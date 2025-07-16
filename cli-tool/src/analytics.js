@@ -16,13 +16,14 @@ const NotificationManager = require('./analytics/notifications/NotificationManag
 const PerformanceMonitor = require('./analytics/utils/PerformanceMonitor');
 
 class ClaudeAnalytics {
-  constructor() {
+  constructor(options = {}) {
     this.app = express();
     this.port = 3333;
+    this.options = options;
     this.stateCalculator = new StateCalculator();
     this.processDetector = new ProcessDetector();
     this.fileWatcher = new FileWatcher();
-    this.sessionAnalyzer = new SessionAnalyzer();
+    this.sessionAnalyzer = new SessionAnalyzer({ overridePlan: options.plan });
     this.dataCache = new DataCache();
     this.performanceMonitor = new PerformanceMonitor({
       enabled: true,
@@ -1142,7 +1143,7 @@ class ClaudeAnalytics {
 async function runAnalytics(options = {}) {
   console.log(chalk.blue('📊 Starting Claude Code Analytics Dashboard...'));
 
-  const analytics = new ClaudeAnalytics();
+  const analytics = new ClaudeAnalytics(options);
 
   try {
     await analytics.initialize();

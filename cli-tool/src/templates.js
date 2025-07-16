@@ -114,7 +114,7 @@ function getFrameworksForLanguage(language) {
 }
 
 function getTemplateConfig(selections) {
-  const { language, framework, commands = [] } = selections;
+  const { language, framework, commands = [], plan = 'free' } = selections;
   const baseConfig = TEMPLATES_CONFIG[language];
   
   if (!baseConfig) {
@@ -143,7 +143,8 @@ function getTemplateConfig(selections) {
     framework,
     files,
     selectedCommands,
-    config: baseConfig
+    config: baseConfig,
+    plan
   };
 }
 

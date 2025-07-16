@@ -5,9 +5,10 @@
 const chalk = require('chalk');
 
 class SessionAnalyzer {
-  constructor() {
+  constructor(options = {}) {
     this.SESSION_DURATION = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
     this.MONTHLY_SESSION_LIMIT = 50;
+    this.overridePlan = options.overridePlan;
     
     // Plan-specific message limits (conservative estimates)
     this.PLAN_LIMITS = {
@@ -30,7 +31,7 @@ class SessionAnalyzer {
         hasSessionLimits: true
       },
       'premium': {
-        name: 'Max Plan (5x)',
+        name: 'Max Plan (20x)',
         messagesPerSession: 900,
         monthlyPrice: 200,
         hasSessionLimits: true
@@ -465,6 +466,17 @@ class SessionAnalyzer {
    * @returns {Object} User plan information
    */
   detectUserPlan(conversations) {
+    if (this.overridePlan && this.PLAN_LIMITS[this.overridePlan]) {
+      return {
+        tier: this.overridePlan,
+        planType: this.overridePlan,
+        allTiers: [this.overridePlan],
+        confidence: 'override',
+        source: 'cli',
+        lastDetected: new Date()
+      };
+    }
+    
     const serviceTiers = new Set();
     let latestTier = null;
     let latestTimestamp = null;
@@ -501,6 +513,7 @@ class SessionAnalyzer {
       planType: planType,
       allTiers: Array.from(serviceTiers),
       confidence: latestTier ? 'high' : 'low',
+      source: 'detected',
       lastDetected: latestTimestamp
     };
   }
