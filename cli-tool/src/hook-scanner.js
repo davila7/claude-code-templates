@@ -123,6 +123,10 @@ function getHookDescription(hook, matcher, type) {
     return 'Block print() statements in Python files';
   }
   
+  if (command.includes('puts\\|p ') && command.includes('rb$')) {
+    return 'Block puts/p statements in Ruby files';
+  }
+  
   if (command.includes('fmt.Print') && command.includes('go$')) {
     return 'Block fmt.Print statements in Go files';
   }
@@ -131,7 +135,7 @@ function getHookDescription(hook, matcher, type) {
     return 'Block println! macros in Rust files';
   }
   
-  if (command.includes('npm audit') || command.includes('pip-audit') || command.includes('cargo audit')) {
+  if (command.includes('npm audit') || command.includes('pip-audit') || command.includes('bundle audit') || command.includes('cargo audit')) {
     return 'Security audit for dependencies';
   }
   
@@ -141,6 +145,18 @@ function getHookDescription(hook, matcher, type) {
   
   if (command.includes('black') && command.includes('py$')) {
     return 'Auto-format Python files with Black';
+  }
+  
+  if (command.includes('rubocop -A') && command.includes('rb$')) {
+    return 'Auto-format Ruby files with RuboCop';
+  }
+  
+  if (command.includes('rubocop') && command.includes('rb$') && !command.includes('-A')) {
+    return 'Run Ruby linting with RuboCop';
+  }
+  
+  if (command.includes('brakeman')) {
+    return 'Run Ruby security scan with Brakeman';
   }
   
   if (command.includes('isort') && command.includes('py$')) {
@@ -193,6 +209,10 @@ function getHookDescription(hook, matcher, type) {
   
   if (command.includes('pytest')) {
     return 'Auto-run Python tests for modified files';
+  }
+  
+  if (command.includes('rspec')) {
+    return 'Auto-run Ruby tests with RSpec';
   }
   
   if (command.includes('go test')) {

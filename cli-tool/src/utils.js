@@ -60,6 +60,50 @@ async function detectProject(targetDir) {
     }
   }
   
+  // Check for Ruby files
+  const rubyFiles = await findFilesByExtension(targetDir, ['.rb']);
+  const gemfilePath = path.join(targetDir, 'Gemfile');
+  const gemfileLockPath = path.join(targetDir, 'Gemfile.lock');
+  
+  if (rubyFiles.length > 0 || await fs.pathExists(gemfilePath)) {
+    detectedLanguages.push('ruby');
+    
+    // Check for Ruby frameworks
+    if (await fs.pathExists(gemfilePath)) {
+      try {
+        const gemfile = await fs.readFile(gemfilePath, 'utf-8');
+        if (gemfile.includes('rails')) {
+          detectedFrameworks.push('rails');
+        }
+        if (gemfile.includes('sinatra')) {
+          detectedFrameworks.push('sinatra');
+        }
+      } catch (error) {
+        console.warn('Could not parse Gemfile');
+      }
+    }
+    
+    // Check for Rails application structure
+    const railsAppPath = path.join(targetDir, 'config', 'application.rb');
+    const railsRoutesPath = path.join(targetDir, 'config', 'routes.rb');
+    if (await fs.pathExists(railsAppPath) || await fs.pathExists(railsRoutesPath)) {
+      detectedFrameworks.push('rails');
+    }
+    
+    // Check for Rakefile (common in Rails and Ruby projects)
+    const rakefilePath = path.join(targetDir, 'Rakefile');
+    if (await fs.pathExists(rakefilePath)) {
+      try {
+        const rakefile = await fs.readFile(rakefilePath, 'utf-8');
+        if (rakefile.includes('Rails.application.load_tasks')) {
+          detectedFrameworks.push('rails');
+        }
+      } catch (error) {
+        // Ignore parsing errors
+      }
+    }
+  }
+  
   // Check for Rust files
   const rustFiles = await findFilesByExtension(targetDir, ['.rs']);
   const cargoPath = path.join(targetDir, 'Cargo.toml');
@@ -145,6 +189,7 @@ async function getProjectSummary(targetDir) {
     hasGit: await fs.pathExists(path.join(targetDir, '.git')),
     hasNodeModules: await fs.pathExists(path.join(targetDir, 'node_modules')),
     hasVenv: await fs.pathExists(path.join(targetDir, 'venv')) || await fs.pathExists(path.join(targetDir, '.venv')),
+    hasBundle: await fs.pathExists(path.join(targetDir, 'vendor', 'bundle')),
     configFiles: []
   };
   
@@ -152,6 +197,7 @@ async function getProjectSummary(targetDir) {
   const configFiles = [
     'package.json', 'tsconfig.json', 'webpack.config.js', 'vite.config.js',
     'requirements.txt', 'setup.py', 'pyproject.toml', 'Pipfile',
+    'Gemfile', 'Gemfile.lock', 'Rakefile', 'config.ru',
     'Cargo.toml', 'go.mod', '.gitignore', 'README.md'
   ];
   
