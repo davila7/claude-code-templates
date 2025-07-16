@@ -76,6 +76,30 @@ const TEMPLATES_CONFIG = {
       }
     }
   },
+  'ruby': {
+    name: 'Ruby',
+    description: 'Optimized for Ruby development with modern tools',
+    files: [
+      { source: 'ruby/CLAUDE.md', destination: 'CLAUDE.md' },
+      { source: 'ruby/.claude', destination: '.claude' },
+      { source: 'ruby/.mcp.json', destination: '.mcp.json' }
+    ],
+    frameworks: {
+      'rails': {
+        name: 'Ruby on Rails 8',
+        additionalFiles: [
+          { source: 'ruby/examples/rails-app/.claude/commands', destination: '.claude/commands' },
+          { source: 'ruby/examples/rails-app/CLAUDE.md', destination: 'CLAUDE.md' }
+        ]
+      },
+      'sinatra': {
+        name: 'Sinatra',
+        additionalFiles: [
+          { source: 'ruby/examples/sinatra-app/.claude/commands', destination: '.claude/commands' }
+        ]
+      }
+    }
+  },
   'rust': {
     name: 'Rust',
     description: 'Optimized for Rust development',
