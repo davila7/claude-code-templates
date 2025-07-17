@@ -17,6 +17,7 @@ async function interactivePrompts(projectInfo, options = {}) {
   // Build steps array based on options
   if (!options.language) state.steps.push('language');
   if (!options.framework) state.steps.push('framework');
+  if (!options.plan) state.steps.push('plan');
   state.steps.push('commands', 'hooks', 'mcps', 'analytics', 'confirm');
 
   while (state.currentStep < state.steps.length) {
@@ -188,6 +189,21 @@ function getStepConfig(stepName, currentAnswers, projectInfo, options) {
         pageSize: 15
       };
 
+    case 'plan':
+      return {
+        type: 'list',
+        name: 'plan',
+        message: 'Select your subscription plan:',
+        choices: [
+          { name: 'Free - Daily limits', value: 'free' },
+          { name: 'Pro (Standard) - 45 messages per 5-hour session', value: 'standard' },
+          { name: 'Max (5x) - 225 messages per 5-hour session', value: 'max' },
+          { name: 'Max (20x Premium) - 900 messages per 5-hour session', value: 'premium' }
+        ],
+        default: 'free',
+        prefix: chalk.blue('💎')
+      };
+
     case 'analytics':
       return {
         type: 'confirm',
@@ -200,6 +216,7 @@ function getStepConfig(stepName, currentAnswers, projectInfo, options) {
     case 'confirm':
       const confirmLanguage = currentAnswers.language || options.language || 'common';
       const confirmFramework = currentAnswers.framework || options.framework || 'none';
+      const confirmPlan = currentAnswers.plan || options.plan || 'free';
       const commandCount = currentAnswers.commands ? currentAnswers.commands.length : 0;
       const hookCount = currentAnswers.hooks ? currentAnswers.hooks.length : 0;
       const mcpCount = currentAnswers.mcps ? currentAnswers.mcps.length : 0;
@@ -208,6 +225,7 @@ function getStepConfig(stepName, currentAnswers, projectInfo, options) {
       if (confirmFramework !== 'none') {
         message += ` with ${chalk.green(confirmFramework)}`;
       }
+      message += ` [${chalk.yellow(confirmPlan.toUpperCase())} plan]`;
       if (commandCount > 0) {
         message += ` (${chalk.yellow(commandCount)} commands)`;
       }
@@ -383,6 +401,7 @@ function createPrompts(projectInfo, options = {}) {
     message: (answers) => {
       const language = answers.language || options.language || 'common';
       const framework = answers.framework || options.framework || 'none';
+      const plan = answers.plan || options.plan || 'free';
       const commandCount = answers.commands ? answers.commands.length : 0;
       const hookCount = answers.hooks ? answers.hooks.length : 0;
       const mcpCount = answers.mcps ? answers.mcps.length : 0;
@@ -391,6 +410,7 @@ function createPrompts(projectInfo, options = {}) {
       if (framework !== 'none') {
         message += ` with ${chalk.green(framework)}`;
       }
+      message += ` [${chalk.yellow(plan.toUpperCase())} plan]`;
       if (commandCount > 0) {
         message += ` (${chalk.yellow(commandCount)} commands)`;
       }

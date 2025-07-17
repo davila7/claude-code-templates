@@ -45,6 +45,7 @@ program
   .option('--hook-stats, --hooks-stats', 'analyze existing automation hooks and offer optimization')
   .option('--mcp-stats, --mcps-stats', 'analyze existing MCP server configurations and offer optimization')
   .option('--analytics', 'launch real-time Claude Code analytics dashboard')
+  .option('-p, --plan <plan>', 'specify subscription plan (free, standard, max, premium)')
   .action(async (options) => {
     try {
       await createClaudeConfig(options);

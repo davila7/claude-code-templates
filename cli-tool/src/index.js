@@ -16,6 +16,17 @@ const { runAnalytics } = require('./analytics');
 async function createClaudeConfig(options = {}) {
   const targetDir = options.directory || process.cwd();
   
+  if (options.plan) {
+    const validPlans = ['free', 'standard', 'max', 'premium'];
+    if (!validPlans.includes(options.plan.toLowerCase())) {
+      console.log(chalk.red(`❌ Invalid subscription plan: ${options.plan}`));
+      console.log(chalk.yellow(`Valid plans are: ${validPlans.join(', ')}`));
+      process.exit(1);
+    }
+    console.log(chalk.green(`✅ Using subscription plan: ${options.plan}`));
+  }
+
+  
   // Handle command stats analysis (both singular and plural)
   if (options.commandStats || options.commandsStats) {
     await runCommandStats(options);
@@ -104,7 +115,8 @@ async function createClaudeConfig(options = {}) {
       framework: options.framework || projectInfo.detectedFramework || 'none',
       features: [],
       hooks: defaultHooks,
-      mcps: defaultMCPs
+      mcps: defaultMCPs,
+      plan: options.plan || 'free'
     };
   } else {
     // Interactive prompts with back navigation
@@ -139,6 +151,9 @@ async function createClaudeConfig(options = {}) {
     templateConfig.language = config.language; // Ensure language is available for MCP filtering
   }
   
+  // Store plan in templateConfig for future use
+  templateConfig.plan = config.plan || options.plan || 'free';
+  
   if (options.dryRun) {
     console.log(chalk.yellow('🔍 Dry run - showing what would be copied:'));
     templateConfig.files.forEach(file => {
@@ -163,6 +178,9 @@ async function createClaudeConfig(options = {}) {
   console.log(chalk.white('  1. Review the generated CLAUDE.md file'));
   console.log(chalk.white('  2. Customize the configuration for your project'));
   console.log(chalk.white('  3. Start using Claude Code with: claude'));
+  
+  const selectedPlan = config.plan || options.plan || 'free';
+  console.log(chalk.yellow(`💎 Subscription plan: ${selectedPlan.toUpperCase()}`));
   
   if (config.language !== 'common') {
     console.log(chalk.yellow(`💡 Language-specific features for ${config.language} have been configured`));
