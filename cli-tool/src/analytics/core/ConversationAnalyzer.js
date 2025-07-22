@@ -376,13 +376,59 @@ class ConversationAnalyzer {
     if (projectIndex !== -1 && projectIndex + 1 < pathParts.length) {
       const projectDir = pathParts[projectIndex + 1];
       // Clean up the project directory name
-      const cleanName = projectDir
-        .replace(/^-/, '')
-        .replace(/-/g, '/')
-        .split('/')
-        .pop() || 'Unknown';
-
-      return cleanName;
+      // The directory appears to be encoded with dashes, but we need to be careful
+      // about which dashes are path separators vs part of the project name
+      
+      // First, let's see what we're working with
+      console.log('DEBUG: projectDir =', projectDir);
+      console.log('DEBUG: full filePath =', filePath);
+      
+      // Split by dash, but we need to intelligently reconstruct the path
+      const parts = projectDir.split('-');
+      
+      // Find the last occurrence of common parent directory names
+      let lastParentIndex = -1;
+      const parentDirs = ['projects', 'repos', 'code', 'src', 'dev', 'workspace', 
+                         'git', 'github', 'Documents', 'Desktop', 'Downloads'];
+      
+      for (let i = parts.length - 1; i >= 0; i--) {
+        // Check if this part matches any parent directory pattern
+        if (parentDirs.includes(parts[i]) || /^\d+$/.test(parts[i]) || 
+            /^\d+_\d+$/.test(parts[i].replace('-', '_'))) {
+          lastParentIndex = i;
+          break;
+        }
+      }
+      
+      // If we found a parent directory, everything after it is the project name
+      // Otherwise, look for the pattern where we have user directory structure
+      if (lastParentIndex === -1) {
+        // Look for username position (typically after empty string and 'Users')
+        let userIndex = -1;
+        if (parts[0] === '') userIndex = 1; // Path started with /
+        if (parts[userIndex] && parts[userIndex].toLowerCase() === 'users') userIndex++;
+        
+        // Skip username and any intermediate directories
+        if (userIndex >= 0 && userIndex < parts.length - 1) {
+          // Start from after the username
+          lastParentIndex = userIndex;
+          
+          // Skip any numeric or date-like directories (e.g., "10-19")
+          for (let i = userIndex + 1; i < parts.length - 1; i++) {
+            if (/^\d+$/.test(parts[i]) || /^\d+_\d+$/.test(parts[i].replace('-', '_'))) {
+              lastParentIndex = i;
+            }
+          }
+        }
+      }
+      
+      // Get the project name parts and join them
+      const projectParts = parts.slice(lastParentIndex + 1);
+      const projectName = projectParts.join('-');
+      
+      console.log('DEBUG: extracted projectName =', projectName);
+      
+      return projectName || 'Unknown';
     }
 
     return null;
