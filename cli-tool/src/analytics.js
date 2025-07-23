@@ -247,13 +247,17 @@ class ClaudeAnalytics {
     if (projectIndex !== -1 && projectIndex + 1 < pathParts.length) {
       const projectDir = pathParts[projectIndex + 1];
       // Clean up the project directory name
-      const cleanName = projectDir
-        .replace(/^-/, '')
-        .replace(/-/g, '/')
-        .split('/')
-        .pop() || 'Unknown';
-
-      return cleanName;
+      // The directory name is like: -Users-thom-10-19-projects-notice-wise-docs
+      // We want to extract just the project name at the end (notice-wise-docs)
+      
+      // Convert the encoded path back to a real path
+      const decodedPath = projectDir.replace(/^-/, '/').replace(/-/g, '/');
+      
+      // Get just the last component of the path (the actual project name)
+      const decodedPathParts = decodedPath.split('/');
+      const projectName = decodedPathParts[decodedPathParts.length - 1];
+      
+      return projectName || 'Unknown';
     }
 
     return null;
