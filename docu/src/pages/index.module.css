@@ -1,0 +1,109 @@
+/**
+ * Terminal-themed homepage styles for Claude Code Templates
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.asciiArt {
+  margin-bottom: 2rem;
+}
+
+.asciiArt pre {
+  color: var(--text-accent);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: clamp(0.4rem, 1.2vw, 0.8rem);
+  line-height: 1.1;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  text-align: center;
+  max-width: 100%;
+}
+
+.terminalSubtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.statusDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-success);
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+  
+  .asciiArt pre {
+    font-size: clamp(0.3rem, 1vw, 0.6rem);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) var(--bg-secondary);
+  }
+  
+  .asciiArt pre::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .asciiArt pre::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+  
+  .asciiArt pre::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 2px;
+  }
+  
+  .terminalSubtitle {
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .asciiArt pre {
+    font-size: clamp(0.25rem, 0.8vw, 0.5rem);
+  }
+  
+  .terminalSubtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+}

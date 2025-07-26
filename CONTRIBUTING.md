@@ -36,6 +36,66 @@ npm test
 npm start -- --dry-run
 ```
 
+## 🔧 Analytics Dashboard Troubleshooting
+
+### Clear Cache and Refresh Data
+When developing the analytics dashboard, you may encounter caching issues where changes don't appear immediately. Use these commands to force refresh:
+
+```bash
+# Method 1: Simple refresh
+curl http://localhost:3333/api/refresh
+
+# Method 2: Clear cache and refresh
+curl -X POST http://localhost:3333/api/cache/clear -H "Content-Type: application/json" -d '{"type":"all"}'
+curl http://localhost:3333/api/refresh
+
+# Method 3: Force complete restart (when cache persists)
+pkill -f analytics
+sleep 3
+npm run analytics:start
+```
+
+### Common Cache Issues
+
+#### Problem: Changes to conversation analysis don't appear
+**Solution:** Clear conversation cache specifically
+```bash
+curl -X POST http://localhost:3333/api/cache/clear -H "Content-Type: application/json" -d '{"type":"conversations"}'
+curl http://localhost:3333/api/refresh
+```
+
+#### Problem: Agent detection changes not reflected
+**Solution:** Restart the server completely
+```bash
+# Stop any running analytics processes
+pkill -f analytics
+sleep 3
+
+# Start fresh
+npm run analytics:start
+```
+
+#### Problem: WebSocket not updating in browser
+**Solution:** Hard refresh browser and reconnect
+```bash
+# In browser: Ctrl+F5 or Cmd+Shift+R
+# Or close and reopen browser tab
+```
+
+### Development Workflow Tips
+
+1. **After modifying backend code:** Always restart the server
+2. **After changing conversation analysis:** Clear cache and refresh
+3. **After updating agent detection:** Full server restart required
+4. **After frontend changes:** Hard refresh browser
+
+### Cache API Endpoints
+
+- `GET /api/refresh` - Refresh data without clearing cache
+- `POST /api/cache/clear` - Clear specific or all caches
+  - `{"type": "all"}` - Clear all caches
+  - `{"type": "conversations"}` - Clear only conversation caches
+
 ## 🏗️ CLI Architecture
 
 The CLI tool is built with a modular architecture:

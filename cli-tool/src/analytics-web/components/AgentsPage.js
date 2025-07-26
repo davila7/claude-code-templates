@@ -37,6 +37,10 @@ class AgentsPage {
     this.loadedConversations = [];
     this.loadedMessages = new Map(); // Cache messages by conversation ID (now stores paginated data)
     
+    // Agent data
+    this.agents = [];
+    this.selectedAgentId = null;
+    
     // State transition tracking for enhanced user experience
     this.lastMessageTime = new Map(); // Track when last message was received per conversation
     
@@ -68,6 +72,7 @@ class AgentsPage {
       this.stateService.setLoading(true);
       await this.render();
       await this.initializeComponents();
+      await this.loadAgentsData();
       await this.loadConversationsData();
       this.isInitialized = true;
     } catch (error) {
@@ -546,39 +551,6 @@ class AgentsPage {
     }, 5000);
   }
 
-  /**
-   * Test console interaction functionality (for development)
-   */
-  testConsoleInteraction() {
-    // Test choice-based interaction (like your example)
-    const testChoiceInteraction = {
-      id: 'test-choice-' + Date.now(),
-      type: 'choice',
-      tool: 'Search',
-      description: 'Search(pattern: "(?:Yes|No|yes|no)(?:,\\s*and\\s*don\'t\\s*ask\\s*again)?", path: "../../../../../../../.claude/projects/-Users-danipower-Proyectos-Github-claude-code-templates", include: "*.jsonl")',
-      prompt: 'Do you want to proceed?',
-      options: [
-        'Yes',
-        'Yes, and add /Users/danipower/.claude/projects/-Users-danipower-Proyectos-Github-claude-code-templates as a working directory for this session',
-        'No, and tell Claude what to do differently'
-      ]
-    };
-
-    // Test text input interaction
-    const testTextInteraction = {
-      id: 'test-text-' + Date.now(),
-      type: 'text',
-      tool: 'Console Input',
-      description: 'Claude Code is requesting text input from the console.',
-      prompt: 'Please provide your input:'
-    };
-
-    // Randomly choose which type to test, or ask user
-    const testType = Math.random() > 0.5 ? testChoiceInteraction : testTextInteraction;
-    
-    console.log('🧪 Testing console interaction:', testType);
-    this.showConsoleInteraction(testType);
-  }
   
   /**
    * Update conversation state elements in the DOM
@@ -660,6 +632,36 @@ class AgentsPage {
                 <button class="search-clear" id="clear-search" title="Clear search">×</button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Agents Section -->
+        <div class="agents-section">
+          <div class="agents-header">
+            <h4>Available Agents</h4>
+            <div class="agents-info">
+              <span class="agents-count" id="agents-count">0 agents</span>
+              <button class="refresh-agents-btn" id="refresh-agents" title="Refresh agents">
+                <span class="btn-icon">🔄</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="agents-list" id="agents-list">
+            <!-- Agent items will be rendered here -->
+          </div>
+          
+          <!-- Loading state for agents -->
+          <div class="agents-loading" id="agents-loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Loading agents...</span>
+          </div>
+          
+          <!-- Empty state for agents -->
+          <div class="agents-empty" id="agents-empty" style="display: none;">
+            <div class="empty-icon">🤖</div>
+            <p>No agents found</p>
+            <small>Create agents in your .claude/agents directory to see them here</small>
           </div>
         </div>
 
@@ -848,10 +850,11 @@ class AgentsPage {
       clearFiltersBtn.addEventListener('click', () => this.clearAllFilters());
     }
 
-    // Test console interaction
-    const testConsoleBtn = this.container.querySelector('#test-console-interaction');
-    if (testConsoleBtn) {
-      testConsoleBtn.addEventListener('click', () => this.testConsoleInteraction());
+
+    // Refresh agents
+    const refreshAgentsBtn = this.container.querySelector('#refresh-agents');
+    if (refreshAgentsBtn) {
+      refreshAgentsBtn.addEventListener('click', () => this.refreshAgents());
     }
 
     // Fullscreen toggle
@@ -929,6 +932,427 @@ class AgentsPage {
     const loadingIndicator = this.container.querySelector('#load-more-indicator');
     if (loadingIndicator) {
       loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+    }
+  }
+
+  /**
+   * Load agents data from API
+   */
+  async loadAgentsData() {
+    try {
+      this.showAgentsLoading(true);
+      
+      const agentsData = await this.dataService.cachedFetch('/api/agents');
+      
+      if (agentsData && agentsData.agents) {
+        this.agents = agentsData.agents;
+        this.renderAgents();
+      } else {
+        this.showAgentsEmpty();
+      }
+      
+    } catch (error) {
+      console.error('Error loading agents data:', error);
+      this.showAgentsEmpty();
+    } finally {
+      this.showAgentsLoading(false);
+    }
+  }
+
+  /**
+   * Render global agents in the agents list (user-level only)
+   */
+  renderAgents() {
+    const agentsList = this.container.querySelector('#agents-list');
+    const agentsCount = this.container.querySelector('#agents-count');
+    
+    if (!agentsList || !agentsCount) return;
+    
+    // Filter only global/user agents for main section
+    const globalAgents = this.agents.filter(agent => agent.level === 'user');
+    
+    if (globalAgents.length === 0) {
+      this.showAgentsEmpty();
+      return;
+    }
+    
+    // Update count for global agents only
+    agentsCount.textContent = `${globalAgents.length} global agent${globalAgents.length !== 1 ? 's' : ''}`;
+    
+    // Render global agent items (compact rectangles)
+    const agentsHTML = globalAgents.map(agent => {
+      const levelBadge = agent.level === 'project' ? 'P' : 'U';
+      
+      return `
+        <div class="agent-item" data-agent-id="${agent.name}">
+          <div class="agent-dot" style="background-color: ${agent.color}"></div>
+          <span class="agent-name">${agent.name}</span>
+          <span class="agent-level-badge ${agent.level}" title="${agent.level === 'project' ? 'Project Agent' : 'User Agent'}">${levelBadge}</span>
+        </div>
+      `;
+    }).join('');
+    
+    agentsList.innerHTML = agentsHTML;
+    
+    // Hide empty state and show list
+    this.hideAgentsEmpty();
+    agentsList.style.display = 'block';
+    
+    // Bind agent events
+    this.bindAgentEvents();
+  }
+
+  /**
+   * Bind events for agent items
+   */
+  bindAgentEvents() {
+    const agentItems = this.container.querySelectorAll('.agent-item');
+    
+    agentItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const agentId = item.dataset.agentId;
+        this.selectAgent(agentId);
+      });
+    });
+  }
+
+  /**
+   * Select an agent (opens modal with details)
+   * @param {string} agentId - Agent ID
+   */
+  selectAgent(agentId) {
+    const agent = this.agents.find(a => a.name === agentId);
+    if (agent) {
+      this.openAgentModal(agent);
+    }
+  }
+
+  /**
+   * Open agent details modal
+   * @param {Object} agent - Agent object
+   */
+  openAgentModal(agent) {
+    const modalHTML = `
+      <div class="agent-modal-overlay" id="agent-modal-overlay">
+        <div class="agent-modal">
+          <div class="agent-modal-header">
+            <div class="agent-modal-title">
+              <div class="agent-title-main">
+                <div class="agent-dot" style="background-color: ${agent.color}"></div>
+                <div class="agent-title-info">
+                  <h3>${agent.name}</h3>
+                  <div class="agent-subtitle">
+                    <span class="agent-level-badge ${agent.level}">${agent.level === 'project' ? 'Project Agent' : 'User Agent'}</span>
+                    ${agent.projectName ? `<span class="agent-project-name">• ${agent.projectName}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="agent-modal-close" id="agent-modal-close">&times;</button>
+          </div>
+          
+          <div class="agent-modal-content">
+            <div class="agent-info-section">
+              <h4>Description</h4>
+              <p>${agent.description}</p>
+            </div>
+            
+            ${agent.projectName ? `
+              <div class="agent-info-section">
+                <h4>Project</h4>
+                <p>${agent.projectName}</p>
+              </div>
+            ` : ''}
+            
+            <div class="agent-info-section">
+              <h4>Tools Access</h4>
+              <p>${agent.tools && agent.tools.length > 0 
+                ? `Has access to: ${agent.tools.join(', ')}` 
+                : 'Has access to all available tools'}</p>
+            </div>
+            
+            <div class="agent-info-section">
+              <h4>System Prompt</h4>
+              <div class="agent-system-prompt">${agent.systemPrompt ? agent.systemPrompt.replace(/\n/g, '<br>') : 'No system prompt available'}</div>
+            </div>
+            
+            <div class="agent-usage-tips">
+              <h4>💡 How to Use This Agent</h4>
+              <div class="usage-tips-content">
+                <p><strong>To invoke this agent explicitly:</strong></p>
+                <code class="usage-example">Use the ${agent.name} agent to [describe your request]</code>
+                
+                <p><strong>Alternative ways to invoke:</strong></p>
+                <ul>
+                  <li><code>Ask the ${agent.name} agent to [task]</code></li>
+                  <li><code>Have the ${agent.name} agent [action]</code></li>
+                  <li><code>Let the ${agent.name} agent handle [request]</code></li>
+                </ul>
+                
+                <p><strong>Best practices:</strong></p>
+                <ul>
+                  <li>Be specific about what you want the agent to do</li>
+                  <li>Provide context when needed</li>
+                  <li>The agent will automatically use appropriate tools</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="agent-metadata">
+              <small><strong>File:</strong> ${agent.filePath}</small><br>
+              <small><strong>Last modified:</strong> ${new Date(agent.lastModified).toLocaleString()}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Add modal to DOM
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Bind close events
+    document.getElementById('agent-modal-close').addEventListener('click', () => this.closeAgentModal());
+    document.getElementById('agent-modal-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'agent-modal-overlay') {
+        this.closeAgentModal();
+      }
+    });
+    
+    // ESC key to close - store reference for cleanup
+    this.modalKeydownHandler = (e) => {
+      if (e.key === 'Escape') {
+        this.closeAgentModal();
+      }
+    };
+    document.addEventListener('keydown', this.modalKeydownHandler);
+  }
+
+  /**
+   * Close agent modal
+   */
+  closeAgentModal() {
+    const modal = document.getElementById('agent-modal-overlay');
+    if (modal) {
+      modal.remove();
+    }
+    if (this.modalKeydownHandler) {
+      document.removeEventListener('keydown', this.modalKeydownHandler);
+      this.modalKeydownHandler = null;
+    }
+  }
+
+  /**
+   * Show agents loading state
+   * @param {boolean} show - Whether to show loading
+   */
+  showAgentsLoading(show) {
+    const loading = this.container.querySelector('#agents-loading');
+    const list = this.container.querySelector('#agents-list');
+    
+    if (loading && list) {
+      loading.style.display = show ? 'flex' : 'none';
+      list.style.display = show ? 'none' : 'block';
+    }
+  }
+
+  /**
+   * Show agents empty state
+   */
+  showAgentsEmpty() {
+    const empty = this.container.querySelector('#agents-empty');
+    const list = this.container.querySelector('#agents-list');
+    const count = this.container.querySelector('#agents-count');
+    
+    if (empty && list && count) {
+      empty.style.display = 'flex';
+      list.style.display = 'none';
+      count.textContent = '0 agents'; 
+    }
+  }
+
+  /**
+   * Hide agents empty state
+   */
+  hideAgentsEmpty() {
+    const empty = this.container.querySelector('#agents-empty');
+    if (empty) {
+      empty.style.display = 'none';
+    }
+  }
+
+  /**
+   * Get project-specific agents for a conversation
+   * @param {string} conversationId - Conversation ID
+   * @returns {Array} Array of project agents for this conversation
+   */
+  getAgentsForConversation(conversationId) {
+    const conversations = this.stateService.getStateProperty('conversations') || [];
+    const conversation = conversations.find(conv => conv.id === conversationId);
+    
+    if (!conversation || !conversation.project) {
+      // Return empty array if no project (global agents are shown in main section)
+      return [];
+    }
+    
+    const projectName = conversation.project;
+    
+    // Return only project agents for this specific project
+    return this.agents.filter(agent => 
+      agent.level === 'project' && agent.projectName === projectName
+    );
+  }
+
+  /**
+   * Show project agents modal
+   * @param {string} conversationId - Conversation ID
+   */
+  showProjectAgents(conversationId) {
+    const conversations = this.stateService.getStateProperty('conversations') || [];
+    const conversation = conversations.find(conv => conv.id === conversationId);
+    const projectAgents = this.getAgentsForConversation(conversationId);
+    
+    const projectName = conversation?.project || 'Unknown Project';
+    const chatTitle = conversation?.title || `Chat ${conversationId.slice(-8)}`;
+    
+    const modalHTML = `
+      <div class="agent-modal-overlay" id="project-agents-modal-overlay">
+        <div class="agent-modal project-agents-modal">
+          <div class="agent-modal-header">
+            <div class="agent-modal-title">
+              <div class="agent-title-main">
+                <div class="project-icon">📁</div>
+                <div class="agent-title-info">
+                  <h3>Project Agents</h3>
+                  <div class="agent-subtitle">
+                    <span class="project-info">${chatTitle}</span>
+                    <span class="agent-project-name">• ${projectName}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="agent-modal-close" id="project-agents-modal-close">&times;</button>
+          </div>
+          
+          <div class="agent-modal-content">
+            ${projectAgents.length === 0 ? `
+              <div class="no-agents-message">
+                <div class="no-agents-icon">🤖</div>
+                <h4>No project agents</h4>
+                <p>This project doesn't have any specific agents configured.</p>
+                <p>Create agents in your project's <code>.claude/agents/</code> directory to see them here.</p>
+                <p><strong>Note:</strong> Global agents are available in the main agents section.</p>
+              </div>
+            ` : `
+              <div class="project-agents-grid">
+                ${projectAgents.map(agent => `
+                  <div class="project-agent-card" data-agent-id="${agent.name}">
+                    <div class="project-agent-header">
+                      <div class="agent-dot" style="background-color: ${agent.color}"></div>
+                      <div class="project-agent-info">
+                        <h4>${agent.name}</h4>
+                        <span class="agent-level-badge ${agent.level}">${agent.level === 'project' ? 'Project' : 'User'}</span>
+                      </div>
+                    </div>
+                    <div class="project-agent-description">
+                      ${this.truncateText(agent.description, 100)}
+                    </div>
+                    <div class="project-agent-footer">
+                      <span class="project-agent-tools">${agent.tools && agent.tools.length > 0 ? `${agent.tools.length} tools` : 'All tools'}</span>
+                      <button class="project-agent-details-btn" data-agent-id="${agent.name}">Details</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+              
+              <div class="usage-instruction">
+                <h4>💡 How to use these agents</h4>
+                <p>In your conversation, mention any agent by name:</p>
+                <div class="usage-examples">
+                  ${projectAgents.slice(0, 3).map(agent => 
+                    `<code class="usage-example">Use the ${agent.name} agent to help with this task</code>`
+                  ).join('')}
+                </div>
+              </div>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Add modal to DOM
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Bind close events
+    document.getElementById('project-agents-modal-close').addEventListener('click', () => this.closeProjectAgentsModal());
+    document.getElementById('project-agents-modal-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'project-agents-modal-overlay') {
+        this.closeProjectAgentsModal();
+      }
+    });
+    
+    // Bind agent detail buttons
+    const detailButtons = document.querySelectorAll('.project-agent-details-btn');
+    detailButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const agentId = btn.dataset.agentId;
+        const agent = this.agents.find(a => a.name === agentId);
+        if (agent) {
+          this.closeProjectAgentsModal();
+          this.openAgentModal(agent);
+        }
+      });
+    });
+    
+    // ESC key to close
+    this.projectModalKeydownHandler = (e) => {
+      if (e.key === 'Escape') {
+        this.closeProjectAgentsModal();
+      }
+    };
+    document.addEventListener('keydown', this.projectModalKeydownHandler);
+  }
+
+  /**
+   * Close project agents modal
+   */
+  closeProjectAgentsModal() {
+    const modal = document.getElementById('project-agents-modal-overlay');
+    if (modal) {
+      modal.remove();
+    }
+    if (this.projectModalKeydownHandler) {
+      document.removeEventListener('keydown', this.projectModalKeydownHandler);
+      this.projectModalKeydownHandler = null;
+    }
+  }
+
+  /**
+   * Refresh agents data
+   */
+  async refreshAgents() {
+    const refreshBtn = this.container.querySelector('#refresh-agents');
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      const iconElement = refreshBtn.querySelector('.btn-icon');
+      if (iconElement) {
+        iconElement.style.animation = 'spin 1s linear infinite';
+      }
+    }
+
+    try {
+      // Just reload agents data without clearing cache
+      await this.loadAgentsData();
+    } catch (error) {
+      console.error('Error refreshing agents:', error);
+    } finally {
+      if (refreshBtn) {
+        refreshBtn.disabled = false;
+        const iconElement = refreshBtn.querySelector('.btn-icon');
+        if (iconElement) {
+          iconElement.style.animation = '';
+        }
+      }
     }
   }
 
@@ -1063,12 +1487,21 @@ class AgentsPage {
       const state = states[conv.id] || 'unknown';
       const stateClass = this.getStateClass(state);
       
+      // Check for agent usage
+      const agentColor = this.getAgentColorForConversation(conv.id);
+      const agentName = this.getAgentNameForConversation(conv.id);
+      
+      // Generate title with agent indicator
+      const titleColor = agentColor ? `style="color: ${agentColor}; border-left: 3px solid ${agentColor}; padding-left: 8px;"` : '';
+      const agentIndicator = agentName ? `<span class="agent-indicator-small" style="background-color: ${agentColor}" title="Using ${agentName} agent">🤖</span>` : '';
+      
       return `
-        <div class="sidebar-conversation-item" data-id="${conv.id}">
+        <div class="sidebar-conversation-item" data-id="${conv.id}" ${agentColor ? `data-agent-color="${agentColor}"` : ''}>
           <div class="sidebar-conversation-header">
-            <div class="sidebar-conversation-title">
+            <div class="sidebar-conversation-title" ${titleColor}>
               <span class="status-dot ${stateClass}"></span>
               <h4 class="sidebar-conversation-name">${conv.title || `Chat ${conv.id.slice(-8)}`}</h4>
+              ${agentIndicator}
             </div>
             <span class="sidebar-conversation-badge ${stateClass}">${this.getStateLabel(state)}</span>
           </div>
@@ -1082,6 +1515,13 @@ class AgentsPage {
           
           <div class="sidebar-conversation-preview">
             <p class="sidebar-preview-text">${this.getSimpleConversationPreview(conv)}</p>
+          </div>
+          
+          <div class="sidebar-conversation-actions">
+            <button class="conversation-agents-btn" data-conversation-id="${conv.id}" title="View available agents for this project">
+              <span class="agents-icon">🤖</span>
+              <span class="agents-text">Agents</span>
+            </button>
           </div>
         </div>
       `;
@@ -1114,9 +1554,23 @@ class AgentsPage {
     // Click on sidebar conversation item to select and view
     const conversationItems = this.container.querySelectorAll('.sidebar-conversation-item');
     conversationItems.forEach(item => {
-      item.addEventListener('click', () => {
+      item.addEventListener('click', (e) => {
+        // Don't select conversation if clicking on agents button
+        if (e.target.closest('.conversation-agents-btn')) {
+          return;
+        }
         const conversationId = item.dataset.id;
         this.selectConversation(conversationId);
+      });
+    });
+
+    // Bind agents button clicks
+    const agentsButtons = this.container.querySelectorAll('.conversation-agents-btn');
+    agentsButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const conversationId = btn.dataset.conversationId;
+        this.showProjectAgents(conversationId);
       });
     });
   }
@@ -1161,7 +1615,22 @@ class AgentsPage {
       const metaElement = this.container.querySelector('#selected-conversation-meta');
       
       if (titleElement) {
-        titleElement.textContent = conversation.title || `Chat ${conversation.id.slice(-8)}`;
+        const baseTitle = conversation.title || `Chat ${conversation.id.slice(-8)}`;
+        const agentName = this.getAgentNameForConversation(conversation.id);
+        const agentColor = this.getAgentColorForConversation(conversation.id);
+        
+        if (agentName && agentColor) {
+          titleElement.innerHTML = `
+            <span style="color: ${agentColor}; border-left: 3px solid ${agentColor}; padding-left: 8px;">
+              ${baseTitle}
+            </span>
+            <span class="agent-badge" style="background-color: ${agentColor};" title="Using ${agentName} agent">
+              🤖 ${agentName}
+            </span>
+          `;
+        } else {
+          titleElement.textContent = baseTitle;
+        }
       }
       
       if (metaElement) {
@@ -1363,10 +1832,29 @@ class AgentsPage {
     // Update dot class with enhanced styling
     stateDot.className = `state-dot ${stateInfo.class}`;
     
-    // Update text with icon and description
+    // Check for agent usage
+    const agentName = this.getAgentNameForConversation(conversationId);
+    const agentColor = this.getAgentColorForConversation(conversationId);
+    
+    // Update text with icon, description, and agent info
+    let stateTextContent = stateInfo.text;
+    let stateDescriptionContent = stateInfo.description;
+    
+    // If an agent is detected and state indicates work, update the message
+    if (agentName && (stateInfo.class.includes('working') || stateInfo.class.includes('executing') || stateInfo.class.includes('analyzing'))) {
+      stateTextContent = `🤖 ${agentName} agent working...`;
+      stateDescriptionContent = `The ${agentName} agent is processing your request`;
+      
+      // Apply agent color to the dot
+      if (agentColor) {
+        stateDot.style.backgroundColor = agentColor;
+        stateDot.style.borderColor = agentColor;
+      }
+    }
+    
     stateText.innerHTML = `
-      <span class="state-text-main">${stateInfo.text}</span>
-      <span class="state-text-description">${stateInfo.description}</span>
+      <span class="state-text-main">${stateTextContent}</span>
+      <span class="state-text-description">${stateDescriptionContent}</span>
     `;
     
     // Add tooltip for additional context
@@ -1958,6 +2446,85 @@ class AgentsPage {
     }
     
     return content;
+  }
+
+  /**
+   * Detect which agent is being used in a conversation
+   * @param {string} conversationId - Conversation ID
+   * @returns {Object|null} Agent info or null if no agent detected
+   */
+  detectAgentInConversation(conversationId) {
+    const messages = this.loadedMessages.get(conversationId) || [];
+    
+    // Look for agent indicators in recent messages
+    for (let i = messages.length - 1; i >= Math.max(0, messages.length - 10); i--) {
+      const message = messages[i];
+      
+      if (message.role === 'assistant' && message.content) {
+        let contentText = '';
+        
+        // Extract text content from message
+        if (Array.isArray(message.content)) {
+          contentText = message.content
+            .filter(block => block.type === 'text')
+            .map(block => block.text)
+            .join(' ');
+        } else if (typeof message.content === 'string') {
+          contentText = message.content;
+        }
+        
+        // Check for agent usage patterns
+        const agentPatterns = [
+          /use(?:s|d)?\s+the\s+([a-zA-Z0-9\-_]+)\s+(?:sub\s+)?agent/i,
+          /([a-zA-Z0-9\-_]+)\s+agent\s+(?:to|for|will)/i,
+          /delegat(?:e|ing)\s+(?:to|task|this)\s+(?:the\s+)?([a-zA-Z0-9\-_]+)\s+agent/i,
+          /invok(?:e|ing)\s+(?:the\s+)?([a-zA-Z0-9\-_]+)\s+agent/i
+        ];
+        
+        for (const pattern of agentPatterns) {
+          const match = contentText.match(pattern);
+          if (match) {
+            const detectedAgentName = match[1].toLowerCase();
+            
+            // Find matching agent from our loaded agents
+            const agent = this.agents.find(a => 
+              a.name.toLowerCase() === detectedAgentName ||
+              a.name.toLowerCase().replace(/-/g, '') === detectedAgentName.replace(/-/g, '')
+            );
+            
+            if (agent) {
+              return {
+                agent,
+                detectedAt: message.timestamp,
+                confidence: 'high'
+              };
+            }
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Get agent color for conversation
+   * @param {string} conversationId - Conversation ID
+   * @returns {string|null} Agent color or null
+   */
+  getAgentColorForConversation(conversationId) {
+    const agentInfo = this.detectAgentInConversation(conversationId);
+    return agentInfo ? agentInfo.agent.color : null;
+  }
+
+  /**
+   * Get agent name for conversation
+   * @param {string} conversationId - Conversation ID
+   * @returns {string|null} Agent name or null
+   */
+  getAgentNameForConversation(conversationId) {
+    const agentInfo = this.detectAgentInConversation(conversationId);
+    return agentInfo ? agentInfo.agent.name : null;
   }
 
   /**

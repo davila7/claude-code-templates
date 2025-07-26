@@ -238,8 +238,35 @@ class ClaudeAnalytics {
     };
   }
 
-  extractProjectFromPath(filePath) {
-    // Extract project name from file path like:
+  async extractProjectFromPath(filePath) {
+    // First try to read cwd from the conversation file itself
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const lines = content.trim().split('\n').filter(line => line.trim());
+      
+      for (const line of lines.slice(0, 10)) { // Check first 10 lines
+        try {
+          const item = JSON.parse(line);
+          
+          // Look for cwd field in the message
+          if (item.cwd) {
+            return path.basename(item.cwd);
+          }
+          
+          // Also check if it's in nested objects
+          if (item.message && item.message.cwd) {
+            return path.basename(item.message.cwd);
+          }
+        } catch (parseError) {
+          // Skip invalid JSON lines
+          continue;
+        }
+      }
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not extract project from conversation ${filePath}:`, error.message));
+    }
+
+    // Fallback: Extract project name from file path like:
     // /Users/user/.claude/projects/-Users-user-Projects-MyProject/conversation.jsonl
     const pathParts = filePath.split('/');
     const projectIndex = pathParts.findIndex(part => part === 'projects');
@@ -256,7 +283,7 @@ class ClaudeAnalytics {
       return cleanName;
     }
 
-    return null;
+    return 'Unknown';
   }
 
 
@@ -1097,6 +1124,17 @@ class ClaudeAnalytics {
       }
     });
 
+    // Agents API endpoint
+    this.app.get('/api/agents', async (req, res) => {
+      try {
+        const agents = await this.loadAgents();
+        res.json({ agents });
+      } catch (error) {
+        console.error('Error loading agents:', error);
+        res.status(500).json({ error: 'Failed to load agents data' });
+      }
+    });
+
     // Main dashboard route
     this.app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'analytics-web', 'index.html'));
@@ -1280,6 +1318,307 @@ class ClaudeAnalytics {
         );
       }
     });
+  }
+
+  /**
+   * Load available agents from .claude/agents directories (project and user level)
+   * @returns {Promise<Array>} Array of agent objects
+   */
+  async loadAgents() {
+    const agents = [];
+    const homeDir = os.homedir();
+    
+    // Define agent paths (user level and project level)
+    const userAgentsDir = path.join(homeDir, '.claude', 'agents');
+    const projectAgentsDirs = [];
+    
+    try {
+      // 1. Check current working directory for .claude/agents
+      const currentProjectAgentsDir = path.join(process.cwd(), '.claude', 'agents');
+      if (await fs.pathExists(currentProjectAgentsDir)) {
+        const currentProjectName = path.basename(process.cwd());
+        projectAgentsDirs.push({
+          path: currentProjectAgentsDir,
+          projectName: currentProjectName
+        });
+      }
+      
+      // 2. Check parent directories for .claude/agents (for monorepo/nested projects)
+      let currentDir = process.cwd();
+      let parentDir = path.dirname(currentDir);
+      
+      // Search up to 3 levels up for .claude/agents
+      for (let i = 0; i < 3 && parentDir !== currentDir; i++) {
+        const parentProjectAgentsDir = path.join(parentDir, '.claude', 'agents');
+        
+        if (await fs.pathExists(parentProjectAgentsDir)) {
+          const parentProjectName = path.basename(parentDir);
+          
+          // Avoid duplicates
+          const exists = projectAgentsDirs.some(p => p.path === parentProjectAgentsDir);
+          if (!exists) {
+            projectAgentsDirs.push({
+              path: parentProjectAgentsDir,
+              projectName: parentProjectName
+            });
+          }
+          break; // Found one, no need to go further up
+        }
+        currentDir = parentDir;
+        parentDir = path.dirname(currentDir);
+      }
+      
+      // 3. Find all project directories that might have agents (in ~/.claude/projects)
+      const projectsDir = path.join(this.claudeDir, 'projects');
+      if (await fs.pathExists(projectsDir)) {
+        const projectDirs = await fs.readdir(projectsDir);
+        for (const projectDir of projectDirs) {
+          const projectAgentsDir = path.join(projectsDir, projectDir, '.claude', 'agents');
+          if (await fs.pathExists(projectAgentsDir)) {
+            projectAgentsDirs.push({
+              path: projectAgentsDir,
+              projectName: this.cleanProjectName(projectDir)
+            });
+          }
+        }
+      }
+      
+      // Load user-level agents
+      if (await fs.pathExists(userAgentsDir)) {
+        const userAgents = await this.loadAgentsFromDirectory(userAgentsDir, 'user');
+        agents.push(...userAgents);
+      }
+      
+      // Load project-level agents
+      for (const projectInfo of projectAgentsDirs) {
+        const projectAgents = await this.loadAgentsFromDirectory(
+          projectInfo.path, 
+          'project', 
+          projectInfo.projectName
+        );
+        agents.push(...projectAgents);
+      }
+      
+      // Log agents summary
+      console.log(chalk.blue('🤖 Agents loaded:'), agents.length);
+      if (agents.length > 0) {
+        const projectAgents = agents.filter(a => a.level === 'project').length;
+        const userAgents = agents.filter(a => a.level === 'user').length;
+        console.log(chalk.gray(`  📦 Project agents: ${projectAgents}, 👤 User agents: ${userAgents}`));
+      }
+      
+      // Sort agents by name and prioritize project agents over user agents
+      return agents.sort((a, b) => {
+        if (a.level !== b.level) {
+          return a.level === 'project' ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      
+    } catch (error) {
+      console.error(chalk.red('Error loading agents:'), error);
+      return [];
+    }
+  }
+
+  /**
+   * Load agents from a specific directory
+   * @param {string} agentsDir - Directory containing agent files
+   * @param {string} level - 'user' or 'project'
+   * @param {string} projectName - Name of project (if project level)
+   * @returns {Promise<Array>} Array of agent objects
+   */
+  async loadAgentsFromDirectory(agentsDir, level, projectName = null) {
+    const agents = [];
+    
+    try {
+      const files = await fs.readdir(agentsDir);
+      
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const filePath = path.join(agentsDir, file);
+          const agentData = await this.parseAgentFile(filePath, level, projectName);
+          if (agentData) {
+            agents.push(agentData);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not read agents directory ${agentsDir}:`, error.message));
+    }
+    
+    return agents;
+  }
+
+  /**
+   * Parse agent markdown file
+   * @param {string} filePath - Path to agent file
+   * @param {string} level - 'user' or 'project'
+   * @param {string} projectName - Name of project (if project level)
+   * @returns {Promise<Object|null>} Agent object or null if parsing failed
+   */
+  async parseAgentFile(filePath, level, projectName = null) {
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const stats = await fs.stat(filePath);
+      
+      // Parse YAML frontmatter
+      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+      if (!frontmatterMatch) {
+        console.warn(chalk.yellow(`Agent file ${path.basename(filePath)} missing frontmatter`));
+        return null;
+      }
+      
+      const frontmatter = {};
+      const yamlContent = frontmatterMatch[1];
+      
+      // Simple YAML parser for the fields we need
+      const yamlLines = yamlContent.split('\n');
+      for (const line of yamlLines) {
+        const match = line.match(/^(\w+):\s*(.*)$/);
+        if (match) {
+          const [, key, value] = match;
+          frontmatter[key] = value.trim();
+        }
+      }
+      
+      // Log parsed frontmatter for debugging
+      console.log(chalk.blue(`📋 Parsed agent frontmatter for ${path.basename(filePath)}:`), frontmatter);
+      
+      if (!frontmatter.name || !frontmatter.description) {
+        console.warn(chalk.yellow(`Agent file ${path.basename(filePath)} missing required fields`));
+        return null;
+      }
+      
+      // Extract system prompt (content after frontmatter)
+      const systemPrompt = content.substring(frontmatterMatch[0].length).trim();
+      
+      // Parse tools if specified
+      let tools = [];
+      if (frontmatter.tools) {
+        tools = frontmatter.tools.split(',').map(tool => tool.trim()).filter(Boolean);
+      }
+      
+      // Use color from frontmatter if available, otherwise generate one
+      const color = frontmatter.color ? this.convertColorToHex(frontmatter.color) : this.generateAgentColor(frontmatter.name);
+      
+      return {
+        name: frontmatter.name,
+        description: frontmatter.description,
+        systemPrompt,
+        tools,
+        level,
+        projectName,
+        filePath,
+        lastModified: stats.mtime,
+        color,
+        isActive: true // All loaded agents are considered active
+      };
+      
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not parse agent file ${filePath}:`, error.message));
+      return null;
+    }
+  }
+
+  /**
+   * Generate consistent color for agent based on name
+   * @param {string} agentName - Name of the agent
+   * @returns {string} Hex color code
+   */
+  generateAgentColor(agentName) {
+    // Simple hash function to generate consistent colors
+    let hash = 0;
+    for (let i = 0; i < agentName.length; i++) {
+      const char = agentName.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    // Generate RGB values with good contrast and visibility
+    const hue = Math.abs(hash) % 360;
+    const saturation = 70 + (Math.abs(hash) % 30); // 70-100%
+    const lightness = 45 + (Math.abs(hash) % 20);  // 45-65%
+    
+    // Convert HSL to RGB
+    const hslToRgb = (h, s, l) => {
+      h /= 360;
+      s /= 100;
+      l /= 100;
+      
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      
+      let r, g, b;
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    };
+    
+    const [r, g, b] = hslToRgb(hue, saturation, lightness);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
+
+  /**
+   * Convert color names to hex values
+   * @param {string} color - Color name or hex value
+   * @returns {string} Hex color code
+   */
+  convertColorToHex(color) {
+    if (!color) return '#007acc';
+    
+    // If already hex, return as-is
+    if (color.startsWith('#')) return color;
+    
+    // Convert common color names to hex
+    const colorMap = {
+      'red': '#ff4444',
+      'blue': '#4444ff', 
+      'green': '#44ff44',
+      'yellow': '#ffff44',
+      'orange': '#ff8844',
+      'purple': '#8844ff',
+      'pink': '#ff44ff',
+      'cyan': '#44ffff',
+      'brown': '#8b4513',
+      'gray': '#888888',
+      'grey': '#888888',
+      'black': '#333333',
+      'white': '#ffffff',
+      'teal': '#008080',
+      'navy': '#000080',
+      'lime': '#00ff00',
+      'maroon': '#800000',
+      'olive': '#808000',
+      'silver': '#c0c0c0'
+    };
+    
+    return colorMap[color.toLowerCase()] || '#007acc';
+  }
+
+  /**
+   * Clean project name for display
+   * @param {string} projectDir - Raw project directory name
+   * @returns {string} Cleaned project name
+   */
+  cleanProjectName(projectDir) {
+    // Convert encoded project paths like "-Users-user-Projects-MyProject" to "MyProject"
+    const parts = projectDir.split('-').filter(Boolean);
+    return parts[parts.length - 1] || projectDir;
   }
 
   /**

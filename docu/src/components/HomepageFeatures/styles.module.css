@@ -1,0 +1,131 @@
+.features {
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+  width: 100%;
+  background: var(--bg-primary);
+}
+
+.featureCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 2rem;
+  height: 100%;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.featureCard:hover {
+  border-color: var(--text-accent);
+  box-shadow: 0 4px 12px var(--shadow-primary);
+  transform: translateY(-2px);
+}
+
+.featureIcon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 50%;
+}
+
+.featureContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.featureTitle {
+  color: var(--text-primary) !important;
+  font-family: inherit !important;
+  font-size: 1.25rem !important;
+  margin-bottom: 1rem !important;
+  font-weight: 500 !important;
+}
+
+.featureDescription {
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 1.5rem !important;
+  flex: 1;
+}
+
+.terminalCommand {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.prompt {
+  color: var(--text-success);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.command {
+  color: var(--text-primary) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  font-size: 0.85rem !important;
+  flex: 1;
+  text-align: left;
+}
+
+@media screen and (max-width: 996px) {
+  .features {
+    padding: 2rem 0;
+  }
+  
+  .featureCard {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .featureIcon {
+    font-size: 2.5rem;
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1rem;
+  }
+  
+  .featureTitle {
+    font-size: 1.1rem !important;
+  }
+  
+  .featureDescription {
+    font-size: 0.85rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .terminalCommand {
+    padding: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  
+  .command {
+    text-align: center !important;
+    word-break: break-all;
+  }
+}
