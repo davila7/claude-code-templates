@@ -27,6 +27,7 @@
     "test:react": "make test-react",
     "test:vue": "make test-vue",
     "test:node": "make test-node",
+    "test:csharp": "make test-csharp",
     "test:all": "npm run test:coverage && make test",
     "dev:link": "npm link",
     "dev:unlink": "npm unlink -g claude-code-templates",
