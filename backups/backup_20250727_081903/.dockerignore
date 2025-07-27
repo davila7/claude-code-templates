@@ -1,0 +1,36 @@
+# Git files
+.git
+.gitignore
+.github
+
+# Node modules (will be installed fresh in container)
+node_modules
+cli-tool/node_modules
+docu/node_modules
+
+# Test files
+tests
+test-*.sh
+coverage
+.coverage
+
+# Development files
+.vscode
+*.log
+.DS_Store
+.env.local
+.env.development
+
+# Documentation files (not needed in container)
+docs
+*.md
+!README.md
+!CLAUDE.md
+
+# Build artifacts
+dist
+build
+*.tgz
+
+# Example projects
+example-project
