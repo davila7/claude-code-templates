@@ -10,10 +10,15 @@ class AgentsPage {
     
     this.components = {};
     this.filters = {
-      status: 'all',
+      status: [],
+      project: 'all',
       timeRange: '7d',
       search: ''
     };
+    
+    // Track available options for dynamic filter updates
+    this.availableStatuses = new Set();
+    this.availableProjects = new Set();
     this.isInitialized = false;
     
     // Pagination state for conversations
@@ -607,12 +612,41 @@ class AgentsPage {
         <div class="conversations-filters">
           <div class="filters-row">
             <div class="filter-group">
-              <label class="filter-label">Status:</label>
-              <select class="filter-select" id="status-filter">
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+              <label class="filter-label">Project:</label>
+              <select class="filter-select" id="project-filter">
+                <option value="all">All Projects</option>
               </select>
+            </div>
+            
+            <div class="filter-group">
+              <label class="filter-label">Status:</label>
+              <div class="multi-select-container">
+                <button class="multi-select-button" id="status-filter-button">
+                  <span id="status-filter-text">All Statuses</span>
+                  <span class="multi-select-arrow">▼</span>
+                </button>
+                <div class="multi-select-dropdown" id="status-filter-dropdown">
+                  <div class="multi-select-option">
+                    <label>
+                      <input type="checkbox" value="all" id="status-all" checked>
+                      <span>All Statuses</span>
+                    </label>
+                  </div>
+                  <div class="multi-select-separator"></div>
+                  <div class="multi-select-option">
+                    <label>
+                      <input type="checkbox" value="active" class="status-checkbox">
+                      <span>Active</span>
+                    </label>
+                  </div>
+                  <div class="multi-select-option">
+                    <label>
+                      <input type="checkbox" value="inactive" class="status-checkbox">
+                      <span>Inactive</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div class="filter-group">
@@ -622,6 +656,28 @@ class AgentsPage {
                 <option value="24h">Last 24 Hours</option>
                 <option value="7d" selected>Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>
+              </select>
+            </div>
+            
+            <!-- FEATURE: Conversation Limit Dropdown
+                 Added to prevent browser memory issues when loading large conversation histories.
+                 Users can limit the number of conversations displayed, which helps with:
+                 1. Reducing initial page load time
+                 2. Preventing browser tab crashes with 100+ conversations
+                 3. Improving UI responsiveness
+                 Default is 10 for optimal performance -->
+            <div class="filter-group">
+              <label class="filter-label">Show Latest:</label>
+              <select class="filter-select" id="conversation-limit">
+                <option value="5">5 Conversations</option>
+                <option value="10" selected>10 Conversations</option>
+                <option value="15">15 Conversations</option>
+                <option value="20">20 Conversations</option>
+                <option value="25">25 Conversations</option>
+                <option value="30">30 Conversations</option>
+                <option value="50">50 Conversations</option>
+                <option value="100">100 Conversations</option>
+                <option value="all">All Conversations</option>
               </select>
             </div>
             
@@ -816,12 +872,37 @@ class AgentsPage {
    * Bind event listeners
    */
   bindEvents() {
-    // Filter controls
-    const statusFilter = this.container.querySelector('#status-filter');
-    statusFilter.addEventListener('change', (e) => this.updateFilter('status', e.target.value));
+    // Project filter
+    const projectFilter = this.container.querySelector('#project-filter');
+    projectFilter.addEventListener('change', (e) => this.updateFilter('project', e.target.value));
+
+    // Multi-select status filter
+    this.setupMultiSelectStatusFilter();
 
     const timeFilter = this.container.querySelector('#time-filter');
     timeFilter.addEventListener('change', (e) => this.updateFilter('timeRange', e.target.value));
+
+    // FEATURE: Conversation limit filter handler
+    // This dropdown allows users to control how many conversations are loaded at once.
+    // Key benefits:
+    // - Prevents memory exhaustion with large conversation histories
+    // - Improves page load performance
+    // - Provides better UX for users with many conversations
+    // The limit is applied at the pagination level, working with existing pagination system
+    const limitFilter = this.container.querySelector('#conversation-limit');
+    limitFilter.addEventListener('change', (e) => {
+      const value = e.target.value;
+      if (value === 'all') {
+        // Set a high limit but not infinite to prevent browser crashes
+        this.pagination.limit = 9999;
+      } else {
+        this.pagination.limit = parseInt(value, 10);
+      }
+      // Reset pagination state and reload with new limit
+      this.pagination.currentPage = 0;
+      this.loadedConversations = [];
+      this.loadConversationsData();
+    });
 
     const searchInput = this.container.querySelector('#search-filter');
     searchInput.addEventListener('input', (e) => this.updateFilter('search', e.target.value));
@@ -2930,10 +3011,15 @@ class AgentsPage {
   async loadConversationsData() {
     try {
       
-      // Reset pagination state
+      // ENHANCEMENT: Preserve user-selected conversation limit across data refreshes
+      // When filters are applied or data is refreshed, we maintain the user's chosen
+      // conversation limit from the dropdown instead of resetting to default.
+      // This provides a consistent experience and prevents unexpected changes in the number
+      // of displayed conversations.
+      const currentLimit = this.pagination.limit || 10;
       this.pagination = {
         currentPage: 0,
-        limit: 10,
+        limit: currentLimit,
         hasMore: true,
         isLoading: false
       };
@@ -3000,6 +3086,15 @@ class AgentsPage {
       
       // For initial load (page 0), replace content. For subsequent loads, append
       const isInitialLoad = conversationsData.pagination.page === 0;
+      
+      // FIX: Update filter options on initial load
+      // This ensures the project dropdown is populated when the page first loads.
+      // Previously, the dropdown remained empty until a manual refresh.
+      // Now it populates with all projects from /home/fubak/projects via the /api/projects endpoint
+      if (isInitialLoad) {
+        await this.updateFilterOptions(this.loadedConversations, activeStates);
+      }
+      
       this.renderConversationsList(
         isInitialLoad ? this.loadedConversations : newConversations, 
         activeStates, 
@@ -4154,12 +4249,20 @@ class AgentsPage {
   filterConversations(conversations, states) {
     let filtered = conversations;
     
-    // Filter by status
-    if (this.filters.status !== 'all') {
+    // Filter by status (multi-select)
+    if (this.filters.status.length > 0) {
       filtered = filtered.filter(conv => {
         const state = states[conv.id] || 'unknown';
         const category = this.getStateCategory(state);
-        return category === this.filters.status;
+        return this.filters.status.includes(category);
+      });
+    }
+    
+    // Filter by project
+    if (this.filters.project !== 'all') {
+      filtered = filtered.filter(conv => {
+        const project = conv.project || 'Unknown';
+        return project === this.filters.project;
       });
     }
     
@@ -4184,6 +4287,200 @@ class AgentsPage {
     }
     
     return filtered;
+  }
+
+  /**
+   * Setup multi-select status filter
+   */
+  setupMultiSelectStatusFilter() {
+    const button = this.container.querySelector('#status-filter-button');
+    const dropdown = this.container.querySelector('#status-filter-dropdown');
+    const allCheckbox = this.container.querySelector('#status-all');
+    const statusCheckboxes = this.container.querySelectorAll('.status-checkbox');
+
+    // Toggle dropdown
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+      button.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+        button.classList.remove('open');
+      }
+    });
+
+    // Handle "All" checkbox
+    allCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        statusCheckboxes.forEach(cb => cb.checked = false);
+        this.updateFilter('status', []);
+      }
+    });
+
+    // Handle individual status checkboxes
+    statusCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        allCheckbox.checked = false;
+        this.updateStatusFilter();
+      });
+    });
+  }
+
+  /**
+   * Update status filter based on selected checkboxes
+   */
+  updateStatusFilter() {
+    const statusCheckboxes = this.container.querySelectorAll('.status-checkbox:checked');
+    const selectedStatuses = Array.from(statusCheckboxes).map(cb => cb.value);
+    this.updateFilter('status', selectedStatuses);
+  }
+
+  /**
+   * Update filter options based on available data
+   */
+  async updateFilterOptions(conversations, states) {
+    await this.updateProjectOptions(conversations);
+    this.updateStatusOptions(conversations, states);
+  }
+
+  /**
+   * Update project filter options - fetches all projects from file system
+   */
+  async updateProjectOptions(conversations) {
+    const projectFilter = this.container.querySelector('#project-filter');
+    if (!projectFilter) return;
+
+    try {
+      // Fetch all project directories from the API
+      let response;
+      try {
+        response = await this.dataService.fetchWithCache('/api/projects');
+      } catch (error) {
+        console.warn('DataService unavailable, using direct fetch:', error.message);
+        const fetchResponse = await fetch('/api/projects');
+        response = await fetchResponse.json();
+      }
+      const allProjects = response.projects || [];
+      
+      // Also get projects from conversations for additional context
+      const conversationProjects = new Set();
+      conversations.forEach(conv => {
+        if (conv.project && conv.project !== 'Unknown') {
+          conversationProjects.add(conv.project);
+        }
+      });
+      
+      // Combine all projects (file system projects take priority)
+      const projects = new Set([...allProjects, ...conversationProjects]);
+      
+      // Update dropdown options
+      const currentValue = projectFilter.value;
+      projectFilter.innerHTML = '<option value="all">All Projects</option>';
+      
+      Array.from(projects).sort().forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        projectFilter.appendChild(option);
+      });
+      
+      // Restore previous selection if still valid
+      if (Array.from(projects).includes(currentValue)) {
+        projectFilter.value = currentValue;
+      }
+      
+      console.log(`✅ Updated project filter with ${projects.size} projects from file system`);
+    } catch (error) {
+      console.warn('Failed to fetch projects from API, falling back to conversation data:', error);
+      
+      // Fallback to old behavior
+      const projects = new Set();
+      conversations.forEach(conv => {
+        const project = conv.project || 'Unknown';
+        projects.add(project);
+      });
+      
+      const currentValue = projectFilter.value;
+      projectFilter.innerHTML = '<option value="all">All Projects</option>';
+      
+      Array.from(projects).sort().forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        projectFilter.appendChild(option);
+      });
+      
+      if (Array.from(projects).includes(currentValue)) {
+        projectFilter.value = currentValue;
+      }
+    }
+  }
+
+  /**
+   * Update status filter options
+   */
+  updateStatusOptions(conversations, states) {
+    const dropdown = this.container.querySelector('#status-filter-dropdown');
+    if (!dropdown) return;
+
+    // Get all unique states and their categories
+    const statusCategories = new Set();
+    const detailedStates = new Set();
+    
+    conversations.forEach(conv => {
+      const state = states[conv.id] || 'unknown';
+      const category = this.getStateCategory(state);
+      statusCategories.add(category);
+      detailedStates.add(state);
+    });
+
+    // Update existing checkboxes and add new ones if needed
+    const existingCheckboxes = dropdown.querySelectorAll('.status-checkbox');
+    const existingValues = Array.from(existingCheckboxes).map(cb => cb.value);
+
+    statusCategories.forEach(category => {
+      if (!existingValues.includes(category)) {
+        // Add new status option
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'multi-select-option';
+        optionDiv.innerHTML = `
+          <label>
+            <input type="checkbox" value="${category}" class="status-checkbox">
+            <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+          </label>
+        `;
+        dropdown.appendChild(optionDiv);
+
+        // Add event listener
+        const checkbox = optionDiv.querySelector('.status-checkbox');
+        checkbox.addEventListener('change', () => {
+          const allCheckbox = this.container.querySelector('#status-all');
+          allCheckbox.checked = false;
+          this.updateStatusFilter();
+        });
+      }
+    });
+  }
+
+  /**
+   * Update status filter display text
+   */
+  updateStatusFilterText() {
+    const textSpan = this.container.querySelector('#status-filter-text');
+    const selectedCheckboxes = this.container.querySelectorAll('.status-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+      textSpan.textContent = 'All Statuses';
+    } else if (selectedCheckboxes.length === 1) {
+      const status = selectedCheckboxes[0].value;
+      textSpan.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    } else {
+      textSpan.textContent = `${selectedCheckboxes.length} Statuses`;
+    }
   }
 
   /**
@@ -4382,6 +4679,12 @@ class AgentsPage {
    */
   updateFilter(filterName, value) {
     this.filters[filterName] = value;
+    
+    // Update status filter display text if it's a status filter change
+    if (filterName === 'status') {
+      this.updateStatusFilterText();
+    }
+    
     // When filters change, restart from beginning
     this.refreshFromBeginning();
   }
@@ -4402,17 +4705,26 @@ class AgentsPage {
    */
   clearAllFilters() {
     this.filters = {
-      status: 'all',
+      status: [],
+      project: 'all',
       timeRange: '7d',
       search: ''
     };
     
     // Reset UI
-    const statusFilter = this.container.querySelector('#status-filter');
+    const projectFilter = this.container.querySelector('#project-filter');
     const timeFilter = this.container.querySelector('#time-filter');
     const searchFilter = this.container.querySelector('#search-filter');
     
-    if (statusFilter) statusFilter.value = 'all';
+    // Reset multi-select status filter
+    const allStatusCheckbox = this.container.querySelector('#status-all');
+    const statusCheckboxes = this.container.querySelectorAll('.status-checkbox');
+    
+    if (allStatusCheckbox) allStatusCheckbox.checked = true;
+    if (statusCheckboxes) statusCheckboxes.forEach(cb => cb.checked = false);
+    this.updateStatusFilterText();
+    
+    if (projectFilter) projectFilter.value = 'all';
     if (timeFilter) timeFilter.value = '7d';
     if (searchFilter) searchFilter.value = '';
     
@@ -4423,11 +4735,15 @@ class AgentsPage {
   /**
    * Refresh conversations display
    */
-  refreshConversationsDisplay() {
+  async refreshConversationsDisplay() {
     const conversations = this.stateService.getStateProperty('conversations') || [];
     const statesData = this.stateService.getStateProperty('conversationStates') || {};
     // Extract activeStates from the stored state data
     const activeStates = statesData?.activeStates || {};
+    
+    // Update filter options based on available data
+    await this.updateFilterOptions(conversations, activeStates);
+    
     this.renderConversationsList(conversations, activeStates);
   }
   
@@ -4679,8 +4995,8 @@ class AgentsPage {
    * Handle conversation state change
    * @param {Object} _state - New state (unused but required by interface)
    */
-  handleConversationStateChange(_state) {
-    this.refreshConversationsDisplay();
+  async handleConversationStateChange(_state) {
+    await this.refreshConversationsDisplay();
   }
 
   /**

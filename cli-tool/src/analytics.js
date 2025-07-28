@@ -578,6 +578,9 @@ class ClaudeAnalytics {
         await this.handleConversationChange(conversationId, filePath);
       }
     );
+    
+    // Set a longer debounce to prevent excessive refreshes
+    this.fileWatcher.setDebounce(2000); // 2 second debounce
   }
 
   setupWebServer() {
@@ -1132,6 +1135,34 @@ class ClaudeAnalytics {
       } catch (error) {
         console.error('Error loading agents:', error);
         res.status(500).json({ error: 'Failed to load agents data' });
+      }
+    });
+
+    // FEATURE: All projects API endpoint
+    // Returns all project directories from the file system for the project filter dropdown.
+    // This enhancement allows users to filter conversations by any project folder,
+    // not just projects that have existing conversations.
+    // Benefits:
+    // - Shows all available projects upfront
+    // - Helps users discover which projects have conversations
+    // - Provides consistent project list regardless of conversation data
+    // Note: When running in Docker, requires volume mount: -v "$HOME/projects:/home/fubak/projects:ro"
+    this.app.get('/api/projects', async (req, res) => {
+      try {
+        const projectsPath = '/home/fubak/projects';
+        const fs = require('fs').promises;
+        
+        // Get all directories in the projects folder
+        const entries = await fs.readdir(projectsPath, { withFileTypes: true });
+        const projects = entries
+          .filter(entry => entry.isDirectory())
+          .map(entry => entry.name)
+          .sort();
+        
+        res.json({ projects });
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        res.status(500).json({ error: 'Failed to load projects data' });
       }
     });
 
