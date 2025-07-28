@@ -10,7 +10,6 @@ class WebSocketServer {
     this.httpServer = httpServer;
     this.performanceMonitor = performanceMonitor;
     this.options = {
-      port: options.port || 3334,
       path: options.path || '/ws',
       heartbeatInterval: options.heartbeatInterval || 30000,
       ...options

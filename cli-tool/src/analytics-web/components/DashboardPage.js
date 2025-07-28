@@ -167,6 +167,31 @@ class DashboardPage {
           </button>
         </div>
 
+        <!-- FEATURE: Conversation Limit Control for Dashboard
+             Allows users to limit how many conversations are loaded in the analytics calculations.
+             This prevents memory issues and improves performance for users with large histories.
+             The selected limit is persisted in localStorage for a consistent experience across sessions. -->
+        <div class="conversation-limit-container" style="margin: 20px 0; padding: 15px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label style="color: var(--text-secondary); font-size: 0.95rem;">
+              Show
+              <select id="dashboard-conversation-limit" class="filter-select" style="margin: 0 8px; min-width: 80px;">
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="75">75</option>
+                <option value="100">100</option>
+                <option value="125">125</option>
+                <option value="150">150</option>
+                <option value="175">175</option>
+                <option value="200">200</option>
+                <option value="all">All</option>
+              </select>
+              out of <span id="total-conversations-count" style="font-weight: bold;">0</span> conversations
+            </label>
+            <span id="limit-info" style="color: var(--text-secondary); font-size: 0.85rem; font-style: italic;"></span>
+          </div>
+        </div>
+
         <!-- Loading State -->
         <div class="loading-state" id="dashboard-loading" style="display: none;">
           <div class="loading-spinner"></div>
@@ -818,6 +843,32 @@ class DashboardPage {
     if (headerThemeSwitch) {
       headerThemeSwitch.addEventListener('click', () => this.toggleTheme());
     }
+
+    // FEATURE: Dashboard conversation limit dropdown handler
+    // Loads saved preference from localStorage and handles changes
+    const limitDropdown = this.container.querySelector('#dashboard-conversation-limit');
+    if (limitDropdown) {
+      // Load saved preference from localStorage
+      const savedLimit = localStorage.getItem('dashboardConversationLimit') || '50';
+      limitDropdown.value = savedLimit;
+      
+      // Handle dropdown changes
+      limitDropdown.addEventListener('change', async (e) => {
+        const newLimit = e.target.value;
+        
+        // Save to localStorage for persistence across sessions
+        localStorage.setItem('dashboardConversationLimit', newLimit);
+        
+        // Update info text
+        const limitInfo = this.container.querySelector('#limit-info');
+        if (limitInfo) {
+          limitInfo.textContent = 'Reloading with new limit...';
+        }
+        
+        // Reload data with new limit
+        await this.loadInitialData();
+      });
+    }
   }
 
   /**
@@ -825,10 +876,48 @@ class DashboardPage {
    */
   async loadInitialData() {
     try {
-      const [conversationsData, statesData] = await Promise.all([
-        this.dataService.getConversations(),
-        this.dataService.getConversationStates()
-      ]);
+      // ENHANCEMENT: Get user's selected conversation limit from dropdown
+      // This allows the dashboard to load only the specified number of conversations,
+      // preventing memory issues and improving performance
+      const limitDropdown = this.container.querySelector('#dashboard-conversation-limit');
+      const limit = limitDropdown ? limitDropdown.value : '50';
+      
+      // First, get the full data to know total count
+      const fullData = await this.dataService.getConversations();
+      const totalCount = fullData.conversations ? fullData.conversations.length : 0;
+      
+      // Update the total count display
+      const totalCountSpan = this.container.querySelector('#total-conversations-count');
+      if (totalCountSpan) {
+        totalCountSpan.textContent = totalCount;
+      }
+      
+      // Update info text based on limit
+      const limitInfo = this.container.querySelector('#limit-info');
+      if (limitInfo) {
+        if (limit === 'all' || parseInt(limit) >= totalCount) {
+          limitInfo.textContent = 'Showing all conversations';
+        } else {
+          limitInfo.textContent = `Limited for better performance`;
+        }
+      }
+      
+      // Now load the limited data if needed
+      let conversationsData;
+      if (limit === 'all' || parseInt(limit) >= totalCount) {
+        // Use full data if showing all or limit exceeds total
+        conversationsData = fullData;
+      } else {
+        // Load limited data through paginated endpoint
+        const limitedData = await this.dataService.getConversationsPaginated(0, parseInt(limit));
+        // Merge with full data's summary info
+        conversationsData = {
+          ...fullData,
+          conversations: limitedData.conversations
+        };
+      }
+      
+      const statesData = await this.dataService.getConversationStates();
 
       this.stateService.updateConversations(conversationsData.conversations);
       this.stateService.updateSummary(conversationsData.summary);

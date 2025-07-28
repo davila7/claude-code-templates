@@ -33,14 +33,14 @@ class DataCache {
       projectStats: new Map(), // projectPath -> { data, timestamp }
     };
     
-    // Cache configuration (reduced TTL for aggressive memory management)
+    // Cache configuration (OPTIMIZED: drastically reduced for memory efficiency)
     this.config = {
-      fileContentTTL: 30000, // 30 seconds for file content (reduced from 60s)
-      parsedDataTTL: 15000, // 15 seconds for parsed data (reduced from 30s)
-      computationTTL: 10000, // 10 seconds for expensive computations (reduced from 20s)
-      metadataTTL: 5000, // 5 seconds for metadata (reduced from 10s)
+      fileContentTTL: 3000, // 3 seconds for file content
+      parsedDataTTL: 3000, // 3 seconds for parsed data
+      computationTTL: 5000, // 5 seconds for expensive computations
+      metadataTTL: 2000, // 2 seconds for metadata
       processTTL: 500, // 500ms for process data
-      maxCacheSize: 25, // Aggressively reduced to 25 to prevent memory buildup
+      maxCacheSize: 5, // CRITICAL: Only 5 conversations max in memory
     };
     
     // Dependency tracking for smart invalidation
@@ -61,6 +61,22 @@ class DataCache {
       this.evictOldEntries();
       this.enforceSizeLimits();
     }, 15000); // Every 15 seconds (reduced from 30 seconds)
+    
+    // OPTIMIZATION: Add memory monitoring
+    this.memoryCheckInterval = setInterval(() => {
+      const usage = process.memoryUsage();
+      const heapUsedMB = usage.heapUsed / 1024 / 1024;
+      
+      if (heapUsedMB > 400) { // 400MB threshold
+        console.warn(chalk.yellow(`⚠️ High memory usage: ${heapUsedMB.toFixed(2)}MB - clearing caches`));
+        this.clearAll();
+        
+        // Force garbage collection if available
+        if (global.gc) {
+          global.gc();
+        }
+      }
+    }, 10000); // Check every 10 seconds
   }
 
   /**
@@ -529,6 +545,24 @@ class DataCache {
       invalidations: 0,
       filesInvalidated: 0,
       computationsInvalidated: 0
+    };
+  }
+
+  /**
+   * Get cache metrics and statistics
+   * @returns {Object} Cache metrics
+   */
+  getMetrics() {
+    const cacheEntries = Object.entries(this.caches).reduce((total, [key, cache]) => {
+      return total + (cache instanceof Map ? cache.size : (cache.data ? 1 : 0));
+    }, 0);
+    
+    return {
+      ...this.metrics,
+      cacheEntries,
+      hitRate: this.metrics.hits + this.metrics.misses > 0 
+        ? (this.metrics.hits / (this.metrics.hits + this.metrics.misses) * 100).toFixed(1) + '%'
+        : '0%'
     };
   }
 

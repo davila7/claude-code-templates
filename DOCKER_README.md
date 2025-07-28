@@ -12,8 +12,9 @@ We implemented a multi-layered approach to reduce memory usage by 97%:
 
 1. **Backend conversation limit** - Load only the 100 most recent conversations
 2. **Frontend pagination controls** - User-configurable display limits
-3. **Optimized Docker image** - Minimal Alpine Linux base with production dependencies only
-4. **Proper volume mounts** - Efficient data access without copying
+3. **Dashboard conversation limit** - Configurable limit (25-200 or All) with persistent storage
+4. **Optimized Docker image** - Minimal Alpine Linux base with production dependencies only
+5. **Proper volume mounts** - Efficient data access without copying
 
 ## Docker Image Optimizations
 
@@ -68,6 +69,22 @@ docker run -d \
 
 - `NODE_OPTIONS="--max-old-space-size=1024"` - Sets Node.js heap limit to 1GB
 - Adjust based on your needs (512 for low memory, 2048 for large datasets)
+
+## UI Features
+
+### Dashboard Conversation Limit
+The main analytics dashboard now includes a conversation limit dropdown that:
+- Shows options: 25, 50, 75, 100, 125, 150, 175, 200, or All conversations
+- Default is 50 for optimal performance
+- Displays "Show X out of Y conversations" for clarity
+- Saves selection to localStorage for persistence across sessions
+- Automatically reloads data when changed
+
+### Chats/Agents Page Limit
+The Chats page has a separate limit control:
+- Shows options: 5, 10, 15, 20, 25, 30, 50, 100, or All conversations
+- Default is 10 for responsive UI
+- Independent from dashboard limit
 
 ## Memory Usage Benchmarks
 
