@@ -1,0 +1,136 @@
+{
+  "mcpServers": {
+    "csharp-sdk": {
+      "name": "C# SDK Tools",
+      "description": ".NET SDK integration for development workflow automation",
+      "command": "dotnet",
+      "args": ["--info"],
+      "env": {
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+      }
+    },
+    "docker": {
+      "name": "Docker MCP",
+      "description": "Containerization support for .NET applications",
+      "command": "python",
+      "args": ["-m", "mcp_server_docker"],
+      "env": {}
+    },
+    "azure-tools": {
+      "name": "Azure CLI MCP",
+      "description": "Azure cloud deployment and management for .NET apps",
+      "command": "az",
+      "args": ["--version"],
+      "env": {}
+    },
+    "sqlserver": {
+      "name": "SQL Server MCP",
+      "description": "SQL Server database management for Entity Framework",
+      "command": "python",
+      "args": ["-m", "server_sqlserver"],
+      "env": {
+        "CONNECTION_STRING": "Server=localhost;Database=MyApp;Trusted_Connection=true;TrustServerCertificate=true"
+      }
+    },
+    "entityframework": {
+      "name": "Entity Framework Tools",
+      "description": "EF Core migrations and database operations",
+      "command": "dotnet",
+      "args": ["ef", "--help"],
+      "env": {}
+    },
+    "nuget-security": {
+      "name": "NuGet Security Scanner",
+      "description": "Vulnerability scanning for NuGet packages",
+      "command": "dotnet",
+      "args": ["list", "package", "--vulnerable"],
+      "env": {}
+    },
+    "performance-profiler": {
+      "name": ".NET Performance Profiler",
+      "description": "Performance analysis and profiling tools for .NET",
+      "command": "dotnet-counters",
+      "args": ["--help"],
+      "env": {}
+    },
+    "code-analysis": {
+      "name": "Roslyn Code Analyzers",
+      "description": "Static code analysis and quality checks",
+      "command": "dotnet",
+      "args": ["format", "--help"],
+      "env": {}
+    },
+    "test-runner": {
+      "name": ".NET Test Runner",
+      "description": "Unit testing and coverage analysis for .NET projects",
+      "command": "dotnet",
+      "args": ["test", "--help"],
+      "env": {}
+    },
+    "github-actions": {
+      "name": "GitHub Actions MCP",
+      "description": "CI/CD workflow automation for .NET projects",
+      "command": "python",
+      "args": ["-m", "server_github"],
+      "env": {}
+    },
+    "memory-analyzer": {
+      "name": ".NET Memory Analyzer",
+      "description": "Memory profiling and leak detection for .NET applications",
+      "command": "dotnet-dump",
+      "args": ["--help"],
+      "env": {}
+    },
+    "security-scanner": {
+      "name": "Security Analysis MCP", 
+      "description": "Security vulnerability scanning and SAST analysis",
+      "command": "python",
+      "args": ["-m", "security_scanner_mcp"],
+      "env": {}
+    },
+    "api-documentation": {
+      "name": "Swagger/OpenAPI MCP",
+      "description": "API documentation generation and testing",
+      "command": "python",
+      "args": ["-m", "swagger_mcp"],
+      "env": {}
+    },
+    "monitoring": {
+      "name": "Application Monitoring MCP",
+      "description": "Application performance monitoring and observability",
+      "command": "python",
+      "args": ["-m", "monitoring_mcp"],
+      "env": {
+        "APPLICATION_INSIGHTS_KEY": "your-app-insights-key"
+      }
+    },
+    "database-migrations": {
+      "name": "Database Migration MCP",
+      "description": "Database schema management and migration tools",
+      "command": "python",
+      "args": ["-m", "migration_mcp"],
+      "env": {}
+    },
+    "container-registry": {
+      "name": "Container Registry MCP",
+      "description": "Docker container registry management and deployment",
+      "command": "python",
+      "args": ["-m", "registry_mcp"],
+      "env": {}
+    },
+    "logging": {
+      "name": "Structured Logging MCP",
+      "description": "Centralized logging and log analysis for .NET applications",
+      "command": "python",
+      "args": ["-m", "logging_mcp"],
+      "env": {}
+    },
+    "configuration": {
+      "name": "Configuration Management MCP",
+      "description": "Application configuration and secrets management",
+      "command": "python",
+      "args": ["-m", "config_mcp"],
+      "env": {}
+    }
+  }
+}

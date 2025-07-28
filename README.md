@@ -153,6 +153,7 @@ Intelligent project setup with framework-specific commands:
 |----------|------------|---------|----------|--------|-----|
 | **JavaScript/TypeScript** | React, Vue, Angular, Node.js | ✅ Ready | 7+ | 9+ | 4+ |
 | **Python** | Django, Flask, FastAPI | ✅ Ready | 5+ | 8+ | 4+ |
+| **C#/.NET Core** | ASP.NET Core Web API | ✅ Ready | 7+ | 10+ | 17+ |
 | **Common** | Universal | ✅ Ready | 2+ | 1+ | 4+ |
 | **Go** | Gin, Echo, Fiber | 🚧 Coming Soon | - | - | - |
 | **Rust** | Axum, Warp, Actix | 🚧 Coming Soon | - | - | - |
