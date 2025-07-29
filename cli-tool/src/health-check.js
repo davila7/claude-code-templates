@@ -394,58 +394,62 @@ class HealthChecker {
   }
 
   checkAuthentication() {
+    const homeDir = os.homedir();
+    
+    // Check for Claude Code OAuth authentication in ~/.claude.json
+    const claudeJsonPath = path.join(homeDir, '.claude.json');
+    
     try {
-      // Try to run claude command to check authentication status
-      const output = execSync('claude auth status 2>&1', { 
-        encoding: 'utf8', 
-        stdio: 'pipe',
-        timeout: 5000 
-      });
-      
-      if (output.includes('authenticated') || output.includes('logged in') || output.includes('active')) {
-        return {
-          status: 'pass',
-          message: 'Authenticated and active'
-        };
-      }
-      
-      // If command runs but no clear authentication status
-      return {
-        status: 'warn',
-        message: 'Authentication status unclear'
-      };
-      
-    } catch (error) {
-      // Try alternative method - check for session/config files
-      const homeDir = os.homedir();
-      const possibleAuthPaths = [
-        path.join(homeDir, '.claude', 'session'),
-        path.join(homeDir, '.claude', 'config'),
-        path.join(homeDir, '.config', 'claude', 'session'),
-        path.join(homeDir, '.config', 'claude', 'config'),
-        path.join(homeDir, '.anthropic', 'session'),
-        path.join(homeDir, '.anthropic', 'config')
-      ];
-      
-      for (const authPath of possibleAuthPaths) {
-        if (fs.existsSync(authPath)) {
-          try {
-            const stats = fs.statSync(authPath);
-            // Check if file was modified recently (within last 30 days)
-            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-            if (stats.mtime > thirtyDaysAgo) {
-              return {
-                status: 'pass',
-                message: 'Authentication session found'
-              };
-            }
-          } catch (statError) {
-            // Continue to next path
-          }
+      if (fs.existsSync(claudeJsonPath)) {
+        const claudeConfig = JSON.parse(fs.readFileSync(claudeJsonPath, 'utf8'));
+        
+        // Check for OAuth authentication
+        if (claudeConfig.oauthAccount && claudeConfig.oauthAccount.accountUuid) {
+          const email = claudeConfig.oauthAccount.emailAddress || 'OAuth user';
+          return {
+            status: 'pass',
+            message: `Authenticated via OAuth (${email})`
+          };
+        }
+        
+        // Check for API key authentication
+        if (claudeConfig.apiKey) {
+          return {
+            status: 'pass',
+            message: 'Authenticated via API key'
+          };
         }
       }
       
+      // Check for environment variable API key
+      if (process.env.ANTHROPIC_API_KEY) {
+        return {
+          status: 'pass',
+          message: 'Authenticated via ANTHROPIC_API_KEY environment variable'
+        };
+      }
+      
       // Try to check if we can make a simple claude command
+      try {
+        execSync('claude --version', { 
+          encoding: 'utf8', 
+          stdio: 'pipe',
+          timeout: 3000 
+        });
+        
+        return {
+          status: 'warn',
+          message: 'Claude CLI available but authentication not configured'
+        };
+      } catch (cliError) {
+        return {
+          status: 'fail',
+          message: 'Claude CLI not available or not authenticated'
+        };
+      }
+      
+    } catch (error) {
+      // If we can't read the config file, check if CLI is at least installed
       try {
         execSync('claude --version', { 
           encoding: 'utf8', 
@@ -460,7 +464,7 @@ class HealthChecker {
       } catch (cliError) {
         return {
           status: 'fail',
-          message: 'Claude CLI not available or not authenticated'
+          message: 'Claude CLI not available or authentication check failed'
         };
       }
     }
