@@ -10,10 +10,15 @@ class AgentsPage {
     
     this.components = {};
     this.filters = {
-      status: 'all',
+      status: [],
+      project: 'all',
       timeRange: '7d',
       search: ''
     };
+    
+    // Track available options for dynamic filter updates
+    this.availableStatuses = new Set();
+    this.availableProjects = new Set();
     this.isInitialized = false;
     
     // Pagination state for conversations
@@ -607,12 +612,47 @@ class AgentsPage {
         <div class="conversations-filters">
           <div class="filters-row">
             <div class="filter-group">
+              <label class="filter-label">Project:</label>
+              <div class="project-filter-container" style="display: flex; align-items: center; gap: 8px;">
+                <select class="filter-select" id="project-filter">
+                  <option value="all">All Projects</option>
+                </select>
+                <button class="folder-browser-btn" id="folder-browser-btn" title="Browse for projects folder">
+                  📁
+                </button>
+                <span class="projects-path-display" id="projects-path-display" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+              </div>
+            </div>
+            
+            <div class="filter-group">
               <label class="filter-label">Status:</label>
-              <select class="filter-select" id="status-filter">
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <div class="multi-select-container">
+                <button class="multi-select-button" id="status-filter-button">
+                  <span id="status-filter-text">All Statuses</span>
+                  <span class="multi-select-arrow">▼</span>
+                </button>
+                <div class="multi-select-dropdown" id="status-filter-dropdown">
+                  <div class="multi-select-option">
+                    <label>
+                      <input type="checkbox" value="all" id="status-all" checked>
+                      <span>All Statuses</span>
+                    </label>
+                  </div>
+                  <div class="multi-select-separator"></div>
+                  <div class="multi-select-option">
+                    <label>
+                      <input type="checkbox" value="active" class="status-checkbox">
+                      <span>Active</span>
+                    </label>
+                  </div>
+                  <div class="multi-select-option">
+                    <label>
+                      <input type="checkbox" value="inactive" class="status-checkbox">
+                      <span>Inactive</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div class="filter-group">
@@ -622,6 +662,28 @@ class AgentsPage {
                 <option value="24h">Last 24 Hours</option>
                 <option value="7d" selected>Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>
+              </select>
+            </div>
+            
+            <!-- FEATURE: Conversation Limit Dropdown
+                 Added to prevent browser memory issues when loading large conversation histories.
+                 Users can limit the number of conversations displayed, which helps with:
+                 1. Reducing initial page load time
+                 2. Preventing browser tab crashes with 100+ conversations
+                 3. Improving UI responsiveness
+                 Default is 10 for optimal performance -->
+            <div class="filter-group">
+              <label class="filter-label">Show Latest:</label>
+              <select class="filter-select" id="conversation-limit">
+                <option value="5">5 Conversations</option>
+                <option value="10" selected>10 Conversations</option>
+                <option value="15">15 Conversations</option>
+                <option value="20">20 Conversations</option>
+                <option value="25">25 Conversations</option>
+                <option value="30">30 Conversations</option>
+                <option value="50">50 Conversations</option>
+                <option value="100">100 Conversations</option>
+                <option value="all">All Conversations</option>
               </select>
             </div>
             
@@ -780,6 +842,46 @@ class AgentsPage {
           </div>
         </div>
       </div>
+        
+        <!-- FEATURE: Folder Browser Modal for Projects Path Selection -->
+        <!-- Essential for Docker/remote deployments where default path may not be correct -->
+        <div class="folder-browser-modal" id="folder-browser-modal" style="display: none;">
+          <div class="folder-browser-overlay">
+            <div class="folder-browser-dialog">
+              <div class="folder-browser-header">
+                <h3>📁 Select Projects Directory</h3>
+                <button class="folder-browser-close" id="folder-browser-close">&times;</button>
+              </div>
+              
+              <div class="folder-browser-content">
+                <div class="current-path-bar">
+                  <label>Current Path:</label>
+                  <input type="text" id="folder-path-input" placeholder="/path/to/projects" />
+                </div>
+                
+                <div class="path-navigation">
+                  <button id="nav-parent" title="Go to parent directory">↑ Up</button>
+                  <button id="nav-home" title="Go to home directory">🏠 Home</button>
+                  <button id="nav-root" title="Go to root directory">/ Root</button>
+                </div>
+                
+                <div class="folders-container">
+                  <div id="folders-list">
+                    <div class="folders-loading">
+                      <div class="loading-spinner"></div>
+                      <span>Loading folders...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="folder-browser-footer">
+                <button id="folder-cancel">Cancel</button>
+                <button id="folder-select">Select This Directory</button>
+              </div>
+            </div>
+          </div>
+        </div>
     `;
 
     this.bindEvents();
@@ -816,12 +918,37 @@ class AgentsPage {
    * Bind event listeners
    */
   bindEvents() {
-    // Filter controls
-    const statusFilter = this.container.querySelector('#status-filter');
-    statusFilter.addEventListener('change', (e) => this.updateFilter('status', e.target.value));
+    // Project filter
+    const projectFilter = this.container.querySelector('#project-filter');
+    projectFilter.addEventListener('change', (e) => this.updateFilter('project', e.target.value));
+
+    // Multi-select status filter
+    this.setupMultiSelectStatusFilter();
 
     const timeFilter = this.container.querySelector('#time-filter');
     timeFilter.addEventListener('change', (e) => this.updateFilter('timeRange', e.target.value));
+
+    // FEATURE: Conversation limit filter handler
+    // This dropdown allows users to control how many conversations are loaded at once.
+    // Key benefits:
+    // - Prevents memory exhaustion with large conversation histories
+    // - Improves page load performance
+    // - Provides better UX for users with many conversations
+    // The limit is applied at the pagination level, working with existing pagination system
+    const limitFilter = this.container.querySelector('#conversation-limit');
+    limitFilter.addEventListener('change', (e) => {
+      const value = e.target.value;
+      if (value === 'all') {
+        // Set a high limit but not infinite to prevent browser crashes
+        this.pagination.limit = 9999;
+      } else {
+        this.pagination.limit = parseInt(value, 10);
+      }
+      // Reset pagination state and reload with new limit
+      this.pagination.currentPage = 0;
+      this.loadedConversations = [];
+      this.loadConversationsData();
+    });
 
     const searchInput = this.container.querySelector('#search-filter');
     searchInput.addEventListener('input', (e) => this.updateFilter('search', e.target.value));
@@ -847,6 +974,16 @@ class AgentsPage {
     if (refreshAgentsBtn) {
       refreshAgentsBtn.addEventListener('click', () => this.refreshAgents());
     }
+
+    // FEATURE: Folder Browser for Projects Path Selection
+    // Essential for Docker/remote deployments where default project path may be incorrect
+    const folderBrowserBtn = this.container.querySelector('#folder-browser-btn');
+    if (folderBrowserBtn) {
+      folderBrowserBtn.addEventListener('click', () => this.openFolderBrowser());
+    }
+
+    // Initialize folder browser functionality on page load
+    this.initializeFolderBrowser();
   }
   
   /**
@@ -2930,10 +3067,15 @@ class AgentsPage {
   async loadConversationsData() {
     try {
       
-      // Reset pagination state
+      // ENHANCEMENT: Preserve user-selected conversation limit across data refreshes
+      // When filters are applied or data is refreshed, we maintain the user's chosen
+      // conversation limit from the dropdown instead of resetting to default.
+      // This provides a consistent experience and prevents unexpected changes in the number
+      // of displayed conversations.
+      const currentLimit = this.pagination.limit || 10;
       this.pagination = {
         currentPage: 0,
-        limit: 10,
+        limit: currentLimit,
         hasMore: true,
         isLoading: false
       };
@@ -3000,6 +3142,15 @@ class AgentsPage {
       
       // For initial load (page 0), replace content. For subsequent loads, append
       const isInitialLoad = conversationsData.pagination.page === 0;
+      
+      // FIX: Update filter options on initial load
+      // This ensures the project dropdown is populated when the page first loads.
+      // Previously, the dropdown remained empty until a manual refresh.
+      // Now it populates with all projects from /home/fubak/projects via the /api/projects endpoint
+      if (isInitialLoad) {
+        await this.updateFilterOptions(this.loadedConversations, activeStates);
+      }
+      
       this.renderConversationsList(
         isInitialLoad ? this.loadedConversations : newConversations, 
         activeStates, 
@@ -3059,13 +3210,28 @@ class AgentsPage {
       const state = states[conv.id] || 'unknown';
       const stateClass = this.getStateClass(state);
       
-      // Check for agent usage
+      // FEATURE: Check for all agents used in conversation
+      const usedAgents = this.detectAllAgentsInConversation(conv.id);
       const agentColor = this.getAgentColorForConversation(conv.id);
       const agentName = this.getAgentNameForConversation(conv.id);
       
       // Generate title with agent indicator
       const titleColor = agentColor ? `style="color: ${agentColor}; border-left: 3px solid ${agentColor}; padding-left: 8px;"` : '';
       const agentIndicator = agentName ? `<span class="agent-indicator-small" style="background-color: ${agentColor}" title="Using ${agentName} agent">🤖</span>` : '';
+      
+      // FEATURE: Show agents button always when agents were used, with count
+      const agentsButtonHtml = usedAgents.length > 0 ? `
+        <button class="conversation-agents-btn agents-used" data-conversation-id="${conv.id}" title="${usedAgents.map(a => a.name).join(', ')}">
+          <span class="agents-icon">🤖</span>
+          <span class="agents-text">Agents</span>
+          <span class="agents-count">${usedAgents.length}</span>
+        </button>
+      ` : `
+        <button class="conversation-agents-btn" data-conversation-id="${conv.id}" title="View available agents for this project">
+          <span class="agents-icon">🤖</span>
+          <span class="agents-text">Agents</span>
+        </button>
+      `;
       
       return `
         <div class="sidebar-conversation-item" data-id="${conv.id}" ${agentColor ? `data-agent-color="${agentColor}"` : ''}>
@@ -3090,10 +3256,7 @@ class AgentsPage {
           </div>
           
           <div class="sidebar-conversation-actions">
-            <button class="conversation-agents-btn" data-conversation-id="${conv.id}" title="View available agents for this project">
-              <span class="agents-icon">🤖</span>
-              <span class="agents-text">Agents</span>
-            </button>
+            ${agentsButtonHtml}
           </div>
         </div>
       `;
@@ -3578,6 +3741,9 @@ class AgentsPage {
         
         // Cache the combined messages
         this.loadedMessages.set(conversationId, existingMessages);
+        
+        // FEATURE: Update agent button when messages are loaded
+        this.updateAgentButtonForConversation(conversationId);
         
         // Render messages
         this.renderCachedMessages(existingMessages, !isInitialLoad);
@@ -4080,6 +4246,95 @@ class AgentsPage {
   }
 
   /**
+   * FEATURE: Detect ALL agents used in a conversation
+   * @param {string} conversationId - Conversation ID
+   * @returns {Array} Array of unique agents used in the conversation
+   */
+  detectAllAgentsInConversation(conversationId) {
+    const messages = this.loadedMessages.get(conversationId) || [];
+    const detectedAgents = new Map(); // Use Map to track unique agents
+    
+    // Look through all messages for agent usage
+    messages.forEach(message => {
+      if (message.role === 'assistant' && message.content) {
+        let contentText = '';
+        
+        // Extract text content from message
+        if (Array.isArray(message.content)) {
+          contentText = message.content
+            .filter(block => block.type === 'text')
+            .map(block => block.text)
+            .join(' ');
+        } else if (typeof message.content === 'string') {
+          contentText = message.content;
+        }
+        
+        // Check for agent usage patterns with global flag for multiple matches
+        const agentPatterns = [
+          /use(?:s|d)?\s+the\s+([a-zA-Z0-9\-_]+)\s+(?:sub\s+)?agent/gi,
+          /([a-zA-Z0-9\-_]+)\s+agent\s+(?:to|for|will)/gi,
+          /delegat(?:e|ing)\s+(?:to|task|this)\s+(?:the\s+)?([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /invok(?:e|ing)\s+(?:the\s+)?([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /I'll\s+use\s+the\s+([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /using\s+the\s+([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /launch(?:ing)?\s+the\s+([a-zA-Z0-9\-_]+)\s+agent/gi
+        ];
+        
+        for (const pattern of agentPatterns) {
+          let match;
+          while ((match = pattern.exec(contentText)) !== null) {
+            const detectedAgentName = match[1].toLowerCase();
+            
+            // Find matching agent from our loaded agents
+            const agent = this.agents.find(a => 
+              a.name.toLowerCase() === detectedAgentName ||
+              a.name.toLowerCase().replace(/-/g, '') === detectedAgentName.replace(/-/g, '')
+            );
+            
+            if (agent && !detectedAgents.has(agent.name)) {
+              detectedAgents.set(agent.name, agent);
+            }
+          }
+        }
+      }
+    });
+    
+    return Array.from(detectedAgents.values());
+  }
+
+  /**
+   * FEATURE: Update agent button for a conversation after messages are loaded
+   * @param {string} conversationId - Conversation ID
+   */
+  updateAgentButtonForConversation(conversationId) {
+    const conversationItem = this.container.querySelector(`[data-id="${conversationId}"]`);
+    if (!conversationItem) return;
+    
+    const usedAgents = this.detectAllAgentsInConversation(conversationId);
+    const agentButton = conversationItem.querySelector('.conversation-agents-btn');
+    
+    if (agentButton && usedAgents.length > 0) {
+      // Add agents-used class and update content
+      agentButton.classList.add('agents-used');
+      agentButton.setAttribute('title', usedAgents.map(a => a.name).join(', '));
+      
+      // Update button content to show count
+      const agentsText = agentButton.querySelector('.agents-text');
+      const agentsCount = agentButton.querySelector('.agents-count');
+      
+      if (agentsText && !agentsCount) {
+        // Add count badge if it doesn't exist
+        agentsText.insertAdjacentHTML('afterend', `<span class="agents-count">${usedAgents.length}</span>`);
+      } else if (agentsCount) {
+        // Update existing count
+        agentsCount.textContent = usedAgents.length;
+      }
+      
+      console.log(`🤖 Updated agent button for ${conversationId}: ${usedAgents.length} agents detected`);
+    }
+  }
+
+  /**
    * Get agent color for conversation
    * @param {string} conversationId - Conversation ID
    * @returns {string|null} Agent color or null
@@ -4154,12 +4409,20 @@ class AgentsPage {
   filterConversations(conversations, states) {
     let filtered = conversations;
     
-    // Filter by status
-    if (this.filters.status !== 'all') {
+    // Filter by status (multi-select)
+    if (this.filters.status.length > 0) {
       filtered = filtered.filter(conv => {
         const state = states[conv.id] || 'unknown';
         const category = this.getStateCategory(state);
-        return category === this.filters.status;
+        return this.filters.status.includes(category);
+      });
+    }
+    
+    // Filter by project
+    if (this.filters.project !== 'all') {
+      filtered = filtered.filter(conv => {
+        const project = conv.project || 'Unknown';
+        return project === this.filters.project;
       });
     }
     
@@ -4184,6 +4447,205 @@ class AgentsPage {
     }
     
     return filtered;
+  }
+
+  /**
+   * Setup multi-select status filter
+   */
+  setupMultiSelectStatusFilter() {
+    const button = this.container.querySelector('#status-filter-button');
+    const dropdown = this.container.querySelector('#status-filter-dropdown');
+    const allCheckbox = this.container.querySelector('#status-all');
+    const statusCheckboxes = this.container.querySelectorAll('.status-checkbox');
+
+    // Toggle dropdown
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+      button.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+        button.classList.remove('open');
+      }
+    });
+
+    // Handle "All" checkbox
+    allCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        statusCheckboxes.forEach(cb => cb.checked = false);
+        this.updateFilter('status', []);
+      }
+    });
+
+    // Handle individual status checkboxes
+    statusCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        allCheckbox.checked = false;
+        this.updateStatusFilter();
+      });
+    });
+  }
+
+  /**
+   * Update status filter based on selected checkboxes
+   */
+  updateStatusFilter() {
+    const statusCheckboxes = this.container.querySelectorAll('.status-checkbox:checked');
+    const selectedStatuses = Array.from(statusCheckboxes).map(cb => cb.value);
+    this.updateFilter('status', selectedStatuses);
+  }
+
+  /**
+   * Update filter options based on available data
+   */
+  async updateFilterOptions(conversations, states) {
+    await this.updateProjectOptions(conversations);
+    this.updateStatusOptions(conversations, states);
+  }
+
+  /**
+   * Update project filter options - fetches all projects from file system
+   */
+  async updateProjectOptions(conversations) {
+    const projectFilter = this.container.querySelector('#project-filter');
+    if (!projectFilter) return;
+
+    try {
+      // FEATURE: Use saved projects path from localStorage
+      // This allows users to set a custom projects directory via the folder browser
+      const savedPath = localStorage.getItem('claudeCodeProjectsPath');
+      const apiUrl = savedPath ? `/api/projects?path=${encodeURIComponent(savedPath)}` : '/api/projects';
+      
+      // Fetch all project directories from the API
+      let response;
+      try {
+        response = await this.dataService.fetchWithCache(apiUrl);
+      } catch (error) {
+        console.warn('DataService unavailable, using direct fetch:', error.message);
+        const fetchResponse = await fetch(apiUrl);
+        response = await fetchResponse.json();
+      }
+      const allProjects = response.projects || [];
+      
+      // Also get projects from conversations for additional context
+      const conversationProjects = new Set();
+      conversations.forEach(conv => {
+        if (conv.project && conv.project !== 'Unknown') {
+          conversationProjects.add(conv.project);
+        }
+      });
+      
+      // Combine all projects (file system projects take priority)
+      const projects = new Set([...allProjects, ...conversationProjects]);
+      
+      // Update dropdown options
+      const currentValue = projectFilter.value;
+      projectFilter.innerHTML = '<option value="all">All Projects</option>';
+      
+      Array.from(projects).sort().forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        projectFilter.appendChild(option);
+      });
+      
+      // Restore previous selection if still valid
+      if (Array.from(projects).includes(currentValue)) {
+        projectFilter.value = currentValue;
+      }
+      
+      console.log(`✅ Updated project filter with ${projects.size} projects from file system`);
+    } catch (error) {
+      console.warn('Failed to fetch projects from API, falling back to conversation data:', error);
+      
+      // Fallback to old behavior
+      const projects = new Set();
+      conversations.forEach(conv => {
+        const project = conv.project || 'Unknown';
+        projects.add(project);
+      });
+      
+      const currentValue = projectFilter.value;
+      projectFilter.innerHTML = '<option value="all">All Projects</option>';
+      
+      Array.from(projects).sort().forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        projectFilter.appendChild(option);
+      });
+      
+      if (Array.from(projects).includes(currentValue)) {
+        projectFilter.value = currentValue;
+      }
+    }
+  }
+
+  /**
+   * Update status filter options
+   */
+  updateStatusOptions(conversations, states) {
+    const dropdown = this.container.querySelector('#status-filter-dropdown');
+    if (!dropdown) return;
+
+    // Get all unique states and their categories
+    const statusCategories = new Set();
+    const detailedStates = new Set();
+    
+    conversations.forEach(conv => {
+      const state = states[conv.id] || 'unknown';
+      const category = this.getStateCategory(state);
+      statusCategories.add(category);
+      detailedStates.add(state);
+    });
+
+    // Update existing checkboxes and add new ones if needed
+    const existingCheckboxes = dropdown.querySelectorAll('.status-checkbox');
+    const existingValues = Array.from(existingCheckboxes).map(cb => cb.value);
+
+    statusCategories.forEach(category => {
+      if (!existingValues.includes(category)) {
+        // Add new status option
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'multi-select-option';
+        optionDiv.innerHTML = `
+          <label>
+            <input type="checkbox" value="${category}" class="status-checkbox">
+            <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+          </label>
+        `;
+        dropdown.appendChild(optionDiv);
+
+        // Add event listener
+        const checkbox = optionDiv.querySelector('.status-checkbox');
+        checkbox.addEventListener('change', () => {
+          const allCheckbox = this.container.querySelector('#status-all');
+          allCheckbox.checked = false;
+          this.updateStatusFilter();
+        });
+      }
+    });
+  }
+
+  /**
+   * Update status filter display text
+   */
+  updateStatusFilterText() {
+    const textSpan = this.container.querySelector('#status-filter-text');
+    const selectedCheckboxes = this.container.querySelectorAll('.status-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+      textSpan.textContent = 'All Statuses';
+    } else if (selectedCheckboxes.length === 1) {
+      const status = selectedCheckboxes[0].value;
+      textSpan.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    } else {
+      textSpan.textContent = `${selectedCheckboxes.length} Statuses`;
+    }
   }
 
   /**
@@ -4382,6 +4844,12 @@ class AgentsPage {
    */
   updateFilter(filterName, value) {
     this.filters[filterName] = value;
+    
+    // Update status filter display text if it's a status filter change
+    if (filterName === 'status') {
+      this.updateStatusFilterText();
+    }
+    
     // When filters change, restart from beginning
     this.refreshFromBeginning();
   }
@@ -4402,17 +4870,26 @@ class AgentsPage {
    */
   clearAllFilters() {
     this.filters = {
-      status: 'all',
+      status: [],
+      project: 'all',
       timeRange: '7d',
       search: ''
     };
     
     // Reset UI
-    const statusFilter = this.container.querySelector('#status-filter');
+    const projectFilter = this.container.querySelector('#project-filter');
     const timeFilter = this.container.querySelector('#time-filter');
     const searchFilter = this.container.querySelector('#search-filter');
     
-    if (statusFilter) statusFilter.value = 'all';
+    // Reset multi-select status filter
+    const allStatusCheckbox = this.container.querySelector('#status-all');
+    const statusCheckboxes = this.container.querySelectorAll('.status-checkbox');
+    
+    if (allStatusCheckbox) allStatusCheckbox.checked = true;
+    if (statusCheckboxes) statusCheckboxes.forEach(cb => cb.checked = false);
+    this.updateStatusFilterText();
+    
+    if (projectFilter) projectFilter.value = 'all';
     if (timeFilter) timeFilter.value = '7d';
     if (searchFilter) searchFilter.value = '';
     
@@ -4423,11 +4900,15 @@ class AgentsPage {
   /**
    * Refresh conversations display
    */
-  refreshConversationsDisplay() {
+  async refreshConversationsDisplay() {
     const conversations = this.stateService.getStateProperty('conversations') || [];
     const statesData = this.stateService.getStateProperty('conversationStates') || {};
     // Extract activeStates from the stored state data
     const activeStates = statesData?.activeStates || {};
+    
+    // Update filter options based on available data
+    await this.updateFilterOptions(conversations, activeStates);
+    
     this.renderConversationsList(conversations, activeStates);
   }
   
@@ -4679,8 +5160,8 @@ class AgentsPage {
    * Handle conversation state change
    * @param {Object} _state - New state (unused but required by interface)
    */
-  handleConversationStateChange(_state) {
-    this.refreshConversationsDisplay();
+  async handleConversationStateChange(_state) {
+    await this.refreshConversationsDisplay();
   }
 
   /**
@@ -4713,8 +5194,291 @@ class AgentsPage {
   }
 
   /**
-   * Destroy agents page
+   * FEATURE: Initialize folder browser functionality
+   * Sets up the projects path from localStorage and displays current path
    */
+  initializeFolderBrowser() {
+    // Load saved projects path from localStorage
+    const savedPath = localStorage.getItem('claudeCodeProjectsPath');
+    if (savedPath) {
+      this.updateProjectsPathDisplay(savedPath);
+    } else {
+      // Show default path
+      this.updateProjectsPathDisplay('/home/fubak/projects');
+    }
+  }
+
+  /**
+   * FEATURE: Open folder browser modal
+   * Allows users to navigate and select their projects directory
+   */
+  async openFolderBrowser() {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    if (!modal) return;
+
+    // Get current or default path
+    const currentPath = localStorage.getItem('claudeCodeProjectsPath') || '/home/fubak/projects';
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Set up event handlers for this modal session
+    this.setupFolderBrowserEvents();
+    
+    // Load initial folder content
+    await this.browseFolders(currentPath);
+  }
+
+  /**
+   * FEATURE: Setup folder browser modal event handlers
+   * Handles navigation, selection, and modal controls
+   */
+  setupFolderBrowserEvents() {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    
+    // Close modal handlers
+    const closeBtn = modal.querySelector('#folder-browser-close');
+    const cancelBtn = modal.querySelector('#folder-cancel');
+    const overlay = modal.querySelector('.folder-browser-overlay');
+    
+    const closeModal = () => {
+      modal.style.display = 'none';
+      // Remove event listeners to prevent memory leaks
+      this.cleanupFolderBrowserEvents();
+    };
+    
+    closeBtn.onclick = closeModal;
+    cancelBtn.onclick = closeModal;
+    overlay.onclick = (e) => {
+      if (e.target === overlay) closeModal();
+    };
+    
+    // Navigation handlers
+    const navParent = modal.querySelector('#nav-parent');
+    const navHome = modal.querySelector('#nav-home');
+    const navRoot = modal.querySelector('#nav-root');
+    const pathInput = modal.querySelector('#folder-path-input');
+    
+    navParent.onclick = () => this.navigateToParent();
+    navHome.onclick = () => this.browseFolders('/home');
+    navRoot.onclick = () => this.browseFolders('/');
+    
+    // Enter key in path input
+    pathInput.onkeypress = (e) => {
+      if (e.key === 'Enter') {
+        this.browseFolders(pathInput.value);
+      }
+    };
+    
+    // Select path button
+    const selectBtn = modal.querySelector('#folder-select');
+    selectBtn.onclick = () => this.selectProjectsPath();
+  }
+
+  /**
+   * FEATURE: Browse folders at specified path
+   * Loads and displays folder contents from the server
+   */
+  async browseFolders(path) {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    const foldersList = modal.querySelector('#folders-list');
+    const pathInput = modal.querySelector('#folder-path-input');
+    
+    try {
+      // Show loading
+      foldersList.innerHTML = `
+        <div class="folders-loading">
+          <div class="loading-spinner"></div>
+          <span>Loading folders...</span>
+        </div>
+      `;
+      
+      // Update path input
+      pathInput.value = path;
+      this.currentBrowsePath = path;
+      
+      // Fetch folder contents
+      const response = await fetch(`/api/browse?path=${encodeURIComponent(path)}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to browse folders');
+      }
+      
+      // Update display
+      this.renderFoldersList(data);
+      
+    } catch (error) {
+      console.error('Error browsing folders:', error);
+      foldersList.innerHTML = `
+        <div class="folders-error">
+          <span>❌ Error: ${error.message}</span>
+          <button onclick="this.browseFolders('/')">Go to Root</button>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * FEATURE: Render folders list in browser modal
+   * Creates clickable folder items for navigation
+   */
+  renderFoldersList(data) {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    const foldersList = modal.querySelector('#folders-list');
+    
+    let html = '';
+    
+    // Add parent directory option if available
+    if (data.parentPath) {
+      html += `
+        <div class="folder-item parent-folder" data-path="${data.parentPath}">
+          <span class="folder-icon">↩️</span>
+          <span class="folder-name">.. (parent directory)</span>
+        </div>
+      `;
+    }
+    
+    // Add folders
+    data.folders.forEach(folder => {
+      html += `
+        <div class="folder-item" data-path="${folder.path}">
+          <span class="folder-icon">📁</span>
+          <span class="folder-name">${folder.name}</span>
+        </div>
+      `;
+    });
+    
+    if (data.folders.length === 0 && !data.parentPath) {
+      html = `
+        <div class="folders-empty">
+          <span>📂 No subdirectories found</span>
+        </div>
+      `;
+    }
+    
+    foldersList.innerHTML = html;
+    
+    // Add click handlers to folder items
+    foldersList.querySelectorAll('.folder-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const path = item.dataset.path;
+        this.browseFolders(path);
+      });
+    });
+  }
+
+  /**
+   * FEATURE: Navigate to parent directory
+   * Goes up one level in the folder hierarchy
+   */
+  async navigateToParent() {
+    if (!this.currentBrowsePath) return;
+    
+    const parentPath = this.currentBrowsePath.split('/').slice(0, -1).join('/') || '/';
+    await this.browseFolders(parentPath);
+  }
+
+  /**
+   * FEATURE: Select and save projects path
+   * Saves the selected path and updates the UI
+   */
+  async selectProjectsPath() {
+    const path = this.currentBrowsePath;
+    if (!path) return;
+    
+    try {
+      // Save to localStorage
+      localStorage.setItem('claudeCodeProjectsPath', path);
+      
+      // Update UI display
+      this.updateProjectsPathDisplay(path);
+      
+      // Close modal
+      const modal = this.container.querySelector('#folder-browser-modal');
+      modal.style.display = 'none';
+      
+      // Refresh projects dropdown with new path
+      await this.updateProjectOptionsFromPath(path);
+      
+      console.log(`✅ Projects path updated to: ${path}`);
+      
+    } catch (error) {
+      console.error('Error selecting projects path:', error);
+      alert('Failed to update projects path. Please try again.');
+    }
+  }
+
+  /**
+   * FEATURE: Update projects path display
+   * Shows the current projects path next to the dropdown
+   */
+  updateProjectsPathDisplay(path) {
+    const pathDisplay = this.container.querySelector('#projects-path-display');
+    if (pathDisplay) {
+      pathDisplay.textContent = path;
+      pathDisplay.title = `Projects directory: ${path}`;
+    }
+  }
+
+  /**
+   * FEATURE: Update project options from selected path
+   * Refreshes the projects dropdown using the new path
+   */
+  async updateProjectOptionsFromPath(path) {
+    const projectFilter = this.container.querySelector('#project-filter');
+    if (!projectFilter) return;
+
+    try {
+      // Fetch projects from the new path
+      const response = await fetch(`/api/projects?path=${encodeURIComponent(path)}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load projects');
+      }
+      
+      // Update dropdown options
+      const currentValue = projectFilter.value;
+      projectFilter.innerHTML = '<option value="all">All Projects</option>';
+      
+      data.projects.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        projectFilter.appendChild(option);
+      });
+      
+      // Restore selection if still valid
+      if (data.projects.includes(currentValue)) {
+        projectFilter.value = currentValue;
+      }
+      
+      console.log(`✅ Updated project filter with ${data.projects.length} projects from ${path}`);
+      
+    } catch (error) {
+      console.error('Error updating project options:', error);
+      // Show fallback message
+      const pathDisplay = this.container.querySelector('#projects-path-display');
+      if (pathDisplay) {
+        pathDisplay.textContent = `${path} (error loading projects)`;
+        pathDisplay.style.color = 'var(--error-color)';
+      }
+    }
+  }
+
+  /**
+   * FEATURE: Clean up folder browser event handlers
+   * Prevents memory leaks by removing event listeners
+   */
+  cleanupFolderBrowserEvents() {
+    // Event handlers are set up as inline functions, so they'll be cleaned up
+    // when the modal is hidden. This method is here for future extensibility.
+  }
+
+  /**
+   * Destroy agents page
+   */  
   destroy() {
     // Cleanup components
     Object.values(this.components).forEach(component => {
@@ -4726,7 +5490,7 @@ class AgentsPage {
     // Cleanup scroll listeners
     const messagesContent = this.container.querySelector('#messages-content');
     if (messagesContent && this.messagesScrollListener) {
-      messagesContent.removeEventListener('scroll', this.messagesScrollListener);
+      messagesContent.removeEventListener('scroll', this.messagesScrollListener);  
     }
     
     // Unsubscribe from state changes

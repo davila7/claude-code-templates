@@ -26,7 +26,11 @@ class ConversationAnalyzer {
    * @returns {Promise<Object>} Complete analyzed data
    */
   async loadInitialData(stateCalculator, processDetector) {
-    console.log(chalk.yellow('📊 Analyzing Claude Code data...'));
+    // Only log on first load, not on every refresh
+    if (!this.hasLoadedOnce) {
+      console.log(chalk.yellow('📊 Analyzing Claude Code data...'));
+      this.hasLoadedOnce = true;
+    }
 
     try {
       // Load conversation files
@@ -94,10 +98,31 @@ class ConversationAnalyzer {
 
       const jsonlFiles = await findJsonlFiles(this.claudeDir);
       // Loading conversation files quietly for better UX
+      
+      // MEMORY OPTIMIZATION: Limit conversation loading to prevent OOM errors
+      // When dealing with large numbers of conversations (195+ in testing), loading all
+      // conversations causes memory usage to spike to 2-4GB, leading to crashes.
+      // This limit ensures stable memory usage around 700-800MB.
+      // Future enhancement: Make this configurable via environment variable
+      const CONVERSATION_LIMIT = 100;
+      
+      const sortedFiles = await this.sortFilesByModTime(jsonlFiles);
+      const filesToLoad = sortedFiles.slice(0, CONVERSATION_LIMIT);
+      
+      if (jsonlFiles.length > filesToLoad.length) {
+        console.log(chalk.yellow(`📊 Loading ${filesToLoad.length} most recent conversations (${jsonlFiles.length} total)`));
+      }
 
-      for (const filePath of jsonlFiles) {
+      for (const filePath of filesToLoad) {
         const stats = await this.getFileStats(filePath);
         const filename = path.basename(filePath);
+        
+        // Skip files larger than 50MB to prevent memory issues
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+        if (stats.size > MAX_FILE_SIZE) {
+          console.warn(chalk.yellow(`⚠️  Skipping large file (${Math.round(stats.size / 1024 / 1024)}MB): ${filename}`));
+          continue;
+        }
 
         try {
           // Extract project name from path
@@ -183,6 +208,29 @@ class ConversationAnalyzer {
       console.error(chalk.red('Error loading projects:'), error.message);
       return [];
     }
+  }
+  
+  /**
+   * Sort files by modification time (newest first)
+   * @param {Array<string>} filePaths - Array of file paths
+   * @returns {Promise<Array<string>>} Sorted array of file paths
+   */
+  async sortFilesByModTime(filePaths) {
+    const filesWithStats = await Promise.all(
+      filePaths.map(async (filePath) => {
+        try {
+          const stats = await this.getFileStats(filePath);
+          return { filePath, mtime: stats.mtime };
+        } catch (error) {
+          return { filePath, mtime: new Date(0) }; // If error, put at end
+        }
+      })
+    );
+    
+    // Sort by modification time, newest first
+    filesWithStats.sort((a, b) => b.mtime - a.mtime);
+    
+    return filesWithStats.map(item => item.filePath);
   }
 
   /**

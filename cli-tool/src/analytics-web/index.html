@@ -3627,6 +3627,11 @@
             opacity: 1;
         }
         
+        /* FEATURE: Always show actions when agents were used */
+        .sidebar-conversation-actions:has(.agents-used) {
+            opacity: 1;
+        }
+        
         .conversation-agents-btn {
             display: flex;
             align-items: center;
@@ -3641,10 +3646,29 @@
             transition: all 0.2s ease;
         }
         
+        /* FEATURE: Always visible when agents were used */
+        .conversation-agents-btn.agents-used {
+            opacity: 1 !important;
+            background: var(--bg-tertiary);
+            border-color: var(--text-accent);
+            color: var(--text-accent);
+        }
+        
         .conversation-agents-btn:hover {
             background: var(--text-accent);
             color: white;
             border-color: var(--text-accent);
+        }
+        
+        /* FEATURE: Agent count badge */
+        .agents-count {
+            background: var(--text-accent);
+            color: white;
+            border-radius: 10px;
+            padding: 1px 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 2px;
         }
         
         .agents-icon {
@@ -3759,6 +3783,131 @@
             outline: none;
             border-color: var(--text-accent);
             box-shadow: 0 0 0 2px rgba(213, 116, 85, 0.2);
+        }
+        
+        /* Dashboard Conversation Limit Styles */
+        .conversation-limit-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .conversation-limit-container label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .conversation-limit-container #dashboard-conversation-limit {
+            margin: 0 8px;
+            min-width: 80px;
+        }
+        
+        .conversation-limit-container #total-conversations-count {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .conversation-limit-container #limit-info {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        
+        /* Multi-select dropdown styles */
+        .multi-select-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .multi-select-button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            height: 40px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        
+        .multi-select-button:hover {
+            border-color: var(--border-secondary);
+        }
+        
+        .multi-select-button:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px rgba(213, 116, 85, 0.2);
+        }
+        
+        .multi-select-arrow {
+            transition: transform 0.2s ease;
+            font-size: 0.75rem;
+        }
+        
+        .multi-select-button.open .multi-select-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .multi-select-dropdown.open {
+            display: block;
+        }
+        
+        .multi-select-option {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .multi-select-option:hover {
+            background: var(--bg-hover);
+        }
+        
+        .multi-select-option label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.875rem;
+        }
+        
+        .multi-select-option input[type="checkbox"] {
+            margin: 0;
+            accent-color: var(--text-accent);
+        }
+        
+        .multi-select-separator {
+            height: 1px;
+            background: var(--border-primary);
+            margin: 4px 0;
         }
         
         .search-input-container {
@@ -5385,7 +5534,7 @@
             padding: 16px;
             background: rgba(33, 38, 45, 0.5);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-primary);
         }
         
         /* Primary Section - Tool Parameters */
@@ -5470,7 +5619,7 @@
             padding: 16px;
             background: rgba(33, 38, 45, 0.5);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-primary);
         }
         
         .diff-header-section {
@@ -5698,7 +5847,7 @@
             padding: 16px;
             background: rgba(33, 38, 45, 0.5);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-primary);
         }
         
         .content-header-section {
@@ -5974,7 +6123,7 @@
             padding: 16px;
             background: rgba(33, 38, 45, 0.5);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-primary);
         }
         
         .glob-pattern-section h4, .glob-components-section h4, .glob-insights-section h4 {
@@ -6100,7 +6249,7 @@
             padding: 16px;
             background: rgba(33, 38, 45, 0.5);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-primary);
         }
         
         .grep-config-section h4, .grep-options-section h4, .grep-pattern-section h4, .grep-insights-section h4 {
@@ -6231,7 +6380,7 @@
             padding: 16px;
             background: rgba(33, 38, 45, 0.5);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-primary);
         }
         
         .todo-summary-section h4, .todo-status-section h4, .todo-priority-section h4, .todo-items-section h4 {
@@ -6511,6 +6660,262 @@
             padding: 20px;
             background: #161b22;
             border-radius: 4px;
+        }
+
+        /* FEATURE: Folder Browser Modal Styles */
+        /* Modal overlay and centering */
+        .folder-browser-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .folder-browser-overlay {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .folder-browser-dialog {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            opacity: 1 !important;
+            background: var(--bg-secondary) !important;
+        }
+
+        /* Ensure all dialog content is fully opaque */
+        .folder-browser-dialog * {
+            opacity: 1 !important;
+        }
+
+        .folder-browser-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .folder-browser-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+
+        .folder-browser-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .folder-browser-close:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .folder-browser-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .current-path-bar {
+            padding: 12px 20px;
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-path-bar label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .current-path-bar input {
+            flex: 1;
+            padding: 6px 10px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+        }
+
+        .path-navigation {
+            padding: 8px 20px;
+            display: flex;
+            gap: 8px;
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .path-navigation button {
+            padding: 6px 12px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 4px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .path-navigation button:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--primary-color);
+        }
+
+        .folders-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        #folders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .folder-item {
+            padding: 10px 12px;
+            background-color: var(--bg-secondary);
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .folder-item:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--primary-color);
+        }
+
+        .folder-item.parent-folder {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .folder-icon {
+            font-size: 18px;
+        }
+
+        .folder-name {
+            flex: 1;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .folders-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            gap: 12px;
+        }
+
+        .folder-browser-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .folder-browser-footer button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border-primary);
+        }
+
+        #folder-cancel {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        #folder-cancel:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        #folder-select {
+            background-color: var(--text-accent);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        #folder-select:hover {
+            background-color: var(--text-error);
+            border-color: var(--text-error);
+        }
+
+        /* Loading spinner for folder browser */
+        .folders-container .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--text-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Error state for folder browser */
+        .folders-error {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-error);
+        }
+
+        .folders-error h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+
+        .folders-error p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
     </style>

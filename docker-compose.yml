@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Claude Code Templates CLI service
+  claude-code-templates:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claude-code-templates
+    volumes:
+      # Mount your project directory here
+      - ./example-project:/project
+      # Optional: Mount your home directory's .claude folder for existing configs
+      # - ~/.claude:/root/.claude
+    environment:
+      # Set to 'true' to enable debug logging
+      - DEBUG=false
+      # Set Node environment
+      - NODE_ENV=production
+    # Interactive terminal and TTY for CLI interaction
+    stdin_open: true
+    tty: true
+    # Override default CMD to run interactive setup
+    command: ["/app/bin/create-claude-config.js"]
+
+  # Analytics Dashboard service
+  analytics:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claude-code-analytics
+    ports:
+      - "3333:3333"
+    volumes:
+      # Mount your Claude Code data directory
+      - ~/.claude:/root/.claude:ro
+      # Mount projects directory for project filter
+      - ~/projects:/home/fubak/projects:ro
+    environment:
+      - NODE_ENV=production
+      - PORT=3333
+      - NODE_OPTIONS=--max-old-space-size=1536 --expose-gc
+      - UV_THREADPOOL_SIZE=4
+      - ENABLE_OPTIMIZATIONS=true
+      - DEFAULT_DATE_FILTER_DAYS=7
+      - CACHE_MAX_SIZE=500
+      - CACHE_TTL_MINUTES=15
+    # Override entrypoint to run analytics with memory optimizations
+    command: ["/app/bin/create-claude-config.js", "--analytics"]
+    # Memory limits to prevent system impact
+    mem_limit: 2g
+    memswap_limit: 2g
+    # Restart policy - unless stopped
+    restart: unless-stopped
+    # Health check to detect high memory usage
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.memoryUsage().heapUsed < 1500000000 ? process.exit(0) : process.exit(1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Health Check service
+  health-check:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claude-code-health
+    volumes:
+      - ./example-project:/project
+    command: ["/app/bin/create-claude-config.js", "--health-check"]
+    # Run once and exit
+    restart: "no"
+
+# Optional network configuration
+networks:
+  default:
+    name: claude-code-network

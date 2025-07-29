@@ -167,6 +167,31 @@ class DashboardPage {
           </button>
         </div>
 
+        <!-- FEATURE: Conversation Limit Control for Dashboard
+             Allows users to limit how many conversations are loaded in the analytics calculations.
+             This prevents memory issues and improves performance for users with large histories.
+             The selected limit is persisted in localStorage for a consistent experience across sessions. -->
+        <div class="conversation-limit-container" style="margin: 20px 0; padding: 15px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label style="color: var(--text-secondary); font-size: 0.95rem;">
+              Show
+              <select id="dashboard-conversation-limit" class="filter-select" style="margin: 0 8px; min-width: 80px;">
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="75">75</option>
+                <option value="100">100</option>
+                <option value="125">125</option>
+                <option value="150">150</option>
+                <option value="175">175</option>
+                <option value="200">200</option>
+                <option value="all">All</option>
+              </select>
+              out of <span id="total-conversations-count" style="font-weight: bold;">0</span> conversations
+            </label>
+            <span id="limit-info" style="color: var(--text-secondary); font-size: 0.85rem; font-style: italic;"></span>
+          </div>
+        </div>
+
         <!-- Loading State -->
         <div class="loading-state" id="dashboard-loading" style="display: none;">
           <div class="loading-spinner"></div>
@@ -818,6 +843,32 @@ class DashboardPage {
     if (headerThemeSwitch) {
       headerThemeSwitch.addEventListener('click', () => this.toggleTheme());
     }
+
+    // FEATURE: Dashboard conversation limit dropdown handler
+    // Loads saved preference from localStorage and handles changes
+    const limitDropdown = this.container.querySelector('#dashboard-conversation-limit');
+    if (limitDropdown) {
+      // Load saved preference from localStorage
+      const savedLimit = localStorage.getItem('dashboardConversationLimit') || '50';
+      limitDropdown.value = savedLimit;
+      
+      // Handle dropdown changes
+      limitDropdown.addEventListener('change', async (e) => {
+        const newLimit = e.target.value;
+        
+        // Save to localStorage for persistence across sessions
+        localStorage.setItem('dashboardConversationLimit', newLimit);
+        
+        // Update info text
+        const limitInfo = this.container.querySelector('#limit-info');
+        if (limitInfo) {
+          limitInfo.textContent = 'Reloading with new limit...';
+        }
+        
+        // Reload data with new limit
+        await this.loadInitialData();
+      });
+    }
   }
 
   /**
@@ -825,10 +876,61 @@ class DashboardPage {
    */
   async loadInitialData() {
     try {
-      const [conversationsData, statesData] = await Promise.all([
-        this.dataService.getConversations(),
-        this.dataService.getConversationStates()
-      ]);
+      // ENHANCEMENT: Get user's selected conversation limit from dropdown
+      // This allows the dashboard to load only the specified number of conversations,
+      // preventing memory issues and improving performance
+      const limitDropdown = this.container.querySelector('#dashboard-conversation-limit');
+      const limit = limitDropdown ? limitDropdown.value : '50';
+      
+      // MEMORY OPTIMIZATION: Use paginated endpoint for limited data
+      // Only load the amount of data the user requested to prevent memory issues
+      let conversationsData;
+      let totalCount;
+      let summaryInfo;
+      
+      // First, get summary data to know total count without loading all conversations
+      const summaryResponse = await fetch('/api/summary');
+      const summaryData = await summaryResponse.json();
+      totalCount = summaryData.totalConversations;
+      summaryInfo = summaryData.summary;
+      
+      if (limit === 'all') {
+        // Load all data only when explicitly requested
+        const fullData = await this.dataService.getConversations();
+        conversationsData = fullData;
+      } else {
+        // Load limited data through paginated endpoint for better performance
+        const limitedData = await this.dataService.getConversationsPaginated(0, parseInt(limit));
+        
+        // CALCULATE METRICS FROM LIMITED CONVERSATIONS
+        // Instead of using full summary, calculate metrics from the actual conversations loaded
+        const limitedSummary = this.calculateSummaryFromConversations(limitedData.conversations);
+        
+        // Combine paginated conversations with calculated summary
+        conversationsData = {
+          conversations: limitedData.conversations,
+          summary: limitedSummary,
+          detailedTokenUsage: summaryData.detailedTokenUsage
+        };
+      }
+      
+      // Update the total count display
+      const totalCountSpan = this.container.querySelector('#total-conversations-count');
+      if (totalCountSpan) {
+        totalCountSpan.textContent = totalCount;
+      }
+      
+      // Update info text based on limit
+      const limitInfo = this.container.querySelector('#limit-info');
+      if (limitInfo) {
+        if (limit === 'all' || parseInt(limit) >= totalCount) {
+          limitInfo.textContent = 'Showing all conversations';
+        } else {
+          limitInfo.textContent = `Limited for better performance`;
+        }
+      }
+      
+      const statesData = await this.dataService.getConversationStates();
 
       this.stateService.updateConversations(conversationsData.conversations);
       this.stateService.updateSummary(conversationsData.summary);
@@ -966,6 +1068,71 @@ class DashboardPage {
       const itemDate = new Date(item.lastModified);
       return itemDate >= fromDate;
     }).length;
+  }
+
+  /**
+   * Calculate summary metrics from a limited set of conversations
+   * @param {Array} conversations - Array of conversations to analyze
+   * @returns {Object} Calculated summary metrics
+   */
+  calculateSummaryFromConversations(conversations) {
+    if (!conversations || !conversations.length) {
+      return {
+        totalConversations: 0,
+        totalTokens: 0,
+        activeConversations: 0,
+        activeProjects: 0,
+        avgTokensPerConversation: 0,
+        totalFileSize: '0 MB',
+        dataSize: '0 MB',
+        lastActivity: null,
+        claudeSessions: 0,
+        claudeSessionsDetail: 'no sessions'
+      };
+    }
+
+    // Calculate totals from the limited conversations
+    const totalTokens = conversations.reduce((sum, conv) => sum + (conv.tokens || 0), 0);
+    const totalFileSize = conversations.reduce((sum, conv) => sum + (conv.fileSize || 0), 0);
+    const activeConversations = conversations.filter(conv => conv.runningProcess).length;
+    const uniqueProjects = new Set(conversations.map(conv => conv.project).filter(Boolean)).size;
+    
+    // Find most recent activity
+    const lastActivity = conversations.reduce((latest, conv) => {
+      const convDate = new Date(conv.lastModified);
+      return !latest || convDate > latest ? convDate : latest;
+    }, null);
+
+    // Count Claude sessions (conversations with recent activity)
+    const recentThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+    const claudeSessions = conversations.filter(conv => 
+      new Date(conv.lastModified) > recentThreshold
+    ).length;
+
+    return {
+      totalConversations: conversations.length,
+      totalTokens,
+      activeConversations,
+      activeProjects: uniqueProjects,
+      avgTokensPerConversation: conversations.length > 0 ? Math.round(totalTokens / conversations.length) : 0,
+      totalFileSize: this.formatFileSize(totalFileSize),
+      dataSize: this.formatFileSize(totalFileSize),
+      lastActivity: lastActivity ? lastActivity.toISOString() : null,
+      claudeSessions,
+      claudeSessionsDetail: claudeSessions === 1 ? '1 session' : `${claudeSessions} sessions`
+    };
+  }
+
+  /**
+   * Format file size in bytes to human readable format
+   * @param {number} bytes - Size in bytes
+   * @returns {string} Formatted size string
+   */
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 MB';
+    const mb = bytes / (1024 * 1024);
+    if (mb < 1) return '< 1 MB';
+    return `${mb.toFixed(2)} MB`;
   }
 
   /**

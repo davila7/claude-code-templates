@@ -578,6 +578,9 @@ class ClaudeAnalytics {
         await this.handleConversationChange(conversationId, filePath);
       }
     );
+    
+    // Set a longer debounce to prevent excessive refreshes
+    this.fileWatcher.setDebounce(2000); // 2 second debounce
   }
 
   setupWebServer() {
@@ -664,6 +667,27 @@ class ClaudeAnalytics {
       } catch (error) {
         console.error('Error getting paginated conversations:', error);
         res.status(500).json({ error: 'Failed to get conversations' });
+      }
+    });
+
+    // FEATURE: Summary endpoint for dashboard conversation limit
+    // Returns only summary data without loading all conversations to prevent memory issues
+    // Used by dashboard to show total count without loading all conversation data
+    this.app.get('/api/summary', async (req, res) => {
+      try {
+        // Calculate detailed token usage
+        const detailedTokenUsage = this.calculateDetailedTokenUsage();
+        
+        res.json({
+          summary: this.data.summary,
+          totalConversations: this.data.conversations.length,
+          detailedTokenUsage,
+          timestamp: new Date().toISOString(),
+          lastUpdate: new Date().toLocaleString(),
+        });
+      } catch (error) {
+        console.error('Error getting summary:', error);
+        res.status(500).json({ error: 'Failed to get summary' });
       }
     });
 
@@ -1132,6 +1156,83 @@ class ClaudeAnalytics {
       } catch (error) {
         console.error('Error loading agents:', error);
         res.status(500).json({ error: 'Failed to load agents data' });
+      }
+    });
+
+    // FEATURE: All projects API endpoint
+    // Returns all project directories from the file system for the project filter dropdown.
+    // This enhancement allows users to filter conversations by any project folder,
+    // not just projects that have existing conversations.
+    // Benefits:
+    // - Shows all available projects upfront
+    // - Helps users discover which projects have conversations
+    // - Provides consistent project list regardless of conversation data
+    // Note: When running in Docker, requires volume mount: -v "$HOME/projects:/home/fubak/projects:ro"
+    this.app.get('/api/projects', async (req, res) => {
+      try {
+        const projectsPath = req.query.path || '/home/fubak/projects';
+        const fs = require('fs').promises;
+        
+        // Get all directories in the projects folder
+        const entries = await fs.readdir(projectsPath, { withFileTypes: true });
+        const projects = entries
+          .filter(entry => entry.isDirectory())
+          .map(entry => entry.name)
+          .sort();
+        
+        res.json({ projects, currentPath: projectsPath });
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        res.status(500).json({ error: 'Failed to load projects data' });
+      }
+    });
+
+    // FEATURE: Folder browser endpoint for project path selection
+    // Allows users to browse the file system to select their projects directory
+    // Essential for Docker/remote deployments where the default path may not be correct
+    this.app.get('/api/browse', async (req, res) => {
+      try {
+        const requestedPath = req.query.path || '/';
+        const fs = require('fs').promises;
+        const path = require('path');
+        
+        // Security: Prevent directory traversal attacks
+        const safePath = path.resolve(requestedPath);
+        
+        // Check if path exists and is accessible
+        const stats = await fs.stat(safePath);
+        if (!stats.isDirectory()) {
+          return res.status(400).json({ error: 'Path is not a directory' });
+        }
+        
+        // Get directory contents
+        const entries = await fs.readdir(safePath, { withFileTypes: true });
+        const folders = entries
+          .filter(entry => entry.isDirectory())
+          .map(entry => ({
+            name: entry.name,
+            path: path.join(safePath, entry.name)
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Add parent directory if not at root
+        const parentPath = path.dirname(safePath);
+        const hasParent = safePath !== parentPath;
+        
+        res.json({
+          currentPath: safePath,
+          parentPath: hasParent ? parentPath : null,
+          folders
+        });
+      } catch (error) {
+        console.error('Error browsing folders:', error);
+        if (error.code === 'ENOENT') {
+          res.status(404).json({ error: 'Directory not found' });
+        } else if (error.code === 'EACCES') {
+          res.status(403).json({ error: 'Permission denied' });
+        } else {
+          res.status(500).json({ error: 'Failed to browse directory' });
+        }
       }
     });
 
