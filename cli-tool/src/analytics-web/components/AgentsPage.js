@@ -613,9 +613,15 @@ class AgentsPage {
           <div class="filters-row">
             <div class="filter-group">
               <label class="filter-label">Project:</label>
-              <select class="filter-select" id="project-filter">
-                <option value="all">All Projects</option>
-              </select>
+              <div class="project-filter-container" style="display: flex; align-items: center; gap: 8px;">
+                <select class="filter-select" id="project-filter">
+                  <option value="all">All Projects</option>
+                </select>
+                <button class="folder-browser-btn" id="folder-browser-btn" title="Browse for projects folder">
+                  📁
+                </button>
+                <span class="projects-path-display" id="projects-path-display" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+              </div>
             </div>
             
             <div class="filter-group">
@@ -836,6 +842,46 @@ class AgentsPage {
           </div>
         </div>
       </div>
+        
+        <!-- FEATURE: Folder Browser Modal for Projects Path Selection -->
+        <!-- Essential for Docker/remote deployments where default path may not be correct -->
+        <div class="folder-browser-modal" id="folder-browser-modal" style="display: none;">
+          <div class="folder-browser-overlay">
+            <div class="folder-browser-dialog">
+              <div class="folder-browser-header">
+                <h3>📁 Select Projects Directory</h3>
+                <button class="folder-browser-close" id="folder-browser-close">&times;</button>
+              </div>
+              
+              <div class="folder-browser-content">
+                <div class="current-path-bar">
+                  <label>Current Path:</label>
+                  <input type="text" id="folder-path-input" placeholder="/path/to/projects" />
+                </div>
+                
+                <div class="path-navigation">
+                  <button id="nav-parent" title="Go to parent directory">↑ Up</button>
+                  <button id="nav-home" title="Go to home directory">🏠 Home</button>
+                  <button id="nav-root" title="Go to root directory">/ Root</button>
+                </div>
+                
+                <div class="folders-container">
+                  <div id="folders-list">
+                    <div class="folders-loading">
+                      <div class="loading-spinner"></div>
+                      <span>Loading folders...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="folder-browser-footer">
+                <button id="folder-cancel">Cancel</button>
+                <button id="folder-select">Select This Directory</button>
+              </div>
+            </div>
+          </div>
+        </div>
     `;
 
     this.bindEvents();
@@ -928,6 +974,16 @@ class AgentsPage {
     if (refreshAgentsBtn) {
       refreshAgentsBtn.addEventListener('click', () => this.refreshAgents());
     }
+
+    // FEATURE: Folder Browser for Projects Path Selection
+    // Essential for Docker/remote deployments where default project path may be incorrect
+    const folderBrowserBtn = this.container.querySelector('#folder-browser-btn');
+    if (folderBrowserBtn) {
+      folderBrowserBtn.addEventListener('click', () => this.openFolderBrowser());
+    }
+
+    // Initialize folder browser functionality on page load
+    this.initializeFolderBrowser();
   }
   
   /**
@@ -3154,13 +3210,28 @@ class AgentsPage {
       const state = states[conv.id] || 'unknown';
       const stateClass = this.getStateClass(state);
       
-      // Check for agent usage
+      // FEATURE: Check for all agents used in conversation
+      const usedAgents = this.detectAllAgentsInConversation(conv.id);
       const agentColor = this.getAgentColorForConversation(conv.id);
       const agentName = this.getAgentNameForConversation(conv.id);
       
       // Generate title with agent indicator
       const titleColor = agentColor ? `style="color: ${agentColor}; border-left: 3px solid ${agentColor}; padding-left: 8px;"` : '';
       const agentIndicator = agentName ? `<span class="agent-indicator-small" style="background-color: ${agentColor}" title="Using ${agentName} agent">🤖</span>` : '';
+      
+      // FEATURE: Show agents button always when agents were used, with count
+      const agentsButtonHtml = usedAgents.length > 0 ? `
+        <button class="conversation-agents-btn agents-used" data-conversation-id="${conv.id}" title="${usedAgents.map(a => a.name).join(', ')}">
+          <span class="agents-icon">🤖</span>
+          <span class="agents-text">Agents</span>
+          <span class="agents-count">${usedAgents.length}</span>
+        </button>
+      ` : `
+        <button class="conversation-agents-btn" data-conversation-id="${conv.id}" title="View available agents for this project">
+          <span class="agents-icon">🤖</span>
+          <span class="agents-text">Agents</span>
+        </button>
+      `;
       
       return `
         <div class="sidebar-conversation-item" data-id="${conv.id}" ${agentColor ? `data-agent-color="${agentColor}"` : ''}>
@@ -3185,10 +3256,7 @@ class AgentsPage {
           </div>
           
           <div class="sidebar-conversation-actions">
-            <button class="conversation-agents-btn" data-conversation-id="${conv.id}" title="View available agents for this project">
-              <span class="agents-icon">🤖</span>
-              <span class="agents-text">Agents</span>
-            </button>
+            ${agentsButtonHtml}
           </div>
         </div>
       `;
@@ -3673,6 +3741,9 @@ class AgentsPage {
         
         // Cache the combined messages
         this.loadedMessages.set(conversationId, existingMessages);
+        
+        // FEATURE: Update agent button when messages are loaded
+        this.updateAgentButtonForConversation(conversationId);
         
         // Render messages
         this.renderCachedMessages(existingMessages, !isInitialLoad);
@@ -4175,6 +4246,95 @@ class AgentsPage {
   }
 
   /**
+   * FEATURE: Detect ALL agents used in a conversation
+   * @param {string} conversationId - Conversation ID
+   * @returns {Array} Array of unique agents used in the conversation
+   */
+  detectAllAgentsInConversation(conversationId) {
+    const messages = this.loadedMessages.get(conversationId) || [];
+    const detectedAgents = new Map(); // Use Map to track unique agents
+    
+    // Look through all messages for agent usage
+    messages.forEach(message => {
+      if (message.role === 'assistant' && message.content) {
+        let contentText = '';
+        
+        // Extract text content from message
+        if (Array.isArray(message.content)) {
+          contentText = message.content
+            .filter(block => block.type === 'text')
+            .map(block => block.text)
+            .join(' ');
+        } else if (typeof message.content === 'string') {
+          contentText = message.content;
+        }
+        
+        // Check for agent usage patterns with global flag for multiple matches
+        const agentPatterns = [
+          /use(?:s|d)?\s+the\s+([a-zA-Z0-9\-_]+)\s+(?:sub\s+)?agent/gi,
+          /([a-zA-Z0-9\-_]+)\s+agent\s+(?:to|for|will)/gi,
+          /delegat(?:e|ing)\s+(?:to|task|this)\s+(?:the\s+)?([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /invok(?:e|ing)\s+(?:the\s+)?([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /I'll\s+use\s+the\s+([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /using\s+the\s+([a-zA-Z0-9\-_]+)\s+agent/gi,
+          /launch(?:ing)?\s+the\s+([a-zA-Z0-9\-_]+)\s+agent/gi
+        ];
+        
+        for (const pattern of agentPatterns) {
+          let match;
+          while ((match = pattern.exec(contentText)) !== null) {
+            const detectedAgentName = match[1].toLowerCase();
+            
+            // Find matching agent from our loaded agents
+            const agent = this.agents.find(a => 
+              a.name.toLowerCase() === detectedAgentName ||
+              a.name.toLowerCase().replace(/-/g, '') === detectedAgentName.replace(/-/g, '')
+            );
+            
+            if (agent && !detectedAgents.has(agent.name)) {
+              detectedAgents.set(agent.name, agent);
+            }
+          }
+        }
+      }
+    });
+    
+    return Array.from(detectedAgents.values());
+  }
+
+  /**
+   * FEATURE: Update agent button for a conversation after messages are loaded
+   * @param {string} conversationId - Conversation ID
+   */
+  updateAgentButtonForConversation(conversationId) {
+    const conversationItem = this.container.querySelector(`[data-id="${conversationId}"]`);
+    if (!conversationItem) return;
+    
+    const usedAgents = this.detectAllAgentsInConversation(conversationId);
+    const agentButton = conversationItem.querySelector('.conversation-agents-btn');
+    
+    if (agentButton && usedAgents.length > 0) {
+      // Add agents-used class and update content
+      agentButton.classList.add('agents-used');
+      agentButton.setAttribute('title', usedAgents.map(a => a.name).join(', '));
+      
+      // Update button content to show count
+      const agentsText = agentButton.querySelector('.agents-text');
+      const agentsCount = agentButton.querySelector('.agents-count');
+      
+      if (agentsText && !agentsCount) {
+        // Add count badge if it doesn't exist
+        agentsText.insertAdjacentHTML('afterend', `<span class="agents-count">${usedAgents.length}</span>`);
+      } else if (agentsCount) {
+        // Update existing count
+        agentsCount.textContent = usedAgents.length;
+      }
+      
+      console.log(`🤖 Updated agent button for ${conversationId}: ${usedAgents.length} agents detected`);
+    }
+  }
+
+  /**
    * Get agent color for conversation
    * @param {string} conversationId - Conversation ID
    * @returns {string|null} Agent color or null
@@ -4355,13 +4515,18 @@ class AgentsPage {
     if (!projectFilter) return;
 
     try {
+      // FEATURE: Use saved projects path from localStorage
+      // This allows users to set a custom projects directory via the folder browser
+      const savedPath = localStorage.getItem('claudeCodeProjectsPath');
+      const apiUrl = savedPath ? `/api/projects?path=${encodeURIComponent(savedPath)}` : '/api/projects';
+      
       // Fetch all project directories from the API
       let response;
       try {
-        response = await this.dataService.fetchWithCache('/api/projects');
+        response = await this.dataService.fetchWithCache(apiUrl);
       } catch (error) {
         console.warn('DataService unavailable, using direct fetch:', error.message);
-        const fetchResponse = await fetch('/api/projects');
+        const fetchResponse = await fetch(apiUrl);
         response = await fetchResponse.json();
       }
       const allProjects = response.projects || [];
@@ -5029,8 +5194,291 @@ class AgentsPage {
   }
 
   /**
-   * Destroy agents page
+   * FEATURE: Initialize folder browser functionality
+   * Sets up the projects path from localStorage and displays current path
    */
+  initializeFolderBrowser() {
+    // Load saved projects path from localStorage
+    const savedPath = localStorage.getItem('claudeCodeProjectsPath');
+    if (savedPath) {
+      this.updateProjectsPathDisplay(savedPath);
+    } else {
+      // Show default path
+      this.updateProjectsPathDisplay('/home/fubak/projects');
+    }
+  }
+
+  /**
+   * FEATURE: Open folder browser modal
+   * Allows users to navigate and select their projects directory
+   */
+  async openFolderBrowser() {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    if (!modal) return;
+
+    // Get current or default path
+    const currentPath = localStorage.getItem('claudeCodeProjectsPath') || '/home/fubak/projects';
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Set up event handlers for this modal session
+    this.setupFolderBrowserEvents();
+    
+    // Load initial folder content
+    await this.browseFolders(currentPath);
+  }
+
+  /**
+   * FEATURE: Setup folder browser modal event handlers
+   * Handles navigation, selection, and modal controls
+   */
+  setupFolderBrowserEvents() {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    
+    // Close modal handlers
+    const closeBtn = modal.querySelector('#folder-browser-close');
+    const cancelBtn = modal.querySelector('#folder-cancel');
+    const overlay = modal.querySelector('.folder-browser-overlay');
+    
+    const closeModal = () => {
+      modal.style.display = 'none';
+      // Remove event listeners to prevent memory leaks
+      this.cleanupFolderBrowserEvents();
+    };
+    
+    closeBtn.onclick = closeModal;
+    cancelBtn.onclick = closeModal;
+    overlay.onclick = (e) => {
+      if (e.target === overlay) closeModal();
+    };
+    
+    // Navigation handlers
+    const navParent = modal.querySelector('#nav-parent');
+    const navHome = modal.querySelector('#nav-home');
+    const navRoot = modal.querySelector('#nav-root');
+    const pathInput = modal.querySelector('#folder-path-input');
+    
+    navParent.onclick = () => this.navigateToParent();
+    navHome.onclick = () => this.browseFolders('/home');
+    navRoot.onclick = () => this.browseFolders('/');
+    
+    // Enter key in path input
+    pathInput.onkeypress = (e) => {
+      if (e.key === 'Enter') {
+        this.browseFolders(pathInput.value);
+      }
+    };
+    
+    // Select path button
+    const selectBtn = modal.querySelector('#folder-select');
+    selectBtn.onclick = () => this.selectProjectsPath();
+  }
+
+  /**
+   * FEATURE: Browse folders at specified path
+   * Loads and displays folder contents from the server
+   */
+  async browseFolders(path) {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    const foldersList = modal.querySelector('#folders-list');
+    const pathInput = modal.querySelector('#folder-path-input');
+    
+    try {
+      // Show loading
+      foldersList.innerHTML = `
+        <div class="folders-loading">
+          <div class="loading-spinner"></div>
+          <span>Loading folders...</span>
+        </div>
+      `;
+      
+      // Update path input
+      pathInput.value = path;
+      this.currentBrowsePath = path;
+      
+      // Fetch folder contents
+      const response = await fetch(`/api/browse?path=${encodeURIComponent(path)}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to browse folders');
+      }
+      
+      // Update display
+      this.renderFoldersList(data);
+      
+    } catch (error) {
+      console.error('Error browsing folders:', error);
+      foldersList.innerHTML = `
+        <div class="folders-error">
+          <span>❌ Error: ${error.message}</span>
+          <button onclick="this.browseFolders('/')">Go to Root</button>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * FEATURE: Render folders list in browser modal
+   * Creates clickable folder items for navigation
+   */
+  renderFoldersList(data) {
+    const modal = this.container.querySelector('#folder-browser-modal');
+    const foldersList = modal.querySelector('#folders-list');
+    
+    let html = '';
+    
+    // Add parent directory option if available
+    if (data.parentPath) {
+      html += `
+        <div class="folder-item parent-folder" data-path="${data.parentPath}">
+          <span class="folder-icon">↩️</span>
+          <span class="folder-name">.. (parent directory)</span>
+        </div>
+      `;
+    }
+    
+    // Add folders
+    data.folders.forEach(folder => {
+      html += `
+        <div class="folder-item" data-path="${folder.path}">
+          <span class="folder-icon">📁</span>
+          <span class="folder-name">${folder.name}</span>
+        </div>
+      `;
+    });
+    
+    if (data.folders.length === 0 && !data.parentPath) {
+      html = `
+        <div class="folders-empty">
+          <span>📂 No subdirectories found</span>
+        </div>
+      `;
+    }
+    
+    foldersList.innerHTML = html;
+    
+    // Add click handlers to folder items
+    foldersList.querySelectorAll('.folder-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const path = item.dataset.path;
+        this.browseFolders(path);
+      });
+    });
+  }
+
+  /**
+   * FEATURE: Navigate to parent directory
+   * Goes up one level in the folder hierarchy
+   */
+  async navigateToParent() {
+    if (!this.currentBrowsePath) return;
+    
+    const parentPath = this.currentBrowsePath.split('/').slice(0, -1).join('/') || '/';
+    await this.browseFolders(parentPath);
+  }
+
+  /**
+   * FEATURE: Select and save projects path
+   * Saves the selected path and updates the UI
+   */
+  async selectProjectsPath() {
+    const path = this.currentBrowsePath;
+    if (!path) return;
+    
+    try {
+      // Save to localStorage
+      localStorage.setItem('claudeCodeProjectsPath', path);
+      
+      // Update UI display
+      this.updateProjectsPathDisplay(path);
+      
+      // Close modal
+      const modal = this.container.querySelector('#folder-browser-modal');
+      modal.style.display = 'none';
+      
+      // Refresh projects dropdown with new path
+      await this.updateProjectOptionsFromPath(path);
+      
+      console.log(`✅ Projects path updated to: ${path}`);
+      
+    } catch (error) {
+      console.error('Error selecting projects path:', error);
+      alert('Failed to update projects path. Please try again.');
+    }
+  }
+
+  /**
+   * FEATURE: Update projects path display
+   * Shows the current projects path next to the dropdown
+   */
+  updateProjectsPathDisplay(path) {
+    const pathDisplay = this.container.querySelector('#projects-path-display');
+    if (pathDisplay) {
+      pathDisplay.textContent = path;
+      pathDisplay.title = `Projects directory: ${path}`;
+    }
+  }
+
+  /**
+   * FEATURE: Update project options from selected path
+   * Refreshes the projects dropdown using the new path
+   */
+  async updateProjectOptionsFromPath(path) {
+    const projectFilter = this.container.querySelector('#project-filter');
+    if (!projectFilter) return;
+
+    try {
+      // Fetch projects from the new path
+      const response = await fetch(`/api/projects?path=${encodeURIComponent(path)}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load projects');
+      }
+      
+      // Update dropdown options
+      const currentValue = projectFilter.value;
+      projectFilter.innerHTML = '<option value="all">All Projects</option>';
+      
+      data.projects.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        projectFilter.appendChild(option);
+      });
+      
+      // Restore selection if still valid
+      if (data.projects.includes(currentValue)) {
+        projectFilter.value = currentValue;
+      }
+      
+      console.log(`✅ Updated project filter with ${data.projects.length} projects from ${path}`);
+      
+    } catch (error) {
+      console.error('Error updating project options:', error);
+      // Show fallback message
+      const pathDisplay = this.container.querySelector('#projects-path-display');
+      if (pathDisplay) {
+        pathDisplay.textContent = `${path} (error loading projects)`;
+        pathDisplay.style.color = 'var(--error-color)';
+      }
+    }
+  }
+
+  /**
+   * FEATURE: Clean up folder browser event handlers
+   * Prevents memory leaks by removing event listeners
+   */
+  cleanupFolderBrowserEvents() {
+    // Event handlers are set up as inline functions, so they'll be cleaned up
+    // when the modal is hidden. This method is here for future extensibility.
+  }
+
+  /**
+   * Destroy agents page
+   */  
   destroy() {
     // Cleanup components
     Object.values(this.components).forEach(component => {
@@ -5042,7 +5490,7 @@ class AgentsPage {
     // Cleanup scroll listeners
     const messagesContent = this.container.querySelector('#messages-content');
     if (messagesContent && this.messagesScrollListener) {
-      messagesContent.removeEventListener('scroll', this.messagesScrollListener);
+      messagesContent.removeEventListener('scroll', this.messagesScrollListener);  
     }
     
     // Unsubscribe from state changes

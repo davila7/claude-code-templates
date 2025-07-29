@@ -670,6 +670,27 @@ class ClaudeAnalytics {
       }
     });
 
+    // FEATURE: Summary endpoint for dashboard conversation limit
+    // Returns only summary data without loading all conversations to prevent memory issues
+    // Used by dashboard to show total count without loading all conversation data
+    this.app.get('/api/summary', async (req, res) => {
+      try {
+        // Calculate detailed token usage
+        const detailedTokenUsage = this.calculateDetailedTokenUsage();
+        
+        res.json({
+          summary: this.data.summary,
+          totalConversations: this.data.conversations.length,
+          detailedTokenUsage,
+          timestamp: new Date().toISOString(),
+          lastUpdate: new Date().toLocaleString(),
+        });
+      } catch (error) {
+        console.error('Error getting summary:', error);
+        res.status(500).json({ error: 'Failed to get summary' });
+      }
+    });
+
     this.app.get('/api/realtime', async (req, res) => {
       const realtimeWithTimestamp = {
         ...this.data.realtimeStats,
@@ -1149,7 +1170,7 @@ class ClaudeAnalytics {
     // Note: When running in Docker, requires volume mount: -v "$HOME/projects:/home/fubak/projects:ro"
     this.app.get('/api/projects', async (req, res) => {
       try {
-        const projectsPath = '/home/fubak/projects';
+        const projectsPath = req.query.path || '/home/fubak/projects';
         const fs = require('fs').promises;
         
         // Get all directories in the projects folder
@@ -1159,10 +1180,59 @@ class ClaudeAnalytics {
           .map(entry => entry.name)
           .sort();
         
-        res.json({ projects });
+        res.json({ projects, currentPath: projectsPath });
       } catch (error) {
         console.error('Error loading projects:', error);
         res.status(500).json({ error: 'Failed to load projects data' });
+      }
+    });
+
+    // FEATURE: Folder browser endpoint for project path selection
+    // Allows users to browse the file system to select their projects directory
+    // Essential for Docker/remote deployments where the default path may not be correct
+    this.app.get('/api/browse', async (req, res) => {
+      try {
+        const requestedPath = req.query.path || '/';
+        const fs = require('fs').promises;
+        const path = require('path');
+        
+        // Security: Prevent directory traversal attacks
+        const safePath = path.resolve(requestedPath);
+        
+        // Check if path exists and is accessible
+        const stats = await fs.stat(safePath);
+        if (!stats.isDirectory()) {
+          return res.status(400).json({ error: 'Path is not a directory' });
+        }
+        
+        // Get directory contents
+        const entries = await fs.readdir(safePath, { withFileTypes: true });
+        const folders = entries
+          .filter(entry => entry.isDirectory())
+          .map(entry => ({
+            name: entry.name,
+            path: path.join(safePath, entry.name)
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Add parent directory if not at root
+        const parentPath = path.dirname(safePath);
+        const hasParent = safePath !== parentPath;
+        
+        res.json({
+          currentPath: safePath,
+          parentPath: hasParent ? parentPath : null,
+          folders
+        });
+      } catch (error) {
+        console.error('Error browsing folders:', error);
+        if (error.code === 'ENOENT') {
+          res.status(404).json({ error: 'Directory not found' });
+        } else if (error.code === 'EACCES') {
+          res.status(403).json({ error: 'Permission denied' });
+        } else {
+          res.status(500).json({ error: 'Failed to browse directory' });
+        }
       }
     });
 

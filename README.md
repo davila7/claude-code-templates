@@ -106,6 +106,10 @@ Monitor and optimize your Claude Code agents with our comprehensive analytics da
 - **Web Interface**: Clean, terminal-style dashboard at `http://localhost:3333`
 - **Performance Monitoring**: Track Claude Code agent performance and optimization opportunities
 - **Usage Patterns**: Identify your most productive coding sessions and workflows
+- **Memory Optimized**: 75-80% memory reduction with intelligent conversation limiting
+- **Conversation Limits**: Customizable dropdown controls for performance tuning (Dashboard: 25-200+, Agents: 5-100+)
+- **Folder Browser**: Dynamic project path selection for Docker/remote deployments with modal interface
+- **Enhanced Agent Display**: Always visible agent usage indicators with count badges and tooltips
 
 ### 🤖 Agent Chats Manager
 Monitor and analyze Claude agent interactions in real-time
@@ -360,6 +364,7 @@ This project is built by the community, for the community. We believe in:
 - **🔒 Security**: [Report security vulnerabilities](SECURITY.md)
 - **📖 Documentation**: [Claude Code Official Docs](https://docs.anthropic.com/en/docs/claude-code)
 - **🤝 Contributing**: [Read our contribution guidelines](CONTRIBUTING.md)
+- **📋 Contribution Guide**: [Best practices for contributing to open source projects](CONTRIBUTION_GUIDE.md)
 
 ---
 

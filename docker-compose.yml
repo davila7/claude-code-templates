@@ -34,6 +34,8 @@ services:
     volumes:
       # Mount your Claude Code data directory
       - ~/.claude:/root/.claude:ro
+      # Mount projects directory for project filter
+      - ~/projects:/home/fubak/projects:ro
     environment:
       - NODE_ENV=production
       - PORT=3333
@@ -43,9 +45,8 @@ services:
       - DEFAULT_DATE_FILTER_DAYS=7
       - CACHE_MAX_SIZE=500
       - CACHE_TTL_MINUTES=15
-    # Override entrypoint to run optimized analytics
-    entrypoint: ["node"]
-    command: ["/app/src/analytics.optimized.js"]
+    # Override entrypoint to run analytics with memory optimizations
+    command: ["/app/bin/create-claude-config.js", "--analytics"]
     # Memory limits to prevent system impact
     mem_limit: 2g
     memswap_limit: 2g
@@ -66,7 +67,7 @@ services:
     container_name: claude-code-health
     volumes:
       - ./example-project:/project
-    command: ["node", "/app/bin/create-claude-config.js", "--health-check"]
+    command: ["/app/bin/create-claude-config.js", "--health-check"]
     # Run once and exit
     restart: "no"
 

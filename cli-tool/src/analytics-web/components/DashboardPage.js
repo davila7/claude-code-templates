@@ -882,9 +882,37 @@ class DashboardPage {
       const limitDropdown = this.container.querySelector('#dashboard-conversation-limit');
       const limit = limitDropdown ? limitDropdown.value : '50';
       
-      // First, get the full data to know total count
-      const fullData = await this.dataService.getConversations();
-      const totalCount = fullData.conversations ? fullData.conversations.length : 0;
+      // MEMORY OPTIMIZATION: Use paginated endpoint for limited data
+      // Only load the amount of data the user requested to prevent memory issues
+      let conversationsData;
+      let totalCount;
+      let summaryInfo;
+      
+      // First, get summary data to know total count without loading all conversations
+      const summaryResponse = await fetch('/api/summary');
+      const summaryData = await summaryResponse.json();
+      totalCount = summaryData.totalConversations;
+      summaryInfo = summaryData.summary;
+      
+      if (limit === 'all') {
+        // Load all data only when explicitly requested
+        const fullData = await this.dataService.getConversations();
+        conversationsData = fullData;
+      } else {
+        // Load limited data through paginated endpoint for better performance
+        const limitedData = await this.dataService.getConversationsPaginated(0, parseInt(limit));
+        
+        // CALCULATE METRICS FROM LIMITED CONVERSATIONS
+        // Instead of using full summary, calculate metrics from the actual conversations loaded
+        const limitedSummary = this.calculateSummaryFromConversations(limitedData.conversations);
+        
+        // Combine paginated conversations with calculated summary
+        conversationsData = {
+          conversations: limitedData.conversations,
+          summary: limitedSummary,
+          detailedTokenUsage: summaryData.detailedTokenUsage
+        };
+      }
       
       // Update the total count display
       const totalCountSpan = this.container.querySelector('#total-conversations-count');
@@ -900,21 +928,6 @@ class DashboardPage {
         } else {
           limitInfo.textContent = `Limited for better performance`;
         }
-      }
-      
-      // Now load the limited data if needed
-      let conversationsData;
-      if (limit === 'all' || parseInt(limit) >= totalCount) {
-        // Use full data if showing all or limit exceeds total
-        conversationsData = fullData;
-      } else {
-        // Load limited data through paginated endpoint
-        const limitedData = await this.dataService.getConversationsPaginated(0, parseInt(limit));
-        // Merge with full data's summary info
-        conversationsData = {
-          ...fullData,
-          conversations: limitedData.conversations
-        };
       }
       
       const statesData = await this.dataService.getConversationStates();
@@ -1055,6 +1068,71 @@ class DashboardPage {
       const itemDate = new Date(item.lastModified);
       return itemDate >= fromDate;
     }).length;
+  }
+
+  /**
+   * Calculate summary metrics from a limited set of conversations
+   * @param {Array} conversations - Array of conversations to analyze
+   * @returns {Object} Calculated summary metrics
+   */
+  calculateSummaryFromConversations(conversations) {
+    if (!conversations || !conversations.length) {
+      return {
+        totalConversations: 0,
+        totalTokens: 0,
+        activeConversations: 0,
+        activeProjects: 0,
+        avgTokensPerConversation: 0,
+        totalFileSize: '0 MB',
+        dataSize: '0 MB',
+        lastActivity: null,
+        claudeSessions: 0,
+        claudeSessionsDetail: 'no sessions'
+      };
+    }
+
+    // Calculate totals from the limited conversations
+    const totalTokens = conversations.reduce((sum, conv) => sum + (conv.tokens || 0), 0);
+    const totalFileSize = conversations.reduce((sum, conv) => sum + (conv.fileSize || 0), 0);
+    const activeConversations = conversations.filter(conv => conv.runningProcess).length;
+    const uniqueProjects = new Set(conversations.map(conv => conv.project).filter(Boolean)).size;
+    
+    // Find most recent activity
+    const lastActivity = conversations.reduce((latest, conv) => {
+      const convDate = new Date(conv.lastModified);
+      return !latest || convDate > latest ? convDate : latest;
+    }, null);
+
+    // Count Claude sessions (conversations with recent activity)
+    const recentThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+    const claudeSessions = conversations.filter(conv => 
+      new Date(conv.lastModified) > recentThreshold
+    ).length;
+
+    return {
+      totalConversations: conversations.length,
+      totalTokens,
+      activeConversations,
+      activeProjects: uniqueProjects,
+      avgTokensPerConversation: conversations.length > 0 ? Math.round(totalTokens / conversations.length) : 0,
+      totalFileSize: this.formatFileSize(totalFileSize),
+      dataSize: this.formatFileSize(totalFileSize),
+      lastActivity: lastActivity ? lastActivity.toISOString() : null,
+      claudeSessions,
+      claudeSessionsDetail: claudeSessions === 1 ? '1 session' : `${claudeSessions} sessions`
+    };
+  }
+
+  /**
+   * Format file size in bytes to human readable format
+   * @param {number} bytes - Size in bytes
+   * @returns {string} Formatted size string
+   */
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 MB';
+    const mb = bytes / (1024 * 1024);
+    if (mb < 1) return '< 1 MB';
+    return `${mb.toFixed(2)} MB`;
   }
 
   /**
