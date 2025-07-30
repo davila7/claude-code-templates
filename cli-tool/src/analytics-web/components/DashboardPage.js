@@ -147,7 +147,7 @@ class DashboardPage {
                   </div>
                 </div>
               </div>
-              <a href="https://github.com/anthropics/claude-code-templates" target="_blank" class="github-link" title="Star on GitHub">
+              <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="github-link" title="Star on GitHub">
                 <span class="github-icon">⭐</span>
                 Star on GitHub
               </a>
