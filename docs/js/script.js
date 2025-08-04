@@ -1504,7 +1504,9 @@ function generateInstallCommand(component) {
     } else if (component.type === 'command') {
         return `npx claude-code-templates@latest --command=${component.name} --yes`;
     } else if (component.type === 'mcp') {
-        return `npx claude-code-templates@latest --mcp=${component.name} --yes`;
+        // Remove .json extension from MCP names for the command
+        const mcpName = component.name.replace(/\.json$/, '');
+        return `npx claude-code-templates@latest --mcp=${mcpName} --yes`;
     }
     return `npx claude-code-templates@latest`;
 }
