@@ -733,6 +733,15 @@ class AgentsPage {
                 <div class="selected-conversation-meta" id="selected-conversation-meta"></div>
               </div>
               <div class="messages-actions">
+                <button class="action-btn-small sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar">
+                  <span class="btn-icon-small">☰</span>
+                  Hide Sidebar
+                </button>
+                <button class="action-btn-small" id="fullscreen-toggle" title="Toggle fullscreen">
+                  <span class="btn-icon-small">⛶</span>
+                  Fullscreen
+                </button>
+                <button class="action-btn-small" id="test-console-interaction" title="Test console interaction">🧪 Test Console</button>
                 <button class="action-btn-small" id="export-conversation" title="Export conversation">
                   <span class="btn-icon-small">📁</span>
                   Export
@@ -858,6 +867,55 @@ class AgentsPage {
     if (refreshAgentsBtn) {
       refreshAgentsBtn.addEventListener('click', () => this.refreshAgents());
     }
+
+    // Fullscreen toggle
+    const fullscreenBtn = this.container.querySelector('#fullscreen-toggle');
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+    }
+
+    // Sidebar toggle (only visible in fullscreen)
+    const sidebarBtn = this.container.querySelector('#sidebar-toggle');
+    if (sidebarBtn) {
+      sidebarBtn.addEventListener('click', () => this.toggleSidebar());
+    }
+
+    // Listen for fullscreen changes (ESC key, browser controls)
+    this.bindFullscreenEvents();
+  }
+
+  /**
+   * Bind fullscreen change events with cross-browser support
+   */
+  bindFullscreenEvents() {
+    const events = [
+      'fullscreenchange',
+      'webkitfullscreenchange',
+      'mozfullscreenchange',
+      'MSFullscreenChange'
+    ];
+
+    this.fullscreenChangeHandler = () => {
+      const agentsPage = this.container.querySelector('.agents-page');
+      
+      if (this.isFullscreen()) {
+        // Entered fullscreen - hide UI elements, keep sidebar visible
+        agentsPage.classList.add('fullscreen-mode');
+      } else {
+        // Exited fullscreen - restore UI elements and sidebar
+        agentsPage.classList.remove('fullscreen-mode');
+        agentsPage.classList.remove('sidebar-hidden');
+      }
+      
+      // Update button states
+      this.updateFullscreenButton();
+      this.updateSidebarButton();
+    };
+
+    // Add listeners for all browser prefixes
+    events.forEach(event => {
+      document.addEventListener(event, this.fullscreenChangeHandler);
+    });
   }
   
   /**
@@ -4724,6 +4782,158 @@ class AgentsPage {
   }
 
   /**
+   * Check if fullscreen is supported
+   */
+  isFullscreenSupported() {
+    return !!(
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.msFullscreenEnabled
+    );
+  }
+
+  /**
+   * Check if currently in fullscreen mode
+   */
+  isFullscreen() {
+    return !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    );
+  }
+
+  /**
+   * Request fullscreen on an element with cross-browser support
+   */
+  requestFullscreen(element) {
+    if (element.requestFullscreen) {
+      return element.requestFullscreen();
+    } else if (element.webkitRequestFullscreen) {
+      return element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      return element.mozRequestFullScreen();
+    } else if (element.msRequestFullscreen) {
+      return element.msRequestFullscreen();
+    }
+    return Promise.reject(new Error('Fullscreen not supported'));
+  }
+
+  /**
+   * Exit fullscreen with cross-browser support
+   */
+  exitFullscreen() {
+    if (document.exitFullscreen) {
+      return document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      return document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      return document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      return document.msExitFullscreen();
+    }
+    return Promise.reject(new Error('Exit fullscreen not supported'));
+  }
+
+  /**
+   * Update fullscreen button state
+   */
+  updateFullscreenButton() {
+    const fullscreenBtn = this.container.querySelector('#fullscreen-toggle');
+    if (!fullscreenBtn) return;
+
+    if (this.isFullscreen()) {
+      fullscreenBtn.innerHTML = '<span class="btn-icon-small">⛷</span> Exit Fullscreen';
+      fullscreenBtn.title = 'Exit fullscreen';
+    } else {
+      fullscreenBtn.innerHTML = '<span class="btn-icon-small">⛶</span> Fullscreen';
+      fullscreenBtn.title = 'Toggle fullscreen';
+    }
+  }
+
+  /**
+   * Update sidebar toggle button state
+   */
+  updateSidebarButton() {
+    const agentsPage = this.container.querySelector('.agents-page');
+    const sidebarBtn = this.container.querySelector('#sidebar-toggle');
+    if (!sidebarBtn) return;
+
+    if (agentsPage.classList.contains('sidebar-hidden')) {
+      sidebarBtn.innerHTML = '<span class="btn-icon-small">⚞</span> Show Sidebar';
+      sidebarBtn.title = 'Show sidebar';
+    } else {
+      sidebarBtn.innerHTML = '<span class="btn-icon-small">☰</span> Hide Sidebar';
+      sidebarBtn.title = 'Hide sidebar';
+    }
+  }
+
+  /**
+   * Toggle sidebar visibility within fullscreen mode
+   */
+  toggleSidebar() {
+    const agentsPage = this.container.querySelector('.agents-page');
+    
+    if (agentsPage.classList.contains('sidebar-hidden')) {
+      // Show sidebar
+      agentsPage.classList.remove('sidebar-hidden');
+    } else {
+      // Hide sidebar
+      agentsPage.classList.add('sidebar-hidden');
+    }
+    
+    // Update button state
+    this.updateSidebarButton();
+  }
+
+  /**
+   * Toggle fullscreen mode for chat window
+   */
+  async toggleFullscreen() {
+    const agentsPage = this.container.querySelector('.agents-page');
+
+    try {
+      if (this.isFullscreen()) {
+        // Exit fullscreen
+        await this.exitFullscreen();
+        // Remove fullscreen class (UI elements will reappear)
+        agentsPage.classList.remove('fullscreen-mode');
+        // Also remove sidebar-hidden class when exiting fullscreen
+        agentsPage.classList.remove('sidebar-hidden');
+      } else {
+        // Check if fullscreen is supported
+        if (this.isFullscreenSupported()) {
+          // Enter browser fullscreen
+          await this.requestFullscreen(document.documentElement);
+          // Add fullscreen class (hide UI elements, keep sidebar visible)
+          agentsPage.classList.add('fullscreen-mode');
+        } else {
+          // Fallback: hide UI elements if fullscreen not supported
+          if (agentsPage.classList.contains('fullscreen-mode')) {
+            agentsPage.classList.remove('fullscreen-mode');
+            agentsPage.classList.remove('sidebar-hidden');
+          } else {
+            agentsPage.classList.add('fullscreen-mode');
+          }
+          this.updateFullscreenButton();
+        }
+      }
+    } catch (error) {
+      console.warn('Fullscreen operation failed:', error);
+      // Fallback to UI hiding behavior
+      if (agentsPage.classList.contains('fullscreen-mode')) {
+        agentsPage.classList.remove('fullscreen-mode');
+        agentsPage.classList.remove('sidebar-hidden');
+      } else {
+        agentsPage.classList.add('fullscreen-mode');
+      }
+      this.updateFullscreenButton();
+    }
+  }
+
+  /**
    * Destroy agents page
    */
   destroy() {
@@ -4744,6 +4954,19 @@ class AgentsPage {
     const messagesContent = this.container.querySelector('#messages-content');
     if (messagesContent && this.messagesScrollListener) {
       messagesContent.removeEventListener('scroll', this.messagesScrollListener);
+    }
+
+    // Cleanup fullscreen event listeners
+    if (this.fullscreenChangeHandler) {
+      const events = [
+        'fullscreenchange',
+        'webkitfullscreenchange',
+        'mozfullscreenchange',
+        'MSFullscreenChange'
+      ];
+      events.forEach(event => {
+        document.removeEventListener(event, this.fullscreenChangeHandler);
+      });
     }
     
     // Unsubscribe from state changes

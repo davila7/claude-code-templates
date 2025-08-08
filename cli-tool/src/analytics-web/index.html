@@ -408,60 +408,43 @@
             /* Custom styles */
             background: var(--bg-tertiary);
             color: var(--text-secondary);
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 0.75rem;
-            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 4px;
-            min-width: 80px;
+            gap: 6px;
+            min-width: auto;
             width: auto;
-            height: 24px;
+            height: 32px;
             white-space: nowrap;
             box-sizing: border-box;
-            
-            /* Force fixed dimensions */
-            max-width: 80px;
-            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .action-btn-small:hover {
             border-color: var(--text-accent);
             color: var(--text-accent);
             background: var(--bg-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .action-btn-small:active {
             opacity: 0.8;
-            transform: none !important;
-            scale: none !important;
+            transform: translateY(0px);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .action-btn-small:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Prevent any size changes on action buttons */
-        .action-btn-small,
-        .action-btn-small:hover,
-        .action-btn-small:active,
-        .action-btn-small:focus,
-        .action-btn-small.loading {
-            transform: none !important;
-            scale: none !important;
-            height: 24px !important;
-            min-width: 80px !important;
-            max-width: 80px !important;
-            padding: 4px 8px !important;
-            border-width: 1px !important;
-            box-sizing: border-box !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
+            transform: none;
+            box-shadow: none;
         }
 
         .action-btn-small.loading {
@@ -470,10 +453,10 @@
         }
 
         .btn-icon-small {
-            font-size: 0.7rem;
+            font-size: 0.875rem;
             line-height: 1;
             display: inline-block;
-            width: 10px;
+            width: auto;
             text-align: center;
         }
 
@@ -3884,6 +3867,71 @@
             gap: 20px;
             height: calc(100vh - 400px);
             min-height: 600px;
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        /* Fullscreen Mode - Clean Chat Experience */
+        .fullscreen-mode .page-header,
+        .fullscreen-mode .conversations-filters {
+            display: none;
+        }
+
+        .fullscreen-mode .conversations-layout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            background: var(--bg-primary);
+        }
+
+        /* Sidebar toggle within fullscreen */
+        .fullscreen-mode.sidebar-hidden .conversations-layout {
+            grid-template-columns: 1fr;
+            gap: 0;
+            padding: 0;
+        }
+
+        .fullscreen-mode.sidebar-hidden .conversations-sidebar {
+            display: none;
+        }
+
+        .fullscreen-mode.sidebar-hidden .messages-panel {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+        }
+
+        .fullscreen-mode.sidebar-hidden .messages-content {
+            background: var(--bg-secondary);
+            height: 100vh;
+            width: 100vw;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .fullscreen-mode.sidebar-hidden .no-conversation-selected {
+            background: var(--bg-secondary);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sidebar toggle button - only visible in fullscreen */
+        .sidebar-toggle {
+            display: none;
+        }
+
+        .fullscreen-mode .sidebar-toggle {
+            display: flex;
         }
 
         /* Left Sidebar */
@@ -4078,7 +4126,8 @@
 
         .messages-actions {
             display: flex;
-            gap: 8px;
+            gap: 12px;
+            align-items: center;
         }
 
         .messages-content {
