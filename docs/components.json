@@ -2181,8 +2181,8 @@
       "description": "Analyze Vue.js applications including component composition, reactive data flow, and template-script relationships."
     },
     {
-      "name": "cicleci",
-      "path": "devtools/cicleci.json",
+      "name": "circleci",
+      "path": "devtools/circleci.json",
       "category": "devtools",
       "type": "mcp",
       "content": "{\n  \"mcpServers\": {\n    \"circleci-mcp-server\": {\n      \"description\": \"Integrate CircleCI build and deployment pipeline management with your Claude Code workflow. Monitor builds, trigger deployments, and access project insights.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@circleci/mcp-server-circleci\"],\n      \"env\": {\n        \"CIRCLECI_TOKEN\": \"your-circleci-token\",\n        \"CIRCLECI_BASE_URL\": \"https://circleci.com\"\n      }\n    }\n  }\n}",
