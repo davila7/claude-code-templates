@@ -448,8 +448,9 @@ class IndexPageManager {
     generateComponentCard(component) {
         // Generate install command - remove .md extension from path
         let componentPath = component.path || component.name;
-        if (componentPath.endsWith('.md')) {
-            componentPath = componentPath.replace(/\.md$/, '');
+        // Remove .md or .json extensions from path
+        if (componentPath.endsWith('.md') || componentPath.endsWith('.json')) {
+            componentPath = componentPath.replace(/\.(md|json)$/, '');
         }
         if (componentPath.endsWith('.json')) {
             componentPath = componentPath.replace(/\.json$/, '');
