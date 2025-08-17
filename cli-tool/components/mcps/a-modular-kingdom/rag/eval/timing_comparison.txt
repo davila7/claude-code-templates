@@ -1,0 +1,15 @@
+V_1
+Query 1 took: 6.9808 seconds
+Query 2 took: 0.0916 seconds
+Query 3 took: 0.0992 seconds
+Query 4 took: 0.0972 seconds
+Query 5 took: 0.0887 seconds
+
+V_2
+Query 1 took: 13.5840 seconds
+Query 2 took: 0.0174 seconds
+Query 3 took: 0.0155 seconds
+Query 4 took: 0.0153 seconds
+Query 5 took: 0.0153 seconds
+
+

@@ -1,0 +1,34 @@
+{
+  "q1": {
+    "query": "What can be inferred from the passage about seed-producing plants?",
+    "ground_truth": "Some of them have turned seed predation into an action that benefits them."
+  },
+  "q2": {
+    "query": "What does the author suggest about biographers?",
+    "ground_truth": "They deliberately misrepresented the facts in their writings."
+  },
+  "q3": {
+    "query": "What is the major value of documents stored in administrative files?",
+    "ground_truth": "Authenticity"
+  },
+  "q4": {
+    "query": "What's the reason white dwarfs have been observed and black dwarfs have not?",
+    "ground_truth": "white dwarfs emit light and black dwarfs do not"
+  },
+  "q5": {
+    "query": "Among stars that eventually became white dwarfs, why do the largest and most massive stars produce the smallest white dwarfs?",
+    "ground_truth": "The gravitational force collapsing a star is greater for more massive stars;so the greater mass is compressed into a smaller volume."
+  },
+  "q6": {
+    "query": "Why are neutron stars very difficult to locate visually?",
+    "ground_truth": "their small size restricts the amount of light they radiate"
+  },
+  "q7": {
+    "query": "Why can't black holes be directly observed?",
+    "ground_truth": "nothing escapes from their surface"
+  },
+  "q8": {
+    "query": "What is the connection between x-rays and black holes?",
+    "ground_truth": "Matter emits a flood of x-rays as it is pulled into a black hole."
+  }
+}

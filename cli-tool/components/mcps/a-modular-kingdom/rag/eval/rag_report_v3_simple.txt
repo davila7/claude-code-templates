@@ -1,0 +1,118 @@
+--- RAG Evaluation Report (v3 - simple) ---
+
+--- Overall Metrics ---
+Average Precision: 0.85
+--- Per-Query Details ---
+
+--- Query ID: q1 ---
+Query: What can be inferred from the passage about seed-producing plants?
+Ground Truth: Some of them have turned seed predation into an action that benefits them.
+Precision:  0.75
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  Many seeds have thick,hard seed coats that provide protection from seed- eating animals.The problem with such seed defense is that the seeds need to be scarified-the hard seed needs scratching or scoring of the seed coat to weaken it-so the seedling itself can escape.If the seed is not scarified,the seedling embryo is sealed in,never to
+
+  --- Chunk 2 ---
+  Some of the least costly defenses,in terms of energy use,available to plants are structures that make penetration by predators difficult,if not impossible. These include tough leaves,spines,and epidermal hairs on leaves,which may trap,impale,or fence out insects and discourage browsing by vertebrate herbivores,as well as hard-coated seeds.These
+
+  --- Chunk 3 ---
+  Results clearly showed that thorns and spines affected the feeding behavior of the three ungulates.These structures restricted bite sizes to mostly single leaves or leaf clusters,and hooked thorns retarded biting rates.Acceptability of leaves of those plant species offering small leaf size along with prickles was lower,at least for kudu,than those
+
+--- Query ID: q2 ---
+Query: What does the author suggest about biographers?
+Ground Truth: They deliberately misrepresented the facts in their writings.
+Precision: 1
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  were dishonest with their inferiors and superiors alike. But-unlike the authors of so many biographies-they hardly ever wrote in order to deceive posterity;hence,archival evidence has an unusual degree of authenticity.The lack of such material makes the historian's job hard indeed.For where there is no writing,there are large areas of human
+
+  --- Chunk 2 ---
+  Some historians,therefore,try to supplement their sources with information from indigenous traditions and folklore,heroic legends,genealogical tables,and personal reminiscences.The use of oral history,however,again presents many difficulties.Historians can look at the same document again and again;so can their successors.An artifact can be
+
+  --- Chunk 3 ---
+  This does not mean that oral traditions are without value to historians.They enlarge their imagination,they help them pose new questions,and they tell them a great deal concerning a people's culture;they also provide a substratum of fact.They are,however,difficult to interpret,and the conventional historian's intellectual tools may often prove
+
+--- Query ID: q3 ---
+Query: What is the major value of documents stored in administrative files?
+Ground Truth: Authenticity
+Precision: 1/3
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  The lack of written material means that we shall never be able to read,for example,the memoirs of a king of the Luba people in the eighteenth century. Worse still,we cannot draw on administrative archives.Dull as they look, administrative files have a peculiar value denied to other written records.They are composed of documents drawn up or used in
+
+  --- Chunk 2 ---
+  other written records.They are composed of documents drawn up or used in the course of an administrative or executive transaction of which they had formed a part.This does not necessarily make official memorandums,communiques,and such more reliable, for officials often enough were dishonest with their inferiors and superiors alike. But-unlike the
+
+  --- Chunk 3 ---
+  were dishonest with their inferiors and superiors alike. But-unlike the authors of so many biographies-they hardly ever wrote in order to deceive posterity;hence,archival evidence has an unusual degree of authenticity.The lack of such material makes the historian's job hard indeed.For where there is no writing,there are large areas of human
+
+--- Query ID: q4 ---
+Query: What's the reason white dwarfs have been observed and black dwarfs have not?
+Ground Truth: white dwarfs emit light and black dwarfs do not
+Precision: 1
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  very hot and very bright.But,without a continuing source of energy,it will slowly become cooler and dimmer.Although none have been observed,the terminal stage of a white dwarf must be a small,cold, nonluminous body called a black dwarf.
+
+  --- Chunk 2 ---
+  heat to counteract the contracting force of its gravity.Although some white dwarfs are no larger than Earth,the mass of such a dwarf can equal 1.4 times that of the Sun.A spoonful of such matter would weigh several tons.As a star contracts into a white dwarf, its surface becomes very hot and very bright.But,without a continuing source of energy,it
+
+  --- Chunk 3 ---
+  White dwarfs are extremely small stars with densities greater than any known terrestrial material.It is believed that white dwarfs began life as low-mass or medium-mass stars.As the star ages,it begins to collapse-become a "dwarf-because it no longer produces sufficient radiant heat to counteract the contracting force of its gravity.Although some
+
+--- Query ID: q5 ---
+Query: Among stars that eventually became white dwarfs, why do the largest and most massive stars produce the smallest white dwarfs?
+Ground Truth: The gravitational force collapsing a star is greater for more massive stars;so the greater mass is compressed into a smaller volume.
+Precision: 1
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  A study of white dwarts produced what might at first appear to be a surprising conclusion:the smallest white dwarfs are the most massive,and the largest white dwarfs are the least massive.The explanation for this is that a more massive star has a greater gravitational force,and that greater gravitational force contracts the star into a
+
+  --- Chunk 2 ---
+  force,and that greater gravitational force contracts the star into a smaller,more densely packed object than one gets with a less massive star.Thus,the smallest white dwarfs came from the collapse of stars that were larger and more massive than those the large white dwarfs came from.
+
+  --- Chunk 3 ---
+  White dwarfs are extremely small stars with densities greater than any known terrestrial material.It is believed that white dwarfs began life as low-mass or medium-mass stars.As the star ages,it begins to collapse-become a "dwarf-because it no longer produces sufficient radiant heat to counteract the contracting force of its gravity.Although some
+
+--- Query ID: q6 ---
+Query: Why are neutron stars very difficult to locate visually?
+Ground Truth: their small size restricts the amount of light they radiate
+Precision: 1
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  Although neutron stars have high surface temperatures,their small size would greatly limit their luminosity.Consequently,locating one visually would be extremely difficult.However,theory predicts that a neutron star would have a very strong magnetic field.Further,as a star collapses,it will rotate faster,for the same reason ice-skaters rotate
+
+  --- Chunk 2 ---
+  collapses,it will rotate faster,for the same reason ice-skaters rotate faster as they pull in their arms.If the Sun were to collapse to the size of a neutron star,it would increase its rate of rotation from once every 25 days to nearly 1,000 times per second.The radio waves generated by such rotating stars would be concentrated into two narrow
+
+  --- Chunk 3 ---
+  generated by such rotating stars would be concentrated into two narrow beams, like the rotating light on a police car or ambulance.If Earth happened to be in the path of this beacon,the star would appear to blink on and off,or pulsate,as the radio waves swept past.
+
+--- Query ID: q7 ---
+Query: Why can't black holes be directly observed?
+Ground Truth: nothing escapes from their surface
+Precision: 3/4
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  How can astronomers find an object whose gravitational field prevents the escape of all matter and energy?Theory predicts that as matter is pulled into a black hole,it should become very hot and emit a flood of x-rays before being engulfed.The first black hole x-ray sources were discovered in 1971 by detectors on satellites.
+
+  --- Chunk 2 ---
+  so immense that even light could not escape the surface. Consequently,they would literally disappear from sight.These incredible bodies have appropriately been named "black holes.Anything that moved too near a black hole would be swept in by its irresistible gravity and annihilated.
+
+  --- Chunk 3 ---
+  neutron stars made of the densest matter possible?No.During a supernova event,remnants of stars greater than three solar masses apparently collapse into objects even smaller and denser than neutron stars.Even though these objects would be very hot, their gravity would be so immense that even light could not escape the surface. Consequently,they
+
+--- Query ID: q8 ---
+Query: What is the connection between x-rays and black holes?
+Ground Truth: Matter emits a flood of x-rays as it is pulled into a black hole.
+Precision: 1
+--- Retrieved Chunks ---
+  --- Chunk 1 ---
+  How can astronomers find an object whose gravitational field prevents the escape of all matter and energy?Theory predicts that as matter is pulled into a black hole,it should become very hot and emit a flood of x-rays before being engulfed.The first black hole x-ray sources were discovered in 1971 by detectors on satellites.
+
+  --- Chunk 2 ---
+  so immense that even light could not escape the surface. Consequently,they would literally disappear from sight.These incredible bodies have appropriately been named "black holes.Anything that moved too near a black hole would be swept in by its irresistible gravity and annihilated.
+
+  --- Chunk 3 ---
+  neutron stars made of the densest matter possible?No.During a supernova event,remnants of stars greater than three solar masses apparently collapse into objects even smaller and denser than neutron stars.Even though these objects would be very hot, their gravity would be so immense that even light could not escape the surface. Consequently,they
+
