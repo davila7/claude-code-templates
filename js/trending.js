@@ -95,17 +95,23 @@ class TrendingPage {
                         allItems = allItems.concat(categoryItems);
                     }
                 });
-                // Sort by weekly downloads and take top 10
-                allItems.sort((a, b) => (b.downloadsWeek || 0) - (a.downloadsWeek || 0));
-                allItems = allItems.slice(0, 10);
             }
         } else {
             // Get items from selected category
             allItems = this.data.trending[this.currentType] || [];
         }
         
-        // Apply date range filter (for now just return all items)
-        // In the future, this could filter by actual dates
+        // Sort by the current date range downloads (highest to lowest)
+        allItems.sort((a, b) => {
+            const aDownloads = this.getDownloadsForRange(a);
+            const bDownloads = this.getDownloadsForRange(b);
+            return bDownloads - aDownloads;
+        });
+        
+        // For "all" categories, limit to top 10
+        if (this.currentType === '') {
+            allItems = allItems.slice(0, 10);
+        }
         
         return allItems;
     }

@@ -2789,6 +2789,14 @@
       "description": "An MCP server that enables AI agents to control web browsers using browser-use."
     },
     {
+      "name": "browsermcp",
+      "path": "browser_automation/browsermcp.json",
+      "category": "browser_automation",
+      "type": "mcp",
+      "content": "{\n  \"mcpServers\": {\n    \"browsermcp\": {\n      \"description\": \"With Browser MCP, you can use MCP to automate your browser so that AI applications can navigate the web, fill out forms, and more.\",\n      \"command\": \"npx\",\n      \"args\": [\"@browsermcp/mcp@latest\"]\n    }\n  }\n}",
+      "description": "With Browser MCP, you can use MCP to automate your browser so that AI applications can navigate the web, fill out forms, and more."
+    },
+    {
       "name": "mcp-server-browserbase",
       "path": "browser_automation/mcp-server-browserbase.json",
       "category": "browser_automation",
