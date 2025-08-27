@@ -1650,4 +1650,58 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     setTimeout(initCategories, 100);
+    
+    // Focus search input on page load and setup terminal cursor
+    setTimeout(() => {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.focus();
+            setupTerminalCursor();
+        }
+    }, 300); // Small delay to ensure DOM is fully loaded
 });
+
+// Terminal cursor functionality
+function setupTerminalCursor() {
+    const searchInput = document.getElementById('searchInput');
+    const cursor = document.getElementById('terminalCursor');
+    
+    if (!searchInput || !cursor) return;
+    
+    function updateCursorPosition() {
+        const promptWidth = 26; // Width of ">" prompt + extra space
+        
+        // If input has text, position cursor at the end of the text
+        if (searchInput.value.length > 0) {
+            // Create a temporary span to measure text width
+            const temp = document.createElement('span');
+            temp.style.visibility = 'hidden';
+            temp.style.position = 'absolute';
+            temp.style.whiteSpace = 'pre';
+            temp.style.font = window.getComputedStyle(searchInput).font;
+            temp.textContent = searchInput.value;
+            
+            document.body.appendChild(temp);
+            const textWidth = temp.getBoundingClientRect().width;
+            document.body.removeChild(temp);
+            
+            cursor.style.left = `${promptWidth + textWidth + 2}px`;
+        } else {
+            // If input is empty, position cursor right after the prompt with space
+            cursor.style.left = `${promptWidth}px`;
+        }
+    }
+    
+    // Update cursor position on input
+    searchInput.addEventListener('input', updateCursorPosition);
+    searchInput.addEventListener('focus', () => {
+        cursor.style.display = 'block';
+        updateCursorPosition();
+    });
+    searchInput.addEventListener('blur', () => {
+        cursor.style.display = 'none';
+    });
+    
+    // Initial position
+    updateCursorPosition();
+}
