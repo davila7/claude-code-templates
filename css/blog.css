@@ -566,3 +566,206 @@
         height: auto;
     }
 }
+
+/* Newsletter Section */
+.newsletter-section {
+    padding: 2rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.newsletter-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.newsletter-header {
+    margin-bottom: 0.5rem;
+}
+
+.newsletter-prompt {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.input-group {
+    display: flex;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+.input-group:focus-within {
+    border-color: var(--accent-color);
+}
+
+.newsletter-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
+    outline: none;
+}
+
+.newsletter-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.newsletter-submit {
+    background: var(--accent-color);
+    color: var(--bg-primary);
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+}
+
+.newsletter-submit:hover {
+    background: #00e08c;
+}
+
+.newsletter-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.newsletter-message {
+    display: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.newsletter-message.show {
+    display: block;
+}
+
+.success-message {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Responsive Newsletter */
+@media (max-width: 768px) {
+    .newsletter-section {
+        padding: 1.5rem 0;
+    }
+    
+    .newsletter-container {
+        max-width: 350px;
+    }
+    
+    .newsletter-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+
+/* Newsletter CTA in Articles */
+.newsletter-cta {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin: 2.5rem 0;
+    text-align: center;
+    position: relative;
+}
+
+.newsletter-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--accent-color);
+    opacity: 0.5;
+}
+
+.newsletter-cta-content h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.newsletter-cta-content p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.newsletter-cta .newsletter-form {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.newsletter-cta .input-group {
+    margin-top: 0.75rem;
+}
+
+/* Different styling for middle vs end */
+.middle-newsletter {
+    background: rgba(0, 255, 157, 0.03);
+    border-color: rgba(0, 255, 157, 0.15);
+}
+
+.end-newsletter {
+    background: rgba(59, 130, 246, 0.03);
+    border-color: rgba(59, 130, 246, 0.15);
+}
+
+.end-newsletter::before {
+    background: #3b82f6;
+}
+
+/* Responsive CTA */
+@media (max-width: 768px) {
+    .newsletter-cta {
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+    
+    .newsletter-cta-content h3 {
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .newsletter-cta-content p {
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .newsletter-cta .newsletter-form {
+        max-width: 100%;
+    }
+}

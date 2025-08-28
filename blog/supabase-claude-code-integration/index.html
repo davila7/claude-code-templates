@@ -221,6 +221,34 @@
                 <p>Visit <strong><a href="https://aitmpl.com" target="_blank" rel="noopener">aitmpl.com</a></strong> and search for "supabase" to see:</p>
 
                 <img src="https://www.aitmpl.com/blog/assets/aitmpl-supabase-search.png" alt="Searching for Supabase components on AITMPL.com" loading="lazy">
+                
+                <!-- Newsletter CTA - Middle -->
+                <div class="newsletter-cta middle-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Stay Updated</h3>
+                        <p>Get new articles, components and templates for Claude Code delivered to your inbox.</p>
+                        
+                        <div id="middle-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="middle-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                    </div>
+                </div>
+
                 <h2>Installation Options</h2>
                 <p>There are multiple ways to install the Supabase stack for Claude Code. Choose the approach that best fits your workflow:</p>
 
@@ -298,6 +326,33 @@ npx claude-code-templates@latest \
 └── src/ # Your application code</code></pre>
                 
                 <p>That's it! Claude Code will automatically detect all components and you can start using them immediately.</p>
+
+                <!-- Newsletter CTA - End -->
+                <div class="newsletter-cta end-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Want More?</h3>
+                        <p>Subscribe to receive new Claude Code articles, components and integration tutorials.</p>
+                        
+                        <div id="end-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="end-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                    </div>
+                </div>
 
             </div>
 
@@ -524,6 +579,59 @@ if (document.readyState === 'loading') {
 } else {
     new CodeCopy();
 }
+
+// Newsletter forms handler
+function initNewsletterForm(formId, successId, errorId) {
+    const form = document.getElementById(formId);
+    const successMessage = document.getElementById(successId);
+    const errorMessage = document.getElementById(errorId);
+    
+    if (!form) return;
+    
+    const submitButton = form.querySelector('.newsletter-submit');
+    const submitText = submitButton.querySelector('.submit-text');
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Hide messages
+        successMessage.classList.remove('show');
+        errorMessage.classList.remove('show');
+        
+        // Set loading state
+        submitButton.disabled = true;
+        submitText.textContent = '...';
+        
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                successMessage.classList.add('show');
+                successMessage.style.display = 'block';
+                form.reset();
+            } else {
+                errorMessage.classList.add('show');
+                errorMessage.style.display = 'block';
+            }
+        } catch (error) {
+            errorMessage.classList.add('show');
+            errorMessage.style.display = 'block';
+        } finally {
+            submitButton.disabled = false;
+            submitText.textContent = '→';
+        }
+    });
+}
+
+// Initialize both newsletter forms
+document.addEventListener('DOMContentLoaded', () => {
+    initNewsletterForm('middle-newsletter-form', 'middle-newsletter-success', 'middle-newsletter-error');
+    initNewsletterForm('end-newsletter-form', 'end-newsletter-success', 'end-newsletter-error');
+});
     </script>
 </body>
 </html>

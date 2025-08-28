@@ -112,6 +112,34 @@
                 </div>
             </div>
         </section>
+
+        <section class="newsletter-section">
+            <div class="container">
+                <div class="newsletter-container">
+                    <div id="newsletter-success" class="newsletter-message success-message" style="display: none;">
+                        ✓ Subscribed successfully
+                    </div>
+                    
+                    <div id="newsletter-error" class="newsletter-message error-message" style="display: none;">
+                        ✗ Error. Try again.
+                    </div>
+                    
+                    <form id="newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form">
+                        <div class="newsletter-header">
+                            <span class="newsletter-prompt">Get updates via email</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="EMAIL" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                            <button type="submit" class="newsletter-submit">
+                                <span class="submit-text">→</span>
+                            </button>
+                        </div>
+                        <input type="text" name="email_address_check" value="" style="display: none;">
+                        <input type="hidden" name="locale" value="en">
+                    </form>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
@@ -155,5 +183,48 @@
             </div>
         </div>
     </footer>
+    
+    <!-- Newsletter Form JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('newsletter-form');
+            const successMessage = document.getElementById('newsletter-success');
+            const errorMessage = document.getElementById('newsletter-error');
+            const submitButton = form.querySelector('.newsletter-submit');
+            const submitText = submitButton.querySelector('.submit-text');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Hide messages
+                successMessage.classList.remove('show');
+                errorMessage.classList.remove('show');
+                
+                // Set loading state
+                submitButton.disabled = true;
+                submitText.textContent = '...';
+                
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        successMessage.classList.add('show');
+                        form.reset();
+                    } else {
+                        errorMessage.classList.add('show');
+                    }
+                } catch (error) {
+                    errorMessage.classList.add('show');
+                } finally {
+                    submitButton.disabled = false;
+                    submitText.textContent = '→';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
