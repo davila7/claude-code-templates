@@ -236,7 +236,7 @@
                             ✗ Error. Try again.
                         </div>
                         
-                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form">
+                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="middle_hidden_iframe">
                             <div class="input-group">
                                 <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
                                 <button type="submit" class="newsletter-submit">
@@ -246,6 +246,7 @@
                             <input type="text" name="email_address_check" value="" style="display: none;">
                             <input type="hidden" name="locale" value="en">
                         </form>
+                        <iframe name="middle_hidden_iframe" style="display: none;"></iframe>
                     </div>
                 </div>
 
@@ -341,7 +342,7 @@ npx claude-code-templates@latest \
                             ✗ Error. Try again.
                         </div>
                         
-                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form">
+                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="end_hidden_iframe">
                             <div class="input-group">
                                 <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
                                 <button type="submit" class="newsletter-submit">
@@ -351,6 +352,7 @@ npx claude-code-templates@latest \
                             <input type="text" name="email_address_check" value="" style="display: none;">
                             <input type="hidden" name="locale" value="en">
                         </form>
+                        <iframe name="end_hidden_iframe" style="display: none;"></iframe>
                     </div>
                 </div>
 
@@ -591,39 +593,22 @@ function initNewsletterForm(formId, successId, errorId) {
     const submitButton = form.querySelector('.newsletter-submit');
     const submitText = submitButton.querySelector('.submit-text');
     
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Hide messages
-        successMessage.classList.remove('show');
-        errorMessage.classList.remove('show');
-        
+    form.addEventListener('submit', (e) => {
         // Set loading state
         submitButton.disabled = true;
         submitText.textContent = '...';
         
-        try {
-            const formData = new FormData(form);
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (response.ok) {
-                successMessage.classList.add('show');
-                successMessage.style.display = 'block';
-                form.reset();
-            } else {
-                errorMessage.classList.add('show');
-                errorMessage.style.display = 'block';
-            }
-        } catch (error) {
-            errorMessage.classList.add('show');
-            errorMessage.style.display = 'block';
-        } finally {
+        // Hide messages initially
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        
+        // Show success message after form submits to iframe
+        setTimeout(() => {
+            successMessage.style.display = 'block';
             submitButton.disabled = false;
             submitText.textContent = '→';
-        }
+            form.reset();
+        }, 1500);
     });
 }
 
