@@ -551,4 +551,18 @@
     .article-content p {
         font-size: 0.8rem;
     }
+    
+    /* Mobile Image Optimization */
+    .article-cover {
+        margin: 1rem 0 !important;
+        max-height: 250px;
+        object-fit: cover;
+    }
+    
+    .article-content-full img {
+        margin: 1rem 0 !important;
+        border-radius: 6px;
+        max-width: 100%;
+        height: auto;
+    }
 }
