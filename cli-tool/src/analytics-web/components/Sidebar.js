@@ -1,6 +1,6 @@
 /**
- * Sidebar - Minimalist navigation sidebar for the analytics dashboard
- * Provides navigation between Dashboard and Agents sections
+ * Sidebar - Analytics dashboard sidebar
+ * Simple sidebar focused only on analytics dashboard functionality
  */
 class Sidebar {
   constructor(container, onNavigate) {
@@ -40,7 +40,7 @@ class Sidebar {
         
         <div class="sidebar-content">
           <ul class="nav-menu">
-            <li class="nav-item ${this.currentPage === 'dashboard' ? 'active' : ''}" data-page="dashboard" title="Dashboard">
+            <li class="nav-item ${this.currentPage === 'dashboard' ? 'active' : ''}" data-page="dashboard" title="Analytics Dashboard">
               <a href="#" class="nav-link">
                 <div class="nav-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -48,16 +48,6 @@ class Sidebar {
                   </svg>
                 </div>
                 <span class="nav-text">Dashboard</span>
-              </a>
-            </li>
-            <li class="nav-item ${this.currentPage === 'agents' ? 'active' : ''}" data-page="agents" title="Agent Chats">
-              <a href="#" class="nav-link">
-                <div class="nav-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                  </svg>
-                </div>
-                <span class="nav-text">Chats</span>
               </a>
             </li>
           </ul>
@@ -126,7 +116,7 @@ class Sidebar {
   navigateToPage(page) {
     if (page === this.currentPage) return;
     
-    console.log(`🖱️ Sidebar navigation clicked: ${page}`);
+    // Handle navigation to the specified page
     
     // Notify parent component for actual navigation
     if (this.onNavigate) {
@@ -181,6 +171,7 @@ class Sidebar {
       statusText.textContent = status === 'connected' ? 'Live' : 'Offline';
     }
   }
+  
 
   /**
    * Destroy sidebar

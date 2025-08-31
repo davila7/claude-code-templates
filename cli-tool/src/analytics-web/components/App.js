@@ -8,7 +8,7 @@ class App {
     this.services = services;
     
     this.components = {};
-    this.currentPage = 'dashboard';
+    this.currentPage = null; // Don't set default page yet
     this.isInitialized = false;
     
     this.init();
@@ -93,8 +93,7 @@ class App {
     // Initialize pages
     this.components.pages = {};
     
-    // Load initial page
-    await this.loadPage(this.currentPage);
+    // Don't load any page yet - wait for routing to determine the correct page
   }
 
   /**
@@ -109,9 +108,7 @@ class App {
     
     // Set initial route
     const initialHash = window.location.hash.slice(1) || 'dashboard';
-    if (initialHash !== this.currentPage) {
-      this.navigateToPage(initialHash);
-    }
+    this.navigateToPage(initialHash);
   }
 
   /**
@@ -149,7 +146,7 @@ class App {
    * @param {string} page - Page to navigate to
    */
   async navigateToPage(page) {
-    if (page === this.currentPage) return;
+    if (page === this.currentPage && this.currentPage !== null) return;
     
     try {
       this.showGlobalLoading();
@@ -190,7 +187,7 @@ class App {
       throw new Error('App content container not found');
     }
     
-    console.log(`🔄 Loading page: ${page}`);
+    console.log(`🚀 Loading page: ${page} (optimized - single page load)`);
     
     // First, destroy any existing page component for this page
     if (this.components.pages[page] && this.components.pages[page].destroy) {
@@ -199,10 +196,10 @@ class App {
       this.components.pages[page] = null;
     }
     
-    // Always clear and recreate the page to ensure clean state
+    // Clear content container
     contentContainer.innerHTML = '';
     
-    // Create or recreate page component
+    // Create new page component
     await this.createPageComponent(page, contentContainer);
     
     // Call showPage for any additional setup
@@ -236,6 +233,11 @@ class App {
         if (typeof AgentsPage !== 'undefined') {
           this.components.pages.agents = new AgentsPage(container, this.services);
           await this.components.pages.agents.initialize();
+          // Expose agentsPage globally for modal access
+          if (typeof window !== 'undefined' && window.claudeAnalyticsApp) {
+            window.claudeAnalyticsApp.agentsPage = this.components.pages.agents;
+            console.log('✅ Exposed agentsPage globally for modal access');
+          }
         } else {
           throw new Error('AgentsPage component not available. Check if components/AgentsPage.js is loaded.');
         }
@@ -266,6 +268,15 @@ class App {
    * Cleanup current page
    */
   async cleanupCurrentPage() {
+    // Skip cleanup if no current page
+    if (!this.currentPage) return;
+    
+    // Clean up global references
+    if (this.currentPage === 'agents' && typeof window !== 'undefined' && window.claudeAnalyticsApp) {
+      window.claudeAnalyticsApp.agentsPage = undefined;
+      console.log('🧹 Cleaned up global agentsPage reference');
+    }
+    
     const currentPageComponent = this.components.pages[this.currentPage];
     if (currentPageComponent && currentPageComponent.onDeactivate) {
       await currentPageComponent.onDeactivate();

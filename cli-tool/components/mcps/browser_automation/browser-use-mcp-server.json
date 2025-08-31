@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "browser-server": {
+      "description": "An MCP server that enables AI agents to control web browsers using browser-use.",
+      "command": "browser-use-mcp-server",
+      "args": [
+        "run",
+        "server",
+        "--port",
+        "8000",
+        "--stdio",
+        "--proxy-port",
+        "9000"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "your-api-key"
+      }
+    }
+  }
+}

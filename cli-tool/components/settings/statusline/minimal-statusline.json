@@ -1,0 +1,7 @@
+{
+  "description": "Simple minimal status line showing only model name and current directory. Clean and distraction-free display perfect for focused development sessions where you want minimal visual clutter.",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); echo \"[$MODEL] ${DIR##*/}\"'"
+  }
+}

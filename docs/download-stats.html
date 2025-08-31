@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Analytics - Claude Code Templates</title>
+    <meta name="description" content="Detailed download analytics and usage statistics for Claude Code Templates">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .analytics-page {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .analytics-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .analytics-title {
+            font-size: 2.5rem;
+            color: var(--text-accent);
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        
+        .analytics-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-info);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            padding: 0.5rem 0;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--text-accent);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        
+        .change-positive {
+            color: var(--text-success);
+        }
+        
+        .change-neutral {
+            color: var(--text-secondary);
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .chart-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .chart-title {
+            color: var(--text-accent);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .chart-canvas {
+            position: relative;
+            height: 300px;
+        }
+        
+        .detailed-tables {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .table-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .table-title {
+            color: var(--text-accent);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .table-content {
+            padding: 0;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .data-value {
+            color: var(--text-accent);
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--border-primary);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-left: 1rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--text-accent);
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 1024px) {
+            .charts-section,
+            .detailed-tables {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .analytics-title {
+                font-size: 2rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .metric-card {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="analytics-page">
+        <div class="container">
+            <a href="/" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                </svg>
+                Back to Templates
+            </a>
+            
+            <div class="analytics-header">
+                <h1 class="analytics-title">📊 Download Analytics</h1>
+                <p class="analytics-subtitle">Comprehensive usage statistics and trends</p>
+            </div>
+            
+            <div class="metrics-grid" id="metricsGrid">
+                <!-- Metrics will be populated by JavaScript -->
+            </div>
+            
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title">Downloads by Component Type</h3>
+                    <div class="chart-canvas">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Downloads Over Time</h3>
+                    <div class="chart-canvas">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detailed-tables">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">🏆 Popular Components</h3>
+                    </div>
+                    <div class="table-content" id="popularComponentsTable">
+                        <!-- Table will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">📊 Category Breakdown</h3>
+                    </div>
+                    <div class="table-content" id="categoryBreakdownTable">
+                        <!-- Table will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-updated" style="margin-top: 2rem; text-align: center;">
+                <span>Data last updated: <span id="lastUpdatedTime">Loading...</span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let statsData = null;
+        
+        // Load analytics data
+        async function loadAnalyticsData() {
+            try {
+                const response = await fetch('/analytics/download-stats.json');
+                statsData = await response.json();
+                
+                populateMetrics();
+                createCharts();
+                populateTables();
+                updateTimestamp();
+                
+            } catch (error) {
+                console.error('Failed to load analytics data:', error);
+                showErrorState();
+            }
+        }
+        
+        function populateMetrics() {
+            const metricsGrid = document.getElementById('metricsGrid');
+            const totalComponents = Object.keys(statsData.downloads_by_component).length;
+            const todayDate = new Date().toISOString().split('T')[0];
+            const todayDownloads = statsData.downloads_by_date[todayDate] || 0;
+            
+            const metrics = [
+                {
+                    value: statsData.total_downloads,
+                    label: 'Total Downloads',
+                    change: `+${statsData.data_points} tracked events`,
+                    changeType: 'positive'
+                },
+                {
+                    value: totalComponents,
+                    label: 'Unique Components',
+                    change: 'across all categories',
+                    changeType: 'neutral'
+                },
+                {
+                    value: todayDownloads,
+                    label: 'Downloads Today',
+                    change: new Date().toLocaleDateString(),
+                    changeType: 'positive'
+                },
+                {
+                    value: Object.keys(statsData.downloads_by_date).length,
+                    label: 'Active Days',
+                    change: 'with recorded activity',
+                    changeType: 'neutral'
+                }
+            ];
+            
+            metricsGrid.innerHTML = metrics.map(metric => `
+                <div class="metric-card">
+                    <div class="metric-value">${metric.value}</div>
+                    <div class="metric-label">${metric.label}</div>
+                    <div class="metric-change change-${metric.changeType}">${metric.change}</div>
+                </div>
+            `).join('');
+        }
+        
+        function createCharts() {
+            createTypeChart();
+            createTimeChart();
+        }
+        
+        function createTypeChart() {
+            const ctx = document.getElementById('typeChart').getContext('2d');
+            const data = statsData.downloads_by_type;
+            const labels = Object.keys(data).filter(key => data[key] > 0);
+            const values = labels.map(key => data[key]);
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.map(label => label.charAt(0).toUpperCase() + label.slice(1)),
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#d57455',
+                            '#f97316', 
+                            '#a5d6ff',
+                            '#3fb950',
+                            '#f85149',
+                            '#7d8590'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#0d1117'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#c9d1d9',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createTimeChart() {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            const dates = Object.keys(statsData.downloads_by_date).sort();
+            const values = dates.map(date => statsData.downloads_by_date[date]);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates.map(date => new Date(date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Downloads',
+                        data: values,
+                        borderColor: '#d57455',
+                        backgroundColor: 'rgba(213, 116, 85, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#c9d1d9'
+                            },
+                            grid: {
+                                color: '#30363d'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#c9d1d9'
+                            },
+                            grid: {
+                                color: '#30363d'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#c9d1d9'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function populateTables() {
+            populatePopularComponents();
+            populateCategoryBreakdown();
+        }
+        
+        function populatePopularComponents() {
+            const table = document.getElementById('popularComponentsTable');
+            const components = Object.entries(statsData.downloads_by_component)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10);
+            
+            const maxDownloads = Math.max(...Object.values(statsData.downloads_by_component));
+            
+            table.innerHTML = components.map(([name, downloads]) => {
+                const percentage = (downloads / maxDownloads) * 100;
+                return `
+                    <div class="data-row">
+                        <div class="data-label">${name}</div>
+                        <div style="display: flex; align-items: center;">
+                            <div class="data-value">${downloads}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function populateCategoryBreakdown() {
+            const table = document.getElementById('categoryBreakdownTable');
+            const categories = Object.entries(statsData.downloads_by_type)
+                .filter(([,count]) => count > 0)
+                .sort(([,a], [,b]) => b - a);
+            
+            const maxDownloads = Math.max(...Object.values(statsData.downloads_by_type));
+            
+            table.innerHTML = categories.map(([type, downloads]) => {
+                const percentage = (downloads / maxDownloads) * 100;
+                const emoji = {
+                    'agent': '🤖',
+                    'command': '⚡',
+                    'mcp': '🔌',
+                    'template': '📦',
+                    'health-check': '🔍',
+                    'analytics': '📊'
+                }[type] || '📄';
+                
+                return `
+                    <div class="data-row">
+                        <div class="data-label">${emoji} ${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                        <div style="display: flex; align-items: center;">
+                            <div class="data-value">${downloads}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateTimestamp() {
+            const timestamp = new Date(statsData.last_updated);
+            document.getElementById('lastUpdatedTime').textContent = timestamp.toLocaleString();
+        }
+        
+        function showErrorState() {
+            document.getElementById('metricsGrid').innerHTML = `
+                <div class="metric-card" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <div style="color: var(--text-error); font-size: 1.5rem; margin-bottom: 1rem;">⚠️</div>
+                    <div class="metric-label">Failed to load analytics data</div>
+                    <div class="metric-change change-neutral">Please try again later</div>
+                </div>
+            `;
+        }
+        
+        // Load data when page loads
+        loadAnalyticsData();
+    </script>
+</body>
+</html>

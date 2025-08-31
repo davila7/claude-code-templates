@@ -10,7 +10,7 @@ class SessionTimer {
     this.sessionData = null;
     this.updateInterval = null;
     this.isInitialized = false;
-    this.refreshInterval = 1000; // 1 second for real-time updates
+    this.refreshInterval = 5000; // 5 seconds to reduce server load
     this.SESSION_DURATION = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
     this.isTooltipVisible = false; // Track tooltip state globally
   }
@@ -169,7 +169,6 @@ class SessionTimer {
     }
 
     // Calculate progress colors based on usage
-    const progressPercentage = Math.round(timer.sessionProgress);
     const timeProgressPercentage = Math.round(((this.SESSION_DURATION - timer.timeRemaining) / this.SESSION_DURATION) * 100);
     
     const getProgressColor = (percentage) => {
@@ -178,7 +177,10 @@ class SessionTimer {
       return '#f85149';
     };
 
-    const messageProgressColor = getProgressColor(progressPercentage);
+    // For messages, use a relative progress based on typical usage patterns
+    // Since Claude uses dynamic limits, we'll show relative activity level
+    const messageActivityLevel = Math.min(100, (timer.messagesUsed / (timer.messagesEstimate || 45)) * 100);
+    const messageProgressColor = timer.messagesEstimate ? getProgressColor(messageActivityLevel) : '#3fb950';
     const timeProgressColor = getProgressColor(timeProgressPercentage);
     
     // Format time remaining with better UX
@@ -213,7 +215,7 @@ class SessionTimer {
               <div class="session-timer-progress-header">
                 <span class="session-timer-progress-label">Messages</span>
                 <span class="session-timer-progress-value">
-                  ${timer.messagesUsed}/${timer.messagesLimit}
+                  ${timer.messagesUsed}${timer.messagesEstimate ? `/${timer.messagesEstimate} est.` : ''}
                   <span class="session-timer-info-icon" data-tooltip="message-info" title="Message calculation info">
                     ℹ️
                   </span>
@@ -221,7 +223,7 @@ class SessionTimer {
               </div>
               <div class="session-timer-progress-bar">
                 <div class="session-timer-progress-fill" 
-                     style="width: ${progressPercentage}%; background-color: ${messageProgressColor};"></div>
+                     style="width: ${messageActivityLevel}%; background-color: ${messageProgressColor};"></div>
               </div>
               ${timer.usageDetails && timer.usageDetails.shortMessages > 0 ? `
               <div class="session-timer-usage-details">
@@ -278,9 +280,10 @@ class SessionTimer {
     const popoverHTML = `
       <div class="session-timer-tooltip" id="message-info-tooltip" style="display: ${this.isTooltipVisible ? 'block' : 'none'};">
         <div class="session-timer-tooltip-content">
-          <h4>Message Count Calculation</h4>
-          <p>This count includes only user messages (your prompts) within the current 5-hour session window. Assistant responses are not counted toward usage limits.</p>
-          <p>The actual limit varies based on message length, conversation context, and current system capacity. The displayed limit is an estimate for typical usage.</p>
+          <h4>Claude Pro Plan Usage</h4>
+          <p>Shows user messages (prompts) sent in this session. Claude Pro doesn't have fixed message limits - usage is based on message complexity, conversation length, and current capacity.</p>
+          <p>The "45 est." is a rough estimate for typical short messages (~200 sentences). You may send more or fewer messages depending on complexity.</p>
+          <p><strong>Projects benefit from caching</strong> - repeated content uses fewer resources, allowing more messages.</p>
           <div class="session-timer-tooltip-link">
             <a href="https://support.anthropic.com/en/articles/9797557-usage-limit-best-practices" target="_blank" rel="noopener noreferrer">
               <i class="fas fa-external-link-alt"></i> Usage Limit Best Practices
@@ -416,11 +419,11 @@ class SessionTimer {
   }
 
   /**
-   * Get message limit based on current plan
+   * Get message estimate based on current plan
    */
-  getMessageLimit() {
-    if (!this.sessionData || !this.sessionData.limits) return 225;
-    return this.sessionData.limits.messagesPerSession;
+  getMessageEstimate() {
+    if (!this.sessionData || !this.sessionData.limits) return 45;
+    return this.sessionData.limits.estimatedMessagesPerSession || 45;
   }
 
   /**

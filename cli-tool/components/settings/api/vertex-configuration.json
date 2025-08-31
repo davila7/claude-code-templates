@@ -1,0 +1,8 @@
+{
+  "description": "Configure Claude Code to use Google Vertex AI for AI model access. Provides integration with Google Cloud Platform infrastructure and billing, suitable for organizations using GCP services.",
+  "env": {
+    "CLAUDE_CODE_USE_VERTEX": "1",
+    "VERTEX_REGION_CLAUDE_3_5_SONNET": "us-central1",
+    "VERTEX_REGION_CLAUDE_3_5_HAIKU": "us-central1"
+  }
+}

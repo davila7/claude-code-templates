@@ -1,0 +1,7 @@
+{
+  "description": "Roll the dice with your code! Persistent chip tracking with wins and losses based on random dice rolls. Watch your coding fortune rise and fall. Displays: Chip count (starts at 100, persistent across session), Two random dice (1-6 each), Dice sum calculation, Game results (🎰 WIN +10 chips on 7 or 11, 💸 LOSE -5 chips on 2 or 12, 🎲 ROLL neutral on other sums).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); SESSION=$(echo \"$input\" | jq -r \".session_id\" | cut -c1-8); CACHE=\"/tmp/casino_$SESSION\"; if [ ! -f \"$CACHE\" ]; then echo \"100\" > \"$CACHE\"; fi; CHIPS=$(cat \"$CACHE\"); DICE1=$((RANDOM % 6 + 1)); DICE2=$((RANDOM % 6 + 1)); SUM=$((DICE1 + DICE2)); if [ $SUM -eq 7 ] || [ $SUM -eq 11 ]; then CHIPS=$((CHIPS + 10)); RESULT=\"🎰 WIN!\"; elif [ $SUM -eq 2 ] || [ $SUM -eq 12 ]; then CHIPS=$((CHIPS - 5)); RESULT=\"💸 LOSE\"; else RESULT=\"🎲 ROLL\"; fi; echo \"$CHIPS\" > \"$CACHE\"; echo \"[$MODEL] 🎰 Chips: $CHIPS | 🎲 $DICE1+$DICE2=$SUM $RESULT | 📁 ${DIR##*/}\"'"
+  }
+}

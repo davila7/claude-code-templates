@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "fb-ads-mcp-server": {
+      "description": "This project provides an MCP server acting as an interface to the Meta Ads, enabling programmatic access to Meta Ads data and management features.",
+      "command": "python",
+      "args": [
+        "/path/to/your/fb-ads-mcp-server/server.py",
+        "--fb-token",
+        "YOUR_META_ACCESS_TOKEN"
+      ]
+    }
+  }
+}

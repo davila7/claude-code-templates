@@ -1,0 +1,6 @@
+{
+  "description": "Disable Claude Code telemetry for privacy.",
+  "env": {
+    "DISABLE_TELEMETRY": "1"
+  }
+}

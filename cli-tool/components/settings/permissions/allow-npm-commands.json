@@ -1,0 +1,11 @@
+{
+  "description": "Allow common npm development commands (lint, test, build, start).",
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run test:*)",
+      "Bash(npm run build)",
+      "Bash(npm start)"
+    ]
+  }
+}

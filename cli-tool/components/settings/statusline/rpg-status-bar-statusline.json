@@ -1,0 +1,7 @@
+{
+  "description": "Level up your coding skills like in an RPG. Gain experience with each session, advance through classes from Novice to Archmage, and track your health and mana. Displays: Class progression (Novice 1-4, Wizard 5-9, Archmage 10+), Level (increases when XP reaches level*100), HP (Health Points 0-10, calculated from git changes: 10 minus uncommitted files), Mana (🔵 if package.json exists, ⚪ if not), XP (Experience Points, +3 per interaction, resets on level up).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); SESSION=$(echo \"$input\" | jq -r \".session_id\" | cut -c1-8); CACHE=\"/tmp/rpg_$SESSION\"; if [ ! -f \"$CACHE\" ]; then echo \"1 0 Novice\" > \"$CACHE\"; fi; read LEVEL XP CLASS < \"$CACHE\"; XP=$((XP + 3)); if [ $XP -ge $((LEVEL * 100)) ]; then LEVEL=$((LEVEL + 1)); XP=0; [ $LEVEL -eq 5 ] && CLASS=\"Wizard\"; [ $LEVEL -eq 10 ] && CLASS=\"Archmage\"; fi; echo \"$LEVEL $XP $CLASS\" > \"$CACHE\"; MANA=$([ -f \"package.json\" ] && echo \"🔵\" || echo \"⚪\"); HP=$(git status --porcelain 2>/dev/null | wc -l | awk \"{\\$1=\\$1}1\"); HP=$((10 - HP)); echo \"[$MODEL] ⚔️ $CLASS Lv.$LEVEL | HP:$HP/10 $MANA | 📁 ${DIR##*/} | XP:$XP/$((LEVEL * 100))\"'"
+  }
+}

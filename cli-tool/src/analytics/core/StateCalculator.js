@@ -19,10 +19,21 @@ class StateCalculator {
    */
   determineConversationState(messages, lastModified, runningProcess = null) {
     const now = new Date();
-    const timeDiff = now - lastModified;
-    const minutesAgo = timeDiff / (1000 * 60);
+    const fileTimeDiff = now - lastModified;
+    const fileMinutesAgo = fileTimeDiff / (1000 * 60);
 
-    // If there's an active process, use simpler and more stable logic
+    // Enhanced detection: Look for real Claude Code activity indicators
+    const claudeActivity = this.detectRealClaudeActivity(messages, lastModified);
+    if (claudeActivity.isActive) {
+      return claudeActivity.status;
+    }
+
+    // If there's very recent file activity (within 5 minutes), consider it active
+    if (fileMinutesAgo < 5) {
+      return 'Claude Code working...';
+    }
+
+    // If there's an active process, prioritize that
     if (runningProcess && runningProcess.hasActiveCommand) {
       // Check conversation flow first for immediate response
       if (messages.length > 0) {
@@ -32,39 +43,30 @@ class StateCalculator {
         const lastMessageMinutesAgo = (now - lastMessageTime) / (1000 * 60);
         
         if (lastMessage.role === 'user') {
-          // User sent message - be more conservative about "working" state
-          if (lastMessageMinutesAgo < 1) {
+          // User sent message - be more generous about active state
+          if (lastMessageMinutesAgo < 3) {
             return 'Claude Code working...';
-          } else {
+          } else if (lastMessageMinutesAgo < 10) {
             return 'Awaiting response...';
+          } else {
+            return 'Active session';
           }
         } else if (lastMessage.role === 'assistant') {
-          // Claude responded - check if file activity indicates continued work
-          const fileTimeDiff = (now - lastModified) / 1000; // seconds
-          if (fileTimeDiff < 30) {
-            return 'Claude Code working...';
-          }
-          // Use broader time ranges for more stability
-          if (lastMessageMinutesAgo < 5) {
+          // Claude responded - if there's an active process, still active
+          if (lastMessageMinutesAgo < 10) {
             return 'Awaiting user input...';
           } else {
-            return 'User typing...';
+            return 'Active session';
           }
         }
       }
       
-      // Very recent file activity = Claude working (fallback)
-      const fileTimeDiff = (now - lastModified) / 1000; // seconds
-      if (fileTimeDiff < 30) {
-        return 'Claude Code working...';
-      }
-      
-      // Default for active process
-      return 'Awaiting user input...';
+      // Default for active process - be more generous
+      return 'Active session';
     }
 
     if (messages.length === 0) {
-      return minutesAgo < 5 ? 'Waiting for input...' : 'Idle';
+      return fileMinutesAgo < 5 ? 'Waiting for input...' : 'Idle';
     }
 
     // Sort messages by timestamp to get the actual conversation flow
@@ -73,28 +75,32 @@ class StateCalculator {
     const lastMessageTime = new Date(lastMessage.timestamp);
     const lastMessageMinutesAgo = (now - lastMessageTime) / (1000 * 60);
 
-    // Simplified and more stable state logic
+    // More generous logic for active conversations
     if (lastMessage.role === 'user') {
       // User sent last message
-      if (lastMessageMinutesAgo < 1) {
+      if (lastMessageMinutesAgo < 3) {
         return 'Claude Code working...';
-      } else if (lastMessageMinutesAgo < 5) {
+      } else if (lastMessageMinutesAgo < 10) {
         return 'Awaiting response...';
-      } else {
+      } else if (lastMessageMinutesAgo < 30) {
         return 'User typing...';
+      } else {
+        return 'Recently active';
       }
     } else if (lastMessage.role === 'assistant') {
-      // Assistant sent last message - consolidate similar states
-      if (lastMessageMinutesAgo < 5) {
+      // Assistant sent last message
+      if (lastMessageMinutesAgo < 10) {
         return 'Awaiting user input...';
-      } else {
+      } else if (lastMessageMinutesAgo < 30) {
         return 'User typing...';
+      } else {
+        return 'Recently active';
       }
     }
 
-    // Fallback states
-    if (minutesAgo < 5) return 'Recently active';
-    if (minutesAgo < 60) return 'Idle';
+    // Fallback states - be more generous about "active" state
+    if (fileMinutesAgo < 10 || lastMessageMinutesAgo < 30) return 'Recently active';
+    if (fileMinutesAgo < 60 || lastMessageMinutesAgo < 120) return 'Idle';
     return 'Inactive';
   }
 
@@ -162,6 +168,69 @@ class StateCalculator {
     if (minutesAgo < 5) return 'active';
     if (minutesAgo < 30) return 'recent';
     return 'inactive';
+  }
+
+  /**
+   * Detect real Claude Code activity based on conversation patterns and file activity
+   * @param {Array} messages - Conversation messages
+   * @param {Date} lastModified - File last modification time
+   * @returns {Object} Activity detection result
+   */
+  detectRealClaudeActivity(messages, lastModified) {
+    const now = new Date();
+    const fileMinutesAgo = (now - lastModified) / (1000 * 60);
+    
+    if (!messages || messages.length === 0) {
+      return { isActive: false, status: 'No messages' };
+    }
+    
+    // Sort messages by timestamp
+    const sortedMessages = messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const lastMessage = sortedMessages[sortedMessages.length - 1];
+    const lastMessageTime = new Date(lastMessage.timestamp);
+    const messageMinutesAgo = (now - lastMessageTime) / (1000 * 60);
+    
+    // Real activity indicators:
+    
+    // 1. Very recent file modification (Claude Code just wrote to the conversation file)
+    if (fileMinutesAgo < 1) {
+      return { isActive: true, status: 'Claude Code working...' };
+    }
+    
+    // 2. Recent user message with recent file activity (Claude is processing)
+    if (lastMessage.role === 'user' && messageMinutesAgo < 5 && fileMinutesAgo < 10) {
+      return { isActive: true, status: 'Claude Code working...' };
+    }
+    
+    // 3. Recent assistant message with very recent file activity (might still be working)
+    if (lastMessage.role === 'assistant' && messageMinutesAgo < 2 && fileMinutesAgo < 5) {
+      return { isActive: true, status: 'Claude Code finishing...' };
+    }
+    
+    // 4. Look for tool activity patterns (tools often indicate active sessions)
+    const recentMessages = sortedMessages.slice(-3);
+    const hasRecentTools = recentMessages.some(msg => 
+      (Array.isArray(msg.content) && msg.content.some(block => block.type === 'tool_use')) ||
+      (msg.toolResults && msg.toolResults.length > 0)
+    );
+    
+    if (hasRecentTools && messageMinutesAgo < 10 && fileMinutesAgo < 15) {
+      return { isActive: true, status: 'Active session' };
+    }
+    
+    // 5. Rapid message exchange pattern (back-and-forth conversation)
+    if (sortedMessages.length >= 2) {
+      const lastTwoMessages = sortedMessages.slice(-2);
+      const timeBetweenLast = Math.abs(
+        new Date(lastTwoMessages[1].timestamp) - new Date(lastTwoMessages[0].timestamp)
+      ) / (1000 * 60); // minutes
+      
+      if (timeBetweenLast < 5 && messageMinutesAgo < 15 && fileMinutesAgo < 20) {
+        return { isActive: true, status: 'Active conversation' };
+      }
+    }
+    
+    return { isActive: false, status: null };
   }
 
   /**

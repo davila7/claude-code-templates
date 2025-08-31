@@ -1,0 +1,11 @@
+{
+  "description": "Grant access to additional directories outside the current project. Useful for monorepo setups, shared libraries, or when working with documentation stored in separate repositories.",
+  "permissions": {
+    "additionalDirectories": [
+      "../docs/",
+      "../shared-components/",
+      "~/projects/common-utils/",
+      "/opt/company-tools/"
+    ]
+  }
+}

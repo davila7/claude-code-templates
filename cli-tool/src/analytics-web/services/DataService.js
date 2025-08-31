@@ -410,6 +410,19 @@ class DataService {
   }
   
   /**
+   * Get application version from backend
+   * @returns {Promise<Object>} Version information
+   */
+  async getVersion() {
+    try {
+      return await this.cachedFetch('/api/version', 300000); // Cache for 5 minutes
+    } catch (error) {
+      console.error('Error fetching version:', error);
+      return { version: '1.13.2', name: 'claude-code-templates' }; // Fallback
+    }
+  }
+
+  /**
    * Get cache statistics
    * @returns {Object} Cache statistics
    */

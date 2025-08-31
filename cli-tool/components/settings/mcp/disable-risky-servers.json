@@ -1,0 +1,8 @@
+{
+  "description": "Disable specific MCP servers that may pose security risks or are not needed for your workflow. This blacklist approach allows most servers while blocking potentially problematic integrations.",
+  "disabledMcpjsonServers": [
+    "web-scraper",
+    "system-admin",
+    "network-tools"
+  ]
+}

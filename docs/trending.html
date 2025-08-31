@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending - Claude Code Templates</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/trending.css">
+    <link rel="icon" type="image/svg+xml" href="static/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Discover the most popular Claude Code templates, agents, and status lines trending today">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art"> 
+████████╗██████╗ ███████╗███╗   ██╗██████╗ ██╗███╗   ██╗ ██████╗ 
+╚══██╔══╝██╔══██╗██╔════╝████╗  ██║██╔══██╗██║████╗  ██║██╔════╝ 
+   ██║   ██████╔╝█████╗  ██╔██╗ ██║██║  ██║██║██╔██╗ ██║██║  ███╗
+   ██║   ██╔══██╗██╔══╝  ██║╚██╗██║██║  ██║██║██║╚██╗██║██║   ██║
+   ██║   ██║  ██║███████╗██║ ╚████║██████╔╝██║██║ ╚████║╚██████╔╝
+   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝</pre>
+                    </div>
+                    <div class="terminal-subtitle">
+                        <span class="status-dot">●</span>
+                        See what the <strong>Claude Code</strong> community is most excited about today
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <!-- Not ready yet -->
+                    <!-- <a href="workflows.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H16L12,22L8,18H4A2,2 0 0,1 2,16V4A2,2 0 0,1 4,2M4,4V16H8.83L12,19.17L15.17,16H20V4H4M6,6H18V8H6V6M6,10H16V12H6V10M6,14H14V16H6V14Z"/>
+                        </svg>
+                        Workflows
+                    </a> -->
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <div class="container">
+            <!-- Terminal command header -->
+            <div class="terminal-command">
+                <div class="header-content">
+                    <h2 class="search-title"><span class="terminal-dot"></span><strong>Trending </strong><span class="title-params">(components/settings/templates)</span></h2>
+                    <p class="search-subtitle">⎿ Discover what the Claude Code community is using most</p>
+                </div>
+            </div>
+
+            <!-- Trending controls with terminal styling -->
+            <div class="terminal-controls-section">
+                <div class="terminal-filter-line">
+                    <span class="terminal-prompt">></span>
+                    <div class="filter-commands">
+                        <div class="command-group">
+                            <div class="component-tabs">
+                                <!-- Not show yet -->
+                                <!-- <button class="component-tab" data-type="">All</button> -->
+                                <button class="component-tab active" data-type="agents">Agents</button>
+                                <button class="component-tab" data-type="commands">Commands</button>
+                                <button class="component-tab" data-type="settings">Settings</button>
+                                <button class="component-tab" data-type="hooks">Hooks</button>
+                                <button class="component-tab" data-type="mcps">MCPs</button>
+                                <button class="component-tab" data-type="templates">Templates</button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-group">
+                            <span class="command-label">--range</span>
+                            <select id="date-range" class="terminal-select">
+                                <option value="today">Today</option>
+                                <option value="week">This week</option>
+                                <option value="month">This month</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal output content -->
+            <div class="terminal-output-section">
+                <div class="trending-list" id="trending-list">
+                    <!-- Trending items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗     
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║     
+███████║██║   ██║   ██╔████╔██║██████╔╝██║     
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║     
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Install Modal -->
+    <div id="installModal" class="modal-overlay" onclick="closeInstallModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title">Install Component</h3>
+                <button class="modal-close" onclick="closeInstallModal()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Run this command to install the component:</p>
+                <div class="command-container">
+                    <div class="command-display" id="installCommand">
+                        <span class="command-prompt">$</span>
+                        <span class="command-text" id="commandText">npx claude-code-templates@latest component-name --yes</span>
+                    </div>
+                    <button class="copy-button" onclick="copyInstallCommand()">
+                        <svg class="copy-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25v-7.5z"/>
+                            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25v-7.5zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25h-7.5z"/>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <div class="copy-feedback" id="copyFeedback">
+                    ✓ Copied to clipboard!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/trending.js"></script>
+</body>
+</html>

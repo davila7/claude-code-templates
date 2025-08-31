@@ -4,22 +4,290 @@ We welcome contributions! Help us make Claude Code even better for everyone.
 
 **📋 Before contributing, please read our [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a respectful and inclusive environment for all community members.**
 
-## 🚀 Development Setup
+## 🧩 Contributing Components
 
-### Prerequisites
+The easiest way to contribute is by adding individual components like agents, commands, MCPs, settings, or hooks.
+
+### 🤖 Adding Agents
+
+Agents are AI specialists for specific domains (security, performance, frameworks, etc.).
+
+1. **Create Agent File**
+   ```bash
+   # Navigate to appropriate category
+   cd cli-tool/components/agents/[category]/
+   
+   # Create your agent file
+   touch your-agent-name.md
+   ```
+
+2. **Agent File Structure**
+   ```markdown
+   # Agent Name
+   
+   Agent description and purpose.
+   
+   ## Expertise
+   - Specific domain knowledge
+   - Key capabilities
+   - Use cases
+   
+   ## Instructions
+   Detailed instructions for Claude on how to act as this agent.
+   
+   ## Examples
+   Practical examples of agent usage.
+   ```
+
+3. **Available Categories**
+   - `development-team/` - Full-stack developers, architects
+   - `domain-experts/` - Security, performance, accessibility specialists  
+   - `creative-team/` - Content creators, designers
+   - `business-team/` - Product managers, analysts
+   - `development-tools/` - Tool specialists, DevOps experts
+
+4. **Creating New Categories**
+   If your agent doesn't fit existing categories, create a new one:
+   ```bash
+   # Create new category folder
+   cd cli-tool/components/agents/
+   mkdir your-new-category
+   
+   # Add your agent file to the new category
+   cd your-new-category/
+   touch your-agent-name.md
+   ```
+
+### ⚡ Adding Commands
+
+Commands are custom slash commands that extend Claude Code functionality.
+
+1. **Create Command File**
+   ```bash
+   cd cli-tool/components/commands/[category]/
+   touch your-command-name.md
+   ```
+
+2. **Command File Structure**
+   ```markdown
+   # /command-name
+   
+   Brief command description.
+   
+   ## Purpose
+   What this command accomplishes.
+   
+   ## Usage
+   How to use the command with examples.
+   
+   ## Implementation
+   Technical details of what the command does.
+   ```
+
+3. **Command Categories**
+   - `code-generation/` - Generate code, tests, documentation
+   - `analysis/` - Code analysis, optimization, debugging
+   - `project-management/` - File operations, project structure
+   - `testing/` - Test generation, validation, coverage
+   - `deployment/` - Build, deploy, CI/CD operations
+
+4. **Creating New Categories**
+   If your command doesn't fit existing categories, create a new one:
+   ```bash
+   # Create new category folder
+   cd cli-tool/components/commands/
+   mkdir your-new-category
+   
+   # Add your command file to the new category
+   cd your-new-category/
+   touch your-command-name.md
+   ```
+
+### 🔌 Adding MCPs (Model Context Protocol)
+
+MCPs provide external service integrations for Claude Code.
+
+1. **Create MCP File**
+   ```bash
+   cd cli-tool/components/mcps/[category]/
+   touch your-service-mcp.json
+   ```
+
+2. **MCP File Structure**
+   ```json
+   {
+     "mcpServers": {
+       "service-name": {
+         "command": "npx",
+         "args": ["-y", "@your-org/mcp-server"],
+         "env": {
+           "API_KEY": "<YOUR_API_KEY>",
+           "BASE_URL": "https://api.service.com"
+         }
+       }
+     }
+   }
+   ```
+
+3. **MCP Categories**
+   - `integration/` - GitHub, GitLab, Jira
+   - `database/` - PostgreSQL, MySQL, MongoDB
+   - `cloud/` - AWS, Azure, GCP services
+   - `devtools/` - Build tools, testing frameworks
+   - `ai-services/` - OpenAI, Anthropic, other AI APIs
+
+4. **Creating New Categories**
+   If your MCP doesn't fit existing categories, create a new one:
+   ```bash
+   # Create new category folder
+   cd cli-tool/components/mcps/
+   mkdir your-new-category
+   
+   # Add your MCP file to the new category
+   cd your-new-category/
+   touch your-service-mcp.json
+   ```
+
+### ⚙️ Adding Settings
+
+Settings configure Claude Code behavior and performance.
+
+1. **Create Settings File**
+   ```bash
+   cd cli-tool/components/settings/[category]/
+   touch your-setting-name.json
+   ```
+
+2. **Settings File Structure**
+   ```json
+   {
+     "setting-category": {
+       "parameter": "value",
+       "description": "What this setting controls"
+     }
+   }
+   ```
+
+3. **Settings Categories**
+   - `performance/` - Memory, timeout, cache settings
+   - `ui/` - Interface customization, themes
+   - `mcp/` - MCP server configurations
+   - `security/` - Access control, permissions
+
+4. **Creating New Categories**
+   If your setting doesn't fit existing categories, create a new one:
+   ```bash
+   # Create new category folder
+   cd cli-tool/components/settings/
+   mkdir your-new-category
+   
+   # Add your setting file to the new category
+   cd your-new-category/
+   touch your-setting-name.json
+   ```
+
+### 🪝 Adding Hooks
+
+Hooks provide automation triggers for different development events.
+
+1. **Create Hook File**
+   ```bash
+   cd cli-tool/components/hooks/[category]/
+   touch your-hook-name.json
+   ```
+
+2. **Hook File Structure**
+   ```json
+   {
+     "hooks": {
+       "hook-name": {
+         "event": "trigger-event",
+         "command": "action-to-perform",
+         "description": "What this hook does"
+       }
+     }
+   }
+   ```
+
+3. **Hook Categories**
+   - `git/` - Pre-commit, post-commit, pre-push
+   - `development/` - File changes, build events
+   - `testing/` - Test execution, coverage checks
+
+4. **Creating New Categories**
+   If your hook doesn't fit existing categories, create a new one:
+   ```bash
+   # Create new category folder
+   cd cli-tool/components/hooks/
+   mkdir your-new-category
+   
+   # Add your hook file to the new category
+   cd your-new-category/
+   touch your-hook-name.json
+   ```
+
+## 📦 Contributing Templates
+
+Templates are complete project configurations that include CLAUDE.md, .claude/* files, and .mcp.json.
+
+### Creating New Templates
+
+1. **Create Template Directory**
+   ```bash
+   cd cli-tool/templates/
+   mkdir your-template-name
+   cd your-template-name
+   ```
+
+2. **Template Structure**
+   ```
+   your-template-name/
+   ├── CLAUDE.md                    # Main configuration
+   ├── .claude/
+   │   ├── settings.json           # Automation hooks
+   │   └── commands/               # Template-specific commands
+   ├── .mcp.json                   # MCP server configuration
+   └── README.md                   # Template documentation
+   ```
+
+3. **CLAUDE.md Guidelines**
+   - Include project-specific configuration
+   - Add development commands and workflows
+   - Document best practices and conventions
+   - Include security guidelines
+   - Provide testing standards
+
+4. **Template Categories**
+   - Framework-specific (React, Vue, Angular, etc.)
+   - Language-specific (Python, TypeScript, Go, etc.)
+   - Domain-specific (API development, machine learning, etc.)
+   - Industry-specific (e-commerce, fintech, etc.)
+
+### Template Quality Standards
+
+- **Comprehensive Configuration** - Include all necessary Claude Code setup
+- **Clear Documentation** - Well-documented CLAUDE.md with examples
+- **Practical Commands** - Useful slash commands for the domain
+- **Proper MCPs** - Relevant external integrations
+- **Testing** - Test template with real projects
+
+## 🛠️ Contributing to Additional Tools
+
+For advanced contributors who want to improve the CLI tools like analytics, health check, and chat monitoring.
+
+### 🚀 Development Setup
+
+#### Prerequisites
 - Node.js 14+ (for the installer)
 - npm or yarn
 - Git
 
-### Project Setup
+#### Project Setup
 ```bash
 # Clone the repository
 git clone https://github.com/davila7/claude-code-templates.git
 cd claude-code-templates
-```
 
-### CLI Development
-```bash
 # Navigate to the CLI tool directory
 cd cli-tool
 
@@ -31,272 +299,197 @@ npm link
 
 # Run test suite
 npm test
-
-# Test locally with dry run
-npm start -- --dry-run
 ```
 
-## 🏗️ CLI Architecture
+### 📊 Analytics Dashboard Development
 
-The CLI tool is built with a modular architecture:
+The analytics dashboard provides real-time monitoring of Claude Code sessions.
 
+#### Development Workflow
+```bash
+# Start analytics dashboard
+npm run analytics:start
+
+# Clear cache during development
+curl -X POST http://localhost:3333/api/cache/clear -H "Content-Type: application/json" -d '{"type":"all"}'
+
+# Refresh data
+curl http://localhost:3333/api/refresh
+
+# Restart server completely
+pkill -f analytics && sleep 3 && npm run analytics:start
 ```
-cli-tool/src/
-├── index.js              # Main entry point & CLI setup
-├── prompts.js            # Interactive prompts & navigation
-├── command-scanner.js    # Scans and loads command templates
-├── hook-scanner.js       # Manages automation hooks
-├── file-operations.js    # File copying and template processing
-├── templates.js          # Template configuration & metadata
-├── command-stats.js      # Command analysis functionality
-└── utils.js              # Project detection utilities
+
+#### Architecture
+```
+src/analytics/
+├── core/                     # Business logic
+│   ├── StateCalculator.js   # Conversation state detection
+│   ├── ProcessDetector.js   # Running process detection
+│   ├── ConversationAnalyzer.js # Message parsing
+│   └── FileWatcher.js       # Real-time file monitoring
+├── data/                    # Data management
+│   └── DataCache.js        # Multi-level caching
+├── notifications/           # Real-time communication
+│   ├── WebSocketServer.js  # Server-side WebSocket
+│   └── NotificationManager.js # Event-driven notifications
+└── utils/                   # Utilities
+    └── PerformanceMonitor.js # System health monitoring
+```
+
+#### Common Development Issues
+
+**Problem:** Changes don't appear in dashboard
+```bash
+# Solution: Clear cache and refresh
+curl -X POST http://localhost:3333/api/cache/clear -H "Content-Type: application/json" -d '{"type":"conversations"}'
+curl http://localhost:3333/api/refresh
+```
+
+**Problem:** WebSocket not updating
+```bash
+# Solution: Hard refresh browser (Ctrl+F5 or Cmd+Shift+R)
+```
+
+### 💬 Chat Monitor Development
+
+Mobile-optimized interface for viewing Claude conversations in real-time.
+
+#### Architecture
+```
+src/chats/
+├── components/              # UI components
+├── services/               # API communication
+├── websocket/              # Real-time updates
+└── styles/                 # Mobile-first CSS
+```
+
+#### Development Commands
+```bash
+# Start chat monitor
+npm run chats:start
+
+# Start with tunnel (requires cloudflared)
+npm run chats:start -- --tunnel
+
+# Test mobile interface
+npm run chats:test
+```
+
+### 🔍 Health Check Development
+
+Comprehensive diagnostics tool for Claude Code installations.
+
+#### Health Check Categories
+- **Installation Validation** - Claude Code setup verification
+- **Configuration Check** - Settings and file validation
+- **Performance Analysis** - Memory, disk, network diagnostics
+- **Security Audit** - Permission and access checks
+
+#### Development
+```bash
+# Run health check
+npm run health-check
+
+# Add new health check
+# 1. Create check in src/health-checks/
+# 2. Add to health check registry
+# 3. Test with various scenarios
 ```
 
 ## 🧪 Testing
 
-### Running Tests
+### Component Testing
 ```bash
-# Run comprehensive test suite
-npm test
+# Test component installation
+npx claude-code-templates@latest --agent your-agent --dry-run
+npx claude-code-templates@latest --command your-command --dry-run
+npx claude-code-templates@latest --mcp your-mcp --dry-run
+```
 
-# Test specific scenarios
+### Template Testing
+```bash
+# Test template installation
+npx claude-code-templates@latest --template your-template --dry-run
+
+# Test with specific scenarios
 npm start -- --language python --framework django --dry-run
-npm start -- --language javascript-typescript --framework react --dry-run
-
-# Test interactive mode
-npm start
-
-# Test command analysis
-npm start -- --command-stats
+npm start -- --language javascript --framework react --dry-run
 ```
 
-### Testing Checklist
-- [ ] Interactive setup works correctly
-- [ ] Framework detection is accurate
-- [ ] Command installation succeeds
-- [ ] Hook configuration is valid
-- [ ] MCP servers are properly configured
-- [ ] Dry run mode shows expected output
-- [ ] Command analysis displays accurate statistics
-
-## 🔄 Template Development
-
-### Adding New Languages
-
-1. **Create Template Directory**
-   ```bash
-   mkdir cli-tool/templates/language-name
-   ```
-
-2. **Add Base Files**
-   - `CLAUDE.md` - Language-specific configuration and best practices
-   - `.claude/settings.json` - Automation hooks configuration
-   - `.claude/commands/` - Directory for language-specific commands
-   - `.mcp.json` - Model Context Protocol server configuration
-
-3. **Create Framework Examples**
-   ```bash
-   mkdir cli-tool/templates/language-name/examples/framework-name
-   ```
-
-4. **Update Configuration**
-   - Add language configuration in `src/templates.js`
-   - Update project detection logic in `src/utils.js` if needed
-
-5. **Add Documentation**
-   - Update main README.md with language support
-   - Add language-specific README if needed
-
-### Adding New Frameworks
-
-1. **Create Framework Directory**
-   ```bash
-   mkdir cli-tool/templates/language/examples/framework-name
-   ```
-
-2. **Add Framework-Specific Files**
-   - Framework-specific `CLAUDE.md` with tailored instructions
-   - Custom commands in `.claude/commands/`
-   - Framework-specific automation hooks
-   - MCP server configurations for framework needs
-
-3. **Test Framework Integration**
-   - Test with various project configurations
-   - Verify framework detection works correctly
-   - Ensure commands work with framework structure
-
-4. **Update Detection Logic**
-   - Modify `src/utils.js` to detect framework
-   - Add framework-specific package.json patterns
-   - Update template selection logic
-
-## 📝 Template Guidelines
-
-### File Structure
-Follow the established folder structure:
-```
-language-name/
-├── CLAUDE.md                    # Language configuration
-├── .claude/
-│   ├── settings.json           # Automation hooks
-│   └── commands/               # Base commands
-├── .mcp.json                   # MCP server configuration
-├── examples/
-│   ├── framework-1/
-│   │   ├── CLAUDE.md           # Framework-specific config
-│   │   └── .claude/commands/   # Framework commands
-│   └── framework-2/
-│       ├── CLAUDE.md
-│       └── .claude/commands/
-└── README.md                   # Language documentation
-```
-
-### Quality Standards
-
-#### CLAUDE.md Files
-- Include comprehensive language-specific configuration
-- Add development commands and workflows
-- Document best practices and conventions
-- Include security guidelines
-- Provide testing standards
-
-#### Command Files
-- Use clear, descriptive names
-- Include comprehensive documentation
-- Add practical examples
-- Follow language conventions
-- Test with real projects
-
-#### Automation Hooks
-- Focus on developer productivity
-- Include security checks
-- Add code quality enforcement
-- Test hook reliability
-- Document hook behavior
-
-### Content Guidelines
-- Write clear, concise documentation
-- Use practical, real-world examples
-- Include error handling guidance
-- Add security considerations
-- Test all examples before submitting
-
-## 🤝 How to Contribute
-
-### 1. Fork the Repository
+### Tool Testing
 ```bash
-# Fork on GitHub, then clone your fork
+# Test analytics
+npm run analytics:test
+
+# Test chat monitor
+npm run chats:test
+
+# Test health check
+npm run health-check:test
+```
+
+## 🤝 Contribution Process
+
+### 1. Fork and Clone
+```bash
 git clone https://github.com/your-username/claude-code-templates.git
 cd claude-code-templates
 ```
 
-### 2. Create a Feature Branch
+### 2. Create Feature Branch
 ```bash
-git checkout -b feature/amazing-template
+git checkout -b feature/your-contribution
 ```
 
-### 3. Make Your Changes
-- Follow the template guidelines above
-- Add comprehensive documentation
-- Test your changes thoroughly
-- Include relevant examples
+### 3. Make Changes
+- Follow the guidelines above for your contribution type
+- Test thoroughly with real scenarios
+- Include comprehensive documentation
 
-### 4. Test Your Changes
+### 4. Test Changes
 ```bash
-# Test the CLI tool
 cd cli-tool
 npm test
 npm start -- --dry-run
-
-# Test specific scenarios
-npm start -- --language your-language --framework your-framework --dry-run
 ```
 
-### 5. Submit a Pull Request
-- Write a clear PR description
-- Include screenshots if relevant
+### 5. Submit Pull Request
+- Clear description of changes
+- Screenshots for UI changes
+- Testing instructions
 - Reference related issues
-- Add testing instructions
 
 ## 🎯 What We're Looking For
 
-### High Priority
-- **New Language Support** - Rust, Go, Java, C#, PHP, etc.
-- **Framework Templates** - Svelte, Next.js, Nuxt.js, NestJS, Laravel, Spring Boot, etc.
-- **Improved Commands** - Better testing, deployment, debugging workflows
-- **Security Enhancements** - Better security checks and practices
-- **Performance Improvements** - Faster installation and better UX
+### High Priority Components
+- **Security Agents** - Security auditing, vulnerability scanning
+- **Performance Commands** - Optimization, profiling, monitoring
+- **Cloud MCPs** - AWS, Azure, GCP integrations
+- **Framework Agents** - React, Vue, Angular, Next.js specialists
 
-### Medium Priority
-- **Documentation** - Clearer guides and examples
-- **Bug Fixes** - Improvements to existing templates
-- **Feature Enhancements** - New CLI features and options
-- **Testing** - Better test coverage and scenarios
+### High Priority Templates  
+- **Modern Frameworks** - Svelte, SvelteKit, Astro, Qwik
+- **Backend Frameworks** - NestJS, Fastify, Hono, tRPC
+- **Full-Stack** - T3 Stack, create-remix-app, SvelteKit
+- **Mobile** - React Native, Expo, Flutter
 
-### Low Priority
-- **Code Cleanup** - Refactoring and code organization
-- **Minor Improvements** - Small UX enhancements
-- **Optimization** - Performance tweaks
-
-## 📋 Contribution Process
-
-### Code Review Process
-1. **Automated Checks** - CI/CD pipeline runs tests
-2. **Manual Review** - Maintainers review code and templates
-3. **Testing** - Contributors test with real projects
-4. **Documentation Review** - Ensure docs are clear and complete
-5. **Merge** - Approved changes are merged
-
-### Review Criteria
-- **Functionality** - Does it work as expected?
-- **Quality** - Is the code well-written and maintainable?
-- **Documentation** - Are changes well-documented?
-- **Testing** - Are there adequate tests?
-- **Security** - Are security best practices followed?
-- **Consistency** - Does it follow project conventions?
-
-## 🛠️ Development Tools
-
-### Required Tools
-- **Node.js 14+** - For CLI development
-- **npm/yarn** - Package management
-- **Git** - Version control
-
-### Recommended Tools
-- **VS Code** - IDE with good JavaScript/TypeScript support
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **Jest** - Testing framework
-
-### Useful Commands
-```bash
-# Format code
-npm run format
-
-# Lint code
-npm run lint
-
-# Run tests with coverage
-npm run test:coverage
-
-# Build for production
-npm run build
-
-# Publish to npm (maintainers only)
-npm publish
-```
+### Medium Priority Tools
+- **Analytics Enhancements** - Better visualizations, export options
+- **Chat Monitor Features** - Search, filtering, conversation history
+- **Health Check Improvements** - More diagnostic categories, fix suggestions
 
 ## 📞 Getting Help
 
 ### Community Support
 - **GitHub Issues** - [Report bugs or request features](https://github.com/davila7/claude-code-templates/issues)
 - **GitHub Discussions** - [Join community discussions](https://github.com/davila7/claude-code-templates/discussions)
-- **Documentation** - [Claude Code Official Docs](https://docs.anthropic.com/en/docs/claude-code)
+- **Documentation** - [Complete guides at docs.aitmpl.com](https://docs.aitmpl.com/)
 
-### Maintainer Contact
-- **GitHub** - [@davila7](https://github.com/davila7)
-- **Issues** - Use GitHub issues for bug reports and feature requests
-- **Discussions** - Use GitHub discussions for questions and ideas
+### Quick Start Guides
+- **Browse Components** - [aitmpl.com](https://aitmpl.com) to see existing components
+- **Component Examples** - Check existing components for structure reference
+- **Template Examples** - Review successful templates for best practices
 
 ## 📄 License
 
@@ -306,7 +499,7 @@ By contributing to this project, you agree that your contributions will be licen
 
 All contributors are recognized in our:
 - **GitHub Contributors** page
-- **Release Notes** for significant contributions
+- **Release Notes** for significant contributions  
 - **Community Discussions** for helpful contributions
 
 Thank you for helping make Claude Code Templates better for everyone! 🚀

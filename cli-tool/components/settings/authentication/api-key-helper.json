@@ -1,0 +1,7 @@
+{
+  "description": "Configure a custom script to dynamically generate authentication tokens. The script will be executed to obtain fresh API keys, useful for environments with rotating credentials or temporary access tokens. TTL is set to 1 hour (3600000ms).",
+  "apiKeyHelper": "/bin/generate_temp_api_key.sh",
+  "env": {
+    "CLAUDE_CODE_API_KEY_HELPER_TTL_MS": "3600000"
+  }
+}

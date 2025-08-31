@@ -16,7 +16,9 @@ class HealthChecker {
       system: [],
       claudeCode: [],
       project: [],
+      agents: [],
       commands: [],
+      mcps: [],
       hooks: []
     };
     this.totalChecks = 0;
@@ -40,6 +42,14 @@ class HealthChecker {
     
     // Project configuration check
     await this.checkProjectSetupWithSpinner();
+    await this.sleep(3000);
+    
+    // Agents check
+    await this.checkAgentsWithSpinner();
+    await this.sleep(3000);
+    
+    // MCP servers check
+    await this.checkMCPServersWithSpinner();
     await this.sleep(3000);
     
     // Custom commands check
@@ -163,6 +173,54 @@ class HealthChecker {
     const localSettingsInfo = this.checkLocalSettings();
     this.addResult('project', 'Local Settings', localSettingsInfo.status, localSettingsInfo.message);
     localSettingsSpinner.succeed(`${this.getStatusIcon(localSettingsInfo.status)} Local Settings       │ ${localSettingsInfo.message}`);
+  }
+
+  /**
+   * Check agents with spinner and immediate results
+   */
+  async checkAgentsWithSpinner() {
+    console.log(chalk.cyan('\n┌──────────┐'));
+    console.log(chalk.cyan('│  AGENTS  │'));
+    console.log(chalk.cyan('└──────────┘'));
+    
+    // Project agents
+    const projectSpinner = ora('Scanning Project Agents...').start();
+    const projectAgents = this.checkProjectAgents();
+    this.addResult('agents', 'Project Agents', projectAgents.status, projectAgents.message);
+    projectSpinner.succeed(`${this.getStatusIcon(projectAgents.status)} Project Agents      │ ${projectAgents.message}`);
+
+    // Personal agents
+    const personalSpinner = ora('Scanning Personal Agents...').start();
+    const personalAgents = this.checkPersonalAgents();
+    this.addResult('agents', 'Personal Agents', personalAgents.status, personalAgents.message);
+    personalSpinner.succeed(`${this.getStatusIcon(personalAgents.status)} Personal Agents     │ ${personalAgents.message}`);
+
+    // Agent syntax validation
+    const syntaxSpinner = ora('Validating Agent Syntax...').start();
+    const syntaxInfo = this.checkAgentSyntax();
+    this.addResult('agents', 'Agent Syntax', syntaxInfo.status, syntaxInfo.message);
+    syntaxSpinner.succeed(`${this.getStatusIcon(syntaxInfo.status)} Agent Syntax        │ ${syntaxInfo.message}`);
+  }
+
+  /**
+   * Check MCP servers with spinner and immediate results
+   */
+  async checkMCPServersWithSpinner() {
+    console.log(chalk.cyan('\n┌──────────────┐'));
+    console.log(chalk.cyan('│  MCP SERVERS │'));
+    console.log(chalk.cyan('└──────────────┘'));
+    
+    // Project MCP configuration
+    const projectMCPSpinner = ora('Scanning Project MCP Configuration...').start();
+    const projectMCP = this.checkProjectMCPConfiguration();
+    this.addResult('mcps', 'Project MCP Config', projectMCP.status, projectMCP.message);
+    projectMCPSpinner.succeed(`${this.getStatusIcon(projectMCP.status)} Project MCP Config   │ ${projectMCP.message}`);
+
+    // MCP configuration validation
+    const mcpValidationSpinner = ora('Validating MCP Configuration...').start();
+    const mcpValidation = this.checkMCPConfigurationSyntax();
+    this.addResult('mcps', 'MCP Config Syntax', mcpValidation.status, mcpValidation.message);
+    mcpValidationSpinner.succeed(`${this.getStatusIcon(mcpValidation.status)} MCP Config Syntax   │ ${mcpValidation.message}`);
   }
 
   /**
@@ -394,58 +452,62 @@ class HealthChecker {
   }
 
   checkAuthentication() {
+    const homeDir = os.homedir();
+    
+    // Check for Claude Code OAuth authentication in ~/.claude.json
+    const claudeJsonPath = path.join(homeDir, '.claude.json');
+    
     try {
-      // Try to run claude command to check authentication status
-      const output = execSync('claude auth status 2>&1', { 
-        encoding: 'utf8', 
-        stdio: 'pipe',
-        timeout: 5000 
-      });
-      
-      if (output.includes('authenticated') || output.includes('logged in') || output.includes('active')) {
-        return {
-          status: 'pass',
-          message: 'Authenticated and active'
-        };
-      }
-      
-      // If command runs but no clear authentication status
-      return {
-        status: 'warn',
-        message: 'Authentication status unclear'
-      };
-      
-    } catch (error) {
-      // Try alternative method - check for session/config files
-      const homeDir = os.homedir();
-      const possibleAuthPaths = [
-        path.join(homeDir, '.claude', 'session'),
-        path.join(homeDir, '.claude', 'config'),
-        path.join(homeDir, '.config', 'claude', 'session'),
-        path.join(homeDir, '.config', 'claude', 'config'),
-        path.join(homeDir, '.anthropic', 'session'),
-        path.join(homeDir, '.anthropic', 'config')
-      ];
-      
-      for (const authPath of possibleAuthPaths) {
-        if (fs.existsSync(authPath)) {
-          try {
-            const stats = fs.statSync(authPath);
-            // Check if file was modified recently (within last 30 days)
-            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-            if (stats.mtime > thirtyDaysAgo) {
-              return {
-                status: 'pass',
-                message: 'Authentication session found'
-              };
-            }
-          } catch (statError) {
-            // Continue to next path
-          }
+      if (fs.existsSync(claudeJsonPath)) {
+        const claudeConfig = JSON.parse(fs.readFileSync(claudeJsonPath, 'utf8'));
+        
+        // Check for OAuth authentication
+        if (claudeConfig.oauthAccount && claudeConfig.oauthAccount.accountUuid) {
+          const email = claudeConfig.oauthAccount.emailAddress || 'OAuth user';
+          return {
+            status: 'pass',
+            message: `Authenticated via OAuth (${email})`
+          };
+        }
+        
+        // Check for API key authentication
+        if (claudeConfig.apiKey) {
+          return {
+            status: 'pass',
+            message: 'Authenticated via API key'
+          };
         }
       }
       
+      // Check for environment variable API key
+      if (process.env.ANTHROPIC_API_KEY) {
+        return {
+          status: 'pass',
+          message: 'Authenticated via ANTHROPIC_API_KEY environment variable'
+        };
+      }
+      
       // Try to check if we can make a simple claude command
+      try {
+        execSync('claude --version', { 
+          encoding: 'utf8', 
+          stdio: 'pipe',
+          timeout: 3000 
+        });
+        
+        return {
+          status: 'warn',
+          message: 'Claude CLI available but authentication not configured'
+        };
+      } catch (cliError) {
+        return {
+          status: 'fail',
+          message: 'Claude CLI not available or not authenticated'
+        };
+      }
+      
+    } catch (error) {
+      // If we can't read the config file, check if CLI is at least installed
       try {
         execSync('claude --version', { 
           encoding: 'utf8', 
@@ -460,7 +522,7 @@ class HealthChecker {
       } catch (cliError) {
         return {
           status: 'fail',
-          message: 'Claude CLI not available or not authenticated'
+          message: 'Claude CLI not available or authentication check failed'
         };
       }
     }
@@ -548,6 +610,123 @@ class HealthChecker {
     }
   }
 
+  checkProjectMCPConfiguration() {
+    const currentDir = process.cwd();
+    const mcpConfigPath = path.join(currentDir, '.mcp.json');
+    
+    if (fs.existsSync(mcpConfigPath)) {
+      try {
+        const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigPath, 'utf8'));
+        
+        if (mcpConfig.mcpServers && typeof mcpConfig.mcpServers === 'object') {
+          const serverCount = Object.keys(mcpConfig.mcpServers).length;
+          return {
+            status: 'pass',
+            message: `${serverCount} MCP servers configured in .mcp.json`
+          };
+        } else {
+          return {
+            status: 'warn',
+            message: 'No mcpServers found in .mcp.json'
+          };
+        }
+      } catch (error) {
+        return {
+          status: 'fail',
+          message: 'Invalid JSON syntax in .mcp.json'
+        };
+      }
+    } else {
+      return {
+        status: 'warn',
+        message: 'No project MCP configuration found (.mcp.json)'
+      };
+    }
+  }
+
+  checkMCPConfigurationSyntax() {
+    const configPaths = [
+      path.join(process.cwd(), '.mcp.json')
+    ];
+    
+    let totalServers = 0;
+    let validServers = 0;
+    let invalidServers = 0;
+    const issues = [];
+    
+    for (const configPath of configPaths) {
+      if (fs.existsSync(configPath)) {
+        try {
+          const mcpConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+          
+          if (mcpConfig.mcpServers && typeof mcpConfig.mcpServers === 'object') {
+            const servers = mcpConfig.mcpServers;
+            
+            for (const [serverName, serverConfig] of Object.entries(servers)) {
+              totalServers++;
+              
+              // Validate server configuration structure
+              if (!serverConfig || typeof serverConfig !== 'object') {
+                invalidServers++;
+                issues.push(`Invalid server config for ${serverName} in ${path.basename(configPath)}`);
+                continue;
+              }
+              
+              // Check required fields
+              if (!serverConfig.command) {
+                invalidServers++;
+                issues.push(`Missing command for ${serverName} in ${path.basename(configPath)}`);
+                continue;
+              }
+              
+              // Optional: Check if args is array when present
+              if (serverConfig.args && !Array.isArray(serverConfig.args)) {
+                invalidServers++;
+                issues.push(`Invalid args format for ${serverName} in ${path.basename(configPath)} (should be array)`);
+                continue;
+              }
+              
+              // Optional: Check if env is object when present
+              if (serverConfig.env && typeof serverConfig.env !== 'object') {
+                invalidServers++;
+                issues.push(`Invalid env format for ${serverName} in ${path.basename(configPath)} (should be object)`);
+                continue;
+              }
+              
+              validServers++;
+            }
+          }
+        } catch (error) {
+          // JSON parsing error already handled in other checks
+        }
+      }
+    }
+    
+    if (totalServers === 0) {
+      return {
+        status: 'warn',
+        message: 'No MCP servers configured'
+      };
+    }
+    
+    if (invalidServers === 0) {
+      return {
+        status: 'pass',
+        message: `All ${totalServers} MCP server configurations are valid`
+      };
+    } else if (validServers > 0) {
+      return {
+        status: 'warn',
+        message: `${validServers}/${totalServers} MCP servers valid, ${invalidServers} issues found`
+      };
+    } else {
+      return {
+        status: 'fail',
+        message: `All ${totalServers} MCP server configurations have issues`
+      };
+    }
+  }
+
   checkProjectCommands() {
     const currentDir = process.cwd();
     const commandsDir = path.join(currentDir, '.claude', 'commands');
@@ -619,6 +798,129 @@ class HealthChecker {
         message: `${issuesFound} commands missing $ARGUMENTS placeholder`
       };
     }
+  }
+
+  checkProjectAgents() {
+    const currentDir = process.cwd();
+    const agentsDir = path.join(currentDir, '.claude', 'agents');
+    
+    if (fs.existsSync(agentsDir)) {
+      const agents = this.countAgentsRecursively(agentsDir);
+      return {
+        status: 'pass',
+        message: `${agents} agents found in .claude/agents/`
+      };
+    } else {
+      return {
+        status: 'warn',
+        message: 'No project agents directory found'
+      };
+    }
+  }
+
+  checkPersonalAgents() {
+    const homeDir = os.homedir();
+    const agentsDir = path.join(homeDir, '.claude', 'agents');
+    
+    if (fs.existsSync(agentsDir)) {
+      const agents = this.countAgentsRecursively(agentsDir);
+      return {
+        status: 'pass',
+        message: `${agents} agents found in ~/.claude/agents/`
+      };
+    } else {
+      return {
+        status: 'warn',
+        message: 'No personal agents directory found'
+      };
+    }
+  }
+
+  countAgentsRecursively(dir) {
+    let count = 0;
+    try {
+      const items = fs.readdirSync(dir);
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        const stat = fs.statSync(itemPath);
+        if (stat.isDirectory()) {
+          count += this.countAgentsRecursively(itemPath);
+        } else if (item.endsWith('.md')) {
+          count++;
+        }
+      }
+    } catch (error) {
+      // Handle permission or access errors
+    }
+    return count;
+  }
+
+  checkAgentSyntax() {
+    const currentDir = process.cwd();
+    const agentsDir = path.join(currentDir, '.claude', 'agents');
+    
+    if (!fs.existsSync(agentsDir)) {
+      return {
+        status: 'warn',
+        message: 'No agents to validate'
+      };
+    }
+    
+    const agents = this.getAgentFilesRecursively(agentsDir);
+    let issuesFound = 0;
+    let agentsChecked = 0;
+    
+    for (const agentPath of agents) {
+      try {
+        const content = fs.readFileSync(agentPath, 'utf8');
+        agentsChecked++;
+        
+        // Check for frontmatter (agent metadata)
+        if (!content.includes('---') || !content.includes('name:') || !content.includes('description:')) {
+          issuesFound++;
+        }
+      } catch (error) {
+        issuesFound++;
+      }
+    }
+    
+    if (agentsChecked === 0) {
+      return {
+        status: 'warn',
+        message: 'No agents to validate'
+      };
+    }
+    
+    if (issuesFound === 0) {
+      return {
+        status: 'pass',
+        message: `All ${agentsChecked} agents have proper syntax`
+      };
+    } else {
+      return {
+        status: 'warn',
+        message: `${issuesFound}/${agentsChecked} agents missing proper frontmatter`
+      };
+    }
+  }
+
+  getAgentFilesRecursively(dir) {
+    let files = [];
+    try {
+      const items = fs.readdirSync(dir);
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        const stat = fs.statSync(itemPath);
+        if (stat.isDirectory()) {
+          files = files.concat(this.getAgentFilesRecursively(itemPath));
+        } else if (item.endsWith('.md')) {
+          files.push(itemPath);
+        }
+      }
+    } catch (error) {
+      // Handle permission or access errors
+    }
+    return files;
   }
 
   checkUserHooks() {
@@ -1037,7 +1339,9 @@ class HealthChecker {
       ...this.results.system,
       ...this.results.claudeCode,
       ...this.results.project,
+      ...this.results.agents,
       ...this.results.commands,
+      ...this.results.mcps,
       ...this.results.hooks
     ];
     
@@ -1048,6 +1352,16 @@ class HealthChecker {
           recommendations.push('Consider switching to Zsh for better autocompletion and features');
         } else if (result.check === 'Command Syntax' && result.message.includes('$ARGUMENTS')) {
           recommendations.push('Add $ARGUMENTS placeholder to command files for proper parameter handling');
+        } else if (result.check === 'Agent Syntax' && result.message.includes('frontmatter')) {
+          recommendations.push('Add proper frontmatter (name, description) to agent files');
+        } else if (result.check === 'Project Agents' && result.message.includes('No project agents directory')) {
+          recommendations.push('Create .claude/agents/ directory to organize your custom agents');
+        } else if (result.check === 'Project MCP Config' && result.message.includes('No project MCP configuration')) {
+          recommendations.push('Create .mcp.json file to configure MCP servers for your project');
+        } else if (result.check === 'MCP Config Syntax' && result.message.includes('Invalid JSON')) {
+          recommendations.push('Fix JSON syntax errors in MCP configuration files');
+        } else if (result.check === 'MCP Config Syntax' && result.message.includes('Missing command')) {
+          recommendations.push('Add missing command fields to MCP server configurations');
         } else if (result.check === 'Local Hooks' && result.message.includes('Invalid JSON')) {
           recommendations.push('Fix JSON syntax error in .claude/settings.local.json');
         }

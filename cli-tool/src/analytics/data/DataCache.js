@@ -33,14 +33,14 @@ class DataCache {
       projectStats: new Map(), // projectPath -> { data, timestamp }
     };
     
-    // Cache configuration (reduced TTL for aggressive memory management)
+    // Cache configuration - balanced for performance vs memory
     this.config = {
-      fileContentTTL: 30000, // 30 seconds for file content (reduced from 60s)
-      parsedDataTTL: 15000, // 15 seconds for parsed data (reduced from 30s)
-      computationTTL: 10000, // 10 seconds for expensive computations (reduced from 20s)
-      metadataTTL: 5000, // 5 seconds for metadata (reduced from 10s)
-      processTTL: 500, // 500ms for process data
-      maxCacheSize: 25, // Aggressively reduced to 25 to prevent memory buildup
+      fileContentTTL: 60000, // 1 minute for file content
+      parsedDataTTL: 30000, // 30 seconds for parsed data
+      computationTTL: 20000, // 20 seconds for expensive computations
+      metadataTTL: 10000, // 10 seconds for metadata
+      processTTL: 1000, // 1 second for process data
+      maxCacheSize: 50, // Increased to reduce evictions
     };
     
     // Dependency tracking for smart invalidation

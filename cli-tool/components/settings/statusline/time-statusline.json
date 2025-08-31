@@ -1,0 +1,7 @@
+{
+  "description": "Status line with timestamp showing model, directory, and current time. Useful for tracking session duration and maintaining awareness of time during long coding sessions.",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); TIME=$(date \"+%H:%M\"); echo \"[$MODEL] 📁 ${DIR##*/} | 🕐 $TIME\"'"
+  }
+}

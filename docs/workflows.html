@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Builder - Claude Code Templates</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/workflows.css">
+    <link rel="stylesheet" href="css/workflows-modal.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/modal-helpers.js"></script>
+    <script src="js/workflows-events.js"></script>
+    
+    <script>
+        function openInstallMethod(evt, methodName) {
+            // Hide all method contents
+            var methodcontent = document.getElementsByClassName("method-content");
+            for (var i = 0; i < methodcontent.length; i++) {
+                methodcontent[i].style.display = "none";
+                methodcontent[i].classList.remove("active");
+            }
+            
+            // Remove active class from all tabs
+            var tablinks = document.getElementsByClassName("tab-link");
+            for (var i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            
+            // Show selected method
+            document.getElementById(methodName).style.display = "block";
+            document.getElementById(methodName).classList.add("active");
+            
+            // Add active class to clicked tab
+            evt.currentTarget.classList.add("active");
+        }
+
+        // YAML Accordion toggle
+        function toggleYamlAccordion() {
+            const content = document.getElementById('yamlAccordionContent');
+            const arrow = document.querySelector('.yaml-accordion-arrow');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                arrow.textContent = '▼';
+            } else {
+                content.classList.add('open');
+                arrow.textContent = '▲';
+            }
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <div class="ascii-title">
+                            <pre class="ascii-art"> ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗    ██████╗ ██████╗ ██████╗ ███████╗    ████████╗███████╗███╗   ███╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗
+██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝   ██╔════╝██╔═══██╗██╔══██╗██╔════╝    ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
+██║     ██║     ███████║██║   ██║██║  ██║█████╗     ██║     ██║   ██║██║  ██║█████╗         ██║   █████╗  ██╔████╔██║██████╔╝██║     ███████║   ██║   █████╗  ███████╗
+██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝     ██║     ██║   ██║██║  ██║██╔══╝         ██║   ██╔══╝  ██║╚██╔╝██║██╔═══╝ ██║     ██╔══██║   ██║   ██╔══╝  ╚════██║
+╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗   ╚██████╗╚██████╔╝██████╔╝███████╗       ██║   ███████╗██║ ╚═╝ ██║██║     ███████╗██║  ██║   ██║   ███████╗███████║
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝       ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝</pre>
+                        </div>
+                        <div class="terminal-subtitle">
+                            <span class="status-dot"></span>
+                            Ready-to-use configurations for your Claude Code projects
+                        </div>
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <a href="https://docs.aitmpl.com/" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Docs
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="workflow-container">
+        <!-- Components Library Panel -->
+        <aside class="components-panel">
+            <h3>Components Library</h3>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="componentSearch" placeholder="Search components...">
+            </div>
+
+            <!-- Component Categories -->
+            <div class="component-categories">
+                <div class="category-card" data-category="agents">
+                    <div class="category-card-header">
+                        <span class="category-icon">🤖</span>
+                        <span class="category-title">Agents</span>
+                        <span class="category-count" id="agents-count">0</span>
+                        <span class="category-arrow">▶</span>
+                    </div>
+                    <div class="category-content" id="agents-tree"></div>
+                </div>
+                <div class="category-card" data-category="commands">
+                    <div class="category-card-header">
+                        <span class="category-icon">⚡</span>
+                        <span class="category-title">Commands</span>
+                        <span class="category-count" id="commands-count">0</span>
+                        <span class="category-arrow">▶</span>
+                    </div>
+                    <div class="category-content" id="commands-tree"></div>
+                </div>
+                <div class="category-card" data-category="mcps">
+                    <div class="category-card-header">
+                        <span class="category-icon">🔌</span>
+                        <span class="category-title">MCPs</span>
+                        <span class="category-count" id="mcps-count">0</span>
+                        <span class="category-arrow">▶</span>
+                    </div>
+                    <div class="category-content" id="mcps-tree"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Workflow Builder Canvas -->
+        <div class="workflow-canvas">
+            <div class="canvas-header">
+                <h2>Workflow Builder</h2>
+                <div class="canvas-actions">
+                    <button id="previewWorkflow" class="btn-secondary">Preview Flow</button>
+                    <button id="clearCanvas" class="btn-secondary">Clear All</button>
+                    <button id="generateWorkflow" class="btn-primary">Generate Workflow</button>
+                </div>
+            </div>
+            
+            <div class="workflow-steps" id="workflowSteps">
+                <div class="drop-zone-header">
+                    <div class="workflow-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Agents:</span>
+                            <span id="agentCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Commands:</span>
+                            <span id="commandCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">MCPs:</span>
+                            <span id="mcpCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Steps:</span>
+                            <span id="totalSteps" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="drop-zone">
+                    <div class="drop-zone-content">
+                        <div class="drop-icon">🤖</div>
+                        <p>Drag agents here to start your workflow</p>
+                        <span class="drop-hint">Then add commands and MCPs to each agent</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Generate Workflow Modal -->
+    <div id="generateModal" class="modal">
+        <div class="modal-content workflow-modal">
+            <div class="modal-header">
+                <h3>Workflow Ready</h3>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Method Selection -->
+                <div class="method-tabs">
+                    <button class="tab-link active" onclick="openInstallMethod(event, 'method1')">Quick Install</button>
+                    <button class="tab-link" onclick="openInstallMethod(event, 'method2')">Manual Install</button>
+                </div>
+
+                <!-- Method 1: Quick Install -->
+                <div id="method1" class="method-content active" style="display: block;">
+                    <div class="method-description">
+                        <p>Run a single command to install all components and create your workflow file automatically.</p>
+                    </div>
+                    <div id="promptIndicator" class="prompt-indicator" style="display: none;">
+                        <div class="prompt-icon">🎯</div>
+                        <div class="prompt-content">
+                            <strong>Initial Prompt Included:</strong>
+                            <span id="promptText"></span>
+                        </div>
+                    </div>
+                    <div class="command-container">
+                        <div class="command-scroll">
+                            <code id="fullCommand" class="workflow-command-text"></code>
+                        </div>
+                    </div>
+                    <div class="command-actions">
+                        <button id="copyFullCommand" class="btn-copy-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                            Copy Command
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Method 2: Manual Install -->
+                <div id="method2" class="method-content" style="display: none;">
+                    <div class="method-description">
+                        <p>Install components step by step and customize your workflow file manually.</p>
+                    </div>
+                    <div class="manual-step">
+                        <h5>1. Install Components</h5>
+                        <div class="command-container">
+                            <div class="command-scroll">
+                                <code id="componentsOnlyCommand" class="workflow-command-text"></code>
+                            </div>
+                        </div>
+                        <div class="command-actions">
+                            <button id="copyComponentsCommand" class="btn-copy-primary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>
+                                Copy Command
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="manual-step">
+                        <h5>2. Create Workflow File</h5>
+                        <div class="step-description">
+                            <p>Create a file named <code><span id="workflowFileName">workflow.yaml</span></code> in the <code>.claude/workflows/</code> folder of your project and paste the YAML content below.</p>
+                        </div>
+                        <div class="yaml-actions">
+                            <button id="copyYamlManual" class="btn-copy-secondary">Copy YAML</button>
+                            <button id="downloadYamlManual" class="btn-copy-secondary">Download</button>
+                        </div>
+                    </div>
+                    
+                    <!-- YAML Preview - Only in Manual Install -->
+                    <div class="yaml-section">
+                        <div class="yaml-accordion-header" onclick="toggleYamlAccordion()">
+                            <span>YAML Preview</span>
+                            <span class="yaml-accordion-arrow">▼</span>
+                        </div>
+                        <div class="yaml-accordion-content" id="yamlAccordionContent">
+                            <pre id="yamlContent" class="yaml-preview"></pre>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button id="shareWorkflow" class="btn-secondary">Share</button>
+                <button class="btn-secondary" onclick="document.getElementById('generateModal').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Properties Modal -->
+    <div id="propertiesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Workflow Properties</h3>
+                <span class="close" id="closePropertiesModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="property-section">
+                    <label for="workflowName">Workflow Name</label>
+                    <input type="text" id="workflowName" placeholder="My Awesome Workflow" value="">
+                </div>
+                
+                <div class="property-section">
+                    <label for="workflowDescription">Description</label>
+                    <textarea id="workflowDescription" placeholder="Describe what this workflow does..."></textarea>
+                </div>
+                
+                <div class="property-section">
+                    <label for="workflowTags">Tags</label>
+                    <input type="text" id="workflowTags" placeholder="development, automation, ai">
+                    <small>Comma-separated tags</small>
+                </div>
+                
+                <div class="property-section">
+                    <label for="workflowPrompt">Initial Prompt (Optional)</label>
+                    <textarea id="workflowPrompt" placeholder="e.g., Create a Todo App in React with authentication and routing" rows="3"></textarea>
+                    <small>This prompt will kickstart the workflow execution automatically after installation</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveWorkflowProperties" class="btn-primary">Save and Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Workflow Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Workflow Preview - YAML</h3>
+                <span class="close" id="closePreviewModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="component-content">
+                    <div class="component-preview">
+                        <div class="code-editor">
+                            <div class="code-line-numbers" id="previewLineNumbers"></div>
+                            <div class="code-content">
+                                <pre id="previewYamlContent"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="copyPreviewYaml" class="btn-secondary">Copy YAML</button>
+                <button id="downloadPreviewYaml" class="btn-secondary">Download</button>
+                <button id="closePreviewModalBtn" class="btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component Details Modal -->
+    <div id="componentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="componentModalTitle">Component Details</h3>
+                <span class="close" id="closeComponentModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="component-detail-info">
+                    <div class="detail-item">
+                        <strong>Type:</strong>
+                        <span id="componentModalType"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Category:</strong>
+                        <span id="componentModalCategory"></span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Path:</strong>
+                        <span id="componentModalPath"></span>
+                    </div>
+                </div>
+                <div class="component-description">
+                    <h4>Description</h4>
+                    <div id="componentModalDescription">Loading description...</div>
+                </div>
+                <div class="component-usage">
+                    <h4>Usage</h4>
+                    <div class="usage-command">
+                        <code id="componentModalUsage"></code>
+                        <button id="copyUsageCommand" class="btn-copy">Copy</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="addComponentToWorkflow" class="btn-primary">Add to Workflow</button>
+                <button id="closeComponentModalBtn" class="btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading components...</p>
+    </div>
+
+</body>
+</html>

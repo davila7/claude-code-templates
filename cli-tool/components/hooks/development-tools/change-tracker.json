@@ -1,0 +1,25 @@
+{
+  "description": "Track file changes in a simple log. Records which files were modified and when for easy tracking of Claude Code activity.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] File modified: $CLAUDE_TOOL_FILE_PATH\" >> ~/.claude/changes.log"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] File created: $CLAUDE_TOOL_FILE_PATH\" >> ~/.claude/changes.log"
+          }
+        ]
+      }
+    ]
+  }
+}

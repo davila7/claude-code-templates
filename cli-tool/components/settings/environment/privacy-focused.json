@@ -1,0 +1,10 @@
+{
+  "description": "Maximize privacy by disabling all telemetry, error reporting, and non-essential network traffic. Ideal for sensitive development environments or organizations with strict data privacy requirements.",
+  "env": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_BUG_COMMAND": "1",
+    "DISABLE_AUTOUPDATER": "1"
+  }
+}

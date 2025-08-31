@@ -1,0 +1,7 @@
+{
+  "description": "Display current model, directory, and git branch with change indicators in the status line. Shows model name, folder name, active branch, and count of uncommitted changes for complete development context.",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); BRANCH=\"\"; if git rev-parse --git-dir >/dev/null 2>&1; then BRANCH=\" | 🌿 $(git branch --show-current 2>/dev/null)\"; CHANGES=$(git status --porcelain 2>/dev/null | wc -l); if [ $CHANGES -gt 0 ]; then BRANCH=\"$BRANCH ($CHANGES)\"; fi; fi; echo \"[$MODEL] 📁 ${DIR##*/}$BRANCH\"'"
+  }
+}

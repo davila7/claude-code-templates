@@ -1,0 +1,8 @@
+{
+  "description": "Optimize Claude Code performance by adjusting token limits and disabling non-essential features. Reduces API costs and improves response times for development workflows focused on code quality over conversational features.",
+  "env": {
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "8000",
+    "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1",
+    "DISABLE_COST_WARNINGS": "1"
+  }
+}

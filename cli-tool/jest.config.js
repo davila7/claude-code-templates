@@ -64,7 +64,7 @@ module.exports = {
   restoreMocks: true,
   
   // Module name mapping for frontend tests
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/analytics-web/$1',
     '^@analytics/(.*)$': '<rootDir>/src/analytics/$1'
   },

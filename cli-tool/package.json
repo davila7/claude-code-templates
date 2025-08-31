@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.11.0",
+  "version": "1.20.1",
   "description": "CLI tool to setup Claude Code configurations with framework-specific commands, automation hooks and MCP Servers for your projects",
   "main": "src/index.js",
   "bin": {
@@ -32,7 +32,6 @@
     "dev:link": "npm link",
     "dev:unlink": "npm unlink -g claude-code-templates",
     "pretest:commands": "npm run dev:link",
-    "prepublishOnly": "npm run test:coverage",
     "analytics:start": "node src/analytics.js",
     "analytics:test": "npm run test:analytics"
   },
@@ -71,6 +70,7 @@
     "inquirer": "^8.2.6",
     "open": "^8.4.2",
     "ora": "^5.4.1",
+    "uuid": "^11.1.0",
     "ws": "^8.18.3"
   },
   "engines": {
@@ -87,11 +87,10 @@
   "files": [
     "bin/",
     "src/",
-    "templates/",
     "README.md"
   ],
   "devDependencies": {
     "jest": "^30.0.4",
-    "jest-watch-typeahead": "^2.2.2"
+    "jest-watch-typeahead": "^3.0.1"
   }
 }

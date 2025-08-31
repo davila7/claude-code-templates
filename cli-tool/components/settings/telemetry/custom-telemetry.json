@@ -1,0 +1,7 @@
+{
+  "description": "Custom telemetry configuration with different endpoint.",
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "OTEL_METRICS_EXPORTER": "custom"
+  }
+}

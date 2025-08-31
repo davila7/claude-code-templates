@@ -15,14 +15,15 @@ class ToolDisplay {
    * @returns {string} Safe HTML string
    */
   renderToolUse(toolBlock, toolResults = null) {
-    const toolName = this.escapeHtml(toolBlock.name || 'Unknown');
+    const originalToolName = toolBlock.name || 'Unknown';
+    const toolName = this.escapeHtml(originalToolName);
     const toolId = toolBlock.id ? toolBlock.id.slice(-8) : 'unknown';
     
     // Generate compact command representation
     const commandSummary = this.generateCompactCommand(toolName, toolBlock.input);
     
     // For ALL tools, ALWAYS add a "Show details" button
-    const contentId = toolName.toLowerCase() + '_' + toolId + '_' + Date.now();
+    const contentId = originalToolName.toLowerCase() + '_' + toolId + '_' + Date.now();
     
     // Try to find corresponding tool result in toolResults first
     let matchingResult = null;
@@ -37,6 +38,20 @@ class ToolDisplay {
     if (typeof window !== 'undefined') {
       window.storedContent = window.storedContent || {};
       window.storedContent[contentId] = modalContent;
+      
+      // Store tool data for all supported tools for custom modals
+      const supportedTools = ['Read', 'Edit', 'Write', 'Bash', 'Glob', 'Grep', 'TodoWrite'];
+      if (supportedTools.includes(originalToolName)) {
+        console.log(`🔧 ToolDisplay: Storing ${originalToolName} tool data for contentId:`, contentId);
+        window.storedToolData = window.storedToolData || {};
+        window.storedToolData[contentId] = {
+          name: originalToolName,
+          input: toolBlock.input || {},
+          id: toolBlock.id,
+          isToolDetails: true
+        };
+        console.log(`🔧 ToolDisplay: Stored tool data:`, window.storedToolData[contentId]);
+      }
     }
     
     // Always show "Show details" for ALL tools

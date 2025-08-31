@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "google-ads": {
+      "description": "A FastMCP-powered Model Context Protocol server for Google Ads API integration with automatic OAuth 2.0 authentication",
+      "command": "/full/path/to/your/project/.venv/bin/python",
+      "args": [
+        "/full/path/to/your/project/server.py"
+      ]
+    }
+  }
+}

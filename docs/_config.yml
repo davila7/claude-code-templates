@@ -2,7 +2,7 @@
 title: Claude Code Templates
 description: Browse and install Claude Code configuration templates for different languages and frameworks
 baseurl: ""
-url: "https://davila7.github.io/claude-code-templates"
+url: "https://aitmpl.com"
 
 # Build settings
 markdown: kramdown

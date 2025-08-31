@@ -1,0 +1,8 @@
+{
+  "description": "Configure a custom status line using a shell command that receives session context via JSON stdin. The script can display model name, current directory, git branch, or any dynamic information. Create your script at ~/.claude/statusline.sh and make it executable.",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "description": "Comprehensive permissions for active development. Allows most development tools and operations while maintaining security boundaries. Ideal for trusted development environments where productivity is prioritized.",
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(node:*)",
+      "Bash(git:*)",
+      "Bash(docker:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Read(**/*.json)",
+      "Read(**/*.js)",
+      "Read(**/*.ts)",
+      "Read(**/*.py)",
+      "Edit(**/*.js)",
+      "Edit(**/*.ts)",
+      "Edit(**/*.py)",
+      "Edit(**/*.json)",
+      "Write(**/*.js)",
+      "Write(**/*.ts)",
+      "Write(**/*.py)"
+    ],
+    "deny": [
+      "Read(./.env*)",
+      "Read(./secrets/**)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)"
+    ]
+  }
+}

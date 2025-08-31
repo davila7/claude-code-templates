@@ -1,0 +1,8 @@
+{
+  "description": "Configure timeout settings for bash command execution. Prevents long-running commands from hanging indefinitely while allowing sufficient time for complex operations like builds and deployments.",
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "120000",
+    "BASH_MAX_TIMEOUT_MS": "600000",
+    "BASH_MAX_OUTPUT_LENGTH": "100000"
+  }
+}

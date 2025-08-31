@@ -1,5 +1,49 @@
+# Environment files
 .env
+.env.local
+.env.production
+.env.development
+.env*.local
+
+# Database related files
+*.db
+*.sqlite
+*.sqlite3
+database.json
+db_backup.*
+supabase_data.*
+trending_cache.*
+analytics_data.*
+generate_trending_data.py
+update_trending.sh
+
+# Python cache and virtual environments  
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Dependencies
 node_modules
 dist
 coverage
+
+# System files
 .DS_Store
+.DS_Store?
+._*
+.DS_Storetemp-gh-pages/
+
+# IDE files
+.vscode
+.vscode/*
+.idea/
+*.swp
+*.swo
+
+# Deployment
+.vercel

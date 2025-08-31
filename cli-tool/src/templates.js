@@ -6,10 +6,7 @@ const TEMPLATES_CONFIG = {
     name: 'Common (Language-agnostic)',
     description: 'Universal configuration for any project',
     files: [
-      { source: 'common/CLAUDE.md', destination: 'CLAUDE.md' },
-      { source: 'common/.claude', destination: '.claude' },
-      { source: 'common/.claude/settings.json', destination: '.claude/settings.json' },
-      { source: 'common/.mcp.json', destination: '.mcp.json' }
+      { source: 'common/CLAUDE.md', destination: 'CLAUDE.md' }
     ]
   },
   'javascript-typescript': {

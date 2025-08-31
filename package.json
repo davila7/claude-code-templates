@@ -1,0 +1,28 @@
+{
+  "name": "claude-code-templates",
+  "version": "1.0.0",
+  "description": "Component templates and tracking system for Claude Code",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "start": "vercel dev",
+    "test": "echo 'No tests specified'",
+    "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0"
+  },
+  "keywords": [
+    "claude-code",
+    "templates", 
+    "components",
+    "tracking",
+    "analytics"
+  ],
+  "author": "Claude Code Templates",
+  "license": "MIT"
+}

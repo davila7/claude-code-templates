@@ -25,14 +25,14 @@ function getAvailableCommands(language) {
   }
   
   // Scan framework-specific commands in examples
-  const examplesDir = path.join(languageDir, 'examples');
-  if (fs.existsSync(examplesDir)) {
-    const frameworkDirs = fs.readdirSync(examplesDir).filter(dir => {
-      return fs.statSync(path.join(examplesDir, dir)).isDirectory();
+  const frameworksDir = path.join(languageDir, 'examples');
+  if (fs.existsSync(frameworksDir)) {
+    const frameworkDirs = fs.readdirSync(frameworksDir).filter(dir => {
+      return fs.statSync(path.join(frameworksDir, dir)).isDirectory();
     });
     
     frameworkDirs.forEach(framework => {
-      const frameworkCommandsDir = path.join(examplesDir, framework, '.claude', 'commands');
+      const frameworkCommandsDir = path.join(frameworksDir, framework, '.claude', 'commands');
       if (fs.existsSync(frameworkCommandsDir)) {
         const frameworkCommands = scanCommandsInDirectory(frameworkCommandsDir, framework);
         commands.push(...frameworkCommands);

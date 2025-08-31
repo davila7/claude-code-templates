@@ -101,7 +101,7 @@ class ConversationAnalyzer {
 
         try {
           // Extract project name from path
-          const projectFromPath = this.extractProjectFromPath(filePath);
+          const projectFromPath = await this.extractProjectFromPath(filePath);
 
           // Use cached parsed conversation if available
           const parsedMessages = await this.getParsedConversation(filePath);
@@ -112,6 +112,9 @@ class ConversationAnalyzer {
 
           // Calculate tool usage data with caching
           const toolUsage = await this.getCachedToolUsage(filePath, parsedMessages);
+
+          const projectFromConversation = await this.extractProjectFromConversation(filePath);
+          const finalProject = projectFromConversation || projectFromPath;
 
           const conversation = {
             id: filename.replace('.jsonl', ''),
@@ -125,7 +128,7 @@ class ConversationAnalyzer {
             tokenUsage: tokenUsage,
             modelInfo: modelInfo,
             toolUsage: toolUsage,
-            project: projectFromPath || this.extractProjectFromConversation(parsedMessages),
+            project: finalProject,
             status: stateCalculator.determineConversationStatus(parsedMessages, stats.mtime),
             conversationState: stateCalculator.determineConversationState(parsedMessages, stats.mtime),
             statusSquares: await this.getCachedStatusSquares(filePath, parsedMessages),
@@ -433,11 +436,11 @@ class ConversationAnalyzer {
   }
 
   /**
-   * Extract project name from Claude directory file path
+   * Extract project name from Claude directory file path using settings.json
    * @param {string} filePath - Full path to conversation file
-   * @returns {string|null} Project name or null
+   * @returns {Promise<string|null>} Project name or null
    */
-  extractProjectFromPath(filePath) {
+  async extractProjectFromPath(filePath) {
     // Extract project name from file path like:
     // /Users/user/.claude/projects/-Users-user-Projects-MyProject/conversation.jsonl
     const pathParts = filePath.split('/');
@@ -445,34 +448,73 @@ class ConversationAnalyzer {
 
     if (projectIndex !== -1 && projectIndex + 1 < pathParts.length) {
       const projectDir = pathParts[projectIndex + 1];
-      // Clean up the project directory name
-      const cleanName = projectDir
-        .replace(/^-/, '')
-        .replace(/-/g, '/')
-        .split('/')
-        .pop() || 'Unknown';
-
-      return cleanName;
+      
+      // Try to read the settings.json file for this project
+      try {
+        const projectPath = path.join(path.dirname(filePath)); // Directory containing the conversation file
+        const settingsPath = path.join(projectPath, 'settings.json');
+        
+        if (await fs.pathExists(settingsPath)) {
+          const settingsContent = await fs.readFile(settingsPath, 'utf8');
+          const settings = JSON.parse(settingsContent);
+          
+          if (settings.projectName) {
+            return settings.projectName;
+          }
+          
+          // If no projectName in settings, try to extract from projectPath
+          if (settings.projectPath) {
+            return path.basename(settings.projectPath);
+          }
+        }
+      } catch (error) {
+        // If we can't read settings.json, fall back to parsing the directory name
+        console.warn(chalk.yellow(`Warning: Could not read settings.json for project ${projectDir}:`, error.message));
+      }
+      
+      // Fallback: we'll extract project name from conversation content instead
+      // For now, return null to trigger reading from conversation file
+      return null;
     }
 
     return null;
   }
 
+
   /**
    * Attempt to extract project information from conversation content
-   * @param {Array} messages - Array of message objects
-   * @returns {string} Project name or 'Unknown'
+   * @param {string} filePath - Path to the conversation file
+   * @returns {Promise<string>} Project name or 'Unknown'
    */
-  extractProjectFromConversation(messages) {
-    // Try to extract project information from conversation
-    for (const message of messages.slice(0, 5)) {
-      if (message.content && typeof message.content === 'string') {
-        const pathMatch = message.content.match(/\/([^\/\s]+)$/);
-        if (pathMatch) {
-          return pathMatch[1];
+  async extractProjectFromConversation(filePath) {
+    try {
+      // Read the conversation file and look for cwd field
+      const content = await this.getFileContent(filePath);
+      const lines = content.trim().split('\n').filter(line => line.trim());
+      
+      for (const line of lines.slice(0, 10)) { // Check first 10 lines
+        try {
+          const item = JSON.parse(line);
+          
+          // Look for cwd field in the message
+          if (item.cwd) {
+            const projectName = path.basename(item.cwd);
+            return projectName;
+          }
+          
+          // Also check if it's in nested objects
+          if (item.message && item.message.cwd) {
+            return path.basename(item.message.cwd);
+          }
+        } catch (parseError) {
+          // Skip invalid JSON lines
+          continue;
         }
       }
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not extract project from conversation ${filePath}:`, error.message));
     }
+    
     return 'Unknown';
   }
 

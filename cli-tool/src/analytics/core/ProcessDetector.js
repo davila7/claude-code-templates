@@ -29,22 +29,38 @@ class ProcessDetector {
 
     return new Promise((resolve) => {
       // Search for processes containing 'claude' but exclude our own analytics process and system processes
-      exec('ps aux | grep -i claude | grep -v grep | grep -v analytics | grep -v "/Applications/Claude.app" | grep -v "npm start"', (error, stdout) => {
+      exec('ps aux | grep -i claude | grep -v grep | grep -v analytics | grep -v "/Applications/Claude.app" | grep -v "npm start" | grep -v chats-mobile', (error, stdout) => {
         if (error) {
           resolve([]);
           return;
         }
         
+        console.log('🔍 Raw Claude processes output:', stdout); // Debug output
+        
         const processes = stdout.split('\n')
           .filter(line => line.trim())
           .filter(line => {
-            // Only include actual Claude CLI processes, not system processes
+            // More flexible Claude CLI process detection
             const fullCommand = line.split(/\s+/).slice(10).join(' ');
-            return fullCommand.includes('claude') && 
-                   !fullCommand.includes('chrome_crashpad_handler') &&
-                   !fullCommand.includes('create-claude-config') &&
-                   !fullCommand.includes('node bin/') &&
-                   fullCommand.trim() === 'claude'; // Only the basic claude command
+            const isClaudeProcess = (
+              fullCommand.includes('claude') &&
+              !fullCommand.includes('chrome_crashpad_handler') &&
+              !fullCommand.includes('create-claude-config') &&
+              !fullCommand.includes('chats-mobile') &&
+              !fullCommand.includes('analytics') &&
+              // Allow various Claude CLI invocations
+              (fullCommand.trim() === 'claude' || 
+               fullCommand.includes('claude --') ||
+               fullCommand.includes('claude ') ||
+               fullCommand.includes('/claude') ||
+               fullCommand.includes('bin/claude'))
+            );
+            
+            if (isClaudeProcess) {
+              console.log('✅ Found Claude process:', fullCommand);
+            }
+            
+            return isClaudeProcess;
           })
           .map(line => {
             const parts = line.split(/\s+/);

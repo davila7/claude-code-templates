@@ -1,0 +1,7 @@
+{
+  "description": "A theatrical display of coding emotions and activities. Random mood faces and dynamic activity detection based on file types present in your project. Displays: Random mood faces (😴 sleepy, 😅 laughing, 🤔 thinking, 😎 cool, 🤯 exploding, 🥳 partying, 😤 huffing, 🤖 robotic), Programming activity (🐍 Python, 🌐 JavaScript, 🦀 Rust, 💻 generic), Random energy percentage (1-100%), Current time (HH:MM format).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); MOOD_FACES=(\"😴\" \"😅\" \"🤔\" \"😎\" \"🤯\" \"🥳\" \"😤\" \"🤖\"); MOOD=${MOOD_FACES[$((RANDOM % ${#MOOD_FACES[@]}))]}; ACTIVITY=$([ -f \"*.py\" ] && echo \"🐍 Pythoning\" || [ -f \"*.js\" ] && echo \"🌐 JSing\" || [ -f \"*.rs\" ] && echo \"🦀 Rusting\" || echo \"💻 Coding\"); TIME=$(date \"+%H:%M\"); ENERGY=$((RANDOM % 100 + 1)); echo \"[$MODEL] $MOOD $ACTIVITY | ⚡$ENERGY% | 🕐 $TIME | 📁 ${DIR##*/}\"'"
+  }
+}

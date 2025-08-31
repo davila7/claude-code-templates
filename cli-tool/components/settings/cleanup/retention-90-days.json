@@ -1,0 +1,4 @@
+{
+  "description": "Set chat transcript retention to 90 days for extended history.",
+  "cleanupPeriodDays": 90
+}

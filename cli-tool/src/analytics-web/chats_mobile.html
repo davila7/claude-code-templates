@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Analytics - Chats</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* Terminal theme - black and orange */
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #ffffff;
+            --text-secondary: #8b949e;
+            --text-accent: #ff6b35;
+            --text-success: #3fb950;
+            --text-warning: #d29922;
+            --text-error: #da3633;
+            --border-primary: #30363d;
+            --border-secondary: #40464e;
+            --shadow: rgba(0, 0, 0, 0.5);
+            
+            /* Terminal specific colors */
+            --terminal-orange: #ff6b35;
+            --terminal-orange-hover: #ff8659;
+            --terminal-dark: #0d1117;
+            --terminal-gray: #21262d;
+            
+            /* Message bubble colors */
+            --message-received: #cc5500; /* Warm orange for received messages */
+            --message-sent: #1e7e34; /* Darker green for sent messages */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Mobile-first chat app layout */
+        .chat-app {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Mobile sidebar (conversations list) */
+        .chat-sidebar {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Chat sidebar header */
+        .chat-header {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            min-height: 64px;
+        }
+
+        .chat-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .chat-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            color: var(--terminal-orange);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 107, 53, 0.15);
+            border-color: rgba(255, 107, 53, 0.3);
+            color: var(--terminal-orange);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+        }
+
+        .header-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(255, 107, 53, 0.2);
+        }
+
+        .back-btn {
+            background: rgba(255, 107, 53, 0.15) !important;
+            border: 1px solid rgba(255, 107, 53, 0.3) !important;
+            color: var(--terminal-orange) !important;
+            font-size: 1.2rem !important;
+            font-weight: 700 !important;
+            padding: 8px 12px !important;
+            min-width: 40px !important;
+            text-align: center !important;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 107, 53, 0.2) !important;
+            border-color: rgba(255, 107, 53, 0.4) !important;
+        }
+
+        /* Search bar */
+        .chat-search {
+            padding: 16px 20px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 24px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--terminal-orange);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Conversations list */
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        .conversation-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .conversation-item.active {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--terminal-orange);
+        }
+
+        .conversation-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--terminal-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 16px;
+            flex-shrink: 0;
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+
+        .conversation-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .conversation-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .conversation-preview {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: 1.3;
+        }
+
+        .conversation-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .conversation-state {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        /* Working states - Green (Claude is actively working) */
+        .state-working { 
+            background: rgba(40, 167, 69, 0.15); 
+            color: #28a745; 
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            animation: pulse-working 2s infinite;
+        }
+
+        @keyframes pulse-working {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Active states - Blue/Cyan (Recent activity, ready) */
+        .state-active { 
+            background: rgba(23, 162, 184, 0.15); 
+            color: #17a2b8; 
+            border: 1px solid rgba(23, 162, 184, 0.3);
+        }
+
+        /* Waiting/Responding states - Orange (Waiting for input/response) */
+        .state-waiting { 
+            background: rgba(255, 193, 7, 0.15); 
+            color: #ffc107; 
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .state-responding { 
+            background: rgba(255, 152, 0, 0.15); 
+            color: #ff9800; 
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+
+        /* Typing states - Purple (User interaction) */
+        .state-typing { 
+            background: rgba(156, 39, 176, 0.15); 
+            color: #9c27b0; 
+            border: 1px solid rgba(156, 39, 176, 0.3);
+        }
+
+        /* Idle states - Gray (Inactive but not old) */
+        .state-idle { 
+            background: rgba(108, 117, 125, 0.15); 
+            color: #6c757d; 
+            border: 1px solid rgba(108, 117, 125, 0.3);
+        }
+
+        /* Inactive states - Red/Gray (Old conversations) */
+        .state-inactive { 
+            background: rgba(134, 142, 150, 0.1); 
+            color: #868e96; 
+            border: 1px solid rgba(134, 142, 150, 0.2);
+        }
+
+        /* Special states */
+        .state-recent { 
+            background: rgba(0, 123, 255, 0.15); 
+            color: #007bff; 
+            border: 1px solid rgba(0, 123, 255, 0.3);
+        }
+
+        .state-finishing { 
+            background: rgba(40, 167, 69, 0.2); 
+            color: #28a745; 
+            border: 1px solid rgba(40, 167, 69, 0.4);
+        }
+
+        .state-empty { 
+            background: rgba(184, 188, 200, 0.1); 
+            color: var(--text-secondary); 
+            border: 1px solid rgba(184, 188, 200, 0.2);
+        }
+
+        /* Hover effects */
+        .conversation-state:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .message-count {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--terminal-orange);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Message styles - matching AgentsPage.js format */
+        .messages-list {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+        }
+
+        .message-user {
+            align-self: flex-end;
+        }
+
+        .message-assistant {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            position: relative;
+        }
+
+        .message-user .message-bubble .message-content {
+            background: var(--message-sent);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 18px 18px 4px 18px;
+            font-size: 1rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message-assistant .message-bubble .message-content {
+            background: var(--terminal-dark);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border: 2px solid var(--message-received);
+            border-radius: 8px;
+            font-size: 1rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .message-user .message-meta {
+            justify-content: flex-end;
+        }
+
+        .message-assistant .message-meta {
+            justify-content: flex-start;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .tool-indicator {
+            color: var(--terminal-orange);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+
+        .token-indicator {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.6rem;
+        }
+
+        /* Code formatting in messages */
+        .message-content pre {
+            background: var(--terminal-dark);
+            color: #ffab70;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-primary);
+        }
+
+        .message-content code {
+            background: var(--terminal-gray);
+            color: #ffab70;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+            color: #ffab70;
+        }
+
+        .message-content em {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        /* Expandable message styles */
+        .expandable-message {
+            width: 100%;
+        }
+
+        .message-expand-link {
+            color: var(--terminal-orange);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding: 4px 0;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .message-expand-link:hover {
+            color: var(--terminal-orange-hover);
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .message-collapse-link {
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            padding: 4px 0;
+            border-top: 1px solid var(--border-primary);
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .message-collapse-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tool call and result styles */
+        .tool-call {
+            margin: 8px 0;
+            padding: 8px 0;
+            background: none;
+        }
+
+        .tool-summary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .tool-summary:hover {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .tool-bullet {
+            color: var(--terminal-orange);
+            font-weight: bold;
+        }
+
+        .tool-name {
+            font-weight: bold;
+            color: var(--terminal-orange);
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        .tool-summary-text {
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            flex-shrink: 1;
+        }
+
+        .tool-expand-note {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-expand-note:hover {
+            color: var(--terminal-orange);
+        }
+
+        .tool-branch {
+            color: var(--text-secondary);
+        }
+
+        .tool-note {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .tool-parameters {
+            margin-top: 8px;
+            border-top: 1px solid var(--border-primary);
+            padding-top: 8px;
+        }
+
+        .tool-parameters-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            margin-bottom: 8px;
+        }
+
+        .tool-param-title {
+            font-weight: bold;
+        }
+
+        .tool-parameters-content {
+            background: var(--terminal-dark);
+            color: var(--terminal-orange);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 0;
+            border: 1px solid var(--border-primary);
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .tool-result {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .tool-result-header {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-result-content {
+            padding: 12px;
+        }
+
+        .tool-result-content pre {
+            background: var(--terminal-dark);
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        /* Expandable tool result styles */
+        .expandable-tool-result {
+            width: 100%;
+        }
+
+        .tool-result-expand-link {
+            color: var(--terminal-orange);
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            padding: 6px 12px;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
+            text-align: center;
+            transition: all 0.2s ease;
+            background: rgba(255, 107, 53, 0.05);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .tool-result-expand-link:hover {
+            color: var(--terminal-orange-hover);
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .tool-result-collapse-link {
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-top: 8px;
+            padding: 4px 8px;
+            border-top: 1px solid var(--border-primary);
+            text-align: center;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tool-result-collapse-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Loading and error states */
+        .messages-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .messages-loading .loading-spinner {
+            margin-bottom: 12px;
+        }
+
+        .no-messages-found {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-messages-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .error-loading-messages {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-error);
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .retry-messages {
+            background: var(--terminal-orange);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 12px;
+            transition: background-color 0.2s ease;
+        }
+
+        .retry-messages:hover {
+            background: var(--terminal-orange-hover);
+        }
+
+        /* Chat view (initially hidden) */
+        .chat-view {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            position: absolute;
+            top: 0;
+            left: 100%;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            transition: left 0.3s ease;
+        }
+
+        .chat-view.active {
+            left: 0;
+        }
+
+        /* Chat view header */
+        .chat-view-header {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            min-height: 64px;
+        }
+
+        .chat-view-back {
+            margin-right: 16px;
+        }
+
+        .chat-view-info {
+            flex: 1;
+        }
+
+        .chat-view-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .chat-view-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Tools toggle switch */
+        .tools-toggle {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .chat-view.conversation-selected .tools-toggle {
+            opacity: 1;
+        }
+
+        .tools-toggle-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: 0.3s;
+            border-radius: 12px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #cc5500;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .toggle-switch input:hover + .toggle-slider {
+            background-color: #666;
+        }
+
+        .toggle-switch input:checked:hover + .toggle-slider {
+            background-color: #e66600;
+        }
+
+        /* Hide complete assistant messages with tools when toggle is off */
+        .chat-view:not(.show-tools) .message-assistant.has-tools {
+            display: none !important;
+        }
+
+        /* Messages area */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 80px; /* Space for status footer */
+            background: var(--bg-primary);
+        }
+
+        /* Loading states */
+        .loading-spinner {
+            border: 2px solid var(--border-primary);
+            border-top: 2px solid var(--terminal-orange);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-conversations {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Status Footer */
+        .status-footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-primary);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 50px;
+            position: sticky;
+            bottom: 0;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.ready {
+            background: #28a745;
+            box-shadow: 0 0 6px rgba(40, 167, 69, 0.4);
+        }
+
+        .status-dot.working {
+            background: var(--terminal-orange);
+            box-shadow: 0 0 6px rgba(255, 107, 53, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.waiting {
+            background: #ffc107;
+            box-shadow: 0 0 6px rgba(255, 193, 7, 0.4);
+        }
+
+        .status-dot.error {
+            background: #dc3545;
+            box-shadow: 0 0 6px rgba(220, 53, 69, 0.4);
+        }
+
+        .status-dot.idle {
+            background: var(--text-secondary);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .status-text {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-details {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        /* Hide status footer when no conversation is selected */
+        .chat-view:not(.conversation-selected) .status-footer {
+            display: none;
+        }
+
+        .no-conversations-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 769px) {
+            .chat-app {
+                /* On larger screens, show side-by-side if needed */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-app" id="chatApp">
+        <!-- Conversations List (Mobile Sidebar) -->
+        <div class="chat-sidebar" id="chatSidebar">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-content">
+                    <h1 class="chat-title">Claude Code Chats</h1>
+                    <div class="header-actions">
+                        <button class="header-btn" id="refreshBtn" title="Refresh">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="chat-search">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search conversations..." 
+                    id="searchInput"
+                />
+            </div>
+
+            <!-- Conversations List -->
+            <div class="conversations-list" id="conversationsList">
+                <div class="loading-spinner" style="margin: 40px auto;"></div>
+            </div>
+        </div>
+
+        <!-- Chat View -->
+        <div class="chat-view" id="chatView">
+            <div class="chat-view-header">
+                <button class="header-btn back-btn chat-view-back" id="backToList">
+                    ←
+                </button>
+                <div class="chat-view-info">
+                    <h2 class="chat-view-title" id="chatViewTitle">Select a conversation</h2>
+                    <p class="chat-view-subtitle" id="chatViewSubtitle"></p>
+                </div>
+                <div class="tools-toggle" id="toolsToggle">
+                    <span class="tools-toggle-label" onclick="document.getElementById('showToolsSwitch').click()">Show Tools</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showToolsSwitch" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="no-conversations">
+                    <div class="no-conversations-icon">💬</div>
+                    <h3>No conversation selected</h3>
+                    <p>Choose a conversation from the list to view messages</p>
+                </div>
+            </div>
+            
+            <!-- Status Footer -->
+            <div class="status-footer" id="statusFooter">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="status-text" id="statusText">Ready</span>
+                </div>
+                <div class="status-details" id="statusDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import WebSocket and Data Services -->
+    <script src="services/WebSocketService.js"></script>
+    <script src="services/DataService.js"></script>
+    <script src="services/StateService.js"></script>
+
+    <script>
+        class ChatsMobileApp {
+            constructor() {
+                this.conversations = [];
+                this.selectedConversationId = null;
+                this.loadedMessages = new Map(); // Cache messages by conversation ID (stores paginated data)
+                
+                // Pagination state for messages
+                this.messagesPagination = {
+                    currentPage: 0,
+                    limit: 15, // Load 15 messages per page
+                    hasMore: true,
+                    isLoading: false,
+                    conversationId: null
+                };
+                
+                // Message scroll listener reference
+                this.messagesScrollListener = null;
+                
+                // Tools visibility state
+                this.showTools = true;
+                
+                // Auto-scroll state tracking
+                this.isUserScrolling = false;
+                this.autoScrollEnabled = true;
+                this.scrollThreshold = 100; // pixels from bottom to consider "at bottom"
+                this.userScrollTimeout = null;
+                
+                // Initialize services for real-time updates
+                this.webSocketService = new WebSocketService();
+                this.stateService = new StateService();
+                this.dataService = new DataService(this.webSocketService);
+                
+                this.init();
+            }
+
+            async init() {
+                this.bindEvents();
+                this.setupRealTimeUpdates();
+                this.loadToolsPreference();
+                await this.loadConversations();
+            }
+
+            bindEvents() {
+                // Refresh conversations
+                document.getElementById('refreshBtn').addEventListener('click', () => {
+                    this.loadConversations();
+                });
+
+                // Back to conversations list
+                document.getElementById('backToList').addEventListener('click', () => {
+                    this.showConversationsList();
+                });
+
+                // Search functionality
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', (e) => {
+                    this.filterConversations(e.target.value);
+                });
+
+                // Show Tools toggle functionality
+                const showToolsSwitch = document.getElementById('showToolsSwitch');
+                showToolsSwitch.addEventListener('change', (e) => {
+                    this.toggleTools(e.target.checked);
+                });
+            }
+
+            setupRealTimeUpdates() {
+                console.log('🔧 Setting up real-time updates...');
+                
+                // Subscribe to DataService events for real-time updates
+                this.dataService.addEventListener((type, data) => {
+                    console.log('📡 DataService event:', type, data);
+                    if (type === 'new_message') {
+                        console.log('🔄 WebSocket: New message received', { conversationId: data.conversationId });
+                        this.handleNewMessage(data.conversationId, data.message, data.metadata);
+                    }
+                });
+
+                // Try to connect WebSocket
+                try {
+                    console.log('🌐 Attempting WebSocket connection...');
+                    this.webSocketService.connect();
+                    
+                    // Log WebSocket connection status
+                    setTimeout(() => {
+                        const status = this.webSocketService.getStatus();
+                        console.log('🔗 WebSocket status:', status);
+                    }, 2000);
+                } catch (error) {
+                    console.warn('WebSocket connection failed, using fallback polling:', error);
+                }
+            }
+
+            async loadConversations() {
+                const conversationsList = document.getElementById('conversationsList');
+                
+                try {
+                    conversationsList.innerHTML = '<div class="loading-spinner" style="margin: 40px auto;"></div>';
+                    
+                    // Fetch conversations and states simultaneously (like AgentsPage.js)
+                    const [conversationsResponse, statesResponse] = await Promise.all([
+                        fetch('/api/conversations'),
+                        fetch('/api/conversation-state') // Use singular like AgentsPage.js
+                    ]);
+                    
+                    if (!conversationsResponse.ok) {
+                        throw new Error(`HTTP error! status: ${conversationsResponse.status}`);
+                    }
+                    
+                    const conversationsData = await conversationsResponse.json();
+                    this.conversations = conversationsData.conversations || [];
+                    
+                    // Get conversation states (like AgentsPage.js)
+                    let states = {};
+                    if (statesResponse.ok) {
+                        const statesData = await statesResponse.json();
+                        states = statesData.activeStates || {};
+                        console.log('📊 Loaded conversation states:', Object.keys(states).length, 'conversations');
+                    } else {
+                        console.warn('Could not load conversation states:', statesResponse.status);
+                    }
+                    
+                    this.renderConversations(this.conversations, states);
+                    
+                } catch (error) {
+                    console.error('Error loading conversations:', error);
+                    conversationsList.innerHTML = `
+                        <div class="no-conversations">
+                            <div class="no-conversations-icon">⚠️</div>
+                            <h3>Error loading conversations</h3>
+                            <p>${error.message}</p>
+                            <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: var(--text-accent); color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+                        </div>
+                    `;
+                }
+            }
+
+            renderConversations(conversations, states = {}) {
+                const conversationsList = document.getElementById('conversationsList');
+                
+                if (conversations.length === 0) {
+                    conversationsList.innerHTML = `
+                        <div class="no-conversations">
+                            <div class="no-conversations-icon">💬</div>
+                            <h3>No conversations found</h3>
+                            <p>Start a conversation with Claude Code to see it here</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                conversationsList.innerHTML = conversations.map(conv => {
+                    const state = states[conv.id] || 'inactive';
+                    const stateClass = this.getStateClass(state);
+                    const stateLabel = this.getStateLabel(state);
+                    
+                    // Debug logging for first few conversations
+                    console.log(`🔍 Conversation ${conv.id.slice(-8)}: State="${state}" -> Label="${stateLabel}" Class="${stateClass}"`);
+                    
+                    const lastActivity = this.formatRelativeTime(new Date(conv.lastModified));
+                    const messageCount = conv.messageCount || 0;
+                    const projectName = conv.project || 'Unknown Project';
+                    const conversationId = conv.id.slice(-8);
+                    
+                    // Get first letter of project name for avatar
+                    const firstLetter = projectName.charAt(0).toUpperCase();
+                    
+                    return `
+                        <div class="conversation-item" data-conversation-id="${conv.id}">
+                            <div class="conversation-avatar">
+                                ${firstLetter}
+                            </div>
+                            <div class="conversation-content">
+                                <div class="conversation-header">
+                                    <div class="conversation-name">${projectName}</div>
+                                    <div class="conversation-time">${lastActivity}</div>
+                                </div>
+                                <div class="conversation-preview">
+                                    Conversation ${conversationId}
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-state ${stateClass}">${stateLabel}</span>
+                                    ${messageCount > 0 ? `<span class="message-count">${messageCount}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Bind conversation click events
+                conversationsList.querySelectorAll('.conversation-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const conversationId = item.dataset.conversationId;
+                        this.selectConversation(conversationId);
+                    });
+                });
+            }
+
+            selectConversation(conversationId) {
+                this.selectedConversationId = conversationId;
+                
+                // Update active state
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.conversationId === conversationId);
+                });
+
+                // Show chat view
+                this.showChatView(conversationId);
+            }
+
+            showChatView(conversationId) {
+                const conversation = this.conversations.find(conv => conv.id === conversationId);
+                if (!conversation) return;
+
+                const chatView = document.getElementById('chatView');
+                const chatViewTitle = document.getElementById('chatViewTitle');
+                const chatViewSubtitle = document.getElementById('chatViewSubtitle');
+                
+                // Update chat view header
+                const projectName = conversation.project || 'Unknown Project';
+                const convId = conversation.id.slice(-8);
+                chatViewTitle.textContent = projectName;
+                chatViewSubtitle.textContent = `Conversation ${convId}`;
+                
+                // Show chat view with animation
+                chatView.classList.add('active');
+                
+                // Apply tools visibility state
+                if (this.showTools) {
+                    chatView.classList.add('show-tools');
+                } else {
+                    chatView.classList.remove('show-tools');
+                }
+                
+                // Load messages (placeholder for now)
+                this.loadChatMessages(conversationId);
+            }
+
+            showConversationsList() {
+                const chatView = document.getElementById('chatView');
+                chatView.classList.remove('active');
+                chatView.classList.remove('conversation-selected'); // Hide status footer
+                this.selectedConversationId = null;
+                
+                // Clean up scroll tracking when leaving conversation
+                this.removeScrollTracking();
+                
+                // Remove active state from conversations
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Reset status
+                this.updateStatus('idle', 'Ready', '');
+            }
+
+            async loadChatMessages(conversationId) {
+                const chatView = document.getElementById('chatView');
+                
+                // Mark conversation as selected and show status footer
+                chatView.classList.add('conversation-selected');
+                
+                // Reset pagination for new conversation
+                this.messagesPagination = {
+                    currentPage: 0,
+                    limit: 15,
+                    hasMore: true,
+                    isLoading: false,
+                    conversationId: conversationId
+                };
+                
+                // Clear cached messages for this conversation
+                this.loadedMessages.delete(conversationId);
+                
+                // Load first page of messages
+                await this.loadMoreMessages(conversationId, true);
+            }
+
+            /**
+             * Load more messages (for infinite scroll)
+             * @param {string} conversationId - Conversation ID
+             * @param {boolean} isInitialLoad - Whether this is the initial load
+             */
+            async loadMoreMessages(conversationId, isInitialLoad = false) {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages) return;
+                
+                // Prevent concurrent loading
+                if (this.messagesPagination.isLoading || !this.messagesPagination.hasMore) {
+                    return;
+                }
+                
+                // Ensure we're loading for the correct conversation
+                if (this.messagesPagination.conversationId !== conversationId) {
+                    return;
+                }
+                
+                try {
+                    this.messagesPagination.isLoading = true;
+                    
+                    if (isInitialLoad) {
+                        // Show loading state for initial load
+                        chatMessages.innerHTML = `
+                            <div class="messages-loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading messages...</span>
+                            </div>
+                        `;
+                        // Update status while loading
+                        this.updateStatus('working', 'Loading conversation...', 'Fetching messages from server');
+                    } else {
+                        // Show loading indicator at top for infinite scroll
+                        this.showMessagesLoadingIndicator(true);
+                    }
+                    
+                    // Fetch paginated messages from the server
+                    const response = await fetch(`/api/conversations/${conversationId}/messages?page=${this.messagesPagination.currentPage}&limit=${this.messagesPagination.limit}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const messagesData = await response.json();
+                    
+                    if (messagesData && messagesData.messages) {
+                        // Update pagination state - handle both paginated and non-paginated responses
+                        if (messagesData.pagination) {
+                            // Paginated response
+                            this.messagesPagination.hasMore = messagesData.pagination.hasMore;
+                            this.messagesPagination.currentPage = messagesData.pagination.page + 1;
+                        } else {
+                            // Non-paginated response (fallback) - treat as complete data
+                            this.messagesPagination.hasMore = false;
+                            this.messagesPagination.currentPage = 1;
+                        }
+                        
+                        // Get existing messages or initialize
+                        let existingMessages = this.loadedMessages.get(conversationId) || [];
+                        
+                        if (isInitialLoad) {
+                            // For initial load, replace all messages (newest messages first)
+                            existingMessages = messagesData.messages;
+                        } else {
+                            // For infinite scroll, prepend older messages to the beginning
+                            existingMessages = [...messagesData.messages, ...existingMessages];
+                        }
+                        
+                        // Cache the combined messages
+                        this.loadedMessages.set(conversationId, existingMessages);
+                        
+                        // Render messages
+                        this.renderCachedMessages(existingMessages, !isInitialLoad);
+                        
+                        // Setup scroll listener for infinite scroll (only on initial load)
+                        if (isInitialLoad) {
+                            this.setupMessagesScrollListener(conversationId);
+                            // Setup intelligent scroll tracking for chat behavior
+                            this.setupScrollTracking();
+                            // Enable auto-scroll for initial load
+                            this.autoScrollEnabled = true;
+                            // Scroll to bottom for initial load
+                            this.scrollToBottom();
+                            // Update status based on conversation state
+                            this.analyzeConversationStatus(existingMessages);
+                        }
+                        
+                    } else if (isInitialLoad) {
+                        chatMessages.innerHTML = `
+                            <div class="no-messages-found">
+                                <div class="no-messages-icon">💭</div>
+                                <h4>No messages found</h4>
+                                <p>This conversation has no messages or they could not be loaded.</p>
+                            </div>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading messages:', error);
+                    
+                    if (isInitialLoad) {
+                        this.updateStatus('error', 'Error loading conversation', error.message);
+                        chatMessages.innerHTML = `
+                            <div class="error-loading-messages">
+                                <div class="error-icon">⚠️</div>
+                                <h4>Error loading messages</h4>
+                                <p>${error.message}</p>
+                                <button class="retry-messages">Retry</button>
+                            </div>
+                        `;
+                        
+                        // Add retry functionality
+                        const retryBtn = chatMessages.querySelector('.retry-messages');
+                        if (retryBtn) {
+                            retryBtn.addEventListener('click', () => {
+                                this.loadChatMessages(conversationId);
+                            });
+                        }
+                    }
+                } finally {
+                    this.messagesPagination.isLoading = false;
+                    if (!isInitialLoad) {
+                        this.showMessagesLoadingIndicator(false);
+                    }
+                }
+            }
+
+            renderCachedMessages(messages, prepend = false) {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages) return;
+                
+                if (prepend) {
+                    // For infinite scroll, prepend messages to existing content
+                    let existingMessagesDiv = chatMessages.querySelector('.messages-list');
+                    
+                    if (!existingMessagesDiv) {
+                        // Create messages div if it doesn't exist
+                        existingMessagesDiv = document.createElement('div');
+                        existingMessagesDiv.className = 'messages-list';
+                        chatMessages.appendChild(existingMessagesDiv);
+                    }
+                    
+                    // Remember scroll position to maintain scroll position after prepending
+                    const scrollTop = chatMessages.scrollTop;
+                    const scrollHeight = chatMessages.scrollHeight;
+                    
+                    // Prepend new messages
+                    const newMessagesHTML = messages.map(msg => this.renderMessage(msg)).join('');
+                    existingMessagesDiv.innerHTML = newMessagesHTML + existingMessagesDiv.innerHTML;
+                    
+                    // Restore scroll position (account for new content)
+                    const newScrollHeight = chatMessages.scrollHeight;
+                    const scrollDiff = newScrollHeight - scrollHeight;
+                    chatMessages.scrollTop = scrollTop + scrollDiff;
+                    
+                } else {
+                    // Normal render (initial load or replace all)
+                    const messageHTML = `
+                        <div class="messages-list">
+                            ${messages.map(msg => this.renderMessage(msg)).join('')}
+                        </div>
+                    `;
+                    
+                    chatMessages.innerHTML = messageHTML;
+                }
+            }
+
+            /**
+             * Show/hide messages loading indicator
+             * @param {boolean} show - Whether to show the indicator
+             */
+            showMessagesLoadingIndicator(show) {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages) return;
+                
+                let indicator = chatMessages.querySelector('.messages-loading-indicator');
+                if (!indicator) {
+                    // Create the loading indicator if it doesn't exist
+                    indicator = document.createElement('div');
+                    indicator.className = 'messages-loading-indicator';
+                    indicator.innerHTML = `
+                        <div class="loading-spinner"></div>
+                        <span>Loading older messages...</span>
+                    `;
+                    indicator.style.cssText = `
+                        display: none;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 15px;
+                        background: rgba(255, 255, 255, 0.05);
+                        border-radius: 8px;
+                        margin-bottom: 10px;
+                        gap: 10px;
+                        font-size: 14px;
+                        color: var(--text-secondary);
+                    `;
+                    chatMessages.insertBefore(indicator, chatMessages.firstChild);
+                }
+                
+                indicator.style.display = show ? 'flex' : 'none';
+            }
+
+            /**
+             * Setup scroll listener for infinite scroll in messages
+             * @param {string} conversationId - Current conversation ID
+             */
+            setupMessagesScrollListener(conversationId) {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages) return;
+                
+                // Remove existing listener if any
+                if (this.messagesScrollListener) {
+                    chatMessages.removeEventListener('scroll', this.messagesScrollListener);
+                }
+                
+                // Create new listener
+                this.messagesScrollListener = () => {
+                    // Check if we've scrolled near the top (for loading older messages)
+                    const scrollTop = chatMessages.scrollTop;
+                    const threshold = 100; // pixels from top
+                    
+                    if (scrollTop <= threshold && this.messagesPagination.hasMore && !this.messagesPagination.isLoading) {
+                        this.loadMoreMessages(conversationId, false);
+                    }
+                };
+                
+                // Add listener
+                chatMessages.addEventListener('scroll', this.messagesScrollListener);
+            }
+
+            renderMessage(message) {
+                const timestamp = this.formatRelativeTime(new Date(message.timestamp));
+                const fullTimestamp = new Date(message.timestamp).toLocaleString();
+                const isUser = message.role === 'user' && !message.isCompactSummary;
+                
+                // Detect if message contains tools (either in content or as correlated toolResults)
+                const hasToolsInContent = Array.isArray(message.content) && 
+                                         message.content.some(block => block.type === 'tool_use');
+                const hasCorrelatedTools = message.toolResults && message.toolResults.length > 0;
+                const hasTools = hasToolsInContent || hasCorrelatedTools;
+                
+                // Debug logging for tool detection
+                if (hasTools) {
+                    console.log('🔧 Rendering message with tools', {
+                        messageId: message.id,
+                        role: message.role,
+                        hasToolsInContent,
+                        hasCorrelatedTools,
+                        toolResultsCount: message.toolResults?.length || 0,
+                        contentType: Array.isArray(message.content) ? 'array' : typeof message.content,
+                        willHaveHasToolsClass: !isUser && hasTools
+                    });
+                }
+                
+                const toolCount = hasToolsInContent ? 
+                                 message.content.filter(block => block.type === 'tool_use').length :
+                                 (hasCorrelatedTools ? message.toolResults.length : 0);
+                
+                // Add has-tools class to assistant messages that contain tools
+                const hasToolsClass = (!isUser && hasTools) ? ' has-tools' : '';
+                
+                return `
+                    <div class="message message-${isUser ? 'user' : 'assistant'}${hasToolsClass}" data-message-id="${message.id || ''}">
+                        <div class="message-bubble">
+                            <div class="message-content">
+                                ${this.formatMessageContent(message.content, message)}
+                            </div>
+                            <div class="message-meta">
+                                <span class="message-time" title="${fullTimestamp}">${timestamp}</span>
+                                ${hasTools ? `<span class="tool-indicator">🔧 ${toolCount}</span>` : ''}
+                                ${message.usage && (message.usage.input_tokens > 0 || message.usage.output_tokens > 0) ? `
+                                    <span class="token-indicator">
+                                        In: ${message.usage.input_tokens} • Out: ${message.usage.output_tokens}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            formatMessageContent(content, message = null) {
+                let result = '';
+                
+                // Handle different content formats
+                if (Array.isArray(content)) {
+                    // Assistant messages with content blocks
+                    content.forEach((block, index) => {
+                        if (block.type === 'text') {
+                            result += this.formatTextContent(block.text);
+                        } else if (block.type === 'tool_use') {
+                            result += this.formatToolCall(block);
+                        } else if (block.type === 'tool_result') {
+                            result += this.formatToolResult(block);
+                        }
+                    });
+                } else if (typeof content === 'string') {
+                    // Simple text content
+                    result = this.formatTextContent(content);
+                } else if (typeof content === 'object' && content.text) {
+                    // Object with text property
+                    result = this.formatTextContent(content.text);
+                }
+                
+                // Handle correlated tool results from ConversationAnalyzer
+                if (message && message.toolResults && message.toolResults.length > 0) {
+                    console.log('🔧 Formatting tool results for message', {
+                        messageId: message.id,
+                        toolResultsCount: message.toolResults.length,
+                        toolResults: message.toolResults.map(tr => ({ tool_use_id: tr.tool_use_id, contentLength: tr.content?.length }))
+                    });
+                    message.toolResults.forEach(toolResult => {
+                        result += this.formatToolResult(toolResult);
+                    });
+                }
+                
+                return result || '<em>Empty message</em>';
+            }
+
+            formatTextContent(text) {
+                if (!text) return '';
+                
+                // Check if text is very long (more than 10 lines or 800 characters)
+                const lines = text.split('\n');
+                const isLongText = lines.length > 10 || text.length > 800;
+                
+                let processedText = text;
+                let expandableContent = '';
+                
+                if (isLongText) {
+                    // Take first 5 lines or 400 characters, whichever comes first
+                    const previewLines = lines.slice(0, 5);
+                    const previewText = previewLines.join('\n');
+                    const remainingLines = lines.length - 5;
+                    
+                    if (previewText.length > 400) {
+                        processedText = text.substring(0, 400) + '...';
+                        expandableContent = text.substring(400);
+                    } else {
+                        processedText = previewText;
+                        expandableContent = lines.slice(5).join('\n');
+                    }
+                    
+                    // Create unique ID for this message
+                    const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    
+                    // Format the preview text
+                    const formattedPreview = processedText
+                        .replace(/```(\w+)?\n([\s\S]+?)\n```/g, '<pre><code class="$1">$2</code></pre>')
+                        .replace(/`([^`]+)`/g, '<code>$1</code>')
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                        .replace(/\n/g, '<br>');
+                    
+                    // Format the hidden content
+                    const formattedHidden = expandableContent
+                        .replace(/```(\w+)?\n([\s\S]+?)\n```/g, '<pre><code class="$1">$2</code></pre>')
+                        .replace(/`([^`]+)`/g, '<code>$1</code>')
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                        .replace(/\n/g, '<br>');
+                    
+                    return `
+                        <div class="expandable-message">
+                            <div class="message-preview">${formattedPreview}</div>
+                            <div class="message-expand-link" onclick="this.parentNode.querySelector('.message-preview').style.display='none'; this.parentNode.querySelector('.message-full').style.display='block'; this.style.display='none';">
+                                + see ${remainingLines > 0 ? remainingLines + ' more lines' : 'more'}
+                            </div>
+                            <div class="message-full" style="display: none;">
+                                ${formattedPreview}<br>${formattedHidden}
+                                <div class="message-collapse-link" onclick="this.parentNode.style.display='none'; this.parentNode.parentNode.querySelector('.message-preview').style.display='block'; this.parentNode.parentNode.querySelector('.message-expand-link').style.display='block';">
+                                    - show less
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Basic markdown-like formatting for normal length messages
+                return text
+                    .replace(/```(\w+)?\n([\s\S]+?)\n```/g, '<pre><code class="$1">$2</code></pre>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+            }
+
+            formatToolCall(toolCall) {
+                const toolName = toolCall.name || 'Tool';
+                const input = toolCall.input || {};
+                
+                // Create a readable summary of the tool call
+                let toolSummary = '';
+                if (toolName === 'Read') {
+                    const filePath = input.file_path || input.path || '';
+                    const fileName = filePath.split('/').pop() || filePath;
+                    const limit = input.limit ? ` ${input.limit} lines` : '';
+                    toolSummary = `${fileName}${limit ? ` (${limit})` : ''}`;
+                } else if (toolName === 'Edit' || toolName === 'MultiEdit') {
+                    const filePath = input.file_path || input.path || '';
+                    const fileName = filePath.split('/').pop() || filePath;
+                    toolSummary = fileName;
+                } else if (toolName === 'Bash') {
+                    const command = input.command || '';
+                    toolSummary = command.length > 50 ? command.substring(0, 50) + '...' : command;
+                } else if (toolName === 'Grep') {
+                    const pattern = input.pattern || '';
+                    const path = input.path ? ` in ${input.path.split('/').pop()}` : '';
+                    toolSummary = `"${pattern}"${path}`;
+                } else if (toolName === 'Write') {
+                    const filePath = input.file_path || input.path || '';
+                    const fileName = filePath.split('/').pop() || filePath;
+                    toolSummary = fileName;
+                } else {
+                    // Generic fallback
+                    const firstKey = Object.keys(input)[0];
+                    if (firstKey) {
+                        const value = input[firstKey];
+                        if (typeof value === 'string') {
+                            toolSummary = value.length > 30 ? value.substring(0, 30) + '...' : value;
+                        }
+                    }
+                }
+                
+                // Create escaped JSON for parameters
+                const inputContent = JSON.stringify(input, null, 2);
+                const escapedInput = this.escapeHtml(inputContent);
+                
+                return `
+                    <div class="tool-call">
+                        <div class="tool-summary" onclick="
+                            const toolCall = this.parentNode;
+                            const expandNote = toolCall.querySelector('.tool-expand-note');
+                            const parameters = toolCall.querySelector('.tool-parameters');
+                            
+                            if (parameters.style.display === 'none') {
+                                expandNote.style.display = 'none';
+                                parameters.style.display = 'block';
+                            } else {
+                                expandNote.style.display = 'flex';
+                                parameters.style.display = 'none';
+                            }
+                        ">
+                            <span class="tool-bullet">⏺</span>
+                            <span class="tool-name">${toolName}</span>${toolSummary ? `<span class="tool-summary-text">(${toolSummary})</span>` : ''}
+                        </div>
+                        <div class="tool-expand-note" onclick="this.parentNode.querySelector('.tool-summary').click();">
+                            <span class="tool-branch">⎿</span>
+                            <span class="tool-note">Click to expand parameters</span>
+                        </div>
+                        <div class="tool-parameters" style="display: none;">
+                            <div class="tool-parameters-header">
+                                <span class="tool-branch">⎿</span>
+                                <span class="tool-param-title">Parameters:</span>
+                            </div>
+                            <pre class="tool-parameters-content"><code>${escapedInput}</code></pre>
+                        </div>
+                    </div>
+                `;
+            }
+
+            formatToolResult(toolResult) {
+                // Properly escape HTML content
+                const content = typeof toolResult.content === 'string' 
+                    ? toolResult.content 
+                    : JSON.stringify(toolResult.content, null, 2);
+                
+                const escapedContent = this.escapeHtml(content);
+                
+                // Check if content is long (more than 5 lines or 300 characters)
+                const lines = content.split('\n');
+                const isLongContent = lines.length > 5 || content.length > 300;
+                
+                if (isLongContent) {
+                    // Show collapsed version for long content
+                    const previewLines = lines.slice(0, 3);
+                    const previewContent = previewLines.join('\n');
+                    const remainingLines = lines.length - 3;
+                    const escapedPreview = this.escapeHtml(previewContent);
+                    
+                    const messageId = 'tool_result_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    
+                    return `
+                        <div class="tool-result">
+                            <div class="tool-result-header">
+                                <span>Tool Result</span>
+                            </div>
+                            <div class="tool-result-content">
+                                <div class="expandable-tool-result">
+                                    <div class="tool-result-preview">
+                                        <pre><code>${escapedPreview}</code></pre>
+                                    </div>
+                                    <div class="tool-result-expand-link" onclick="this.parentNode.querySelector('.tool-result-preview').style.display='none'; this.parentNode.querySelector('.tool-result-full').style.display='block'; this.style.display='none';">
+                                        + see ${remainingLines} more lines
+                                    </div>
+                                    <div class="tool-result-full" style="display: none;">
+                                        <pre><code>${escapedContent}</code></pre>
+                                        <div class="tool-result-collapse-link" onclick="this.parentNode.style.display='none'; this.parentNode.parentNode.querySelector('.tool-result-preview').style.display='block'; this.parentNode.parentNode.querySelector('.tool-result-expand-link').style.display='block';">
+                                            - show less
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Regular format for short content
+                return `
+                    <div class="tool-result">
+                        <div class="tool-result-header">
+                            <span>Tool Result</span>
+                        </div>
+                        <div class="tool-result-content">
+                            <pre><code>${escapedContent}</code></pre>
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Check if user is near the bottom of the chat
+             * @returns {boolean} True if user is near the bottom
+             */
+            isNearBottom() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages) return false;
+                
+                const scrollTop = chatMessages.scrollTop;
+                const scrollHeight = chatMessages.scrollHeight;
+                const clientHeight = chatMessages.clientHeight;
+                
+                // Consider "near bottom" if within scrollThreshold pixels
+                return scrollHeight - scrollTop - clientHeight <= this.scrollThreshold;
+            }
+
+            /**
+             * Smart scroll to bottom with chat logic
+             * Only scrolls if user is near bottom or auto-scroll is enabled
+             */
+            scrollToBottom() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages) return;
+                
+                // Always scroll on initial load or if user is near bottom
+                if (this.autoScrollEnabled || this.isNearBottom()) {
+                    console.log('📱 Auto-scrolling to bottom', {
+                        autoScrollEnabled: this.autoScrollEnabled,
+                        isNearBottom: this.isNearBottom(),
+                        userScrolling: this.isUserScrolling
+                    });
+                    
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    console.log('📱 Skipping auto-scroll (user viewing older messages)', {
+                        scrollTop: chatMessages.scrollTop,
+                        scrollHeight: chatMessages.scrollHeight,
+                        isNearBottom: this.isNearBottom()
+                    });
+                }
+            }
+
+            /**
+             * Setup scroll tracking for intelligent auto-scroll
+             */
+            setupScrollTracking() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (!chatMessages || this.scrollListener) return;
+
+                this.scrollListener = () => {
+                    // Clear previous timeout
+                    if (this.userScrollTimeout) {
+                        clearTimeout(this.userScrollTimeout);
+                    }
+
+                    // Mark as user scrolling
+                    this.isUserScrolling = true;
+
+                    // Check if user scrolled back to bottom
+                    if (this.isNearBottom()) {
+                        this.autoScrollEnabled = true;
+                        console.log('📱 User scrolled to bottom, re-enabling auto-scroll');
+                    } else {
+                        this.autoScrollEnabled = false;
+                    }
+
+                    // Reset user scrolling flag after a delay
+                    this.userScrollTimeout = setTimeout(() => {
+                        this.isUserScrolling = false;
+                    }, 1000);
+                };
+
+                chatMessages.addEventListener('scroll', this.scrollListener, { passive: true });
+                console.log('📱 Scroll tracking enabled for intelligent auto-scroll');
+            }
+
+            /**
+             * Remove scroll tracking
+             */
+            removeScrollTracking() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages && this.scrollListener) {
+                    chatMessages.removeEventListener('scroll', this.scrollListener);
+                    this.scrollListener = null;
+                }
+                
+                if (this.userScrollTimeout) {
+                    clearTimeout(this.userScrollTimeout);
+                    this.userScrollTimeout = null;
+                }
+            }
+
+            /**
+             * Escape HTML characters to prevent double-encoding issues
+             * @param {string} text - Text to escape
+             * @returns {string} Escaped text
+             */
+            escapeHtml(text) {
+                if (typeof text !== 'string') return text;
+                
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+
+
+            filterConversations(searchTerm) {
+                const items = document.querySelectorAll('.conversation-item');
+                const term = searchTerm.toLowerCase();
+                
+                items.forEach(item => {
+                    const name = item.querySelector('.conversation-name').textContent.toLowerCase();
+                    const preview = item.querySelector('.conversation-preview').textContent.toLowerCase();
+                    const matches = name.includes(term) || preview.includes(term);
+                    item.style.display = matches ? 'flex' : 'none';
+                });
+            }
+
+            getStateLabel(state) {
+                // Handle all possible states from StateCalculator with icons
+                const stateLabels = {
+                    // Basic states
+                    'active': '● Active',
+                    'idle': '◐ Idle', 
+                    'inactive': '○ Inactive',
+                    
+                    // Detailed states from StateCalculator
+                    'Claude Code working...': '⚡ Working',
+                    'Claude Code finishing...': '✓ Finishing',
+                    'Active session': '● Active',
+                    'Active conversation': '● Active',
+                    'Recently active': '◉ Recent',
+                    'Awaiting user input...': '⏳ Waiting',
+                    'Awaiting response...': '💭 Responding',
+                    'User typing...': '⌨️ Typing',
+                    'Waiting for input...': '⏳ Waiting',
+                    'No messages': '○ Empty',
+                    
+                    // Fallback for exact matches
+                    'Claude Code working': '⚡ Working',
+                    'Claude Code': '⚡ Working',
+                    'working': '⚡ Working',
+                    'working...': '⚡ Working',
+                    'recent': '◉ Recent',
+                    'waiting': '⏳ Waiting'
+                };
+                
+                // Try exact match first
+                if (stateLabels[state]) {
+                    return stateLabels[state];
+                }
+                
+                // Try partial matches for complex states with icons
+                const stateLower = state.toLowerCase();
+                if (stateLower.includes('working') || stateLower.includes('claude')) {
+                    return '⚡ Working';
+                }
+                if (stateLower.includes('active')) {
+                    return '● Active';
+                }
+                if (stateLower.includes('recent')) {
+                    return '◉ Recent';
+                }
+                if (stateLower.includes('waiting') || stateLower.includes('awaiting')) {
+                    return '⏳ Waiting';
+                }
+                if (stateLower.includes('responding')) {
+                    return '💭 Responding';
+                }
+                if (stateLower.includes('typing')) {
+                    return '⌨️ Typing';
+                }
+                if (stateLower.includes('idle')) {
+                    return '◐ Idle';
+                }
+                if (stateLower.includes('inactive')) {
+                    return '○ Inactive';
+                }
+                
+                // Return the state as-is if we can't categorize it
+                return state || 'Unknown';
+            }
+
+            getStateClass(state) {
+                // Generate appropriate CSS class based on state
+                const stateLower = (state || '').toLowerCase();
+                
+                if (stateLower.includes('working') || stateLower.includes('claude')) {
+                    return 'state-working';
+                }
+                if (stateLower.includes('active') || stateLower.includes('recent')) {
+                    return 'state-active';
+                }
+                if (stateLower.includes('waiting') || stateLower.includes('awaiting') || stateLower.includes('responding')) {
+                    return 'state-waiting';
+                }
+                if (stateLower.includes('typing')) {
+                    return 'state-typing';
+                }
+                if (stateLower.includes('idle')) {
+                    return 'state-idle';
+                }
+                if (stateLower.includes('inactive')) {
+                    return 'state-inactive';
+                }
+                
+                // Fallback to basic classification
+                return `state-${state.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z-]/g, '')}`;
+            }
+
+            formatRelativeTime(date) {
+                if (!date) return '';
+                
+                const now = new Date();
+                const diff = now.getTime() - date.getTime();
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                const weeks = Math.floor(days / 7);
+                const months = Math.floor(days / 30);
+                
+                if (minutes < 1) return 'Just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                if (days < 7) return `${days}d ago`;
+                if (weeks < 4) return `${weeks}w ago`;
+                if (months < 12) return `${months}mo ago`;
+                
+                return date.toLocaleDateString();
+            }
+
+            /**
+             * Handle new message received via WebSocket
+             * @param {string} conversationId - Conversation ID that received new message
+             * @param {Object} message - New message object
+             * @param {Object} metadata - Additional metadata
+             */
+            handleNewMessage(conversationId, message, metadata) {
+                console.log('🔄 Processing new message', {
+                    conversationId,
+                    role: message?.role,
+                    selectedConversationId: this.selectedConversationId,
+                    hasToolResults: !!(message?.toolResults && message.toolResults.length > 0),
+                    toolResultsCount: message?.toolResults?.length || 0,
+                    hasToolsInContent: Array.isArray(message?.content) && message.content.some(block => block.type === 'tool_use'),
+                    contentType: Array.isArray(message?.content) ? 'array' : typeof message?.content,
+                    metadata: metadata
+                });
+
+                // Update message cache for this conversation
+                const existingMessages = this.loadedMessages.get(conversationId) || [];
+                
+                // Check if we already have this message (ONLY by ID - no timestamp fallback)
+                // This ensures we only merge/replace the exact same message, never different ones
+                // CRITICAL: Only match if both messages have valid, non-null IDs
+                const existingIndex = existingMessages.findIndex(msg => 
+                    msg.id && message.id && msg.id === message.id
+                );
+                
+                console.log('🔍 WebSocket message processing:', {
+                    messageId: message.id,
+                    messageIdValid: !!message.id,
+                    existingIndex,
+                    totalExisting: existingMessages.length,
+                    hasToolResults: !!(message.toolResults && message.toolResults.length > 0),
+                    messageRole: message.role,
+                    contentType: Array.isArray(message.content) ? `array(${message.content.length})` : typeof message.content,
+                    existingIds: existingMessages.map(m => m.id).slice(-3) // Last 3 IDs for debugging
+                });
+                
+                let updatedMessages;
+                if (existingIndex >= 0) {
+                    const existingMessage = existingMessages[existingIndex];
+                    
+                    // CRITICAL PROTECTION: If existing message is text and was rendered in DOM, NEVER replace it
+                    const existingIsText = !existingMessage.toolResults || existingMessage.toolResults.length === 0;
+                    const newIsText = !message.toolResults || message.toolResults.length === 0;
+                    
+                    // Check if this message is currently rendered in the DOM
+                    const isRenderedInDOM = this.isMessageRenderedInDOM(existingMessage);
+                    
+                    if (existingIsText && isRenderedInDOM) {
+                        // This is a text message already in DOM - NEVER replace it, always add new message
+                        console.log('🛡️ PROTECTING text message already rendered in DOM', {
+                            messageId: message.id,
+                            existingType: 'TEXT',
+                            newType: newIsText ? 'TEXT' : 'TOOL',
+                            reason: 'TEXT_MESSAGE_IN_DOM_PROTECTED',
+                            action: 'ADD_AS_NEW'
+                        });
+                        
+                        // Add as new message instead of replacing
+                        updatedMessages = [...existingMessages, message];
+                    } else if (existingIsText && !newIsText) {
+                        // Existing is text, new has tools - DON'T REPLACE, they're different messages
+                        console.log('⚠️ PREVENTING text message replacement with tool message', {
+                            messageId: message.id,
+                            existingType: 'TEXT',
+                            newType: 'TOOL',
+                            reason: 'DIFFERENT_MESSAGE_TYPES_DONT_REPLACE'
+                        });
+                        
+                        // Add as new message instead
+                        updatedMessages = [...existingMessages, message];
+                    } else if (!existingIsText && newIsText) {
+                        // Existing has tools, new is text - DON'T REPLACE, they're different messages
+                        console.log('⚠️ PREVENTING tool message replacement with text message', {
+                            messageId: message.id,
+                            existingType: 'TOOL',
+                            newType: 'TEXT',
+                            reason: 'DIFFERENT_MESSAGE_TYPES_DONT_REPLACE'
+                        });
+                        
+                        // Add as new message instead
+                        updatedMessages = [...existingMessages, message];
+                    } else {
+                        // Same type of message - safe to replace ONLY if not a protected text message
+                        console.log('🔄 REPLACING existing message with server-correlated version', {
+                            messageId: message.id,
+                            existingToolResults: existingMessage.toolResults?.length || 0,
+                            newToolResults: message.toolResults?.length || 0,
+                            messageType: newIsText ? 'TEXT' : 'TOOL',
+                            reason: 'SERVER_CORRELATION_AUTHORITATIVE'
+                        });
+                        
+                        updatedMessages = [...existingMessages];
+                        updatedMessages[existingIndex] = message;
+                    }
+                } else {
+                    // Add new message to the end
+                    console.log('➕ Adding new message from WebSocket', {
+                        messageId: message.id,
+                        toolResults: message.toolResults?.length || 0,
+                        hasContent: !!(message.content && (typeof message.content === 'string' || Array.isArray(message.content))),
+                        messageType: (!message.toolResults || message.toolResults.length === 0) ? 'TEXT' : 'TOOL'
+                    });
+                    updatedMessages = [...existingMessages, message];
+                }
+                
+                this.loadedMessages.set(conversationId, updatedMessages);
+                
+                // If this conversation is currently selected, update the messages view immediately
+                if (this.selectedConversationId === conversationId) {
+                    console.log('💬 Updating messages view in real-time');
+                    this.renderCachedMessages(updatedMessages);
+                    
+                    // Smart scroll behavior: scroll to bottom for new messages
+                    // or when user is already near the bottom
+                    if (existingIndex === -1) {
+                        // This is a completely new message
+                        console.log('📱 New message received, checking auto-scroll...');
+                        this.scrollToBottom();
+                    } else if (this.isNearBottom()) {
+                        // This is an update to existing message and user is near bottom
+                        console.log('📱 Message updated, user near bottom, scrolling...');
+                        this.scrollToBottom();
+                    } else {
+                        console.log('📱 Message updated, user viewing older messages, not scrolling');
+                    }
+                    
+                    // Update status based on the message
+                    this.analyzeConversationStatus(updatedMessages);
+                }
+            }
+
+            /**
+             * Update status footer
+             * @param {string} status - Status type: 'ready', 'working', 'waiting', 'error', 'idle'
+             * @param {string} text - Status text
+             * @param {string} details - Optional details text
+             */
+            updateStatus(status, text, details = '') {
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                const statusDetails = document.getElementById('statusDetails');
+                
+                if (!statusDot || !statusText || !statusDetails) return;
+                
+                // Remove all status classes
+                statusDot.className = 'status-dot';
+                
+                // Add new status class
+                statusDot.classList.add(status);
+                
+                // Update text
+                statusText.textContent = text;
+                statusDetails.textContent = details;
+            }
+
+            /**
+             * Analyze conversation messages to determine current status
+             * @param {Array} messages - Array of messages
+             */
+            analyzeConversationStatus(messages) {
+                if (!messages || messages.length === 0) {
+                    this.updateStatus('idle', 'No messages', '');
+                    return;
+                }
+                
+                const lastMessage = messages[messages.length - 1];
+                const secondLastMessage = messages.length > 1 ? messages[messages.length - 2] : null;
+                const now = new Date();
+                const messageTime = new Date(lastMessage.timestamp);
+                const timeDiff = (now - messageTime) / 1000 / 60; // minutes ago
+                
+                // Analyze message patterns to determine status
+                if (lastMessage.role === 'user') {
+                    // Last message is from user - Claude should be working
+                    if (timeDiff < 2) {
+                        this.updateStatus('working', 'Claude Code is working...', 'Processing your request');
+                    } else if (timeDiff < 10) {
+                        this.updateStatus('working', 'Claude Code is thinking...', `Started ${Math.round(timeDiff)}m ago`);
+                    } else {
+                        this.updateStatus('waiting', 'Waiting for response', `User input ${Math.round(timeDiff)}m ago`);
+                    }
+                } else if (lastMessage.role === 'assistant') {
+                    // Check if assistant is using tools
+                    const hasTools = (Array.isArray(lastMessage.content) && 
+                                     lastMessage.content.some(block => block.type === 'tool_use')) ||
+                                     (lastMessage.toolResults && lastMessage.toolResults.length > 0);
+                    
+                    if (hasTools) {
+                        // Assistant used tools - might still be working
+                        if (timeDiff < 1) {
+                            this.updateStatus('working', 'Claude Code executing tools...', 'Running commands');
+                        } else if (timeDiff < 5) {
+                            this.updateStatus('working', 'Processing tool results...', `Tools executed ${Math.round(timeDiff)}m ago`);
+                        } else {
+                            this.updateStatus('ready', 'Tools completed', `Waiting for user input`);
+                        }
+                    } else {
+                        // Regular assistant message
+                        if (timeDiff < 5) {
+                            this.updateStatus('ready', 'Claude Code ready', 'Waiting for user input');
+                        } else if (timeDiff < 60) {
+                            this.updateStatus('ready', 'Ready', `Response sent ${Math.round(timeDiff)}m ago`);
+                        } else if (timeDiff < 1440) { // 24 hours
+                            const hours = Math.round(timeDiff / 60);
+                            this.updateStatus('idle', 'Conversation idle', `Last activity ${hours}h ago`);
+                        } else {
+                            const days = Math.round(timeDiff / 1440);
+                            this.updateStatus('idle', 'Conversation inactive', `Last activity ${days}d ago`);
+                        }
+                    }
+                }
+                
+                // Special handling for sequences of messages
+                if (messages.length >= 2) {
+                    const recentMessages = messages.slice(-3); // Last 3 messages
+                    const hasRecentTools = recentMessages.some(msg => 
+                        (Array.isArray(msg.content) && msg.content.some(block => block.type === 'tool_use')) ||
+                        (msg.toolResults && msg.toolResults.length > 0)
+                    );
+                    
+                    // If there's been recent tool activity, show more specific status
+                    if (hasRecentTools && lastMessage.role === 'assistant' && timeDiff < 2) {
+                        const toolCount = recentMessages.reduce((count, msg) => {
+                            const contentTools = Array.isArray(msg.content) ? 
+                                                msg.content.filter(block => block.type === 'tool_use').length : 0;
+                            const resultTools = msg.toolResults ? msg.toolResults.length : 0;
+                            return count + contentTools + resultTools;
+                        }, 0);
+                        
+                        this.updateStatus('working', 'Processing multiple tools...', `${toolCount} tools in progress`);
+                    }
+                }
+            }
+
+            /**
+             * Determine if two messages should be merged or replaced
+             * @param {Object} existingMessage - The existing message in cache
+             * @param {Object} newMessage - The new message from WebSocket
+             * @returns {boolean} True if should merge, false if should replace
+             */
+            shouldMergeMessages(existingMessage, newMessage) {
+                // SIMPLE RULE: Only merge if it's the EXACT same message getting tool results added
+                // This mirrors server behavior: text messages stay separate, tools stay separate
+                
+                // If messages have different IDs, they are DIFFERENT messages - never merge
+                if (existingMessage.id !== newMessage.id) {
+                    console.log('🤔 shouldMergeMessages decision:', {
+                        existingId: existingMessage.id,
+                        newId: newMessage.id,
+                        decision: 'NEVER_MERGE_DIFFERENT_IDS',
+                        reason: 'DIFFERENT_MESSAGE_IDS'
+                    });
+                    return false; // Different messages - never merge
+                }
+                
+                // If IDs are the same, check if this is just adding tool results to the same message
+                const existingToolResults = existingMessage.toolResults?.length || 0;
+                const newToolResults = newMessage.toolResults?.length || 0;
+                
+                // If new message has more tool results for the SAME message ID, we can replace
+                if (newToolResults > existingToolResults) {
+                    console.log('🤔 shouldMergeMessages decision:', {
+                        messageId: newMessage.id,
+                        existingToolResults,
+                        newToolResults,
+                        decision: 'REPLACE_SAME_ID_MORE_TOOLS',
+                        reason: 'MORE_TOOLS_SAME_MESSAGE'
+                    });
+                    return false; // Replace with more complete version of same message
+                }
+                
+                // If they're the same message but new one has less or equal tools, keep existing
+                console.log('🤔 shouldMergeMessages decision:', {
+                    messageId: newMessage.id,
+                    existingToolResults,
+                    newToolResults,
+                    decision: 'KEEP_EXISTING',
+                    reason: 'SAME_MESSAGE_NO_NEW_TOOLS'
+                });
+                return true; // Keep existing (merge, but existing wins)
+            }
+
+            /**
+             * Merge two message objects, preserving content and adding tool results
+             * @param {Object} existingMessage - The existing message in cache
+             * @param {Object} newMessage - The new message from WebSocket
+             * @returns {Object} Merged message object
+             */
+            mergeMessages(existingMessage, newMessage) {
+                // Start with the existing message as base
+                const mergedMessage = { ...existingMessage };
+                
+                // Always use the latest timestamp, role, and metadata from new message
+                mergedMessage.timestamp = newMessage.timestamp || existingMessage.timestamp;
+                mergedMessage.role = newMessage.role || existingMessage.role;
+                mergedMessage.id = newMessage.id || existingMessage.id;
+                mergedMessage.model = newMessage.model || existingMessage.model;
+                mergedMessage.usage = newMessage.usage || existingMessage.usage;
+                
+                // Merge content intelligently
+                if (existingMessage.content && newMessage.content) {
+                    // Both have content - need to merge intelligently
+                    const existingIsArray = Array.isArray(existingMessage.content);
+                    const newIsArray = Array.isArray(newMessage.content);
+                    
+                    if (existingIsArray && newIsArray) {
+                        // Both are arrays - combine unique content blocks
+                        const combinedContent = [...existingMessage.content];
+                        for (const newBlock of newMessage.content) {
+                            const existsAlready = combinedContent.some(block => 
+                                block.type === newBlock.type && 
+                                (block.type === 'text' ? block.text === newBlock.text : 
+                                 block.type === 'tool_use' ? block.id === newBlock.id : 
+                                 JSON.stringify(block) === JSON.stringify(newBlock))
+                            );
+                            if (!existsAlready) {
+                                combinedContent.push(newBlock);
+                            }
+                        }
+                        mergedMessage.content = combinedContent;
+                    } else if (existingIsArray) {
+                        // Existing is array, new is string - keep array (more complete)
+                        mergedMessage.content = existingMessage.content;
+                    } else if (newIsArray) {
+                        // New is array, existing is string - use array (more complete)
+                        mergedMessage.content = newMessage.content;
+                    } else {
+                        // Both strings - use the longer one
+                        mergedMessage.content = existingMessage.content.length >= newMessage.content.length ? 
+                            existingMessage.content : newMessage.content;
+                    }
+                } else if (newMessage.content) {
+                    mergedMessage.content = newMessage.content;
+                } else if (existingMessage.content) {
+                    mergedMessage.content = existingMessage.content;
+                }
+                
+                // Merge tool results - use the most complete set
+                const existingToolResults = existingMessage.toolResults || [];
+                const newToolResults = newMessage.toolResults || [];
+                
+                if (newToolResults.length > existingToolResults.length) {
+                    // New message has more tool results
+                    mergedMessage.toolResults = newToolResults;
+                } else if (existingToolResults.length > 0) {
+                    // Keep existing tool results if they're more complete
+                    mergedMessage.toolResults = existingToolResults;
+                } else {
+                    // Use whatever we have
+                    mergedMessage.toolResults = newToolResults.length > 0 ? newToolResults : existingToolResults;
+                }
+                
+                // Preserve any other fields that might be important
+                mergedMessage.isCompactSummary = newMessage.isCompactSummary || existingMessage.isCompactSummary;
+                mergedMessage.uuid = newMessage.uuid || existingMessage.uuid;
+                mergedMessage.type = newMessage.type || existingMessage.type;
+                
+                console.log('🔀 Message merge result', {
+                    messageId: mergedMessage.id,
+                    existingContentType: Array.isArray(existingMessage.content) ? `array(${existingMessage.content.length})` : typeof existingMessage.content,
+                    newContentType: Array.isArray(newMessage.content) ? `array(${newMessage.content.length})` : typeof newMessage.content,
+                    finalContentType: Array.isArray(mergedMessage.content) ? `array(${mergedMessage.content.length})` : typeof mergedMessage.content,
+                    existingToolResults: existingMessage.toolResults?.length || 0,
+                    newToolResults: newMessage.toolResults?.length || 0,
+                    finalToolResults: mergedMessage.toolResults?.length || 0,
+                    mergeStrategy: existingMessage.content && newMessage.content ? 'MERGED_CONTENT' : 
+                                 existingMessage.content ? 'EXISTING_CONTENT' : 'NEW_CONTENT'
+                });
+                
+                return mergedMessage;
+            }
+
+            /**
+             * Load tools preference from localStorage
+             */
+            loadToolsPreference() {
+                const saved = localStorage.getItem('showTools');
+                const showTools = saved !== null ? saved === 'true' : true; // Default to true
+                
+                this.showTools = showTools;
+                const chatView = document.getElementById('chatView');
+                const showToolsSwitch = document.getElementById('showToolsSwitch');
+                
+                // Update switch state
+                showToolsSwitch.checked = showTools;
+                
+                // Update CSS class
+                if (showTools) {
+                    chatView.classList.add('show-tools');
+                } else {
+                    chatView.classList.remove('show-tools');
+                }
+                
+                console.log('🔧 Tools preference loaded:', showTools ? 'ON' : 'OFF');
+            }
+
+            /**
+             * Check if a message is currently rendered in the DOM
+             * @param {Object} message - The message to check
+             * @returns {boolean} True if message is rendered in DOM
+             */
+            isMessageRenderedInDOM(message) {
+                if (!message || !message.id) return false;
+                
+                const chatMessages = document.querySelector('.chat-messages');
+                if (!chatMessages) return false;
+                
+                // Look for message element with matching data-message-id
+                const messageElement = chatMessages.querySelector(`[data-message-id="${message.id}"]`);
+                if (messageElement) {
+                    console.log('🔍 DOM check: Found message in DOM', {
+                        messageId: message.id,
+                        hasTools: messageElement.classList.contains('has-tools'),
+                        isText: !messageElement.classList.contains('has-tools')
+                    });
+                    return true;
+                }
+                
+                // Additional check: look for text content in DOM if message has no tools
+                const isTextMessage = !message.toolResults || message.toolResults.length === 0;
+                if (isTextMessage && message.content) {
+                    const contentText = typeof message.content === 'string' ? 
+                        message.content : 
+                        (Array.isArray(message.content) ? 
+                            message.content.filter(block => block.type === 'text').map(block => block.text).join(' ') : 
+                            ''
+                        );
+                    
+                    if (contentText && contentText.length > 10) {
+                        // Check if this text content appears in any message bubble
+                        const messageElements = chatMessages.querySelectorAll('.message .message-content');
+                        for (const element of messageElements) {
+                            if (element.textContent.includes(contentText.substring(0, 50))) {
+                                console.log('🔍 DOM check: Found text message by content', {
+                                    messageId: message.id,
+                                    contentPreview: contentText.substring(0, 50)
+                                });
+                                return true;
+                            }
+                        }
+                    }
+                }
+                
+                console.log('🔍 DOM check: Message NOT found in DOM', {
+                    messageId: message.id,
+                    isText: isTextMessage,
+                    hasContent: !!message.content
+                });
+                return false;
+            }
+
+            /**
+             * Toggle tools visibility
+             * @param {boolean} show - Whether to show tools
+             */
+            toggleTools(show) {
+                this.showTools = show;
+                const chatView = document.getElementById('chatView');
+                
+                if (show) {
+                    chatView.classList.add('show-tools');
+                } else {
+                    chatView.classList.remove('show-tools');
+                }
+                
+                console.log('🔧 Tools visibility toggled:', show ? 'ON' : 'OFF');
+                console.log('🔧 Messages with .has-tools class will be:', show ? 'VISIBLE' : 'HIDDEN');
+                
+                // Store preference in localStorage
+                localStorage.setItem('showTools', show);
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            new ChatsMobileApp();
+        });
+    </script>
+</body>
+</html>

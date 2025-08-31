@@ -13,6 +13,9 @@ class DashboardPage {
     this.refreshInterval = null;
     this.isInitialized = false;
     
+    // Initialize header component
+    this.headerComponent = null;
+    
     // Subscribe to state changes
     this.unsubscribe = this.stateService.subscribe(this.handleStateChange.bind(this));
   }
@@ -118,42 +121,8 @@ class DashboardPage {
   async render() {
     this.container.innerHTML = `
       <div class="dashboard-page">
-        <!-- Page Header -->
-        <div class="page-header">
-          <div class="header-content">
-            <div class="header-left">
-              <div class="status-header">
-                <span class="session-timer-status-dot active" id="session-status-dot"></span>
-                <h1 class="page-title">
-                  Claude Code Analytics Dashboard
-                  <span class="version-badge">v1.10.1</span>
-                </h1>
-              </div>
-              <div class="page-subtitle">
-                Real-time monitoring and analytics for Claude Code sessions
-              </div>
-              <div class="last-update-header">
-                <span class="last-update-label">last update:</span>
-                <span id="last-update-header-text">Never</span>
-              </div>
-            </div>
-            <div class="header-right">
-              <div class="theme-switch-container" title="Toggle light/dark theme">
-                <div class="theme-switch" id="header-theme-switch">
-                  <div class="theme-switch-track">
-                    <div class="theme-switch-thumb" id="header-theme-switch-thumb">
-                      <span class="theme-switch-icon">🌙</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <a href="https://github.com/anthropics/claude-code-templates" target="_blank" class="github-link" title="Star on GitHub">
-                <span class="github-icon">⭐</span>
-                Star on GitHub
-              </a>
-            </div>
-          </div>
-        </div>
+        <!-- Page Header (will be replaced by HeaderComponent) -->
+        <div id="dashboard-header-container"></div>
 
         <!-- Action Buttons -->
         <div class="action-buttons-container">
@@ -188,13 +157,9 @@ class DashboardPage {
           <div class="metrics-cards-container">
             <!-- Conversations Card -->
             <div class="metric-card">
-              <div class="metric-header">
-                <div class="metric-icon">💬</div>
-                <div class="metric-title">Conversations</div>
-              </div>
               <div class="metric-primary">
                 <span class="metric-primary-value" id="totalConversations">0</span>
-                <span class="metric-primary-label">Total</span>
+                <span class="metric-primary-label">Total Conversations</span>
               </div>
               <div class="metric-secondary">
                 <div class="metric-secondary-item">
@@ -214,13 +179,9 @@ class DashboardPage {
 
             <!-- Sessions Card -->
             <div class="metric-card">
-              <div class="metric-header">
-                <div class="metric-icon">⚡</div>
-                <div class="metric-title">Sessions</div>
-              </div>
               <div class="metric-primary">
                 <span class="metric-primary-value" id="claudeSessions">0</span>
-                <span class="metric-primary-label">Total</span>
+                <span class="metric-primary-label">Total Sessions</span>
               </div>
               <div class="metric-secondary">
                 <div class="metric-secondary-item">
@@ -240,13 +201,9 @@ class DashboardPage {
 
             <!-- Tokens Card -->
             <div class="metric-card">
-              <div class="metric-header">
-                <div class="metric-icon">🔢</div>
-                <div class="metric-title">Tokens</div>
-              </div>
               <div class="metric-primary">
                 <span class="metric-primary-value" id="totalTokens">0</span>
-                <span class="metric-primary-label">Total</span>
+                <span class="metric-primary-label">Total Tokens</span>
               </div>
               <div class="metric-secondary">
                 <div class="metric-secondary-item">
@@ -260,6 +217,28 @@ class DashboardPage {
                 <div class="metric-secondary-item">
                   <span class="metric-secondary-label">Cache:</span>
                   <span class="metric-secondary-value" id="cacheTokens">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Agents Card -->
+            <div class="metric-card">
+              <div class="metric-primary">
+                <span class="metric-primary-value" id="totalAgentInvocations">0</span>
+                <span class="metric-primary-label">Total Agent Uses</span>
+              </div>
+              <div class="metric-secondary">
+                <div class="metric-secondary-item">
+                  <span class="metric-secondary-label">Types:</span>
+                  <span class="metric-secondary-value" id="totalAgentTypes">0</span>
+                </div>
+                <div class="metric-secondary-item">
+                  <span class="metric-secondary-label">Top Agent:</span>
+                  <span class="metric-secondary-value" id="topAgentName">None</span>
+                </div>
+                <div class="metric-secondary-item">
+                  <span class="metric-secondary-label">Adoption:</span>
+                  <span class="metric-secondary-value" id="agentAdoption">0%</span>
                 </div>
               </div>
             </div>
@@ -286,35 +265,96 @@ class DashboardPage {
             </div>
           </div>
 
-          <!-- Charts Container (2x2 Grid) -->
+          <!-- Charts Container - Organized by Sections -->
           <div class="charts-container">
-            <div class="chart-card">
-              <div class="chart-title">
-                📊 token usage over time
-              </div>
-              <canvas id="tokenChart" class="chart-canvas"></canvas>
-            </div>
             
-            <div class="chart-card">
-              <div class="chart-title">
-                🎯 project activity distribution
+            <!-- SECTION 1: Token Analytics -->
+            <div class="chart-section">
+              <div class="section-header">
+                <h3 class="section-title">🔢 Token Analytics</h3>
+                <p class="section-description">Monitor token consumption patterns and efficiency</p>
               </div>
-              <canvas id="projectChart" class="chart-canvas"></canvas>
+              <div class="section-charts">
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Token Usage Over Time
+                  </div>
+                  <canvas id="tokenChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Token Distribution by Type
+                  </div>
+                  <canvas id="tokenTypeChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Token Usage Over Time
+                  </div>
+                  <canvas id="tokenTimelineChart" class="chart-canvas"></canvas>
+                </div>
+              </div>
             </div>
-            
-            <div class="chart-card">
-              <div class="chart-title">
-                🛠️ tool usage trends
+
+            <!-- SECTION 2: Workflow Intelligence -->
+            <div class="chart-section">
+              <div class="section-header">
+                <h3 class="section-title">🤖 Workflow Intelligence</h3>
+                <p class="section-description">Analyze agent usage and automation patterns</p>
               </div>
-              <canvas id="toolChart" class="chart-canvas"></canvas>
+              <div class="section-charts">
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Agent Usage Distribution
+                  </div>
+                  <canvas id="agentUsageChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Agent Activity Timeline
+                  </div>
+                  <canvas id="agentTimelineChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Workflow Efficiency Score
+                  </div>
+                  <canvas id="workflowEfficiencyChart" class="chart-canvas"></canvas>
+                </div>
+              </div>
             </div>
-            
-            <div class="chart-card">
-              <div class="chart-title">
-                ⚡ tool activity summary
+
+            <!-- SECTION 3: Productivity Analytics -->
+            <div class="chart-section">
+              <div class="section-header">
+                <h3 class="section-title">📈 Productivity Analytics</h3>
+                <p class="section-description">Track project activity and tool utilization</p>
               </div>
-              <div id="toolSummary" class="tool-summary">
-                <!-- Tool summary will be loaded here -->
+              <div class="section-charts">
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Project Activity Distribution
+                  </div>
+                  <canvas id="projectChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Tool Usage Patterns
+                  </div>
+                  <canvas id="toolChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                  <div class="chart-title">
+                    Daily Productivity Trends
+                  </div>
+                  <canvas id="productivityChart" class="chart-canvas"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -323,7 +363,28 @@ class DashboardPage {
     `;
 
     this.bindEvents();
-    this.initializeTheme();
+    this.initializeHeaderComponent();
+  }
+
+  /**
+   * Initialize the header component
+   */
+  initializeHeaderComponent() {
+    const headerContainer = this.container.querySelector('#dashboard-header-container');
+    if (headerContainer && typeof HeaderComponent !== 'undefined') {
+      this.headerComponent = new HeaderComponent(headerContainer, {
+        title: 'Claude Code Analytics Dashboard',
+        subtitle: 'Real-time monitoring and analytics for Claude Code sessions',
+        version: 'v1.13.2', // Fallback version
+        showVersionBadge: true,
+        showLastUpdate: true,
+        showThemeSwitch: true,
+        showGitHubLink: true,
+        dataService: this.dataService // Pass DataService for dynamic version loading
+      });
+      
+      this.headerComponent.render();
+    }
   }
 
   /**
@@ -813,11 +874,6 @@ class DashboardPage {
       retryBtn.addEventListener('click', () => this.loadInitialData());
     }
 
-    // Theme toggle (header)
-    const headerThemeSwitch = this.container.querySelector('#header-theme-switch');
-    if (headerThemeSwitch) {
-      headerThemeSwitch.addEventListener('click', () => this.toggleTheme());
-    }
   }
 
   /**
@@ -825,14 +881,18 @@ class DashboardPage {
    */
   async loadInitialData() {
     try {
-      const [conversationsData, statesData] = await Promise.all([
+      const [conversationsData, statesData, agentData] = await Promise.all([
         this.dataService.getConversations(),
-        this.dataService.getConversationStates()
+        this.dataService.getConversationStates(),
+        this.dataService.cachedFetch('/api/agents')
       ]);
 
       this.stateService.updateConversations(conversationsData.conversations);
       this.stateService.updateSummary(conversationsData.summary);
       this.stateService.updateConversationStates(statesData);
+      
+      // Store agent data for charts
+      this.agentData = agentData;
       
       // Update dashboard with original format
       this.updateSummaryDisplay(
@@ -843,6 +903,7 @@ class DashboardPage {
       
       this.updateLastUpdateTime();
       this.updateChartData(conversationsData);
+      this.updateAgentCharts(agentData);
     } catch (error) {
       console.error('Error loading initial data:', error);
       
@@ -948,6 +1009,11 @@ class DashboardPage {
       this.updateTokenBreakdown(detailedTokenUsage);
     }
 
+    // Update agent metrics if available
+    if (this.agentData) {
+      this.updateAgentMetrics(this.agentData);
+    }
+
     // Store data for chart updates
     this.allData = allData;
   }
@@ -983,6 +1049,44 @@ class DashboardPage {
     // Combine cache creation and read tokens
     const totalCache = (tokenUsage.cacheCreationTokens || 0) + (tokenUsage.cacheReadTokens || 0);
     if (cacheTokens) cacheTokens.textContent = totalCache.toLocaleString();
+  }
+
+  /**
+   * Update agent metrics in the agents card
+   * @param {Object} agentData - Agent analytics data
+   */
+  updateAgentMetrics(agentData) {
+    if (!agentData) return;
+
+    const totalAgentInvocations = this.container.querySelector('#totalAgentInvocations');
+    const totalAgentTypes = this.container.querySelector('#totalAgentTypes');
+    const topAgentName = this.container.querySelector('#topAgentName');
+    const agentAdoption = this.container.querySelector('#agentAdoption');
+
+    // Update primary metric - total invocations
+    if (totalAgentInvocations) {
+      totalAgentInvocations.textContent = agentData.totalAgentInvocations?.toLocaleString() || '0';
+    }
+
+    // Update secondary metrics
+    if (totalAgentTypes) {
+      totalAgentTypes.textContent = agentData.totalAgentTypes?.toLocaleString() || '0';
+    }
+
+    if (topAgentName) {
+      const topAgent = agentData.agentStats?.[0];
+      if (topAgent) {
+        topAgentName.textContent = topAgent.name;
+        topAgentName.title = `${topAgent.totalInvocations} uses`;
+      } else {
+        topAgentName.textContent = 'None';
+      }
+    }
+
+    if (agentAdoption) {
+      const adoptionRate = agentData.efficiency?.adoptionRate || '0';
+      agentAdoption.textContent = adoptionRate + '%';
+    }
   }
 
   /**
@@ -1050,6 +1154,9 @@ class DashboardPage {
     if (this.allData) {
       this.updateChartData(this.allData);
     }
+    if (this.agentData) {
+      this.updateAgentCharts(this.agentData);
+    }
   }
 
   /**
@@ -1095,9 +1202,17 @@ class DashboardPage {
   updateChartData(data) {
     if (!data || !data.conversations) return;
 
+    // Token Analytics Section
     this.updateTokenChart(data.conversations);
+    this.updateTokenTypeChart(data);
+    this.updateTokenTimelineChart(data);
+    
+    // Productivity Analytics Section  
     this.updateProjectChart(data.conversations);
     this.updateToolChart(data.conversations);
+    this.updateProductivityChart(data);
+    
+    // Legacy tool summary (keeping for now)
     this.updateToolSummary(data.conversations);
   }
 
@@ -1126,6 +1241,10 @@ class DashboardPage {
     const sortedDates = Object.keys(tokensByDate).sort((a, b) => new Date(a) - new Date(b));
     const labels = sortedDates.map(date => new Date(date).toLocaleDateString());
     const data = sortedDates.map(date => tokensByDate[date]);
+
+    console.log('📊 Token chart - tokensByDate:', tokensByDate);
+    console.log('📊 Token chart - Labels:', labels);
+    console.log('📊 Token chart - Data:', data);
 
     this.components.tokenChart.data.labels = labels;
     this.components.tokenChart.data.datasets[0].data = data;
@@ -1253,6 +1372,647 @@ class DashboardPage {
   }
 
   /**
+   * Update agent usage charts
+   * @param {Object} agentData - Agent analytics data
+   */
+  updateAgentCharts(agentData) {
+    if (!agentData || !agentData.agentStats) {
+      console.warn('No agent data available for charts');
+      return;
+    }
+
+    this.updateAgentUsageChart(agentData);
+    this.updateAgentTimelineChart(agentData);
+    this.updateWorkflowEfficiencyChart(agentData);
+  }
+
+  /**
+   * Update agent usage distribution chart
+   * @param {Object} agentData - Agent analytics data
+   */
+  updateAgentUsageChart(agentData) {
+    const canvas = this.container.querySelector('#agentUsageChart');
+    if (!canvas) {
+      console.warn('Agent usage chart canvas not found');
+      return;
+    }
+
+    // Destroy existing chart if it exists
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    const ctx = canvas.getContext('2d');
+    const agentStats = agentData.agentStats || [];
+
+    if (agentStats.length === 0) {
+      // Show "no data" message
+      ctx.fillStyle = '#7d8590';
+      ctx.textAlign = 'center';
+      ctx.font = '14px Monaco, monospace';
+      ctx.fillText('No agent usage data', canvas.width / 2, canvas.height / 2);
+      return;
+    }
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: agentStats.map(agent => agent.name),
+        datasets: [{
+          data: agentStats.map(agent => agent.totalInvocations),
+          backgroundColor: agentStats.map(agent => agent.color),
+          borderColor: '#0d1117',
+          borderWidth: 2,
+          hoverBorderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#c9d1d9',
+              padding: 10,
+              usePointStyle: true,
+              font: {
+                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                size: 11
+              }
+            }
+          },
+          tooltip: {
+            titleFont: {
+              family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+            },
+            bodyFont: {
+              family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+            },
+            callbacks: {
+              label: function(context) {
+                const agent = agentStats[context.dataIndex];
+                return `${agent.name}: ${context.parsed} uses (${agent.uniqueConversations} conversations)`;
+              }
+            }
+          }
+        },
+        cutout: '60%'
+      }
+    });
+  }
+
+  /**
+   * Update agent usage timeline chart
+   * @param {Object} agentData - Agent analytics data
+   */
+  updateAgentTimelineChart(agentData) {
+    const canvas = this.container.querySelector('#agentTimelineChart');
+    if (!canvas) {
+      console.warn('Agent timeline chart canvas not found');
+      return;
+    }
+
+    // Destroy existing chart if it exists
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    const ctx = canvas.getContext('2d');
+    const usageByDay = agentData.usageByDay || [];
+
+    if (usageByDay.length === 0) {
+      // Show "no data" message
+      ctx.fillStyle = '#7d8590';
+      ctx.textAlign = 'center';
+      ctx.font = '14px Monaco, monospace';
+      ctx.fillText('No timeline data', canvas.width / 2, canvas.height / 2);
+      return;
+    }
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: usageByDay.map(d => new Date(d.date).toLocaleDateString()),
+        datasets: [{
+          label: 'Agent Usage',
+          data: usageByDay.map(d => d.count),
+          borderColor: '#3fb950',
+          backgroundColor: 'rgba(63, 185, 80, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: '#3fb950',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#c9d1d9',
+              font: {
+                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                size: 11
+              }
+            }
+          },
+          tooltip: {
+            titleFont: {
+              family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+            },
+            bodyFont: {
+              family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+            },
+            callbacks: {
+              label: function(context) {
+                return `Agent invocations: ${context.parsed.y}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: '#7d8590',
+              font: {
+                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+              }
+            },
+            grid: {
+              color: '#30363d'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: '#7d8590',
+              font: {
+                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+              },
+              stepSize: 1
+            },
+            grid: {
+              color: '#30363d'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Update workflow efficiency chart
+   * @param {Object} agentData - Agent analytics data
+   */
+  updateWorkflowEfficiencyChart(agentData) {
+    const canvas = this.container.querySelector('#workflowEfficiencyChart');
+    if (!canvas) {
+      console.warn('Workflow efficiency chart canvas not found');
+      return;
+    }
+
+    // Destroy existing chart if it exists
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    const ctx = canvas.getContext('2d');
+    const efficiency = agentData.efficiency || {};
+
+    const data = {
+      labels: ['Adoption Rate', 'Workflow Completion', 'Time Efficiency', 'Success Rate'],
+      datasets: [{
+        label: 'Efficiency %',
+        data: [
+          efficiency.adoptionRate || 0,
+          efficiency.workflowCompletion || 0,
+          efficiency.timeEfficiency || 0,
+          efficiency.successRate || 0
+        ],
+        backgroundColor: [
+          'rgba(63, 185, 80, 0.8)',
+          'rgba(88, 166, 255, 0.8)', 
+          'rgba(249, 115, 22, 0.8)',
+          'rgba(213, 116, 85, 0.8)'
+        ],
+        borderColor: [
+          '#3fb950',
+          '#58a6ff',
+          '#f97316', 
+          '#d57455'
+        ],
+        borderWidth: 2
+      }]
+    };
+
+    new Chart(ctx, {
+      type: 'radar',
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label;
+                const value = context.parsed.r;
+                return `${label}: ${value.toFixed(1)}%`;
+              }
+            }
+          }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              stepSize: 20,
+              color: '#7d8590',
+              backdropColor: 'transparent'
+            },
+            grid: {
+              color: '#30363d'
+            },
+            angleLines: {
+              color: '#30363d'
+            },
+            pointLabels: {
+              color: '#c9d1d9',
+              font: {
+                size: 11
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Update token type distribution chart  
+   * @param {Object} data - Chart data
+   */
+  updateTokenTypeChart(data) {
+    const canvas = this.container.querySelector('#tokenTypeChart');
+    if (!canvas) {
+      console.warn('Token type chart canvas not found');
+      return;
+    }
+
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) existingChart.destroy();
+
+    const ctx = canvas.getContext('2d');
+    const tokenData = data.detailedTokenUsage || {};
+    
+    console.log('Token type chart data:', tokenData);
+
+    const chartData = [
+      tokenData.inputTokens || 0,
+      tokenData.outputTokens || 0,
+      tokenData.cacheCreationTokens || 0,
+      tokenData.cacheReadTokens || 0
+    ];
+    
+    const totalTokens = chartData.reduce((sum, val) => sum + val, 0);
+    
+    if (totalTokens === 0) {
+      // Show "no data" message
+      ctx.fillStyle = '#7d8590';
+      ctx.textAlign = 'center';
+      ctx.font = '14px Monaco, monospace';
+      ctx.fillText('No token data available', canvas.width / 2, canvas.height / 2);
+      return;
+    }
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Input Tokens', 'Output Tokens', 'Cache Creation', 'Cache Read'],
+        datasets: [{
+          data: chartData,
+          backgroundColor: ['#3fb950', '#58a6ff', '#f97316', '#d57455'],
+          borderColor: '#0d1117',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#c9d1d9',
+              font: { size: 11 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label;
+                const value = context.parsed;
+                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                return `${label}: ${value.toLocaleString()} tokens (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Update token usage over time chart
+   * @param {Object} data - Chart data  
+   */
+  updateTokenTimelineChart(data) {
+    const canvas = this.container.querySelector('#tokenTimelineChart');
+    if (!canvas) {
+      console.warn('Token timeline chart canvas not found');
+      return;
+    }
+
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) existingChart.destroy();
+
+    const ctx = canvas.getContext('2d');
+    const conversations = data.conversations || [];
+    
+    if (conversations.length === 0) {
+      // Show "no data" message
+      ctx.fillStyle = '#7d8590';
+      ctx.textAlign = 'center';
+      ctx.font = '14px Monaco, monospace';
+      ctx.fillText('No token timeline data', canvas.width / 2, canvas.height / 2);
+      return;
+    }
+
+    // Calculate daily token usage
+    const dailyTokens = this.calculateDailyTokenUsage(conversations);
+    
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dailyTokens.labels,
+        datasets: [{
+          label: 'Input Tokens',
+          data: dailyTokens.inputTokens,
+          borderColor: '#3fb950',
+          backgroundColor: 'rgba(63, 185, 80, 0.1)',
+          fill: false,
+          tension: 0.3,
+          pointBackgroundColor: '#3fb950',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }, {
+          label: 'Output Tokens',
+          data: dailyTokens.outputTokens,
+          borderColor: '#58a6ff',
+          backgroundColor: 'rgba(88, 166, 255, 0.1)',
+          fill: false,
+          tension: 0.3,
+          pointBackgroundColor: '#58a6ff',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }, {
+          label: 'Cache Usage',
+          data: dailyTokens.cacheTokens,
+          borderColor: '#f97316',
+          backgroundColor: 'rgba(249, 115, 22, 0.1)',
+          fill: false,
+          tension: 0.3,
+          pointBackgroundColor: '#f97316',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#c9d1d9',
+              font: { size: 11 },
+              padding: 15,
+              usePointStyle: true
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label;
+                const value = context.parsed.y;
+                return `${label}: ${value.toLocaleString()} tokens`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#7d8590' },
+            grid: { color: '#30363d' }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { 
+              color: '#7d8590',
+              callback: function(value) {
+                return value.toLocaleString();
+              }
+            },
+            grid: { color: '#30363d' }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        }
+      }
+    });
+  }
+
+  /**
+   * Update daily productivity trends chart
+   * @param {Object} data - Chart data
+   */
+  updateProductivityChart(data) {
+    const canvas = this.container.querySelector('#productivityChart');
+    if (!canvas) return;
+
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) existingChart.destroy();
+
+    const ctx = canvas.getContext('2d');
+    
+    // Calculate productivity metrics by day
+    const dailyData = this.calculateDailyProductivity(data);
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dailyData.labels,
+        datasets: [{
+          label: 'Messages per Day',
+          data: dailyData.messages,
+          borderColor: '#3fb950',
+          backgroundColor: 'rgba(63, 185, 80, 0.1)',
+          fill: true,
+          tension: 0.3
+        }, {
+          label: 'Tokens per Day',
+          data: dailyData.tokens,
+          borderColor: '#58a6ff', 
+          backgroundColor: 'rgba(88, 166, 255, 0.1)',
+          fill: true,
+          tension: 0.3,
+          yAxisID: 'y1'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#c9d1d9', font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label;
+                const value = context.parsed.y;
+                if (label === 'Messages per Day') {
+                  return `${label}: ${value} messages`;
+                } else {
+                  return `${label}: ${value.toLocaleString()} tokens`;
+                }
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#7d8590' },
+            grid: { color: '#30363d' }
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            ticks: { color: '#7d8590' },
+            grid: { color: '#30363d' }
+          },
+          y1: {
+            type: 'linear',
+            display: true, 
+            position: 'right',
+            ticks: { color: '#7d8590' },
+            grid: { drawOnChartArea: false }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        }
+      }
+    });
+  }
+
+  /**
+   * Calculate daily productivity metrics
+   * @param {Object} data - Raw data
+   * @returns {Object} Processed daily data
+   */
+  /**
+   * Calculate daily token usage from conversations
+   * @param {Array} conversations - Array of conversation objects
+   * @returns {Object} Daily token data
+   */
+  calculateDailyTokenUsage(conversations) {
+    const dailyData = {};
+    const { fromDate, toDate } = this.getDateRange();
+    
+    conversations.forEach(conv => {
+      const convDate = new Date(conv.lastModified);
+      if (convDate >= fromDate && convDate <= toDate) {
+        const dateKey = convDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        
+        if (!dailyData[dateKey]) {
+          dailyData[dateKey] = {
+            inputTokens: 0,
+            outputTokens: 0,
+            cacheTokens: 0
+          };
+        }
+        
+        if (conv.tokenUsage) {
+          dailyData[dateKey].inputTokens += conv.tokenUsage.inputTokens || 0;
+          dailyData[dateKey].outputTokens += conv.tokenUsage.outputTokens || 0;
+          dailyData[dateKey].cacheTokens += (conv.tokenUsage.cacheCreationTokens || 0) + (conv.tokenUsage.cacheReadTokens || 0);
+        }
+      }
+    });
+    
+    // Sort dates and create arrays
+    const sortedDates = Object.keys(dailyData).sort();
+    const labels = sortedDates.map(date => new Date(date).toLocaleDateString());
+    const inputTokens = sortedDates.map(date => dailyData[date].inputTokens);
+    const outputTokens = sortedDates.map(date => dailyData[date].outputTokens);
+    const cacheTokens = sortedDates.map(date => dailyData[date].cacheTokens);
+    
+    return { labels, inputTokens, outputTokens, cacheTokens };
+  }
+
+  calculateDailyProductivity(data) {
+    const conversations = data.conversations || [];
+    const dailyStats = {};
+
+    // Group data by day
+    conversations.forEach(conv => {
+      if (!conv.lastModified) return;
+      
+      const date = new Date(conv.lastModified).toDateString();
+      if (!dailyStats[date]) {
+        dailyStats[date] = { messages: 0, tokens: 0 };
+      }
+      
+      dailyStats[date].messages += conv.messageCount || 0;
+      dailyStats[date].tokens += (conv.tokenUsage?.inputTokens || 0) + (conv.tokenUsage?.outputTokens || 0);
+    });
+
+    // Convert to arrays for chart
+    const sortedDates = Object.keys(dailyStats).sort((a, b) => new Date(a) - new Date(b));
+    
+    return {
+      labels: sortedDates.map(date => new Date(date).toLocaleDateString()),
+      messages: sortedDates.map(date => dailyStats[date].messages),
+      tokens: sortedDates.map(date => Math.round(dailyStats[date].tokens / 1000)) // Convert to K tokens
+    };
+  }
+
+  /**
    * Update usage chart
    * @param {string} period - Time period
    */
@@ -1330,74 +2090,13 @@ class DashboardPage {
     }
   }
 
-  /**
-   * Initialize theme from localStorage
-   */
-  initializeTheme() {
-    const savedTheme = localStorage.getItem('claude-analytics-theme') || 'dark';
-    const body = document.body;
-    const headerThumb = this.container.querySelector('#header-theme-switch-thumb');
-    const headerIcon = headerThumb?.querySelector('.theme-switch-icon');
-    
-    body.setAttribute('data-theme', savedTheme);
-    if (headerThumb && headerIcon) {
-      if (savedTheme === 'light') {
-        headerThumb.classList.add('light');
-        headerIcon.textContent = '☀️';
-      } else {
-        headerThumb.classList.remove('light');
-        headerIcon.textContent = '🌙';
-      }
-    }
-  }
-
-  /**
-   * Toggle theme between light and dark
-   */
-  toggleTheme() {
-    const body = document.body;
-    const headerThumb = this.container.querySelector('#header-theme-switch-thumb');
-    const headerIcon = headerThumb?.querySelector('.theme-switch-icon');
-    
-    // Also sync with global theme switch
-    const globalThumb = document.getElementById('themeSwitchThumb');
-    const globalIcon = globalThumb?.querySelector('.theme-switch-icon');
-    
-    const isLight = body.getAttribute('data-theme') === 'light';
-    const newTheme = isLight ? 'dark' : 'light';
-    
-    body.setAttribute('data-theme', newTheme);
-    
-    // Update header theme switch
-    if (headerThumb && headerIcon) {
-      headerThumb.classList.toggle('light', newTheme === 'light');
-      headerIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
-    }
-    
-    // Sync with global theme switch
-    if (globalThumb && globalIcon) {
-      globalThumb.classList.toggle('light', newTheme === 'light');
-      globalIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
-    }
-    
-    localStorage.setItem('claude-analytics-theme', newTheme);
-  }
 
   /**
    * Update last update time
    */
   updateLastUpdateTime() {
-    const currentTime = new Date().toLocaleTimeString();
-    
-    // Update both locations
-    const lastUpdateText = this.container.querySelector('#last-update-text');
-    const lastUpdateHeaderText = this.container.querySelector('#last-update-header-text');
-    
-    if (lastUpdateText) {
-      lastUpdateText.textContent = currentTime;
-    }
-    if (lastUpdateHeaderText) {
-      lastUpdateHeaderText.textContent = currentTime;
+    if (this.headerComponent) {
+      this.headerComponent.updateLastUpdateTime();
     }
   }
 
@@ -1476,6 +2175,12 @@ class DashboardPage {
    */
   destroy() {
     this.stopPeriodicRefresh();
+    
+    // Cleanup header component
+    if (this.headerComponent) {
+      this.headerComponent.destroy();
+      this.headerComponent = null;
+    }
     
     // Cleanup Chart.js instances specifically
     if (this.components.tokenChart) {

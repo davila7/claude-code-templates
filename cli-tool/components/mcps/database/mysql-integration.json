@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mysql": {
+      "description": "Connect to MySQL databases for direct data access, queries, and database management within Claude Code workflows.",
+      "command": "uvx",
+      "args": ["mcp-server-mysql"],
+      "env": {
+        "MYSQL_CONNECTION_STRING": "mysql://user:password@localhost:3306/dbname"
+      }
+    }
+  }
+}

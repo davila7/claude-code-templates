@@ -324,7 +324,7 @@ The analytics dashboard has been refactored into a modular architecture in 4 pha
 ### During Development
 1. Use meaningful variable and function names
 2. Run tests frequently to catch issues early: `npm run test:watch`
-3. Test analytics dashboard: `npm run analytics:start`
+3. For frontend changes, let user handle analytics server startup - don't run `npm run analytics:start` automatically
 4. Use meaningful commit messages
 
 ### Before Committing

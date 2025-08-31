@@ -1,0 +1,4 @@
+{
+  "description": "Set chat transcript retention to 7 days for privacy.",
+  "cleanupPeriodDays": 7
+}

@@ -6,34 +6,40 @@ const chalk = require('chalk');
 
 class SessionAnalyzer {
   constructor() {
-    this.SESSION_DURATION = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+    // CORRECTED: Sessions don't have fixed duration - they reset at scheduled times
+    // Reset hours: 1am, 7am, 1pm, 7pm local time
+    this.RESET_HOURS = [1, 7, 13, 19];
     this.MONTHLY_SESSION_LIMIT = 50;
     
-    // Plan-specific message limits (conservative estimates)
+    // Plan-specific usage information (Claude uses complexity-based limits, not fixed message counts)
     this.PLAN_LIMITS = {
       'free': {
         name: 'Free Plan',
-        messagesPerSession: null,
+        estimatedMessagesPerSession: null,
         monthlyPrice: 0,
-        hasSessionLimits: false
+        hasSessionLimits: false,
+        description: 'Daily usage limits apply'
       },
       'standard': {
         name: 'Pro Plan',
-        messagesPerSession: 45,
+        estimatedMessagesPerSession: 45, // Rough estimate for ~200 sentence messages
         monthlyPrice: 20,
-        hasSessionLimits: true
+        hasSessionLimits: true,
+        description: 'Usage based on message complexity, conversation length, and current capacity. Limits reset every 5 hours.'
       },
       'max': {
         name: 'Max Plan (5x)',
-        messagesPerSession: 225,
+        estimatedMessagesPerSession: null, // 5x more than Pro, but still complexity-based
         monthlyPrice: 100,
-        hasSessionLimits: true
+        hasSessionLimits: true,
+        description: '5x the usage of Pro plan. Complexity-based limits.'
       },
       'premium': {
-        name: 'Max Plan (5x)',
-        messagesPerSession: 900,
+        name: 'Max Plan (20x)',
+        estimatedMessagesPerSession: null, // 20x more than Pro
         monthlyPrice: 200,
-        hasSessionLimits: true
+        hasSessionLimits: true,
+        description: '20x the usage of Pro plan. Complexity-based limits.'
       }
     };
   }
@@ -325,7 +331,7 @@ class SessionAnalyzer {
 
     // Create current session based on Claude's actual session window
     const sessionStartTime = new Date(claudeSessionInfo.startTime);
-    const sessionEndTime = new Date(claudeSessionInfo.startTime + claudeSessionInfo.sessionLimit.ms);
+    const sessionEndTime = new Date(claudeSessionInfo.sessionLimit.nextResetTime);
     const now = new Date();
     
     // Find the first user message that occurred AT OR AFTER the Claude session started
@@ -346,8 +352,50 @@ class SessionAnalyzer {
       return msgTime >= effectiveSessionStart && msgTime < sessionEndTime;
     });
 
+    // If no estimated messages found in session window, check for active conversations by lastModified
     if (currentSessionMessages.length === 0) {
-      return [];
+      const RECENT_ACTIVITY_THRESHOLD = 10 * 60 * 1000; // 10 minutes
+      const now = new Date();
+      
+      // Find conversations with recent activity (lastModified within session timeframe)
+      const activeConversations = conversations.filter(conversation => {
+        if (!conversation.lastModified) return false;
+        
+        const lastModified = new Date(conversation.lastModified);
+        const timeSinceModified = now - lastModified;
+        
+        // Consider conversation active if:
+        // 1. Modified after session start, AND
+        // 2. Recently modified (within threshold)
+        return lastModified >= sessionStartTime && timeSinceModified < RECENT_ACTIVITY_THRESHOLD;
+      });
+      
+      if (activeConversations.length === 0) {
+        return [];
+      }
+      
+      // Create messages for active conversations based on their real message count
+      activeConversations.forEach(conversation => {
+        const lastModified = new Date(conversation.lastModified);
+        const messageCount = conversation.messageCount || 0;
+        
+        // Create messages based on real message count, distributing them over the session
+        const sessionDuration = now - sessionStartTime;
+        const timePerMessage = sessionDuration / messageCount;
+        
+        for (let i = 0; i < messageCount; i++) {
+          // Distribute messages over the session timeline, alternating user/assistant
+          const messageTime = new Date(sessionStartTime.getTime() + (i * timePerMessage));
+          const role = i % 2 === 0 ? 'user' : 'assistant';
+          
+          currentSessionMessages.push({
+            timestamp: messageTime,
+            role: role,
+            conversationId: conversation.id,
+            usage: conversation.tokenUsage || null
+          });
+        }
+      });
     }
 
     // Create the current session object
@@ -409,12 +457,19 @@ class SessionAnalyzer {
   getCurrentActiveSessionFromClaudeInfo(sessions, claudeSessionInfo) {
     if (sessions.length === 0) return null;
     
-    // If Claude session is expired, return null
-    if (claudeSessionInfo.estimatedTimeRemaining.isExpired) {
-      return null;
+    const now = Date.now();
+    const RECENT_ACTIVITY_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+    
+    // Check if there's recent activity - sessions can be renewed at reset time
+    const timeSinceLastUpdate = now - claudeSessionInfo.lastUpdate;
+    const hasRecentActivity = timeSinceLastUpdate < RECENT_ACTIVITY_THRESHOLD;
+    
+    // Session is active if not expired OR has recent activity (session was renewed)
+    if (!claudeSessionInfo.estimatedTimeRemaining.isExpired || hasRecentActivity) {
+      return sessions[0];
     }
     
-    return sessions[0]; // Since we only create one session based on Claude's current session
+    return null;
   }
 
   /**
@@ -516,38 +571,33 @@ class SessionAnalyzer {
     const warnings = [];
     const planLimits = this.PLAN_LIMITS[userPlan.planType] || this.PLAN_LIMITS['standard'];
 
-    // Session-level warnings
+    // Session-level warnings - only for time remaining and token usage
     if (currentSession) {
-      const sessionProgress = currentSession.messageCount / planLimits.messagesPerSession;
-      
-      if (sessionProgress >= 0.9) {
-        warnings.push({
-          type: 'session_limit_critical',
-          level: 'error',
-          message: `You're near your session message limit (${currentSession.messageCount}/${planLimits.messagesPerSession})`,
-          timeRemaining: currentSession.timeRemaining
-        });
-      } else if (sessionProgress >= 0.75) {
-        warnings.push({
-          type: 'session_limit_warning',
-          level: 'warning',
-          message: `75% of session messages used (${currentSession.messageCount}/${planLimits.messagesPerSession})`,
-          timeRemaining: currentSession.timeRemaining
-        });
-      }
-
-      // Time remaining warning
+      // Time remaining warning (30 minutes before reset)
       if (currentSession.timeRemaining < 30 * 60 * 1000) { // 30 minutes
         warnings.push({
           type: 'session_time_warning',
           level: 'info',
-          message: `Session expires in ${Math.round(currentSession.timeRemaining / 60000)} minutes`,
+          message: `Session resets in ${Math.round(currentSession.timeRemaining / 60000)} minutes`,
           timeRemaining: currentSession.timeRemaining
         });
       }
+
+      // High token usage warning (if we have token data and it's exceptionally high)
+      if (currentSession.tokenUsage && currentSession.tokenUsage.total > 1000000) { // 1M tokens
+        warnings.push({
+          type: 'high_token_usage',
+          level: 'info',
+          message: `High token usage in this session (${Math.round(currentSession.tokenUsage.total / 1000)}K tokens)`,
+          tokenUsage: currentSession.tokenUsage.total
+        });
+      }
+
+      // Note: We don't warn about message counts since Claude uses complexity-based limits
+      // that can't be accurately predicted from simple message counts
     }
 
-    // Monthly warnings
+    // Monthly warnings (these limits are more predictable)
     const monthlyProgress = monthlyUsage.sessionCount / this.MONTHLY_SESSION_LIMIT;
     
     if (monthlyProgress >= 0.9) {
@@ -605,25 +655,30 @@ class SessionAnalyzer {
     // Ensure limits exist, fallback to standard plan
     const planLimits = limits || this.PLAN_LIMITS['standard'];
     
-    // Use weighted message calculation for more accurate progress
-    const weightedProgress = (currentSession.messageWeight / planLimits.messagesPerSession) * 100;
+    // Calculate only user messages (Claude only counts prompts toward limits)
+    const userMessages = currentSession.messages ? currentSession.messages.filter(msg => msg.role === 'user') : [];
+    const userMessageCount = userMessages.length;
     
     return {
       hasActiveSession: true,
       timeRemaining: currentSession.timeRemaining,
       timeRemainingFormatted: this.formatTimeRemaining(currentSession.timeRemaining),
-      messagesUsed: currentSession.messageCount,
-      messagesLimit: planLimits.messagesPerSession,
-      messageWeight: currentSession.messageWeight,
-      usageDetails: currentSession.usageDetails,
+      messagesUsed: userMessageCount,
+      messagesEstimate: planLimits.estimatedMessagesPerSession, // Show as estimate, not limit
       tokensUsed: currentSession.tokenUsage.total,
-      sessionProgress: weightedProgress,
-      sessionProgressSimple: (currentSession.messageCount / planLimits.messagesPerSession) * 100,
       planName: planLimits.name,
+      planDescription: planLimits.description,
       monthlySessionsUsed: monthlyUsage.sessionCount,
       monthlySessionsLimit: this.MONTHLY_SESSION_LIMIT,
       warnings: warnings.filter(w => w.type.includes('session')),
-      willResetAt: currentSession.endTime
+      willResetAt: currentSession.endTime,
+      // Usage insights
+      usageInsights: {
+        tokensPerMessage: userMessageCount > 0 ? Math.round(currentSession.tokenUsage.total / userMessageCount) : 0,
+        averageMessageComplexity: userMessageCount > 0 ? currentSession.messageWeight / userMessageCount : 0,
+        conversationLength: currentSession.messages ? currentSession.messages.length : 0,
+        sessionDuration: Date.now() - currentSession.startTime
+      }
     };
   }
 }

@@ -1,0 +1,6 @@
+{
+  "description": "Enable Claude Code telemetry for usage analytics and improvements.",
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1"
+  }
+}

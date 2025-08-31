@@ -4,26 +4,34 @@ const path = require('path');
 const express = require('express');
 const open = require('open');
 const os = require('os');
+const inquirer = require('inquirer');
+const boxen = require('boxen');
+const { spawn } = require('child_process');
 const packageJson = require('../package.json');
 const StateCalculator = require('./analytics/core/StateCalculator');
 const ProcessDetector = require('./analytics/core/ProcessDetector');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 const FileWatcher = require('./analytics/core/FileWatcher');
 const SessionAnalyzer = require('./analytics/core/SessionAnalyzer');
+const AgentAnalyzer = require('./analytics/core/AgentAnalyzer');
 const DataCache = require('./analytics/data/DataCache');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const NotificationManager = require('./analytics/notifications/NotificationManager');
 const PerformanceMonitor = require('./analytics/utils/PerformanceMonitor');
 const ConsoleBridge = require('./console-bridge');
+const ClaudeAPIProxy = require('./claude-api-proxy');
 
 class ClaudeAnalytics {
-  constructor() {
+  constructor(options = {}) {
+    this.options = options;
+    this.verbose = options.verbose || false;
     this.app = express();
     this.port = 3333;
     this.stateCalculator = new StateCalculator();
     this.processDetector = new ProcessDetector();
     this.fileWatcher = new FileWatcher();
     this.sessionAnalyzer = new SessionAnalyzer();
+    this.agentAnalyzer = new AgentAnalyzer();
     this.dataCache = new DataCache();
     this.performanceMonitor = new PerformanceMonitor({
       enabled: true,
@@ -34,6 +42,9 @@ class ClaudeAnalytics {
     this.notificationManager = null;
     this.httpServer = null;
     this.consoleBridge = null;
+    this.cloudflareProcess = null;
+    this.publicUrl = null;
+    this.claudeApiProxy = null;
     this.data = {
       conversations: [],
       summary: {},
@@ -45,6 +56,29 @@ class ClaudeAnalytics {
         lastActivity: null,
       },
     };
+  }
+
+  /**
+   * Log messages only if verbose mode is enabled
+   * @param {string} level - Log level ('info', 'warn', 'error')
+   * @param {string} message - Message to log
+   * @param {...any} args - Additional arguments
+   */
+  log(level, message, ...args) {
+    if (!this.verbose) return;
+    
+    switch (level) {
+      case 'error':
+        console.error(message, ...args);
+        break;
+      case 'warn':
+        console.warn(message, ...args);
+        break;
+      case 'info':
+      default:
+        console.log(message, ...args);
+        break;
+    }
   }
 
   async initialize() {
@@ -238,8 +272,35 @@ class ClaudeAnalytics {
     };
   }
 
-  extractProjectFromPath(filePath) {
-    // Extract project name from file path like:
+  async extractProjectFromPath(filePath) {
+    // First try to read cwd from the conversation file itself
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const lines = content.trim().split('\n').filter(line => line.trim());
+      
+      for (const line of lines.slice(0, 10)) { // Check first 10 lines
+        try {
+          const item = JSON.parse(line);
+          
+          // Look for cwd field in the message
+          if (item.cwd) {
+            return path.basename(item.cwd);
+          }
+          
+          // Also check if it's in nested objects
+          if (item.message && item.message.cwd) {
+            return path.basename(item.message.cwd);
+          }
+        } catch (parseError) {
+          // Skip invalid JSON lines
+          continue;
+        }
+      }
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not extract project from conversation ${filePath}:`, error.message));
+    }
+
+    // Fallback: Extract project name from file path like:
     // /Users/user/.claude/projects/-Users-user-Projects-MyProject/conversation.jsonl
     const pathParts = filePath.split('/');
     const projectIndex = pathParts.findIndex(part => part === 'projects');
@@ -256,7 +317,7 @@ class ClaudeAnalytics {
       return cleanName;
     }
 
-    return null;
+    return 'Unknown';
   }
 
 
@@ -637,6 +698,28 @@ class ClaudeAnalytics {
       } catch (error) {
         console.error('Error getting paginated conversations:', error);
         res.status(500).json({ error: 'Failed to get conversations' });
+      }
+    });
+
+    // Agent usage analytics endpoint
+    this.app.get('/api/agents', async (req, res) => {
+      try {
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
+        const dateRange = (startDate || endDate) ? { startDate, endDate } : null;
+        
+        const agentAnalysis = await this.agentAnalyzer.analyzeAgentUsage(this.data.conversations, dateRange);
+        const agentSummary = this.agentAnalyzer.generateSummary(agentAnalysis);
+        
+        res.json({
+          ...agentAnalysis,
+          summary: agentSummary,
+          dateRange,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error getting agent analytics:', error);
+        res.status(500).json({ error: 'Failed to get agent analytics' });
       }
     });
 
@@ -1097,6 +1180,17 @@ class ClaudeAnalytics {
       }
     });
 
+    // Agents API endpoint
+    this.app.get('/api/agents', async (req, res) => {
+      try {
+        const agents = await this.loadAgents();
+        res.json({ agents });
+      } catch (error) {
+        console.error('Error loading agents:', error);
+        res.status(500).json({ error: 'Failed to load agents data' });
+      }
+    });
+
     // Main dashboard route
     this.app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'analytics-web', 'index.html'));
@@ -1119,7 +1213,7 @@ class ClaudeAnalytics {
   }
 
   async openBrowser(openTo = null) {
-    const baseUrl = `http://localhost:${this.port}`;
+    const baseUrl = this.publicUrl || `http://localhost:${this.port}`;
     let fullUrl = baseUrl;
     
     // Add fragment/hash for specific page
@@ -1135,6 +1229,191 @@ class ClaudeAnalytics {
     } catch (error) {
       console.log(chalk.yellow('Could not open browser automatically. Please visit:'));
       console.log(chalk.cyan(fullUrl));
+    }
+  }
+
+  /**
+   * Prompt user if they want to use Cloudflare Tunnel
+   */
+  async promptCloudflareSetup() {
+    console.log('');
+    console.log(chalk.yellow('🌐 Analytics Dashboard Access Options'));
+    console.log('');
+    console.log(chalk.cyan('🔒 About Cloudflare Tunnel:'));
+    console.log(chalk.gray('• Creates a secure connection between your localhost and the web'));
+    console.log(chalk.gray('• Only you will have access to the generated URL (not public)'));
+    console.log(chalk.gray('• The connection is end-to-end encrypted'));
+    console.log(chalk.gray('• Automatically closes when you end the session'));
+    console.log(chalk.gray('• No firewall or port configuration required'));
+    console.log('');
+    console.log(chalk.green('✅ It is completely secure - only you can access the dashboard'));
+    console.log('');
+    
+    const { useCloudflare } = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'useCloudflare',
+      message: 'Enable Cloudflare Tunnel for secure remote access?',
+      default: true
+    }]);
+
+    return useCloudflare;
+  }
+
+  /**
+   * Start Cloudflare Tunnel
+   */
+  async startCloudflareTunnel() {
+    try {
+      console.log(chalk.blue('🔧 Starting Cloudflare Tunnel...'));
+      
+      // Check if cloudflared is installed
+      const checkProcess = spawn('cloudflared', ['version'], { stdio: 'pipe' });
+      
+      return new Promise((resolve, reject) => {
+        checkProcess.on('error', (error) => {
+          console.log(chalk.red('❌ Cloudflared is not installed.'));
+          console.log('');
+          console.log(chalk.yellow('📥 To install Cloudflare Tunnel:'));
+          console.log(chalk.gray('• macOS: brew install cloudflared'));
+          console.log(chalk.gray('• Windows: winget install --id Cloudflare.cloudflared'));
+          console.log(chalk.gray('• Linux: apt-get install cloudflared'));
+          console.log('');
+          console.log(chalk.blue('💡 More info: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/'));
+          resolve(false);
+        });
+
+        checkProcess.on('close', (code) => {
+          if (code === 0) {
+            this.createCloudflareTunnel();
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      });
+    } catch (error) {
+      console.log(chalk.red(`❌ Error checking Cloudflare Tunnel: ${error.message}`));
+      return false;
+    }
+  }
+
+  /**
+   * Create the actual Cloudflare Tunnel
+   */
+  async createCloudflareTunnel() {
+    try {
+      console.log(chalk.blue('🚀 Creating secure tunnel...'));
+      
+      // Start cloudflared tunnel normally, but filter the output to capture URL
+      this.cloudflareProcess = spawn('cloudflared', [
+        'tunnel',
+        '--url', `http://localhost:${this.port}`
+      ], { 
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+
+      let tunnelEstablished = false;
+
+      return new Promise((resolve) => {
+        // Monitor stderr for the tunnel URL (cloudflared outputs most info to stderr)
+        this.cloudflareProcess.stderr.on('data', (data) => {
+          const output = data.toString();
+          
+          // Use the cleaner regex to extract URL from the logs
+          const urlMatch = output.match(/https:\/\/[a-zA-Z0-9.-]+\.trycloudflare\.com/);
+          
+          if (urlMatch && !tunnelEstablished) {
+            tunnelEstablished = true;
+            this.publicUrl = urlMatch[0];
+            
+            // Create a prominent, boxed display for the tunnel URL
+            const tunnelMessage = chalk.green.bold('🌍 CLOUDFLARE TUNNEL ACTIVE') + '\n\n' +
+              chalk.cyan.bold('Public URL: ') + chalk.white.underline(this.publicUrl) + '\n\n' +
+              chalk.yellow('🔗 Share this URL to access your dashboard remotely') + '\n' +
+              chalk.gray('🔒 This tunnel is private and secure - only accessible by you');
+            
+            console.log('\n');
+            console.log(boxen(tunnelMessage, {
+              padding: 1,
+              margin: 1,
+              borderStyle: 'double',
+              borderColor: 'cyan',
+              backgroundColor: '#1a1a1a'
+            }));
+            console.log('\n');
+            resolve(true);
+          }
+        });
+
+        // Also check stdout just in case
+        this.cloudflareProcess.stdout.on('data', (data) => {
+          const output = data.toString();
+          const urlMatch = output.match(/https:\/\/[a-zA-Z0-9.-]+\.trycloudflare\.com/);
+          
+          if (urlMatch && !tunnelEstablished) {
+            tunnelEstablished = true;
+            this.publicUrl = urlMatch[0];
+            
+            // Create a prominent, boxed display for the tunnel URL
+            const tunnelMessage = chalk.green.bold('🌍 CLOUDFLARE TUNNEL ACTIVE') + '\n\n' +
+              chalk.cyan.bold('Public URL: ') + chalk.white.underline(this.publicUrl) + '\n\n' +
+              chalk.yellow('🔗 Share this URL to access your dashboard remotely') + '\n' +
+              chalk.gray('🔒 This tunnel is private and secure - only accessible by you');
+            
+            console.log('\n');
+            console.log(boxen(tunnelMessage, {
+              padding: 1,
+              margin: 1,
+              borderStyle: 'double',
+              borderColor: 'cyan',
+              backgroundColor: '#1a1a1a'
+            }));
+            console.log('\n');
+            resolve(true);
+          }
+        });
+
+        this.cloudflareProcess.on('close', (code) => {
+          if (code !== 0) {
+            console.log(chalk.red(`❌ Cloudflare Tunnel terminated with code: ${code}`));
+          }
+          this.publicUrl = null;
+          this.cloudflareProcess = null;
+          if (!tunnelEstablished) {
+            resolve(false);
+          }
+        });
+
+        this.cloudflareProcess.on('error', (error) => {
+          console.log(chalk.red(`❌ Error with Cloudflare Tunnel: ${error.message}`));
+          this.publicUrl = null;
+          this.cloudflareProcess = null;
+          resolve(false);
+        });
+
+        // Timeout after 15 seconds if tunnel doesn't establish
+        setTimeout(() => {
+          if (!tunnelEstablished) {
+            console.log(chalk.red('❌ Timeout waiting for Cloudflare Tunnel to establish'));
+            resolve(false);
+          }
+        }, 15000);
+      });
+    } catch (error) {
+      console.log(chalk.red(`❌ Error creating Cloudflare Tunnel: ${error.message}`));
+      return false;
+    }
+  }
+
+  /**
+   * Stop Cloudflare Tunnel
+   */
+  stopCloudflareTunnel() {
+    if (this.cloudflareProcess) {
+      console.log(chalk.yellow('🛑 Closing Cloudflare Tunnel...'));
+      this.cloudflareProcess.kill('SIGTERM');
+      this.cloudflareProcess = null;
+      this.publicUrl = null;
     }
   }
 
@@ -1156,6 +1435,12 @@ class ClaudeAnalytics {
       
       // Connect notification manager to file watcher for typing detection
       this.fileWatcher.setNotificationManager(this.notificationManager);
+      
+      // Initialize Claude API Proxy for bidirectional communication
+      console.log(chalk.blue('🌉 Initializing Claude API Proxy...'));
+      this.claudeApiProxy = new ClaudeAPIProxy();
+      await this.claudeApiProxy.start();
+      console.log(chalk.green('✅ Claude API Proxy initialized on port 3335'));
       
       // Setup notification subscriptions
       this.setupNotificationSubscriptions();
@@ -1283,6 +1568,307 @@ class ClaudeAnalytics {
   }
 
   /**
+   * Load available agents from .claude/agents directories (project and user level)
+   * @returns {Promise<Array>} Array of agent objects
+   */
+  async loadAgents() {
+    const agents = [];
+    const homeDir = os.homedir();
+    
+    // Define agent paths (user level and project level)
+    const userAgentsDir = path.join(homeDir, '.claude', 'agents');
+    const projectAgentsDirs = [];
+    
+    try {
+      // 1. Check current working directory for .claude/agents
+      const currentProjectAgentsDir = path.join(process.cwd(), '.claude', 'agents');
+      if (await fs.pathExists(currentProjectAgentsDir)) {
+        const currentProjectName = path.basename(process.cwd());
+        projectAgentsDirs.push({
+          path: currentProjectAgentsDir,
+          projectName: currentProjectName
+        });
+      }
+      
+      // 2. Check parent directories for .claude/agents (for monorepo/nested projects)
+      let currentDir = process.cwd();
+      let parentDir = path.dirname(currentDir);
+      
+      // Search up to 3 levels up for .claude/agents
+      for (let i = 0; i < 3 && parentDir !== currentDir; i++) {
+        const parentProjectAgentsDir = path.join(parentDir, '.claude', 'agents');
+        
+        if (await fs.pathExists(parentProjectAgentsDir)) {
+          const parentProjectName = path.basename(parentDir);
+          
+          // Avoid duplicates
+          const exists = projectAgentsDirs.some(p => p.path === parentProjectAgentsDir);
+          if (!exists) {
+            projectAgentsDirs.push({
+              path: parentProjectAgentsDir,
+              projectName: parentProjectName
+            });
+          }
+          break; // Found one, no need to go further up
+        }
+        currentDir = parentDir;
+        parentDir = path.dirname(currentDir);
+      }
+      
+      // 3. Find all project directories that might have agents (in ~/.claude/projects)
+      const projectsDir = path.join(this.claudeDir, 'projects');
+      if (await fs.pathExists(projectsDir)) {
+        const projectDirs = await fs.readdir(projectsDir);
+        for (const projectDir of projectDirs) {
+          const projectAgentsDir = path.join(projectsDir, projectDir, '.claude', 'agents');
+          if (await fs.pathExists(projectAgentsDir)) {
+            projectAgentsDirs.push({
+              path: projectAgentsDir,
+              projectName: this.cleanProjectName(projectDir)
+            });
+          }
+        }
+      }
+      
+      // Load user-level agents
+      if (await fs.pathExists(userAgentsDir)) {
+        const userAgents = await this.loadAgentsFromDirectory(userAgentsDir, 'user');
+        agents.push(...userAgents);
+      }
+      
+      // Load project-level agents
+      for (const projectInfo of projectAgentsDirs) {
+        const projectAgents = await this.loadAgentsFromDirectory(
+          projectInfo.path, 
+          'project', 
+          projectInfo.projectName
+        );
+        agents.push(...projectAgents);
+      }
+      
+      // Log agents summary
+      console.log(chalk.blue('🤖 Agents loaded:'), agents.length);
+      if (agents.length > 0) {
+        const projectAgents = agents.filter(a => a.level === 'project').length;
+        const userAgents = agents.filter(a => a.level === 'user').length;
+        console.log(chalk.gray(`  📦 Project agents: ${projectAgents}, 👤 User agents: ${userAgents}`));
+      }
+      
+      // Sort agents by name and prioritize project agents over user agents
+      return agents.sort((a, b) => {
+        if (a.level !== b.level) {
+          return a.level === 'project' ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      
+    } catch (error) {
+      console.error(chalk.red('Error loading agents:'), error);
+      return [];
+    }
+  }
+
+  /**
+   * Load agents from a specific directory
+   * @param {string} agentsDir - Directory containing agent files
+   * @param {string} level - 'user' or 'project'
+   * @param {string} projectName - Name of project (if project level)
+   * @returns {Promise<Array>} Array of agent objects
+   */
+  async loadAgentsFromDirectory(agentsDir, level, projectName = null) {
+    const agents = [];
+    
+    try {
+      const files = await fs.readdir(agentsDir);
+      
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const filePath = path.join(agentsDir, file);
+          const agentData = await this.parseAgentFile(filePath, level, projectName);
+          if (agentData) {
+            agents.push(agentData);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not read agents directory ${agentsDir}:`, error.message));
+    }
+    
+    return agents;
+  }
+
+  /**
+   * Parse agent markdown file
+   * @param {string} filePath - Path to agent file
+   * @param {string} level - 'user' or 'project'
+   * @param {string} projectName - Name of project (if project level)
+   * @returns {Promise<Object|null>} Agent object or null if parsing failed
+   */
+  async parseAgentFile(filePath, level, projectName = null) {
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const stats = await fs.stat(filePath);
+      
+      // Parse YAML frontmatter
+      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+      if (!frontmatterMatch) {
+        console.warn(chalk.yellow(`Agent file ${path.basename(filePath)} missing frontmatter`));
+        return null;
+      }
+      
+      const frontmatter = {};
+      const yamlContent = frontmatterMatch[1];
+      
+      // Simple YAML parser for the fields we need
+      const yamlLines = yamlContent.split('\n');
+      for (const line of yamlLines) {
+        const match = line.match(/^(\w+):\s*(.*)$/);
+        if (match) {
+          const [, key, value] = match;
+          frontmatter[key] = value.trim();
+        }
+      }
+      
+      // Log parsed frontmatter for debugging
+      console.log(chalk.blue(`📋 Parsed agent frontmatter for ${path.basename(filePath)}:`), frontmatter);
+      
+      if (!frontmatter.name || !frontmatter.description) {
+        console.warn(chalk.yellow(`Agent file ${path.basename(filePath)} missing required fields`));
+        return null;
+      }
+      
+      // Extract system prompt (content after frontmatter)
+      const systemPrompt = content.substring(frontmatterMatch[0].length).trim();
+      
+      // Parse tools if specified
+      let tools = [];
+      if (frontmatter.tools) {
+        tools = frontmatter.tools.split(',').map(tool => tool.trim()).filter(Boolean);
+      }
+      
+      // Use color from frontmatter if available, otherwise generate one
+      const color = frontmatter.color ? this.convertColorToHex(frontmatter.color) : this.generateAgentColor(frontmatter.name);
+      
+      return {
+        name: frontmatter.name,
+        description: frontmatter.description,
+        systemPrompt,
+        tools,
+        level,
+        projectName,
+        filePath,
+        lastModified: stats.mtime,
+        color,
+        isActive: true // All loaded agents are considered active
+      };
+      
+    } catch (error) {
+      console.warn(chalk.yellow(`Warning: Could not parse agent file ${filePath}:`, error.message));
+      return null;
+    }
+  }
+
+  /**
+   * Generate consistent color for agent based on name
+   * @param {string} agentName - Name of the agent
+   * @returns {string} Hex color code
+   */
+  generateAgentColor(agentName) {
+    // Simple hash function to generate consistent colors
+    let hash = 0;
+    for (let i = 0; i < agentName.length; i++) {
+      const char = agentName.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    // Generate RGB values with good contrast and visibility
+    const hue = Math.abs(hash) % 360;
+    const saturation = 70 + (Math.abs(hash) % 30); // 70-100%
+    const lightness = 45 + (Math.abs(hash) % 20);  // 45-65%
+    
+    // Convert HSL to RGB
+    const hslToRgb = (h, s, l) => {
+      h /= 360;
+      s /= 100;
+      l /= 100;
+      
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      
+      let r, g, b;
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    };
+    
+    const [r, g, b] = hslToRgb(hue, saturation, lightness);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
+
+  /**
+   * Convert color names to hex values
+   * @param {string} color - Color name or hex value
+   * @returns {string} Hex color code
+   */
+  convertColorToHex(color) {
+    if (!color) return '#007acc';
+    
+    // If already hex, return as-is
+    if (color.startsWith('#')) return color;
+    
+    // Convert common color names to hex
+    const colorMap = {
+      'red': '#ff4444',
+      'blue': '#4444ff', 
+      'green': '#44ff44',
+      'yellow': '#ffff44',
+      'orange': '#ff8844',
+      'purple': '#8844ff',
+      'pink': '#ff44ff',
+      'cyan': '#44ffff',
+      'brown': '#8b4513',
+      'gray': '#888888',
+      'grey': '#888888',
+      'black': '#333333',
+      'white': '#ffffff',
+      'teal': '#008080',
+      'navy': '#000080',
+      'lime': '#00ff00',
+      'maroon': '#800000',
+      'olive': '#808000',
+      'silver': '#c0c0c0'
+    };
+    
+    return colorMap[color.toLowerCase()] || '#007acc';
+  }
+
+  /**
+   * Clean project name for display
+   * @param {string} projectDir - Raw project directory name
+   * @returns {string} Cleaned project name
+   */
+  cleanProjectName(projectDir) {
+    // Convert encoded project paths like "-Users-user-Projects-MyProject" to "MyProject"
+    const parts = projectDir.split('-').filter(Boolean);
+    return parts[parts.length - 1] || projectDir;
+  }
+
+  /**
    * Get Claude session information from statsig files
    */
   async getClaudeSessionInfo() {
@@ -1322,12 +1908,88 @@ class ClaudeAnalytics {
       const timeSinceLastUpdate = now - lastUpdate;
       const timeSinceLastUpdateMinutes = Math.floor(timeSinceLastUpdate / (1000 * 60));
       
-      // Based on observed pattern: ~2 hours and 21 minutes session limit
-      const sessionLimitMs = 2 * 60 * 60 * 1000 + 21 * 60 * 1000; // 2h 21m
-      const timeRemaining = sessionLimitMs - sessionDuration;
-      const timeRemainingMinutes = Math.floor(timeRemaining / (1000 * 60));
-      const timeRemainingHours = Math.floor(timeRemainingMinutes / 60);
-      const remainingMinutesDisplay = timeRemainingMinutes % 60;
+      // CORRECTED: Calculate next reset time based on scheduled reset hours
+      // Claude sessions reset at specific times, not fixed durations
+      const resetHours = [1, 7, 13, 19]; // 1am, 7am, 1pm, 7pm local time
+      const sessionStartDate = new Date(startTime);
+      
+      // Find next reset time after session start
+      let nextResetTime = new Date(sessionStartDate);
+      nextResetTime.setMinutes(0, 0, 0); // Set to exact hour
+      
+      // Find the next reset hour
+      let foundReset = false;
+      for (let i = 0; i < resetHours.length * 2; i++) { // Check up to 2 full days
+        const currentDay = Math.floor(i / resetHours.length);
+        const hourIndex = i % resetHours.length;
+        const resetHour = resetHours[hourIndex];
+        
+        const testResetTime = new Date(sessionStartDate);
+        testResetTime.setDate(testResetTime.getDate() + currentDay);
+        testResetTime.setHours(resetHour, 0, 0, 0);
+        
+        if (testResetTime > sessionStartDate) {
+          nextResetTime = testResetTime;
+          foundReset = true;
+          break;
+        }
+      }
+      
+      if (!foundReset) {
+        // Fallback: assume next day 7am if no pattern found
+        nextResetTime.setDate(nextResetTime.getDate() + 1);
+        nextResetTime.setHours(7, 0, 0, 0);
+      }
+      
+      const sessionLimitMs = nextResetTime.getTime() - startTime;
+      let timeRemaining = nextResetTime.getTime() - now;
+      let timeRemainingMinutes = Math.floor(timeRemaining / (1000 * 60));
+      let timeRemainingHours = Math.floor(timeRemainingMinutes / 60);
+      let remainingMinutesDisplay = timeRemainingMinutes % 60;
+      
+      // If session is expired but has recent activity, calculate next reset time
+      if (timeRemaining <= 0) {
+        const RECENT_ACTIVITY_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+        const timeSinceLastUpdate = now - lastUpdate;
+        
+        if (timeSinceLastUpdate < RECENT_ACTIVITY_THRESHOLD) {
+          // Session was renewed, find the NEXT reset time
+          let nextNextResetTime = new Date(nextResetTime);
+          let foundNextReset = false;
+          
+          for (let i = 0; i < resetHours.length; i++) {
+            const resetHour = resetHours[i];
+            const testResetTime = new Date(nextResetTime);
+            
+            if (resetHour > nextResetTime.getHours()) {
+              // Same day, later hour
+              testResetTime.setHours(resetHour, 0, 0, 0);
+            } else {
+              // Next day
+              testResetTime.setDate(testResetTime.getDate() + 1);
+              testResetTime.setHours(resetHour, 0, 0, 0);
+            }
+            
+            if (testResetTime > nextResetTime) {
+              nextNextResetTime = testResetTime;
+              foundNextReset = true;
+              break;
+            }
+          }
+          
+          if (!foundNextReset) {
+            // Default to next day 1am
+            nextNextResetTime.setDate(nextNextResetTime.getDate() + 1);
+            nextNextResetTime.setHours(1, 0, 0, 0);
+          }
+          
+          timeRemaining = nextNextResetTime.getTime() - now;
+          timeRemainingMinutes = Math.floor(timeRemaining / (1000 * 60));
+          timeRemainingHours = Math.floor(timeRemainingMinutes / 60);
+          remainingMinutesDisplay = timeRemainingMinutes % 60;
+          nextResetTime = nextNextResetTime;
+        }
+      }
       
       return {
         hasSession: true,
@@ -1352,13 +2014,15 @@ class ClaudeAnalytics {
           hours: timeRemainingHours,
           remainingMinutes: remainingMinutesDisplay,
           formatted: timeRemaining > 0 ? `${timeRemainingHours}h ${remainingMinutesDisplay}m` : 'Session expired',
-          isExpired: timeRemaining <= 0
+          isExpired: timeRemaining <= 0 && timeSinceLastUpdate >= (5 * 60 * 1000) // Expired only if past reset time AND no recent activity
         },
         sessionLimit: {
           ms: sessionLimitMs,
-          hours: 2,
-          minutes: 21,
-          formatted: '2h 21m'
+          hours: Math.floor(sessionLimitMs / (1000 * 60 * 60)),
+          minutes: Math.floor((sessionLimitMs % (1000 * 60 * 60)) / (1000 * 60)),
+          formatted: `${Math.floor(sessionLimitMs / (1000 * 60 * 60))}h ${Math.floor((sessionLimitMs % (1000 * 60 * 60)) / (1000 * 60))}m`,
+          nextResetTime: nextResetTime.toISOString(),
+          resetHour: nextResetTime.getHours()
         }
       };
     } catch (error) {
@@ -1374,6 +2038,9 @@ class ClaudeAnalytics {
     // Stop file watchers
     this.fileWatcher.stop();
 
+    // Stop Cloudflare Tunnel
+    this.stopCloudflareTunnel();
+
     // Stop server
     // Close WebSocket server
     if (this.webSocketServer) {
@@ -1388,6 +2055,11 @@ class ClaudeAnalytics {
     // Shutdown console bridge
     if (this.consoleBridge) {
       this.consoleBridge.shutdown();
+    }
+    
+    // Stop Claude API Proxy
+    if (this.claudeApiProxy) {
+      this.claudeApiProxy.stop();
     }
     
     if (this.httpServer) {
@@ -1416,24 +2088,51 @@ async function runAnalytics(options = {}) {
     console.log(chalk.blue('📊 Starting Claude Code Analytics Dashboard...'));
   }
 
-  const analytics = new ClaudeAnalytics();
+  const analytics = new ClaudeAnalytics(options);
 
   try {
+    // Handle Cloudflare Tunnel prompt BEFORE initializing anything
+    let useCloudflare = false;
+    
+    if (options.tunnel) {
+      useCloudflare = await analytics.promptCloudflareSetup();
+    }
+
     await analytics.initialize();
 
     // Create web dashboard files
     // Web dashboard files are now static in analytics-web directory
 
     await analytics.startServer();
+    
+    // Start Cloudflare Tunnel BEFORE other services if requested and confirmed
+    if (useCloudflare) {
+      const cloudflareStarted = await analytics.startCloudflareTunnel();
+      if (!cloudflareStarted) {
+        console.log(chalk.yellow('⚠️  Continuing with localhost only...'));
+      }
+      // Wait a bit longer for tunnel to stabilize
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
     await analytics.openBrowser(openTo);
 
+    const accessUrl = analytics.publicUrl || `http://localhost:${analytics.port}`;
+    
     if (openTo === 'agents') {
       console.log(chalk.green('✅ Claude Code Chats dashboard is running!'));
-      console.log(chalk.cyan(`📱 Access at: http://localhost:${analytics.port}/#agents`));
+      console.log(chalk.cyan(`📱 Access at: ${accessUrl}/#agents`));
     } else {
       console.log(chalk.green('✅ Analytics dashboard is running!'));
-      console.log(chalk.cyan(`📱 Access at: http://localhost:${analytics.port}`));
+      console.log(chalk.cyan(`📱 Access at: ${accessUrl}`));
     }
+    
+    if (analytics.publicUrl) {
+      console.log(chalk.gray('🔒 Secure access via Cloudflare Tunnel'));
+    } else {
+      console.log(chalk.gray('🏠 Local access only'));
+    }
+    
     console.log(chalk.gray('Press Ctrl+C to stop the server'));
 
     // Handle graceful shutdown

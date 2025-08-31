@@ -1,0 +1,475 @@
+/**
+ * Claude Code Templates - Terminal Theme for Docusaurus
+ * Matching the main website's dark terminal aesthetic
+ */
+
+/* Terminal theme colors matching main site */
+:root {
+  /* Dark theme colors (terminal style) */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --border-primary: #30363d;
+  --border-secondary: #21262d;
+  --text-primary: #c9d1d9;
+  --text-secondary: #7d8590;
+  --text-accent: #d57455;
+  --text-success: #3fb950;
+  --text-warning: #f97316;
+  --text-error: #f85149;
+  --text-info: #a5d6ff;
+  --shadow-primary: rgba(0, 0, 0, 0.4);
+  --shadow-secondary: rgba(1, 4, 9, 0.85);
+  
+  /* Docusaurus overrides - Force dark theme */
+  --ifm-color-primary: #00d4aa;
+  --ifm-color-primary-dark: #00c299;
+  --ifm-color-primary-darker: #00b88f;
+  --ifm-color-primary-darkest: #009973;
+  --ifm-color-primary-light: #1addbb;
+  --ifm-color-primary-lighter: #26e1c5;
+  --ifm-color-primary-lightest: #4de6d2;
+  
+  /* Background colors */
+  --ifm-background-color: var(--bg-primary);
+  --ifm-background-surface-color: var(--bg-secondary);
+  --ifm-color-content-secondary: var(--text-secondary);
+  --ifm-color-content: var(--text-primary);
+  
+  /* Navbar and footer */
+  --ifm-navbar-background-color: var(--bg-secondary);
+  --ifm-navbar-link-color: var(--text-primary);
+  --ifm-navbar-link-hover-color: var(--text-accent);
+  --ifm-footer-background-color: var(--bg-secondary);
+  --ifm-footer-color: var(--text-secondary);
+  
+  /* Code blocks */
+  --ifm-code-font-size: 95%;
+  --ifm-code-background: var(--bg-tertiary);
+  --ifm-code-color: var(--text-primary);
+  --ifm-pre-background: var(--bg-tertiary);
+  --ifm-pre-color: var(--text-primary);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 212, 170, 0.1);
+  
+  /* Borders and dividers */
+  --ifm-color-emphasis-200: var(--border-primary);
+  --ifm-color-emphasis-300: var(--border-primary);
+  --ifm-color-emphasis-400: var(--border-secondary);
+  --ifm-hr-background-color: var(--border-primary);
+  
+  /* Cards and containers */
+  --ifm-card-background-color: var(--bg-secondary);
+  --ifm-card-border-radius: 8px;
+  
+  /* Typography */
+  --ifm-font-family-base: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  --ifm-font-family-monospace: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  --ifm-heading-color: var(--text-primary);
+  --ifm-link-color: var(--text-info);
+  --ifm-link-hover-color: var(--text-accent);
+}
+
+/* Force dark mode always */
+[data-theme='light'] {
+  --ifm-color-primary: #00d4aa;
+  --ifm-color-primary-dark: #00c299;
+  --ifm-color-primary-darker: #00b88f;
+  --ifm-color-primary-darkest: #009973;
+  --ifm-color-primary-light: #1addbb;
+  --ifm-color-primary-lighter: #26e1c5;
+  --ifm-color-primary-lightest: #4de6d2;
+  
+  --ifm-background-color: var(--bg-primary);
+  --ifm-background-surface-color: var(--bg-secondary);
+  --ifm-color-content-secondary: var(--text-secondary);
+  --ifm-color-content: var(--text-primary);
+  --ifm-navbar-background-color: var(--bg-secondary);
+  --ifm-navbar-link-color: var(--text-primary);
+  --ifm-navbar-link-hover-color: var(--text-accent);
+  --ifm-footer-background-color: var(--bg-secondary);
+  --ifm-footer-color: var(--text-secondary);
+  --ifm-code-background: var(--bg-tertiary);
+  --ifm-code-color: var(--text-primary);
+  --ifm-pre-background: var(--bg-tertiary);
+  --ifm-pre-color: var(--text-primary);
+  --ifm-color-emphasis-200: var(--border-primary);
+  --ifm-color-emphasis-300: var(--border-primary);
+  --ifm-color-emphasis-400: var(--border-secondary);
+  --ifm-hr-background-color: var(--border-primary);
+  --ifm-card-background-color: var(--bg-secondary);
+  --ifm-heading-color: var(--text-primary);
+  --ifm-link-color: var(--text-info);
+  --ifm-link-hover-color: var(--text-accent);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 212, 170, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #00d4aa;
+  --ifm-color-primary-dark: #00c299;
+  --ifm-color-primary-darker: #00b88f;
+  --ifm-color-primary-darkest: #009973;
+  --ifm-color-primary-light: #1addbb;
+  --ifm-color-primary-lighter: #26e1c5;
+  --ifm-color-primary-lightest: #4de6d2;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 212, 170, 0.1);
+}
+
+/* Global terminal styling */
+html[data-theme='light'], 
+html[data-theme='dark'] {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Navbar customization */
+.navbar {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-primary);
+  box-shadow: 0 1px 0 var(--border-primary);
+}
+
+.navbar__brand {
+  color: var(--text-accent) !important;
+  font-weight: normal;
+}
+
+.navbar__link {
+  color: var(--text-primary) !important;
+  transition: color 0.2s ease;
+}
+
+.navbar__link:hover {
+  color: var(--text-accent) !important;
+}
+
+.navbar__link--active {
+  color: var(--text-accent) !important;
+}
+
+/* Sidebar customization */
+.theme-doc-sidebar-container {
+  background: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-primary);
+}
+
+.theme-doc-sidebar-item-link {
+  color: var(--text-secondary) !important;
+  border-radius: 6px;
+  margin: 2px 0;
+  transition: all 0.2s ease;
+}
+
+.theme-doc-sidebar-item-link:hover {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-doc-sidebar-item-link--active {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-accent) !important;
+  border-left: 3px solid var(--text-accent);
+}
+
+.theme-doc-sidebar-item-category {
+  margin: 8px 0;
+}
+
+.theme-doc-sidebar-item-category-level-1 > .theme-doc-sidebar-item-link {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+/* Main content */
+.main-wrapper {
+  background: var(--bg-primary) !important;
+}
+
+.theme-doc-markdown {
+  background: var(--bg-primary) !important;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary) !important;
+  font-family: inherit !important;
+}
+
+h1 {
+  color: var(--text-accent) !important;
+  border-bottom: 1px solid var(--border-primary);
+  padding-bottom: 0.5rem;
+}
+
+h2 {
+  color: var(--text-accent) !important;
+  margin-top: 2rem;
+}
+
+/* Code blocks */
+.theme-code-block {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.prism-code {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+code {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-secondary);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: inherit !important;
+}
+
+pre {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+}
+
+/* Tables */
+table {
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+th {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-accent) !important;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+td {
+  border-bottom: 1px solid var(--border-secondary);
+  color: var(--text-primary) !important;
+}
+
+/* Admonitions */
+.theme-admonition {
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+  margin: 1rem 0;
+}
+
+.theme-admonition-note {
+  border-left: 4px solid var(--text-info);
+}
+
+.theme-admonition-tip {
+  border-left: 4px solid var(--text-success);
+}
+
+.theme-admonition-warning {
+  border-left: 4px solid var(--text-warning);
+}
+
+.theme-admonition-danger {
+  border-left: 4px solid var(--text-error);
+}
+
+/* Cards */
+.card {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--text-accent) !important;
+  box-shadow: 0 4px 12px var(--shadow-primary) !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.breadcrumbs__link {
+  color: var(--text-secondary) !important;
+}
+
+.breadcrumbs__link:hover {
+  color: var(--text-accent) !important;
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--text-primary) !important;
+}
+
+/* Footer */
+.footer {
+  background: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-primary);
+  color: var(--text-secondary) !important;
+}
+
+.footer__link-item {
+  color: var(--text-secondary) !important;
+}
+
+.footer__link-item:hover {
+  color: var(--text-primary) !important;
+}
+
+.footer__title {
+  color: var(--text-primary) !important;
+}
+
+/* Search */
+.DocSearch-Button {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 6px !important;
+  color: var(--text-secondary) !important;
+}
+
+.DocSearch-Button:hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--text-accent) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Pagination */
+.pagination-nav__link {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+  transition: all 0.2s ease;
+}
+
+.pagination-nav__link:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--text-accent) !important;
+  color: var(--text-accent) !important;
+}
+
+.pagination-nav__sublabel {
+  color: var(--text-secondary) !important;
+}
+
+/* TOC */
+.table-of-contents {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.table-of-contents__link {
+  color: var(--text-secondary) !important;
+  transition: color 0.2s ease;
+}
+
+.table-of-contents__link:hover {
+  color: var(--text-primary) !important;
+}
+
+.table-of-contents__link--active {
+  color: var(--text-accent) !important;
+  border-left: 2px solid var(--text-accent);
+  padding-left: 8px;
+}
+
+/* Toggle switch for theme (hide it since we force dark) */
+.toggleButton_node_modules-\@docusaurus-theme-classic-lib-theme-ColorModeToggle-styles-module {
+  display: none !important;
+}
+
+.react-toggle {
+  display: none !important;
+}
+
+/* Custom terminal elements */
+.terminal-prompt::before {
+  content: '$ ';
+  color: var(--text-success);
+  font-weight: bold;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-success);
+  animation: pulse 2s infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Button customizations */
+.button {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.button:hover {
+  background: var(--bg-primary) !important;
+  border-color: var(--text-accent) !important;
+  color: var(--text-accent) !important;
+}
+
+.button--primary {
+  background: var(--text-accent) !important;
+  border-color: var(--text-accent) !important;
+  color: var(--bg-primary) !important;
+}
+
+.button--primary:hover {
+  background: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+}
+
+/* Hero section customization */
+.hero {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.hero__title {
+  color: var(--text-accent) !important;
+  font-family: inherit !important;
+}
+
+.hero__subtitle {
+  color: var(--text-secondary) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar__item {
+    margin: 0;
+  }
+  
+  .theme-doc-sidebar-container {
+    background: var(--bg-primary) !important;
+  }
+}

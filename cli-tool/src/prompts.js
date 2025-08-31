@@ -6,6 +6,7 @@ const inquirer = require('inquirer');
 const { getAvailableLanguages, getFrameworksForLanguage } = require('./templates');
 const { getCommandsForLanguageAndFramework } = require('./command-scanner');
 const { getHooksForLanguage, getMCPsForLanguage } = require('./hook-scanner');
+const { getAgentsForLanguageAndFramework, getInstalledAgents, formatAgentChoices } = require('./agents');
 
 async function interactivePrompts(projectInfo, options = {}) {
   const state = {
@@ -17,7 +18,7 @@ async function interactivePrompts(projectInfo, options = {}) {
   // Build steps array based on options
   if (!options.language) state.steps.push('language');
   if (!options.framework) state.steps.push('framework');
-  state.steps.push('commands', 'hooks', 'mcps', 'analytics', 'confirm');
+  state.steps.push('commands', 'hooks', 'mcps', 'agents', 'analytics', 'confirm');
 
   while (state.currentStep < state.steps.length) {
     const stepName = state.steps[state.currentStep];
@@ -41,7 +42,13 @@ async function interactivePrompts(projectInfo, options = {}) {
 }
 
 async function showStep(stepName, currentAnswers, projectInfo, options) {
-  const stepConfig = getStepConfig(stepName, currentAnswers, projectInfo, options);
+  // Handle async data fetching for agents step
+  let additionalData = {};
+  if (stepName === 'agents') {
+    additionalData.installedAgents = await getInstalledAgents();
+  }
+  
+  const stepConfig = getStepConfig(stepName, currentAnswers, projectInfo, options, additionalData);
   
   if (!stepConfig) {
     return { action: 'next', value: null };
@@ -69,7 +76,7 @@ async function showStep(stepName, currentAnswers, projectInfo, options) {
   return { action: 'next', value };
 }
 
-function getStepConfig(stepName, currentAnswers, projectInfo, options) {
+function getStepConfig(stepName, currentAnswers, projectInfo, options, additionalData = {}) {
   switch (stepName) {
     case 'language':
       return {
@@ -188,6 +195,32 @@ function getStepConfig(stepName, currentAnswers, projectInfo, options) {
         pageSize: 15
       };
 
+    case 'agents':
+      const agentLanguage = currentAnswers.language || options.language;
+      const agentFramework = currentAnswers.framework || options.framework;
+      
+      if (!agentLanguage) {
+        return null; // Skip if no language selected
+      }
+      
+      const availableAgents = getAgentsForLanguageAndFramework(agentLanguage, agentFramework);
+      
+      if (availableAgents.length === 0) {
+        return null; // Skip if no agents available
+      }
+      
+      const installedAgents = additionalData.installedAgents || [];
+      const agentChoices = formatAgentChoices(availableAgents, installedAgents);
+      
+      return {
+        type: 'checkbox',
+        name: 'agents',
+        message: 'Select Claude Code agents to install (use space to select):',
+        choices: agentChoices,
+        prefix: chalk.magenta('🤖'),
+        pageSize: 10
+      };
+
     case 'analytics':
       return {
         type: 'confirm',
@@ -203,6 +236,7 @@ function getStepConfig(stepName, currentAnswers, projectInfo, options) {
       const commandCount = currentAnswers.commands ? currentAnswers.commands.length : 0;
       const hookCount = currentAnswers.hooks ? currentAnswers.hooks.length : 0;
       const mcpCount = currentAnswers.mcps ? currentAnswers.mcps.length : 0;
+      const agentCount = currentAnswers.agents ? currentAnswers.agents.length : 0;
       
       let message = `Setup Claude Code for ${chalk.cyan(confirmLanguage)}`;
       if (confirmFramework !== 'none') {
@@ -216,6 +250,9 @@ function getStepConfig(stepName, currentAnswers, projectInfo, options) {
       }
       if (mcpCount > 0) {
         message += ` (${chalk.blue(mcpCount)} MCP)`;
+      }
+      if (agentCount > 0) {
+        message += ` (${chalk.magenta(agentCount)} agents)`;
       }
       message += '?';
       
