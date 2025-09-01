@@ -390,9 +390,9 @@ npx claude-code-templates@latest --hook vercel-auto-deploy</code></pre>
                 <ul>
                     <li>📁 <code>.claude/commands/</code></li>
                     <li>📁 <code>.claude/agents/</code></li>
-                    <li>📁 <code>.claude/hooks/</code></li>
                     <li>📁 <code>.claude/settings.json</code></li>
                 </ul>
+                <p>While agents and commands are installed as files in their respective directories, hooks are configured differently. The installation command directly modifies the <code>.claude/settings.json</code> file to add the hook's configuration, which defines the logic and the trigger event.</p>
 
                 <h3>Create Global Agents (Available Anywhere)</h3>
                 <pre><code class="language-bash"># Create global agents accessible from any project
@@ -420,7 +420,9 @@ npx claude-code-templates@latest --command nextjs-component-generator,nextjs-pag
 npx claude-code-templates@latest \
   --command nextjs-component-generator,nextjs-page-architect,nextjs-api-builder,vercel-deployment-manager,nextjs-performance-analyzer,nextjs-seo-optimizer,vercel-edge-functions,nextjs-database-integrator,nextjs-testing-suite,vercel-monitoring-dashboard \
   --agent nextjs-architecture-expert,vercel-deployment-specialist,react-performance-optimizer \
-  --hook vercel-auto-deploy,performance-budget-guard,nextjs-code-quality-enforcer,vercel-environment-sync,deployment-health-monitor</code></pre>
+  --hook vercel-auto-deploy,performance-budget-guard,nextjs-code-quality-enforcer,vercel-environment-sync,deployment-health-monitor \
+  --statusline vercel-deployment-monitor,vercel-error-alert-system,vercel-multi-environment-status \
+  --mcp deepgraph-nextjs-mcp</code></pre>
   
                 <p><strong>This will install:</strong></p>
                 <ul>
@@ -428,6 +430,7 @@ npx claude-code-templates@latest \
                     <li>✓ 3 specialized AI agents</li>
                     <li>✓ 5 intelligent automation hooks</li>
                     <li>✓ 3 Vercel status line monitors</li>
+                    <li>✓ 1 DeepGraph MCP Integration</li>
                 </ul>
 
                 <h2>Where Components Are Installed</h2>
@@ -436,6 +439,10 @@ npx claude-code-templates@latest \
 
                 <pre><code class="language-bash">your-nextjs-project/
 ├── .claude/
+│   ├── agents/
+│   │       ├── nextjs-architecture-expert.md
+│   │       ├── vercel-deployment-specialist.md
+│   │       └── react-performance-optimizer.md
 │   ├── commands/
 │   │       ├── nextjs-component-generator.md
 │   │       ├── nextjs-page-architect.md
@@ -447,18 +454,36 @@ npx claude-code-templates@latest \
 │   │       ├── nextjs-database-integrator.md
 │   │       ├── nextjs-testing-suite.md
 │   │       └── vercel-monitoring-dashboard.md
-│   ├── agents/
-│   │       ├── nextjs-architecture-expert.md
-│   │       ├── vercel-deployment-specialist.md
-│   │       └── react-performance-optimizer.md
-│   ├── hooks/
-│   │       ├── vercel-auto-deploy.py
-│   │       ├── performance-budget-guard.py
-│   │       ├── nextjs-code-quality-enforcer.py
-│   │       ├── vercel-environment-sync.sh
-│   │       └── deployment-health-monitor.py
 │   └── settings.json
+├── .mcp.json
 └── src/ # Your Next.js application code</code></pre>
+
+                <h3>How Hook Installation Works</h3>
+                <p>When you install a hook using the <code>--hook</code> flag, the CLI performs two key actions:</p>
+                <ol>
+                    <li><strong>Script Installation:</strong> The hook's script file (e.g., <code>vercel-auto-deploy.py</code>) is downloaded and saved into the <code>.claude/hooks/</code> directory. This script contains the logic that runs when the hook is triggered.</li>
+                    <li><strong>Configuration in <code>settings.json</code>:</strong> The most important step is the automatic update to your <code>.claude/settings.json</code> file. A JSON object is added to register the hook, telling Claude Code which event should trigger which script.</li>
+                </ol>
+                <p>For example, here is how a hook that runs after every file edit is registered in <code>settings.json</code>:</p>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/your-hook-script.sh"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+                <p>This configuration ensures that your hooks are precisely integrated into the development workflow, running automatically at the correct moment.</p>
+
+                <h3>How MCP Integration Works</h3>
+                <p>When you install an MCP (Model Context Protocol) integration, the command configures the connection to the MCP server in the <code>.mcp.json</code> file in your project's root directory. This file acts as a central registry for all MCP tools, allowing Claude Code to discover and use them.</p>
                 
                 <h2>Using the Next.js and Vercel Stack</h2>
 
@@ -481,15 +506,20 @@ npx claude-code-templates@latest \
 /nextjs-performance-analyzer</code></pre>
 
                 <h3>AI Agents Integration</h3>
-                <pre><code class="language-bash"># Use specialized agents for complex tasks
-/agents nextjs-architecture-expert "Review my app structure"
-/agents vercel-deployment-specialist "Optimize my deployment strategy"
-/agents react-performance-optimizer "Improve my component performance"</code></pre>
+                <p>You can activate the specialized agents by directly asking for them in your prompt. Mentioning the agent's role or name is enough to have them handle your request with their specific expertise.</p>
+                <pre><code class="language-bash"># Ask the agent to perform a task by mentioning its role
+> As the Next.js Architecture Expert, can you review my app structure for best practices?
+
+# Another example
+> I need the Vercel Deployment Specialist to help me optimize my deployment strategy.
+
+# You can also use the /agents command for more direct control
+/agents react-performance-optimizer "Find performance bottlenecks in my React components"</code></pre>
 
                 <h3>Automated Hooks</h3>
-                <p>The hooks work automatically once installed:</p>
+                <p>The hooks are triggered automatically by specific events within your Claude Code session. For example, a hook might run after you modify a file or use a specific tool. Once installed, they work in the background to automate tasks:</p>
                 <ul>
-                    <li>🚀 <strong>Auto-deploy</strong> triggers when you commit changes</li>
+                    <li>🚀 <strong>Auto-deploy</strong> triggers after file modifications to initiate a new Vercel deployment.</li>
                     <li>📊 <strong>Performance guard</strong> blocks deployments that exceed budgets</li>
                     <li>✅ <strong>Code quality enforcer</strong> ensures Next.js best practices</li>
                     <li>🔄 <strong>Environment sync</strong> keeps variables consistent</li>
