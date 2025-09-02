@@ -378,58 +378,58 @@
                 <h3>Install Individual Components</h3>
                 <pre><code class="language-bash">
 # Install specific agent
-npx claude-code-templates@latest --agent nextjs-architecture-expert
+npx claude-code-templates@latest --agent web-tools/nextjs-architecture-expert
 
 # Install specific Next.js command
-npx claude-code-templates@latest --command nextjs-component-generator
+npx claude-code-templates@latest --command nextjs-vercel/nextjs-component-generator
 
 # Install specific hook
-npx claude-code-templates@latest --hook vercel-auto-deploy</code></pre>
+npx claude-code-templates@latest --hook automation/vercel-auto-deploy</code></pre>
                 
                 <p><strong>Components will be installed to:</strong></p>
                 <ul>
-                    <li>📁 <code>.claude/commands/</code></li>
-                    <li>📁 <code>.claude/agents/</code></li>
-                    <li>📁 <code>.claude/settings.json</code></li>
+                    <li>📁 <code>.claude/commands/</code> - Command files (.md)</li>
+                    <li>📁 <code>.claude/agents/</code> - Agent files (.md)</li>
+                    <li>📄 <code>.claude/settings.json</code> - Hook configurations with embedded logic</li>
                 </ul>
-                <p>While agents and commands are installed as files in their respective directories, hooks are configured differently. The installation command directly modifies the <code>.claude/settings.json</code> file to add the hook's configuration, which defines the logic and the trigger event.</p>
+                <p>Agents and commands are installed as separate markdown files in their respective directories, while hooks are embedded directly into the <code>.claude/settings.json</code> file. Each hook contains its complete logic as an inline bash command within the JSON configuration.</p>
 
                 <h3>Create Global Agents (Available Anywhere)</h3>
                 <pre><code class="language-bash"># Create global agents accessible from any project
-npx claude-code-templates@latest --create-agent nextjs-architecture-expert
-npx claude-code-templates@latest --create-agent vercel-deployment-specialist
-npx claude-code-templates@latest --create-agent react-performance-optimizer
+npx claude-code-templates@latest --create-agent web-tools/nextjs-architecture-expert
+npx claude-code-templates@latest --create-agent devops-infrastructure/vercel-deployment-specialist
+npx claude-code-templates@latest --create-agent web-tools/react-performance-optimizer
 
 # List all global agents
 npx claude-code-templates@latest --list-agents
 
 # Update global agents
-npx claude-code-templates@latest --update-agent nextjs-architecture-expert
+npx claude-code-templates@latest --update-agent web-tools/nextjs-architecture-expert
 
 # Remove global agents  
-npx claude-code-templates@latest --remove-agent vercel-deployment-specialist</code></pre>
+npx claude-code-templates@latest --remove-agent devops-infrastructure/vercel-deployment-specialist</code></pre>
 
                 <h3>Install Multiple Components at Once</h3>
                 <pre><code class="language-bash">
 # Install specific Next.js commands (comma-separated for multiple)
-npx claude-code-templates@latest --command nextjs-component-generator,nextjs-page-architect,nextjs-api-builder
+npx claude-code-templates@latest --command nextjs-vercel/nextjs-component-generator,nextjs-vercel/nextjs-bundle-analyzer,nextjs-vercel/nextjs-performance-audit
               </code></pre>      
 
               <pre><code class="language-bash">
 # Install complete Next.js + Vercel stack in one command
 npx claude-code-templates@latest \
-  --command nextjs-component-generator,nextjs-page-architect,nextjs-api-builder,vercel-deployment-manager,nextjs-performance-analyzer,nextjs-seo-optimizer,vercel-edge-functions,nextjs-database-integrator,nextjs-testing-suite,vercel-monitoring-dashboard \
-  --agent nextjs-architecture-expert,vercel-deployment-specialist,react-performance-optimizer \
-  --hook vercel-auto-deploy,performance-budget-guard,nextjs-code-quality-enforcer,vercel-environment-sync,deployment-health-monitor \
-  --statusline vercel-deployment-monitor,vercel-error-alert-system,vercel-multi-environment-status \
-  --mcp deepgraph-nextjs-mcp</code></pre>
+  --command nextjs-vercel/nextjs-component-generator,nextjs-vercel/nextjs-bundle-analyzer,nextjs-vercel/nextjs-performance-audit,nextjs-vercel/vercel-deploy-optimize,nextjs-vercel/vercel-edge-function,nextjs-vercel/vercel-env-sync \
+  --agent web-tools/nextjs-architecture-expert,devops-infrastructure/vercel-deployment-specialist,web-tools/react-performance-optimizer \
+  --hook automation/vercel-auto-deploy,performance/performance-budget-guard,automation/vercel-environment-sync,automation/deployment-health-monitor \
+  --setting statusline/vercel-deployment-monitor \
+  --mcp deepgraph/deepgraph-nextjs</code></pre>
   
                 <p><strong>This will install:</strong></p>
                 <ul>
-                    <li>✓ 10 Next.js and Vercel commands</li>
+                    <li>✓ 6 Next.js and Vercel commands</li>
                     <li>✓ 3 specialized AI agents</li>
-                    <li>✓ 5 intelligent automation hooks</li>
-                    <li>✓ 3 Vercel status line monitors</li>
+                    <li>✓ 4 intelligent automation hooks</li>
+                    <li>✓ 1 Vercel status line monitor (only one can be active)</li>
                     <li>✓ 1 DeepGraph MCP Integration</li>
                 </ul>
 
@@ -445,42 +445,38 @@ npx claude-code-templates@latest \
 │   │       └── react-performance-optimizer.md
 │   ├── commands/
 │   │       ├── nextjs-component-generator.md
-│   │       ├── nextjs-page-architect.md
-│   │       ├── nextjs-api-builder.md
-│   │       ├── vercel-deployment-manager.md
-│   │       ├── nextjs-performance-analyzer.md
-│   │       ├── nextjs-seo-optimizer.md
-│   │       ├── vercel-edge-functions.md
-│   │       ├── nextjs-database-integrator.md
-│   │       ├── nextjs-testing-suite.md
-│   │       └── vercel-monitoring-dashboard.md
-│   └── settings.json
+│   │       ├── nextjs-bundle-analyzer.md
+│   │       ├── nextjs-performance-audit.md
+│   │       ├── vercel-deploy-optimize.md
+│   │       ├── vercel-edge-function.md
+│   │       └── vercel-env-sync.md
+│   └── settings.json (contains all hook configurations with embedded logic)
 ├── .mcp.json
 └── src/ # Your Next.js application code</code></pre>
 
                 <h3>How Hook Installation Works</h3>
-                <p>When you install a hook using the <code>--hook</code> flag, the CLI performs two key actions:</p>
+                <p>When you install a hook using the <code>--hook</code> flag, the CLI performs one key action:</p>
                 <ol>
-                    <li><strong>Script Installation:</strong> The hook's script file (e.g., <code>vercel-auto-deploy.py</code>) is downloaded and saved into the <code>.claude/hooks/</code> directory. This script contains the logic that runs when the hook is triggered.</li>
-                    <li><strong>Configuration in <code>settings.json</code>:</strong> The most important step is the automatic update to your <code>.claude/settings.json</code> file. A JSON object is added to register the hook, telling Claude Code which event should trigger which script.</li>
+                    <li><strong>Configuration in <code>settings.json</code>:</strong> The hook configuration (including all the embedded code logic) is directly added to your <code>.claude/settings.json</code> file. The hook's entire logic is contained within the JSON as an inline bash command, not as separate script files.</li>
                 </ol>
-                <p>For example, here is how a hook that runs after every file edit is registered in <code>settings.json</code>:</p>
+                <p>For example, here is how the Vercel auto-deploy hook is registered in <code>settings.json</code> with its complete embedded logic:</p>
                 <pre><code class="language-json">{
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/your-hook-script.sh"
+            "command": "bash -c 'input=$(cat); TOOL_NAME=$(echo \"$input\" | jq -r \".tool_name\"); FILE_PATH=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE_PATH\" =~ \\.(js|jsx|ts|tsx)$ ]]; then echo \"🚀 Triggering Vercel deployment...\"; vercel --yes; fi'",
+            "timeout": 120
           }
         ]
       }
     ]
   }
 }</code></pre>
-                <p>This configuration ensures that your hooks are precisely integrated into the development workflow, running automatically at the correct moment.</p>
+                <p>This configuration contains the complete hook logic embedded directly in the JSON, ensuring automated deployment workflows run seamlessly when code changes occur.</p>
 
                 <h3>How MCP Integration Works</h3>
                 <p>When you install an MCP (Model Context Protocol) integration, the command configures the connection to the MCP server in the <code>.mcp.json</code> file in your project's root directory. This file acts as a central registry for all MCP tools, allowing Claude Code to discover and use them.</p>
@@ -493,17 +489,17 @@ npx claude-code-templates@latest \
                 <pre><code class="language-bash"># Generate a new Next.js component
 /nextjs-component-generator UserProfile components/ui
 
-# Create a new page with App Router
-/nextjs-page-architect dashboard /app/dashboard
+# Analyze Next.js bundle size
+/nextjs-bundle-analyzer
 
-# Build API endpoints
-/nextjs-api-builder users /api/users
+# Audit Next.js performance
+/nextjs-performance-audit
 
-# Deploy to Vercel
-/vercel-deployment-manager deploy production
+# Optimize Vercel deployment
+/vercel-deploy-optimize
 
-# Analyze performance
-/nextjs-performance-analyzer</code></pre>
+# Create Vercel edge function
+/vercel-edge-function</code></pre>
 
                 <h3>AI Agents Integration</h3>
                 <p>You can activate the specialized agents by directly asking for them in your prompt. Mentioning the agent's role or name is enough to have them handle your request with their specific expertise.</p>
@@ -531,6 +527,10 @@ npx claude-code-templates@latest \
                 <h3>Status Line Integration</h3>
                 <p>The stack includes three pre-built Vercel status line monitors that display real-time deployment information at the bottom of your Claude Code interface:</p>
                 
+                <div class="alert-box">
+                    <p><strong>⚠️ Important:</strong> Only one statusline can be active at a time in Claude Code. Installing a new statusline will replace any existing one. You can switch between statuslines by installing different ones.</p>
+                </div>
+                
                 <h4>🔹 Vercel Deployment Monitor</h4>
                 <p>Shows current build status, deployment URL, and time since last deployment with intuitive icons:</p>
                 <pre><code class="language-bash">▲ Vercel 🚀 ✅ READY | 🌐 my-app-xyz.vercel.app | ⏰ 5m ago | 📁 my-project</code></pre>
@@ -543,31 +543,21 @@ npx claude-code-templates@latest \
                 <p>Monitors production and preview environments simultaneously with color-coded indicators:</p>
                 <pre><code class="language-bash">▲ Vercel 🚀 Prod:🟢 Prev:🟡 | 📁 my-project</code></pre>
 
+                <p><strong>Individual Statusline Installation:</strong></p>
+                <pre><code class="language-bash"># Install basic deployment monitor
+npx claude-code-templates@latest --setting statusline/vercel-deployment-monitor
+
+# Install error alert system with notifications
+npx claude-code-templates@latest --setting statusline/vercel-error-alert-system
+
+# Install multi-environment status monitor
+npx claude-code-templates@latest --setting statusline/vercel-multi-env-status</code></pre>
+
                 <p><strong>Setup Requirements:</strong></p>
                 <ul>
                     <li>📊 Export <code>VERCEL_TOKEN=your_token</code> (get from <a href="https://vercel.com/account/tokens" target="_blank">vercel.com/account/tokens</a>)</li>
                     <li>🔧 Export <code>VERCEL_PROJECT_ID=your_project_id</code> (from Vercel dashboard)</li>
-                    <li>⚡ Install with: <code>/statusline include Vercel deployment status</code></li>
-                </ul>
-
-                <h3>Performance Optimization</h3>
-                <p>Built-in performance optimization features:</p>
-                <ul>
-                    <li>🎯 Bundle size monitoring and optimization</li>
-                    <li>⚡ Core Web Vitals tracking and improvement</li>
-                    <li>🖼️ Image optimization recommendations</li>
-                    <li>🔄 Code splitting analysis</li>
-                    <li>📱 Mobile performance optimization</li>
-                </ul>
-
-                <h3>SEO and Analytics</h3>
-                <p>Comprehensive SEO and analytics integration:</p>
-                <ul>
-                    <li>🔍 Automated metadata generation</li>
-                    <li>🗺️ Dynamic sitemap creation</li>
-                    <li>📈 Vercel Analytics integration</li>
-                    <li>🏷️ Structured data implementation</li>
-                    <li>📊 Web Vitals monitoring</li>
+                    <li>⚡ Remember: Only one statusline can be active at a time</li>
                 </ul>
 
                 <!-- Newsletter CTA - End -->
