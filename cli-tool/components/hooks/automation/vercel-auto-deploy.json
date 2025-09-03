@@ -1,0 +1,17 @@
+{
+  "description": "Automatically trigger Vercel deployments when code changes are committed, with environment-specific deployment strategies and rollback on failure. Setup: Export environment variables 'export VERCEL_TOKEN=your_token' and 'export VERCEL_PROJECT_ID=your_project_id' (get your token from vercel.com/account/tokens and project ID from your Vercel dashboard). Hook triggers on PostToolUse for Write, Edit, and MultiEdit operations affecting source code files.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); TOOL_NAME=$(echo \"$input\" | jq -r \".tool_name\"); FILE_PATH=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); SUCCESS=$(echo \"$input\" | jq -r \".tool_response.success // false\"); if [ \"$SUCCESS\" = \"true\" ] && [[ \"$FILE_PATH\" =~ \\.(js|jsx|ts|tsx|json|md|css|scss|html)$ ]] && [[ ! \"$FILE_PATH\" =~ node_modules ]] && [[ ! \"$FILE_PATH\" =~ \\.next ]] && [[ ! \"$FILE_PATH\" =~ \\.vercel ]]; then echo \"🚀 Code change detected in $FILE_PATH, checking for auto-deployment...\"; if [ -n \"$VERCEL_TOKEN\" ] && [ -n \"$VERCEL_PROJECT_ID\" ]; then BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo \"unknown\"); if [ \"$BRANCH\" = \"main\" ] || [ \"$BRANCH\" = \"master\" ]; then echo \"📦 Triggering production deployment on $BRANCH branch...\"; DEPLOY_RESULT=$(curl -s -X POST \"https://api.vercel.com/v13/deployments\" -H \"Authorization: Bearer $VERCEL_TOKEN\" -H \"Content-Type: application/json\" -d \"{\\\"name\\\":\\\"auto-deploy\\\",\\\"project\\\":\\\"$VERCEL_PROJECT_ID\\\",\\\"gitSource\\\":{\\\"type\\\":\\\"github\\\",\\\"ref\\\":\\\"$BRANCH\\\"}}\"); DEPLOY_URL=$(echo \"$DEPLOY_RESULT\" | jq -r \".url // empty\"); if [ -n \"$DEPLOY_URL\" ]; then echo \"✅ Deployment initiated: https://$DEPLOY_URL\"; echo \"🔄 Monitor status: vercel ls --limit 1\"; else echo \"❌ Deployment failed. Check Vercel logs.\"; fi; elif [ \"$BRANCH\" = \"develop\" ] || [ \"$BRANCH\" = \"staging\" ]; then echo \"🎯 Triggering preview deployment on $BRANCH branch...\"; vercel --yes --force 2>/dev/null && echo \"✅ Preview deployment completed\" || echo \"❌ Preview deployment failed\"; else echo \"ℹ️ Auto-deployment disabled for branch: $BRANCH (only main/master/develop/staging)\"; fi; else echo \"⚠️ VERCEL_TOKEN or VERCEL_PROJECT_ID not configured. Set environment variables to enable auto-deployment.\"; fi; else echo \"ℹ️ File $FILE_PATH not eligible for auto-deployment (non-source file or unsuccessful operation)\"; fi'",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

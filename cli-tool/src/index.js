@@ -607,6 +607,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Setting "${settingName}" not found`));
         console.log(chalk.yellow('Available settings: enable-telemetry, disable-telemetry, allow-npm-commands, deny-sensitive-files, use-sonnet, use-haiku, retention-7-days, retention-90-days'));
+        console.log(chalk.yellow('Available statuslines: statusline/context-monitor'));
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -615,9 +616,39 @@ async function installIndividualSetting(settingName, targetDir, options) {
     const settingConfigText = await response.text();
     const settingConfig = JSON.parse(settingConfigText);
 
-    // Remove description field before merging
+    // Check if there are additional files to download (e.g., Python scripts)
+    const additionalFiles = {};
+    
+    // For statusline settings, check if there's a corresponding Python file
+    if (settingName.includes('statusline/')) {
+      const pythonFileName = settingName.split('/')[1] + '.py';
+      const pythonUrl = githubUrl.replace('.json', '.py');
+      
+      try {
+        console.log(chalk.gray(`📥 Downloading Python script: ${pythonFileName}...`));
+        const pythonResponse = await fetch(pythonUrl);
+        if (pythonResponse.ok) {
+          const pythonContent = await pythonResponse.text();
+          additionalFiles['.claude/scripts/' + pythonFileName] = {
+            content: pythonContent,
+            executable: true
+          };
+        }
+      } catch (error) {
+        console.log(chalk.yellow(`⚠️  Could not download Python script: ${error.message}`));
+      }
+    }
+
+    // Extract and handle additional files before removing them from config
+    const configFiles = settingConfig.files || {};
+    
+    // Merge downloaded files with config files
+    Object.assign(additionalFiles, configFiles);
+    
+    // Remove description and files fields before merging
     if (settingConfig && typeof settingConfig === 'object') {
       delete settingConfig.description;
+      delete settingConfig.files;
     }
     
     // Use shared locations if provided (batch mode), otherwise ask user
@@ -816,6 +847,37 @@ async function installIndividualSetting(settingName, targetDir, options) {
       
       // Write the merged configuration
       await fs.writeJson(actualTargetFile, mergedConfig, { spaces: 2 });
+      
+      // Install additional files if any exist
+      if (Object.keys(additionalFiles).length > 0) {
+        console.log(chalk.blue(`📄 Installing ${Object.keys(additionalFiles).length} additional file(s)...`));
+        
+        for (const [filePath, fileConfig] of Object.entries(additionalFiles)) {
+          try {
+            // Resolve tilde (~) to home directory
+            const resolvedFilePath = filePath.startsWith('~') 
+              ? path.join(require('os').homedir(), filePath.slice(1))
+              : path.resolve(currentTargetDir, filePath);
+            
+            // Ensure directory exists
+            await fs.ensureDir(path.dirname(resolvedFilePath));
+            
+            // Write file content
+            await fs.writeFile(resolvedFilePath, fileConfig.content, 'utf8');
+            
+            // Make file executable if specified
+            if (fileConfig.executable) {
+              await fs.chmod(resolvedFilePath, 0o755);
+              console.log(chalk.gray(`🔧 Made executable: ${resolvedFilePath}`));
+            }
+            
+            console.log(chalk.green(`✅ File installed: ${resolvedFilePath}`));
+            
+          } catch (fileError) {
+            console.log(chalk.red(`❌ Failed to install file ${filePath}: ${fileError.message}`));
+          }
+        }
+      }
       
       if (!options.silent) {
         console.log(chalk.green(`✅ Setting "${settingName}" installed successfully in ${installLocation}!`));

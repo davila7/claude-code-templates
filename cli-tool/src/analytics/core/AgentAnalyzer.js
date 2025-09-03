@@ -302,9 +302,9 @@ class AgentAnalyzer {
           
           return JSON.parse(trimmed);
         } catch (error) {
-          // Only log the error occasionally to avoid spam
-          if (index % 10 === 0) {
-            console.warn(`Error parsing JSONL line ${index + 1} in ${filePath}:`, error.message.substring(0, 100));
+          // Only log significant parsing errors to avoid spam from occasional corrupted lines
+          if (index < 10 || index % 100 === 0) {
+            console.warn(`Skipping corrupted JSONL line ${index + 1} in ${path.basename(filePath)}`);
           }
           return null;
         }

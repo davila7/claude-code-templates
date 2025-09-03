@@ -244,6 +244,33 @@ class DashboardPage {
             </div>
           </div>
 
+          <!-- Activity Heatmap Section -->
+          <div class="activity-heatmap-section">
+            <div class="section-title">
+              <h2 id="activity-total">Loading activity...</h2>
+              <div class="heatmap-settings" style="position: relative;">
+                <span class="heatmap-settings-text">Activity settings</span>
+                <span class="heatmap-settings-icon">⚙️</span>
+                <div class="heatmap-settings-dropdown" id="heatmap-settings-dropdown">
+                  <div class="heatmap-setting-group">
+                    <label class="heatmap-setting-label">Activity Metric</label>
+                    <div class="heatmap-metric-selector">
+                      <div class="heatmap-metric-option messages active" data-metric="messages">
+                        Messages
+                      </div>
+                      <div class="heatmap-metric-option tools" data-metric="tools">
+                        Tools
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="activity-heatmap-container">
+              <!-- ActivityHeatmap component will be mounted here -->
+            </div>
+          </div>
+
           <!-- Session Timer Section -->
           <div class="session-timer-section">
             <div class="section-title">
@@ -407,6 +434,28 @@ class DashboardPage {
         sessionTimerContainer.innerHTML = `
           <div class="session-timer-placeholder">
             <p>Session timer not available</p>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize ActivityHeatmap if available
+    const activityHeatmapContainer = this.container.querySelector('#activity-heatmap-container');
+    if (activityHeatmapContainer && typeof ActivityHeatmap !== 'undefined') {
+      try {
+        this.components.activityHeatmap = new ActivityHeatmap(
+          activityHeatmapContainer,
+          this.dataService
+        );
+        await this.components.activityHeatmap.initialize();
+      } catch (error) {
+        console.warn('ActivityHeatmap initialization failed:', error);
+        // Show fallback content
+        activityHeatmapContainer.innerHTML = `
+          <div class="heatmap-empty-state">
+            <div class="heatmap-empty-icon">📊</div>
+            <div class="heatmap-empty-text">Activity heatmap not available</div>
+            <div class="heatmap-empty-subtext">Please try refreshing the page</div>
           </div>
         `;
       }
@@ -950,6 +999,11 @@ class DashboardPage {
     try {
       this.dataService.clearCache();
       await this.loadInitialData();
+      
+      // Refresh heatmap if available
+      if (this.components.activityHeatmap) {
+        await this.components.activityHeatmap.refresh();
+      }
     } catch (error) {
       console.error('Error refreshing data:', error);
       this.stateService.setError('Failed to refresh data');

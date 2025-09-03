@@ -333,3 +333,150 @@ The analytics dashboard has been refactored into a modular architecture in 4 pha
 3. Test analytics functionality: `npm run analytics:test`
 4. Ensure no console errors in browser (if testing frontend)
 5. Run performance tests if available
+
+## Component System Architecture
+
+### Core Component Types
+
+This CLI tool manages a comprehensive component system for Claude Code configurations:
+
+#### 🤖 Agents (600+ specialists)
+AI specialists organized by domain expertise:
+- **Development**: `frontend-developer`, `fullstack-developer`, `devops-engineer`
+- **Security**: `security-auditor`, `penetration-tester`, `compliance-specialist`
+- **Data/AI**: `data-scientist`, `ml-engineer`, `nlp-engineer`
+- **Business**: `product-strategist`, `business-analyst`, `legal-advisor`
+
+#### ⚡ Commands (200+ automations)
+Custom slash commands for development workflows:
+- **Setup**: `/setup-ci-cd-pipeline`, `/setup-testing`, `/migrate-to-typescript`
+- **Performance**: `/optimize-bundle`, `/performance-audit`, `/add-caching`
+- **Testing**: `/generate-tests`, `/setup-e2e`, `/test-coverage`
+- **Documentation**: `/update-docs`, `/generate-api-docs`, `/create-guide`
+
+#### 🔌 MCPs (Model Context Protocol Integrations)
+External service connections:
+- **Databases**: `postgresql-integration`, `supabase`, `mysql-integration`
+- **Development**: `github-integration`, `context7`, `filesystem-access`
+- **Browser**: `playwright-mcp`, `browsermcp`, `browser-use-mcp-server`
+
+#### ⚙️ Settings
+Claude Code configuration files:
+- **Performance**: `performance-optimization`, `bash-timeouts`, `mcp-timeouts`
+- **Security**: `read-only-mode`, `deny-sensitive-files`, `allow-git-operations`
+- **Statuslines**: `context-monitor`, `git-branch-statusline`, `time-statusline`
+
+#### 🪝 Hooks
+Automation triggers for development workflows:
+- **Git**: `auto-git-add`, `smart-commit`, `pre-commit-validation`
+- **Notifications**: `discord-notifications`, `slack-notifications`, `telegram-notifications`
+- **Performance**: `performance-monitor`, `lint-on-save`, `test-runner`
+
+### Component Installation System
+
+#### CLI Installation Patterns
+```bash
+# Install specific components
+npx claude-code-templates@latest --agent <name>
+npx claude-code-templates@latest --command <name>
+npx claude-code-templates@latest --mcp <name>
+npx claude-code-templates@latest --setting <name>
+npx claude-code-templates@latest --hook <name>
+
+# Batch installation
+npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
+
+# Interactive mode
+npx claude-code-templates@latest
+```
+
+#### Special Component Features
+
+**Statusline System with Python Scripts**
+- Statuslines can reference external Python scripts
+- Files are downloaded automatically to `.claude/scripts/` relative to project
+- Example: `statusline/context-monitor` installs both JSON config and Python script
+- Implementation in `src/index.js:installIndividualSetting()`:
+
+```javascript
+if (settingName.includes('statusline/')) {
+  const pythonFileName = settingName.split('/')[1] + '.py';
+  const pythonUrl = githubUrl.replace('.json', '.py');
+  additionalFiles['.claude/scripts/' + pythonFileName] = {
+    content: pythonContent,
+    executable: true
+  };
+}
+```
+
+### Component Generation System
+
+The `generate_components_json.py` script creates the component catalog:
+- Scans all component directories recursively
+- Excludes `.py` files from public listings (they remain as background dependencies)
+- Generates `docs/components.json` for the web interface at aitmpl.com
+- Handles file content embedding and metadata extraction
+
+## Important Implementation Notes
+
+### Path Handling
+- **Relative Paths**: Always use relative paths like `.claude/scripts/` for project-local files
+- **Cross-platform**: Use `path.join()` for cross-platform compatibility
+- **No Hardcoding**: Never hardcode user home directories or absolute paths
+
+### Context Monitor Implementation
+The statusline context monitor system demonstrates key architectural patterns:
+- **Component Download**: Automatic download of related files (Python scripts)
+- **Relative Installation**: Files installed relative to project, not globally
+- **Background Dependencies**: Python files excluded from public component listings
+- **Dynamic Loading**: Components loaded and executed dynamically by Claude Code
+
+### Error Handling Patterns
+- Use try/catch blocks for async operations
+- Log errors with appropriate context using chalk for styling
+- Provide helpful error messages to users
+- Handle missing files or directories gracefully
+- Implement fallback mechanisms for network operations
+
+### Component Development Guidelines
+
+#### Adding New Components
+1. **Structure**: Follow existing directory patterns in `cli-tool/components/`
+2. **Naming**: Use descriptive, hyphenated names (`security-auditor.md`)
+3. **Documentation**: Include clear descriptions and usage examples
+4. **Testing**: Add tests for complex logic components
+5. **Generation**: Run `python generate_components_json.py` to update catalog
+
+#### Modifying Existing Components
+1. **Backward Compatibility**: Ensure changes don't break existing installations
+2. **Version Management**: Consider version bumping for breaking changes
+3. **Testing**: Test component installation with `--setting`, `--agent`, etc.
+4. **Documentation**: Update component descriptions if functionality changes
+
+### Publishing Workflow
+
+#### Version Management
+```bash
+# Bump version (automatically updates package.json)
+npm version patch   # 1.20.2 -> 1.20.3
+npm version minor   # 1.20.3 -> 1.21.0  
+npm version major   # 1.21.0 -> 2.0.0
+
+# Publish to npm
+npm publish
+```
+
+#### Pre-publish Checklist
+1. All tests passing (`npm test`)
+2. Component catalog updated (`python generate_components_json.py`)
+3. No hardcoded paths or sensitive information
+4. Version bumped appropriately
+5. Git commits include all relevant files
+
+### Component Security
+- Never include hardcoded credentials or API keys in components
+- Validate all user inputs in components
+- Use relative paths (`.claude/scripts/`) instead of absolute paths
+- Review components for potential security vulnerabilities before publishing
+
+This codebase represents a comprehensive Claude Code component ecosystem with real-time analytics, modular architecture, and extensive automation capabilities. The system is designed for scalability, maintainability, and ease of use while providing powerful development workflow enhancements.

@@ -93,7 +93,8 @@ class ConversationAnalyzer {
       };
 
       const jsonlFiles = await findJsonlFiles(this.claudeDir);
-      // Loading conversation files quietly for better UX
+      console.log(`🔥 ConversationAnalyzer found ${jsonlFiles.length} JSONL files in ${this.claudeDir}`);
+      
 
       for (const filePath of jsonlFiles) {
         const stats = await this.getFileStats(filePath);

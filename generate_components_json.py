@@ -48,7 +48,7 @@ def generate_components_json():
             if os.path.isdir(category_path):
                 for file_name in os.listdir(category_path):
                     file_path = os.path.join(category_path, file_name)
-                    if os.path.isfile(file_path) and (file_name.endswith('.md') or file_name.endswith('.json')):
+                    if os.path.isfile(file_path) and (file_name.endswith('.md') or file_name.endswith('.json')) and not file_name.endswith('.py'):
                         name = os.path.splitext(file_name)[0]
                         
                         # Read file content

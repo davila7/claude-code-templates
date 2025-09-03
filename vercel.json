@@ -9,12 +9,16 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/blog",
+      "destination": "/blog/"
+    },
+    {
       "source": "/supabase-claude-code-integration",
       "destination": "/blog/supabase-claude-code-integration/"
     },
     {
-      "source": "/supabase-claude-code-integration/",
-      "destination": "/blog/supabase-claude-code-integration/"
+      "source": "/nextjs-vercel-claude-code-integration",
+      "destination": "/blog/nextjs-vercel-claude-code-integration/"
     }
   ],
   "cleanUrls": true,

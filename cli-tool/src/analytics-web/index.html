@@ -15,12 +15,12 @@
     <script src="components/HeaderComponent.js"></script>
     <script src="components/Charts.js"></script>
     <!-- Dashboard.js removed - deprecated architecture -->
+    <script src="components/ActivityHeatmap.js"></script>
     <script src="components/SessionTimer.js"></script>
     <script src="components/ConversationTable.js"></script>
     <script src="components/ToolDisplay.js"></script>
     <script src="components/Sidebar.js"></script>
     <script src="components/DashboardPage.js"></script>
-    <script src="components/AgentsPage.js"></script>
     <script src="components/App.js"></script>
     
     <!-- main.js removed - deprecated architecture -->
@@ -7847,6 +7847,476 @@
 
             .efficiency-grid {
                 grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        /* Activity Heatmap Styles */
+        .activity-heatmap-section {
+            margin: 24px 0;
+        }
+
+        .activity-heatmap-section .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .activity-heatmap-section .section-title h2 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .heatmap-settings {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .heatmap-settings:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-primary);
+        }
+
+        .heatmap-settings-icon {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .heatmap-settings-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(1, 4, 9, 0.7);
+            padding: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            display: none;
+        }
+
+        .heatmap-settings-dropdown.show {
+            display: block;
+        }
+
+        .heatmap-setting-group {
+            margin-bottom: 12px;
+        }
+
+        .heatmap-setting-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .heatmap-setting-label {
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .heatmap-metric-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .heatmap-metric-option {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .heatmap-metric-option:hover {
+            border-color: var(--text-accent);
+            color: var(--text-primary);
+        }
+
+        .heatmap-metric-option.active {
+            background: var(--text-accent);
+            border-color: var(--text-accent);
+            color: #000;
+            font-weight: 500;
+        }
+
+        .heatmap-metric-option.messages.active {
+            background: rgb(249, 115, 22);
+            border-color: rgb(249, 115, 22);
+        }
+
+        .heatmap-metric-option.tools.active {
+            background: rgb(147, 51, 234);
+            border-color: rgb(147, 51, 234);
+        }
+
+        .activity-heatmap-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 24px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .heatmap-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .heatmap-legend-text {
+            margin-right: 2px;
+            font-weight: 500;
+        }
+
+        .heatmap-legend-scale {
+            display: flex;
+            gap: 3px;
+        }
+
+        .heatmap-legend-square {
+            width: 11px;
+            height: 11px;
+            border-radius: 3px;
+            border: 1px solid var(--border-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .heatmap-legend-square:hover {
+            border-color: var(--text-accent);
+            transform: scale(1.1);
+        }
+
+        .heatmap-legend-square.level-0 {
+            background: #21262d;
+        }
+
+        .heatmap-legend-square.level-1 {
+            background: rgba(249, 115, 22, 0.25);
+        }
+
+        .heatmap-legend-square.level-2 {
+            background: rgba(249, 115, 22, 0.45);
+        }
+
+        .heatmap-legend-square.level-3 {
+            background: rgba(249, 115, 22, 0.65);
+        }
+
+        .heatmap-legend-square.level-4 {
+            background: rgb(249, 115, 22);
+        }
+
+        .heatmap-legend-more {
+            margin-left: 2px;
+            font-weight: 500;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: start;
+            width: 100%;
+        }
+
+        .heatmap-months {
+            position: relative;
+            height: 16px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            grid-column: 2;
+            font-weight: 500;
+        }
+
+        .heatmap-month {
+            position: absolute;
+            top: 0;
+            text-align: left;
+            white-space: nowrap;
+            overflow: visible;
+        }
+
+        .heatmap-weekdays {
+            display: grid;
+            grid-template-rows: repeat(7, 1fr);
+            gap: 3px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            align-self: start;
+            padding-top: 22px;
+            font-weight: 500;
+        }
+
+        .heatmap-weekday {
+            height: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            padding-right: 6px;
+        }
+
+        .heatmap-weeks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(11px, 1fr));
+            gap: 3px;
+            align-self: start;
+            width: 100%;
+        }
+
+        .heatmap-week {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .heatmap-day {
+            width: 11px;
+            height: 11px;
+            border-radius: 3px;
+            border: 1px solid #1c2128;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .heatmap-day:hover {
+            border-color: var(--text-accent);
+            transform: scale(1.15);
+            z-index: 10;
+            box-shadow: 0 0 0 1px var(--text-accent);
+        }
+
+        /* Activity level colors - Clean orange gradient */
+        .heatmap-day.level-0 {
+            background: #21262d;
+        }
+
+        .heatmap-day.level-1 {
+            background: rgba(249, 115, 22, 0.4);
+            border-color: rgba(249, 115, 22, 0.45);
+        }
+
+        .heatmap-day.level-2 {
+            background: rgba(249, 115, 22, 0.55);
+            border-color: rgba(249, 115, 22, 0.6);
+        }
+
+        .heatmap-day.level-3 {
+            background: rgba(249, 115, 22, 0.75);
+            border-color: rgba(249, 115, 22, 0.8);
+        }
+
+        .heatmap-day.level-4 {
+            background: rgb(249, 115, 22);
+            border-color: rgb(249, 115, 22);
+        }
+
+        /* Purple theme for tools mode */
+        .heatmap-day.level-1.tools-mode {
+            background: rgba(147, 51, 234, 0.4);
+            border-color: rgba(147, 51, 234, 0.45);
+        }
+
+        .heatmap-day.level-2.tools-mode {
+            background: rgba(147, 51, 234, 0.55);
+            border-color: rgba(147, 51, 234, 0.6);
+        }
+
+        .heatmap-day.level-3.tools-mode {
+            background: rgba(147, 51, 234, 0.75);
+            border-color: rgba(147, 51, 234, 0.8);
+        }
+
+        .heatmap-day.level-4.tools-mode {
+            background: rgb(147, 51, 234);
+            border-color: rgb(147, 51, 234);
+        }
+
+        /* Purple theme for legend squares in tools mode */
+        .activity-heatmap-container.tools-mode .heatmap-legend-square.level-1 {
+            background: rgba(147, 51, 234, 0.4);
+        }
+
+        .activity-heatmap-container.tools-mode .heatmap-legend-square.level-2 {
+            background: rgba(147, 51, 234, 0.55);
+        }
+
+        .activity-heatmap-container.tools-mode .heatmap-legend-square.level-3 {
+            background: rgba(147, 51, 234, 0.75);
+        }
+
+        .activity-heatmap-container.tools-mode .heatmap-legend-square.level-4 {
+            background: rgb(147, 51, 234);
+        }
+
+        .heatmap-tooltip {
+            position: absolute;
+            background: #000;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .heatmap-tooltip.show {
+            opacity: 1;
+        }
+
+        .heatmap-tooltip-date {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .heatmap-tooltip-activity {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.75rem;
+        }
+
+        .heatmap-empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: var(--text-secondary);
+            border: 2px dashed var(--border-primary);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+        }
+
+        .heatmap-empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+
+        .heatmap-empty-text {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .heatmap-empty-subtext {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        /* Loading state for heatmap */
+        .heatmap-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            gap: 12px;
+            color: var(--text-secondary);
+        }
+
+        .heatmap-loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-primary);
+            border-top: 2px solid var(--text-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .activity-heatmap-container {
+                padding: 20px 16px;
+                overflow-x: auto;
+            }
+            
+            .heatmap-grid {
+                min-width: 700px;
+            }
+            
+            .heatmap-settings {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .activity-heatmap-section .section-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .heatmap-header {
+                justify-content: center;
+                margin-bottom: 16px;
+            }
+
+            .heatmap-legend {
+                font-size: 0.75rem;
+                gap: 8px;
+            }
+
+            .heatmap-loading {
+                padding: 40px;
+            }
+
+            .heatmap-empty-state {
+                padding: 40px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .activity-heatmap-section {
+                margin: 16px -10px;
+            }
+
+            .activity-heatmap-container {
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+
+            .heatmap-weekdays {
+                font-size: 0.7rem;
+            }
+
+            .heatmap-months {
+                font-size: 0.7rem;
             }
         }
 

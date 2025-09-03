@@ -1,0 +1,29 @@
+{
+  "description": "Monitor deployment status, error rates, and performance metrics, sending notifications for failed deployments or performance degradation. Tracks Vercel deployment health, monitors build success/failure rates, and provides alerts for deployment issues. Setup: Export 'export VERCEL_TOKEN=your_token' and 'export VERCEL_PROJECT_ID=your_project_id' (get from vercel.com/account/tokens and Vercel dashboard).",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); COMMAND=$(echo \"$input\" | jq -r \".tool_input.command // empty\"); SUCCESS=$(echo \"$input\" | jq -r \".tool_response.success // false\"); if [[ \"$COMMAND\" =~ (vercel|deploy|build) ]] && [ -n \"$VERCEL_TOKEN\" ] && [ -n \"$VERCEL_PROJECT_ID\" ]; then echo \"🏥 Deployment Health Monitor: Checking deployment status...\"; DEPLOY_DATA=$(curl -s -H \"Authorization: Bearer $VERCEL_TOKEN\" \"https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5\" 2>/dev/null); if [ -n \"$DEPLOY_DATA\" ] && [ \"$DEPLOY_DATA\" != \"null\" ]; then RECENT_DEPLOYMENTS=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[]\"); TOTAL_DEPLOYMENTS=$(echo \"$DEPLOY_DATA\" | jq \".deployments | length\"); SUCCESS_COUNT=0; ERROR_COUNT=0; BUILDING_COUNT=0; echo \"📊 Recent deployment analysis ($TOTAL_DEPLOYMENTS deployments):\"; echo \"$DEPLOY_DATA\" | jq -r \".deployments[] | \\\"State: \\(.state) | Created: \\(.created | todateiso8601) | URL: \\(.url // \\\"N/A\\\")\\\"\"; for state in $(echo \"$DEPLOY_DATA\" | jq -r \".deployments[].state\"); do case \"$state\" in READY) ((SUCCESS_COUNT++));; ERROR|CANCELED) ((ERROR_COUNT++));; BUILDING|QUEUED) ((BUILDING_COUNT++));; esac; done; SUCCESS_RATE=$(( SUCCESS_COUNT * 100 / TOTAL_DEPLOYMENTS )); echo \"\" ; echo \"📈 Deployment Health Summary:\"; echo \"✅ Successful: $SUCCESS_COUNT/$TOTAL_DEPLOYMENTS ($SUCCESS_RATE%)\"; echo \"❌ Failed: $ERROR_COUNT/$TOTAL_DEPLOYMENTS\"; echo \"🔄 In Progress: $BUILDING_COUNT/$TOTAL_DEPLOYMENTS\"; if [ $ERROR_COUNT -gt 0 ]; then echo \"\" >&2; echo \"🚨 DEPLOYMENT HEALTH ALERT!\" >&2; echo \"Recent failures detected: $ERROR_COUNT failed deployments\" >&2; echo \"Success rate: $SUCCESS_RATE%\" >&2; echo \"\" >&2; echo \"🔍 Failed deployments:\" >&2; echo \"$DEPLOY_DATA\" | jq -r \".deployments[] | select(.state == \\\"ERROR\\\" or .state == \\\"CANCELED\\\") | \\\"❌ \\(.created | todateiso8601): \\(.url // \\\"No URL\\\")\\\"\" >&2; echo \"\" >&2; echo \"💡 Troubleshooting steps:\" >&2; echo \"• Check Vercel dashboard for detailed error logs\" >&2; echo \"• Review recent code changes\" >&2; echo \"• Verify environment variables are set\" >&2; echo \"• Check for build script errors\" >&2; if [ $SUCCESS_RATE -lt 50 ]; then echo \"🚨 CRITICAL: Success rate below 50%!\" >&2; exit 2; fi; elif [ $SUCCESS_RATE -lt 80 ]; then echo \"⚠️ Warning: Success rate below 80%\"; fi; if [ $BUILDING_COUNT -gt 2 ]; then echo \"⏳ Multiple builds in progress ($BUILDING_COUNT)\"; echo \"💡 This might indicate build queue issues\"; fi; LATEST_DEPLOY=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0]\"); LATEST_STATE=$(echo \"$LATEST_DEPLOY\" | jq -r \".state\"); LATEST_URL=$(echo \"$LATEST_DEPLOY\" | jq -r \".url // empty\"); LATEST_CREATED=$(echo \"$LATEST_DEPLOY\" | jq -r \".created\"); if [ -n \"$LATEST_CREATED\" ] && [ \"$LATEST_CREATED\" != \"null\" ]; then MINUTES_AGO=$(( ($(date +%s) - $LATEST_CREATED/1000) / 60 )); echo \"🕒 Latest deployment: $LATEST_STATE ($MINUTES_AGO minutes ago)\"; if [ -n \"$LATEST_URL\" ]; then echo \"🌐 URL: https://$LATEST_URL\"; fi; fi; echo \"✅ Deployment health check completed\"; else echo \"❌ Unable to fetch deployment data from Vercel API\"; fi; else echo \"ℹ️ Deployment health monitoring skipped (not a deployment command or missing tokens)\"; fi'",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -n \"$VERCEL_TOKEN\" ] && [ -n \"$VERCEL_PROJECT_ID\" ]; then echo \"🏥 Deployment Health Monitor: Initial health check...\"; DEPLOY_DATA=$(curl -s -H \"Authorization: Bearer $VERCEL_TOKEN\" \"https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=1\" 2>/dev/null); if [ -n \"$DEPLOY_DATA\" ] && [ \"$DEPLOY_DATA\" != \"null\" ]; then LATEST_STATE=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0].state // empty\"); LATEST_URL=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0].url // empty\"); LATEST_CREATED=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0].created // empty\"); if [ -n \"$LATEST_CREATED\" ] && [ \"$LATEST_CREATED\" != \"null\" ]; then MINUTES_AGO=$(( ($(date +%s) - $LATEST_CREATED/1000) / 60 )); case \"$LATEST_STATE\" in READY) echo \"✅ Latest deployment: READY ($MINUTES_AGO minutes ago)\"; if [ -n \"$LATEST_URL\" ]; then echo \"🌐 Live at: https://$LATEST_URL\"; fi;; ERROR) echo \"❌ Latest deployment: FAILED ($MINUTES_AGO minutes ago)\" >&2; echo \"🔧 Check Vercel dashboard for details\" >&2;; BUILDING) echo \"🔄 Latest deployment: BUILDING ($MINUTES_AGO minutes ago)\"; echo \"⏳ Build in progress...\";; QUEUED) echo \"⏳ Latest deployment: QUEUED ($MINUTES_AGO minutes ago)\";; *) echo \"❓ Latest deployment: $LATEST_STATE ($MINUTES_AGO minutes ago)\";; esac; echo \"📊 Deployment monitoring active\"; else echo \"ℹ️ No recent deployments found\"; fi; else echo \"⚠️ Unable to connect to Vercel API\"; fi; else echo \"ℹ️ Deployment health monitoring disabled (VERCEL_TOKEN or VERCEL_PROJECT_ID not set)\"; fi'",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

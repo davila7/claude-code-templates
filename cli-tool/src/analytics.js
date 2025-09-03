@@ -1191,6 +1191,27 @@ class ClaudeAnalytics {
       }
     });
 
+    // Activity heatmap data endpoint - needs full conversation history
+    this.app.get('/api/activity', async (req, res) => {
+      try {
+        console.log(`🔥 /api/activity called - loading all conversations...`);
+        // Get all conversations without the 150 limit for accurate heatmap data
+        const allConversations = await this.conversationAnalyzer.loadConversations(this.stateCalculator);
+        console.log(`🔥 Loaded ${allConversations.length} conversations from server`);
+        
+        // Generate activity data using complete dataset
+        const activityData = this.generateActivityDataFromConversations(allConversations);
+        res.json({
+          conversations: allConversations, // Also include conversations for the heatmap component
+          ...activityData,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error generating activity data:', error);
+        res.status(500).json({ error: 'Failed to generate activity data' });
+      }
+    });
+
     // Main dashboard route
     this.app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'analytics-web', 'index.html'));
@@ -2033,6 +2054,172 @@ class ClaudeAnalytics {
     }
   }
 
+  /**
+   * Generate activity data for the heatmap using complete conversation set
+   * @param {Array} conversations - Complete conversation array (not limited)
+   * @returns {Object} Activity data including daily contributions and stats
+   */
+  generateActivityDataFromConversations(conversations) {
+    const dailyActivity = new Map();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    oneYearAgo.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    console.log(`🔥 Generating activity data for ${conversations.length} conversations (FULL DATASET)...`);
+    
+    // Show date range of conversations
+    if (conversations.length > 0) {
+      const dates = conversations.map(c => c.lastModified ? new Date(c.lastModified) : null).filter(Boolean);
+      dates.sort((a, b) => a - b);
+      console.log(`🔥 Server conversation date range: ${dates[0]?.toLocaleDateString()} to ${dates[dates.length - 1]?.toLocaleDateString()}`);
+      
+      // Show some sample conversations with dates
+      console.log(`🔥 First 3 conversations by date:`);
+      const sortedConversations = conversations
+        .filter(c => c.lastModified)
+        .sort((a, b) => new Date(a.lastModified) - new Date(b.lastModified))
+        .slice(0, 3);
+      sortedConversations.forEach((conv, i) => {
+        console.log(`  ${i+1}: ${conv.filename} - ${new Date(conv.lastModified).toLocaleDateString()}`);
+      });
+    }
+
+    // Process conversations for daily activity
+    conversations.forEach(conversation => {
+      if (!conversation.lastModified) return;
+      
+      const date = new Date(conversation.lastModified);
+      if (date < oneYearAgo || date > today) return;
+
+      const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      const current = dailyActivity.get(dateKey) || {
+        conversations: 0,
+        tokens: 0,
+        messages: 0,
+        tools: 0,
+        date: dateKey
+      };
+      
+      current.conversations += 1;
+      current.tokens += conversation.tokens || 0;
+      current.messages += conversation.messageCount || 0;
+      current.tools += (conversation.toolUsage?.totalToolCalls || 0);
+      
+      dailyActivity.set(dateKey, current);
+    });
+
+    // Convert to array and sort by date
+    const activityArray = Array.from(dailyActivity.values())
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Calculate stats
+    const totalContributions = activityArray.reduce((sum, day) => sum + day.conversations, 0);
+    const totalTools = activityArray.reduce((sum, day) => sum + day.tools, 0);
+    const { longestStreak, currentStreak } = this.calculateStreaks(activityArray);
+
+    console.log(`🔥 Activity data generated: ${activityArray.length} active days, ${totalContributions} total contributions, ${totalTools} tool calls`);
+
+    return {
+      dailyActivity: activityArray,
+      totalContributions,
+      totalTools,
+      longestStreak,
+      currentStreak,
+      activeDays: activityArray.length,
+      startDate: oneYearAgo.toISOString().split('T')[0],
+      endDate: today.toISOString().split('T')[0]
+    };
+  }
+
+  /**
+   * Generate activity data for the heatmap (legacy method for backward compatibility)
+   * @returns {Object} Activity data including daily contributions and stats
+   */
+  generateActivityData() {
+    if (!this.data || !this.data.conversations) {
+      return {
+        dailyActivity: [],
+        totalContributions: 0,
+        longestStreak: 0,
+        currentStreak: 0
+      };
+    }
+
+    return this.generateActivityDataFromConversations(this.data.conversations);
+  }
+
+  /**
+   * Calculate contribution streaks
+   * @param {Array} activityArray - Sorted array of daily activity
+   * @returns {Object} Longest and current streak counts
+   */
+  calculateStreaks(activityArray) {
+    if (activityArray.length === 0) {
+      return { longestStreak: 0, currentStreak: 0 };
+    }
+
+    let longestStreak = 0;
+    let currentStreak = 0;
+    let tempStreak = 0;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Create a map of active dates for quick lookup
+    const activeDates = new Set(activityArray.map(day => day.date));
+
+    // Check streak going backwards from today
+    let checkDate = new Date(today);
+    let foundToday = false;
+
+    // First check if today or yesterday has activity
+    for (let i = 0; i < 2; i++) {
+      const dateKey = checkDate.toISOString().split('T')[0];
+      if (activeDates.has(dateKey)) {
+        foundToday = true;
+        break;
+      }
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    if (foundToday) {
+      // Calculate current streak
+      checkDate = new Date(today);
+      while (true) {
+        const dateKey = checkDate.toISOString().split('T')[0];
+        if (activeDates.has(dateKey)) {
+          currentStreak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+    }
+
+    // Calculate longest streak by checking all consecutive days
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+    checkDate = new Date(oneYearAgo);
+    while (checkDate <= today) {
+      const dateKey = checkDate.toISOString().split('T')[0];
+      
+      if (activeDates.has(dateKey)) {
+        tempStreak++;
+        longestStreak = Math.max(longestStreak, tempStreak);
+      } else {
+        tempStreak = 0;
+      }
+      
+      checkDate.setDate(checkDate.getDate() + 1);
+    }
+
+    return { longestStreak, currentStreak };
+  }
 
   stop() {
     // Stop file watchers
