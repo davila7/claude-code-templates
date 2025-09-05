@@ -173,6 +173,22 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="step-card sandbox-highlight">
+                    <div class="step-number">☁️</div>
+                    <div class="step-content">
+                        <h3>Cloud Sandbox</h3>
+                        <p>Test components in isolated E2B cloud environment</p>
+                        <div class="sandbox-setup">
+                            <div class="env-hint">💡 Add to .env: E2B_API_KEY & ANTHROPIC_API_KEY</div>
+                        </div>
+                        <div class="command-line">
+                            <span class="prompt">$</span>
+                            <code class="command">--sandbox e2b --prompt "your task"</code>
+                            <span class="command-note">// Safe testing!</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -404,6 +420,28 @@
                         <span class="prompt">$</span>
                         <code class="command">npx claude-code-templates@latest --chats</code>
                         <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --chats')">Copy</button>
+                    </div>
+                </div>
+                
+                <div class="tool-card e2b-highlight">
+                    <div class="tool-icon">☁️</div>
+                    <h3>E2B Cloud Sandbox</h3>
+                    <p>Execute Claude Code in isolated cloud environments with any agent or component. Perfect for testing complex projects without affecting your local system</p>
+                    <div class="env-setup">
+                        <div class="env-comment"># Add API keys to .env file:</div>
+                        <div class="env-vars">
+                            <code>E2B_API_KEY=your_e2b_key</code>
+                            <code>ANTHROPIC_API_KEY=your_anthropic_key</code>
+                        </div>
+                    </div>
+                    <div class="command-line">
+                        <span class="prompt">$</span>
+                        <code class="command">npx claude-code-templates@latest --sandbox e2b --agent=frontend-developer --prompt "Create a React app"</code>
+                        <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --sandbox e2b --agent=frontend-developer --prompt &quot;Create a React app&quot;')">Copy</button>
+                    </div>
+                    <div class="api-links">
+                        <a href="https://e2b.dev/dashboard" target="_blank" class="api-link">Get E2B Key</a>
+                        <a href="https://console.anthropic.com" target="_blank" class="api-link">Get Anthropic Key</a>
                     </div>
                 </div>
             </div>

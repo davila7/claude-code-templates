@@ -2532,6 +2532,256 @@ body {
     text-decoration: underline;
 }
 
+/* E2B Modal API Setup Styles */
+.e2b-api-setup {
+    margin: 1.5rem 0;
+    background: var(--bg-terminal);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1.2rem;
+}
+
+.api-setup-title {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.api-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.api-method {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-secondary);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.method-title {
+    color: var(--text-accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.env-example {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.env-example code {
+    display: block;
+    color: var(--text-accent);
+    font-size: 0.8rem;
+    background: none;
+    padding: 0.2rem 0;
+    margin: 0;
+}
+
+/* Responsive adjustments for modal API setup */
+@media (max-width: 768px) {
+    .api-method {
+        padding: 0.8rem;
+    }
+    
+    .env-example code {
+        font-size: 0.75rem;
+    }
+    
+    .api-method .command-line code {
+        font-size: 0.7rem;
+        word-break: break-all;
+    }
+}
+
+/* E2B Sandbox Tool Card Styles */
+.tool-card.e2b-highlight {
+    background: linear-gradient(135deg, rgba(70, 130, 180, 0.1) 0%, rgba(100, 149, 237, 0.1) 100%);
+    border: 2px solid rgba(70, 130, 180, 0.3);
+    position: relative;
+    grid-column: 1 / -1; /* Span across all columns */
+    max-width: none;
+}
+
+/* E2B highlight card internal layout */
+.tool-card.e2b-highlight .env-setup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.tool-card.e2b-highlight .command-line {
+    margin-top: 1rem;
+}
+
+.tool-card.e2b-highlight .api-links {
+    margin-top: 1.5rem;
+}
+
+/* Responsive adjustments for full-width E2B card */
+@media (max-width: 1024px) {
+    .tool-card.e2b-highlight .env-setup {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+.tool-card.e2b-highlight::before {
+    content: "NEW";
+    position: absolute;
+    top: -8px;
+    right: 15px;
+    background: linear-gradient(135deg, #4682B4 0%, #6495ED 100%);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.env-setup {
+    background: var(--bg-terminal);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.env-comment {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.env-vars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.env-vars code {
+    color: var(--text-accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: none;
+    padding: 0;
+}
+
+.api-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.api-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(70, 130, 180, 0.1);
+    border: 1px solid rgba(70, 130, 180, 0.3);
+    border-radius: 6px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.api-link:hover {
+    background: rgba(70, 130, 180, 0.2);
+    border-color: rgba(70, 130, 180, 0.5);
+    transform: translateY(-1px);
+}
+
+.api-link::before {
+    content: "🔑";
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .api-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .env-vars code {
+        font-size: 0.75rem;
+    }
+}
+
+/* Sandbox Step Card Styles */
+.step-card.sandbox-highlight {
+    background: linear-gradient(135deg, rgba(70, 130, 180, 0.08) 0%, rgba(100, 149, 237, 0.08) 100%);
+    border: 2px solid rgba(70, 130, 180, 0.2);
+    position: relative;
+}
+
+.step-card.sandbox-highlight .step-number {
+    background: linear-gradient(135deg, #4682B4 0%, #6495ED 100%);
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sandbox-setup {
+    margin: 0.8rem 0;
+}
+
+.env-hint {
+    background: var(--bg-terminal);
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-align: center;
+}
+
+/* Adjust steps grid for 4 items */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .env-hint {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
+}
+
 .component-preview {
     background: var(--bg-primary);
     border: 1px solid var(--border-secondary);

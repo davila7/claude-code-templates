@@ -108,10 +108,32 @@ function createComponentModalHTML(component) {
                             <div class="e2b-sandbox-section">
                                 <h4>☁️ Run in E2B Sandbox (Cloud Execution)</h4>
                                 <p class="e2b-description">Execute Claude Code with this ${component.type} in an isolated cloud environment using E2B. Perfect for testing without affecting your local system.</p>
-                                <div class="command-line">
-                                    <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt "your development task"</code>
-                                    <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
+                                
+                                <div class="e2b-api-setup">
+                                    <div class="api-setup-title">🔑 Setup API Keys (Choose one method):</div>
+                                    <div class="api-methods">
+                                        <div class="api-method">
+                                            <div class="method-title">Method 1: Environment Variables (.env file)</div>
+                                            <div class="env-example">
+                                                <code>E2B_API_KEY=your_e2b_key_here</code>
+                                                <code>ANTHROPIC_API_KEY=your_anthropic_key_here</code>
+                                            </div>
+                                            <div class="command-line">
+                                                <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt "your development task"</code>
+                                                <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="api-method">
+                                            <div class="method-title">Method 2: Command Line Parameters</div>
+                                            <div class="command-line">
+                                                <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --e2b-api-key your_e2b_key --anthropic-api-key your_anthropic_key --prompt "your development task"</code>
+                                                <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --e2b-api-key your_e2b_key --anthropic-api-key your_anthropic_key --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                
                                 <div class="e2b-features">
                                     <div class="feature">🔒 Isolated cloud environment</div>
                                     <div class="feature">⚡ Extended timeouts for complex operations</div>
@@ -119,7 +141,7 @@ function createComponentModalHTML(component) {
                                     <div class="feature">🔍 Real-time execution monitoring</div>
                                 </div>
                                 <div class="e2b-requirements">
-                                    <div class="requirements-title">Requirements:</div>
+                                    <div class="requirements-title">Get API Keys:</div>
                                     <div class="requirement">• E2B API key from <a href="https://e2b.dev/dashboard" target="_blank">e2b.dev/dashboard</a></div>
                                     <div class="requirement">• Anthropic API key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
                                 </div>
