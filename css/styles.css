@@ -2532,45 +2532,68 @@ body {
     text-decoration: underline;
 }
 
-/* E2B Modal API Setup Styles */
+/* Modal Section Styles */
+.basic-installation-section,
+.global-agent-section,
+.e2b-sandbox-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-secondary);
+}
+
+.basic-installation-section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.installation-description,
+.global-agent-description,
+.e2b-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 1rem 0;
+    font-style: italic;
+}
+
+/* E2B Sandbox NEW Badge */
+.new-badge {
+    background: linear-gradient(135deg, #4682B4 0%, #6495ED 100%);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+/* E2B Modal API Setup Styles - Simplified */
 .e2b-api-setup {
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     background: var(--bg-terminal);
     border: 1px solid var(--border-primary);
-    border-radius: 8px;
-    padding: 1.2rem;
-}
-
-.api-setup-title {
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.api-methods {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.api-method {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-secondary);
     border-radius: 6px;
     padding: 1rem;
 }
 
-.method-title {
-    color: var(--text-accent);
+.e2b-api-setup h5 {
+    color: var(--text-primary);
     font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 0.8rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-secondary);
+    margin: 0 0 0.8rem 0;
+}
+
+.env-setup-simple {
+    margin-bottom: 1rem;
+}
+
+.env-comment {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
 }
 
 .env-example {
@@ -2578,7 +2601,6 @@ body {
     border: 1px solid var(--border-primary);
     border-radius: 4px;
     padding: 0.8rem;
-    margin-bottom: 0.8rem;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
 
@@ -2591,19 +2613,52 @@ body {
     margin: 0;
 }
 
-/* Responsive adjustments for modal API setup */
+/* API Key Links */
+.api-key-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.api-key-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(70, 130, 180, 0.1);
+    border: 1px solid rgba(70, 130, 180, 0.3);
+    border-radius: 6px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.api-key-link:hover {
+    background: rgba(70, 130, 180, 0.2);
+    border-color: rgba(70, 130, 180, 0.5);
+    transform: translateY(-1px);
+}
+
+.api-key-link span {
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .api-method {
-        padding: 0.8rem;
-    }
-    
     .env-example code {
         font-size: 0.75rem;
     }
     
-    .api-method .command-line code {
-        font-size: 0.7rem;
-        word-break: break-all;
+    .api-key-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .api-key-link {
+        justify-content: center;
     }
 }
 

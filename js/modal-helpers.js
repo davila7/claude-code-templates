@@ -76,19 +76,27 @@ function createComponentModalHTML(component) {
                         <div class="component-description">${component.type === 'mcp' ? (component.description || description) : description}</div>
                         
                         <div class="installation-section">
-                            <h4>📦 Installation</h4>
-                            <div class="command-line">
-                                <code>${installCommand}</code>
-                                <button class="copy-btn" data-command="${installCommand.replace(/"/g, '&quot;')}" onclick="copyToClipboard(this.dataset.command)">Copy</button>
+                            <!-- Basic Installation -->
+                            <div class="basic-installation-section">
+                                <h4>📦 Basic Installation</h4>
+                                <p class="installation-description">Install this ${component.type} locally in your project. Works with your existing Claude Code setup.</p>
+                                <div class="command-line">
+                                    <code>${installCommand}</code>
+                                    <button class="copy-btn" data-command="${installCommand.replace(/"/g, '&quot;')}" onclick="copyToClipboard(this.dataset.command)">Copy</button>
+                                </div>
                             </div>
+                            
                             ${globalAgentCommand ? `
+                            <!-- Global Agent (Claude Code SDK) -->
                             <div class="global-agent-section">
                                 <h4>🌍 Global Agent (Claude Code SDK)</h4>
-                                <p class="global-agent-description">Create a global AI agent accessible from anywhere with zero configuration</p>
+                                <p class="global-agent-description">Create a global AI agent accessible from anywhere with zero configuration. Perfect for automation and CI/CD workflows.</p>
+                                
                                 <div class="command-line">
                                     <code>${globalAgentCommand}</code>
                                     <button class="copy-btn" data-command="${globalAgentCommand.replace(/"/g, '&quot;')}" onclick="copyToClipboard(this.dataset.command)">Copy</button>
                                 </div>
+                                
                                 <div class="global-agent-usage">
                                     <div class="usage-example">
                                         <div class="usage-title">After installation, use from anywhere:</div>
@@ -105,32 +113,24 @@ function createComponentModalHTML(component) {
                                 </div>
                             </div>` : ''}
                             
+                            <!-- Run in E2B Sandbox (Cloud Execution) -->
                             <div class="e2b-sandbox-section">
-                                <h4>☁️ Run in E2B Sandbox (Cloud Execution)</h4>
-                                <p class="e2b-description">Execute Claude Code with this ${component.type} in an isolated cloud environment using E2B. Perfect for testing without affecting your local system.</p>
+                                <h4>☁️ Run in E2B Sandbox (Cloud Execution) <span class="new-badge">NEW</span></h4>
+                                <p class="e2b-description">Execute Claude Code with this ${component.type} in an isolated cloud environment using E2B. Perfect for testing complex projects without affecting your local system.</p>
                                 
                                 <div class="e2b-api-setup">
-                                    <div class="api-setup-title">🔑 Setup API Keys (Choose one method):</div>
-                                    <div class="api-methods">
-                                        <div class="api-method">
-                                            <div class="method-title">Method 1: Environment Variables (.env file)</div>
-                                            <div class="env-example">
-                                                <code>E2B_API_KEY=your_e2b_key_here</code>
-                                                <code>ANTHROPIC_API_KEY=your_anthropic_key_here</code>
-                                            </div>
-                                            <div class="command-line">
-                                                <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt "your development task"</code>
-                                                <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
-                                            </div>
+                                    <h5>🔑 Setup API Keys</h5>
+                                    <div class="env-setup-simple">
+                                        <div class="env-comment">Add to your .env file:</div>
+                                        <div class="env-example">
+                                            <code>E2B_API_KEY=your_e2b_key_here</code>
+                                            <code>ANTHROPIC_API_KEY=your_anthropic_key_here</code>
                                         </div>
-                                        
-                                        <div class="api-method">
-                                            <div class="method-title">Method 2: Command Line Parameters</div>
-                                            <div class="command-line">
-                                                <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --e2b-api-key your_e2b_key --anthropic-api-key your_anthropic_key --prompt "your development task"</code>
-                                                <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --e2b-api-key your_e2b_key --anthropic-api-key your_anthropic_key --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
-                                            </div>
-                                        </div>
+                                    </div>
+                                    
+                                    <div class="command-line">
+                                        <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt "your development task"</code>
+                                        <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
                                     </div>
                                 </div>
                                 
@@ -140,10 +140,17 @@ function createComponentModalHTML(component) {
                                     <div class="feature">📁 Automatic file download and organization</div>
                                     <div class="feature">🔍 Real-time execution monitoring</div>
                                 </div>
+                                
                                 <div class="e2b-requirements">
                                     <div class="requirements-title">Get API Keys:</div>
-                                    <div class="requirement">• E2B API key from <a href="https://e2b.dev/dashboard" target="_blank">e2b.dev/dashboard</a></div>
-                                    <div class="requirement">• Anthropic API key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+                                    <div class="api-key-links">
+                                        <a href="https://e2b.dev/dashboard" target="_blank" class="api-key-link">
+                                            <span>🔑</span> E2B API Key
+                                        </a>
+                                        <a href="https://console.anthropic.com" target="_blank" class="api-key-link">
+                                            <span>🔑</span> Anthropic API Key
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
