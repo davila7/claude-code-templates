@@ -2465,6 +2465,73 @@ body {
     gap: 0.5rem;
 }
 
+/* E2B Sandbox Section Styles */
+.e2b-sandbox-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-secondary);
+    background: linear-gradient(135deg, rgba(70, 130, 180, 0.08) 0%, rgba(100, 149, 237, 0.08) 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.e2b-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+    font-style: italic;
+}
+
+.e2b-features {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.e2b-requirements {
+    margin-top: 1rem;
+    background: rgba(255, 165, 0, 0.1);
+    border-left: 3px solid var(--accent-orange);
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+}
+
+.requirements-title {
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.requirements-title::before {
+    content: "⚠️";
+    font-size: 0.9rem;
+}
+
+.requirement {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin: 0.3rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.requirement a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.requirement a:hover {
+    text-decoration: underline;
+}
+
 .component-preview {
     background: var(--bg-primary);
     border: 1px solid var(--border-secondary);
