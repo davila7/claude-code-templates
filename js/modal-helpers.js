@@ -113,6 +113,7 @@ function createComponentModalHTML(component) {
                                 </div>
                             </div>` : ''}
                             
+                            ${component.type === 'agent' ? `
                             <!-- Run in E2B Sandbox (Cloud Execution) -->
                             <div class="e2b-sandbox-section">
                                 <h4>☁️ Run in E2B Sandbox (Cloud Execution) <span class="new-badge">NEW</span></h4>
@@ -152,7 +153,7 @@ function createComponentModalHTML(component) {
                                         </a>
                                     </div>
                                 </div>
-                            </div>
+                            </div>` : ''}
                         </div>
 
                         <div class="component-content">
