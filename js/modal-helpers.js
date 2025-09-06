@@ -138,7 +138,7 @@ function createComponentModalHTML(component) {
                                 <div class="e2b-features">
                                     <div class="feature">🔒 Isolated cloud environment</div>
                                     <div class="feature">⚡ Extended timeouts for complex operations</div>
-                                    <div class="feature">📁 Automatic file download and organization</div>
+                                    <div class="feature">📁 Files downloaded to project root</div>
                                     <div class="feature">🔍 Real-time execution monitoring</div>
                                 </div>
                                 
