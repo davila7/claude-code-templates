@@ -130,8 +130,8 @@ function createComponentModalHTML(component) {
                                     </div>
                                     
                                     <div class="command-line">
-                                        <code>npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt "your development task"</code>
-                                        <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --${component.type}=${component.type === 'template' ? component.name : componentPath} --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
+                                        <code>npx claude-code-templates@latest --sandbox e2b --agent=${componentPath} --prompt "your development task"</code>
+                                        <button class="copy-btn" data-command="npx claude-code-templates@latest --sandbox e2b --agent=${componentPath} --prompt &quot;your development task&quot;" onclick="copyToClipboard(this.dataset.command)">Copy</button>
                                     </div>
                                 </div>
                                 
