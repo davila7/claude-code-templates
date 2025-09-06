@@ -508,9 +508,7 @@ npx claude-code-templates@latest \
 
 # Another example
 > I need the Vercel Deployment Specialist to help me optimize my deployment strategy.
-
-# You can also use the /agents command for more direct control
-/agents react-performance-optimizer "Find performance bottlenecks in my React components"</code></pre>
+</code></pre>
 
                 <h3>Automated Hooks</h3>
                 <p>The hooks are triggered automatically by specific events within your Claude Code session. For example, a hook might run after you modify a file or use a specific tool. Once installed, they work in the background to automate tasks:</p>
@@ -530,29 +528,32 @@ npx claude-code-templates@latest \
                 <div class="alert-box">
                     <p><strong>⚠️ Important:</strong> Only one statusline can be active at a time in Claude Code. Installing a new statusline will replace any existing one. You can switch between statuslines by installing different ones.</p>
                 </div>
-                
                 <h4>🔹 Vercel Deployment Monitor</h4>
                 <p>Shows current build status, deployment URL, and time since last deployment with intuitive icons:</p>
-                <pre><code class="language-bash">▲ Vercel 🚀 ✅ READY | 🌐 my-app-xyz.vercel.app | ⏰ 5m ago | 📁 my-project</code></pre>
-
-                <h4>🔹 Vercel Error Alert System</h4>
-                <p>Intelligent error monitoring with desktop notifications and building status tracking:</p>
-                <pre><code class="language-bash">▲ Vercel 🚀 🚨 2 errors! | Building: 0 | 📁 my-project</code></pre>
-
-                <h4>🔹 Vercel Multi-Environment Status</h4>
-                <p>Monitors production and preview environments simultaneously with color-coded indicators:</p>
-                <pre><code class="language-bash">▲ Vercel 🚀 Prod:🟢 Prev:🟡 | 📁 my-project</code></pre>
-
-                <p><strong>Individual Statusline Installation:</strong></p>
+                <h4>Install:</h4>
                 <pre><code class="language-bash"># Install basic deployment monitor
 npx claude-code-templates@latest --setting statusline/vercel-deployment-monitor
-
-# Install error alert system with notifications
+                </code></pre>
+                <h4>Result:</h4>
+                <pre><code class="language-bash">▲ Vercel 🚀 ✅ READY | 🌐 my-app-xyz.vercel.app | ⏰ 5m ago | 📁 my-project</code></pre>
+                <h3>🔹 Vercel Error Alert System</h3>
+                <p>Intelligent error monitoring with desktop notifications and building status tracking:</p>
+                <h4>Install:</h4>
+                <pre><code class="language-bash"># Install error alert system with notifications
 npx claude-code-templates@latest --setting statusline/vercel-error-alert-system
-
-# Install multi-environment status monitor
-npx claude-code-templates@latest --setting statusline/vercel-multi-env-status</code></pre>
-
+                </code></pre>
+                <h4>Result:</h4>
+                <pre><code class="language-bash">▲ Vercel 🚀 🚨 2 errors! | Building: 0 | 📁 my-project</code></pre>
+                <h3>🔹 Vercel Multi-Environment Status</h3>
+                <p>Monitors production and preview environments simultaneously with color-coded indicators:</p>
+                <h4>Install:</h4>
+                <pre><code class="language-bash"># Install multi-environment status monitor
+npx claude-code-templates@latest --setting statusline/vercel-multi-env-status
+                </code></pre>
+                <h4>Result:</h4>
+                <pre>
+                    <code class="language-bash">▲ Vercel 🚀 Prod:🟢 Prev:🟡 | 📁 my-project</code>
+                </pre>
                 <p><strong>Setup Requirements:</strong></p>
                 <ul>
                     <li>📊 Export <code>VERCEL_TOKEN=your_token</code> (get from <a href="https://vercel.com/account/tokens" target="_blank">vercel.com/account/tokens</a>)</li>
