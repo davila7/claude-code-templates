@@ -409,9 +409,15 @@ body {
 /* Tools section */
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-top: 20px;
+}
+
+@media (max-width: 1200px) {
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .tool-card {
@@ -420,6 +426,21 @@ body {
     border-radius: 8px;
     padding: 20px;
     transition: all 0.3s ease;
+    position: relative;
+}
+
+.tool-card .new-label {
+    position: absolute;
+    top: -8px;
+    right: 15px;
+    background: var(--accent-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .tool-card:hover {
