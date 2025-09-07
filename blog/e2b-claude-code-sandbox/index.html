@@ -346,16 +346,34 @@ npx claude-code-templates@latest --sandbox e2b \
   --prompt "Create a React todo app with TypeScript"
 
 # Or use environment variables (set E2B_API_KEY and ANTHROPIC_API_KEY)
-npx claude-code-templates@latest --sandbox e2b --prompt "Create a React todo app with TypeScript"</code></pre>
+npx claude-code-templates@latest --sandbox e2b --prompt "Create a React todo app with TypeScript"
+
+# Interactive mode - let the CLI guide you
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key</code></pre>
 
                 <p><strong>This command will:</strong></p>
                 <ul>
                     <li>✓ Download and install E2B sandbox component</li>
                     <li>✓ Check and install Python dependencies</li>
+                    <li>✓ Interactively select an agent (if not provided)</li>
+                    <li>✓ Ask for your prompt (if not provided)</li>
+                    <li>✓ Confirm execution with Y/n prompt</li>
                     <li>✓ Create secure E2B cloud sandbox</li>
                     <li>✓ Execute your prompt using Claude Code</li>
-                    <li>✓ Show complete output and generated files</li>
+                    <li>✓ Show complete output and generated files in real-time</li>
+                    <li>✓ Download files to current directory in `sandbox-xxxxx` folder</li>
                     <li>✓ Automatically cleanup the sandbox</li>
+                </ul>
+
+                <p><strong>💡 Interactive Features:</strong></p>
+                <ul>
+                    <li>🤖 <strong>Agent Selection:</strong> When --agent is not provided, browse and select from 600+ available agents</li>
+                    <li>📝 <strong>Prompt Input:</strong> When --prompt is not provided, enter your requirements interactively</li>
+                    <li>✅ <strong>Execution Confirmation:</strong> Review and confirm before cloud execution starts</li>
+                    <li>⏹️ <strong>Cancel Anytime:</strong> Press ESC during execution to cancel</li>
+                    <li>📁 <strong>Local Download:</strong> Files are downloaded to your current working directory</li>
                 </ul>
 
                 <h3>Advanced Usage - With Components</h3>
@@ -420,11 +438,15 @@ npx claude-code-templates@latest --sandbox e2b --prompt "Your prompt here"</code
                 <p>After first execution, the sandbox component creates these files in your project:</p>
 
                 <pre><code class="language-bash">your-project/
-└── .claude/
-    └── sandbox/
-        ├── e2b-launcher.py      # Python launcher script
-        ├── requirements.txt     # E2B SDK dependencies
-        └── .env.example         # Environment variables template</code></pre>
+├── .claude/
+│   └── sandbox/
+│       ├── e2b-launcher.py      # Python launcher script
+│       ├── requirements.txt     # E2B SDK dependencies
+│       └── .env.example         # Environment variables template
+└── sandbox-xxxxxxxx/            # Generated project files (after execution)
+    ├── index.html               # Your generated files
+    ├── src/                     # Project source code
+    └── ...</code></pre>
 
                 <h3>Set Up Environment Variables</h3>
                 <p>Create a <code>.env</code> file in the <code>.claude/sandbox/</code> directory:</p>
@@ -451,35 +473,51 @@ cp .env.example .env
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>1. Component Download</strong></td>
-                            <td>Downloads E2B launcher script, requirements, and environment template to your project.</td>
+                            <td><strong>1. Agent Selection</strong></td>
+                            <td>If --agent not provided, shows interactive list of 600+ available agents to choose from.</td>
                         </tr>
                         <tr>
-                            <td><strong>2. Environment Check</strong></td>
+                            <td><strong>2. Prompt Input</strong></td>
+                            <td>If --prompt not provided, asks for your project requirements interactively.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Component Download</strong></td>
+                            <td>Downloads E2B launcher script, requirements, and environment template to .claude/sandbox/.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Environment Check</strong></td>
                             <td>Validates Python 3.11+ installation and API key availability.</td>
                         </tr>
                         <tr>
-                            <td><strong>3. Dependencies</strong></td>
+                            <td><strong>5. Dependencies</strong></td>
                             <td>Automatically installs E2B Python SDK and required packages.</td>
                         </tr>
                         <tr>
-                            <td><strong>4. Sandbox Creation</strong></td>
+                            <td><strong>6. Execution Confirmation</strong></td>
+                            <td>Shows execution summary and asks for Y/n confirmation before proceeding.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7. Sandbox Creation</strong></td>
                             <td>Creates E2B sandbox with anthropic-claude-code template pre-installed.</td>
                         </tr>
                         <tr>
-                            <td><strong>5. Component Installation</strong></td>
+                            <td><strong>8. Component Installation</strong></td>
                             <td>Installs any specified agents, commands, MCPs, settings, or hooks inside the sandbox.</td>
                         </tr>
                         <tr>
-                            <td><strong>6. Prompt Execution</strong></td>
+                            <td><strong>9. Prompt Execution</strong></td>
                             <td>Runs your prompt through Claude Code in the isolated sandbox environment.</td>
                         </tr>
                         <tr>
-                            <td><strong>7. Results Display</strong></td>
-                            <td>Shows complete Claude Code output, generated files, and execution details.</td>
+                            <td><strong>10. Real-time Output</strong></td>
+                            <td>Shows Claude Code execution logs and progress in real-time. Press ESC to cancel.</td>
                         </tr>
                         <tr>
-                            <td><strong>8. Automatic Cleanup</strong></td>
+                            <td><strong>11. File Download</strong></td>
+                            <td>Downloads generated files to sandbox-xxxxx folder in your current directory.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12. Automatic Cleanup</strong></td>
                             <td>Destroys the sandbox after execution, leaving no traces or residual resources.</td>
                         </tr>
                     </tbody>
@@ -558,7 +596,7 @@ npx claude-code-templates@latest --sandbox e2b \
                         </tr>
                         <tr>
                             <td><strong>Sandbox Timeout</strong></td>
-                            <td>Large prompts may take time; E2B sandboxes have a 5-minute default timeout</td>
+                            <td>Large prompts may take time; configured with 15-minute timeout for complex operations</td>
                         </tr>
                     </tbody>
                 </table>
