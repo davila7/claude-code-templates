@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AITMPL Cloud Agent - E2B Sandbox Management</title>
+    <meta name="description" content="Execute Claude Code agents in isolated E2B cloud environments">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Additional styles for sandbox interface */
+        .sandbox-interface {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', monospace;
+        }
+        
+        .sandbox-header {
+            padding: 2rem 0 1rem;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .sandbox-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+        }
+        
+        .sandbox-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .task-input-section {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .task-input-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .task-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: 'Inter', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+        
+        .task-textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.1);
+        }
+        
+        .task-textarea::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .code-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+        
+        .code-btn:hover {
+            background: #e55555;
+            transform: translateY(-1px);
+        }
+        
+        .code-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .tasks-section {
+            padding: 2rem 0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .section-count {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 1rem;
+            font-weight: 600;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .task-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .task-item:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-running {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        
+        .status-completed {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .status-failed {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        .task-progress {
+            background: var(--bg-primary);
+            border-radius: 4px;
+            height: 4px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: var(--accent-color);
+            height: 100%;
+            transition: width 0.3s ease;
+            animation: progressPulse 2s infinite;
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .task-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-secondary);
+        }
+        
+        .task-output {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 4px;
+            padding: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .floating-status {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body class="sandbox-interface">
+    <div class="container">
+        <header class="sandbox-header">
+            <div class="terminal-header">
+                <div class="sandbox-title">AITMPL Cloud Agent</div>
+                <div class="sandbox-subtitle">Execute Claude Code agents in isolated E2B cloud environments</div>
+            </div>
+        </header>
+
+        <section class="task-input-section">
+            <div class="task-input-container">
+                <textarea 
+                    id="taskInput" 
+                    class="task-textarea" 
+                    placeholder="Describe what you want to create...
+
+Example:
+Create a React todo app with TypeScript and Tailwind CSS, including:
+- Add, edit, delete tasks
+- Mark tasks as complete
+- Filter by status (all, active, completed)
+- Local storage persistence
+- Dark/light mode toggle
+- Responsive design"></textarea>
+                <button id="codeBtn" class="code-btn" onclick="executeTask()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                        <path d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z"/>
+                    </svg>
+                    Code
+                </button>
+            </div>
+        </section>
+
+        <section class="tasks-section">
+            <div class="section-header">
+                <h2 class="section-title">Running Tasks</h2>
+                <span class="section-count" id="runningCount">0</span>
+            </div>
+            <div class="task-list" id="runningTasks">
+                <div class="empty-state">
+                    <div class="empty-icon">⚡</div>
+                    <p>No running tasks</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tasks-section">
+            <div class="section-header">
+                <h2 class="section-title">Completed Tasks</h2>
+                <span class="section-count" id="completedCount">0</span>
+            </div>
+            <div class="task-list" id="completedTasks">
+                <div class="empty-state">
+                    <div class="empty-icon">📁</div>
+                    <p>No completed tasks</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Floating status indicator -->
+    <div class="floating-status" id="floatingStatus">
+        <div>Status: <span id="statusText">Ready</span></div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let taskIdCounter = 1;
+
+        function generateTaskId() {
+            return `task-${Date.now()}-${taskIdCounter++}`;
+        }
+
+        async function executeTask() {
+            const taskInput = document.getElementById('taskInput');
+            const prompt = taskInput.value.trim();
+            const codeBtn = document.getElementById('codeBtn');
+            
+            if (!prompt) {
+                alert('Please describe what you want to create');
+                return;
+            }
+
+            if (prompt.length < 10) {
+                alert('Please provide a more detailed description (at least 10 characters)');
+                return;
+            }
+
+            // Disable button during execution
+            codeBtn.disabled = true;
+            codeBtn.textContent = 'Starting...';
+
+            try {
+                // Send task to server
+                const response = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        agent: 'development-team/frontend-developer'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Clear input and re-enable button
+                    taskInput.value = '';
+                    codeBtn.disabled = false;
+                    codeBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                            <path d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z"/>
+                        </svg>
+                        Code
+                    `;
+                    
+                    // Start polling for task updates
+                    startTaskPolling(result.taskId);
+                } else {
+                    alert('Failed to start task: ' + result.error);
+                    codeBtn.disabled = false;
+                    codeBtn.textContent = 'Code';
+                }
+            } catch (error) {
+                alert('Error starting task: ' + error.message);
+                codeBtn.disabled = false;
+                codeBtn.textContent = 'Code';
+            }
+        }
+
+        function startTaskPolling(taskId) {
+            // Add task to local tasks array for immediate display
+            const newTask = {
+                id: taskId,
+                title: 'Loading...',
+                status: 'running',
+                progress: 0,
+                output: 'Initializing task...',
+                startTime: new Date(),
+                sandboxId: 'pending'
+            };
+            tasks.unshift(newTask);
+            updateTaskLists();
+
+            // Start polling for updates
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/task/${taskId}`);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const taskIndex = tasks.findIndex(t => t.id === taskId);
+                        if (taskIndex !== -1) {
+                            tasks[taskIndex] = {
+                                id: result.task.id,
+                                title: result.task.title,
+                                status: result.task.status,
+                                progress: result.task.progress,
+                                output: result.task.output,
+                                startTime: new Date(result.task.startTime),
+                                endTime: result.task.endTime ? new Date(result.task.endTime) : null,
+                                sandboxId: result.task.sandboxId || 'pending'
+                            };
+                            updateTaskLists();
+                            
+                            // Stop polling if task is completed or failed
+                            if (result.task.status === 'completed' || result.task.status === 'failed') {
+                                clearInterval(pollInterval);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                }
+            }, 2000); // Poll every 2 seconds
+        }
+
+        async function loadAllTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                const result = await response.json();
+                
+                if (result.success) {
+                    tasks = result.tasks.map(task => ({
+                        id: task.id,
+                        title: task.title,
+                        status: task.status,
+                        progress: task.progress,
+                        output: task.output || '',
+                        startTime: new Date(task.startTime),
+                        endTime: task.endTime ? new Date(task.endTime) : null,
+                        sandboxId: task.sandboxId || 'unknown'
+                    }));
+                    updateTaskLists();
+                }
+            } catch (error) {
+                console.error('Failed to load tasks:', error);
+            }
+        }
+
+        function updateTaskLists() {
+            const runningTasks = tasks.filter(t => t.status === 'running');
+            const completedTasks = tasks.filter(t => t.status === 'completed' || t.status === 'failed');
+            
+            updateTaskSection('runningTasks', 'runningCount', runningTasks);
+            updateTaskSection('completedTasks', 'completedCount', completedTasks);
+        }
+
+        function updateTaskSection(containerId, countId, taskList) {
+            const container = document.getElementById(containerId);
+            const countElement = document.getElementById(countId);
+            
+            countElement.textContent = taskList.length;
+            
+            if (taskList.length === 0) {
+                const emptyIcon = containerId === 'runningTasks' ? '⚡' : '📁';
+                const emptyText = containerId === 'runningTasks' ? 'No running tasks' : 'No completed tasks';
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">${emptyIcon}</div>
+                        <p>${emptyText}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = taskList.map(task => createTaskHTML(task)).join('');
+        }
+
+        function createTaskHTML(task) {
+            const duration = task.endTime ? 
+                Math.round((task.endTime - task.startTime) / 1000) : 
+                Math.round((new Date() - task.startTime) / 1000);
+            
+            return `
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-meta">
+                                <span>Sandbox: ${task.sandboxId}</span>
+                                <span>Duration: ${duration}s</span>
+                                <span>Started: ${task.startTime.toLocaleTimeString()}</span>
+                            </div>
+                            <div class="task-status status-${task.status}">${task.status}</div>
+                        </div>
+                    </div>
+                    ${task.status === 'running' ? `
+                        <div class="task-progress">
+                            <div class="progress-bar" style="width: ${task.progress}%"></div>
+                        </div>
+                    ` : ''}
+                    <div class="task-details">
+                        <div class="task-output">${task.output}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function truncateText(text, maxLength) {
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load existing tasks from server
+            loadAllTasks();
+            
+            // Auto-resize textarea
+            const textarea = document.getElementById('taskInput');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.max(120, this.scrollHeight) + 'px';
+            });
+
+            // Periodically refresh tasks
+            setInterval(loadAllTasks, 10000); // Refresh every 10 seconds
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                executeTask();
+            }
+        });
+    </script>
+</body>
+</html>
