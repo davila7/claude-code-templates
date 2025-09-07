@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AITMPL Cloud Agent - E2B Sandbox Management</title>
-    <meta name="description" content="Execute Claude Code agents in isolated E2B cloud environments">
+    <title>Claude Code Studio - AI Development Interface</title>
+    <meta name="description" content="Execute Claude Code locally or in cloud sandbox environments with real-time task management">
     
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -253,26 +253,110 @@
             padding: 1rem;
             display: none;
         }
+        
+        /* Execution Mode Selector */
+        .mode-selector {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .mode-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .mode-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .mode-btn svg {
+            margin-right: 0.5rem;
+        }
+        
+        .mode-btn:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+        
+        .mode-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .api-keys-notice.cloud-only {
+            display: block;
+        }
+        
+        .api-keys-notice.local-hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="sandbox-interface">
     <div class="container">
         <header class="sandbox-header">
             <div class="terminal-header">
-                <div class="sandbox-title">AITMPL Cloud Agent</div>
-                <div class="sandbox-subtitle">Execute Claude Code agents in isolated E2B cloud environments</div>
+                <div class="sandbox-title">Claude Code Studio</div>
+                <div class="sandbox-subtitle">Execute Claude Code locally or in cloud sandbox environments</div>
             </div>
         </header>
 
         <section class="task-input-section">
             <div class="task-input-container">
-                <!-- API Keys Notice -->
-                <div class="api-keys-notice" style="margin-bottom: 1rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 8px;">
+                <!-- Execution Mode Selector -->
+                <div class="execution-mode-section" style="margin-bottom: 1.5rem;">
+                    <div class="mode-selector">
+                        <div class="mode-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,6H13V14H11V6M10,16V18H14V16H10Z"/>
+                            </svg>
+                            <strong>Execution Mode</strong>
+                        </div>
+                        <div class="mode-buttons">
+                            <button class="mode-btn active" id="localModeBtn" onclick="setExecutionMode('local')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4,6H20V16H4M20,18A2,2 0 0,0 22,16V6C22,4.89 21.1,4 20,4H4C2.89,4 2,4.89 2,6V16A2,2 0 0,0 4,18H0V20H24V18H20Z"/>
+                                </svg>
+                                Local Machine
+                            </button>
+                            <button class="mode-btn" id="cloudModeBtn" onclick="setExecutionMode('cloud')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,18H6A4,4 0 0,1 2,14A4,4 0 0,1 6,10H6.71C7.37,7.69 9.5,6 12,6A5.5,5.5 0 0,1 17.5,11.5V12H19A3,3 0 0,1 22,15A3,3 0 0,1 19,18M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z"/>
+                                </svg>
+                                E2B Cloud
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Keys Notice (only for cloud mode) -->
+                <div id="apiKeysNotice" class="api-keys-notice local-hidden" style="margin-bottom: 1rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 8px;">
                     <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffc107" style="margin-right: 0.5rem;">
                             <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
                         </svg>
-                        <strong style="color: #ffc107;">Required API Keys</strong>
+                        <strong style="color: #ffc107;">Required API Keys for Cloud Mode</strong>
                     </div>
                     <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
                         Make sure these environment variables are set in your project's <code>.env</code> file:
@@ -284,6 +368,23 @@
                     <div style="margin-top: 0.5rem;">
                         <a href="https://e2b.dev/dashboard" target="_blank" style="color: #ffc107; text-decoration: none; margin-right: 1rem; font-size: 0.85rem;">🔑 Get E2B Key</a>
                         <a href="https://console.anthropic.com" target="_blank" style="color: #ffc107; text-decoration: none; font-size: 0.85rem;">🔑 Get Anthropic Key</a>
+                    </div>
+                </div>
+                
+                <!-- Local Mode Notice -->
+                <div id="localModeNotice" class="api-keys-notice cloud-only" style="margin-bottom: 1rem; padding: 1rem; background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#28a745" style="margin-right: 0.5rem;">
+                            <path d="M4,6H20V16H4M20,18A2,2 0 0,0 22,16V6C22,4.89 21.1,4 20,4H4C2.89,4 2,4.89 2,6V16A2,2 0 0,0 4,18H0V20H24V18H20Z"/>
+                        </svg>
+                        <strong style="color: #28a745;">Local Execution Mode</strong>
+                    </div>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                        Claude Code will execute locally on your machine. Make sure you have Claude Code CLI installed and configured.
+                    </p>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="https://claude.ai/code" target="_blank" style="color: #28a745; text-decoration: none; margin-right: 1rem; font-size: 0.85rem;">📥 Install Claude Code</a>
+                        <a href="https://docs.anthropic.com/claude-code" target="_blank" style="color: #28a745; text-decoration: none; font-size: 0.85rem;">📖 Documentation</a>
                     </div>
                 </div>
 
@@ -344,9 +445,34 @@ Create a React todo app with TypeScript and Tailwind CSS, including:
     <script>
         let tasks = [];
         let taskIdCounter = 1;
+        let executionMode = 'local'; // Default to local mode
 
         function generateTaskId() {
             return `task-${Date.now()}-${taskIdCounter++}`;
+        }
+
+        function setExecutionMode(mode) {
+            executionMode = mode;
+            
+            // Update button states
+            document.getElementById('localModeBtn').classList.toggle('active', mode === 'local');
+            document.getElementById('cloudModeBtn').classList.toggle('active', mode === 'cloud');
+            
+            // Show/hide appropriate notices
+            const apiKeysNotice = document.getElementById('apiKeysNotice');
+            const localModeNotice = document.getElementById('localModeNotice');
+            
+            if (mode === 'cloud') {
+                apiKeysNotice.classList.remove('local-hidden');
+                apiKeysNotice.classList.add('cloud-only');
+                localModeNotice.classList.add('local-hidden');
+                localModeNotice.classList.remove('cloud-only');
+            } else {
+                apiKeysNotice.classList.add('local-hidden');
+                apiKeysNotice.classList.remove('cloud-only');
+                localModeNotice.classList.remove('local-hidden');
+                localModeNotice.classList.add('cloud-only');
+            }
         }
 
         async function executeTask() {
@@ -369,7 +495,7 @@ Create a React todo app with TypeScript and Tailwind CSS, including:
             codeBtn.textContent = 'Starting...';
 
             try {
-                // Send task to server
+                // Send task to server with execution mode
                 const response = await fetch('/api/execute', {
                     method: 'POST',
                     headers: {
@@ -377,6 +503,7 @@ Create a React todo app with TypeScript and Tailwind CSS, including:
                     },
                     body: JSON.stringify({
                         prompt: prompt,
+                        mode: executionMode,
                         agent: 'development-team/frontend-developer'
                     })
                 });
