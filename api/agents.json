@@ -1,0 +1,942 @@
+{
+  "agents": [
+    {
+      "name": "ai-ethics-advisor",
+      "path": "ai-specialists/ai-ethics-advisor",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "hackathon-ai-strategist",
+      "path": "ai-specialists/hackathon-ai-strategist",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "llms-maintainer",
+      "path": "ai-specialists/llms-maintainer",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "model-evaluator",
+      "path": "ai-specialists/model-evaluator",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "prompt-engineer",
+      "path": "ai-specialists/prompt-engineer",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "search-specialist",
+      "path": "ai-specialists/search-specialist",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "task-decomposition-expert",
+      "path": "ai-specialists/task-decomposition-expert",
+      "category": "ai-specialists",
+      "description": ""
+    },
+    {
+      "name": "graphql-architect",
+      "path": "api-graphql/graphql-architect",
+      "category": "api-graphql",
+      "description": ""
+    },
+    {
+      "name": "graphql-performance-optimizer",
+      "path": "api-graphql/graphql-performance-optimizer",
+      "category": "api-graphql",
+      "description": ""
+    },
+    {
+      "name": "graphql-security-specialist",
+      "path": "api-graphql/graphql-security-specialist",
+      "category": "api-graphql",
+      "description": ""
+    },
+    {
+      "name": "smart-contract-auditor",
+      "path": "blockchain-web3/smart-contract-auditor",
+      "category": "blockchain-web3",
+      "description": ""
+    },
+    {
+      "name": "smart-contract-specialist",
+      "path": "blockchain-web3/smart-contract-specialist",
+      "category": "blockchain-web3",
+      "description": ""
+    },
+    {
+      "name": "web3-integration-specialist",
+      "path": "blockchain-web3/web3-integration-specialist",
+      "category": "blockchain-web3",
+      "description": ""
+    },
+    {
+      "name": "business-analyst",
+      "path": "business-marketing/business-analyst",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "content-marketer",
+      "path": "business-marketing/content-marketer",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "customer-support",
+      "path": "business-marketing/customer-support",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "legal-advisor",
+      "path": "business-marketing/legal-advisor",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "marketing-attribution-analyst",
+      "path": "business-marketing/marketing-attribution-analyst",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "payment-integration",
+      "path": "business-marketing/payment-integration",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "product-strategist",
+      "path": "business-marketing/product-strategist",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "risk-manager",
+      "path": "business-marketing/risk-manager",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "sales-automator",
+      "path": "business-marketing/sales-automator",
+      "category": "business-marketing",
+      "description": ""
+    },
+    {
+      "name": "ai-engineer",
+      "path": "data-ai/ai-engineer",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "computer-vision-engineer",
+      "path": "data-ai/computer-vision-engineer",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "data-engineer",
+      "path": "data-ai/data-engineer",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "data-scientist",
+      "path": "data-ai/data-scientist",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "ml-engineer",
+      "path": "data-ai/ml-engineer",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "mlops-engineer",
+      "path": "data-ai/mlops-engineer",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "nlp-engineer",
+      "path": "data-ai/nlp-engineer",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "quant-analyst",
+      "path": "data-ai/quant-analyst",
+      "category": "data-ai",
+      "description": ""
+    },
+    {
+      "name": "database-admin",
+      "path": "database/database-admin",
+      "category": "database",
+      "description": ""
+    },
+    {
+      "name": "database-architect",
+      "path": "database/database-architect",
+      "category": "database",
+      "description": ""
+    },
+    {
+      "name": "database-optimization",
+      "path": "database/database-optimization",
+      "category": "database",
+      "description": ""
+    },
+    {
+      "name": "database-optimizer",
+      "path": "database/database-optimizer",
+      "category": "database",
+      "description": ""
+    },
+    {
+      "name": "nosql-specialist",
+      "path": "database/nosql-specialist",
+      "category": "database",
+      "description": ""
+    },
+    {
+      "name": "supabase-schema-architect",
+      "path": "database/supabase-schema-architect",
+      "category": "database",
+      "description": ""
+    },
+    {
+      "name": "academic-researcher",
+      "path": "deep-research-team/academic-researcher",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "agent-overview",
+      "path": "deep-research-team/agent-overview",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "competitive-intelligence-analyst",
+      "path": "deep-research-team/competitive-intelligence-analyst",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "data-analyst",
+      "path": "deep-research-team/data-analyst",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "fact-checker",
+      "path": "deep-research-team/fact-checker",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "query-clarifier",
+      "path": "deep-research-team/query-clarifier",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "report-generator",
+      "path": "deep-research-team/report-generator",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "research-brief-generator",
+      "path": "deep-research-team/research-brief-generator",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "research-coordinator",
+      "path": "deep-research-team/research-coordinator",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "research-orchestrator",
+      "path": "deep-research-team/research-orchestrator",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "research-synthesizer",
+      "path": "deep-research-team/research-synthesizer",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "technical-researcher",
+      "path": "deep-research-team/technical-researcher",
+      "category": "deep-research-team",
+      "description": ""
+    },
+    {
+      "name": "backend-architect",
+      "path": "development-team/backend-architect",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "cli-ui-designer",
+      "path": "development-team/cli-ui-designer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "devops-engineer",
+      "path": "development-team/devops-engineer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "frontend-developer",
+      "path": "development-team/frontend-developer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "fullstack-developer",
+      "path": "development-team/fullstack-developer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "ios-developer",
+      "path": "development-team/ios-developer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "mobile-developer",
+      "path": "development-team/mobile-developer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "ui-ux-designer",
+      "path": "development-team/ui-ux-designer",
+      "category": "development-team",
+      "description": ""
+    },
+    {
+      "name": "code-reviewer",
+      "path": "development-tools/code-reviewer",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "command-expert",
+      "path": "development-tools/command-expert",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "context-manager",
+      "path": "development-tools/context-manager",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "debugger",
+      "path": "development-tools/debugger",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "dx-optimizer",
+      "path": "development-tools/dx-optimizer",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "error-detective",
+      "path": "development-tools/error-detective",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "mcp-expert",
+      "path": "development-tools/mcp-expert",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "performance-profiler",
+      "path": "development-tools/performance-profiler",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "test-engineer",
+      "path": "development-tools/test-engineer",
+      "category": "development-tools",
+      "description": ""
+    },
+    {
+      "name": "cloud-architect",
+      "path": "devops-infrastructure/cloud-architect",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "deployment-engineer",
+      "path": "devops-infrastructure/deployment-engineer",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "devops-troubleshooter",
+      "path": "devops-infrastructure/devops-troubleshooter",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "monitoring-specialist",
+      "path": "devops-infrastructure/monitoring-specialist",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "network-engineer",
+      "path": "devops-infrastructure/network-engineer",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "security-engineer",
+      "path": "devops-infrastructure/security-engineer",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "terraform-specialist",
+      "path": "devops-infrastructure/terraform-specialist",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "vercel-deployment-specialist",
+      "path": "devops-infrastructure/vercel-deployment-specialist",
+      "category": "devops-infrastructure",
+      "description": ""
+    },
+    {
+      "name": "api-documenter",
+      "path": "documentation/api-documenter",
+      "category": "documentation",
+      "description": ""
+    },
+    {
+      "name": "changelog-generator",
+      "path": "documentation/changelog-generator",
+      "category": "documentation",
+      "description": ""
+    },
+    {
+      "name": "docusaurus-expert",
+      "path": "documentation/docusaurus-expert",
+      "category": "documentation",
+      "description": ""
+    },
+    {
+      "name": "technical-writer",
+      "path": "documentation/technical-writer",
+      "category": "documentation",
+      "description": ""
+    },
+    {
+      "name": "agent-expert",
+      "path": "expert-advisors/agent-expert",
+      "category": "expert-advisors",
+      "description": ""
+    },
+    {
+      "name": "architect-review",
+      "path": "expert-advisors/architect-review",
+      "category": "expert-advisors",
+      "description": ""
+    },
+    {
+      "name": "dependency-manager",
+      "path": "expert-advisors/dependency-manager",
+      "category": "expert-advisors",
+      "description": ""
+    },
+    {
+      "name": "documentation-expert",
+      "path": "expert-advisors/documentation-expert",
+      "category": "expert-advisors",
+      "description": ""
+    },
+    {
+      "name": "audio-mixer",
+      "path": "ffmpeg-clip-team/audio-mixer",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "audio-quality-controller",
+      "path": "ffmpeg-clip-team/audio-quality-controller",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "podcast-content-analyzer",
+      "path": "ffmpeg-clip-team/podcast-content-analyzer",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "podcast-metadata-specialist",
+      "path": "ffmpeg-clip-team/podcast-metadata-specialist",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "podcast-transcriber",
+      "path": "ffmpeg-clip-team/podcast-transcriber",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "social-media-clip-creator",
+      "path": "ffmpeg-clip-team/social-media-clip-creator",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "timestamp-precision-specialist",
+      "path": "ffmpeg-clip-team/timestamp-precision-specialist",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "video-editor",
+      "path": "ffmpeg-clip-team/video-editor",
+      "category": "ffmpeg-clip-team",
+      "description": ""
+    },
+    {
+      "name": "3d-artist",
+      "path": "game-development/3d-artist",
+      "category": "game-development",
+      "description": ""
+    },
+    {
+      "name": "game-designer",
+      "path": "game-development/game-designer",
+      "category": "game-development",
+      "description": ""
+    },
+    {
+      "name": "unity-game-developer",
+      "path": "game-development/unity-game-developer",
+      "category": "game-development",
+      "description": ""
+    },
+    {
+      "name": "unreal-engine-developer",
+      "path": "game-development/unreal-engine-developer",
+      "category": "game-development",
+      "description": ""
+    },
+    {
+      "name": "mcp-deployment-orchestrator",
+      "path": "mcp-dev-team/mcp-deployment-orchestrator",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "mcp-integration-engineer",
+      "path": "mcp-dev-team/mcp-integration-engineer",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "mcp-protocol-specialist",
+      "path": "mcp-dev-team/mcp-protocol-specialist",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "mcp-registry-navigator",
+      "path": "mcp-dev-team/mcp-registry-navigator",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "mcp-security-auditor",
+      "path": "mcp-dev-team/mcp-security-auditor",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "mcp-server-architect",
+      "path": "mcp-dev-team/mcp-server-architect",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "mcp-testing-engineer",
+      "path": "mcp-dev-team/mcp-testing-engineer",
+      "category": "mcp-dev-team",
+      "description": ""
+    },
+    {
+      "name": "architecture-modernizer",
+      "path": "modernization/architecture-modernizer",
+      "category": "modernization",
+      "description": ""
+    },
+    {
+      "name": "cloud-migration-specialist",
+      "path": "modernization/cloud-migration-specialist",
+      "category": "modernization",
+      "description": ""
+    },
+    {
+      "name": "legacy-modernizer",
+      "path": "modernization/legacy-modernizer",
+      "category": "modernization",
+      "description": ""
+    },
+    {
+      "name": "connection-agent",
+      "path": "obsidian-ops-team/connection-agent",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "content-curator",
+      "path": "obsidian-ops-team/content-curator",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "metadata-agent",
+      "path": "obsidian-ops-team/metadata-agent",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "moc-agent",
+      "path": "obsidian-ops-team/moc-agent",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "review-agent",
+      "path": "obsidian-ops-team/review-agent",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "tag-agent",
+      "path": "obsidian-ops-team/tag-agent",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "vault-optimizer",
+      "path": "obsidian-ops-team/vault-optimizer",
+      "category": "obsidian-ops-team",
+      "description": ""
+    },
+    {
+      "name": "document-structure-analyzer",
+      "path": "ocr-extraction-team/document-structure-analyzer",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "markdown-syntax-formatter",
+      "path": "ocr-extraction-team/markdown-syntax-formatter",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "ocr-grammar-fixer",
+      "path": "ocr-extraction-team/ocr-grammar-fixer",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "ocr-preprocessing-optimizer",
+      "path": "ocr-extraction-team/ocr-preprocessing-optimizer",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "ocr-quality-assurance",
+      "path": "ocr-extraction-team/ocr-quality-assurance",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "text-comparison-validator",
+      "path": "ocr-extraction-team/text-comparison-validator",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "visual-analysis-ocr",
+      "path": "ocr-extraction-team/visual-analysis-ocr",
+      "category": "ocr-extraction-team",
+      "description": ""
+    },
+    {
+      "name": "load-testing-specialist",
+      "path": "performance-testing/load-testing-specialist",
+      "category": "performance-testing",
+      "description": ""
+    },
+    {
+      "name": "performance-engineer",
+      "path": "performance-testing/performance-engineer",
+      "category": "performance-testing",
+      "description": ""
+    },
+    {
+      "name": "react-performance-optimization",
+      "path": "performance-testing/react-performance-optimization",
+      "category": "performance-testing",
+      "description": ""
+    },
+    {
+      "name": "test-automator",
+      "path": "performance-testing/test-automator",
+      "category": "performance-testing",
+      "description": ""
+    },
+    {
+      "name": "web-vitals-optimizer",
+      "path": "performance-testing/web-vitals-optimizer",
+      "category": "performance-testing",
+      "description": ""
+    },
+    {
+      "name": "academic-research-synthesizer",
+      "path": "podcast-creator-team/academic-research-synthesizer",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "comprehensive-researcher",
+      "path": "podcast-creator-team/comprehensive-researcher",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "episode-orchestrator",
+      "path": "podcast-creator-team/episode-orchestrator",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "guest-outreach-coordinator",
+      "path": "podcast-creator-team/guest-outreach-coordinator",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "market-research-analyst",
+      "path": "podcast-creator-team/market-research-analyst",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "podcast-editor",
+      "path": "podcast-creator-team/podcast-editor",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "podcast-trend-scout",
+      "path": "podcast-creator-team/podcast-trend-scout",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "project-supervisor-orchestrator",
+      "path": "podcast-creator-team/project-supervisor-orchestrator",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "seo-podcast-optimizer",
+      "path": "podcast-creator-team/seo-podcast-optimizer",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "social-media-copywriter",
+      "path": "podcast-creator-team/social-media-copywriter",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "twitter-ai-influencer-manager",
+      "path": "podcast-creator-team/twitter-ai-influencer-manager",
+      "category": "podcast-creator-team",
+      "description": ""
+    },
+    {
+      "name": "c-pro",
+      "path": "programming-languages/c-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "c-sharp-pro",
+      "path": "programming-languages/c-sharp-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "cpp-pro",
+      "path": "programming-languages/cpp-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "golang-pro",
+      "path": "programming-languages/golang-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "javascript-pro",
+      "path": "programming-languages/javascript-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "php-pro",
+      "path": "programming-languages/php-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "python-pro",
+      "path": "programming-languages/python-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "rust-pro",
+      "path": "programming-languages/rust-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "shell-scripting-pro",
+      "path": "programming-languages/shell-scripting-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "sql-pro",
+      "path": "programming-languages/sql-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "typescript-pro",
+      "path": "programming-languages/typescript-pro",
+      "category": "programming-languages",
+      "description": ""
+    },
+    {
+      "name": "supabase-realtime-optimizer",
+      "path": "realtime/supabase-realtime-optimizer",
+      "category": "realtime",
+      "description": ""
+    },
+    {
+      "name": "api-security-audit",
+      "path": "security/api-security-audit",
+      "category": "security",
+      "description": ""
+    },
+    {
+      "name": "compliance-specialist",
+      "path": "security/compliance-specialist",
+      "category": "security",
+      "description": ""
+    },
+    {
+      "name": "incident-responder",
+      "path": "security/incident-responder",
+      "category": "security",
+      "description": ""
+    },
+    {
+      "name": "penetration-tester",
+      "path": "security/penetration-tester",
+      "category": "security",
+      "description": ""
+    },
+    {
+      "name": "security-auditor",
+      "path": "security/security-auditor",
+      "category": "security",
+      "description": ""
+    },
+    {
+      "name": "nextjs-architecture-expert",
+      "path": "web-tools/nextjs-architecture-expert",
+      "category": "web-tools",
+      "description": ""
+    },
+    {
+      "name": "react-performance-optimizer",
+      "path": "web-tools/react-performance-optimizer",
+      "category": "web-tools",
+      "description": ""
+    },
+    {
+      "name": "seo-analyzer",
+      "path": "web-tools/seo-analyzer",
+      "category": "web-tools",
+      "description": ""
+    },
+    {
+      "name": "url-context-validator",
+      "path": "web-tools/url-context-validator",
+      "category": "web-tools",
+      "description": ""
+    },
+    {
+      "name": "url-link-extractor",
+      "path": "web-tools/url-link-extractor",
+      "category": "web-tools",
+      "description": ""
+    },
+    {
+      "name": "web-accessibility-checker",
+      "path": "web-tools/web-accessibility-checker",
+      "category": "web-tools",
+      "description": ""
+    }
+  ],
+  "version": "1.0.0",
+  "total": 156
+}
