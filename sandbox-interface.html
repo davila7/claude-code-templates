@@ -266,6 +266,27 @@
 
         <section class="task-input-section">
             <div class="task-input-container">
+                <!-- API Keys Notice -->
+                <div class="api-keys-notice" style="margin-bottom: 1rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffc107" style="margin-right: 0.5rem;">
+                            <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                        </svg>
+                        <strong style="color: #ffc107;">Required API Keys</strong>
+                    </div>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                        Make sure these environment variables are set in your project's <code>.env</code> file:
+                    </p>
+                    <div style="margin-top: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.85rem; color: var(--text-primary);">
+                        <div>E2B_API_KEY=your_e2b_key_here</div>
+                        <div>ANTHROPIC_API_KEY=your_anthropic_key_here</div>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="https://e2b.dev/dashboard" target="_blank" style="color: #ffc107; text-decoration: none; margin-right: 1rem; font-size: 0.85rem;">🔑 Get E2B Key</a>
+                        <a href="https://console.anthropic.com" target="_blank" style="color: #ffc107; text-decoration: none; font-size: 0.85rem;">🔑 Get Anthropic Key</a>
+                    </div>
+                </div>
+
                 <textarea 
                     id="taskInput" 
                     class="task-textarea" 
