@@ -59,6 +59,16 @@ class ComponentPageManager {
             // Try to find by name first, then by path
             if (componentName) {
                 component = components.find(c => c.name === componentName);
+                
+                // If not found, try to find by path that ends with the component name
+                if (!component) {
+                    component = components.find(c => {
+                        // Check if path ends with componentName.md or componentName.json
+                        const pathEnd = `${componentName}.md`;
+                        const pathEndJson = `${componentName}.json`;
+                        return c.path && (c.path.endsWith(pathEnd) || c.path.endsWith(pathEndJson));
+                    });
+                }
             }
             
             if (!component && componentPath) {
@@ -153,6 +163,20 @@ class ComponentPageManager {
         const categoryElement = document.getElementById('componentCategory');
         if (categoryElement) {
             categoryElement.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        // Update download badge
+        const downloadBadge = document.getElementById('componentDownloadBadge');
+        const downloadCount = document.getElementById('downloadCount');
+        if (downloadBadge && downloadCount) {
+            const downloads = this.component.downloads || 0;
+            if (downloads > 0) {
+                downloadBadge.style.display = 'inline-flex';
+                downloadCount.textContent = this.formatNumber(downloads);
+                downloadBadge.title = `${downloads.toLocaleString()} downloads`;
+            } else {
+                downloadBadge.style.display = 'none';
+            }
         }
 
         // Add to cart button is set up in setupEventListeners()
@@ -320,13 +344,25 @@ class ComponentPageManager {
             addToCartBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (this.component) {
+                    // Debug logging for production
+                    console.log('=== Add to Cart Debug ===');
+                    console.log('Component object:', this.component);
+                    console.log('Component type:', this.component.type);
+                    console.log('Component name:', this.component.name);
+                    console.log('Component path:', this.component.path);
+                    
                     // Check if cartManager exists
                     if (typeof addToCart === 'function') {
                         // Convert component type to plural format
                         const componentType = this.getComponentTypePlural();
                         
-                        console.log('Component data:', this.component);
-                        console.log('Adding to cart:', this.component.name, 'Type:', componentType);
+                        console.log('Plural type for cart:', componentType);
+                        
+                        if (!componentType) {
+                            console.error('Failed to get component type plural');
+                            alert('Unable to determine component type. Please refresh the page.');
+                            return;
+                        }
                         
                         if (this.component.name && this.component.path) {
                             // Create component object that matches cart manager expectations
@@ -337,6 +373,7 @@ class ComponentPageManager {
                                 path: this.component.path,
                                 category: this.component.category
                             };
+                            console.log('Sending to cart:', componentItem, componentType);
                             addToCart(componentItem, componentType);
                         } else {
                             console.error('Missing component name or path:', this.component);
@@ -344,11 +381,14 @@ class ComponentPageManager {
                         }
                     } else {
                         console.error('Cart functionality not available');
+                        console.log('typeof addToCart:', typeof addToCart);
+                        console.log('window.addToCart:', window.addToCart);
                         // Fallback: show a message or redirect to main page
                         alert('Cart functionality not available. Please return to the main page to add components to your stack.');
                     }
                 } else {
                     console.error('No component data available');
+                    alert('Component data not loaded. Please refresh the page.');
                 }
             });
         }
@@ -360,8 +400,13 @@ class ComponentPageManager {
     }
     
     getComponentTypePlural() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type = urlParams.get('type');
+        // Get type from the component object itself
+        const type = this.component?.type;
+        
+        if (!type) {
+            console.error('Component type not found in component object');
+            return null;
+        }
         
         // Convert singular type to plural for cart manager
         const typeMapping = {
@@ -531,6 +576,16 @@ class ComponentPageManager {
         return name.split('-').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ');
+    }
+
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        }
+        if (num >= 1000) {
+            return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+        }
+        return num.toString();
     }
 
     getComponentDescription() {

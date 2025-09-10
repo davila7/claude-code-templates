@@ -13,6 +13,7 @@ class IndexPageManager {
     constructor() {
         this.currentFilter = 'agents';
         this.currentCategoryFilter = 'all';
+        this.currentSort = 'downloads'; // Default sort by downloads
         this.templatesData = null;
         this.componentsData = null;
         this.availableCategories = {
@@ -275,7 +276,40 @@ class IndexPageManager {
             });
         }
         
+        // Apply sorting
+        components = this.sortComponents(components);
+        
         return components;
+    }
+    
+    // Sort components based on current sort option
+    sortComponents(components) {
+        const sortedComponents = [...components]; // Create a copy to avoid mutating original
+        
+        if (this.currentSort === 'downloads') {
+            // Sort by downloads (descending) - components with no downloads go to the end
+            sortedComponents.sort((a, b) => {
+                const downloadsA = a.downloads || 0;
+                const downloadsB = b.downloads || 0;
+                return downloadsB - downloadsA;
+            });
+        } else if (this.currentSort === 'alphabetical') {
+            // Sort alphabetically by name
+            sortedComponents.sort((a, b) => {
+                const nameA = (a.name || '').toLowerCase();
+                const nameB = (b.name || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
+        }
+        
+        return sortedComponents;
+    }
+    
+    // Handle sort change from the dropdown
+    handleSortChange(sortValue) {
+        this.currentSort = sortValue;
+        this.currentPage = 1; // Reset to first page when changing sort
+        this.displayCurrentFilter();
     }
 
     // Collect available categories from loaded components
@@ -395,6 +429,9 @@ class IndexPageManager {
             });
         }
         
+        // Apply sorting to templates
+        filteredTemplates = this.sortComponents(filteredTemplates);
+        
         // Create template cards from the filtered list
         filteredTemplates.forEach(template => {
             const templateCard = this.createTemplateCardFromJSON(template);
@@ -487,10 +524,20 @@ class IndexPageManager {
         const categoryName = component.category || 'general';
         const categoryLabel = `<div class="category-label">${this.formatComponentName(categoryName)}</div>`;
         
+        // Create download badge if downloads data exists
+        const downloadBadge = component.downloads && component.downloads > 0 ? 
+            `<div class="download-badge" title="${component.downloads} downloads">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/>
+                </svg>
+                ${this.formatNumber(component.downloads)}
+            </div>` : '';
+        
         return `
             <div class="template-card" data-type="${component.type}">
                 <div class="card-inner">
                     <div class="card-front">
+                        ${downloadBadge}
                         ${categoryLabel}
                         <div class="framework-logo" style="color: ${config.color}">
                             <span class="component-icon">${config.icon}</span>
@@ -570,6 +617,15 @@ class IndexPageManager {
 
     formatComponentName(name) {
         return name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
+
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
     }
 
     truncateDescription(description, maxLength = 80) {
@@ -971,6 +1027,13 @@ class IndexPageManager {
 // Global function for component details is now handled by modal-helpers.js
 
 // Global function for copying is now handled by utils.js
+
+// Global function for handling sort change (called from onchange)
+function handleSortChange(sortValue) {
+    if (window.indexManager) {
+        window.indexManager.handleSortChange(sortValue);
+    }
+}
 
 // Global function for setting filter (called from onclick)
 function setUnifiedFilter(filter) {

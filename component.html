@@ -141,7 +141,15 @@
                     <div class="component-title-section">
                         <div class="component-icon-large" id="componentIcon">🤖</div>
                         <div class="component-title-info">
-                            <h1 id="componentTitle">Component Name</h1>
+                            <div class="component-title-with-downloads">
+                                <h1 id="componentTitle">Component Name</h1>
+                                <div class="component-download-badge" id="componentDownloadBadge" style="display: none;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/>
+                                    </svg>
+                                    <span id="downloadCount">0</span>
+                                </div>
+                            </div>
                             <div class="component-meta">
                                 <div class="component-type-badge-title" id="componentTypeBadge">AGENT</div>
                                 <span class="component-category-title" id="componentCategory">Development</span>
@@ -458,13 +466,29 @@
     <script src="/js/utils.js"></script>
     
     <script>
-        // Debug script loading
-        setTimeout(() => {
+        // Debug script loading and ensure proper initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('=== Component Page Debug ===');
             console.log('Scripts loaded. Available objects:', {
                 DataLoader: typeof DataLoader,
-                ComponentPageManager: typeof ComponentPageManager
+                ComponentPageManager: typeof ComponentPageManager,
+                addToCart: typeof addToCart,
+                CartManager: typeof CartManager,
+                windowAddToCart: typeof window.addToCart
             });
-        }, 500);
+            
+            // Ensure cart manager is initialized
+            if (typeof CartManager !== 'undefined' && !window.cartManager) {
+                console.log('Initializing CartManager...');
+                window.cartManager = new CartManager();
+            }
+            
+            // Ensure component page manager is initialized
+            if (typeof ComponentPageManager !== 'undefined' && !window.componentPageManager) {
+                console.log('Initializing ComponentPageManager...');
+                window.componentPageManager = new ComponentPageManager();
+            }
+        });
     </script>
 </body>
 </html>

@@ -257,6 +257,17 @@
         </section>
 
         <section class="content-grid" id="contentGrid">
+            <!-- Sort selector -->
+            <div class="sort-controls" id="sortControls">
+                <div class="sort-wrapper">
+                    <span class="sort-label">Sort by:</span>
+                    <select class="sort-selector" id="sortSelector" onchange="handleSortChange(this.value)">
+                        <option value="downloads" selected>Most Downloaded</option>
+                        <option value="alphabetical">Alphabetical</option>
+                    </select>
+                </div>
+            </div>
+            
             <!-- Loading indicator -->
             <div class="loading-indicator" id="components-loading" style="display: none;">
                 <div class="loading-spinner"></div>
