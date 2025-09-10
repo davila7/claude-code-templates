@@ -8,6 +8,7 @@
     <!-- Meta tags -->
     <meta name="description" content="Explore Claude Code templates, agents, commands, and automation tools for enhanced development workflows.">
     <meta name="keywords" content="Claude Code, AI development, automation, templates, agents, commands">
+    <link rel="canonical" href="" id="canonical-url">
     
     <!-- Open Graph -->
     <meta property="og:title" content="Component - Claude Code Templates" id="og-title">
@@ -23,12 +24,33 @@
     <meta name="twitter:image" content="https://aitmpl.com/og-image.png">
     <meta name="twitter:url" content="" id="twitter-url">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/component-page.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- Dynamic Path Loading -->
+    <script>
+        // Detect environment and load resources with appropriate paths
+        window.isLocal = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname.includes('127.0.0.1');
+        
+        window.basePath = window.isLocal ? '' : '';
+        
+        // Load favicon
+        const faviconLink = document.createElement('link');
+        faviconLink.rel = 'icon';
+        faviconLink.type = 'image/x-icon';
+        faviconLink.href = window.basePath + (window.isLocal ? 'favicon.ico' : '/favicon.ico');
+        document.head.appendChild(faviconLink);
+        
+        // Load stylesheets
+        const componentPageCSS = document.createElement('link');
+        componentPageCSS.rel = 'stylesheet';
+        componentPageCSS.href = window.basePath + (window.isLocal ? 'css/component-page.css' : '/css/component-page.css');
+        document.head.appendChild(componentPageCSS);
+        
+        const stylesCSS = document.createElement('link');
+        stylesCSS.rel = 'stylesheet';
+        stylesCSS.href = window.basePath + (window.isLocal ? 'css/styles.css' : '/css/styles.css');
+        document.head.appendChild(stylesCSS);
+    </script>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -58,7 +80,7 @@
                         </svg>
                         Claude Code
                     </a>
-                    <a href="blog/index.html" class="header-btn">
+                    <a href="/blog/index.html" class="header-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
@@ -79,7 +101,7 @@
         <!-- Back Navigation -->
         <div class="back-navigation">
             <div class="container">
-                <a href="index.html" class="back-link">
+                <a href="#" class="back-link" id="backLink">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
                     </svg>
@@ -99,7 +121,7 @@
             <div class="error-icon">❌</div>
             <h2>Component Not Found</h2>
             <p>The requested component could not be found. Please check the URL and try again.</p>
-            <a href="index.html" class="btn-primary">Back to Components</a>
+            <a href="#" class="btn-primary" id="errorBackLink">Back to Components</a>
         </div>
 
         <!-- Component Content -->
@@ -451,9 +473,31 @@
     </div>
 
     <!-- Scripts -->
+    <script>
+        // Set navigation links based on environment
+        document.addEventListener('DOMContentLoaded', function() {
+            const backLink = document.getElementById('backLink');
+            const errorBackLink = document.getElementById('errorBackLink');
+            const indexPath = window.isLocal ? 'index.html' : '/index.html';
+            
+            if (backLink) backLink.href = indexPath;
+            if (errorBackLink) errorBackLink.href = indexPath;
+        });
+    </script>
+    <!-- Static scripts for reliable loading -->
     <script src="js/data-loader.js"></script>
     <script src="js/cart-manager.js"></script>
     <script src="js/component-page.js"></script>
     <script src="js/utils.js"></script>
+    
+    <script>
+        // Debug info
+        console.log('Scripts should be loaded now. Environment:', {
+            hostname: window.location.hostname,
+            isLocal: window.isLocal,
+            DataLoader: typeof DataLoader,
+            ComponentPageManager: typeof ComponentPageManager
+        });
+    </script>
 </body>
 </html>

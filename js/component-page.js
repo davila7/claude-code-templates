@@ -404,25 +404,127 @@ class ComponentPageManager {
     }
 
     updatePageMetadata() {
-        const formattedName = this.formatComponentName(this.component.name);
+        const cleanName = this.getCleanComponentName(this.component.name);
         const description = this.getComponentDescription();
-        const pageTitle = `${formattedName} - Claude Code Templates`;
-        const currentURL = window.location.href;
+        const typeCapitalized = this.component.type.charAt(0).toUpperCase() + this.component.type.slice(1);
+        const category = this.component.category || 'Development';
+        
+        // Enhanced page title with component type and category
+        const pageTitle = `${cleanName} ${typeCapitalized} - Claude Code Templates`;
+        const enhancedDescription = `${description} | ${typeCapitalized} for ${category} | Claude Code Templates - AI-powered development tools`;
+        
+        // Generate proper canonical URL for SEO
+        const canonicalURL = this.generateCanonicalURL();
 
         // Update page title
         document.title = pageTitle;
-        document.getElementById('page-title').textContent = pageTitle;
+        const pageTitleElement = document.getElementById('page-title');
+        if (pageTitleElement) {
+            pageTitleElement.textContent = pageTitle;
+        }
+
+        // Update meta description
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.content = enhancedDescription;
+        }
+
+        // Update keywords
+        const metaKeywords = document.querySelector('meta[name="keywords"]');
+        if (metaKeywords) {
+            metaKeywords.content = `${cleanName}, ${this.component.type}, ${category}, Claude Code, AI development, automation, ${this.component.type}s, templates`;
+        }
+
+        // Update canonical URL
+        const canonicalLink = document.getElementById('canonical-url');
+        if (canonicalLink) {
+            canonicalLink.href = canonicalURL;
+        }
 
         // Update Open Graph meta tags
-        document.getElementById('og-url').content = currentURL;
-        document.getElementById('og-title').content = pageTitle;
-        document.getElementById('og-description').content = description;
+        const ogUrl = document.getElementById('og-url');
+        const ogTitle = document.getElementById('og-title');
+        const ogDescription = document.getElementById('og-description');
+        
+        if (ogUrl) ogUrl.content = canonicalURL;
+        if (ogTitle) ogTitle.content = pageTitle;
+        if (ogDescription) ogDescription.content = enhancedDescription;
 
         // Update Twitter meta tags
-        document.getElementById('twitter-url').content = currentURL;
-        document.getElementById('twitter-title').content = pageTitle;
-        document.getElementById('twitter-description').content = description;
+        const twitterUrl = document.getElementById('twitter-url');
+        const twitterTitle = document.getElementById('twitter-title');
+        const twitterDescription = document.getElementById('twitter-description');
+        
+        if (twitterUrl) twitterUrl.content = canonicalURL;
+        if (twitterTitle) twitterTitle.content = pageTitle;
+        if (twitterDescription) twitterDescription.content = enhancedDescription;
+
+        // Add structured data for better SEO
+        this.addStructuredData(cleanName, description, typeCapitalized, category, canonicalURL);
     }
+
+    generateCanonicalURL() {
+        // Generate SEO-friendly canonical URL
+        const isLocal = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname.includes('5500');
+        
+        if (!isLocal && this.component.type && this.component.name) {
+            // Use SEO-friendly URL for production
+            let cleanName = this.component.name;
+            if (cleanName.endsWith('.md')) {
+                cleanName = cleanName.slice(0, -3);
+            }
+            if (cleanName.endsWith('.json')) {
+                cleanName = cleanName.slice(0, -5);
+            }
+            
+            const baseUrl = window.location.origin;
+            return `${baseUrl}/component/${encodeURIComponent(this.component.type)}/${encodeURIComponent(cleanName)}`;
+        }
+        
+        // Fallback to current URL
+        return window.location.href;
+    }
+
+    addStructuredData(name, description, type, category, url) {
+        // Remove existing structured data
+        const existingScript = document.getElementById('component-structured-data');
+        if (existingScript) {
+            existingScript.remove();
+        }
+
+        // Add new structured data
+        const structuredData = {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": name,
+            "applicationCategory": "DeveloperApplication",
+            "applicationSubCategory": `${type} Component`,
+            "description": description,
+            "operatingSystem": ["Windows", "macOS", "Linux"],
+            "url": url,
+            "author": {
+                "@type": "Organization",
+                "name": "Claude Code Templates Community"
+            },
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            },
+            "keywords": `${name}, ${type}, ${category}, Claude Code, AI development`,
+            "programmingLanguage": type === "command" ? "Shell" : "Configuration",
+            "relatedLink": "https://www.anthropic.com/claude-code"
+        };
+
+        const script = document.createElement('script');
+        script.id = 'component-structured-data';
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify(structuredData, null, 2);
+        document.head.appendChild(script);
+    }
+
 
     // Utility methods
     formatComponentName(name) {
@@ -563,15 +665,34 @@ function toggleComponentShareDropdown() {
 }
 
 function shareComponentOnTwitter() {
-    const componentTitle = document.getElementById('componentTitle')?.textContent || 'Claude Code Component';
-    const currentURL = window.location.href;
-    const message = `🚀 Check out this ${componentTitle} component for Claude Code!
+    const componentManager = window.componentPageManager;
+    let message;
+    
+    if (componentManager && componentManager.component) {
+        const cleanName = componentManager.getCleanComponentName(componentManager.component.name);
+        const type = componentManager.component.type.charAt(0).toUpperCase() + componentManager.component.type.slice(1);
+        const category = componentManager.component.category || 'Development';
+        const canonicalURL = componentManager.generateCanonicalURL();
+        
+        message = `🚀 Found this amazing ${cleanName} ${type} for Claude Code!
 
-Perfect for enhancing your AI-powered development workflow.
+Perfect for ${category.toLowerCase()} workflows with AI-powered automation.
+
+${canonicalURL}
+
+#ClaudeCode #AI #Development #${category.replace(/\s+/g, '')} #Automation`;
+    } else {
+        // Fallback message
+        const componentTitle = document.getElementById('componentTitle')?.textContent || 'Claude Code Component';
+        const currentURL = window.location.href;
+        message = `🚀 Check out this ${componentTitle} for Claude Code!
+
+Perfect for AI-powered development workflows.
 
 ${currentURL}
 
 #ClaudeCode #AI #Development`;
+    }
     
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
     window.open(twitterUrl, '_blank');
@@ -584,15 +705,34 @@ ${currentURL}
 }
 
 function shareComponentOnThreads() {
-    const componentTitle = document.getElementById('componentTitle')?.textContent || 'Claude Code Component';
-    const currentURL = window.location.href;
-    const message = `🚀 Check out this ${componentTitle} component for Claude Code!
+    const componentManager = window.componentPageManager;
+    let message;
+    
+    if (componentManager && componentManager.component) {
+        const cleanName = componentManager.getCleanComponentName(componentManager.component.name);
+        const type = componentManager.component.type.charAt(0).toUpperCase() + componentManager.component.type.slice(1);
+        const category = componentManager.component.category || 'Development';
+        const canonicalURL = componentManager.generateCanonicalURL();
+        
+        message = `🚀 Found this amazing ${cleanName} ${type} for Claude Code!
 
-Perfect for enhancing your AI-powered development workflow.
+Perfect for ${category.toLowerCase()} workflows with AI-powered automation.
+
+${canonicalURL}
+
+#ClaudeCode #AI #Development #${category.replace(/\s+/g, '')} #Automation`;
+    } else {
+        // Fallback message
+        const componentTitle = document.getElementById('componentTitle')?.textContent || 'Claude Code Component';
+        const currentURL = window.location.href;
+        message = `🚀 Check out this ${componentTitle} for Claude Code!
+
+Perfect for AI-powered development workflows.
 
 ${currentURL}
 
 #ClaudeCode #AI #Development`;
+    }
     
     const threadsUrl = `https://threads.net/intent/post?text=${encodeURIComponent(message)}`;
     window.open(threadsUrl, '_blank');
