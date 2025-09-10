@@ -11,26 +11,17 @@ class DataLoader {
         this.cache = new Map();
         this.TIMEOUT_MS = 8000; // 8 seconds timeout
         this.ITEMS_PER_PAGE = 50; // Lazy loading batch size
-        
-        // Environment detection for correct resource paths
-        this.isLocal = window.location.hostname === 'localhost' || 
-                      window.location.hostname === '127.0.0.1' ||
-                      window.location.hostname.includes('127.0.0.1');
     }
     
-    // Get correct path for data files based on environment
+    // Get data file paths (always absolute for production)
     getDataPath(filename) {
-        return this.isLocal ? filename : '/' + filename;
+        return '/' + filename;
     }
 
     // Load all components at once (simplified approach)
     async loadAllComponents() {
         try {
-            console.log('DataLoader: Starting to load components, environment:', {
-                isLocal: this.isLocal,
-                hostname: window.location.hostname,
-                componentsPath: this.getDataPath('components.json')
-            });
+            console.log('DataLoader: Loading components from:', this.getDataPath('components.json'));
             
             this.loadingStates.components = true;
             this.showLoadingState('components', true);
