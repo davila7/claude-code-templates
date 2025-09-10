@@ -1596,6 +1596,34 @@ function goToPage(page) {
     }
 }
 
+// Clean component name by removing extensions and formatting
+function getCleanComponentName(name) {
+    if (!name) {
+        return 'Unknown Component';
+    }
+    
+    let cleanName = name;
+    
+    // Remove .md extension if present
+    if (cleanName.endsWith('.md')) {
+        cleanName = cleanName.slice(0, -3);
+    }
+    
+    // Remove .json extension if present
+    if (cleanName.endsWith('.json')) {
+        cleanName = cleanName.slice(0, -5);
+    }
+    
+    // Convert kebab-case or snake_case to Title Case
+    cleanName = cleanName
+        .replace(/[-_]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+        
+    return cleanName;
+}
+
 // Handle Add to Cart button click
 function handleAddToCart(name, path, type, category, buttonElement) {
     // Prevent event propagation to avoid card flip
@@ -1603,11 +1631,14 @@ function handleAddToCart(name, path, type, category, buttonElement) {
         window.event.stopPropagation();
     }
     
+    // Clean the component name for better display
+    const cleanName = getCleanComponentName(name);
+    
     const item = {
-        name: name,
+        name: cleanName,
         path: path,
         category: category,
-        description: `${name} - ${category}`
+        description: `${cleanName} - ${category}`
     };
     
     // Add to cart using the cart manager

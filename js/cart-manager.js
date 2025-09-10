@@ -6,7 +6,8 @@ class CartManager {
             commands: [],
             settings: [],
             hooks: [],
-            mcps: []
+            mcps: [],
+            templates: [] // Add templates support
         };
         this.init();
     }
@@ -14,6 +15,8 @@ class CartManager {
     init() {
         // Load cart from localStorage if exists
         this.loadCartFromStorage();
+        // Clean corrupted data
+        this.cleanCorruptedData();
         this.updateCartUI();
         this.updateFloatingButton();
         
@@ -37,6 +40,12 @@ class CartManager {
 
     // Add item to cart
     addToCart(item, type) {
+        // Ensure the cart type exists
+        if (!this.cart[type]) {
+            console.warn(`Cart type '${type}' not found. Available types:`, Object.keys(this.cart));
+            return false;
+        }
+
         // Check if item already exists
         const existingItem = this.cart[type].find(cartItem => cartItem.path === item.path);
         if (existingItem) {
@@ -62,6 +71,12 @@ class CartManager {
 
     // Remove item from cart
     removeFromCart(itemPath, type) {
+        // Ensure the cart type exists
+        if (!this.cart[type]) {
+            console.warn(`Cart type '${type}' not found. Available types:`, Object.keys(this.cart));
+            return;
+        }
+        
         this.cart[type] = this.cart[type].filter(item => item.path !== itemPath);
         this.saveCartToStorage();
         this.updateCartUI();
@@ -71,10 +86,13 @@ class CartManager {
 
     // Clear entire cart
     clearCart() {
+        // Initialize cart structure to prevent errors
+        this.initializeCartStructure();
+        
         if (this.getTotalItems() === 0) return;
         
         if (confirm('Are you sure you want to clear your entire stack?')) {
-            this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [] };
+            this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [], templates: [] };
             this.saveCartToStorage();
             this.updateCartUI();
             this.updateFloatingButton();
@@ -84,11 +102,98 @@ class CartManager {
 
     // Get total items count
     getTotalItems() {
-        return this.cart.agents.length + this.cart.commands.length + this.cart.settings.length + this.cart.hooks.length + this.cart.mcps.length;
+        this.initializeCartStructure();
+        return (this.cart.agents?.length || 0) + 
+               (this.cart.commands?.length || 0) + 
+               (this.cart.settings?.length || 0) + 
+               (this.cart.hooks?.length || 0) + 
+               (this.cart.mcps?.length || 0) + 
+               (this.cart.templates?.length || 0);
+    }
+    
+    // Ensure cart has all required arrays
+    initializeCartStructure() {
+        if (!this.cart.agents) this.cart.agents = [];
+        if (!this.cart.commands) this.cart.commands = [];
+        if (!this.cart.settings) this.cart.settings = [];
+        if (!this.cart.hooks) this.cart.hooks = [];
+        if (!this.cart.mcps) this.cart.mcps = [];
+        if (!this.cart.templates) this.cart.templates = [];
+    }
+    
+    // Clean corrupted data from cart
+    cleanCorruptedData() {
+        let cleaned = false;
+        Object.keys(this.cart).forEach(type => {
+            if (Array.isArray(this.cart[type])) {
+                const originalLength = this.cart[type].length;
+                this.cart[type] = this.cart[type].filter(item => 
+                    item && typeof item === 'object' && item.name && item.path
+                );
+                if (this.cart[type].length !== originalLength) {
+                    cleaned = true;
+                }
+            }
+        });
+        
+        if (cleaned) {
+            console.log('Cleaned corrupted cart data');
+            this.saveCartToStorage();
+        }
+    }
+    
+    // Clean path by removing .md and .json extensions
+    getCleanPath(path) {
+        if (!path) return path;
+        
+        // Remove .md extension if present
+        if (path.endsWith('.md')) {
+            return path.slice(0, -3);
+        }
+        
+        // Remove .json extension if present
+        if (path.endsWith('.json')) {
+            return path.slice(0, -5);
+        }
+        
+        return path;
+    }
+
+    // Clean component name by removing extensions and formatting
+    getCleanComponentName(name) {
+        if (!name) {
+            return 'Unknown Component';
+        }
+        
+        let cleanName = name;
+        
+        // Remove .md extension if present
+        if (cleanName.endsWith('.md')) {
+            cleanName = cleanName.slice(0, -3);
+        }
+        
+        // Remove .json extension if present
+        if (cleanName.endsWith('.json')) {
+            cleanName = cleanName.slice(0, -5);
+        }
+        
+        // Convert kebab-case or snake_case to Title Case
+        cleanName = cleanName
+            .replace(/[-_]/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+            
+        return cleanName;
     }
 
     // Check if item is in cart
     isInCart(itemPath, type) {
+        // Ensure the cart type exists
+        if (!this.cart[type]) {
+            console.warn(`Cart type '${type}' not found. Available types:`, Object.keys(this.cart));
+            return false;
+        }
         return this.cart[type].some(item => item.path === itemPath);
     }
 
@@ -99,6 +204,11 @@ class CartManager {
         const cartFooter = document.getElementById('cartFooter');
         const cartClearProminent = document.getElementById('cartClearProminent');
         const clearCount = document.getElementById('clearCount');
+        
+        // Early return if essential elements don't exist (e.g., on component page)
+        if (!cartEmpty || !cartItems || !cartFooter) {
+            return;
+        }
         
         const totalItems = this.getTotalItems();
 
@@ -128,12 +238,18 @@ class CartManager {
 
     // Render cart items
     renderCartItems() {
-        // Update counts
-        document.getElementById('agentsCount').textContent = this.cart.agents.length;
-        document.getElementById('commandsCount').textContent = this.cart.commands.length;
-        document.getElementById('settingsCount').textContent = this.cart.settings.length;
-        document.getElementById('hooksCount').textContent = this.cart.hooks.length;
-        document.getElementById('mcpsCount').textContent = this.cart.mcps.length;
+        // Update counts - only if elements exist
+        const agentsCount = document.getElementById('agentsCount');
+        const commandsCount = document.getElementById('commandsCount');
+        const settingsCount = document.getElementById('settingsCount');
+        const hooksCount = document.getElementById('hooksCount');
+        const mcpsCount = document.getElementById('mcpsCount');
+        
+        if (agentsCount) agentsCount.textContent = this.cart.agents.length;
+        if (commandsCount) commandsCount.textContent = this.cart.commands.length;
+        if (settingsCount) settingsCount.textContent = this.cart.settings.length;
+        if (hooksCount) hooksCount.textContent = this.cart.hooks.length;
+        if (mcpsCount) mcpsCount.textContent = this.cart.mcps.length;
 
         // Render sections
         this.renderSection('agents', 'agentsList');
@@ -146,6 +262,12 @@ class CartManager {
     // Render a specific section
     renderSection(type, containerId) {
         const container = document.getElementById(containerId);
+        
+        // Skip if container doesn't exist (e.g., on component page)
+        if (!container) {
+            return;
+        }
+        
         const items = this.cart[type];
 
         if (items.length === 0) {
@@ -157,8 +279,8 @@ class CartManager {
             <div class="cart-item">
                 <div class="cart-item-icon">${item.icon}</div>
                 <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-path">${item.path}</div>
+                    <div class="cart-item-name">${this.getCleanComponentName(item.name)}</div>
+                    <div class="cart-item-path">${this.getCleanPath(item.path)}</div>
                 </div>
                 <button class="cart-item-remove" onclick="cartManager.removeFromCart('${item.path}', '${type}')" title="Remove from stack">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -174,37 +296,46 @@ class CartManager {
         let command = 'npx claude-code-templates@latest';
         
         if (this.cart.agents.length > 0) {
-            const agentPaths = this.cart.agents.map(item => item.path).join(',');
+            const agentPaths = this.cart.agents.map(item => this.getCleanPath(item.path)).join(',');
             command += ` --agent ${agentPaths}`;
         }
         
         if (this.cart.commands.length > 0) {
-            const commandPaths = this.cart.commands.map(item => item.path).join(',');
+            const commandPaths = this.cart.commands.map(item => this.getCleanPath(item.path)).join(',');
             command += ` --command "${commandPaths}"`;
         }
         
         if (this.cart.settings.length > 0) {
-            const settingsPaths = this.cart.settings.map(item => item.path).join(',');
+            const settingsPaths = this.cart.settings.map(item => this.getCleanPath(item.path)).join(',');
             command += ` --setting "${settingsPaths}"`;
         }
         
         if (this.cart.hooks.length > 0) {
-            const hooksPaths = this.cart.hooks.map(item => item.path).join(',');
+            const hooksPaths = this.cart.hooks.map(item => this.getCleanPath(item.path)).join(',');
             command += ` --hook "${hooksPaths}"`;
         }
         
         if (this.cart.mcps.length > 0) {
-            const mcpPaths = this.cart.mcps.map(item => item.path).join(',');
+            const mcpPaths = this.cart.mcps.map(item => this.getCleanPath(item.path)).join(',');
             command += ` --mcp "${mcpPaths}"`;
         }
 
-        document.getElementById('generatedCommand').textContent = command;
+        const generatedCommand = document.getElementById('generatedCommand');
+        if (generatedCommand) {
+            generatedCommand.textContent = command;
+        }
     }
 
     // Update floating button
     updateFloatingButton() {
         const floatingBtn = document.getElementById('cartFloatingBtn');
         const badge = document.getElementById('cartBadge');
+        
+        // Skip if floating button doesn't exist (e.g., on component page)
+        if (!floatingBtn || !badge) {
+            return;
+        }
+        
         const totalItems = this.getTotalItems();
 
         if (totalItems > 0) {
@@ -251,7 +382,8 @@ class CartManager {
             commands: '⚡',
             settings: '⚙️',
             hooks: '🪝',
-            mcps: '🔌'
+            mcps: '🔌',
+            templates: '📦'
         };
         return icons[type] || '📦';
     }
@@ -267,15 +399,12 @@ class CartManager {
         if (saved) {
             try {
                 this.cart = JSON.parse(saved);
-                // Ensure all arrays exist
-                if (!this.cart.agents) this.cart.agents = [];
-                if (!this.cart.commands) this.cart.commands = [];
-                if (!this.cart.settings) this.cart.settings = [];
-                if (!this.cart.hooks) this.cart.hooks = [];
-                if (!this.cart.mcps) this.cart.mcps = [];
+                // Ensure all arrays exist using centralized method
+                this.initializeCartStructure();
+                if (!this.cart.templates) this.cart.templates = [];
             } catch (e) {
                 console.warn('Failed to load cart from storage:', e);
-                this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [] };
+                this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [], templates: [] };
             }
         }
     }

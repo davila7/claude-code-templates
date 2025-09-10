@@ -93,6 +93,9 @@ function clearSearch() {
         searchTimeout = null;
     }
     
+    // Clear URL parameter
+    updateURLWithSearch('');
+    
     // Restore previous view
     restorePreviousView();
     
@@ -129,7 +132,46 @@ function restorePreviousView() {
  */
 async function loadComponentsForSearch() {
     try {
-        // First try to load from main components.json
+        // Check if dataLoader is available and use it
+        if (window.dataLoader) {
+            console.log('Using DataLoader for search components...');
+            const data = await window.dataLoader.loadAllComponents();
+            
+            if (data) {
+                // Process each category for search
+                const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps'];
+                
+                for (const category of categories) {
+                    if (data[category] && Array.isArray(data[category])) {
+                        // Process components to make them search-friendly
+                        allComponents[category] = data[category].map(component => ({
+                            ...component,
+                            // Normalize fields for better searching
+                            title: component.name || component.title || 'Untitled',
+                            displayName: (component.name || component.title || '').replace(/[-_]/g, ' '),
+                            category: category,
+                            searchableText: [
+                                component.name || component.title,
+                                component.description,
+                                component.category,
+                                ...(component.tags || []),
+                                component.keywords || '',
+                                component.path || ''
+                            ].filter(Boolean).join(' ').toLowerCase(),
+                            
+                            // Ensure tags exist
+                            tags: component.tags || [component.category].filter(Boolean)
+                        }));
+                    }
+                }
+                
+                console.log('Search data loaded successfully via DataLoader:', Object.keys(allComponents));
+                return;
+            }
+        }
+        
+        // Fallback: direct fetch if DataLoader not available
+        console.log('DataLoader not available, using direct fetch...');
         const response = await fetch('components.json');
         if (response.ok) {
             const data = await response.json();
@@ -161,7 +203,7 @@ async function loadComponentsForSearch() {
                 }
             }
             
-            console.log('Search data loaded successfully:', Object.keys(allComponents));
+            console.log('Search data loaded successfully via direct fetch:', Object.keys(allComponents));
         } else {
             console.error('Failed to load components.json');
         }
@@ -182,14 +224,39 @@ async function loadComponentsForSearch() {
 }
 
 /**
+ * Update URL with search parameter
+ */
+function updateURLWithSearch(query) {
+    const url = new URL(window.location);
+    if (query && query.length >= 3) {
+        url.searchParams.set('search', encodeURIComponent(query));
+    } else {
+        url.searchParams.delete('search');
+    }
+    window.history.replaceState({}, '', url);
+}
+
+/**
+ * Get search query from URL parameters
+ */
+function getSearchQueryFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('search') ? decodeURIComponent(params.get('search')) : null;
+}
+
+/**
  * Perform search across all loaded components
  */
 function performSearch(query) {
     if (!query || query.length < 3) {
         updateSearchResults([]);
         showFilters(); // Show filters when no search
+        updateURLWithSearch(''); // Clear URL parameter
         return;
     }
+    
+    // Update URL with search query
+    updateURLWithSearch(query);
     
     // Hide filters during search
     hideFilters();
@@ -542,10 +609,68 @@ function showAllComponents() {
 // Search result cards now use the global click handler from index-events.js
 // No need for custom toggleCard function
 
+/**
+ * Initialize search from URL parameters on page load
+ */
+function initializeSearchFromURL() {
+    const urlQuery = getSearchQueryFromURL();
+    if (urlQuery) {
+        console.log('Initializing search from URL:', urlQuery);
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = urlQuery;
+            
+            // Show search interface
+            const resultsInfo = document.getElementById('searchResultsInfo');
+            if (resultsInfo) {
+                resultsInfo.style.display = 'block';
+            }
+            
+            // Show clear button
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (clearBtn) {
+                clearBtn.style.display = 'flex';
+            }
+            
+            // Ensure components are loaded before searching
+            let attempts = 0;
+            const maxAttempts = 25; // 5 seconds total (200ms * 25)
+            
+            const trySearch = () => {
+                attempts++;
+                console.log(`Attempt ${attempts} to perform search. Components loaded:`, Object.keys(allComponents).length > 0);
+                
+                if (Object.keys(allComponents).length > 0) {
+                    console.log('Components ready, performing search...');
+                    performSearch(urlQuery);
+                } else if (attempts < maxAttempts) {
+                    // If components not loaded, wait and try again
+                    setTimeout(trySearch, 200);
+                } else {
+                    console.error('Failed to load components for URL search after maximum attempts');
+                    // Force load components and try one more time
+                    loadComponentsForSearch().then(() => {
+                        if (Object.keys(allComponents).length > 0) {
+                            performSearch(urlQuery);
+                        }
+                    });
+                }
+            };
+            
+            // Start trying to search
+            trySearch();
+        }
+    }
+}
+
 // Initialize search functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Load components for search
     loadComponentsForSearch();
+    
+    // Initialize search from URL if present
+    initializeSearchFromURL();
     
     // Add CSS for search functionality if not already present
     if (!document.getElementById('search-styles')) {

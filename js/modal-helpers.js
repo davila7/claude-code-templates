@@ -310,25 +310,36 @@ function formatComponentName(name) {
 
 // Global function for component details (called from onclick)
 function showComponentDetails(type, name, path, category) {
-    let component;
+    // Instead of showing modal, redirect to component page
+    const componentURL = createComponentURL(type, name, path);
+    window.location.href = componentURL;
+}
+
+// Function to create component URL
+function createComponentURL(type, name, path) {
+    // Detect if we're in local development
+    const isLocal = window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1' ||
+                   window.location.hostname.includes('5500');
     
-    if (type === 'template') {
-        if (window.indexManager && window.indexManager.templatesData) {
-            Object.values(window.indexManager.templatesData).forEach(templates => {
-                const found = templates.find(t => t.id === name);
-                if (found) component = found;
-            });
+    if (!isLocal && type && name) {
+        // Use SEO-friendly URL structure for production: /component/type/name
+        let cleanName = name;
+        if (cleanName.endsWith('.md')) {
+            cleanName = cleanName.slice(0, -3);
         }
-    } else {
-        if (window.indexManager && window.indexManager.componentsData) {
-            const components = window.indexManager.componentsData[type + 's'] || [];
-            component = components.find(c => c.name === name || c.path === path);
+        if (cleanName.endsWith('.json')) {
+            cleanName = cleanName.slice(0, -5);
         }
+        
+        return `component/${encodeURIComponent(type)}/${encodeURIComponent(cleanName)}`;
     }
     
-    if (component) {
-        showComponentModal(component);
-    } else {
-        console.warn('Component not found:', type, name, 'path:', path, 'category:', category);
-    }
+    // Use query parameters for local development or fallback
+    const params = new URLSearchParams();
+    params.set('type', type);
+    if (name) params.set('name', name);
+    if (path) params.set('path', path);
+    
+    return `component.html?${params.toString()}`;
 }
