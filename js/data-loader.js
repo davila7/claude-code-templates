@@ -11,11 +11,27 @@ class DataLoader {
         this.cache = new Map();
         this.TIMEOUT_MS = 8000; // 8 seconds timeout
         this.ITEMS_PER_PAGE = 50; // Lazy loading batch size
+        
+        // Environment detection for correct resource paths
+        this.isLocal = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.hostname.includes('127.0.0.1');
+    }
+    
+    // Get correct path for data files based on environment
+    getDataPath(filename) {
+        return this.isLocal ? filename : '/' + filename;
     }
 
     // Load all components at once (simplified approach)
     async loadAllComponents() {
         try {
+            console.log('DataLoader: Starting to load components, environment:', {
+                isLocal: this.isLocal,
+                hostname: window.location.hostname,
+                componentsPath: this.getDataPath('components.json')
+            });
+            
             this.loadingStates.components = true;
             this.showLoadingState('components', true);
             
@@ -29,7 +45,7 @@ class DataLoader {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT_MS);
             
-            const response = await fetch('components.json', {
+            const response = await fetch(this.getDataPath('components.json'), {
                 signal: controller.signal,
                 headers: {
                     'Cache-Control': 'max-age=300' // 5 minutes cache
@@ -89,7 +105,7 @@ class DataLoader {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT_MS);
             
-            const response = await fetch('components.json', {
+            const response = await fetch(this.getDataPath('components.json'), {
                 signal: controller.signal,
                 headers: {
                     'Cache-Control': 'max-age=300' // 5 minutes cache
@@ -386,7 +402,7 @@ class DataLoader {
                 return this.metadataData;
             }
 
-            const response = await fetch('components-metadata.json', {
+            const response = await fetch(this.getDataPath('components-metadata.json'), {
                 headers: {
                     'Cache-Control': 'max-age=300' // 5 minutes cache
                 }
