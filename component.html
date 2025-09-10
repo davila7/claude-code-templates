@@ -484,20 +484,41 @@
             if (errorBackLink) errorBackLink.href = indexPath;
         });
     </script>
-    <!-- Static scripts for reliable loading -->
-    <script src="js/data-loader.js"></script>
-    <script src="js/cart-manager.js"></script>
-    <script src="js/component-page.js"></script>
-    <script src="js/utils.js"></script>
-    
+    <!-- Environment-aware script loading -->
     <script>
-        // Debug info
-        console.log('Scripts should be loaded now. Environment:', {
-            hostname: window.location.hostname,
-            isLocal: window.isLocal,
-            DataLoader: typeof DataLoader,
-            ComponentPageManager: typeof ComponentPageManager
+        // Load scripts with correct paths based on environment  
+        const isLocal = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname.includes('127.0.0.1');
+        
+        const scriptBasePath = isLocal ? 'js/' : '/js/';
+        console.log('Loading scripts with base path:', scriptBasePath);
+        
+        const scripts = [
+            'data-loader.js',
+            'cart-manager.js', 
+            'component-page.js',
+            'utils.js'
+        ];
+        
+        // Load scripts synchronously to maintain execution order
+        scripts.forEach(scriptName => {
+            const script = document.createElement('script');
+            script.src = scriptBasePath + scriptName;
+            script.async = false; // Important: maintain execution order
+            document.head.appendChild(script);
+            console.log('Loading script:', script.src);
         });
+        
+        // Debug script loading after a brief delay
+        setTimeout(() => {
+            console.log('Scripts should be loaded now. Environment:', {
+                hostname: window.location.hostname,
+                isLocal: isLocal,
+                DataLoader: typeof DataLoader,
+                ComponentPageManager: typeof ComponentPageManager
+            });
+        }, 1000);
     </script>
 </body>
 </html>
