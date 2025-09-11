@@ -179,11 +179,10 @@
             <img src="https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png" alt="E2B and Claude Code Sandbox Integration" class="article-cover" loading="lazy">
             
             <div class="article-content-full">
-                <h2>Why Use Claude Code in a Sandbox?</h2>
+                <h2>Benefits of Secure Sandbox Execution</h2>
 
-                <p>Running Claude Code in an isolated cloud environment provides multiple security and practical benefits:</p>
+                <p>Running Claude Code in an isolated E2B cloud sandbox provides essential security and development advantages:</p>
 
-                <h3>🔒 Security Benefits</h3>
                 <table class="components-table">
                     <thead>
                         <tr>
@@ -193,48 +192,24 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Complete Isolation</strong></td>
-                            <td>Code runs in a separate cloud environment with no access to your local system, files, or network.</td>
+                            <td><strong>🔒 Complete Isolation</strong></td>
+                            <td>Code runs in a separate cloud environment with zero access to your local system, files, or network.</td>
                         </tr>
                         <tr>
-                            <td><strong>No Local Impact</strong></td>
-                            <td>Zero risk of system modifications, file corruption, or security vulnerabilities on your machine.</td>
+                            <td><strong>🛡️ No Local Impact</strong></td>
+                            <td>Eliminates risk of system modifications, file corruption, or security vulnerabilities on your machine.</td>
                         </tr>
                         <tr>
-                            <td><strong>Temporary Environment</strong></td>
-                            <td>Sandbox is automatically destroyed after execution, leaving no traces or residual files.</td>
+                            <td><strong>🚀 Clean Environment</strong></td>
+                            <td>Fresh Ubuntu with Claude Code pre-installed, ensuring consistent execution without dependency conflicts.</td>
                         </tr>
                         <tr>
-                            <td><strong>Controlled Execution</strong></td>
-                            <td>Only specified components and prompts are executed, preventing unexpected operations.</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>🚀 Development Benefits</h3>
-                <table class="components-table">
-                    <thead>
-                        <tr>
-                            <th>Benefit</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Clean Environment</strong></td>
-                            <td>Fresh Ubuntu environment with Claude Code pre-installed, no dependency conflicts.</td>
+                            <td><strong>☁️ Remote Execution</strong></td>
+                            <td>Intensive operations run in the cloud without consuming your local CPU, memory, or storage.</td>
                         </tr>
                         <tr>
-                            <td><strong>Reproducible Results</strong></td>
-                            <td>Consistent execution environment across different machines and operating systems.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Remote Execution</strong></td>
-                            <td>Execute intensive operations without consuming local CPU, memory, or storage resources.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Component Testing</strong></td>
-                            <td>Safely test new agents, commands, and configurations without affecting your local setup.</td>
+                            <td><strong>🧪 Safe Testing</strong></td>
+                            <td>Test new agents and commands risk-free, with automatic cleanup after execution.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -264,19 +239,8 @@
                             <td><strong>Component Integration</strong></td>
                             <td>Installs any specified agents, commands, MCPs, settings, and hooks inside the sandbox.</td>
                         </tr>
-                        <tr>
-                            <td><strong>Environment Template</strong></td>
-                            <td>Pre-configured environment variables template for API keys and configuration.</td>
-                        </tr>
                     </tbody>
                 </table>
-
-                <h2>Browse Sandbox Components</h2>
-
-                <p>Before installing, explore the available sandbox components on the official Claude Code Templates website:</p>
-
-                <p>Visit <strong><a href="https://aitmpl.com" target="_blank" rel="noopener">aitmpl.com</a></strong> and search for "sandbox" to see all available cloud development environments.</p>
-                
                 <!-- Newsletter CTA - Middle -->
                 <div class="newsletter-cta middle-newsletter">
                     <div class="newsletter-cta-content">
@@ -307,34 +271,13 @@
 
                 <h2>Prerequisites</h2>
 
-                <p>Before using the E2B sandbox, you'll need to set up API keys:</p>
+                <p>You'll need two API keys to use the E2B sandbox:</p>
 
-                <h3>1. Get E2B API Key</h3>
                 <ul>
-                    <li>Visit <strong><a href="https://e2b.dev/dashboard" target="_blank" rel="noopener">e2b.dev/dashboard</a></strong></li>
-                    <li>Sign up for a free E2B account</li>
-                    <li>Generate your API key from the dashboard</li>
-                    <li>Free tier includes generous usage limits for development</li>
+                    <li><strong>E2B API Key:</strong> Get it from <a href="https://e2b.dev/dashboard" target="_blank" rel="noopener">e2b.dev/dashboard</a> (free tier available)</li>
+                    <li><strong>Anthropic API Key:</strong> Get it from <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></li>
+                    <li><strong>Python 3.11+:</strong> Required for the E2B SDK (usually auto-installed)</li>
                 </ul>
-
-                <h3>2. Get Anthropic API Key</h3>
-                <ul>
-                    <li>Visit <strong><a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></strong></li>
-                    <li>Sign up or log in to your Anthropic account</li>
-                    <li>Generate an API key for Claude Code usage</li>
-                </ul>
-
-                <h3>3. Install Python 3.11+</h3>
-                <p>The E2B sandbox requires Python 3.11 or higher. Most systems will have this automatically handled, but if needed:</p>
-
-                <pre><code class="language-bash"># macOS with Homebrew
-brew install python3
-
-# Ubuntu/Debian
-sudo apt update && sudo apt install python3.11
-
-# Windows
-# Download from https://python.org/downloads</code></pre>
 
                 <h2>Installation and Usage</h2>
 
@@ -355,53 +298,34 @@ npx claude-code-templates@latest --sandbox e2b \
 
                 <p><strong>This command will:</strong></p>
                 <ul>
-                    <li>✓ Download and install E2B sandbox component</li>
-                    <li>✓ Check and install Python dependencies</li>
-                    <li>✓ Interactively select an agent (if not provided)</li>
-                    <li>✓ Ask for your prompt (if not provided)</li>
-                    <li>✓ Confirm execution with Y/n prompt</li>
                     <li>✓ Create secure E2B cloud sandbox</li>
                     <li>✓ Execute your prompt using Claude Code</li>
-                    <li>✓ Show complete output and generated files in real-time</li>
-                    <li>✓ Download files to current directory in `sandbox-xxxxx` folder</li>
-                    <li>✓ Automatically cleanup the sandbox</li>
+                    <li>✓ Download generated files to `sandbox-xxxxx` folder</li>
+                    <li>✓ Automatically cleanup after execution</li>
                 </ul>
 
-                <p><strong>💡 Interactive Features:</strong></p>
-                <ul>
-                    <li>🤖 <strong>Agent Selection:</strong> When --agent is not provided, browse and select from 600+ available agents</li>
-                    <li>📝 <strong>Prompt Input:</strong> When --prompt is not provided, enter your requirements interactively</li>
-                    <li>✅ <strong>Execution Confirmation:</strong> Review and confirm before cloud execution starts</li>
-                    <li>⏹️ <strong>Cancel Anytime:</strong> Press ESC during execution to cancel</li>
-                    <li>📁 <strong>Local Download:</strong> Files are downloaded to your current working directory</li>
-                </ul>
-
-                <h3>Advanced Usage - With Components</h3>
-                <pre><code class="language-bash"># Install specific components and execute in sandbox
+                <h3>Advanced Usage - With Specific Agent</h3>
+                <pre><code class="language-bash"># Execute with a specific agent in sandbox
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --agent frontend-developer \
-  --command setup-react \
+  --agent development-team/frontend-developer \
   --prompt "Create a modern todo app with TypeScript and Tailwind"</code></pre>
 
                 <h3>Full Stack Development</h3>
-                <pre><code class="language-bash"># Complete full-stack app with multiple components
+                <pre><code class="language-bash"># Complete full-stack app development
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --agent fullstack-developer \
-  --command setup-node,setup-database \
-  --mcp postgresql \
+  --agent development-team/fullstack-developer \
   --prompt "Create a Node.js API with PostgreSQL and authentication"</code></pre>
 
                 <h3>Data Science and Analysis</h3>
-                <pre><code class="language-bash"># Data analysis with specialized components
+                <pre><code class="language-bash"># Data analysis with specialized agent
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --agent data-scientist \
-  --command python-analysis,visualization-setup \
+  --agent ai-ml-specialists/data-scientist \
   --prompt "Analyze this dataset and create interactive visualizations"</code></pre>
 
                 <h2>API Key Configuration</h2>
@@ -448,128 +372,39 @@ npx claude-code-templates@latest --sandbox e2b --prompt "Your prompt here"</code
     ├── src/                     # Project source code
     └── ...</code></pre>
 
-                <h3>Set Up Environment Variables</h3>
-                <p>Create a <code>.env</code> file in the <code>.claude/sandbox/</code> directory:</p>
+                <h2>Use Cases - When You Need Sandbox Isolation</h2>
 
-                <pre><code class="language-bash"># Create .env file with your API keys
-cd .claude/sandbox
-cp .env.example .env
-
-# Edit .env and add your keys:
-# E2B_API_KEY=your_e2b_api_key_here
-# ANTHROPIC_API_KEY=your_anthropic_api_key_here</code></pre>
-
-                <h2>How It Works</h2>
-
-                <p>The E2B sandbox integration follows this execution flow:</p>
-
-                <h3>🔄 Execution Process</h3>
-                <table class="components-table">
-                    <thead>
-                        <tr>
-                            <th>Step</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>1. Agent Selection</strong></td>
-                            <td>If --agent not provided, shows interactive list of 600+ available agents to choose from.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>2. Prompt Input</strong></td>
-                            <td>If --prompt not provided, asks for your project requirements interactively.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>3. Component Download</strong></td>
-                            <td>Downloads E2B launcher script, requirements, and environment template to .claude/sandbox/.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>4. Environment Check</strong></td>
-                            <td>Validates Python 3.11+ installation and API key availability.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>5. Dependencies</strong></td>
-                            <td>Automatically installs E2B Python SDK and required packages.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>6. Execution Confirmation</strong></td>
-                            <td>Shows execution summary and asks for Y/n confirmation before proceeding.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>7. Sandbox Creation</strong></td>
-                            <td>Creates E2B sandbox with anthropic-claude-code template pre-installed.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>8. Component Installation</strong></td>
-                            <td>Installs any specified agents, commands, MCPs, settings, or hooks inside the sandbox.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>9. Prompt Execution</strong></td>
-                            <td>Runs your prompt through Claude Code in the isolated sandbox environment.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>10. Real-time Output</strong></td>
-                            <td>Shows Claude Code execution logs and progress in real-time. Press ESC to cancel.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>11. File Download</strong></td>
-                            <td>Downloads generated files to sandbox-xxxxx folder in your current directory.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>12. Automatic Cleanup</strong></td>
-                            <td>Destroys the sandbox after execution, leaving no traces or residual resources.</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h2>Use Cases and Examples</h2>
-
-                <h3>🌐 Web Development</h3>
-                <pre><code class="language-bash"># Create modern web applications safely
+                <h3>🔥 System-Level Operations</h3>
+                <pre><code class="language-bash"># Modify system configurations without risk
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --prompt "Create a responsive portfolio website with dark mode toggle"</code></pre>
+  --agent devops-cloud/system-administrator \
+  --prompt "Set up nginx with multiple virtual hosts, SSL certificates, and firewall rules"</code></pre>
 
-                <h3>🛡️ Security Testing</h3>
-                <pre><code class="language-bash"># Security analysis in isolated environment
+                <h3>🧪 Experimental Package Installation</h3>
+                <pre><code class="language-bash"># Test unknown dependencies and packages safely
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --agent security-auditor \
-  --command security-audit \
-  --prompt "Analyze this codebase for security vulnerabilities"</code></pre>
+  --agent development-team/fullstack-developer \
+  --prompt "Install and configure a complex tech stack with Redis, RabbitMQ, Elasticsearch, and their dependencies"</code></pre>
 
-                <h3>🤖 AI and Machine Learning</h3>
-                <pre><code class="language-bash"># ML model development and training
+                <h3>🛡️ Security Vulnerability Testing</h3>
+                <pre><code class="language-bash"># Run penetration testing tools without affecting your system
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --agent ml-engineer \
-  --command python-ml-setup \
-  --prompt "Create and train a sentiment analysis model"</code></pre>
+  --agent security-testing/penetration-tester \
+  --prompt "Set up and run OWASP ZAP, Metasploit, and Nmap to test this application"</code></pre>
 
-                <h3>📊 Data Processing</h3>
-                <pre><code class="language-bash"># Large-scale data processing
+                <h3>💣 Database Operations</h3>
+                <pre><code class="language-bash"># Perform destructive database migrations and schema changes
 npx claude-code-templates@latest --sandbox e2b \
   --e2b-api-key your_e2b_key \
   --anthropic-api-key your_anthropic_key \
-  --agent data-engineer \
-  --command data-pipeline \
-  --prompt "Process and analyze large CSV datasets with pandas"</code></pre>
-
-                <h2>Future Sandbox Providers</h2>
-
-                <p>The sandbox system is designed to support multiple cloud providers:</p>
-
-                <h3>🚀 Coming Soon</h3>
-                <ul>
-                    <li><strong>Docker Sandbox</strong> - Local containerized execution with Docker</li>
-                    <li><strong>AWS CodeBuild</strong> - AWS-based cloud development environment</li>
-                    <li><strong>GitHub Codespaces</strong> - GitHub's cloud development environment</li>
-                    <li><strong>Custom Providers</strong> - User-defined sandbox configurations</li>
-                </ul>
+  --agent data-analytics/database-administrator \
+  --prompt "Create a PostgreSQL database, run complex migrations, drop tables, and test backup/restore procedures"</code></pre>
 
                 <h2>Troubleshooting</h2>
 
