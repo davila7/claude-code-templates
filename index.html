@@ -33,6 +33,9 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://davila7.github.io/claude-code-templates/">
     
+    <!-- Sitemap for SEO -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    
     <!-- Claude Code / Anthropic relation -->
     <meta name="product" content="Claude Code Templates">
     <meta name="platform" content="Anthropic Claude Code">
@@ -201,24 +204,24 @@
             <div class="component-type-filters">
                 <div class="filter-group">
                     <div class="filter-chips">
-                        <button class="filter-chip active" data-filter="agents" onclick="setUnifiedFilter('agents')">
+                        <a href="/agents" class="filter-chip active" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
                             <span class="chip-icon">🤖</span>agents
-                        </button>
-                        <button class="filter-chip" data-filter="commands" onclick="setUnifiedFilter('commands')">
+                        </a>
+                        <a href="/commands" class="filter-chip" data-filter="commands" onclick="handleFilterClick(event, 'commands')">
                             <span class="chip-icon">⚡</span>commands
-                        </button>
-                        <button class="filter-chip" data-filter="settings" onclick="setUnifiedFilter('settings')">
+                        </a>
+                        <a href="/settings" class="filter-chip" data-filter="settings" onclick="handleFilterClick(event, 'settings')">
                             <span class="chip-icon">⚙️</span>settings
-                        </button>
-                        <button class="filter-chip" data-filter="hooks" onclick="setUnifiedFilter('hooks')">
+                        </a>
+                        <a href="/hooks" class="filter-chip" data-filter="hooks" onclick="handleFilterClick(event, 'hooks')">
                             <span class="chip-icon">🪝</span>hooks
-                        </button>
-                        <button class="filter-chip" data-filter="mcps" onclick="setUnifiedFilter('mcps')">
+                        </a>
+                        <a href="/mcps" class="filter-chip" data-filter="mcps" onclick="handleFilterClick(event, 'mcps')">
                             <span class="chip-icon">🔌</span>mcps
-                        </button>
-                        <button class="filter-chip" data-filter="templates" onclick="setUnifiedFilter('templates')">
+                        </a>
+                        <a href="/templates" class="filter-chip" data-filter="templates" onclick="handleFilterClick(event, 'templates')">
                             <span class="chip-icon">📦</span>templates
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

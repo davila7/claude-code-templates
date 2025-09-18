@@ -1999,6 +1999,7 @@ body {
     align-items: center;
     gap: 0.4rem;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .filter-chip:hover {

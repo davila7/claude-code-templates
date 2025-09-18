@@ -1,0 +1,36 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/agents",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/commands", 
+      "destination": "/index.html"
+    },
+    {
+      "source": "/settings",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/hooks",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/mcps",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/templates",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/component/:type/:name*",
+      "destination": "/component.html"
+    }
+  ]
+}

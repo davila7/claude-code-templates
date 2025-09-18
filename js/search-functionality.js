@@ -245,6 +245,39 @@ function getSearchQueryFromURL() {
 }
 
 /**
+ * Update URL with filter using path-based routing
+ */
+function updateURLWithFilter(filter) {
+    const currentSearch = window.location.search; // Preserve search parameters
+    const newPath = `/${filter}${currentSearch}`;
+    
+    window.history.pushState({}, '', newPath);
+}
+
+/**
+ * Get filter from URL path
+ */
+function getFilterFromURL() {
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(segment => segment);
+    
+    // Check if first segment is a valid filter
+    const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates'];
+    const firstSegment = segments[0];
+    
+    if (firstSegment && validFilters.includes(firstSegment)) {
+        return firstSegment;
+    }
+    
+    // If no valid filter found and we're on root, default to agents
+    if (path === '/' || path === '') {
+        return 'agents';
+    }
+    
+    return 'agents'; // Default fallback
+}
+
+/**
  * Perform search across all loaded components
  */
 function performSearch(query) {
@@ -610,6 +643,18 @@ function showAllComponents() {
 // No need for custom toggleCard function
 
 /**
+ * Initialize filter from URL parameters on page load
+ */
+function initializeFilterFromURL() {
+    const urlFilter = getFilterFromURL();
+    console.log('Initializing filter from URL:', urlFilter);
+    
+    if (urlFilter && typeof setUnifiedFilter === 'function') {
+        setUnifiedFilter(urlFilter);
+    }
+}
+
+/**
  * Initialize search from URL parameters on page load
  */
 function initializeSearchFromURL() {
@@ -668,6 +713,9 @@ function initializeSearchFromURL() {
 document.addEventListener('DOMContentLoaded', function() {
     // Load components for search
     loadComponentsForSearch();
+    
+    // Initialize filter from URL if present
+    initializeFilterFromURL();
     
     // Initialize search from URL if present
     initializeSearchFromURL();

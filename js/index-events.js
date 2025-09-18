@@ -1035,6 +1035,12 @@ function handleSortChange(sortValue) {
     }
 }
 
+// Global function for handling filter click with navigation
+function handleFilterClick(event, filter) {
+    event.preventDefault(); // Prevent default link navigation
+    setUnifiedFilter(filter);
+}
+
 // Global function for setting filter (called from onclick)
 function setUnifiedFilter(filter) {
     if (window.indexManager) {
@@ -1047,12 +1053,17 @@ function setUnifiedFilter(filter) {
     });
     
     // Add active class only to the clicked filter button
-    const activeBtn = document.querySelector(`[data-filter="${filter}"]`);
+    const activeBtn = document.querySelector(`.component-type-filters [data-filter="${filter}"]`);
     if (activeBtn) {
         activeBtn.classList.add('active');
     }
     
     console.log('Component type filter selected:', filter);
+    
+    // Update URL with filter parameter
+    if (typeof updateURLWithFilter === 'function') {
+        updateURLWithFilter(filter);
+    }
     
     // Show category filters for the selected component type
     showCategoryFilters(filter);

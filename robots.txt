@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+
+# Filter pages - high priority for crawling
+Allow: /agents
+Allow: /commands
+Allow: /settings
+Allow: /hooks
+Allow: /mcps
+Allow: /templates
+
+# Blog content
+Allow: /blog/
+
+# Component pages
+Allow: /component/
+
+# Important pages
+Allow: /trending.html
+
+# Disallow temporary or admin files
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.vercel/
+Disallow: /dev-server.js
+
+# Sitemap location
+Sitemap: https://davila7.github.io/claude-code-templates/sitemap.xml
