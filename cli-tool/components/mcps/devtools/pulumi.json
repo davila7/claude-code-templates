@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "pulumi": {
+      "description": "The Pulumi Model Context Protocol (MCP) server enables advanced Infrastructure as Code development capabilities for connected agents, providing tools for cloud resource discovery and management using Pulumi Cloud and the Pulumi CLI.",
+      "command": "npx",
+      "args": ["-y", "@pulumi/mcp-server@latest", "stdio"]
+    }
+  }
+}
