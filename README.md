@@ -35,9 +35,6 @@ npx claude-code-templates@latest --setting mcp-timeouts
 npx claude-code-templates@latest --hook pre-commit-validation
 npx claude-code-templates@latest --mcp postgresql-integration
 ```
-
-## What You Get
-
 | Component | Description | Examples |
 |-----------|-------------|----------|
 | **🤖 Agents** | AI specialists for specific domains | Security auditor, React performance optimizer, database architect |
