@@ -21,6 +21,199 @@ body, html {
     flex-direction: column;
 }
 
+/* Hero Statistics Section */
+.trending-hero {
+    margin-bottom: 2rem;
+}
+
+/* Growth Analytics Section */
+.growth-analytics-section {
+    margin-bottom: 2rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.analytics-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1.5rem;
+}
+
+.analytics-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.analytics-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.analytics-chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    background: var(--bg-primary);
+    padding: 2rem;
+}
+
+.analytics-chart-container canvas {
+    background: transparent !important;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+}
+
+.hero-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.hero-stat-item:hover {
+    border-color: var(--text-accent);
+    transform: translateY(-2px);
+}
+
+.hero-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.hero-stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero-stat-change {
+    font-size: 0.7rem;
+    color: var(--text-success);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.hero-stat-change.negative {
+    color: var(--text-error);
+}
+
+/* Main Grid Layout */
+.trending-main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+/* Terminal command header spanning full width */
+.terminal-command-header {
+    grid-column: 1 / -1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.terminal-command-header .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.search-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.title-params {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: 1.25rem;
+}
+
+.search-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Content and sidebar layout */
+@media (min-width: 768px) {
+    .trending-main-grid {
+        grid-template-columns: 1fr 320px;
+        grid-template-rows: auto 1fr;
+        gap: 2rem;
+    }
+
+    .terminal-command-header {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        margin-bottom: 1.5rem;
+    }
+
+    .trending-content-area {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .trending-sidebar {
+        grid-column: 2;
+        grid-row: 2;
+    }
+}
+
+.trending-content-area {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.trending-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
 /* Terminal Command Section */
 .terminal-command {
     background: var(--bg-tertiary);
@@ -716,26 +909,39 @@ body, html {
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-    .trending-content {
-        grid-template-columns: 1fr;
+@media (max-width: 1200px) {
+    .trending-main-grid {
+        grid-template-columns: 1fr 280px;
+        gap: 1.5rem;
     }
-    
+}
+
+@media (max-width: 1024px) {
+    .trending-main-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
     .trending-sidebar {
         order: -1;
+        grid-template-columns: 1fr 1fr;
+        display: grid;
+        gap: 1.5rem;
     }
-    
-    .trending-controls {
-        flex-direction: column;
-        align-items: stretch;
+
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 1rem;
     }
-    
-    .tab-navigation {
-        justify-content: center;
+
+    .hero-stat-number {
+        font-size: 1.5rem;
     }
-    
-    .filter-controls {
-        justify-content: center;
+
+    /* Growth Analytics tablet styles */
+    .analytics-chart-container {
+        height: 350px;
+        padding: 1.5rem;
     }
 }
 
@@ -743,44 +949,102 @@ body, html {
     .container {
         padding: 0 16px;
     }
-    
-    .trending-header {
-        padding: 32px 0;
+
+    .trending-main-grid {
+        gap: 1rem;
     }
-    
-    .trending-title {
-        font-size: 32px;
+
+    .trending-sidebar {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
-    
-    .trending-subtitle {
-        font-size: 16px;
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 0.75rem;
     }
-    
+
+    .hero-stat-item {
+        padding: 0.75rem;
+    }
+
+    .hero-stat-number {
+        font-size: 1.25rem;
+    }
+
+    .hero-stat-label {
+        font-size: 0.7rem;
+    }
+
+    /* Growth Analytics responsive styles */
+    .analytics-header {
+        padding: 1rem;
+    }
+
+    .analytics-title {
+        font-size: 1rem;
+    }
+
+    .analytics-subtitle {
+        font-size: 0.75rem;
+    }
+
+    .analytics-chart-container {
+        height: 300px;
+        padding: 1rem;
+    }
+
+    .sidebar-header {
+        padding: 1rem;
+    }
+
+    .sidebar-title {
+        font-size: 0.9rem;
+    }
+
+    .popular-categories {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .popular-item {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .popular-item-name {
+        font-size: 0.75rem;
+    }
+
+    .total-number {
+        font-size: 1rem;
+    }
+
+
+    .terminal-controls-section {
+        padding: 0.75rem;
+    }
+
+    .filter-commands {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .component-tabs {
+        flex-wrap: wrap;
+    }
+
+    .component-tab {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
     .trending-item {
-        padding: 16px;
+        padding: 1rem;
     }
-    
-    .trending-item-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    
-    .filter-controls {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .filter-group {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .filter-select {
-        flex: 1;
-        min-width: auto;
-    }
-    
+
     .footer-content {
         flex-direction: column;
         gap: 16px;
@@ -969,3 +1233,200 @@ body, html {
 .copy-feedback.show {
     display: block;
 }
+
+/* Sidebar Sections */
+.sidebar-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 1.25rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.sidebar-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.popular-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+}
+
+.popular-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 0.875rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: auto;
+}
+
+.popular-item:hover {
+    border-color: var(--text-accent);
+    background: rgba(217, 119, 6, 0.05);
+}
+
+.popular-item-header {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.popular-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.popular-item-type {
+    color: var(--text-accent);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    margin-bottom: 0.25rem;
+}
+
+.popular-item-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.popular-total-downloads {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.total-number {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    line-height: 1;
+    margin-bottom: 0.125rem;
+}
+
+.total-label {
+    color: var(--text-secondary);
+    font-size: 0.6rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.popular-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.popular-install-btn {
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.2s ease;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.popular-install-btn:hover {
+    background: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.popular-install-icon {
+    width: 10px;
+    height: 10px;
+}
+
+/* Category rank indicator for popular items */
+.popular-rank {
+    background: linear-gradient(135deg, var(--text-accent), var(--text-primary));
+    color: var(--bg-primary);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .popular-categories {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .popular-categories {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .popular-item {
+        padding: 0.75rem;
+        min-height: 100px;
+    }
+
+    .popular-item-name {
+        font-size: 0.8rem;
+    }
+
+    .total-number {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .popular-categories {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+

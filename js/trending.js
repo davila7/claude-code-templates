@@ -6,9 +6,9 @@
 class TrendingPage {
     constructor() {
         this.currentType = 'agents';
-        this.currentRange = 'today';
+        this.currentRange = 'month'; // Changed from 'today' to 'month' to show real data
         this.data = null;
-        
+
         this.init();
     }
 
@@ -16,6 +16,9 @@ class TrendingPage {
         try {
             await this.loadData();
             this.setupEventListeners();
+            this.renderHeroStats();
+            this.renderPopularItems();
+            this.renderChart();
             this.renderTrendingItems();
         } catch (error) {
             console.error('Failed to initialize trending page:', error);
@@ -42,10 +45,10 @@ class TrendingPage {
             tab.addEventListener('click', (e) => {
                 // Remove active class from all tabs
                 document.querySelectorAll('.component-tab').forEach(t => t.classList.remove('active'));
-                
+
                 // Add active class to clicked tab
                 e.target.classList.add('active');
-                
+
                 // Update current type
                 this.currentType = e.target.dataset.type;
                 this.renderTrendingItems();
@@ -62,8 +65,248 @@ class TrendingPage {
         }
     }
 
+    renderHeroStats() {
+        const container = document.getElementById('hero-stats');
+        if (!container || !this.data || !this.data.globalStats) {
+            return;
+        }
 
+        // Use real global statistics from the JSON
+        const globalStats = this.data.globalStats;
 
+        const stats = [
+            {
+                number: globalStats.totalComponents.toLocaleString(),
+                label: 'Unique Components',
+                change: 'Across 6 categories',
+                positive: true
+            },
+            {
+                number: globalStats.totalDownloads.toLocaleString(),
+                label: 'Total Downloads',
+                change: 'All time downloads',
+                positive: true
+            },
+            {
+                number: globalStats.totalCountries.toLocaleString(),
+                label: 'Countries',
+                change: 'Global reach',
+                positive: true
+            }
+        ];
+
+        container.innerHTML = stats.map(stat => `
+            <div class="hero-stat-item">
+                <div class="hero-stat-number">${stat.number}</div>
+                <div class="hero-stat-label">${stat.label}</div>
+                <div class="hero-stat-change ${stat.positive ? '' : 'negative'}">
+                    <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="${stat.positive ? 'M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0zm7-3.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z' : 'M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM3.25 8a.75.75 0 0 1 .75-.75h8a.75.75 0 0 1 0 1.5h-8A.75.75 0 0 1 3.25 8z'}"/>
+                    </svg>
+                    ${stat.change}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    renderPopularItems() {
+        const container = document.getElementById('popular-categories');
+        if (!container || !this.data || !this.data.trending) {
+            return;
+        }
+
+        // Define categories to show and their display info
+        const categories = [
+            { key: 'agents', title: 'Agents', icon: 'M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z' },
+            { key: 'commands', title: 'Commands', icon: 'M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM2.5 8a5.5 5.5 0 1 0 11 0 5.5 5.5 0 0 0-11 0z' },
+            { key: 'mcps', title: 'MCPs', icon: 'M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c0 .026.009.051.025.072L2.5 7a.5.5 0 0 1 0 .708L1.025 9.133a.149.149 0 0 0-.025.072V10.5A1.5 1.5 0 0 0 2.5 12h2.793a.149.149 0 0 0 .072-.025L7 10.5a.5.5 0 0 1 .708 0l1.625 1.475c.021.016.046.025.072.025H12.5A1.5 1.5 0 0 0 14 10.5v-.793a.149.149 0 0 0-.025-.072L12.5 8a.5.5 0 0 1 0-.708l1.475-1.625a.149.149 0 0 0 .025-.072V4.5A1.5 1.5 0 0 0 12.5 3H9.707a.149.149 0 0 0-.072.025L8 4.5a.5.5 0 0 1-.708 0L5.867 3.025A.149.149 0 0 0 5.793 3H2.5z' },
+            { key: 'settings', title: 'Settings', icon: 'M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z' },
+            { key: 'hooks', title: 'Hooks', icon: 'M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4.2-4.2a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z' },
+            { key: 'templates', title: 'Templates', icon: 'M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25H1.75zM7.25 4a.75.75 0 0 1 1.5 0v4.25H12a.75.75 0 0 1 0 1.5H8.75V12a.75.75 0 0 1-1.5 0V9.75H4a.75.75 0 0 1 0-1.5h3.25V4z' }
+        ];
+
+        container.innerHTML = '';
+
+        categories.forEach(category => {
+            const categoryData = this.data.trending[category.key];
+            if (!categoryData || !Array.isArray(categoryData) || categoryData.length === 0) {
+                return;
+            }
+
+            // Sort by monthly downloads and take only the top 1
+            const topItem = categoryData
+                .sort((a, b) => (b.downloadsMonth || 0) - (a.downloadsMonth || 0))[0];
+
+            const itemElement = this.createPopularItemCard(category, topItem);
+            container.appendChild(itemElement);
+        });
+    }
+
+    createPopularItemCard(category, item) {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'popular-item';
+
+        const totalDownloads = item.downloadsTotal || 0;
+
+        itemElement.innerHTML = `
+            <div class="popular-item-header">
+                <div class="popular-item-info">
+                    <div class="popular-item-type">${category.title}</div>
+                    <h4 class="popular-item-name">${item.name}</h4>
+                </div>
+            </div>
+
+            <div class="popular-total-downloads">
+                <span class="total-number">${totalDownloads.toLocaleString()}</span>
+                <span class="total-label">downloads</span>
+            </div>
+
+            <div class="popular-stats">
+                <button class="popular-install-btn" onclick="showInstallModal('${item.id || item.name}')">
+                    <svg class="popular-install-icon" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                    </svg>
+                    Get
+                </button>
+            </div>
+        `;
+
+        return itemElement;
+    }
+
+    renderChart() {
+        if (!this.data || !this.data.chartData) {
+            console.warn('No chart data available');
+            return;
+        }
+
+        const ctx = document.getElementById('downloadsChart');
+        if (!ctx) {
+            console.warn('Chart canvas not found');
+            return;
+        }
+
+        // Chart colors matching terminal theme
+        const colors = {
+            commands: '#f59e0b',    // amber
+            agents: '#10b981',      // emerald
+            mcps: '#3b82f6',        // blue
+            settings: '#8b5cf6',    // violet
+            hooks: '#f97316',       // orange
+            templates: '#06b6d4'    // cyan
+        };
+
+        // Prepare datasets
+        const datasets = Object.keys(this.data.chartData.series).map(category => ({
+            label: category.charAt(0).toUpperCase() + category.slice(1),
+            data: this.data.chartData.series[category],
+            borderColor: colors[category] || '#6b7280',
+            backgroundColor: (colors[category] || '#6b7280') + '20',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointBackgroundColor: colors[category] || '#6b7280',
+            pointBorderColor: '#1f2937',
+            pointBorderWidth: 2
+        }));
+
+        // Create chart
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: this.data.chartData.dates.map(date => {
+                    return new Date(date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }),
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#d1d5db',
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleColor: '#f3f4f6',
+                        bodyColor: '#d1d5db',
+                        borderColor: '#374151',
+                        borderWidth: 1,
+                        titleFont: {
+                            family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+                        },
+                        bodyFont: {
+                            family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
+                        },
+                        callbacks: {
+                            title: function(context) {
+                                return `Date: ${context[0].label}`;
+                            },
+                            beforeBody: function(context) {
+                                // Sort tooltip items by download count (highest to lowest)
+                                context.sort((a, b) => b.parsed.y - a.parsed.y);
+                                return [];
+                            },
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} downloads`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#374151',
+                            borderColor: '#4b5563'
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: {
+                                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: '#374151',
+                            borderColor: '#4b5563'
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: {
+                                family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    }
 
     renderTrendingItems() {
         const container = document.getElementById('trending-list');

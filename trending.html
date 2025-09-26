@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="description" content="Discover the most popular Claude Code templates, agents, and status lines trending today">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Hotjar Tracking Code for https://aitmpl.com -->
     <script>
@@ -70,49 +73,93 @@
 
     <main class="terminal">
         <div class="container">
-            <!-- Terminal command header -->
-            <div class="terminal-command">
-                <div class="header-content">
-                    <h2 class="search-title"><span class="terminal-dot"></span><strong>Trending </strong><span class="title-params">(components/settings/templates)</span></h2>
-                    <p class="search-subtitle">⎿ Discover what the Claude Code community is using most</p>
+            <!-- Hero Statistics Section -->
+            <section class="trending-hero">
+                <div class="hero-stats" id="hero-stats">
+                    <!-- Hero statistics will be populated by JavaScript -->
                 </div>
-            </div>
+            </section>
 
-            <!-- Trending controls with terminal styling -->
-            <div class="terminal-controls-section">
-                <div class="terminal-filter-line">
-                    <span class="terminal-prompt">></span>
-                    <div class="filter-commands">
-                        <div class="command-group">
-                            <div class="component-tabs">
-                                <!-- Not show yet -->
-                                <!-- <button class="component-tab" data-type="">All</button> -->
-                                <button class="component-tab active" data-type="agents">Agents</button>
-                                <button class="component-tab" data-type="commands">Commands</button>
-                                <button class="component-tab" data-type="settings">Settings</button>
-                                <button class="component-tab" data-type="hooks">Hooks</button>
-                                <button class="component-tab" data-type="mcps">MCPs</button>
-                                <button class="component-tab" data-type="templates">Templates</button>
+            <!-- Growth Analytics Section -->
+            <section class="growth-analytics-section">
+                <div class="analytics-header">
+                    <h2 class="analytics-title">
+                        <span class="terminal-dot"></span>
+                        <strong>Growth Analytics</strong>
+                    </h2>
+                    <p class="analytics-subtitle">⎿ Cumulative downloads growth by category over the last 30 days</p>
+                </div>
+                <div class="analytics-chart-container">
+                    <canvas id="downloadsChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Main Content Grid -->
+            <div class="trending-main-grid">
+                <!-- Terminal command header spanning full width -->
+                <div class="terminal-command-header">
+                    <div class="header-content">
+                        <h2 class="search-title"><span class="terminal-dot"></span><strong>Trending </strong><span class="title-params">(components/settings/templates)</span></h2>
+                        <p class="search-subtitle">⎿ Discover what the Claude Code community is using most</p>
+                    </div>
+                </div>
+
+                <!-- Content area with controls and results -->
+                <div class="trending-content-area">
+                    <!-- Trending controls with terminal styling -->
+                    <div class="terminal-controls-section">
+                        <div class="terminal-filter-line">
+                            <span class="terminal-prompt">></span>
+                            <div class="filter-commands">
+                                <div class="command-group">
+                                    <div class="component-tabs">
+                                        <!-- Not show yet -->
+                                        <!-- <button class="component-tab" data-type="">All</button> -->
+                                        <button class="component-tab active" data-type="agents">Agents</button>
+                                        <button class="component-tab" data-type="commands">Commands</button>
+                                        <button class="component-tab" data-type="settings">Settings</button>
+                                        <button class="component-tab" data-type="hooks">Hooks</button>
+                                        <button class="component-tab" data-type="mcps">MCPs</button>
+                                        <button class="component-tab" data-type="templates">Templates</button>
+                                    </div>
+                                </div>
+
+                                <div class="command-group">
+                                    <span class="command-label">--range</span>
+                                    <select id="date-range" class="terminal-select">
+                                        <option value="today">Today</option>
+                                        <option value="week">This week</option>
+                                        <option value="month" selected>This month</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="command-group">
-                            <span class="command-label">--range</span>
-                            <select id="date-range" class="terminal-select">
-                                <option value="today">Today</option>
-                                <option value="week">This week</option>
-                                <option value="month">This month</option>
-                            </select>
+                    </div>
+
+                    <!-- Terminal output content -->
+                    <div class="terminal-output-section">
+                        <div class="trending-list" id="trending-list">
+                            <!-- Trending items will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Terminal output content -->
-            <div class="terminal-output-section">
-                <div class="trending-list" id="trending-list">
-                    <!-- Trending items will be populated by JavaScript -->
-                </div>
+                <!-- Right Sidebar: Popular -->
+                <aside class="trending-sidebar">
+                    <!-- Most Popular Section -->
+                    <div class="sidebar-section">
+                        <div class="sidebar-header">
+                            <h3 class="sidebar-title">
+                                <span class="terminal-dot"></span>
+                                <strong>Most Popular</strong>
+                            </h3>
+                            <p class="sidebar-subtitle">Top component in each category</p>
+                        </div>
+                        <div class="popular-categories" id="popular-categories">
+                            <!-- Popular categories will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </aside>
             </div>
         </div>
     </main>
