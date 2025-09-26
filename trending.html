@@ -73,6 +73,14 @@
 
     <main class="terminal">
         <div class="container">
+            <!-- Terminal command header at the top -->
+            <div class="terminal-command-header">
+                <div class="header-content">
+                    <h2 class="search-title"><span class="terminal-dot"></span><strong>Trending </strong><span class="title-params">(components/settings/templates)</span></h2>
+                    <p class="search-subtitle">⎿ Discover what the Claude Code community is using most</p>
+                </div>
+            </div>
+
             <!-- Hero Statistics Section -->
             <section class="trending-hero">
                 <div class="hero-stats" id="hero-stats">
@@ -96,13 +104,6 @@
 
             <!-- Main Content Grid -->
             <div class="trending-main-grid">
-                <!-- Terminal command header spanning full width -->
-                <div class="terminal-command-header">
-                    <div class="header-content">
-                        <h2 class="search-title"><span class="terminal-dot"></span><strong>Trending </strong><span class="title-params">(components/settings/templates)</span></h2>
-                        <p class="search-subtitle">⎿ Discover what the Claude Code community is using most</p>
-                    </div>
-                </div>
 
                 <!-- Content area with controls and results -->
                 <div class="trending-content-area">
@@ -113,8 +114,7 @@
                             <div class="filter-commands">
                                 <div class="command-group">
                                     <div class="component-tabs">
-                                        <!-- Not show yet -->
-                                        <!-- <button class="component-tab" data-type="">All</button> -->
+                                        <!-- Agents first - most popular category -->
                                         <button class="component-tab active" data-type="agents">Agents</button>
                                         <button class="component-tab" data-type="commands">Commands</button>
                                         <button class="component-tab" data-type="settings">Settings</button>

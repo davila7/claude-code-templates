@@ -189,29 +189,34 @@ class TrendingPage {
 
         // Chart colors matching terminal theme
         const colors = {
-            commands: '#f59e0b',    // amber
-            agents: '#10b981',      // emerald
+            commands: '#10b981',    // emerald (green)
+            agents: '#f59e0b',      // amber (yellow)
             mcps: '#3b82f6',        // blue
             settings: '#8b5cf6',    // violet
             hooks: '#f97316',       // orange
             templates: '#06b6d4'    // cyan
         };
 
-        // Prepare datasets
-        const datasets = Object.keys(this.data.chartData.series).map(category => ({
-            label: category.charAt(0).toUpperCase() + category.slice(1),
-            data: this.data.chartData.series[category],
-            borderColor: colors[category] || '#6b7280',
-            backgroundColor: (colors[category] || '#6b7280') + '20',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.1,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointBackgroundColor: colors[category] || '#6b7280',
-            pointBorderColor: '#1f2937',
-            pointBorderWidth: 2
-        }));
+        // Define the desired order for the legend (agents first - most popular)
+        const categoryOrder = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'templates'];
+
+        // Prepare datasets in the specified order
+        const datasets = categoryOrder
+            .filter(category => this.data.chartData.series[category]) // Only include categories that exist
+            .map(category => ({
+                label: category.charAt(0).toUpperCase() + category.slice(1),
+                data: this.data.chartData.series[category],
+                borderColor: colors[category] || '#6b7280',
+                backgroundColor: (colors[category] || '#6b7280') + '20',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointBackgroundColor: colors[category] || '#6b7280',
+                pointBorderColor: '#1f2937',
+                pointBorderWidth: 2
+            }));
 
         // Create chart
         new Chart(ctx, {
@@ -254,17 +259,28 @@ class TrendingPage {
                         bodyFont: {
                             family: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace"
                         },
+                        filter: function(tooltipItem, data) {
+                            return true; // Show all items
+                        },
+                        itemSort: function(a, b) {
+                            // Sort tooltip items by download count (highest to lowest)
+                            return b.parsed.y - a.parsed.y;
+                        },
                         callbacks: {
                             title: function(context) {
                                 return `Date: ${context[0].label}`;
                             },
-                            beforeBody: function(context) {
-                                // Sort tooltip items by download count (highest to lowest)
-                                context.sort((a, b) => b.parsed.y - a.parsed.y);
-                                return [];
-                            },
                             label: function(context) {
                                 return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} downloads`;
+                            },
+                            labelColor: function(context) {
+                                // Use the same colors as defined for the chart lines
+                                const category = context.dataset.label.toLowerCase();
+                                const color = colors[category] || '#6b7280';
+                                return {
+                                    borderColor: color,
+                                    backgroundColor: color
+                                };
                             }
                         }
                     }

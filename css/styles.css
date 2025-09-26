@@ -77,7 +77,7 @@ body {
     margin: 0;
     overflow: visible;
     white-space: pre;
-    text-align: left;
+    text-align: center;
     width: 100%;
 }
 
@@ -86,7 +86,7 @@ body {
     color: var(--text-secondary);
     font-size: 0.8rem;
     margin: 0;
-    text-align: left;
+    text-align: center;
 }
 
 .header .status-dot {
