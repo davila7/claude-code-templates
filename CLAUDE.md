@@ -334,6 +334,82 @@ The analytics dashboard has been refactored into a modular architecture in 4 pha
 4. Ensure no console errors in browser (if testing frontend)
 5. Run performance tests if available
 
+## Git Flow Workflow
+
+This repository follows Git Flow methodology for branch management and releases.
+
+### Branch Structure
+
+- **main** - Production-ready code (protected, requires PR approval)
+- **develop** - Integration branch for features (protected, requires PR approval)
+- **feature/** - New features and enhancements (branch from develop)
+- **release/** - Release preparation (branch from develop)
+- **hotfix/** - Critical production fixes (branch from main)
+- **support/** - Long-term support branches
+
+### Branch Protection Rules
+
+Both `main` and `develop` branches have the following protections:
+- Require pull request reviews (minimum 1 approval)
+- Dismiss stale reviews when new commits are pushed
+- No force pushes allowed
+- No branch deletions allowed
+
+### Quick Reference
+
+#### Start New Feature
+```bash
+git checkout develop
+git pull origin develop
+git flow feature start <feature-name>
+# Creates: feature/<feature-name>
+```
+
+#### Finish Feature
+```bash
+git flow feature finish <feature-name>
+# Merges into develop and deletes feature branch
+```
+
+#### Start Release
+```bash
+git checkout develop
+git pull origin develop
+git flow release start v1.22.0
+npm version minor  # Update package.json
+```
+
+#### Finish Release
+```bash
+git flow release finish v1.22.0
+git push origin main develop --tags
+npm publish  # If publishing to npm
+```
+
+#### Create Hotfix
+```bash
+git checkout main
+git pull origin main
+git flow hotfix start <fix-name>
+# Fix the issue, then:
+git flow hotfix finish <fix-name>
+git push origin main develop --tags
+```
+
+### Git Flow Configuration
+
+```
+Production branch: main
+Development branch: develop
+Feature prefix: feature/
+Release prefix: release/
+Hotfix prefix: hotfix/
+Support prefix: support/
+Version tag prefix: v
+```
+
+For detailed Git Flow documentation, see the [Git Flow Workflow Guide](docs/git-flow-workflow.md).
+
 ## Component System Architecture
 
 ### Core Component Types
