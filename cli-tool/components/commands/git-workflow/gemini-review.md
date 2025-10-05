@@ -2,7 +2,7 @@
 allowed-tools: Bash(gh:*), Read, Grep, TodoWrite, Edit, MultiEdit
 argument-hint: [pr-number] | --analyze-only | --preview | --priority high|medium|low
 description: Transform Gemini Code Assist PR reviews into prioritized TodoLists with automated execution
-model: sonnet
+model: claude-sonnet-4-5-20250929
 ---
 
 # Gemini PR Review Automation
@@ -73,43 +73,26 @@ Key behaviors:
 ## Examples
 
 ### Analyze Current Branch's PR
-```
+```bash
 /gemini-review
 # Automatically detects current branch's PR
-# Generates TodoList from Gemini review
-# Ready to execute immediately
+# Generates prioritized TodoList from Gemini review
+# Ready to execute after user confirmation
 ```
 
 ### Analyze Specific PR
-```
+```bash
 /gemini-review 42
 # Analyzes Gemini review comments on PR #42
-# Creates prioritized TodoList
-# Shows detailed breakdown and effort estimates
-```
-
-### Analysis-Only Mode
-```
-/gemini-review --analyze-only
-# Analyzes review comments without creating TodoList
-# Useful for understanding feedback scope before committing
-# Provides summary of required work
+# Creates prioritized TodoList with effort estimates
 ```
 
 ### Preview Mode (Safe Execution)
-```
+```bash
 /gemini-review --preview
 # Shows what would be fixed without applying changes
 # Creates TodoList for manual execution
 # Allows review before implementation
-```
-
-### Priority-Filtered Execution
-```
-/gemini-review --priority high
-# Focuses on critical/must-fix items only
-# Creates filtered TodoList
-# Skips low-priority suggestions
 ```
 
 ## Real Workflow Example
@@ -151,7 +134,10 @@ For each review comment:
 - **Reasoning**: Why this priority was assigned
 - **Effort**: Estimated implementation time (Small/Medium/Large)
 
-### 3. TodoList Generation (Automatic)
+### 3. TodoList Generation
+
+**Automatically creates TodoList with user confirmation before execution**
+
 ```
 High Priority (Must-Fix):
 ✓ Fix SQL injection in auth.js:45 (15 min)
@@ -169,6 +155,8 @@ Skipped:
 - Style suggestion conflicts with project standards
 - Already addressed in different approach
 ```
+
+*Note: User reviews and confirms TodoList before any code modifications are made*
 
 ### 4. Execution Plan
 - **Phase 1 - Critical Fixes**: Security and breaking issues (immediate)
@@ -299,14 +287,7 @@ If you haven't set up Gemini Code Assist yet:
 
 ## Limitations
 
-**Current Scope**:
 - Only supports Gemini Code Assist reviews (not GitHub Copilot, CodeRabbit, etc.)
 - Requires GitHub CLI access and authentication
 - Analysis quality depends on Gemini review quality
 - Cannot modify reviews or re-trigger Gemini analysis
-
-**Future Enhancements**:
-- Support for other AI review systems
-- Custom severity classification rules
-- Team-specific priority overrides
-- Integration with project management tools (Jira, Linear)
