@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Studio - AI Development Interface</title>
+    <meta name="description" content="Execute Claude Code locally or in cloud sandbox environments with real-time task management">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+    
+    <style>
+        /* Additional styles for sandbox interface */
+        .sandbox-interface {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', monospace;
+        }
+        
+        .sandbox-header {
+            padding: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .ascii-title {
+            margin-bottom: 1rem;
+            overflow-x: hidden;
+            width: 100%;
+        }
+        
+        .ascii-art {
+            font-size: 0.65rem;
+            line-height: 0.8;
+            color: var(--accent-color);
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+            white-space: pre;
+            width: 100%;
+            max-width: 100vw;
+            transform: scale(1);
+            transform-origin: center;
+        }
+        
+        @media (max-width: 768px) {
+            .ascii-art {
+                font-size: 0.5rem;
+                transform: scale(0.85);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .ascii-art {
+                font-size: 0.4rem;
+                transform: scale(0.7);
+            }
+        }
+        
+        .header-nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+        
+        .nav-icon {
+            margin-right: 0.375rem;
+            font-size: 0.9rem;
+        }
+        
+        .nav-separator {
+            color: var(--text-secondary);
+            margin: 0 0.25rem;
+            font-weight: 300;
+        }
+        
+        .terminal-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .task-input-section {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .task-input-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .main-input-container {
+            position: relative;
+        }
+        
+        .bottom-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .bottom-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .bottom-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .task-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            margin-bottom: 0;
+        }
+        
+        .task-textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.1);
+        }
+        
+        .task-textarea::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .code-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            letter-spacing: 0.025em;
+        }
+        
+        .code-btn:hover {
+            background: #e55555;
+            transform: translateY(-1px);
+        }
+        
+        .code-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .tasks-section {
+            padding: 2rem 0;
+        }
+        
+        .tasks-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* Tasks Tabs */
+        .tasks-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+        
+        .tab-count {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .tab-btn.active .tab-count {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .task-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .task-item:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.1);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+        }
+        
+        .task-agent-label {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            display: inline-block;
+        }
+        
+        .status-running {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        
+        .status-completed {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .status-failed {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        .task-progress {
+            background: var(--bg-primary);
+            border-radius: 4px;
+            height: 4px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: var(--accent-color);
+            height: 100%;
+            transition: width 0.3s ease;
+            animation: progressPulse 2s infinite;
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .task-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-secondary);
+        }
+        
+        .task-output {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 4px;
+            padding: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .floating-status {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            display: none;
+        }
+        
+        /* Compact Execution Mode Toggle */
+        .compact-mode-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .mode-toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .mode-info-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .mode-info-icon:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .mode-info-tooltip {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mode-info-icon:hover .mode-info-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .compact-toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+        }
+        
+        .compact-toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .compact-toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            transition: 0.3s;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .compact-toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            background: var(--text-secondary);
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .compact-toggle-switch input:checked + .compact-toggle-slider {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: var(--accent-color);
+        }
+        
+        .compact-toggle-switch input:checked + .compact-toggle-slider:before {
+            background: var(--accent-color);
+            transform: translateX(32px);
+        }
+        
+        .toggle-labels-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .toggle-label-active {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .api-keys-notice.cloud-only {
+            display: block;
+        }
+        
+        .api-keys-notice.local-hidden {
+            display: none;
+        }
+
+        /* Agent Autocomplete Styles */
+        .autocomplete-container {
+            position: relative;
+        }
+        
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .autocomplete-item .agent-name {
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .autocomplete-item .agent-category {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+            background: var(--bg-primary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-secondary);
+        }
+        
+        .autocomplete-item:hover .agent-category,
+        .autocomplete-item.selected .agent-category {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Task Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--accent-color);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .task-info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 80px;
+        }
+        
+        .logs-section {
+            margin-top: 2rem;
+        }
+        
+        .logs-section h4 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .logs-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            word-wrap: break-word;
+        }
+        
+        .log-entry:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="sandbox-interface">
+    <div class="container">
+        <header class="sandbox-header">
+            <div class="terminal-header">
+                <div class="ascii-title">
+                    <pre class="ascii-art">
+ ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗     ██████╗ ██████╗ ██████╗ ███████╗    ███████╗████████╗██╗   ██╗██████╗ ██╗ ██████╗ 
+██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██╔════╝    ██╔════╝╚══██╔══╝██║   ██║██╔══██╗██║██╔═══██╗
+██║     ██║     ███████║██║   ██║██║  ██║█████╗      ██║     ██║   ██║██║  ██║█████╗      ███████╗   ██║   ██║   ██║██║  ██║██║██║   ██║
+██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝      ██║     ██║   ██║██║  ██║██╔══╝      ╚════██║   ██║   ██║   ██║██║  ██║██║██║   ██║
+╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗    ╚██████╗╚██████╔╝██████╔╝███████╗    ███████║   ██║   ╚██████╔╝██████╔╝██║╚██████╔╝
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚══════╝   ╚═╝    ╚═════╝ ╚═════╝ ╚═╝ ╚═════╝ </pre>
+                </div>
+                <div class="header-nav">
+                    <div class="nav-links">
+                        <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="nav-link">
+                            Claude Code
+                        </a>
+                        <span class="nav-separator">|</span>
+                        <a href="https://aitmpl.com" target="_blank" class="nav-link">
+                            Templates
+                        </a>
+                        <span class="nav-separator">|</span>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="nav-link">
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="task-input-section">
+            <div class="task-input-container">
+                <!-- Main Title -->
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <h1 style="margin: 0; font-size: 2.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+                        What are we coding next?
+                    </h1>
+                </div>
+
+
+                <!-- Main Input Container -->
+                <div class="main-input-container">
+                    <div class="autocomplete-container">
+                        <textarea 
+                            id="taskInput" 
+                            class="task-textarea" 
+                            placeholder="Describe what you want to build..."></textarea>
+                        
+                        <div id="autocompleteDropdown" class="autocomplete-dropdown">
+                            <!-- Agent suggestions will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Controls -->
+                    <div class="bottom-controls">
+                        <!-- Left: Execution Mode Toggle -->
+                        <div class="bottom-left">
+                            <div class="compact-mode-selector">
+                                <div class="mode-toggle-group">
+                                    <div class="toggle-labels-compact">
+                                        <span id="localLabel" class="toggle-label-active">Local</span>
+                                    </div>
+                                    <label class="compact-toggle-switch">
+                                        <input type="checkbox" id="executionModeToggle" onchange="toggleExecutionMode()">
+                                        <span class="compact-toggle-slider"></span>
+                                    </label>
+                                    <div class="toggle-labels-compact">
+                                        <span id="cloudLabel">Cloud</span>
+                                    </div>
+                                </div>
+                                <div class="mode-info-icon">
+                                    <span>i</span>
+                                    <div class="mode-info-tooltip">
+                                        Switch between Local (Claude Code CLI) and Cloud (E2B Sandbox) execution
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Code Button -->
+                        <div class="bottom-right">
+                            <button id="codeBtn" class="code-btn" onclick="executeTask()">
+                                Code
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tasks-section">
+            <div class="tasks-container">
+                <!-- Tasks Tabs -->
+                <div class="tasks-tabs">
+                    <button class="tab-btn active" id="tasksTab" onclick="switchTab('tasks')">
+                        Tasks
+                        <span class="tab-count" id="tasksCount">0</span>
+                    </button>
+                    <button class="tab-btn" id="archiveTab" onclick="switchTab('archive')">
+                        Archive  
+                        <span class="tab-count" id="archiveCount">0</span>
+                    </button>
+                </div>
+
+                <!-- Tasks Content -->
+                <div class="tab-content active" id="tasksContent">
+                    <div class="task-list" id="runningTasks">
+                        <div class="empty-state">
+                            <div class="empty-icon">⚡</div>
+                            <p>No active tasks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive Content -->
+                <div class="tab-content" id="archiveContent">
+                    <div class="task-list" id="completedTasks">
+                        <div class="empty-state">
+                            <div class="empty-icon">📁</div>
+                            <p>No archived tasks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task Modal -->
+        <div id="taskModal" class="modal" onclick="closeTaskModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3 id="modalTaskTitle">Task Details</h3>
+                    <button class="modal-close" onclick="closeTaskModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="task-info-row">
+                        <span class="info-label">Status:</span>
+                        <span id="modalTaskStatus" class="task-status">running</span>
+                    </div>
+                    <div class="task-info-row">
+                        <span class="info-label">Agent:</span>
+                        <span id="modalTaskAgent">frontend-developer</span>
+                    </div>
+                    <div class="task-info-row">
+                        <span class="info-label">Mode:</span>
+                        <span id="modalTaskMode">local</span>
+                    </div>
+                    <div class="task-info-row">
+                        <span class="info-label">Started:</span>
+                        <span id="modalTaskTime">--</span>
+                    </div>
+                    <div class="logs-section">
+                        <h4>Execution Logs</h4>
+                        <div class="logs-container" id="modalTaskLogs">
+                            <div class="log-entry">Initializing task...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating status indicator -->
+    <div class="floating-status" id="floatingStatus">
+        <div>Status: <span id="statusText">Ready</span></div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let taskIdCounter = 1;
+        let executionMode = 'local'; // Default to local mode
+        let agents = []; // Will be populated from components.json
+        let selectedAgentIndex = -1;
+
+        function generateTaskId() {
+            return `task-${Date.now()}-${taskIdCounter++}`;
+        }
+
+        function toggleExecutionMode() {
+            const toggle = document.getElementById('executionModeToggle');
+            const localLabel = document.getElementById('localLabel');
+            const cloudLabel = document.getElementById('cloudLabel');
+            
+            executionMode = toggle.checked ? 'cloud' : 'local';
+            
+            // Update label highlighting
+            if (executionMode === 'cloud') {
+                localLabel.classList.remove('toggle-label-active');
+                cloudLabel.classList.add('toggle-label-active');
+            } else {
+                localLabel.classList.add('toggle-label-active');
+                cloudLabel.classList.remove('toggle-label-active');
+            }
+            
+            // Execution mode changed - no additional UI updates needed
+        }
+
+        function extractAgentFromPrompt(prompt) {
+            // Look for @agent-name pattern at the start or after whitespace
+            const agentMatch = prompt.match(/(?:^|\s)@([a-zA-Z0-9-_]+)/);
+            if (agentMatch) {
+                const shortName = agentMatch[1];
+                const cleanPrompt = prompt.replace(agentMatch[0], '').trim();
+                
+                // Find the full agent path from the agents list
+                const agent = agents.find(a => a.name === shortName);
+                const fullAgentPath = agent ? `${agent.category}/${agent.name}` : shortName;
+                
+                return { agentName: fullAgentPath, cleanPrompt };
+            }
+            return { agentName: null, cleanPrompt: prompt };
+        }
+
+        async function executeTask() {
+            const taskInput = document.getElementById('taskInput');
+            const prompt = taskInput.value.trim();
+            const codeBtn = document.getElementById('codeBtn');
+            
+            if (!prompt) {
+                alert('Please describe what you want to create');
+                return;
+            }
+
+            if (prompt.length < 10) {
+                alert('Please provide a more detailed description (at least 10 characters)');
+                return;
+            }
+
+            // Extract agent from prompt if specified
+            const { agentName, cleanPrompt } = extractAgentFromPrompt(prompt);
+
+            // Disable button during execution
+            codeBtn.disabled = true;
+            codeBtn.textContent = 'Starting...';
+
+            try {
+                // Send task to server with execution mode and selected agent
+                const response = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: cleanPrompt,
+                        mode: executionMode,
+                        agent: agentName || 'development-team/frontend-developer'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Clear input and re-enable button
+                    taskInput.value = '';
+                    codeBtn.disabled = false;
+                    codeBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                            <path d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z"/>
+                        </svg>
+                        Code
+                    `;
+                    
+                    // Start polling for task updates
+                    startTaskPolling(result.taskId);
+                } else {
+                    alert('Failed to start task: ' + result.error);
+                    codeBtn.disabled = false;
+                    codeBtn.textContent = 'Code';
+                }
+            } catch (error) {
+                alert('Error starting task: ' + error.message);
+                codeBtn.disabled = false;
+                codeBtn.textContent = 'Code';
+            }
+        }
+
+        function startTaskPolling(taskId) {
+            // Add task to local tasks array for immediate display
+            const newTask = {
+                id: taskId,
+                title: 'Loading...',
+                status: 'running',
+                progress: 0,
+                output: 'Initializing task...',
+                startTime: new Date(),
+                sandboxId: 'pending'
+            };
+            tasks.unshift(newTask);
+            updateTaskLists();
+
+            // Start polling for updates
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/task/${taskId}`);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const taskIndex = tasks.findIndex(t => t.id === taskId);
+                        if (taskIndex !== -1) {
+                            tasks[taskIndex] = {
+                                id: result.task.id,
+                                title: result.task.title,
+                                status: result.task.status,
+                                progress: result.task.progress,
+                                output: result.task.output,
+                                startTime: new Date(result.task.startTime),
+                                endTime: result.task.endTime ? new Date(result.task.endTime) : null,
+                                sandboxId: result.task.sandboxId || 'pending'
+                            };
+                            updateTaskLists();
+                            
+                            // Stop polling if task is completed or failed
+                            if (result.task.status === 'completed' || result.task.status === 'failed') {
+                                clearInterval(pollInterval);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                }
+            }, 2000); // Poll every 2 seconds
+        }
+
+        async function loadAllTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                const result = await response.json();
+                
+                if (result.success) {
+                    tasks = result.tasks.map(task => ({
+                        id: task.id,
+                        title: task.title,
+                        status: task.status,
+                        progress: task.progress,
+                        output: task.output || '',
+                        startTime: new Date(task.startTime),
+                        endTime: task.endTime ? new Date(task.endTime) : null,
+                        sandboxId: task.sandboxId || 'unknown'
+                    }));
+                    updateTaskLists();
+                }
+            } catch (error) {
+                console.error('Failed to load tasks:', error);
+            }
+        }
+
+        // Tab functionality
+        let currentTab = 'tasks';
+        
+        function switchTab(tabName) {
+            const tasksTab = document.getElementById('tasksTab');
+            const archiveTab = document.getElementById('archiveTab');
+            const tasksContent = document.getElementById('tasksContent');
+            const archiveContent = document.getElementById('archiveContent');
+            
+            // Update tab buttons
+            tasksTab.classList.toggle('active', tabName === 'tasks');
+            archiveTab.classList.toggle('active', tabName === 'archive');
+            
+            // Update content visibility
+            tasksContent.classList.toggle('active', tabName === 'tasks');
+            archiveContent.classList.toggle('active', tabName === 'archive');
+            
+            currentTab = tabName;
+        }
+
+        function updateTaskLists() {
+            const runningTasks = tasks.filter(t => t.status === 'running');
+            const completedTasks = tasks.filter(t => t.status === 'completed' || t.status === 'failed');
+            
+            updateTaskSection('runningTasks', 'tasksCount', runningTasks);
+            updateTaskSection('completedTasks', 'archiveCount', completedTasks);
+        }
+
+        function updateTaskSection(containerId, countId, taskList) {
+            const container = document.getElementById(containerId);
+            const countElement = document.getElementById(countId);
+            
+            countElement.textContent = taskList.length;
+            
+            if (taskList.length === 0) {
+                const emptyIcon = containerId === 'runningTasks' ? '⚡' : '📁';
+                const emptyText = containerId === 'runningTasks' ? 'No running tasks' : 'No completed tasks';
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">${emptyIcon}</div>
+                        <p>${emptyText}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = taskList.map(task => createTaskHTML(task)).join('');
+        }
+
+        // Modal functionality
+        function openTaskModal(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            // Update modal content
+            document.getElementById('modalTaskTitle').textContent = task.title;
+            document.getElementById('modalTaskStatus').textContent = task.status;
+            document.getElementById('modalTaskStatus').className = `task-status status-${task.status}`;
+            document.getElementById('modalTaskAgent').textContent = task.agent || 'default';
+            document.getElementById('modalTaskMode').textContent = task.mode || 'local';
+            document.getElementById('modalTaskTime').textContent = task.startTime.toLocaleString();
+            
+            // Update logs
+            const logsContainer = document.getElementById('modalTaskLogs');
+            if (task.output) {
+                if (Array.isArray(task.output)) {
+                    // If output is an array, map each line
+                    logsContainer.innerHTML = task.output.map(line => 
+                        `<div class="log-entry">${line}</div>`
+                    ).join('');
+                } else if (typeof task.output === 'string') {
+                    // If output is a string, split by lines and handle \n literals
+                    const cleanOutput = task.output.replace(/\\n/g, '\n'); // Convert literal \n to actual newlines
+                    const lines = cleanOutput.split('\n').filter(line => line.trim());
+                    logsContainer.innerHTML = lines.map(line => 
+                        `<div class="log-entry">${line}</div>`
+                    ).join('');
+                } else {
+                    // If output is something else, convert to string and handle \n
+                    const cleanOutput = String(task.output).replace(/\\n/g, '\n');
+                    const lines = cleanOutput.split('\n').filter(line => line.trim());
+                    logsContainer.innerHTML = lines.map(line => 
+                        `<div class="log-entry">${line}</div>`
+                    ).join('');
+                }
+            } else {
+                logsContainer.innerHTML = '<div class="log-entry">No logs available</div>';
+            }
+            
+            // Show modal
+            document.getElementById('taskModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeTaskModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            
+            document.getElementById('taskModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function createTaskHTML(task) {
+            const duration = task.endTime ? 
+                Math.round((task.endTime - task.startTime) / 1000) : 
+                Math.round((new Date() - task.startTime) / 1000);
+            
+            // Create title with agent prefix and truncate
+            let displayTitle = task.title;
+            if (task.agent && task.agent !== 'development-team/frontend-developer') {
+                const agentName = task.agent.split('/').pop(); // Get agent name without category
+                displayTitle = `@${agentName} ${task.title}`;
+            }
+            
+            // Truncate title to max 60 characters
+            const truncatedTitle = displayTitle.length > 60 ? 
+                displayTitle.substring(0, 57) + '...' : displayTitle;
+            
+            // Create agent label if agent is specified
+            const agentLabel = (task.agent && task.agent !== 'development-team/frontend-developer') ? 
+                `<span class="task-agent-label">@${task.agent.split('/').pop()}</span>` : '';
+            
+            return `
+                <div class="task-item" onclick="openTaskModal('${task.id}')">
+                    <div class="task-header">
+                        <div class="task-info">
+                            <div class="task-title">${truncatedTitle} ${agentLabel}</div>
+                            <div class="task-meta">
+                                <span>Mode: ${task.mode || 'local'}</span>
+                                <span>Duration: ${duration}s</span>
+                                <span>Started: ${task.startTime.toLocaleTimeString()}</span>
+                            </div>
+                            <div class="task-status status-${task.status}">${task.status}</div>
+                        </div>
+                    </div>
+                    ${task.status === 'running' ? `
+                        <div class="task-progress">
+                            <div class="progress-bar" style="width: ${task.progress}%"></div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function truncateText(text, maxLength) {
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        // Agent Autocomplete Functionality
+        async function loadAgents() {
+            try {
+                const response = await fetch('/components.json');
+                const data = await response.json();
+                agents = data.agents || [];
+            } catch (error) {
+                console.warn('Could not load agents list:', error);
+                agents = [];
+            }
+        }
+
+        function getCaretPosition(textarea) {
+            return textarea.selectionStart;
+        }
+
+        function setCaretPosition(textarea, pos) {
+            textarea.setSelectionRange(pos, pos);
+        }
+
+        function findAtSymbolPosition(text, caretPos) {
+            // Find the last @ symbol before the caret position
+            for (let i = caretPos - 1; i >= 0; i--) {
+                if (text[i] === '@') {
+                    // Check if this @ is at the start or preceded by whitespace
+                    if (i === 0 || /\s/.test(text[i - 1])) {
+                        return i;
+                    }
+                }
+                // If we hit whitespace before finding @, stop searching
+                if (/\s/.test(text[i])) {
+                    break;
+                }
+            }
+            return -1;
+        }
+
+        function extractAgentQuery(text, atPos, caretPos) {
+            // Extract the text between @ and caret position
+            return text.substring(atPos + 1, caretPos);
+        }
+
+        function filterAgents(query) {
+            if (!query) return agents.slice(0, 8); // Show first 8 agents if no query
+            
+            const lowerQuery = query.toLowerCase();
+            return agents.filter(agent => 
+                agent.name.toLowerCase().includes(lowerQuery) ||
+                agent.category.toLowerCase().includes(lowerQuery)
+            ).slice(0, 8); // Limit to 8 results
+        }
+
+        function showAutocomplete(filteredAgents, query) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            
+            if (filteredAgents.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            dropdown.innerHTML = filteredAgents.map((agent, index) => `
+                <div class="autocomplete-item" data-index="${index}" onclick="selectAgent('${agent.name}')">
+                    <span class="agent-name">@${agent.name}</span>
+                    <span class="agent-category">[${agent.category}]</span>
+                </div>
+            `).join('');
+
+            dropdown.style.display = 'block';
+            selectedAgentIndex = -1; // Reset selection
+        }
+
+        function hideAutocomplete() {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            dropdown.style.display = 'none';
+            selectedAgentIndex = -1;
+        }
+
+        function selectAgent(agentName) {
+            const textarea = document.getElementById('taskInput');
+            const text = textarea.value;
+            const caretPos = getCaretPosition(textarea);
+            const atPos = findAtSymbolPosition(text, caretPos);
+            
+            if (atPos !== -1) {
+                // Replace the @query with the selected agent name
+                const beforeAt = text.substring(0, atPos);
+                const afterCaret = text.substring(caretPos);
+                const newText = beforeAt + '@' + agentName + ' ' + afterCaret;
+                
+                textarea.value = newText;
+                
+                // Position caret after the inserted agent name
+                const newCaretPos = atPos + agentName.length + 2; // +2 for @ and space
+                setCaretPosition(textarea, newCaretPos);
+                textarea.focus();
+            }
+            
+            hideAutocomplete();
+        }
+
+        function handleAutocomplete() {
+            const textarea = document.getElementById('taskInput');
+            const text = textarea.value;
+            const caretPos = getCaretPosition(textarea);
+            const atPos = findAtSymbolPosition(text, caretPos);
+            
+            if (atPos !== -1) {
+                const query = extractAgentQuery(text, atPos, caretPos);
+                const filteredAgents = filterAgents(query);
+                showAutocomplete(filteredAgents, query);
+            } else {
+                hideAutocomplete();
+            }
+        }
+
+        function handleKeyNavigation(event) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            
+            if (dropdown.style.display !== 'block') return;
+            
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                selectedAgentIndex = Math.min(selectedAgentIndex + 1, items.length - 1);
+                updateSelection(items);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                selectedAgentIndex = Math.max(selectedAgentIndex - 1, -1);
+                updateSelection(items);
+            } else if (event.key === 'Enter' && selectedAgentIndex >= 0) {
+                event.preventDefault();
+                const selectedItem = items[selectedAgentIndex];
+                const agentName = selectedItem.querySelector('.agent-name').textContent.slice(1); // Remove @
+                selectAgent(agentName);
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                hideAutocomplete();
+            }
+        }
+
+        function updateSelection(items) {
+            items.forEach((item, index) => {
+                if (index === selectedAgentIndex) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load existing tasks from server
+            loadAllTasks();
+            
+            // Load agents for autocomplete
+            loadAgents();
+            
+            // Auto-resize textarea and handle autocomplete
+            const textarea = document.getElementById('taskInput');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.max(200, this.scrollHeight) + 'px';
+                
+                // Handle agent autocomplete
+                handleAutocomplete();
+            });
+
+            // Handle keyboard navigation for autocomplete
+            textarea.addEventListener('keydown', handleKeyNavigation);
+            
+            // Hide autocomplete when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.autocomplete-container')) {
+                    hideAutocomplete();
+                }
+            });
+
+            // Periodically refresh tasks
+            setInterval(loadAllTasks, 10000); // Refresh every 10 seconds
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                executeTask();
+            }
+        });
+    </script>
+</body>
+</html>

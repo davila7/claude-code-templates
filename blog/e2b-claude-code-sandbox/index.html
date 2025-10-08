@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E2B + Claude Code Sandbox: Secure Cloud Development Environment Guide</title>
+    <meta name="description" content="Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment, and develop without local system risks.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/e2b-claude-code-sandbox/">
+    <meta property="og:title" content="E2B + Claude Code Sandbox: Secure Cloud Development Environment Guide">
+    <meta property="og:description" content="Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment, and develop without local system risks.">
+    <meta property="og:image" content="https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:published_time" content="2025-01-31T10:00:00Z">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Cloud Development">
+    <meta property="article:tag" content="E2B">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="Sandbox">
+    <meta property="article:tag" content="Cloud Development">
+    <meta property="article:tag" content="Security">
+    <meta property="article:tag" content="Isolation">
+    <meta property="article:tag" content="AI Development">
+    <meta property="article:tag" content="Anthropic">
+    <meta property="article:tag" content="Safe Execution">
+    <meta property="article:tag" content="Python SDK">
+    <meta property="article:tag" content="Development Environment">
+    <meta property="article:tag" content="Remote Development">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aitmpl.com/blog/e2b-claude-code-sandbox/">
+    <meta property="twitter:title" content="E2B + Claude Code Sandbox: Secure Cloud Development Environment Guide">
+    <meta property="twitter:description" content="Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment, and develop without local system risks.">
+    <meta property="twitter:image" content="https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png">
+    
+    <!-- Additional SEO -->
+    <meta name="keywords" content="E2B Claude Code sandbox, cloud development environment, secure code execution, isolated development, Claude Code safety, E2B Python SDK, remote development, AI sandbox, secure AI development, cloud sandbox, development isolation, safe code generation">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/e2b-claude-code-sandbox/">
+    
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "E2B + Claude Code Sandbox: Secure Cloud Development Environment Guide",
+        "description": "Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment, and develop without local system risks.",
+        "image": "https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "datePublished": "2025-01-31T10:00:00Z",
+        "dateModified": "2025-01-31T10:00:00Z",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/e2b-claude-code-sandbox/"
+        },
+        "keywords": "E2B Claude Code sandbox, cloud development environment, secure code execution, isolated development",
+        "wordCount": "1800",
+        "articleSection": "Cloud Development",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "E2B"
+            },
+            {
+                "@type": "Thing", 
+                "name": "Claude Code"
+            },
+            {
+                "@type": "Thing",
+                "name": "Cloud Development"
+            },
+            {
+                "@type": "Thing",
+                "name": "Sandbox Environment"
+            }
+        ],
+        "mentions": [
+            {
+                "@type": "SoftwareApplication",
+                "name": "E2B",
+                "url": "https://e2b.dev"
+            },
+            {
+                "@type": "SoftwareApplication", 
+                "name": "Claude Code",
+                "url": "https://claude.ai/code"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art"> 
+██████╗ ██╗      ██████╗  ██████╗ 
+██╔══██╗██║     ██╔═══██╗██╔════╝ 
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">        
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+                
+                <h1 class="article-title">E2B + Claude Code Sandbox: Secure Cloud Development Environment</h1>
+                <p class="article-subtitle">Complete guide to execute Claude Code in isolated E2B cloud sandbox. Install any components safely, run prompts in secure environment, and develop without local system risks.</p>
+                <div class="article-meta-full">
+                    <time datetime="2025-01-31">January 31, 2025</time>
+                    <span class="read-time">6 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">E2B</span>
+                        <span class="tag">Sandbox</span>
+                        <span class="tag">Security</span>
+                        <span class="tag">Cloud</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png" alt="E2B and Claude Code Sandbox Integration" class="article-cover" loading="lazy">
+            
+            <div class="article-content-full">
+                <h2>Benefits of Secure Sandbox Execution</h2>
+
+                <p>Running Claude Code in an isolated E2B cloud sandbox provides essential security and development advantages:</p>
+
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Benefit</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>🔒 Complete Isolation</strong></td>
+                            <td>Code runs in a separate cloud environment with zero access to your local system, files, or network.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🛡️ No Local Impact</strong></td>
+                            <td>Eliminates risk of system modifications, file corruption, or security vulnerabilities on your machine.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🚀 Clean Environment</strong></td>
+                            <td>Fresh Ubuntu with Claude Code pre-installed, ensuring consistent execution without dependency conflicts.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>☁️ Remote Execution</strong></td>
+                            <td>Intensive operations run in the cloud without consuming your local CPU, memory, or storage.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🧪 Safe Testing</strong></td>
+                            <td>Test new agents and commands risk-free, with automatic cleanup after execution.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>E2B Claude Code Sandbox Component</h2>
+
+                <p>Claude Code Templates provides a ready-to-use E2B sandbox integration:</p>
+
+                <h3>🔧 What's Included</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>E2B Launcher Script</strong></td>
+                            <td>Python script that creates, configures, and manages E2B sandbox instances with Claude Code.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Automatic Setup</strong></td>
+                            <td>Downloads dependencies, checks Python environment, and installs E2B SDK automatically.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Component Integration</strong></td>
+                            <td>Installs any specified agents, commands, MCPs, settings, and hooks inside the sandbox.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Newsletter CTA - Middle -->
+                <div class="newsletter-cta middle-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Stay Updated</h3>
+                        <p>Get new articles, components and templates for Claude Code delivered to your inbox.</p>
+                        
+                        <div id="middle-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="middle-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="middle_hidden_iframe">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                        <iframe name="middle_hidden_iframe" style="display: none;"></iframe>
+                    </div>
+                </div>
+
+                <h2>Prerequisites</h2>
+
+                <p>You'll need two API keys to use the E2B sandbox:</p>
+
+                <ul>
+                    <li><strong>E2B API Key:</strong> Get it from <a href="https://e2b.dev/dashboard" target="_blank" rel="noopener">e2b.dev/dashboard</a> (free tier available)</li>
+                    <li><strong>Anthropic API Key:</strong> Get it from <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></li>
+                    <li><strong>Python 3.11+:</strong> Required for the E2B SDK (usually auto-installed)</li>
+                </ul>
+
+                <h2>Installation and Usage</h2>
+
+                <h3>Quick Start - Simple Execution</h3>
+                <pre><code class="language-bash"># Execute a prompt in secure E2B sandbox with API keys
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --prompt "Create a React todo app with TypeScript"
+
+# Or use environment variables (set E2B_API_KEY and ANTHROPIC_API_KEY)
+npx claude-code-templates@latest --sandbox e2b --prompt "Create a React todo app with TypeScript"
+
+# Interactive mode - let the CLI guide you
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key</code></pre>
+
+                <p><strong>This command will:</strong></p>
+                <ul>
+                    <li>✓ Create secure E2B cloud sandbox</li>
+                    <li>✓ Execute your prompt using Claude Code</li>
+                    <li>✓ Download generated files to `sandbox-xxxxx` folder</li>
+                    <li>✓ Automatically cleanup after execution</li>
+                </ul>
+
+                <h3>Advanced Usage - With Specific Agent</h3>
+                <pre><code class="language-bash"># Execute with a specific agent in sandbox
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent development-team/frontend-developer \
+  --prompt "Create a modern todo app with TypeScript and Tailwind"</code></pre>
+
+                <h3>Full Stack Development</h3>
+                <pre><code class="language-bash"># Complete full-stack app development
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent development-team/fullstack-developer \
+  --prompt "Create a Node.js API with PostgreSQL and authentication"</code></pre>
+
+                <h3>Data Science and Analysis</h3>
+                <pre><code class="language-bash"># Data analysis with specialized agent
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent ai-ml-specialists/data-scientist \
+  --prompt "Analyze this dataset and create interactive visualizations"</code></pre>
+
+                <h2>API Key Configuration</h2>
+
+                <p>You can provide your E2B and Anthropic API keys in two convenient ways:</p>
+
+                <h3>🔑 Option 1: CLI Parameters (Recommended)</h3>
+                <pre><code class="language-bash"># Pass API keys directly as command parameters
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_api_key_here \
+  --anthropic-api-key your_anthropic_api_key_here \
+  --prompt "Your prompt here"</code></pre>
+
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li>✓ No need to set up environment variables</li>
+                    <li>✓ Works immediately without additional configuration</li>
+                    <li>✓ Perfect for CI/CD pipelines and automation</li>
+                    <li>✓ No risk of accidentally committing keys to repositories</li>
+                </ul>
+
+                <h3>🌍 Option 2: Environment Variables</h3>
+                <pre><code class="language-bash"># Set environment variables in your shell
+export E2B_API_KEY=your_e2b_api_key_here
+export ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Then run without API key parameters
+npx claude-code-templates@latest --sandbox e2b --prompt "Your prompt here"</code></pre>
+
+                <p><strong>Note:</strong> CLI parameters take precedence over environment variables, so you can override environment settings when needed.</p>
+
+                <h2>Environment Configuration</h2>
+
+                <p>After first execution, the sandbox component creates these files in your project:</p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   └── sandbox/
+│       ├── e2b-launcher.py      # Python launcher script
+│       ├── requirements.txt     # E2B SDK dependencies
+│       └── .env.example         # Environment variables template
+└── sandbox-xxxxxxxx/            # Generated project files (after execution)
+    ├── index.html               # Your generated files
+    ├── src/                     # Project source code
+    └── ...</code></pre>
+
+                <h2>Use Cases - When You Need Sandbox Isolation</h2>
+
+                <h3>🔥 System-Level Operations</h3>
+                <pre><code class="language-bash"># Modify system configurations without risk
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent devops-cloud/system-administrator \
+  --prompt "Set up nginx with multiple virtual hosts, SSL certificates, and firewall rules"</code></pre>
+
+                <h3>🧪 Experimental Package Installation</h3>
+                <pre><code class="language-bash"># Test unknown dependencies and packages safely
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent development-team/fullstack-developer \
+  --prompt "Install and configure a complex tech stack with Redis, RabbitMQ, Elasticsearch, and their dependencies"</code></pre>
+
+                <h3>🛡️ Security Vulnerability Testing</h3>
+                <pre><code class="language-bash"># Run penetration testing tools without affecting your system
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent security-testing/penetration-tester \
+  --prompt "Set up and run OWASP ZAP, Metasploit, and Nmap to test this application"</code></pre>
+
+                <h3>💣 Database Operations</h3>
+                <pre><code class="language-bash"># Perform destructive database migrations and schema changes
+npx claude-code-templates@latest --sandbox e2b \
+  --e2b-api-key your_e2b_key \
+  --anthropic-api-key your_anthropic_key \
+  --agent data-analytics/database-administrator \
+  --prompt "Create a PostgreSQL database, run complex migrations, drop tables, and test backup/restore procedures"</code></pre>
+
+                <h2>Troubleshooting</h2>
+
+                <h3>Common Issues and Solutions</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Python Not Found</strong></td>
+                            <td>Install Python 3.11+ from <a href="https://python.org/downloads" target="_blank">python.org/downloads</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Keys Not Set</strong></td>
+                            <td>Create <code>.env</code> file in <code>.claude/sandbox/</code> with your E2B and Anthropic API keys</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dependencies Failed</strong></td>
+                            <td>Run <code>pip3 install -r .claude/sandbox/requirements.txt</code> manually</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sandbox Timeout</strong></td>
+                            <td>Large prompts may take time; configured with 15-minute timeout for complex operations</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Newsletter CTA - End -->
+                <div class="newsletter-cta end-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Want More?</h3>
+                        <p>Subscribe to receive new Claude Code articles, components and integration tutorials.</p>
+                        
+                        <div id="end-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="end-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="end_hidden_iframe">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                        <iframe name="end_hidden_iframe" style="display: none;"></iframe>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗     
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║     
+███████║██║   ██║   ██╔████╔██║██████╔╝██║     
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║     
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+        
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+            
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+            
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+            
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+            
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+            
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+            
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+            
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+            
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+        
+        // Check content patterns
+        const content = codeElement.textContent;
+        
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+        
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+            
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+            
+            if (!code) return;
+            
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+                
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+                
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+                
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') || 
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+                
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Newsletter forms handler
+function initNewsletterForm(formId, successId, errorId) {
+    const form = document.getElementById(formId);
+    const successMessage = document.getElementById(successId);
+    const errorMessage = document.getElementById(errorId);
+    
+    if (!form) return;
+    
+    const submitButton = form.querySelector('.newsletter-submit');
+    const submitText = submitButton.querySelector('.submit-text');
+    
+    form.addEventListener('submit', (e) => {
+        // Set loading state
+        submitButton.disabled = true;
+        submitText.textContent = '...';
+        
+        // Hide messages initially
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        
+        // Show success message after form submits to iframe
+        setTimeout(() => {
+            successMessage.style.display = 'block';
+            submitButton.disabled = false;
+            submitText.textContent = '→';
+            form.reset();
+        }, 1500);
+    });
+}
+
+// Initialize both newsletter forms
+document.addEventListener('DOMContentLoaded', () => {
+    initNewsletterForm('middle-newsletter-form', 'middle-newsletter-success', 'middle-newsletter-error');
+    initNewsletterForm('end-newsletter-form', 'end-newsletter-success', 'end-newsletter-error');
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+            
+            try {
+                await navigator.clipboard.writeText(markdown);
+                
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+        
+        let markdown = `# ${title}\n\n`;
+        
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+        
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+        
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+        
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+        
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+        
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+        
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+        
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+        
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+        
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+        
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+        
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

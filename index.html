@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Templates - Supercharge Your AI-Powered Development with Anthropic's Claude Code</title>
+    <meta name="description" content="Professional templates and configurations for Anthropic's Claude Code. Get Claude Opus 4.1 working at terminal velocity with 100+ agents, 159+ commands, settings, hooks, and MCPs. Transform your development workflow with AI.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://davila7.github.io/claude-code-templates/">
+    <meta property="og:title" content="Claude Code Templates - Supercharge Your AI Development with Anthropic Claude">
+    <meta property="og:description" content="Professional templates for Anthropic's Claude Code. Deep coding at terminal velocity with Claude Opus 4.1. Install 100+ agents, commands, settings & hooks. Transform your AI-powered development workflow.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/davila7/claude-code-templates/main/social-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Claude Code Templates - Supercharge Your AI Development with Anthropic Claude">
+    <meta property="og:site_name" content="Claude Code Templates">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://davila7.github.io/claude-code-templates/">
+    <meta property="twitter:title" content="Claude Code Templates - Supercharge Your AI Development">
+    <meta property="twitter:description" content="Professional templates for Anthropic's Claude Code. Deep coding at terminal velocity with Claude Opus 4.1. Install 100+ agents, commands, settings & hooks.">
+    <meta property="twitter:image" content="https://raw.githubusercontent.com/davila7/claude-code-templates/main/social-preview.png">
+    <meta property="twitter:image:alt" content="Claude Code Templates - Supercharge Your AI Development with Anthropic Claude">
+    <meta property="twitter:creator" content="@davila7">
+    <meta property="twitter:site" content="@davila7"
+    
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code, Anthropic Claude, AI development, Claude Opus 4.1, code templates, AI assistant, terminal velocity, deep coding, agents, commands, MCP, Model Context Protocol, development tools, AI-powered development, Claude Code configurations, Claude Code setup, agentic search, multi-file edits">
+    <meta name="author" content="Claude Code Templates Community">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://davila7.github.io/claude-code-templates/">
+    
+    <!-- Sitemap for SEO -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    
+    <!-- Claude Code / Anthropic relation -->
+    <meta name="product" content="Claude Code Templates">
+    <meta name="platform" content="Anthropic Claude Code">
+    <meta name="category" content="AI Development Tools">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <script src="https://cdn.counter.dev/script.js" data-id="1f599060-4af4-4cbc-a809-a158768ab768" data-utcoffset="-4"></script>
+    
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Claude Code Templates",
+      "applicationCategory": "DeveloperApplication",
+      "description": "Professional templates and configurations for Anthropic's Claude Code. Transform your AI-powered development workflow with Claude Opus 4.1 at terminal velocity.",
+      "operatingSystem": ["Windows", "macOS", "Linux"],
+      "softwareVersion": "1.18.0",
+      "url": "https://davila7.github.io/claude-code-templates/",
+      "downloadUrl": "https://www.npmjs.com/package/claude-code-templates",
+      "author": {
+        "@type": "Organization",
+        "name": "Claude Code Templates Community"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "relatedLink": "https://www.anthropic.com/claude-code",
+      "keywords": "Claude Code, Anthropic, AI development, Claude Opus 4.1, terminal velocity, deep coding"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+            <div class="ascii-title">
+                <pre class="ascii-art"> ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗    ██████╗ ██████╗ ██████╗ ███████╗    ████████╗███████╗███╗   ███╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗
+██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝   ██╔════╝██╔═══██╗██╔══██╗██╔════╝    ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
+██║     ██║     ███████║██║   ██║██║  ██║█████╗     ██║     ██║   ██║██║  ██║█████╗         ██║   █████╗  ██╔████╔██║██████╔╝██║     ███████║   ██║   █████╗  ███████╗
+██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝     ██║     ██║   ██║██║  ██║██╔══╝         ██║   ██╔══╝  ██║╚██╔╝██║██╔═══╝ ██║     ██╔══██║   ██║   ██╔══╝  ╚════██║
+╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗   ╚██████╗╚██████╔╝██████╔╝███████╗       ██║   ███████╗██║ ╚═╝ ██║██║     ███████╗██║  ██║   ██║   ███████╗███████║
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝       ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝</pre>
+            </div>
+            <div class="terminal-subtitle">
+                <span class="status-dot"></span>
+                Ready-to-use configurations for your <strong>Claude Code</strong> projects
+            </div>
+        </div>
+                <div class="header-actions">
+                    <!-- Workflows button temporarily hidden for testing -->
+                    <!-- 
+                    <a href="workflows.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H16L12,22L8,18H4A2,2 0 0,1 2,16V4A2,2 0 0,1 4,2M4,4V16H8.83L12,19.17L15.17,16H20V4H4M6,6H18V8H6V6M6,10H16V12H6V10M6,14H14V16H6V14Z"/>
+                        </svg>
+                        Workflows
+                    </a>
+                    -->
+                    <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="header-btn anthropic-btn" title="Learn about Anthropic's Claude Code">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Claude Code
+                    </a>
+                    <a href="blog/index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <!-- <a href="jobs.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V8A2,2 0 0,1 4,6H8V4A2,2 0 0,1 10,2M14,6V4H10V6H14Z"/>
+                        </svg>
+                        Jobs
+                    </a> -->
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <section class="stats-section">
+            <div class="stats-badges">
+                <a href="https://www.npmjs.com/package/claude-code-templates" target="_blank" class="stat-badge-link">
+                    <img src="https://img.shields.io/npm/dt/claude-code-templates.svg" alt="npm downloads" class="stat-badge">
+                </a>
+                <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="stat-badge-link">
+                    <img src="https://img.shields.io/github/stars/davila7/claude-code-templates.svg?style=social&label=Star" alt="GitHub stars" class="stat-badge">
+                </a>
+                <a href="https://github.com/davila7/claude-code-templates/blob/main/LICENSE" target="_blank" class="stat-badge-link">
+                    <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat" alt="MIT License" class="stat-badge">
+                </a>
+            </div>
+        </section>
+        
+
+
+        <section class="unified-filter-section">
+            <!-- Search Section Header -->
+            <div class="search-header">
+                <div class="terminal-command">
+                    <div class="header-content">
+                        <h2 class="search-title"><span class="terminal-dot"></span><strong>Search </strong><span class="title-params">(components/settings/templates)</span></h2>
+                        <p class="search-subtitle">⎿ Build your personalized development stack</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Search Input - Main Component -->
+            <div class="terminal-search-container">
+                <div class="terminal-search-wrapper" onclick="focusSearchInput()">
+                    <span class="terminal-prompt">></span>
+                    <input type="text" id="searchInput" class="terminal-search-input" placeholder="Search components..." oninput="handleSearchInput(event)" onkeydown="handleSearchKeydown(event)">
+                    <div class="terminal-cursor" id="terminalCursor"></div>
+                    <svg class="search-icon-end" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5,14H14.71L14.43,13.73C15.41,12.59 16,11.11 16,9.5C16,5.91 13.09,3 9.5,3C5.91,3 3,5.91 3,9.5C3,13.09 5.91,16 9.5,16C11.11,16 12.59,15.41 13.73,14.43L14,14.71V15.5L19,20.49L20.49,19L15.5,14M9.5,14C7.01,14 5,11.99 5,9.5C5,7.01 7.01,5 9.5,5C11.99,5 14,7.01 14,9.5C14,11.99 11.99,14 9.5,14Z"/>
+                    </svg>
+                    <button class="terminal-clear-btn" id="clearSearchBtn" onclick="clearSearch()" style="display: none;" title="Clear search">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Search results info and tags -->
+                <div class="search-results-info" id="searchResultsInfo" style="display: none;">
+                    <div class="terminal-results">
+                        <span class="terminal-dot"></span>
+                        <div class="results-content">
+                            <div class="results-count" id="resultsCount">Found(0 results)</div>
+                            <div class="search-filters">⎿ <span class="search-filter-tags" id="searchFilterTags"></span></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Compact Component Type Filters -->
+            <div class="component-type-filters">
+                <div class="filter-group">
+                    <div class="filter-chips">
+                        <a href="/agents" class="filter-chip active" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
+                            <span class="chip-icon">🤖</span>agents
+                        </a>
+                        <a href="/commands" class="filter-chip" data-filter="commands" onclick="handleFilterClick(event, 'commands')">
+                            <span class="chip-icon">⚡</span>commands
+                        </a>
+                        <a href="/settings" class="filter-chip" data-filter="settings" onclick="handleFilterClick(event, 'settings')">
+                            <span class="chip-icon">⚙️</span>settings
+                        </a>
+                        <a href="/hooks" class="filter-chip" data-filter="hooks" onclick="handleFilterClick(event, 'hooks')">
+                            <span class="chip-icon">🪝</span>hooks
+                        </a>
+                        <a href="/mcps" class="filter-chip" data-filter="mcps" onclick="handleFilterClick(event, 'mcps')">
+                            <span class="chip-icon">🔌</span>mcps
+                        </a>
+                        <a href="/templates" class="filter-chip" data-filter="templates" onclick="handleFilterClick(event, 'templates')">
+                            <span class="chip-icon">📦</span>templates
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Component Categories (will be populated dynamically) -->
+            <div class="component-categories" id="componentCategories" style="display: none;">
+                <div class="category-group">
+                    <span class="category-group-label">category:</span>
+                    <div class="category-chips" id="categoryChips">
+                        <!-- Categories will be populated by JavaScript based on selected type -->
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="content-grid" id="contentGrid">
+            <!-- Sort selector -->
+            <div class="sort-controls" id="sortControls">
+                <div class="sort-wrapper">
+                    <span class="sort-label">Sort by:</span>
+                    <select class="sort-selector" id="sortSelector" onchange="handleSortChange(this.value)">
+                        <option value="downloads" selected>Most Downloaded</option>
+                        <option value="alphabetical">Alphabetical</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Loading indicator -->
+            <div class="loading-indicator" id="components-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">
+                    <h3>Loading Components...</h3>
+                    <p>Optimizing data for better performance on mobile devices</p>
+                    <div class="loading-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content container -->
+            <div class="unified-grid" id="unifiedGrid" id="components-content">
+                <!-- All content will be loaded here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Company Stacks Carousel -->
+        <section class="company-stacks-carousel" style="display: none;">
+            <div class="command-block">
+                <div class="command-label">$ Popular Development Stacks</div>
+                <div class="command-description">Complete component collections for major companies and technologies</div>
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-btn carousel-btn-left" onclick="scrollCarousel('left')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
+                    </svg>
+                </button>
+                <div class="carousel-track" id="companyCarousel">
+                    <a href="#/company/openai" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/openai')">
+                        <div class="company-logo">🤖</div>
+                        <div class="company-info">
+                            <h3>OpenAI</h3>
+                            <p>GPT, DALL-E & Whisper APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/anthropic" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/anthropic')">
+                        <div class="company-logo">🧠</div>
+                        <div class="company-info">
+                            <h3>Anthropic</h3>
+                            <p>Claude AI integration</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/stripe" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/stripe')">
+                        <div class="company-logo">💳</div>
+                        <div class="company-info">
+                            <h3>Stripe</h3>
+                            <p>Payment processing APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/salesforce" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/salesforce')">
+                        <div class="company-logo">☁️</div>
+                        <div class="company-info">
+                            <h3>Salesforce</h3>
+                            <p>CRM & Lightning platform</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/shopify" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/shopify')">
+                        <div class="company-logo">🛒</div>
+                        <div class="company-info">
+                            <h3>Shopify</h3>
+                            <p>E-commerce APIs & apps</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/twilio" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/twilio')">
+                        <div class="company-logo">📞</div>
+                        <div class="company-info">
+                            <h3>Twilio</h3>
+                            <p>Communication APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/aws" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/aws')">
+                        <div class="company-logo">☁️</div>
+                        <div class="company-info">
+                            <h3>AWS</h3>
+                            <p>Cloud & serverless APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/github" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/github')">
+                        <div class="company-logo">🐙</div>
+                        <div class="company-info">
+                            <h3>GitHub</h3>
+                            <p>Git automation & Actions</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/companies" class="company-stack-card view-all-card" onclick="window.stackRouter?.navigateTo('#/companies')">
+                        <div class="company-logo">👀</div>
+                        <div class="company-info">
+                            <h3>View All</h3>
+                            <p>30+ companies & platforms</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                </div>
+                <button class="carousel-btn carousel-btn-right" onclick="scrollCarousel('right')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <section class="additional-tools">
+            <div class="command-block">
+                <div class="command-label">$ Additional Tools</div>
+                <div class="command-description">Advanced tools to maximize your Claude Code AI development experience</div>
+            </div>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">📊</div>
+                    <h3>Claude Code Analytics</h3>
+                    <p>Monitor your AI-powered development sessions in real-time. Track Claude Opus 4.1 performance, tool usage, and productivity metrics</p>
+                    <div class="command-line">
+                        <span class="prompt">$</span>
+                        <code class="command">npx claude-code-templates@latest --analytics</code>
+                        <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --analytics')">Copy</button>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">🔍</div>
+                    <h3>Claude Code Health Check</h3>
+                    <p>Comprehensive diagnostics to ensure your Anthropic Claude Code installation is optimized for deep coding at terminal velocity</p>
+                    <div class="command-line">
+                        <span class="prompt">$</span>
+                        <code class="command">npx claude-code-templates@latest --health-check</code>
+                        <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --health-check')">Copy</button>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">💬</div>
+                    <h3>Claude Conversation Monitor</h3>
+                    <p>View Claude Opus 4.1 responses in real-time, analyze AI reasoning, and monitor agentic search patterns during your coding sessions</p>
+                    <div class="command-line">
+                        <span class="prompt">$</span>
+                        <code class="command">npx claude-code-templates@latest --chats</code>
+                        <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --chats')">Copy</button>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <span class="new-label">NEW</span>
+                    <div class="tool-icon">☁️</div>
+                    <h3>E2B Cloud Sandbox</h3>
+                    <p>Execute Claude Code in isolated cloud environments with any agent or component</p>
+                    <div class="command-line">
+                        <span class="prompt">$</span>
+                        <code class="command">npx claude-code-templates@latest --sandbox e2b</code>
+                        <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --sandbox e2b')">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗     
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║     
+███████║██║   ██║   ██╔████╔██║██████╔╝██║     
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║     
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="shoppingCart" class="cart-sidebar">
+        <div class="cart-content">
+            <div class="cart-header">
+                <div class="cart-header-main">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-0.16 0.27-0.25 0.58-0.25 0.96 0 1.1 0.9 2 2 2h12v-2H7.42c-0.14 0-0.25-0.11-0.25-0.25l0.03-0.12L8.1 13h7.45c0.75 0 1.41-0.41 1.75-1.03L21.7 4H5.21l-0.94-2H1zM17 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2z"/>
+                        </svg>
+                        Stack Builder
+                    </h3>
+                    <button class="cart-close" onclick="closeCart()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Clear All Button - Subtle position -->
+                <div class="cart-clear-section-prominent" id="cartClearProminent" style="display: none;">
+                    <button class="clear-all-btn-prominent" onclick="clearCart()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"/>
+                        </svg>
+                        Clear All
+                        <span class="clear-count" id="clearCount">(0)</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="cart-body">
+                <div class="cart-empty" id="cartEmpty">
+                    <div class="empty-cart-icon">🛒</div>
+                    <p>Your stack is empty</p>
+                    <small>Add agents, commands, settings, hooks, or MCPs to build your development stack</small>
+                </div>
+                
+                <div class="cart-items" id="cartItems" style="display: none;">
+                    
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🤖</span>
+                            Agents (<span id="agentsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="agentsList"></div>
+                    </div>
+                    
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">⚡</span>
+                            Commands (<span id="commandsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="commandsList"></div>
+                    </div>
+                    
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">⚙️</span>
+                            Settings (<span id="settingsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="settingsList"></div>
+                    </div>
+                    
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🪝</span>
+                            Hooks (<span id="hooksCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="hooksList"></div>
+                    </div>
+                    
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🔌</span>
+                            MCPs (<span id="mcpsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="mcpsList"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="command-preview">
+                    <div class="command-preview-header">
+                        <span>Generated Command:</span>
+                    </div>
+                    <div class="cart-command-container">
+                        <div class="command-code" id="generatedCommand">
+                            npx claude-code-templates@latest
+                        </div>
+                        <button class="cart-copy-overlay-btn" onclick="copyCartCommand()" title="Copy command">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="cart-instructions">
+                    <div class="instructions-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                        </svg>
+                        <strong>Instructions</strong>
+                    </div>
+                    <p>Navigate to your project root and run the generated command. All selected components will be installed automatically.</p>
+                </div>
+                
+                <div class="cart-actions">
+                    <button class="copy-command-btn" onclick="copyCartCommand()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
+                        Copy Command
+                    </button>
+                    <div class="share-dropdown" id="shareDropdown">
+                        <button class="share-stack-btn" onclick="toggleShareDropdown()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.6 20.92,19A2.84,2.84 0 0,0 18,16.08Z"/>
+                            </svg>
+                            Share Stack
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="dropdown-arrow">
+                                <path d="M7,10L12,15L17,10H7Z"/>
+                            </svg>
+                        </button>
+                        <div class="share-options" id="shareOptions">
+                            <button class="share-option-btn" onclick="shareOnTwitter()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                                Share on X
+                            </button>
+                            <button class="share-option-btn" onclick="shareOnThreads()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.595-.053-1.144-.16-1.644-.107-.496-.27-.941-.488-1.336a3.79 3.79 0 00-.82-1.084 3.790 3.790 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.007c-1.623.02-3.094.37-4.37 1.04-.558.29-1.029.63-1.414 1.017-.33.33-.602.69-.82 1.084-.218.395-.381.84-.488 1.336-.107.5-.16 1.049-.16 1.644 0 .595.053 1.144.16 1.644.107.496.27.941.488 1.336.218.395.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/>
+                                </svg>
+                                Share on Threads
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Floating Button -->
+    <div id="cartFloatingBtn" class="cart-floating-btn" onclick="openCart()" style="display: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-0.16 0.27-0.25 0.58-0.25 0.96 0 1.1 0.9 2 2 2h12v-2H7.42c-0.14 0-0.25-0.11-0.25-0.25l0.03-0.12L8.1 13h7.45c0.75 0 1.41-0.41 1.75-1.03L21.7 4H5.21l-0.94-2H1zM17 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2z"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+    </div>
+
+    <link rel="stylesheet" href="css/workflows-modal.css">
+    <link rel="stylesheet" href="css/stack-page.css">
+    <script src="js/utils.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/stack-router.js"></script>
+    <script src="js/carousel.js"></script>
+    <script src="js/cart-manager.js"></script>
+    <script src="js/index-events.js"></script>
+    <script src="js/modal-helpers.js"></script>
+    <script src="js/generate-search-data.js"></script>
+    <script src="js/search-functionality.js"></script>
+</body>
+</html>

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Claude Code Integration Guide: 8 Commands + AI Agents + MCP Server</title>
+    <meta name="description" content="Complete guide to integrate Supabase with Claude Code. Install 8 database commands, 2 AI agents, and MCP server for automated schema design, migrations, and TypeScript generation.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/supabase-claude-code-integration/">
+    <meta property="og:title" content="Supabase Claude Code Integration Guide: 8 Commands + AI Agents + MCP Server">
+    <meta property="og:description" content="Complete guide to integrate Supabase with Claude Code. Install 8 database commands, 2 AI agents, and MCP server for automated schema design, migrations, and TypeScript generation.">
+    <meta property="og:image" content="https://www.aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:published_time" content="2025-01-28T10:00:00Z">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Database">
+    <meta property="article:tag" content="Supabase">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="MCP">
+    <meta property="article:tag" content="Database">
+    <meta property="article:tag" content="PostgreSQL">
+    <meta property="article:tag" content="TypeScript">
+    <meta property="article:tag" content="AI Development">
+    <meta property="article:tag" content="Anthropic">
+    <meta property="article:tag" content="Schema Design">
+    <meta property="article:tag" content="Database Migration">
+    <meta property="article:tag" content="Automation">
+    <meta property="article:tag" content="Real-time Database">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aitmpl.com/blog/supabase-claude-code-integration/">
+    <meta property="twitter:title" content="Supabase Claude Code Integration Guide: 8 Commands + AI Agents + MCP Server">
+    <meta property="twitter:description" content="Complete guide to integrate Supabase with Claude Code. Install 8 database commands, 2 AI agents, and MCP server for automated schema design, migrations, and TypeScript generation.">
+    <meta property="twitter:image" content="https://www.aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png">
+    
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Supabase Claude Code integration, MCP server Supabase, Claude Code agents, database development AI, Supabase schema architect, PostgreSQL Claude Code, AI database tools, Supabase automation, Claude Code templates, database migration assistant, Supabase TypeScript generator, real-time database monitoring, Supabase backup automation, database security audit, Anthropic Claude Code, AI-powered database development">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/supabase-claude-code-integration/">
+    
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Supabase Claude Code Integration Guide: 8 Commands + AI Agents + MCP Server",
+        "description": "Complete guide to integrate Supabase with Claude Code. Install 8 database commands, 2 AI agents, and MCP server for automated schema design, migrations, and TypeScript generation.",
+        "image": "https://www.aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "datePublished": "2025-01-28T10:00:00Z",
+        "dateModified": "2025-01-28T10:00:00Z",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/supabase-claude-code-integration/"
+        },
+        "keywords": "Supabase Claude Code integration, MCP server, database development AI, schema architect, TypeScript generator, database automation",
+        "wordCount": "1200",
+        "articleSection": "Database Development",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Supabase"
+            },
+            {
+                "@type": "Thing", 
+                "name": "Claude Code"
+            },
+            {
+                "@type": "Thing",
+                "name": "Model Context Protocol"
+            },
+            {
+                "@type": "Thing",
+                "name": "Database Development"
+            }
+        ],
+        "mentions": [
+            {
+                "@type": "SoftwareApplication",
+                "name": "Supabase",
+                "url": "https://supabase.com"
+            },
+            {
+                "@type": "SoftwareApplication", 
+                "name": "Claude Code",
+                "url": "https://claude.ai/code"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art"> 
+██████╗ ██╗      ██████╗  ██████╗ 
+██╔══██╗██║     ██╔═══██╗██╔════╝ 
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">        
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+                
+                <h1 class="article-title">Claude Code + Supabase Integration: Complete Guide with Agents, Commands and MCP</h1>
+                <p class="article-subtitle">Step-by-step tutorial to install and use 2 Agents, 8 database commands, and MCP server for automated Supabase development with Claude Code.</p>
+                <div class="article-meta-full">
+                    <time datetime="2025-01-28">January 28, 2025</time>
+                    <span class="read-time">5 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Supabase</span>
+                        <span class="tag">Database</span>
+                        <span class="tag">MCP</span>
+                        <span class="tag">Agents</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="https://www.aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png" alt="Supabase and Claude Code Integration" class="article-cover" loading="lazy">
+            
+            <div class="article-content-full">
+                <h2>Claude Code stack for Supabase</h2>
+
+                <p>Claude Code Templates offers three pre-built components for Supabase integration:</p>
+
+                <h3>🤖 Agents</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Supabase Schema Architect</strong></td>
+                            <td>Expert in database design, migrations, and RLS policies. Automatically analyzes requirements and generates production-ready schemas with optimal performance.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Supabase Realtime Optimizer</strong></td>
+                            <td>Specialist in WebSocket optimization and real-time performance. Monitors connections, optimizes subscriptions, and ensures scalable real-time applications.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>⚡ Commands</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>supabase-schema-sync</strong></td>
+                            <td>Synchronize local and remote schemas, manage version control, and detect schema drift automatically.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-migration-assistant</strong></td>
+                            <td>Generate, manage, and execute database migrations with rollback capabilities and conflict resolution.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-performance-optimizer</strong></td>
+                            <td>Analyze query performance, suggest indexes, and optimize database operations for maximum speed.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-security-audit</strong></td>
+                            <td>Comprehensive security analysis, RLS policy validation, and vulnerability scanning with automated fixes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-backup-manager</strong></td>
+                            <td>Automated backup scheduling, restoration procedures, and disaster recovery planning with testing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-type-generator</strong></td>
+                            <td>Generate TypeScript types from database schema, maintain type safety, and auto-update on schema changes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-data-explorer</strong></td>
+                            <td>Interactive data exploration, visual query builder, and data export capabilities with filtering.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>supabase-realtime-monitor</strong></td>
+                            <td>Real-time connection monitoring, performance tracking, and WebSocket health diagnostics.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>🔌 MCP</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🔌 <strong>Supabase MCP Server</strong></td>
+                            <td>Direct integration with Supabase API through Model Context Protocol for seamless Claude Code interaction.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Browse all components on AITMPL.com</h2>
+
+                <p>Before installing, you can explore all available Supabase components on the official Claude Code Templates website:</p>
+
+                <p>Visit <strong><a href="https://aitmpl.com" target="_blank" rel="noopener">aitmpl.com</a></strong> and search for "supabase" to see:</p>
+
+                <img src="https://www.aitmpl.com/blog/assets/aitmpl-supabase-search.png" alt="Searching for Supabase components on AITMPL.com" loading="lazy">
+                
+                <!-- Newsletter CTA - Middle -->
+                <div class="newsletter-cta middle-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Stay Updated</h3>
+                        <p>Get new articles, components and templates for Claude Code delivered to your inbox.</p>
+                        
+                        <div id="middle-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="middle-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="middle_hidden_iframe">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                        <iframe name="middle_hidden_iframe" style="display: none;"></iframe>
+                    </div>
+                </div>
+
+                <h2>Installation Options</h2>
+                <p>There are multiple ways to install the Supabase stack for Claude Code. Choose the approach that best fits your workflow:</p>
+
+                <h3>Install Individual Components</h3>
+                <pre><code class="language-bash">
+# Install specific agent
+npx claude-code-templates@latest --agent supabase-schema-architect
+
+# Install specific Supabase command
+npx claude-code-templates@latest --command supabase-schema-sync
+
+# Install MCP server
+npx claude-code-templates@latest --mcp supabase</code></pre>
+                
+                <p><strong>Components will be installed to:</strong></p>
+                <ul>
+                    <li>📁 <code>.claude/commands/</code></li>
+                    <li>📁 <code>.claude/agents/</code></li>
+                    <li>📁 <code>.mcp.json</code></li>
+                </ul>
+
+                <h3>Create Global Agents (Available Anywhere)</h3>
+                <pre><code class="language-bash"># Create global agents accessible from any project
+npx claude-code-templates@latest --create-agent supabase-schema-architect
+npx claude-code-templates@latest --create-agent supabase-realtime-optimizer
+
+# List all global agents
+npx claude-code-templates@latest --list-agents
+
+# Update global agents
+npx claude-code-templates@latest --update-agent supabase-schema-architect
+
+# Remove global agents  
+npx claude-code-templates@latest --remove-agent supabase-realtime-optimizer</code></pre>
+
+                <h3>Install Multiple Components at Once</h3>
+                <pre><code class="language-bash">
+# Install specific Supabase commands (comma-separated for multiple)
+npx claude-code-templates@latest --command supabase-schema-sync,supabase-type-generator,supabase-data-explorer
+              </code></pre>      
+
+              <pre><code class="language-bash">
+# Install all Supabase components in one command
+npx claude-code-templates@latest \
+  --command supabase-schema-sync,supabase-migration-assistant,supabase-performance-optimizer,supabase-security-audit,supabase-backup-manager,supabase-type-generator,supabase-data-explorer,supabase-realtime-monitor \
+  --agent supabase-schema-architect,supabase-realtime-optimizer \
+  --mcp supabase</code></pre>
+  
+                <p><strong>This will install:</strong></p>
+                <ul>
+                    <li>✓ 8 database commands</li>
+                    <li>✓ 2 specialized AI agents</li>
+                    <li>✓ 1 MCP server integration</li>
+                </ul>
+
+                <h2>Where Components Are Installed</h2>
+
+                <p>The installation creates a standard Claude Code structure with components organized as follows:</p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   ├── commands/
+│   │       ├── supabase-schema-sync.md
+│   │       ├── supabase-migration-assistant.md
+│   │       ├── supabase-performance-optimizer.md
+│   │       ├── supabase-security-audit.md
+│   │       ├── supabase-backup-manager.md
+│   │       ├── supabase-type-generator.md
+│   │       ├── supabase-data-explorer.md
+│   │       └── supabase-realtime-monitor.md
+│   └── agents/
+│       └── supabase-schema-architect.md
+│       └── supabase-realtime-optimizer.md
+└── .mcp.json
+└── src/ # Your application code</code></pre>
+                
+                <p>That's it! Claude Code will automatically detect all components and you can start using them immediately.</p>
+
+                <!-- Newsletter CTA - End -->
+                <div class="newsletter-cta end-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Want More?</h3>
+                        <p>Subscribe to receive new Claude Code articles, components and integration tutorials.</p>
+                        
+                        <div id="end-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="end-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="end_hidden_iframe">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                        <iframe name="end_hidden_iframe" style="display: none;"></iframe>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗     
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║     
+███████║██║   ██║   ██╔████╔██║██████╔╝██║     
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║     
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+        
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+            
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+            
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+            
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+            
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+            
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+            
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+            
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+            
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+        
+        // Check content patterns
+        const content = codeElement.textContent;
+        
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+        
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+            
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+            
+            if (!code) return;
+            
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+                
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+                
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+                
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') || 
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+                
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Newsletter forms handler
+function initNewsletterForm(formId, successId, errorId) {
+    const form = document.getElementById(formId);
+    const successMessage = document.getElementById(successId);
+    const errorMessage = document.getElementById(errorId);
+    
+    if (!form) return;
+    
+    const submitButton = form.querySelector('.newsletter-submit');
+    const submitText = submitButton.querySelector('.submit-text');
+    
+    form.addEventListener('submit', (e) => {
+        // Set loading state
+        submitButton.disabled = true;
+        submitText.textContent = '...';
+        
+        // Hide messages initially
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        
+        // Show success message after form submits to iframe
+        setTimeout(() => {
+            successMessage.style.display = 'block';
+            submitButton.disabled = false;
+            submitText.textContent = '→';
+            form.reset();
+        }, 1500);
+    });
+}
+
+// Initialize both newsletter forms
+document.addEventListener('DOMContentLoaded', () => {
+    initNewsletterForm('middle-newsletter-form', 'middle-newsletter-success', 'middle-newsletter-error');
+    initNewsletterForm('end-newsletter-form', 'end-newsletter-success', 'end-newsletter-error');
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+            
+            try {
+                await navigator.clipboard.writeText(markdown);
+                
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+        
+        let markdown = `# ${title}\n\n`;
+        
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+        
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+        
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+        
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+        
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+        
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+        
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+        
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+        
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+        
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+        
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+        
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

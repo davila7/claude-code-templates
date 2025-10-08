@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js + Vercel + Claude Code Integration: Complete Guide with Agents, Commands and Hooks</title>
+    <meta name="description" content="Complete guide to integrate Next.js and Vercel with Claude Code. Install 10 development commands, 3 specialized AI agents, and 5 automated hooks for Next.js deployment, optimization, and monitoring.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/nextjs-vercel-claude-code-integration/">
+    <meta property="og:title" content="Next.js + Vercel + Claude Code Integration: Complete Guide with Agents, Commands and Hooks">
+    <meta property="og:description" content="Complete guide to integrate Next.js and Vercel with Claude Code. Install 10 development commands, 3 specialized AI agents, and 5 automated hooks for Next.js deployment, optimization, and monitoring.">
+    <meta property="og:image" content="https://www.aitmpl.com/blog/assets/nextjs-vercel-claude-code-templates-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:published_time" content="2025-01-31T10:00:00Z">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Frontend">
+    <meta property="article:tag" content="Next.js">
+    <meta property="article:tag" content="Vercel">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="React">
+    <meta property="article:tag" content="TypeScript">
+    <meta property="article:tag" content="AI Development">
+    <meta property="article:tag" content="Anthropic">
+    <meta property="article:tag" content="Deployment">
+    <meta property="article:tag" content="Performance">
+    <meta property="article:tag" content="Automation">
+    <meta property="article:tag" content="Edge Computing">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aitmpl.com/blog/nextjs-vercel-claude-code-integration/">
+    <meta property="twitter:title" content="Next.js + Vercel + Claude Code Integration: Complete Guide with Agents, Commands and Hooks">
+    <meta property="twitter:description" content="Complete guide to integrate Next.js and Vercel with Claude Code. Install 10 development commands, 3 specialized AI agents, and 5 automated hooks for Next.js deployment, optimization, and monitoring.">
+    <meta property="twitter:image" content="https://www.aitmpl.com/blog/assets/nextjs-vercel-claude-code-templates-cover.png">
+    
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Next.js Claude Code integration, Vercel Claude Code, Next.js AI development, Claude Code agents, Next.js automation, Vercel deployment hooks, React Claude Code, TypeScript automation, Next.js performance optimization, Vercel monitoring, AI-powered frontend development, Next.js best practices, Claude Code templates, Next.js deployment automation, Vercel error monitoring">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/nextjs-vercel-claude-code-integration/">
+    
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Next.js + Vercel + Claude Code Integration: Complete Guide with Agents, Commands and Hooks",
+        "description": "Complete guide to integrate Next.js and Vercel with Claude Code. Install 10 development commands, 3 specialized AI agents, and 5 automated hooks for Next.js deployment, optimization, and monitoring.",
+        "image": "https://www.aitmpl.com/blog/assets/nextjs-vercel-claude-code-templates-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "datePublished": "2025-01-31T10:00:00Z",
+        "dateModified": "2025-01-31T10:00:00Z",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/nextjs-vercel-claude-code-integration/"
+        },
+        "keywords": "Next.js Claude Code integration, Vercel deployment automation, React AI development, frontend optimization, TypeScript automation",
+        "wordCount": "1500",
+        "articleSection": "Frontend Development",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Next.js"
+            },
+            {
+                "@type": "Thing", 
+                "name": "Vercel"
+            },
+            {
+                "@type": "Thing",
+                "name": "Claude Code"
+            },
+            {
+                "@type": "Thing",
+                "name": "Frontend Development"
+            }
+        ],
+        "mentions": [
+            {
+                "@type": "SoftwareApplication",
+                "name": "Next.js",
+                "url": "https://nextjs.org"
+            },
+            {
+                "@type": "SoftwareApplication", 
+                "name": "Vercel",
+                "url": "https://vercel.com"
+            },
+            {
+                "@type": "SoftwareApplication", 
+                "name": "Claude Code",
+                "url": "https://claude.ai/code"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art"> 
+██████╗ ██╗      ██████╗  ██████╗ 
+██╔══██╗██║     ██╔═══██╗██╔════╝ 
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">        
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+                
+                <h1 class="article-title">Claude Code + Next.js and Vercel Integration: Complete Guide with Agents, Commands and Hooks</h1>
+                <p class="article-subtitle">Step-by-step tutorial to install and use 3 AI Agents, 10 development commands, and 5 automated hooks for Next.js development, Vercel deployment, and performance monitoring with Claude Code.</p>
+                <div class="article-meta-full">
+                    <time datetime="2025-01-31">January 31, 2025</time>
+                    <span class="read-time">8 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Next.js</span>
+                        <span class="tag">Vercel</span>
+                        <span class="tag">Hooks</span>
+                        <span class="tag">Agents</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="https://www.aitmpl.com/blog/assets/nextjs-vercel-claude-code-templates-cover.png" alt="Next.js, Vercel and Claude Code Integration" class="article-cover" loading="lazy">
+            
+            <div class="article-content-full">
+                <h2>Claude Code stack for Next.js and Vercel</h2>
+
+                <p>Claude Code Templates offers a comprehensive integration for Next.js and Vercel development, featuring specialized AI agents, powerful commands, and intelligent automation hooks:</p>
+
+                <h3>🤖 Agents</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Next.js Architecture Expert</strong></td>
+                            <td>Master of Next.js best practices, App Router, Server Components, and performance optimization. Analyzes project structure and recommends optimal patterns for scalable applications.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vercel Deployment Specialist</strong></td>
+                            <td>Expert in Vercel platform features, edge functions, middleware, and deployment strategies. Optimizes build processes, manages environment variables, and monitors deployment health.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>React Performance Optimizer</strong></td>
+                            <td>Specialist in React performance patterns, bundle optimization, and Core Web Vitals. Identifies performance bottlenecks and implements optimization strategies for lightning-fast user experiences.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>⚡ Commands</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>nextjs-component-generator</strong></td>
+                            <td>Generate production-ready Next.js components with TypeScript, tests, Storybook stories, and proper file structure following Next.js conventions.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>nextjs-page-architect</strong></td>
+                            <td>Create complete Next.js pages with App Router structure, metadata, loading states, error boundaries, and SEO optimization.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>nextjs-api-builder</strong></td>
+                            <td>Build Next.js API routes with proper TypeScript types, validation, error handling, middleware integration, and OpenAPI documentation.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vercel-deployment-manager</strong></td>
+                            <td>Manage Vercel deployments, environment variables, preview deployments, and production releases with automated rollback capabilities.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>nextjs-performance-analyzer</strong></td>
+                            <td>Analyze bundle size, Core Web Vitals, lighthouse scores, and identify optimization opportunities for better performance metrics.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>nextjs-seo-optimizer</strong></td>
+                            <td>Generate SEO-optimized metadata, sitemaps, robots.txt, and structured data for better search engine visibility and social sharing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vercel-edge-functions</strong></td>
+                            <td>Create and deploy Vercel Edge Functions with geolocation, A/B testing, authentication, and performance monitoring capabilities.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>nextjs-database-integrator</strong></td>
+                            <td>Integrate databases with Next.js using Prisma, Drizzle, or other ORMs, with proper connection pooling and query optimization.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>nextjs-testing-suite</strong></td>
+                            <td>Generate comprehensive test suites with Jest, React Testing Library, Playwright E2E tests, and Storybook visual testing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vercel-monitoring-dashboard</strong></td>
+                            <td>Set up monitoring dashboards with Vercel Analytics, Web Vitals tracking, error monitoring, and performance alerting systems.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>🎣 Hooks</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Vercel Auto-Deploy Hook</strong></td>
+                            <td>Automatically trigger Vercel deployments when code changes are committed, with environment-specific deployment strategies and rollback on failure.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance Budget Guard</strong></td>
+                            <td>Monitor bundle size and Core Web Vitals metrics during development, blocking deployments that exceed performance budgets with detailed reports.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Next.js Code Quality Enforcer</strong></td>
+                            <td>Enforce Next.js best practices, proper file structure, component patterns, and TypeScript usage with automated code reviews and suggestions.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vercel Environment Sync</strong></td>
+                            <td>Synchronize environment variables between local development and Vercel deployments, ensuring consistency across all environments.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Deployment Health Monitor</strong></td>
+                            <td>Monitor deployment status, error rates, and performance metrics, sending notifications for failed deployments or performance degradation.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>📊 Status Lines</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Vercel Deployment Monitor</strong></td>
+                            <td>Real-time Vercel deployment monitor showing current build status, deployment URL, and time since last deployment. Displays build state with intuitive icons.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vercel Error Alert System</strong></td>
+                            <td>Intelligent error monitoring system that tracks deployment failures and build issues. Automatically sends desktop notifications when errors are detected.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vercel Multi-Environment Status</strong></td>
+                            <td>Monitors both production and preview environments simultaneously with color-coded status indicators for quick visual assessment of deployment health.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>🔍 MCP Integrations</h3>
+                <table class="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>DeepGraph Next.js MCP</strong></td>
+                            <td>Deep code analysis and visualization for Next.js projects. Understand component relationships, dependencies, and architecture patterns with interactive graph visualization and intelligent code insights.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Browse all components on AITMPL.com</h2>
+
+                <p>Before installing, you can explore all available Next.js and Vercel components on the official Claude Code Templates website:</p>
+
+                <p>Visit <strong><a href="https://aitmpl.com" target="_blank" rel="noopener">aitmpl.com</a></strong> and search for "nextjs" or "vercel" to see:</p>
+
+                <img src="https://www.aitmpl.com/blog/assets/aitmpl-nextjs-search.png" alt="Searching for Next.js components on AITMPL.com" loading="lazy">
+                
+                <!-- Newsletter CTA - Middle -->
+                <div class="newsletter-cta middle-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Stay Updated</h3>
+                        <p>Get new articles, components and templates for Claude Code delivered to your inbox.</p>
+                        
+                        <div id="middle-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="middle-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="middle_hidden_iframe">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                        <iframe name="middle_hidden_iframe" style="display: none;"></iframe>
+                    </div>
+                </div>
+
+                <h2>Installation Options</h2>
+                <p>There are multiple ways to install the Next.js and Vercel stack for Claude Code. Choose the approach that best fits your workflow:</p>
+
+                <h3>Install Individual Components</h3>
+                <pre><code class="language-bash">
+# Install specific agent
+npx claude-code-templates@latest --agent web-tools/nextjs-architecture-expert
+
+# Install specific Next.js command
+npx claude-code-templates@latest --command nextjs-vercel/nextjs-component-generator
+
+# Install specific hook
+npx claude-code-templates@latest --hook automation/vercel-auto-deploy</code></pre>
+                
+                <p><strong>Components will be installed to:</strong></p>
+                <ul>
+                    <li>📁 <code>.claude/commands/</code> - Command files (.md)</li>
+                    <li>📁 <code>.claude/agents/</code> - Agent files (.md)</li>
+                    <li>📄 <code>.claude/settings.json</code> - Hook configurations with embedded logic</li>
+                </ul>
+                <p>Agents and commands are installed as separate markdown files in their respective directories, while hooks are embedded directly into the <code>.claude/settings.json</code> file. Each hook contains its complete logic as an inline bash command within the JSON configuration.</p>
+
+                <h3>Create Global Agents (Available Anywhere)</h3>
+                <pre><code class="language-bash"># Create global agents accessible from any project
+npx claude-code-templates@latest --create-agent web-tools/nextjs-architecture-expert
+npx claude-code-templates@latest --create-agent devops-infrastructure/vercel-deployment-specialist
+npx claude-code-templates@latest --create-agent web-tools/react-performance-optimizer
+
+# List all global agents
+npx claude-code-templates@latest --list-agents
+
+# Update global agents
+npx claude-code-templates@latest --update-agent web-tools/nextjs-architecture-expert
+
+# Remove global agents  
+npx claude-code-templates@latest --remove-agent devops-infrastructure/vercel-deployment-specialist</code></pre>
+
+                <h3>Install Multiple Components at Once</h3>
+                <pre><code class="language-bash">
+# Install specific Next.js commands (comma-separated for multiple)
+npx claude-code-templates@latest --command nextjs-vercel/nextjs-component-generator,nextjs-vercel/nextjs-bundle-analyzer,nextjs-vercel/nextjs-performance-audit
+              </code></pre>      
+
+              <pre><code class="language-bash">
+# Install complete Next.js + Vercel stack in one command
+npx claude-code-templates@latest \
+  --command nextjs-vercel/nextjs-component-generator,nextjs-vercel/nextjs-bundle-analyzer,nextjs-vercel/nextjs-performance-audit,nextjs-vercel/vercel-deploy-optimize,nextjs-vercel/vercel-edge-function,nextjs-vercel/vercel-env-sync \
+  --agent web-tools/nextjs-architecture-expert,devops-infrastructure/vercel-deployment-specialist,web-tools/react-performance-optimizer \
+  --hook automation/vercel-auto-deploy,performance/performance-budget-guard,automation/vercel-environment-sync,automation/deployment-health-monitor \
+  --setting statusline/vercel-deployment-monitor \
+  --mcp deepgraph/deepgraph-nextjs</code></pre>
+  
+                <p><strong>This will install:</strong></p>
+                <ul>
+                    <li>✓ 6 Next.js and Vercel commands</li>
+                    <li>✓ 3 specialized AI agents</li>
+                    <li>✓ 4 intelligent automation hooks</li>
+                    <li>✓ 1 Vercel status line monitor (only one can be active)</li>
+                    <li>✓ 1 DeepGraph MCP Integration</li>
+                </ul>
+
+                <h2>Where Components Are Installed</h2>
+
+                <p>The installation creates a standard Claude Code structure with components organized as follows:</p>
+
+                <pre><code class="language-bash">your-nextjs-project/
+├── .claude/
+│   ├── agents/
+│   │       ├── nextjs-architecture-expert.md
+│   │       ├── vercel-deployment-specialist.md
+│   │       └── react-performance-optimizer.md
+│   ├── commands/
+│   │       ├── nextjs-component-generator.md
+│   │       ├── nextjs-bundle-analyzer.md
+│   │       ├── nextjs-performance-audit.md
+│   │       ├── vercel-deploy-optimize.md
+│   │       ├── vercel-edge-function.md
+│   │       └── vercel-env-sync.md
+│   └── settings.json (contains all hook configurations with embedded logic)
+├── .mcp.json
+└── src/ # Your Next.js application code</code></pre>
+
+                <h3>How Hook Installation Works</h3>
+                <p>When you install a hook using the <code>--hook</code> flag, the CLI performs one key action:</p>
+                <ol>
+                    <li><strong>Configuration in <code>settings.json</code>:</strong> The hook configuration (including all the embedded code logic) is directly added to your <code>.claude/settings.json</code> file. The hook's entire logic is contained within the JSON as an inline bash command, not as separate script files.</li>
+                </ol>
+                <p>For example, here is how the Vercel auto-deploy hook is registered in <code>settings.json</code> with its complete embedded logic:</p>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); TOOL_NAME=$(echo \"$input\" | jq -r \".tool_name\"); FILE_PATH=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE_PATH\" =~ \\.(js|jsx|ts|tsx)$ ]]; then echo \"🚀 Triggering Vercel deployment...\"; vercel --yes; fi'",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+                <p>This configuration contains the complete hook logic embedded directly in the JSON, ensuring automated deployment workflows run seamlessly when code changes occur.</p>
+
+                <h3>How MCP Integration Works</h3>
+                <p>When you install an MCP (Model Context Protocol) integration, the command configures the connection to the MCP server in the <code>.mcp.json</code> file in your project's root directory. This file acts as a central registry for all MCP tools, allowing Claude Code to discover and use them.</p>
+                
+                <h2>Using the Next.js and Vercel Stack</h2>
+
+                <p>Once installed, you can immediately start using the components in your Claude Code sessions:</p>
+
+                <h3>Quick Start Commands</h3>
+                <pre><code class="language-bash"># Generate a new Next.js component
+/nextjs-component-generator UserProfile components/ui
+
+# Analyze Next.js bundle size
+/nextjs-bundle-analyzer
+
+# Audit Next.js performance
+/nextjs-performance-audit
+
+# Optimize Vercel deployment
+/vercel-deploy-optimize
+
+# Create Vercel edge function
+/vercel-edge-function</code></pre>
+
+                <h3>AI Agents Integration</h3>
+                <p>You can activate the specialized agents by directly asking for them in your prompt. Mentioning the agent's role or name is enough to have them handle your request with their specific expertise.</p>
+                <pre><code class="language-bash"># Ask the agent to perform a task by mentioning its role
+> As the Next.js Architecture Expert, can you review my app structure for best practices?
+
+# Another example
+> I need the Vercel Deployment Specialist to help me optimize my deployment strategy.
+</code></pre>
+
+                <h3>Automated Hooks</h3>
+                <p>The hooks are triggered automatically by specific events within your Claude Code session. For example, a hook might run after you modify a file or use a specific tool. Once installed, they work in the background to automate tasks:</p>
+                <ul>
+                    <li>🚀 <strong>Auto-deploy</strong> triggers after file modifications to initiate a new Vercel deployment.</li>
+                    <li>📊 <strong>Performance guard</strong> blocks deployments that exceed budgets</li>
+                    <li>✅ <strong>Code quality enforcer</strong> ensures Next.js best practices</li>
+                    <li>🔄 <strong>Environment sync</strong> keeps variables consistent</li>
+                    <li>📈 <strong>Health monitor</strong> tracks deployment success</li>
+                </ul>
+
+                <h2>Advanced Features</h2>
+
+                <h3>Status Line Integration</h3>
+                <p>The stack includes three pre-built Vercel status line monitors that display real-time deployment information at the bottom of your Claude Code interface:</p>
+                
+                <div class="alert-box">
+                    <p><strong>⚠️ Important:</strong> Only one statusline can be active at a time in Claude Code. Installing a new statusline will replace any existing one. You can switch between statuslines by installing different ones.</p>
+                </div>
+                <h4>🔹 Vercel Deployment Monitor</h4>
+                <p>Shows current build status, deployment URL, and time since last deployment with intuitive icons:</p>
+                <h4>Install:</h4>
+                <pre><code class="language-bash"># Install basic deployment monitor
+npx claude-code-templates@latest --setting statusline/vercel-deployment-monitor
+                </code></pre>
+                <h4>Result:</h4>
+                <pre><code class="language-bash">▲ Vercel 🚀 ✅ READY | 🌐 my-app-xyz.vercel.app | ⏰ 5m ago | 📁 my-project</code></pre>
+                <h3>🔹 Vercel Error Alert System</h3>
+                <p>Intelligent error monitoring with desktop notifications and building status tracking:</p>
+                <h4>Install:</h4>
+                <pre><code class="language-bash"># Install error alert system with notifications
+npx claude-code-templates@latest --setting statusline/vercel-error-alert-system
+                </code></pre>
+                <h4>Result:</h4>
+                <pre><code class="language-bash">▲ Vercel 🚀 🚨 2 errors! | Building: 0 | 📁 my-project</code></pre>
+                <h3>🔹 Vercel Multi-Environment Status</h3>
+                <p>Monitors production and preview environments simultaneously with color-coded indicators:</p>
+                <h4>Install:</h4>
+                <pre><code class="language-bash"># Install multi-environment status monitor
+npx claude-code-templates@latest --setting statusline/vercel-multi-env-status
+                </code></pre>
+                <h4>Result:</h4>
+                <pre>
+                    <code class="language-bash">▲ Vercel 🚀 Prod:🟢 Prev:🟡 | 📁 my-project</code>
+                </pre>
+                <p><strong>Setup Requirements:</strong></p>
+                <ul>
+                    <li>📊 Export <code>VERCEL_TOKEN=your_token</code> (get from <a href="https://vercel.com/account/tokens" target="_blank">vercel.com/account/tokens</a>)</li>
+                    <li>🔧 Export <code>VERCEL_PROJECT_ID=your_project_id</code> (from Vercel dashboard)</li>
+                    <li>⚡ Remember: Only one statusline can be active at a time</li>
+                </ul>
+
+                <!-- Newsletter CTA - End -->
+                <div class="newsletter-cta end-newsletter">
+                    <div class="newsletter-cta-content">
+                        <h3>Want More?</h3>
+                        <p>Subscribe to receive new Claude Code articles, components and integration tutorials.</p>
+                        
+                        <div id="end-newsletter-success" class="newsletter-message success-message" style="display: none;">
+                            ✓ Subscribed successfully
+                        </div>
+                        
+                        <div id="end-newsletter-error" class="newsletter-message error-message" style="display: none;">
+                            ✗ Error. Try again.
+                        </div>
+                        
+                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="end_hidden_iframe">
+                            <div class="input-group">
+                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
+                                <button type="submit" class="newsletter-submit">
+                                    <span class="submit-text">→</span>
+                                </button>
+                            </div>
+                            <input type="text" name="email_address_check" value="" style="display: none;">
+                            <input type="hidden" name="locale" value="en">
+                        </form>
+                        <iframe name="end_hidden_iframe" style="display: none;"></iframe>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗     
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║     
+███████║██║   ██║   ██╔████╔██║██████╔╝██║     
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║     
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+        
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+            
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+            
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+            
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+            
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+            
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+            
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+            
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+            
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+        
+        // Check content patterns
+        const content = codeElement.textContent;
+        
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+        
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+            
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+            
+            if (!code) return;
+            
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+                
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+                
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+                
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') || 
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+                
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Newsletter forms handler
+function initNewsletterForm(formId, successId, errorId) {
+    const form = document.getElementById(formId);
+    const successMessage = document.getElementById(successId);
+    const errorMessage = document.getElementById(errorId);
+    
+    if (!form) return;
+    
+    const submitButton = form.querySelector('.newsletter-submit');
+    const submitText = submitButton.querySelector('.submit-text');
+    
+    form.addEventListener('submit', (e) => {
+        // Set loading state
+        submitButton.disabled = true;
+        submitText.textContent = '...';
+        
+        // Hide messages initially
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        
+        // Show success message after form submits to iframe
+        setTimeout(() => {
+            successMessage.style.display = 'block';
+            submitButton.disabled = false;
+            submitText.textContent = '→';
+            form.reset();
+        }, 1500);
+    });
+}
+
+// Initialize both newsletter forms
+document.addEventListener('DOMContentLoaded', () => {
+    initNewsletterForm('middle-newsletter-form', 'middle-newsletter-success', 'middle-newsletter-error');
+    initNewsletterForm('end-newsletter-form', 'end-newsletter-success', 'end-newsletter-error');
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+            
+            try {
+                await navigator.clipboard.writeText(markdown);
+                
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+        
+        let markdown = `# ${title}\n\n`;
+        
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+        
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+        
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+        
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+        
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+        
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+        
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+        
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+        
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+        
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+        
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+        
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>
