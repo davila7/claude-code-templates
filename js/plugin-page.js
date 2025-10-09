@@ -141,7 +141,7 @@ class PluginPageManager {
             .join('');
 
         // Update installation commands
-        document.getElementById('installPluginCmd').textContent = `/plugin install ${plugin.name}`;
+        document.getElementById('installPluginCmd').textContent = `/plugin install "${plugin.name}"@claude-code-templates`;
 
         // Render components sections
         this.renderComponents(plugin);
