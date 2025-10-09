@@ -141,7 +141,7 @@ class PluginPageManager {
             .join('');
 
         // Update installation commands
-        document.getElementById('installPluginCmd').textContent = `/plugin install "${plugin.name}"@claude-code-templates`;
+        document.getElementById('installPluginCmd').textContent = `/plugin install ${plugin.name}@claude-code-templates`;
 
         // Render components sections
         this.renderComponents(plugin);
@@ -345,25 +345,39 @@ class PluginPageManager {
 /**
  * Copy command to clipboard
  */
-function copyCommand(elementId) {
+function copyCommand(elementId, event) {
     const element = document.getElementById(elementId);
     const text = element.textContent;
 
     navigator.clipboard.writeText(text).then(() => {
-        // Show feedback
-        const button = event.target.closest('.copy-btn');
-        const originalHTML = button.innerHTML;
+        // Show feedback - find the button that was clicked
+        let button = null;
+        if (event && event.target) {
+            button = event.target.closest('.copy-btn');
+        }
 
-        button.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
-            </svg>
-            Copied!
-        `;
+        // If we can't find the button through event, try to find it near the element
+        if (!button) {
+            const parentContainer = element.closest('.command-box');
+            if (parentContainer) {
+                button = parentContainer.querySelector('.copy-btn');
+            }
+        }
 
-        setTimeout(() => {
-            button.innerHTML = originalHTML;
-        }, 2000);
+        if (button) {
+            const originalHTML = button.innerHTML;
+
+            button.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                </svg>
+                Copied!
+            `;
+
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+            }, 2000);
+        }
     }).catch(err => {
         console.error('Failed to copy:', err);
     });

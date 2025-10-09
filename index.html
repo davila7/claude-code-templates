@@ -144,6 +144,25 @@
     </header>
 
     <main class="terminal">
+        <!-- Plugin Marketplace Announcement Banner -->
+        <section class="announcement-banner">
+            <div class="container">
+                <div class="banner-content">
+                    <div class="banner-icon">🎉</div>
+                    <div class="banner-text">
+                        <h3>Plugin Marketplace Now Available!</h3>
+                        <p>Discover and install <strong>10 ready-to-use plugins</strong> for Claude Code. Extend your workflow with pre-configured component bundles.</p>
+                    </div>
+                    <a href="/plugins" class="banner-cta" onclick="handleFilterClick(event, 'plugins')">
+                        Explore Plugins
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <section class="stats-section">
             <div class="stats-badges">
                 <a href="https://www.npmjs.com/package/claude-code-templates" target="_blank" class="stat-badge-link">
@@ -219,7 +238,7 @@
                         <a href="/mcps" class="filter-chip" data-filter="mcps" onclick="handleFilterClick(event, 'mcps')">
                             <span class="chip-icon">🔌</span>mcps
                         </a>
-                        <a href="/plugins" class="filter-chip" data-filter="plugins" onclick="handleFilterClick(event, 'plugins')" style="display: none;">
+                        <a href="/plugins" class="filter-chip" data-filter="plugins" onclick="handleFilterClick(event, 'plugins')">
                             <span class="new-label">NEW</span>
                             <span class="chip-icon">🧩</span>plugins
                         </a>

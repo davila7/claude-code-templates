@@ -502,6 +502,27 @@ class IndexPageManager {
             return;
         }
 
+        // Add marketplace setup notice
+        const marketplaceNotice = document.createElement('div');
+        marketplaceNotice.className = 'plugin-marketplace-notice';
+        marketplaceNotice.innerHTML = `
+            <div class="notice-icon">ℹ️</div>
+            <div class="notice-content">
+                <h4>First Time Setup Required</h4>
+                <p>Before installing any plugin, you need to add the marketplace to Claude Code:</p>
+                <div class="notice-command">
+                    <code>/plugin marketplace add https://github.com/davila7/claude-code-templates</code>
+                    <button class="notice-copy-btn" onclick="copyToClipboard('/plugin marketplace add https://github.com/davila7/claude-code-templates'); event.stopPropagation();" title="Copy command">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="notice-footer">After adding the marketplace, you can install any plugin below.</p>
+            </div>
+        `;
+        grid.appendChild(marketplaceNotice);
+
         // Create plugin cards
         plugins.forEach(plugin => {
             const pluginCard = this.createPluginCard(plugin);
