@@ -260,20 +260,20 @@ function updateURLWithFilter(filter) {
 function getFilterFromURL() {
     const path = window.location.pathname;
     const segments = path.split('/').filter(segment => segment);
-    
+
     // Check if first segment is a valid filter
-    const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates'];
+    const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates', 'plugins'];
     const firstSegment = segments[0];
-    
+
     if (firstSegment && validFilters.includes(firstSegment)) {
         return firstSegment;
     }
-    
+
     // If no valid filter found and we're on root, default to agents
     if (path === '/' || path === '') {
         return 'agents';
     }
-    
+
     return 'agents'; // Default fallback
 }
 

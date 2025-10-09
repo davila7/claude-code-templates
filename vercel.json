@@ -29,6 +29,14 @@
       "destination": "/index.html"
     },
     {
+      "source": "/plugins",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/plugin/:name",
+      "destination": "/plugin.html"
+    },
+    {
       "source": "/component/:type/:name*",
       "destination": "/component.html"
     }

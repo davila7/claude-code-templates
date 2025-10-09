@@ -115,14 +115,13 @@ class TrendingPage {
             return;
         }
 
-        // Define categories to show and their display info
+        // Define categories to show and their display info (excluding templates)
         const categories = [
             { key: 'agents', title: 'Agents', icon: 'M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z' },
             { key: 'commands', title: 'Commands', icon: 'M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM2.5 8a5.5 5.5 0 1 0 11 0 5.5 5.5 0 0 0-11 0z' },
             { key: 'mcps', title: 'MCPs', icon: 'M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c0 .026.009.051.025.072L2.5 7a.5.5 0 0 1 0 .708L1.025 9.133a.149.149 0 0 0-.025.072V10.5A1.5 1.5 0 0 0 2.5 12h2.793a.149.149 0 0 0 .072-.025L7 10.5a.5.5 0 0 1 .708 0l1.625 1.475c.021.016.046.025.072.025H12.5A1.5 1.5 0 0 0 14 10.5v-.793a.149.149 0 0 0-.025-.072L12.5 8a.5.5 0 0 1 0-.708l1.475-1.625a.149.149 0 0 0 .025-.072V4.5A1.5 1.5 0 0 0 12.5 3H9.707a.149.149 0 0 0-.072.025L8 4.5a.5.5 0 0 1-.708 0L5.867 3.025A.149.149 0 0 0 5.793 3H2.5z' },
             { key: 'settings', title: 'Settings', icon: 'M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z' },
-            { key: 'hooks', title: 'Hooks', icon: 'M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4.2-4.2a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z' },
-            { key: 'templates', title: 'Templates', icon: 'M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25H1.75zM7.25 4a.75.75 0 0 1 1.5 0v4.25H12a.75.75 0 0 1 0 1.5H8.75V12a.75.75 0 0 1-1.5 0V9.75H4a.75.75 0 0 1 0-1.5h3.25V4z' }
+            { key: 'hooks', title: 'Hooks', icon: 'M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4.2-4.2a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z' }
         ];
 
         container.innerHTML = '';
@@ -187,18 +186,17 @@ class TrendingPage {
             return;
         }
 
-        // Chart colors matching terminal theme
+        // Chart colors matching terminal theme (excluding templates)
         const colors = {
             commands: '#10b981',    // emerald (green)
             agents: '#f59e0b',      // amber (yellow)
             mcps: '#3b82f6',        // blue
             settings: '#8b5cf6',    // violet
-            hooks: '#f97316',       // orange
-            templates: '#06b6d4'    // cyan
+            hooks: '#f97316'        // orange
         };
 
-        // Define the desired order for the legend (agents first - most popular)
-        const categoryOrder = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'templates'];
+        // Define the desired order for the legend (agents first - most popular, excluding templates)
+        const categoryOrder = ['agents', 'commands', 'mcps', 'settings', 'hooks'];
 
         // Prepare datasets in the specified order
         const datasets = categoryOrder
@@ -594,45 +592,56 @@ document.addEventListener('DOMContentLoaded', () => {
 function showInstallModal(componentName) {
     const modal = document.getElementById('installModal');
     const commandText = document.getElementById('commandText');
-    
+
     // Determine the component type from the current filter or component name
     let componentType = 'command'; // default
-    
+    let componentCategory = '';
+
     // Get the current trending page instance to check the type
     if (window.trendingPageInstance) {
         componentType = window.trendingPageInstance.currentType || 'commands';
+
+        // Find the component in the data to get its category
+        const items = window.trendingPageInstance.data.trending[componentType] || [];
+        const item = items.find(i => (i.id || i.name) === componentName);
+        if (item && item.category) {
+            componentCategory = item.category;
+        }
     }
-    
+
     // Convert plural to singular for the command flag
     const typeMap = {
         'agents': 'agent',
-        'commands': 'command', 
+        'commands': 'command',
         'settings': 'setting',
         'hooks': 'hook',
         'mcps': 'mcp',
         'templates': 'template'
     };
-    
+
     const flagType = typeMap[componentType] || 'command';
-    
+
     // Clean the component name by removing prefixes
     let cleanName = componentName;
     const prefixesToRemove = ['agent-', 'command-', 'setting-', 'hook-', 'mcp-', 'template-'];
-    
+
     for (const prefix of prefixesToRemove) {
         if (cleanName.startsWith(prefix)) {
             cleanName = cleanName.substring(prefix.length);
             break;
         }
     }
-    
-    // Update the command with the correct flag and clean component name
-    const command = `npx claude-code-templates@latest --${flagType} ${cleanName} --yes`;
+
+    // Build the full component path: category/name
+    const componentPath = componentCategory ? `${componentCategory}/${cleanName}` : cleanName;
+
+    // Update the command with the correct flag and full component path
+    const command = `npx claude-code-templates@latest --${flagType} ${componentPath} --yes`;
     commandText.textContent = command;
-    
+
     // Show the modal
     modal.classList.add('show');
-    
+
     // Prevent body scrolling
     document.body.style.overflow = 'hidden';
 }

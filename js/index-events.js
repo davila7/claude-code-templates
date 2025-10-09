@@ -22,7 +22,8 @@ class IndexPageManager {
             mcps: new Set(),
             settings: new Set(),
             hooks: new Set(),
-            templates: new Set()
+            templates: new Set(),
+            plugins: new Set()
         };
         
         // Pagination settings
@@ -64,23 +65,60 @@ class IndexPageManager {
         try {
             // Setup event listeners first (they don't depend on data)
             this.setupEventListeners();
-            
+
             // Show loading state
             this.showLoadingState(true);
-            
+
             // Load all components and templates at once
             await this.loadComponentsData();
             await this.loadTemplatesData();
-            
+
+            // Check if URL has a specific filter and update accordingly
+            const filterFromURL = this.getFilterFromURL();
+            if (filterFromURL && filterFromURL !== this.currentFilter) {
+                this.currentFilter = filterFromURL;
+
+                // Update active filter chip
+                document.querySelectorAll('.component-type-filters .filter-chip').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const activeBtn = document.querySelector(`.component-type-filters [data-filter="${filterFromURL}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+            }
+
             // Display components
             this.displayCurrentFilter();
-            
+
+            // Show category filters for the current filter
+            if (typeof showCategoryFilters === 'function') {
+                showCategoryFilters(this.currentFilter);
+            }
+
         } catch (error) {
             console.error('Error initializing index page:', error);
             this.showError('Failed to load data. Please refresh the page.');
         } finally {
             this.showLoadingState(false);
         }
+    }
+
+    // Get filter from URL path
+    getFilterFromURL() {
+        const path = window.location.pathname;
+        const segments = path.split('/').filter(segment => segment);
+
+        // Check if first segment is a valid filter
+        const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates', 'plugins'];
+        const firstSegment = segments[0];
+
+        if (firstSegment && validFilters.includes(firstSegment)) {
+            return firstSegment;
+        }
+
+        // Default to agents
+        return 'agents';
     }
 
     async loadTemplatesData() {
@@ -183,13 +221,18 @@ class IndexPageManager {
         this.currentFilter = filter;
         this.currentPage = 1; // Reset to first page when changing filter
         this.currentCategoryFilter = 'all'; // Reset category filter to show all items
-        
+
         // Update active button
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.filter === filter);
         });
-        
+
         this.displayCurrentFilter();
+
+        // Show category filters for the new filter
+        if (typeof showCategoryFilters === 'function') {
+            showCategoryFilters(filter);
+        }
     }
 
     // Set category filter
@@ -388,6 +431,9 @@ class IndexPageManager {
             case 'templates':
                 this.displayTemplates(grid);
                 break;
+            case 'plugins':
+                this.displayPlugins(grid);
+                break;
             case 'agents':
             case 'commands':
             case 'mcps':
@@ -437,6 +483,89 @@ class IndexPageManager {
             const templateCard = this.createTemplateCardFromJSON(template);
             grid.appendChild(templateCard);
         });
+    }
+
+    displayPlugins(grid) {
+        if (!this.componentsData || !this.componentsData.plugins) {
+            grid.innerHTML = '<div class="loading">Loading plugins...</div>';
+            return;
+        }
+
+        // Clear the grid
+        grid.innerHTML = '';
+
+        // Get plugins from loaded components data
+        const plugins = this.componentsData.plugins;
+
+        if (plugins.length === 0) {
+            grid.innerHTML = '<div class="no-data">No plugins available</div>';
+            return;
+        }
+
+        // Create plugin cards
+        plugins.forEach(plugin => {
+            const pluginCard = this.createPluginCard(plugin);
+            grid.appendChild(pluginCard);
+        });
+    }
+
+    createPluginCard(plugin) {
+        const card = document.createElement('div');
+        card.className = 'template-card plugin-card';
+
+        // Count components
+        const totalComponents = (plugin.commands || 0) + (plugin.agents || 0) + (plugin.mcpServers || 0);
+
+        card.innerHTML = `
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="plugin-content-wrapper">
+                        <div class="plugin-version">v${plugin.version}</div>
+                        <div class="framework-logo" style="color: #a855f7">
+                            <span class="component-icon">🧩</span>
+                        </div>
+                        <h3 class="template-title">${this.formatComponentName(plugin.name)}</h3>
+                        <p class="template-description">${plugin.description}</p>
+                        <div class="plugin-stats">
+                            ${plugin.commands > 0 ? `<span class="plugin-stat"><span class="stat-icon">⚡</span>${plugin.commands}</span>` : ''}
+                            ${plugin.agents > 0 ? `<span class="plugin-stat"><span class="stat-icon">🤖</span>${plugin.agents}</span>` : ''}
+                            ${plugin.mcpServers > 0 ? `<span class="plugin-stat"><span class="stat-icon">🔌</span>${plugin.mcpServers}</span>` : ''}
+                        </div>
+                        <div class="plugin-keywords">
+                            ${plugin.keywords.map(keyword => `<span class="keyword-badge">${keyword}</span>`).join('')}
+                        </div>
+                    </div>
+                    <button class="plugin-view-details-btn" onclick="window.location.href='/plugin/${plugin.name}'; event.stopPropagation();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                        </svg>
+                        View Details
+                    </button>
+                </div>
+                <div class="card-back">
+                    <div class="command-display">
+                        <h3>Installation Command</h3>
+                        <div class="command-code-container">
+                            <div class="command-code">${plugin.installCommand}</div>
+                            <button class="copy-overlay-btn" onclick="copyToClipboard('${plugin.installCommand.replace(/'/g, "\\'")}'); event.stopPropagation();" title="Copy command">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                                Copy Command
+                            </button>
+                        </div>
+                        <div class="plugin-components-list">
+                            <h4>Included Components (${totalComponents})</h4>
+                            ${plugin.commands > 0 ? `<div class="component-type-item">⚡ ${plugin.commands} Command${plugin.commands > 1 ? 's' : ''}</div>` : ''}
+                            ${plugin.agents > 0 ? `<div class="component-type-item">🤖 ${plugin.agents} Agent${plugin.agents > 1 ? 's' : ''}</div>` : ''}
+                            ${plugin.mcpServers > 0 ? `<div class="component-type-item">🔌 ${plugin.mcpServers} MCP${plugin.mcpServers > 1 ? 's' : ''}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return card;
     }
 
     displayComponents(grid, type) {
@@ -1122,6 +1251,10 @@ function showCategoryFilters(componentType) {
                 console.log('Templates data:', templates);
                 categories = getUniqueCategories(templates);
                 break;
+            case 'plugins':
+                // Plugins don't have categories
+                categories = [];
+                break;
             default:
                 categories = [];
         }
@@ -1743,19 +1876,7 @@ function handleAddToCart(name, path, type, category, buttonElement) {
 document.addEventListener('DOMContentLoaded', () => {
     window.indexManager = new IndexPageManager();
     window.indexManager.init();
-    
-    // Initialize category filters for default selection (agents)
-    // Wait for components to load, then show categories
-    const initCategories = () => {
-        if (window.dataLoader && window.dataLoader.componentsData) {
-            showCategoryFilters('agents');
-        } else {
-            setTimeout(initCategories, 200);
-        }
-    };
-    
-    setTimeout(initCategories, 100);
-    
+
     // Focus search input on page load and setup terminal cursor
     setTimeout(() => {
         const searchInput = document.getElementById('searchInput');

@@ -443,6 +443,24 @@ body {
     letter-spacing: 0.5px;
 }
 
+.filter-chip {
+    position: relative;
+}
+
+.filter-chip .new-label {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--accent-color);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 6px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .tool-card:hover {
     border-color: var(--text-accent);
     box-shadow: 0 4px 12px var(--shadow-primary);
@@ -2197,6 +2215,162 @@ body {
 
 .unified-grid.components-mode {
     /* Component specific styles if needed */
+}
+
+/* Plugin Cards */
+.plugin-card {
+    height: auto;
+    min-height: 480px;
+}
+
+.plugin-card .template-card {
+    height: 100%;
+}
+
+.plugin-card .card-front {
+    min-height: 480px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 1.5rem;
+    overflow: visible;
+}
+
+.plugin-card .plugin-content-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.plugin-card .framework-logo {
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+}
+
+.plugin-card .template-title {
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.plugin-card .plugin-version {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.plugin-card .template-description {
+    margin: 0 0 1.25rem 0;
+    line-height: 1.6;
+    flex-shrink: 0;
+    white-space: normal;
+    overflow: visible;
+}
+
+.plugin-card .plugin-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0 0 1.25rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-secondary);
+    border-bottom: 1px solid var(--border-secondary);
+    flex-shrink: 0;
+}
+
+.plugin-card .plugin-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.plugin-card .plugin-stat .stat-icon {
+    font-size: 1.1rem;
+}
+
+.plugin-card .plugin-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+.plugin-card .keyword-badge {
+    background: var(--bg-tertiary);
+    color: var(--text-accent);
+    padding: 0.3rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid var(--border-secondary);
+}
+
+.plugin-card .plugin-view-details-btn {
+    margin-top: auto;
+    padding: 0.75rem 1.5rem;
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    flex-shrink: 0;
+    align-self: flex-end;
+}
+
+.plugin-card .plugin-view-details-btn:hover {
+    background: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.plugin-card .plugin-view-details-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.plugin-card .plugin-view-details-btn:hover svg {
+    transform: translateX(2px);
+}
+
+.plugin-components-list {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-secondary);
+}
+
+.plugin-components-list h4 {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.component-type-item {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
 }
 
 /* Components Grid */
