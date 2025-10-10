@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [framework] | --cypress | --playwright | --webdriver | --puppeteer | --mobile
 description: Configure comprehensive end-to-end testing suite with framework selection and CI integration
-model: sonnet
 ---
 
 # E2E Setup
@@ -23,6 +22,7 @@ Implement comprehensive end-to-end testing with framework selection and optimiza
 **Framework Focus**: Use $ARGUMENTS to specify Cypress, Playwright, WebDriver, Puppeteer, mobile testing, or auto-detect best fit
 
 **E2E Testing Framework**:
+
 1. **Framework Selection & Setup** - Choose optimal E2E tool, install dependencies, configure basic settings, setup project structure
 2. **Test Environment Configuration** - Setup test environments, configure base URLs, implement environment switching, optimize test isolation
 3. **Page Object Patterns** - Design page object model, create reusable components, implement element selectors, optimize maintainability

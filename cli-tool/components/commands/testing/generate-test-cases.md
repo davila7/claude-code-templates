@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [target] | [scope] | --unit | --integration | --edge-cases | --automatic
 description: Generate comprehensive test cases with automatic analysis and coverage optimization
-model: sonnet
 ---
 
 # Generate Test Cases
@@ -23,6 +22,7 @@ Execute intelligent test case generation with comprehensive coverage and optimiz
 **Generation Scope**: Use $ARGUMENTS to specify target file, unit tests, integration tests, edge cases, or automatic comprehensive generation
 
 **Test Case Generation Framework**:
+
 1. **Code Structure Analysis** - Parse function signatures, analyze control flow, identify branching paths, assess complexity metrics
 2. **Test Pattern Recognition** - Analyze existing test patterns, identify testing conventions, extract reusable patterns, optimize consistency
 3. **Input Space Analysis** - Identify parameter domains, analyze boundary conditions, discover edge cases, evaluate error conditions

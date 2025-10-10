@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [target-code] | [test-type] | --rust | --inline | --refactoring-suggestions
 description: Create comprehensive integration testing plan with inline tests and refactoring recommendations
-model: sonnet
 ---
 
 # Testing Plan Integration
@@ -23,6 +22,7 @@ Execute comprehensive integration testing plan with testability analysis:
 **Planning Focus**: Use $ARGUMENTS to specify target code, test type requirements, Rust inline testing, or refactoring suggestions
 
 **Integration Testing Framework**:
+
 1. **Code Testability Analysis** - Analyze target code structure, identify testing challenges, assess coupling levels, evaluate dependency injection
 2. **Test Strategy Design** - Design integration test approach, plan inline vs separate test files, identify test boundaries, optimize test isolation
 3. **Refactoring Assessment** - Identify testability improvements, suggest dependency injection, recommend interface abstractions, optimize component boundaries

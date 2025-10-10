@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [coverage-type] | --line | --branch | --function | --statement | --report
 description: Analyze and improve test coverage with comprehensive reporting and gap identification
-model: sonnet
 ---
 
 # Test Coverage
@@ -23,6 +22,7 @@ Execute comprehensive coverage analysis with improvement recommendations and rep
 **Coverage Type**: Use $ARGUMENTS to focus on line coverage, branch coverage, function coverage, statement coverage, or comprehensive reporting
 
 **Coverage Analysis Framework**:
+
 1. **Coverage Tool Setup** - Configure appropriate tools (Jest, NYC, Istanbul, Coverage.py, JaCoCo), setup collection settings, optimize performance, enable reporting
 2. **Coverage Measurement** - Generate line coverage, branch coverage, function coverage, statement coverage reports, identify uncovered code paths
 3. **Gap Analysis** - Identify critical uncovered paths, analyze coverage quality, assess business logic coverage, evaluate edge case handling

@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [language] | --javascript | --java | --python | --rust | --go | --csharp
 description: Setup comprehensive mutation testing with framework selection and CI integration
-model: sonnet
 ---
 
 # Add Mutation Testing
@@ -23,6 +22,7 @@ Implement comprehensive mutation testing with framework optimization and quality
 **Language Focus**: Use $ARGUMENTS to specify JavaScript, Java, Python, Rust, Go, C#, or auto-detect from codebase
 
 **Mutation Testing Framework**:
+
 1. **Tool Selection & Setup** - Choose framework (Stryker, PIT, mutmut, cargo-mutants), install dependencies, configure basic settings, validate installation
 2. **Mutation Operator Configuration** - Configure arithmetic operators, relational operators, logical operators, conditional boundaries, statement mutations
 3. **Performance Optimization** - Setup parallel execution, configure incremental testing, optimize file filtering, implement caching strategies

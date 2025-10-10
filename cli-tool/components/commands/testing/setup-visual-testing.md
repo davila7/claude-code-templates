@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [testing-scope] | --components | --pages | --responsive | --cross-browser | --accessibility
 description: Setup comprehensive visual regression testing with cross-browser and responsive testing
-model: sonnet
 ---
 
 # Setup Visual Testing
@@ -23,6 +22,7 @@ Implement comprehensive visual testing with regression detection and accessibili
 **Testing Scope**: Use $ARGUMENTS to focus on component testing, page testing, responsive testing, cross-browser testing, or accessibility testing
 
 **Visual Testing Framework**:
+
 1. **Tool Selection & Setup** - Choose visual testing tools (Percy, Chromatic, BackstopJS, Playwright), configure integration, setup environments
 2. **Baseline Creation** - Capture visual baselines, organize screenshot structure, implement version control, optimize image management
 3. **Test Scenario Design** - Create component tests, design page workflows, implement responsive breakpoints, configure browser matrix

@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [automation-type] | --changelog | --workflow-demo | --ci-integration | --validation
 description: Automate changelog testing workflow with CI integration and validation
-model: sonnet
 ---
 
 # Test Changelog Automation
@@ -23,6 +22,7 @@ Implement comprehensive changelog automation with testing and validation workflo
 **Automation Type**: Use $ARGUMENTS to focus on changelog automation, workflow demonstration, CI integration, or validation testing
 
 **Changelog Automation Framework**:
+
 1. **Automation Setup** - Configure changelog generation, setup version control integration, implement automated updates, design validation rules
 2. **Workflow Integration** - Design CI/CD integration, configure automated triggers, implement validation checks, optimize execution performance
 3. **Testing Strategy** - Create changelog validation tests, implement format verification, design content validation, setup regression testing

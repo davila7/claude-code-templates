@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [testing-type] | --capacity | --stress | --spike | --endurance | --volume
 description: Configure comprehensive load testing with performance metrics and bottleneck identification
-model: sonnet
 ---
 
 # Setup Load Testing
@@ -23,6 +22,7 @@ Implement comprehensive load testing with performance optimization and bottlenec
 **Testing Type**: Use $ARGUMENTS to focus on capacity planning, stress testing, spike testing, endurance testing, or volume testing
 
 **Load Testing Framework**:
+
 1. **Strategy & Requirements** - Analyze application architecture, define testing objectives, determine scenarios, identify performance metrics
 2. **Tool Selection & Setup** - Choose appropriate tools (k6, Artillery, JMeter, Gatling), install dependencies, configure environments
 3. **Test Scenario Design** - Create realistic user scenarios, implement API test scripts, configure data generation, design load patterns

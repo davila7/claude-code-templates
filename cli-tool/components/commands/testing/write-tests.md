@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [target-file] | [test-type] | --unit | --integration | --e2e | --component
 description: Write comprehensive unit and integration tests with proper mocking and coverage
-model: sonnet
 ---
 
 # Write Tests
@@ -23,6 +22,7 @@ Execute comprehensive test writing with framework-specific optimizations and bes
 **Test Focus**: Use $ARGUMENTS to specify target file, unit tests, integration tests, e2e tests, or component tests
 
 **Test Writing Framework**:
+
 1. **Code Analysis** - Analyze target code structure, identify testable functions, assess dependency complexity, evaluate edge cases
 2. **Test Strategy Design** - Plan test organization, design test hierarchies, identify mock requirements, optimize test isolation
 3. **Framework Integration** - Setup framework-specific patterns, configure test utilities, implement proper assertions, optimize test performance

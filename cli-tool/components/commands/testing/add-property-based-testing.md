@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [language] | --javascript | --python | --java | --haskell | --rust | --clojure
 description: Implement property-based testing with framework selection and invariant identification
-model: sonnet
 ---
 
 # Add Property-Based Testing
@@ -23,6 +22,7 @@ Implement comprehensive property-based testing with invariant analysis and autom
 **Language Focus**: Use $ARGUMENTS to specify JavaScript, Python, Java, Haskell, Rust, Clojure, or auto-detect from codebase
 
 **Property-Based Testing Framework**:
+
 1. **Framework Selection** - Choose appropriate tool (fast-check, Hypothesis, QuickCheck, proptest), install dependencies, configure integration
 2. **Property Identification** - Analyze mathematical properties, identify business invariants, discover symmetries, evaluate round-trip properties
 3. **Generator Design** - Create custom data generators, implement constraint-based generation, design composite generators, optimize generation strategies

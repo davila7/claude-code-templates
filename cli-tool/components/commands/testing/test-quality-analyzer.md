@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [analysis-type] | --coverage-quality | --test-effectiveness | --maintainability | --performance-analysis
 description: Analyze test suite quality with comprehensive metrics and improvement recommendations
-model: sonnet
 ---
 
 # Test Quality Analyzer
@@ -23,6 +22,7 @@ Execute comprehensive test quality analysis with improvement recommendations and
 **Analysis Type**: Use $ARGUMENTS to focus on coverage quality, test effectiveness, maintainability analysis, or performance analysis
 
 **Test Quality Analysis Framework**:
+
 1. **Coverage Quality Assessment** - Analyze coverage depth, evaluate coverage quality, assess edge case handling, identify coverage gaps
 2. **Test Effectiveness Evaluation** - Measure defect detection capability, analyze test reliability, assess assertion quality, evaluate test value
 3. **Maintainability Analysis** - Evaluate test code quality, analyze test organization, assess refactoring needs, optimize test structure
