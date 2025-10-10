@@ -2220,7 +2220,7 @@ body {
 /* Plugin Cards */
 .plugin-card {
     height: auto;
-    min-height: 480px;
+    min-height: 380px;
 }
 
 .plugin-card .template-card {
@@ -2228,7 +2228,7 @@ body {
 }
 
 .plugin-card .card-front {
-    min-height: 480px;
+    min-height: 380px;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -2278,7 +2278,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin: 0 0 1.25rem 0;
+    margin: 0;
     padding: 1rem 0;
     border-top: 1px solid var(--border-secondary);
     border-bottom: 1px solid var(--border-secondary);
@@ -2296,25 +2296,6 @@ body {
 
 .plugin-card .plugin-stat .stat-icon {
     font-size: 1.1rem;
-}
-
-.plugin-card .plugin-keywords {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-top: 0;
-    flex-shrink: 0;
-}
-
-.plugin-card .keyword-badge {
-    background: var(--bg-tertiary);
-    color: var(--text-accent);
-    padding: 0.3rem 0.7rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border: 1px solid var(--border-secondary);
 }
 
 .plugin-card .plugin-view-details-btn {
