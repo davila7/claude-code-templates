@@ -552,9 +552,6 @@ class IndexPageManager {
                             ${plugin.agents > 0 ? `<span class="plugin-stat"><span class="stat-icon">🤖</span>${plugin.agents}</span>` : ''}
                             ${plugin.mcpServers > 0 ? `<span class="plugin-stat"><span class="stat-icon">🔌</span>${plugin.mcpServers}</span>` : ''}
                         </div>
-                        <div class="plugin-keywords">
-                            ${plugin.keywords.map(keyword => `<span class="keyword-badge">${keyword}</span>`).join('')}
-                        </div>
                     </div>
                     <button class="plugin-view-details-btn" onclick="window.location.href='/plugin/${plugin.name}'; event.stopPropagation();">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -1188,6 +1185,15 @@ function handleSortChange(sortValue) {
 // Global function for handling filter click with navigation
 function handleFilterClick(event, filter) {
     event.preventDefault(); // Prevent default link navigation
+
+    // If plugins filter, scroll to plugins section
+    if (filter === 'plugins') {
+        const contentGrid = document.getElementById('contentGrid');
+        if (contentGrid) {
+            contentGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
     setUnifiedFilter(filter);
 }
 
