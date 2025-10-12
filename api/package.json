@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0",
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
