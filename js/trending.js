@@ -18,6 +18,7 @@ class TrendingPage {
             this.setupEventListeners();
             this.renderHeroStats();
             this.renderPopularItems();
+            this.renderTopCountries();
             this.renderChart();
             this.renderTrendingItems();
         } catch (error) {
@@ -139,6 +140,31 @@ class TrendingPage {
             const itemElement = this.createPopularItemCard(category, topItem);
             container.appendChild(itemElement);
         });
+    }
+
+    renderTopCountries() {
+        const container = document.getElementById('top-countries-list');
+        if (!container || !this.data || !this.data.topCountries) {
+            return;
+        }
+
+        const topCountries = this.data.topCountries;
+
+        container.innerHTML = topCountries.map(country => `
+            <div class="country-item">
+                <div class="country-flag">${country.flag}</div>
+                <div class="country-info">
+                    <div class="country-name">${country.name}</div>
+                    <div class="country-stats">
+                        <span class="country-downloads">${country.downloads.toLocaleString()}</span>
+                        <span class="country-percentage">(${country.percentage}%)</span>
+                    </div>
+                    <div class="country-bar-container">
+                        <div class="country-bar" style="width: ${country.percentage}%"></div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
     }
 
     createPopularItemCard(category, item) {

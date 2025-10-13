@@ -212,14 +212,11 @@ body, html {
     gap: 2rem;
 }
 
-/* Sticky sidebar on desktop */
+/* Sidebar on desktop - no sticky, full height */
 @media (min-width: 768px) {
     .trending-sidebar {
-        position: sticky;
-        top: 2rem;
         align-self: flex-start;
-        max-height: calc(100vh - 4rem);
-        overflow-y: auto;
+        height: auto;
     }
 }
 
@@ -1248,7 +1245,7 @@ body, html {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to allow content to expand */
 }
 
 .sidebar-header {
@@ -1280,6 +1277,7 @@ body, html {
     flex-direction: column;
     gap: 0.75rem;
     padding: 1.25rem;
+    min-height: 400px; /* Ensure enough space for all 5 popular items */
 }
 
 .popular-item {
@@ -1436,6 +1434,112 @@ body, html {
 @media (max-width: 480px) {
     .popular-categories {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Top Countries Section */
+.top-countries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    min-height: 400px; /* Ensure enough space for all 5 countries */
+}
+
+.country-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 0.875rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.country-item:hover {
+    border-color: var(--text-accent);
+    background: rgba(217, 119, 6, 0.05);
+    transform: translateX(2px);
+}
+
+.country-flag {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.country-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.country-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.country-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.country-downloads {
+    color: var(--text-accent);
+    font-weight: 600;
+}
+
+.country-percentage {
+    color: var(--text-secondary);
+}
+
+.country-bar-container {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-secondary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.country-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--text-accent), var(--text-primary));
+    transition: width 0.6s ease;
+    border-radius: 2px;
+}
+
+/* Responsive adjustments for countries */
+@media (max-width: 768px) {
+    .top-countries-list {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .country-item {
+        padding: 0.75rem;
+    }
+
+    .country-flag {
+        font-size: 1.25rem;
+    }
+
+    .country-name {
+        font-size: 0.75rem;
+    }
+
+    .country-stats {
+        font-size: 0.65rem;
     }
 }
 
