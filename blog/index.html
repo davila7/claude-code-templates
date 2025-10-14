@@ -23,6 +23,7 @@
     <link rel="canonical" href="https://aitmpl.com/blog/">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/blog.css">
+    <link rel="stylesheet" href="css/blog-controls.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -95,109 +96,55 @@
 
         <section class="blog-articles">
             <div class="container">
-                <div class="articles-grid" style="grid-template-columns: 1fr;">
-                    <article class="article-card">
-                        <a href="e2b-claude-code-sandbox/" class="article-link">
-                            <div class="article-image">
-                                <img src="https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png" alt="E2B Claude Code Sandbox" loading="lazy">
-                                <div class="article-category">Cloud Development</div>
-                            </div>
-                            <div class="article-content">
-                                <div class="article-meta">
-                                    <time datetime="2025-01-31">January 31, 2025</time>
-                                    <span class="read-time">6 min read</span>
-                                </div>
-                                <h2>E2B + Claude Code Sandbox: Secure Cloud Development</h2>
-                                <p>Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment.</p>
-                                <div class="article-tags">
-                                    <span class="tag">E2B</span>
-                                    <span class="tag">Sandbox</span>
-                                    <span class="tag">Security</span>
-                                    <span class="tag">Cloud</span>
-                                </div>
-                            </div>
-                        </a>
-                    </article>
-                    
-                    <article class="article-card">
-                        <a href="nextjs-vercel-claude-code-integration/" class="article-link">
-                            <div class="article-image">
-                                <img src="https://www.aitmpl.com/blog/assets/nextjs-vercel-claude-code-templates-cover.png" alt="Next.js, Vercel and Claude Code Integration" loading="lazy">
-                                <div class="article-category">Frontend</div>
-                            </div>
-                            <div class="article-content">
-                                <div class="article-meta">
-                                    <time datetime="2025-01-31">January 31, 2025</time>
-                                    <span class="read-time">8 min read</span>
-                                </div>
-                                <h2>Claude Code + Next.js and Vercel Integration</h2>
-                                <p>Learn how to integrate Next.js and Vercel with Claude Code using Agents, Commands and Hooks for faster frontend development.</p>
-                                <div class="article-tags">
-                                    <span class="tag">Next.js</span>
-                                    <span class="tag">Vercel</span>
-                                    <span class="tag">Hooks</span>
-                                    <span class="tag">Agents</span>
-                                </div>
-                            </div>
-                        </a>
-                    </article>
-                    
-                    <article class="article-card">
-                        <a href="supabase-claude-code-integration/" class="article-link">
-                            <div class="article-image">
-                                <img src="https://www.aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png" alt="Supabase and Claude Code Integration" loading="lazy">
-                                <div class="article-category">Database</div>
-                            </div>
-                            <div class="article-content">
-                                <div class="article-meta">
-                                    <time datetime="2025-01-28">January 28, 2025</time>
-                                    <span class="read-time">5 min read</span>
-                                </div>
-                                <h2>Claude Code + Supabase Integration</h2>
-                                <p>Learn how to integrate Supabase with Claude Code using MCP, Agents, and Commands for faster database development.</p>
-                                <div class="article-tags">
-                                    <span class="tag">Supabase</span>
-                                    <span class="tag">Database</span>
-                                    <span class="tag">Agents</span>
-                                    <span class="tag">Commands</span>
-                                    <span class="tag">MCP</span>
-                                </div>
-                            </div>
-                        </a>
-                    </article>
-                    
+                <!-- Search and Filter Controls -->
+                <div class="blog-controls">
+                    <div class="search-container">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input
+                            type="text"
+                            id="blog-search"
+                            class="blog-search-input"
+                            placeholder="Search articles by title, description, tags..."
+                            autocomplete="off"
+                        >
+                        <button id="clear-search" class="clear-search-btn" style="display: none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="sort-container">
+                        <label for="sort-by" class="sort-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3,13H15V11H3M3,6V8H21V6M3,18H9V16H3V18Z"/>
+                            </svg>
+                            Sort by:
+                        </label>
+                        <select id="sort-by" class="sort-select">
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="difficulty-asc">Difficulty: Basic → Advanced</option>
+                            <option value="difficulty-desc">Difficulty: Advanced → Basic</option>
+                        </select>
+                    </div>
                 </div>
+
+                <!-- Results Info -->
+                <div class="results-info" id="results-info" style="display: none;">
+                    <span id="results-count"></span>
+                    <button id="clear-filters" class="clear-filters-btn" style="display: none;">Clear filters</button>
+                </div>
+
+                <!-- Articles will be loaded dynamically from blog-articles.json -->
+                <div class="articles-grid" style="grid-template-columns: 1fr;"></div>
             </div>
         </section>
 
-        <section class="newsletter-section">
-            <div class="container">
-                <div class="newsletter-container">
-                    <div id="newsletter-success" class="newsletter-message success-message" style="display: none;">
-                        ✓ Subscribed successfully
-                    </div>
-                    
-                    <div id="newsletter-error" class="newsletter-message error-message" style="display: none;">
-                        ✗ Error. Try again.
-                    </div>
-                    
-                    <form id="newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="hidden_iframe">
-                        <div class="newsletter-header">
-                            <span class="newsletter-prompt">Get updates via email</span>
-                        </div>
-                        <div class="input-group">
-                            <input type="email" id="EMAIL" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
-                            <button type="submit" class="newsletter-submit">
-                                <span class="submit-text">→</span>
-                            </button>
-                        </div>
-                        <input type="text" name="email_address_check" value="" style="display: none;">
-                        <input type="hidden" name="locale" value="en">
-                    </form>
-                    <iframe name="hidden_iframe" style="display: none;"></iframe>
-                </div>
-            </div>
-        </section>
     </main>
 
     <footer class="footer">
@@ -242,33 +189,7 @@
         </div>
     </footer>
     
-    <!-- Newsletter Form JavaScript -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('newsletter-form');
-            const successMessage = document.getElementById('newsletter-success');
-            const errorMessage = document.getElementById('newsletter-error');
-            const submitButton = form.querySelector('.newsletter-submit');
-            const submitText = submitButton.querySelector('.submit-text');
-            
-            form.addEventListener('submit', (e) => {
-                // Set loading state
-                submitButton.disabled = true;
-                submitText.textContent = '...';
-                
-                // Hide messages initially
-                successMessage.style.display = 'none';
-                errorMessage.style.display = 'none';
-                
-                // Show success message after form submits to iframe
-                setTimeout(() => {
-                    successMessage.style.display = 'block';
-                    submitButton.disabled = false;
-                    submitText.textContent = '→';
-                    form.reset();
-                }, 1500);
-            });
-        });
-    </script>
+    <!-- Blog Articles Dynamic Loader -->
+    <script src="js/blog-loader.js"></script>
 </body>
 </html>

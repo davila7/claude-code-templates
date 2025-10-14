@@ -1,0 +1,65 @@
+{
+  "articles": [
+    {
+      "id": "supabase-integration",
+      "title": "Claude Code + Supabase Integration: Complete Guide with Agents, Commands and MCP",
+      "description": "Learn how to integrate Supabase with Claude Code using MCP, Agents, and Commands for faster database development.",
+      "url": "https://medium.com/@dan.avila7/claude-code-supabase-integration-complete-guide-with-agents-commands-and-mcp-427613d9051e",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*UkD_4OChMB5_x50ZPledvw.png",
+      "category": "Database",
+      "publishDate": "2025-10-14",
+      "readTime": "5 min read",
+      "tags": ["Supabase", "Database", "Agents", "Commands", "MCP"],
+      "difficulty": "basic",
+      "order": 1
+    },
+    {
+      "id": "git-flow-guide",
+      "title": "Complete Guide to Setting Up Git Flow in Claude Code",
+      "description": "Step-by-step guide to implementing Git Flow workflow in Claude Code for better version control and team collaboration.",
+      "url": "https://medium.com/@dan.avila7/complete-guide-to-setting-up-git-flow-in-claude-code-616477941f78",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*hY3wY-RvsuF4aIFopX9cMg.png",
+      "category": "Development",
+      "publishDate": "2025-10-02",
+      "readTime": "7 min read",
+      "tags": ["Git", "Workflow", "Version Control", "Automation"],
+      "difficulty": "intermediate",
+      "order": 2
+    },
+    {
+      "id": "google-cloud-vertex-ai",
+      "title": "Step-by-Step Guide to Connect Claude Code with Google Cloud Vertex AI",
+      "description": "Complete guide to integrate Claude Code with Google Cloud Vertex AI for enhanced AI capabilities and scalable cloud infrastructure.",
+      "url": "https://medium.com/@dan.avila7/step-by-step-guide-to-connect-claude-code-with-google-cloud-vertex-ai-17e7916e711e",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*1mhKnj46P_xCxovKsQqBuQ.png",
+      "category": "Cloud & AI",
+      "publishDate": "2025-09-27",
+      "readTime": "8 min read",
+      "tags": ["Google Cloud", "Vertex AI", "Integration", "Cloud"],
+      "difficulty": "advanced",
+      "order": 3
+    },
+    {
+      "id": "automated-documentation",
+      "title": "Automated Documentation with Claude Code: Building Self-Updating Docs Using Docusaurus Agent",
+      "description": "Learn how to create self-updating documentation systems using Claude Code and the Docusaurus agent for automatic content generation.",
+      "url": "https://medium.com/@dan.avila7/automated-documentation-with-claude-code-building-self-updating-docs-using-docusaurus-agent-2c85d3ec0e19",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*Qxn21wqw6J4QACgoZkWWpg.png",
+      "category": "Documentation",
+      "publishDate": "2025-09-17",
+      "readTime": "6 min read",
+      "tags": ["Documentation", "Docusaurus", "Automation", "Agents"],
+      "difficulty": "advanced",
+      "order": 4
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2025-02-03",
+    "totalArticles": 4,
+    "difficultyLevels": {
+      "basic": 1,
+      "intermediate": 1,
+      "advanced": 2
+    }
+  }
+}
