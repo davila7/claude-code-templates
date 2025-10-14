@@ -15,7 +15,7 @@ def parse_context_from_transcript(transcript_path):
         return None
     
     try:
-        with open(transcript_path, 'r') as f:
+        with open(transcript_path, 'r', encoding='utf-8', errors='replace') as f:
             lines = f.readlines()
         
         # Check last 15 lines for context information
