@@ -11,6 +11,7 @@
       "readTime": "5 min read",
       "tags": ["Supabase", "Database", "Agents", "Commands", "MCP"],
       "difficulty": "basic",
+      "featured": true,
       "order": 1
     },
     {
@@ -51,15 +52,82 @@
       "tags": ["Documentation", "Docusaurus", "Automation", "Agents"],
       "difficulty": "advanced",
       "order": 4
+    },
+    {
+      "id": "claude-code-templates-guide",
+      "title": "Complete Guide to Claude Code Templates",
+      "description": "Comprehensive introduction to Claude Code Templates, covering installation, configuration, and best practices for AI-powered development.",
+      "url": "https://medium.com/latinxinai/complete-guide-to-claude-code-templates-4e53d6688b34",
+      "image": "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*YwxsC2eeW5fW1K6E8VBZpA.png",
+      "category": "Getting Started",
+      "publishDate": "2025-08-27",
+      "readTime": "5 min read",
+      "tags": ["Getting Started", "Templates", "Installation", "Configuration"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 5
+    },
+    {
+      "id": "tunnel-vision-fix",
+      "title": "Fixed Claude Code's 2024 Tunnel Vision with a Simple Hook",
+      "description": "Learn how to solve Claude Code's tunnel vision problem using a simple automation hook for better context awareness.",
+      "url": "https://medium.com/@dan.avila7/fixed-claude-codes-2024-tunnel-vision-with-a-simple-hook-cb32cfaf9b27",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*T5gG6RGS-4dpD0K6mhnkHA.png",
+      "category": "Automation",
+      "publishDate": "2025-09-13",
+      "readTime": "3 min read",
+      "tags": ["Hooks", "Automation", "Context", "Problem Solving"],
+      "difficulty": "basic",
+      "order": 6
+    },
+    {
+      "id": "telegram-integration",
+      "title": "Step-by-Step Guide: Connect Telegram with Claude Code Hooks",
+      "description": "Complete tutorial for integrating Telegram notifications with Claude Code using automation hooks.",
+      "url": "https://medium.com/@dan.avila7/step-by-step-guide-connect-telegram-with-claude-code-hooks-1686fadcee65",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*CMFx_4KLxgIbv8xZ6UCpQw.png",
+      "category": "Integrations",
+      "publishDate": "2025-08-18",
+      "readTime": "4 min read",
+      "tags": ["Telegram", "Hooks", "Notifications", "Integration"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 7
+    },
+    {
+      "id": "vercel-statusline",
+      "title": "Vercel Statusline Tutorial for Claude Code",
+      "description": "Learn how to create a custom Vercel statusline for Claude Code to monitor deployments and project status.",
+      "url": "https://medium.com/@dan.avila7/vercel-statusline-tutorial-for-claude-code-14755f113d76",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*dGIs0XoRdrs9STzM-BWDSA.png",
+      "category": "Customization",
+      "publishDate": "2025-08-16",
+      "readTime": "3 min read",
+      "tags": ["Vercel", "Statusline", "Deployment", "Monitoring"],
+      "difficulty": "basic",
+      "order": 8
+    },
+    {
+      "id": "prepare-codebase",
+      "title": "Step-by-Step Guide: Prepare Your Codebase for Claude Code",
+      "description": "Advanced guide to structuring and optimizing your codebase for maximum efficiency with Claude Code.",
+      "url": "https://medium.com/@dan.avila7/step-by-step-guide-prepare-your-codebase-for-claude-code-3e14262566e9",
+      "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*lV1ujaM_2kDSJXNlmLIg2A.png",
+      "category": "Best Practices",
+      "publishDate": "2025-08-06",
+      "readTime": "4 min read",
+      "tags": ["Best Practices", "Code Organization", "Optimization", "Setup"],
+      "difficulty": "advanced",
+      "order": 9
     }
   ],
   "metadata": {
     "lastUpdated": "2025-02-03",
-    "totalArticles": 4,
+    "totalArticles": 9,
     "difficultyLevels": {
-      "basic": 1,
+      "basic": 5,
       "intermediate": 1,
-      "advanced": 2
+      "advanced": 3
     }
   }
 }

@@ -7,11 +7,14 @@ class BlogLoader {
     constructor() {
         this.articles = [];
         this.filteredArticles = [];
+        this.featuredArticles = [];
         this.articlesContainer = null;
+        this.featuredCarousel = null;
         this.searchInput = null;
         this.sortSelect = null;
         this.currentSearchTerm = '';
         this.currentSortBy = 'date-desc';
+        this.carouselScrollPosition = 0;
     }
 
     /**
@@ -20,6 +23,7 @@ class BlogLoader {
     async init() {
         try {
             this.articlesContainer = document.querySelector('.articles-grid');
+            this.featuredCarousel = document.getElementById('featured-carousel');
             this.searchInput = document.getElementById('blog-search');
             this.sortSelect = document.getElementById('sort-by');
 
@@ -34,8 +38,14 @@ class BlogLoader {
             // Load articles from JSON
             await this.loadArticles();
 
+            // Render featured posts
+            this.renderFeaturedPosts();
+
             // Setup event listeners
             this.setupEventListeners();
+
+            // Setup carousel navigation
+            this.setupCarouselNavigation();
 
             // Render articles
             this.renderArticles();
@@ -217,7 +227,10 @@ class BlogLoader {
             this.articles = data.articles.sort((a, b) => a.order - b.order);
             this.filteredArticles = [...this.articles];
 
-            console.log(`Loaded ${this.articles.length} articles`);
+            // Extract featured articles
+            this.featuredArticles = this.articles.filter(article => article.featured === true);
+
+            console.log(`Loaded ${this.articles.length} articles (${this.featuredArticles.length} featured)`);
 
         } catch (error) {
             console.error('Error loading articles:', error);
@@ -402,6 +415,163 @@ class BlogLoader {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Render featured posts carousel
+     */
+    renderFeaturedPosts() {
+        if (!this.featuredCarousel || !this.featuredArticles || this.featuredArticles.length === 0) {
+            return;
+        }
+
+        // Show featured section
+        const featuredSection = document.getElementById('featured-posts-section');
+        if (featuredSection) {
+            featuredSection.style.display = 'block';
+        }
+
+        // Clear carousel
+        this.featuredCarousel.innerHTML = '';
+
+        // Render each featured article
+        this.featuredArticles.forEach(article => {
+            const featuredCard = this.createFeaturedCard(article);
+            this.featuredCarousel.appendChild(featuredCard);
+        });
+    }
+
+    /**
+     * Create featured article card
+     * @param {Object} article - Article data
+     * @returns {HTMLElement} Featured card element
+     */
+    createFeaturedCard(article) {
+        const cardElement = document.createElement('article');
+        cardElement.className = 'featured-card';
+
+        const isExternal = article.url.startsWith('http');
+        const linkAttrs = isExternal ? 'target="_blank" rel="noopener noreferrer"' : '';
+
+        const tagsHTML = article.tags
+            .slice(0, 3)
+            .map(tag => `<span class="tag">${this.escapeHtml(tag)}</span>`)
+            .join('');
+
+        cardElement.innerHTML = `
+            <div class="featured-star">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
+                </svg>
+            </div>
+            <a href="${this.escapeHtml(article.url)}" ${linkAttrs} class="featured-link">
+                <div class="featured-image">
+                    <img src="${this.escapeHtml(article.image)}"
+                         alt="${this.escapeHtml(article.title)}"
+                         loading="lazy">
+                </div>
+                <div class="featured-content">
+                    <div class="featured-meta">
+                        <time datetime="${this.escapeHtml(article.publishDate)}">
+                            ${this.formatDate(article.publishDate)}
+                        </time>
+                        <span class="read-time">${this.escapeHtml(article.readTime)}</span>
+                    </div>
+                    <h3>${this.escapeHtml(article.title)}</h3>
+                    <p>${this.escapeHtml(article.description)}</p>
+                    <div class="featured-tags">
+                        ${tagsHTML}
+                    </div>
+                </div>
+            </a>
+        `;
+
+        return cardElement;
+    }
+
+    /**
+     * Setup carousel navigation
+     */
+    setupCarouselNavigation() {
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+
+        if (!prevBtn || !nextBtn || !this.featuredCarousel) return;
+
+        // Check if navigation is needed
+        this.checkCarouselNavigation(prevBtn, nextBtn);
+
+        // Scroll carousel on button click
+        prevBtn.addEventListener('click', () => {
+            this.featuredCarousel.scrollBy({
+                left: -280,
+                behavior: 'smooth'
+            });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            this.featuredCarousel.scrollBy({
+                left: 280,
+                behavior: 'smooth'
+            });
+        });
+
+        // Update button states on scroll
+        this.featuredCarousel.addEventListener('scroll', () => {
+            this.updateCarouselButtons(prevBtn, nextBtn);
+        });
+
+        // Re-check on window resize
+        window.addEventListener('resize', () => {
+            this.checkCarouselNavigation(prevBtn, nextBtn);
+        });
+
+        // Initial button state
+        this.updateCarouselButtons(prevBtn, nextBtn);
+    }
+
+    /**
+     * Check if carousel navigation buttons should be visible
+     */
+    checkCarouselNavigation(prevBtn, nextBtn) {
+        if (!this.featuredCarousel) return;
+
+        // Wait for images to load before checking
+        setTimeout(() => {
+            const isOverflowing = this.featuredCarousel.scrollWidth > this.featuredCarousel.clientWidth;
+
+            if (isOverflowing) {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+        }, 100);
+    }
+
+    /**
+     * Update carousel button states based on scroll position
+     */
+    updateCarouselButtons(prevBtn, nextBtn) {
+        if (!this.featuredCarousel) return;
+
+        const scrollLeft = this.featuredCarousel.scrollLeft;
+        const maxScroll = this.featuredCarousel.scrollWidth - this.featuredCarousel.clientWidth;
+
+        // Disable/enable previous button
+        if (scrollLeft <= 0) {
+            prevBtn.disabled = true;
+        } else {
+            prevBtn.disabled = false;
+        }
+
+        // Disable/enable next button
+        if (scrollLeft >= maxScroll - 1) {
+            nextBtn.disabled = true;
+        } else {
+            nextBtn.disabled = false;
+        }
     }
 }
 

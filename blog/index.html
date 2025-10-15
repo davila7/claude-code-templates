@@ -21,6 +21,15 @@
     <meta property="twitter:image" content="https://www.aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png">
     
     <link rel="canonical" href="https://aitmpl.com/blog/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../static/favicon/android-chrome-512x512.png">
+
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/blog.css">
     <link rel="stylesheet" href="css/blog-controls.css">
@@ -96,6 +105,33 @@
 
         <section class="blog-articles">
             <div class="container">
+                <!-- Featured Posts Carousel -->
+                <div class="featured-posts-section" id="featured-posts-section" style="display: none;">
+                    <div class="featured-header">
+                        <h2 class="featured-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
+                            </svg>
+                            Featured Posts
+                        </h2>
+                    </div>
+                    <div class="featured-carousel-wrapper">
+                        <button class="carousel-nav carousel-prev" id="carousel-prev" aria-label="Previous">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
+                            </svg>
+                        </button>
+                        <div class="featured-carousel" id="featured-carousel">
+                            <!-- Featured posts will be loaded here dynamically -->
+                        </div>
+                        <button class="carousel-nav carousel-next" id="carousel-next" aria-label="Next">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Search and Filter Controls -->
                 <div class="blog-controls">
                     <div class="search-container">

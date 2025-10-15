@@ -40,7 +40,15 @@
     <meta name="product" content="Claude Code Templates">
     <meta name="platform" content="Anthropic Claude Code">
     <meta name="category" content="AI Development Tools">
-    
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="static/favicon/android-chrome-512x512.png">
+
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,21 +113,6 @@
             </div>
         </div>
                 <div class="header-actions">
-                    <!-- Workflows button temporarily hidden for testing -->
-                    <!--
-                    <a href="workflows.html" class="header-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H16L12,22L8,18H4A2,2 0 0,1 2,16V4A2,2 0 0,1 4,2M4,4V16H8.83L12,19.17L15.17,16H20V4H4M6,6H18V8H6V6M6,10H16V12H6V10M6,14H14V16H6V14Z"/>
-                        </svg>
-                        Workflows
-                    </a>
-                    -->
-                    <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="header-btn anthropic-btn" title="Learn about Anthropic's Claude Code">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        Claude Code
-                    </a>
                     <a href="blog/index.html" class="header-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
@@ -150,25 +143,6 @@
     </header>
 
     <main class="terminal">
-        <!-- Plugin Marketplace Announcement Banner -->
-        <section class="announcement-banner">
-            <div class="container">
-                <div class="banner-content">
-                    <div class="banner-icon">🎉</div>
-                    <div class="banner-text">
-                        <h3>Plugin Marketplace Now Available!</h3>
-                        <p>Discover and install <strong>10 ready-to-use plugins</strong> for Claude Code. Extend your workflow with pre-configured component bundles.</p>
-                    </div>
-                    <a href="/plugins" class="banner-cta" onclick="handleFilterClick(event, 'plugins')">
-                        Explore Plugins
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </section>
-
         <section class="stats-section">
             <div class="stats-badges">
                 <a href="https://www.npmjs.com/package/claude-code-templates" target="_blank" class="stat-badge-link">
@@ -474,6 +448,12 @@
                                 <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                             </svg>
                             Documentation
+                        </a>
+                        <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Claude Code
                         </a>
                         <a href="https://discord.gg/dyTTwzBhwY" target="_blank" class="footer-link">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
