@@ -36,7 +36,9 @@
       "Read(/Users/danipower/.claude/local/node_modules/@anthropic-ai/claude-code/**)",
       "WebSearch",
       "WebFetch(domain:neon.com)",
-      "Read(//Users/danipower/.claude/**)"
+      "Read(//Users/danipower/.claude/**)",
+      "Bash(git checkout -b feature/agent-validation-system)",
+      "Bash(npm test -- StructuralValidator.test.js)"
     ],
     "deny": []
   },

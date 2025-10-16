@@ -537,6 +537,95 @@ body {
     transform: scale(1.05);
 }
 
+/* Validation badge */
+.validation-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    z-index: 5;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    cursor: help;
+}
+
+/* Adjust position when download badge is also present */
+.template-card .download-badge ~ .validation-badge {
+    right: auto;
+    left: 8px;
+}
+
+.validation-badge svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0.9;
+}
+
+.validation-badge:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* Twitter-style Verified Badge (100% score) */
+.verified-badge {
+    background: linear-gradient(135deg, #1DA1F2 0%, #0c8bd9 100%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(29, 161, 242, 0.4);
+    padding: 5px 10px;
+}
+
+.verified-badge svg {
+    width: 16px;
+    height: 16px;
+    opacity: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.verified-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.3px;
+}
+
+.verified-badge:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.6);
+}
+
+/* Verified Checkmark - Positioned on framework logo */
+.verified-checkmark {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.verified-checkmark svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.verified-checkmark:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 2px 4px rgba(29, 161, 242, 0.6));
+}
+
 /* Sort Controls */
 .sort-controls {
     margin-bottom: 20px;
@@ -717,6 +806,7 @@ body {
     font-size: 2.5rem;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
+    position: relative; /* Required for absolute positioning of verified checkmark */
 }
 
 .framework-logo i {

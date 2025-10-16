@@ -1454,15 +1454,19 @@ function createComponentCard(component) {
     // Get download count for this component
     const downloadCount = getDownloadCount(component.name, component.type);
     const downloadBadge = createDownloadBadge(downloadCount);
-    
+
+    // Get validation badge
+    const validationBadge = createValidationBadge(component.security);
+
     // Create category label for all components (use "General" if no category)
     const categoryName = component.category || 'general';
     const categoryLabel = `<div class="category-label">${formatComponentName(categoryName)}</div>`;
-    
+
     card.innerHTML = `
         <div class="card-inner">
             <div class="card-front">
                 ${downloadBadge}
+                ${validationBadge}
                 ${categoryLabel}
                 <div class="framework-logo" style="color: ${config.color}">
                     <span class="component-icon">${config.icon}</span>
@@ -2157,11 +2161,54 @@ function getDownloadCount(componentName, componentType) {
  */
 function createDownloadBadge(count) {
     if (count === 0) return '';
-    
+
     return `<div class="download-badge" title="${count} downloads">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
             <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/>
         </svg>
         ${formatNumber(count)}
+    </div>`;
+}
+
+/**
+ * Create validation badge HTML
+ */
+function createValidationBadge(validation) {
+    if (!validation || !validation.validated) return '';
+
+    const score = validation.score || 0;
+    const isValid = validation.valid;
+
+    // Debug logging
+    console.log('Validation badge:', { score, isValid, validation });
+
+    // Perfect score (100%) - Show Twitter-style verified badge
+    if (score === 100 && isValid) {
+        console.log('✓ Showing verified badge for score 100');
+        return `<div class="validation-badge verified-badge" title="100% Validated - Perfect Security Score">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1DA1F2">
+                <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z"/>
+            </svg>
+            <span class="verified-text">Verified</span>
+        </div>`;
+    }
+
+    // Determine color based on score
+    let badgeColor = '#48bb78'; // Green
+    let statusIcon = '✓';
+
+    if (!isValid || score < 70) {
+        badgeColor = '#f56565'; // Red
+        statusIcon = '✗';
+    } else if (score < 85) {
+        badgeColor = '#ed8936'; // Orange
+        statusIcon = '⚠';
+    }
+
+    return `<div class="validation-badge" style="background-color: ${badgeColor}" title="Quality Score: ${score}/100 - Validated">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+        </svg>
+        <span>${statusIcon} ${score}</span>
     </div>`;
 }

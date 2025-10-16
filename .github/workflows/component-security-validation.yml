@@ -1,0 +1,129 @@
+name: Component Security Validation
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/**/*.md'
+      - 'cli-tool/src/validation/**'
+      - '.github/workflows/component-security-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'cli-tool/components/**/*.md'
+
+jobs:
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git metadata
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: cli-tool/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd cli-tool
+          npm ci
+
+      - name: Run Security Audit
+        id: audit
+        run: |
+          cd cli-tool
+          npm run security-audit:ci
+        continue-on-error: false
+
+      - name: Generate JSON Report
+        if: always()
+        run: |
+          cd cli-tool
+          npm run security-audit:json
+
+      - name: Upload Security Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-report
+          path: cli-tool/security-report.json
+          retention-days: 30
+
+      - name: Comment PR with Results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'cli-tool/security-report.json';
+
+            if (!fs.existsSync(reportPath)) {
+              console.log('No security report found');
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+
+            const passed = report.summary.passed;
+            const failed = report.summary.failed;
+            const warnings = report.summary.warnings;
+            const total = report.summary.total;
+
+            const status = failed === 0 ? '✅ PASSED' : '❌ FAILED';
+            const emoji = failed === 0 ? '🎉' : '⚠️';
+
+            let comment = `## ${emoji} Security Audit Report\n\n`;
+            comment += `**Status**: ${status}\n\n`;
+            comment += `### Summary\n`;
+            comment += `- **Total components**: ${total}\n`;
+            comment += `- ✅ **Passed**: ${passed}\n`;
+            comment += `- ❌ **Failed**: ${failed}\n`;
+            comment += `- ⚠️ **Warnings**: ${warnings}\n\n`;
+
+            if (failed > 0) {
+              comment += `### ❌ Failed Components\n\n`;
+
+              for (const component of report.components) {
+                if (!component.overall.valid) {
+                  comment += `**${component.component.path}**\n`;
+                  comment += `- Errors: ${component.overall.errorCount}\n`;
+                  comment += `- Warnings: ${component.overall.warningCount}\n`;
+                  comment += `- Score: ${component.overall.score}/100\n\n`;
+
+                  // Show top errors
+                  for (const [validator, result] of Object.entries(component.validators)) {
+                    if (result.errors && result.errors.length > 0) {
+                      comment += `  **${validator}**: ${result.errors.length} error(s)\n`;
+                      for (const error of result.errors.slice(0, 2)) {
+                        comment += `  - \`${error.code}\`: ${error.message}\n`;
+                      }
+                    }
+                  }
+                  comment += `\n`;
+                }
+              }
+            }
+
+            comment += `\n---\n`;
+            comment += `📊 View full report in [workflow artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail workflow if errors found
+        if: failure()
+        run: |
+          echo "::error::Security audit found critical issues"
+          exit 1

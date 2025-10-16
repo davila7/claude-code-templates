@@ -102,25 +102,31 @@ class ComponentPageManager {
 
         // Hide loading state
         document.getElementById('loadingState').style.display = 'none';
-        
+
         // Show component content
         document.getElementById('componentContent').style.display = 'block';
 
         // Render component header
         this.renderComponentHeader();
-        
+
         // Render component description
         this.renderComponentDescription();
-        
+
+        // Render security validation section
+        this.renderSecurityValidation();
+
+        // Render metadata section
+        await this.renderMetadataSection();
+
         // Render installation section
         this.renderInstallationSection();
-        
+
         // Render component code
         await this.renderComponentCode();
-        
+
         // Render GitHub link
         this.renderGitHubLink();
-        
+
         // Update page metadata
         this.updatePageMetadata();
     }
@@ -190,10 +196,319 @@ class ComponentPageManager {
         }
     }
 
+    renderSecurityValidation() {
+        const security = this.component.security;
+
+        // If no security data, hide everything
+        if (!security || !security.validated) {
+            const validationSection = document.getElementById('validationSection');
+            if (validationSection) validationSection.style.display = 'none';
+
+            const validationBadge = document.getElementById('componentValidationBadge');
+            if (validationBadge) validationBadge.style.display = 'none';
+            return;
+        }
+
+        // Show validation section
+        const validationSection = document.getElementById('validationSection');
+        if (validationSection) validationSection.style.display = 'block';
+
+        const score = security.score || 0;
+        const isValid = security.valid;
+        const errors = security.errorCount || 0;
+        const warnings = security.warningCount || 0;
+
+        // Determine color based on score
+        let scoreColor = '#48bb78'; // Green
+        let scoreStatus = 'Excellent';
+
+        if (score < 70) {
+            scoreColor = '#f56565'; // Red
+            scoreStatus = 'Needs Attention';
+        } else if (score < 85) {
+            scoreColor = '#ed8936'; // Orange
+            scoreStatus = 'Good';
+        } else if (score < 100) {
+            scoreColor = '#48bb78'; // Green
+            scoreStatus = 'Very Good';
+        } else if (score === 100) {
+            scoreColor = '#48bb78'; // Green
+            scoreStatus = 'Excellent';
+        }
+
+        // Only override to red if score is below 70 OR (invalid AND low errors)
+        if (!isValid && score < 70) {
+            scoreColor = '#f56565'; // Red
+            scoreStatus = 'Needs Attention';
+        }
+
+        // Update header badge
+        const validationBadge = document.getElementById('componentValidationBadge');
+        const validationScoreSpan = document.getElementById('validationScore');
+        if (validationBadge && validationScoreSpan) {
+            validationBadge.style.display = 'inline-flex';
+            validationBadge.style.backgroundColor = scoreColor + '20';
+            validationBadge.style.borderColor = scoreColor + '50';
+            validationBadge.style.color = scoreColor;
+            validationScoreSpan.textContent = score;
+            validationBadge.title = `Quality Score: ${score}/100 - Click to see details`;
+            validationBadge.style.cursor = 'pointer';
+
+            // Add click event to scroll to validation section
+            validationBadge.onclick = function() {
+                const validationSection = document.getElementById('validationSection');
+                if (validationSection) {
+                    validationSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Add a highlight animation
+                    validationSection.style.animation = 'highlight 1s ease';
+                    setTimeout(() => {
+                        validationSection.style.animation = '';
+                    }, 1000);
+                }
+            };
+        }
+
+        // Update score circle
+        const scoreCircle = document.getElementById('scoreCircle');
+        const scoreValue = document.getElementById('scoreValue');
+        if (scoreCircle && scoreValue) {
+            scoreCircle.style.borderColor = scoreColor;
+            scoreValue.textContent = score;
+            scoreValue.style.color = scoreColor;
+        }
+
+        // Update score status
+        const scoreStatusEl = document.getElementById('scoreStatus');
+        if (scoreStatusEl) {
+            scoreStatusEl.textContent = scoreStatus;
+            scoreStatusEl.style.color = scoreColor;
+        }
+
+        // Update inline stats
+        const inlineErrors = document.getElementById('inlineErrors');
+        const inlineWarnings = document.getElementById('inlineWarnings');
+        if (inlineErrors) {
+            inlineErrors.textContent = errors;
+            inlineErrors.style.color = errors > 0 ? '#f56565' : '#48bb78';
+        }
+        if (inlineWarnings) {
+            inlineWarnings.textContent = warnings;
+            inlineWarnings.style.color = warnings > 0 ? '#ed8936' : '#48bb78';
+        }
+
+        // Render validation checks with detailed messages
+        const validationChecks = document.getElementById('validationChecks');
+        if (validationChecks && security.validators) {
+            const checkDescriptions = {
+                structural: 'Verifies file format, YAML frontmatter, required fields, and encoding',
+                integrity: 'Checks for tampering using SHA256 hash and version tracking',
+                semantic: 'Detects malicious patterns, prompt injection, and dangerous commands',
+                references: 'Validates external URLs and prevents SSRF attacks',
+                provenance: 'Confirms author metadata and repository information'
+            };
+
+            const checkLabels = {
+                structural: 'Structure',
+                integrity: 'Integrity',
+                semantic: 'Content Safety',
+                references: 'references',
+                provenance: 'Source'
+            };
+
+            validationChecks.innerHTML = '';
+            Object.entries(security.validators).forEach(([key, validatorData]) => {
+                // Handle both old format (boolean) and new format (object with detailed data)
+                const passed = typeof validatorData === 'boolean' ? validatorData : validatorData.valid;
+                const hasErrors = typeof validatorData === 'object' && validatorData.errors && validatorData.errors.length > 0;
+                const hasWarnings = typeof validatorData === 'object' && validatorData.warnings && validatorData.warnings.length > 0;
+                const hasInfo = typeof validatorData === 'object' && validatorData.info && validatorData.info.length > 0;
+                const hasDetails = hasErrors || hasWarnings || hasInfo || passed;
+
+                // Determine status: passed, warning, or failed
+                let status = 'passed';
+                let icon = '✓';
+                if (hasErrors) {
+                    status = 'failed';
+                    icon = '✗';
+                } else if (hasWarnings) {
+                    status = 'warning';
+                    icon = '⚠';
+                }
+
+                const checkItem = document.createElement('div');
+                checkItem.className = `validation-check-item ${status}`;
+                checkItem.style.cursor = 'pointer';
+
+                // Build HTML for check item
+                checkItem.innerHTML = `
+                    <div class="check-header">
+                        <div class="check-main">
+                            <span class="check-icon">${icon}</span>
+                            <span class="check-label">${checkLabels[key] || key}</span>
+                        </div>
+                        <div class="check-stats">
+                            ${typeof validatorData === 'object' ? `
+                                ${validatorData.errorCount > 0 ? `<span class="check-error-count">${validatorData.errorCount} errors</span>` : ''}
+                                ${validatorData.warningCount > 0 ? `<span class="check-warning-count">${validatorData.warningCount} warnings</span>` : ''}
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                // Add click event listener - all items are clickable now
+                checkItem.addEventListener('click', () => {
+                    window.openValidationModal(key, checkLabels[key] || key, validatorData, checkDescriptions[key]);
+                });
+
+                validationChecks.appendChild(checkItem);
+            });
+        }
+    }
+
+    async renderMetadataSection() {
+        const metadataSection = document.getElementById('metadataSection');
+
+        console.log('=== Metadata Section Debug ===');
+        console.log('Component type:', this.component.type);
+        console.log('Component name:', this.component.name);
+
+        // Only show metadata for agents (since marketplace.json only contains agent metadata)
+        if (this.component.type !== 'agent') {
+            console.log('Not an agent, hiding metadata section');
+            if (metadataSection) metadataSection.style.display = 'none';
+            return;
+        }
+
+        try {
+            // Load components marketplace (Claude Code standard)
+            const marketplace = await this.loadComponentsMarketplace();
+            console.log('Components marketplace loaded:', marketplace);
+
+            if (!marketplace || !marketplace.agents) {
+                console.log('No components marketplace or agents found');
+                if (metadataSection) metadataSection.style.display = 'none';
+                return;
+            }
+
+            // Find the component in marketplace
+            const componentName = this.component.name.replace('.md', '');
+            console.log('Looking for component:', componentName);
+            console.log('Available agents:', marketplace.agents.map(a => a.name));
+
+            const agentMetadata = marketplace.agents.find(
+                agent => agent.name === componentName
+            );
+
+            console.log('Found agent metadata:', agentMetadata);
+
+            if (!agentMetadata) {
+                console.log('No metadata found for component:', componentName);
+                if (metadataSection) metadataSection.style.display = 'none';
+                return;
+            }
+
+            // Show metadata section
+            if (metadataSection) metadataSection.style.display = 'block';
+
+            // Populate version
+            const versionElement = document.getElementById('metadataVersion');
+            if (versionElement) {
+                versionElement.textContent = agentMetadata.version || '--';
+            }
+
+            // Populate author
+            const authorElement = document.getElementById('metadataAuthor');
+            if (authorElement) {
+                const authorName = agentMetadata.author?.name || agentMetadata.author || '--';
+                authorElement.textContent = authorName;
+            }
+
+            // Populate license
+            const licenseElement = document.getElementById('metadataLicense');
+            if (licenseElement) {
+                licenseElement.textContent = agentMetadata.license || '--';
+            }
+
+            // Populate repository
+            const repositoryLink = document.getElementById('metadataRepository');
+            const repositoryNone = document.getElementById('metadataRepositoryNone');
+            if (agentMetadata.repository) {
+                if (repositoryLink) {
+                    repositoryLink.href = agentMetadata.repository;
+                    repositoryLink.style.display = 'inline-flex';
+                }
+                if (repositoryNone) {
+                    repositoryNone.style.display = 'none';
+                }
+            } else {
+                if (repositoryLink) {
+                    repositoryLink.style.display = 'none';
+                }
+                if (repositoryNone) {
+                    repositoryNone.style.display = 'inline';
+                }
+            }
+
+            // Populate keywords
+            const keywordsContainer = document.getElementById('metadataKeywords');
+            if (keywordsContainer && agentMetadata.keywords && agentMetadata.keywords.length > 0) {
+                keywordsContainer.innerHTML = '';
+                agentMetadata.keywords.forEach(keyword => {
+                    const keywordChip = document.createElement('span');
+                    keywordChip.className = 'metadata-keyword';
+                    keywordChip.textContent = keyword;
+                    keywordsContainer.appendChild(keywordChip);
+                });
+            } else if (keywordsContainer) {
+                keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
+            }
+
+        } catch (error) {
+            console.error('Error loading marketplace metadata:', error);
+            if (metadataSection) metadataSection.style.display = 'none';
+        }
+    }
+
+    async loadComponentsMarketplace() {
+        try {
+            // Check if components marketplace is already cached
+            if (this.componentsMarketplace) {
+                return this.componentsMarketplace;
+            }
+
+            // Use the already loaded components data from dataLoader
+            const componentsData = await this.dataLoader.loadAllComponents();
+
+            if (componentsData && componentsData.componentsMarketplace) {
+                this.componentsMarketplace = componentsData.componentsMarketplace;
+                console.log('Loaded components marketplace:', this.componentsMarketplace);
+                return this.componentsMarketplace;
+            }
+
+            // Fallback: try to fetch marketplace.json directly from components/.claude-plugin/
+            const marketplaceResponse = await fetch('https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/.claude-plugin/marketplace.json');
+            if (marketplaceResponse.ok) {
+                this.componentsMarketplace = await marketplaceResponse.json();
+                console.log('Loaded components marketplace from GitHub:', this.componentsMarketplace);
+                return this.componentsMarketplace;
+            }
+
+            console.warn('No components marketplace found');
+            return null;
+        } catch (error) {
+            console.error('Error loading components marketplace:', error);
+            return null;
+        }
+    }
+
     renderInstallationSection() {
         const componentPath = this.getCleanPath();
         const basicInstallCommand = `npx claude-code-templates@latest --${this.component.type}=${componentPath} --yes`;
-        
+
         // Update basic installation command
         const basicInstallElement = document.getElementById('basicInstallCommand');
         if (basicInstallElement) {
@@ -208,7 +523,7 @@ class ComponentPageManager {
             // Hide agent-specific sections for non-agents
             const globalAgentSection = document.getElementById('globalAgentSection');
             const e2bSandboxSection = document.getElementById('e2bSandboxSection');
-            
+
             if (globalAgentSection) globalAgentSection.style.display = 'none';
             if (e2bSandboxSection) e2bSandboxSection.style.display = 'none';
         }
@@ -265,7 +580,7 @@ class ComponentPageManager {
                         // Pretty print JSON
                         try {
                             content = JSON.stringify(JSON.parse(content), null, 2);
-                        } catch (e) { 
+                        } catch (e) {
                             console.warn('Could not parse JSON content:', e);
                         }
                         break;
@@ -277,6 +592,47 @@ class ComponentPageManager {
                         language = 'yaml';
                         break;
                 }
+            }
+
+            // Collect line numbers with errors and warnings
+            const errorLines = new Set();
+            const warningLines = new Set();
+
+            if (this.component.security && this.component.security.validators) {
+                Object.values(this.component.security.validators).forEach(validator => {
+                    if (validator.errors) {
+                        validator.errors.forEach(error => {
+                            // Check direct line property
+                            if (error.line) {
+                                errorLines.add(error.line);
+                            }
+                            // Check examples array
+                            if (error.examples && error.examples.length > 0) {
+                                error.examples.forEach(example => {
+                                    if (example.line) {
+                                        errorLines.add(example.line);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    if (validator.warnings) {
+                        validator.warnings.forEach(warning => {
+                            // Check direct line property
+                            if (warning.line) {
+                                warningLines.add(warning.line);
+                            }
+                            // Check examples array
+                            if (warning.examples && warning.examples.length > 0) {
+                                warning.examples.forEach(example => {
+                                    if (example.line) {
+                                        warningLines.add(example.line);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
 
             // Update code language indicator
@@ -292,12 +648,109 @@ class ComponentPageManager {
                 codeElement.className = `language-${language}`;
             }
 
-            // Generate line numbers
+            // Generate line numbers with error/warning indicators
             const lines = content.split('\n');
-            const lineNumbers = lines.map((_, index) => `<span>${index + 1}</span>`).join('');
+            const lineNumbers = lines.map((_, index) => {
+                const lineNum = index + 1;
+                let className = '';
+                let style = '';
+                let title = '';
+
+                if (errorLines.has(lineNum)) {
+                    className = 'line-with-error';
+                    style = 'background-color: rgba(245, 101, 101, 0.15); color: #f56565; font-weight: 600; border-left: 3px solid #f56565; padding-left: 5px; cursor: pointer;';
+                    title = 'Line has validation errors - Click to see details';
+                } else if (warningLines.has(lineNum)) {
+                    className = 'line-with-warning';
+                    style = 'background-color: rgba(237, 137, 54, 0.15); color: #ed8936; font-weight: 600; border-left: 3px solid #ed8936; padding-left: 5px; cursor: pointer;';
+                    title = 'Line has validation warnings - Click to see details';
+                }
+
+                return `<span class="${className}" style="${style}" title="${title}" data-line-number="${lineNum}">${lineNum}</span>`;
+            }).join('');
+
             const lineNumbersElement = document.getElementById('lineNumbers');
             if (lineNumbersElement) {
                 lineNumbersElement.innerHTML = lineNumbers;
+
+                // Add click event listeners to error/warning line numbers
+                const clickableLines = lineNumbersElement.querySelectorAll('.line-with-error, .line-with-warning');
+                clickableLines.forEach(lineSpan => {
+                    lineSpan.addEventListener('click', () => {
+                        // Find which validator has the error for this line
+                        const lineNum = parseInt(lineSpan.getAttribute('data-line-number'));
+
+                        if (this.component.security && this.component.security.validators) {
+                            // Look for the validator with this line number
+                            for (const [validatorKey, validatorData] of Object.entries(this.component.security.validators)) {
+                                if (typeof validatorData === 'object') {
+                                    // Check if this validator has errors/warnings for this line
+                                    const hasError = validatorData.errors && validatorData.errors.some(error => {
+                                        if (error.line === lineNum) return true;
+                                        if (error.examples && error.examples.some(ex => ex.line === lineNum)) return true;
+                                        return false;
+                                    });
+
+                                    const hasWarning = validatorData.warnings && validatorData.warnings.some(warning => {
+                                        if (warning.line === lineNum) return true;
+                                        if (warning.examples && warning.examples.some(ex => ex.line === lineNum)) return true;
+                                        return false;
+                                    });
+
+                                    if (hasError || hasWarning) {
+                                        // Found the validator with this line, open its modal
+                                        const checkLabels = {
+                                            structural: 'Structure',
+                                            integrity: 'Integrity',
+                                            semantic: 'Content Safety',
+                                            references: 'references',
+                                            provenance: 'Source'
+                                        };
+
+                                        const checkDescriptions = {
+                                            structural: 'Verifies file format, YAML frontmatter, required fields, and encoding',
+                                            integrity: 'Checks for tampering using SHA256 hash and version tracking',
+                                            semantic: 'Detects malicious patterns, prompt injection, and dangerous commands',
+                                            references: 'Validates external URLs and prevents SSRF attacks',
+                                            provenance: 'Confirms author metadata and repository information'
+                                        };
+
+                                        window.openValidationModal(
+                                            validatorKey,
+                                            checkLabels[validatorKey] || validatorKey,
+                                            validatorData,
+                                            checkDescriptions[validatorKey]
+                                        );
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Add corresponding highlighting to code lines
+            if (errorLines.size > 0 || warningLines.size > 0) {
+                const codeLines = codeElement.innerHTML.split('\n');
+                const highlightedLines = codeLines.map((line, index) => {
+                    const lineNum = index + 1;
+                    if (errorLines.has(lineNum)) {
+                        return `<span style="background-color: rgba(245, 101, 101, 0.08); display: block; margin: 0 -10px; padding: 0 10px;">${line}</span>`;
+                    } else if (warningLines.has(lineNum)) {
+                        return `<span style="background-color: rgba(237, 137, 54, 0.08); display: block; margin: 0 -10px; padding: 0 10px;">${line}</span>`;
+                    }
+                    return line;
+                });
+                codeElement.innerHTML = highlightedLines.join('\n');
+            }
+
+            // Sync scroll between line numbers and code content
+            const codeContentDiv = document.getElementById('codeContent');
+            if (lineNumbersElement && codeContentDiv) {
+                codeContentDiv.addEventListener('scroll', function() {
+                    lineNumbersElement.scrollTop = codeContentDiv.scrollTop;
+                });
             }
 
         } catch (error) {
@@ -806,3 +1259,551 @@ document.addEventListener('click', (e) => {
         shareDropdown.classList.remove('open');
     }
 });
+
+// Validation Modal System
+window.openValidationModal = function(validatorKey, validatorLabel, validatorData, description) {
+    // Create modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    modalOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+        backdrop-filter: blur(3px);
+        overflow: hidden;
+    `;
+
+    // Create modal container
+    const modalContainer = document.createElement('div');
+    modalContainer.style.cssText = `
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        max-width: 700px;
+        max-height: 80vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    `;
+
+    // Handle both old format (boolean) and new format (object)
+    const passed = typeof validatorData === 'boolean' ? validatorData : validatorData.valid;
+    const hasErrors = typeof validatorData === 'object' && validatorData.errors && validatorData.errors.length > 0;
+    const hasWarnings = typeof validatorData === 'object' && validatorData.warnings && validatorData.warnings.length > 0;
+    const hasInfo = typeof validatorData === 'object' && validatorData.info && validatorData.info.length > 0;
+
+    // Determine status
+    let status = 'passed';
+    let statusColor = '#48bb78';
+    let statusText = 'All Checks Passed';
+    let statusIcon = '✓';
+
+    if (hasErrors) {
+        status = 'failed';
+        statusColor = '#f56565';
+        statusText = 'Validation Failed';
+        statusIcon = '✗';
+    } else if (hasWarnings) {
+        status = 'warning';
+        statusColor = '#ed8936';
+        statusText = 'Validation Passed with Warnings';
+        statusIcon = '⚠';
+    }
+
+    // Build modal content - Header (fixed)
+    let modalHeader = `
+        <div style="padding: 30px 30px 20px 30px; flex-shrink: 0; border-bottom: 1px solid #333;">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h2 style="margin: 0 0 8px 0; color: #fff; font-size: 24px; font-weight: 600;">
+                        ${validatorLabel}
+                    </h2>
+                    <p style="margin: 0; color: #999; font-size: 14px; line-height: 1.6;">
+                        ${description || 'Validation check details'}
+                    </p>
+                </div>
+                <button id="closeValidationModal" style="
+                    background: transparent;
+                    border: none;
+                    color: #999;
+                    font-size: 28px;
+                    cursor: pointer;
+                    padding: 0;
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: color 0.2s;
+                    margin-left: 20px;
+                    flex-shrink: 0;
+                " onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#999'">
+                    ×
+                </button>
+            </div>
+
+            <!-- Status Badge -->
+            <div style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                background: ${statusColor}20;
+                border: 1px solid ${statusColor}40;
+                border-radius: 6px;
+                color: ${statusColor};
+                font-weight: 600;
+                font-size: 14px;
+            ">
+                <span style="font-size: 16px;">${statusIcon}</span>
+                ${statusText}
+            </div>
+        </div>
+    `;
+
+    // Build modal body content (scrollable)
+    let modalBodyContent = '';
+
+    // Add errors section if present
+    if (hasErrors) {
+        modalBodyContent += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="color: #f56565; font-size: 16px; font-weight: 600; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+                    <span>✗</span>
+                    Errors (${validatorData.errorCount || validatorData.errors.length})
+                </h3>
+                <div style="
+                    background: rgba(245, 101, 101, 0.1);
+                    border-left: 3px solid #f56565;
+                    border-radius: 4px;
+                    padding: 16px;
+                ">
+        `;
+
+        validatorData.errors.forEach((error, index) => {
+            // Build location info if available
+            let locationInfo = '';
+            if (error.position || error.line) {
+                locationInfo = `
+                    <div style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        margin-top: 4px;
+                        padding: 4px 8px;
+                        background: rgba(0, 0, 0, 0.3);
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #999;
+                        font-family: 'Courier New', monospace;
+                    ">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,7H13V13H11V7M11,15H13V17H11V15Z"/>
+                        </svg>
+                        ${error.position ? `Line ${error.position}` : `Line ${error.line}` + (error.column ? `:${error.column}` : '')}
+                    </div>
+                `;
+            }
+
+            // Build line text preview if available
+            let lineTextPreview = '';
+            if (error.lineText) {
+                lineTextPreview = `
+                    <div style="margin-top: 8px; padding: 8px 12px; background: rgba(0, 0, 0, 0.4); border-left: 2px solid #f56565; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; color: #ddd; white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
+                        ${error.lineText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </div>
+                `;
+            }
+
+            // Handle examples array (for patterns with multiple matches)
+            let examplesSection = '';
+            if (error.examples && error.examples.length > 0) {
+                examplesSection = `
+                    <div style="margin-top: 12px;">
+                        <div style="color: #999; font-size: 12px; margin-bottom: 6px; font-weight: 600;">
+                            Found ${error.examples.length} occurrence${error.examples.length > 1 ? 's' : ''}:
+                        </div>
+                `;
+
+                error.examples.slice(0, 5).forEach((example, exIdx) => {
+                    examplesSection += `
+                        <div style="margin-bottom: 8px; padding: 8px 12px; background: rgba(0, 0, 0, 0.3); border-radius: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                <span style="color: #f56565; font-size: 11px; font-weight: 600; font-family: 'Courier New', monospace;">
+                                    ${example.position || `Line ${example.line}`}
+                                </span>
+                                ${example.text ? `
+                                    <span style="color: #ed8936; font-size: 11px; font-family: 'Courier New', monospace;">
+                                        "${example.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}"
+                                    </span>
+                                ` : ''}
+                            </div>
+                            ${example.lineText ? `
+                                <div style="color: #999; font-size: 11px; font-family: 'Courier New', monospace; white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
+                                    ${example.lineText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                if (error.examples.length > 5) {
+                    examplesSection += `
+                        <div style="color: #666; font-size: 11px; font-style: italic; margin-top: 4px;">
+                            ... and ${error.examples.length - 5} more occurrence${error.examples.length - 5 > 1 ? 's' : ''}
+                        </div>
+                    `;
+                }
+
+                examplesSection += `</div>`;
+            }
+
+            modalBodyContent += `
+                <div style="margin-bottom: ${index < validatorData.errors.length - 1 ? '12px' : '0'}; padding-bottom: ${index < validatorData.errors.length - 1 ? '12px' : '0'}; border-bottom: ${index < validatorData.errors.length - 1 ? '1px solid rgba(245, 101, 101, 0.2)' : 'none'};">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                        <div style="color: #f56565; font-weight: 600; font-size: 13px;">
+                            ${error.code || 'ERROR'}
+                        </div>
+                        ${locationInfo}
+                    </div>
+                    <div style="color: #ddd; font-size: 16px; line-height: 1.6; margin-bottom: 8px;">
+                        ${error.message || error}
+                    </div>
+                    ${lineTextPreview}
+                    ${examplesSection}
+                    ${error.context && !error.examples ? `
+                        <div style="margin-top: 8px; padding: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; color: #999;">
+                            ${JSON.stringify(error.context, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        modalBodyContent += `
+                </div>
+            </div>
+        `;
+    }
+
+    // Add warnings section if present
+    if (hasWarnings) {
+        modalBodyContent += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="color: #ed8936; font-size: 16px; font-weight: 600; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+                    <span>⚠</span>
+                    Warnings (${validatorData.warningCount || validatorData.warnings.length})
+                </h3>
+                <div style="
+                    background: rgba(237, 137, 54, 0.1);
+                    border-left: 3px solid #ed8936;
+                    border-radius: 4px;
+                    padding: 16px;
+                ">
+        `;
+
+        validatorData.warnings.forEach((warning, index) => {
+            // Build location info if available
+            let locationInfo = '';
+            if (warning.position || warning.line) {
+                locationInfo = `
+                    <div style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        margin-top: 4px;
+                        padding: 4px 8px;
+                        background: rgba(0, 0, 0, 0.3);
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #999;
+                        font-family: 'Courier New', monospace;
+                    ">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,7H13V13H11V7M11,15H13V17H11V15Z"/>
+                        </svg>
+                        ${warning.position ? `Line ${warning.position}` : `Line ${warning.line}` + (warning.column ? `:${warning.column}` : '')}
+                    </div>
+                `;
+            }
+
+            // Build line text preview if available
+            let lineTextPreview = '';
+            if (warning.lineText) {
+                lineTextPreview = `
+                    <div style="margin-top: 8px; padding: 8px 12px; background: rgba(0, 0, 0, 0.4); border-left: 2px solid #ed8936; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; color: #ddd; white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
+                        ${warning.lineText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </div>
+                `;
+            }
+
+            // Handle examples array (for patterns with multiple matches)
+            let examplesSection = '';
+            if (warning.examples && warning.examples.length > 0) {
+                examplesSection = `
+                    <div style="margin-top: 12px;">
+                        <div style="color: #999; font-size: 12px; margin-bottom: 6px; font-weight: 600;">
+                            Found ${warning.examples.length} occurrence${warning.examples.length > 1 ? 's' : ''}:
+                        </div>
+                `;
+
+                warning.examples.slice(0, 5).forEach((example, exIdx) => {
+                    examplesSection += `
+                        <div style="margin-bottom: 8px; padding: 8px 12px; background: rgba(0, 0, 0, 0.3); border-radius: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                <span style="color: #ed8936; font-size: 11px; font-weight: 600; font-family: 'Courier New', monospace;">
+                                    ${example.position || `Line ${example.line}`}
+                                </span>
+                                ${example.text ? `
+                                    <span style="color: #f9a825; font-size: 11px; font-family: 'Courier New', monospace;">
+                                        "${example.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}"
+                                    </span>
+                                ` : ''}
+                            </div>
+                            ${example.lineText ? `
+                                <div style="color: #999; font-size: 11px; font-family: 'Courier New', monospace; white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
+                                    ${example.lineText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                if (warning.examples.length > 5) {
+                    examplesSection += `
+                        <div style="color: #666; font-size: 11px; font-style: italic; margin-top: 4px;">
+                            ... and ${warning.examples.length - 5} more occurrence${warning.examples.length - 5 > 1 ? 's' : ''}
+                        </div>
+                    `;
+                }
+
+                examplesSection += `</div>`;
+            }
+
+            modalBodyContent += `
+                <div style="margin-bottom: ${index < validatorData.warnings.length - 1 ? '12px' : '0'}; padding-bottom: ${index < validatorData.warnings.length - 1 ? '12px' : '0'}; border-bottom: ${index < validatorData.warnings.length - 1 ? '1px solid rgba(237, 137, 54, 0.2)' : 'none'};">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                        <div style="color: #ed8936; font-weight: 600; font-size: 13px;">
+                            ${warning.code || 'WARNING'}
+                        </div>
+                        ${locationInfo}
+                    </div>
+                    <div style="color: #ddd; font-size: 16px; line-height: 1.6; margin-bottom: 8px;">
+                        ${warning.message || warning}
+                    </div>
+                    ${lineTextPreview}
+                    ${examplesSection}
+                    ${warning.context && !warning.examples ? `
+                        <div style="margin-top: 8px; padding: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; color: #999;">
+                            ${JSON.stringify(warning.context, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        modalBodyContent += `
+                </div>
+            </div>
+        `;
+    }
+
+    // Add success/info section if everything passed
+    if (!hasErrors && !hasWarnings && (hasInfo || passed)) {
+        // Generate validator-specific success summary
+        let successSummary = '';
+
+        switch(validatorKey) {
+            case 'structural':
+                successSummary = `
+                    <div style="color: #bbb; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                        This component has a valid structure with proper formatting:
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px; color: #999; font-size: 13px; line-height: 1.8;">
+                        <li>YAML frontmatter is properly formatted and contains all required fields</li>
+                        <li>File size is within acceptable limits</li>
+                        <li>UTF-8 encoding is valid with no binary content</li>
+                        <li>Content structure follows markdown conventions</li>
+                        <li>Section count is optimal for readability</li>
+                    </ul>
+                `;
+                break;
+
+            case 'integrity':
+                successSummary = `
+                    <div style="color: #bbb; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                        This component's integrity has been verified:
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px; color: #999; font-size: 13px; line-height: 1.8;">
+                        <li>SHA256 hash matches expected value</li>
+                        <li>No tampering or unauthorized modifications detected</li>
+                        <li>Version tracking is consistent</li>
+                        <li>File has not been corrupted during transmission</li>
+                    </ul>
+                `;
+                break;
+
+            case 'semantic':
+                successSummary = `
+                    <div style="color: #bbb; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                        This component is safe and contains no malicious content:
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px; color: #999; font-size: 13px; line-height: 1.8;">
+                        <li>No prompt injection attempts detected</li>
+                        <li>No dangerous shell commands or system calls</li>
+                        <li>No obfuscated or suspicious code patterns</li>
+                        <li>No attempts to access sensitive file paths</li>
+                        <li>Content follows security best practices</li>
+                    </ul>
+                `;
+                break;
+
+            case 'references':
+                successSummary = `
+                    <div style="color: #bbb; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                        All external references have been validated:
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px; color: #999; font-size: 13px; line-height: 1.8;">
+                        <li>All URLs are properly formatted and accessible</li>
+                        <li>No SSRF (Server-Side Request Forgery) vulnerabilities</li>
+                        <li>External links point to trusted domains</li>
+                        <li>No private network or localhost references</li>
+                        <li>HTTP links have been upgraded to HTTPS where possible</li>
+                    </ul>
+                `;
+                break;
+
+            case 'provenance':
+                successSummary = `
+                    <div style="color: #bbb; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                        Component origin and authorship have been confirmed:
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px; color: #999; font-size: 13px; line-height: 1.8;">
+                        <li>Author metadata is present and valid</li>
+                        <li>Repository information is correct</li>
+                        <li>License information is specified</li>
+                        <li>Component source can be traced to original repository</li>
+                        <li>No signs of unauthorized redistribution</li>
+                    </ul>
+                `;
+                break;
+
+            default:
+                successSummary = `
+                    <div style="color: #bbb; font-size: 14px; line-height: 1.6;">
+                        This component has been validated and meets all ${validatorLabel.toLowerCase()} requirements.
+                    </div>
+                `;
+        }
+
+        modalBodyContent += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="color: #48bb78; font-size: 16px; font-weight: 600; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+                    <span>✓</span>
+                    Validation Passed
+                </h3>
+                <div style="
+                    background: rgba(72, 187, 120, 0.1);
+                    border-left: 3px solid #48bb78;
+                    border-radius: 4px;
+                    padding: 16px;
+                ">
+                    <div style="color: #48bb78; font-weight: 600; font-size: 14px; margin-bottom: 12px;">
+                        All ${validatorLabel} checks passed successfully
+                    </div>
+                    ${successSummary}
+        `;
+
+        // Add info items if present
+        if (hasInfo) {
+            modalBodyContent += `
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(72, 187, 120, 0.2);">
+                    <div style="color: #48bb78; font-weight: 600; font-size: 13px; margin-bottom: 8px;">
+                        Additional Details:
+                    </div>
+            `;
+            validatorData.info.forEach((info, index) => {
+                modalBodyContent += `
+                    <div style="margin-bottom: ${index < validatorData.info.length - 1 ? '8px' : '0'}; color: #999; font-size: 13px; padding-left: 12px;">
+                        • ${info.message || info}
+                    </div>
+                `;
+            });
+            modalBodyContent += `
+                </div>
+            `;
+        }
+
+        modalBodyContent += `
+                </div>
+            </div>
+        `;
+    }
+
+    // Build modal footer (fixed)
+    let modalFooter = `
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px; padding-top: 24px; border-top: 1px solid #333;">
+                <button id="closeValidationModalBtn" style="
+                    background: #2d2d2d;
+                    border: 1px solid #444;
+                    color: #fff;
+                    padding: 10px 24px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='#3d3d3d'; this.style.borderColor='#555'" onmouseout="this.style.background='#2d2d2d'; this.style.borderColor='#444'">
+                    Close
+                </button>
+            </div>
+    `;
+
+    // Assemble the complete modal with scrollable body
+    modalContainer.innerHTML = `
+        ${modalHeader}
+        <div style="flex: 1; overflow-y: auto; padding: 30px;">
+            ${modalBodyContent}
+        </div>
+        <div style="flex-shrink: 0; padding: 20px 30px; border-top: 1px solid #333;">
+            ${modalFooter}
+        </div>
+    `;
+    modalOverlay.appendChild(modalContainer);
+    document.body.appendChild(modalOverlay);
+
+    // Close modal handlers
+    function closeModal() {
+        document.body.removeChild(modalOverlay);
+    }
+
+    document.getElementById('closeValidationModal').addEventListener('click', closeModal);
+    document.getElementById('closeValidationModalBtn').addEventListener('click', closeModal);
+
+    // Close on overlay click (but not on modal content click)
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key
+    function handleEscape(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    }
+    document.addEventListener('keydown', handleEscape);
+};

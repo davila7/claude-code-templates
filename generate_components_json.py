@@ -1,11 +1,192 @@
 import os
 import json
 import requests
+import subprocess
 from collections import defaultdict
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
+
+def run_security_validation():
+    """
+    Run security validation on all components and return the results.
+    Returns a dictionary with component paths as keys and security data as values.
+    """
+    print("🔒 Running security validation on components...")
+
+    try:
+        # Change to cli-tool directory to run npm command
+        cli_tool_dir = Path(__file__).parent / 'cli-tool'
+
+        # Run security audit and generate JSON report
+        result = subprocess.run(
+            ['npm', 'run', 'security-audit:json'],
+            cwd=cli_tool_dir,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 minute timeout
+        )
+
+        if result.returncode != 0:
+            print(f"⚠️ Security validation completed with warnings")
+            print(f"  stdout: {result.stdout[:200]}")
+            print(f"  stderr: {result.stderr[:200]}")
+        else:
+            print("✅ Security validation completed successfully")
+
+        # Read the generated security report
+        security_report_path = cli_tool_dir / 'security-report.json'
+
+        if not security_report_path.exists():
+            print("⚠️ Security report not found, skipping security metadata")
+            return {}
+
+        with open(security_report_path, 'r', encoding='utf-8') as f:
+            security_data = json.load(f)
+
+        # Transform security data into a lookup dictionary
+        # Key format: "agents/category/name" -> security metadata
+        security_lookup = {}
+
+        for component_result in security_data.get('components', []):
+            component_info = component_result.get('component', {})
+            component_path = component_info.get('path', '')
+            component_type = component_info.get('type', '')
+
+            if component_path:
+                # Extract category and name from path
+                # Path format: components/agents/development-team/frontend-developer.md
+                path_parts = component_path.replace('\\', '/').split('/')
+
+                # Handle both formats: "components/agents/..." and "cli-tool/components/agents/..."
+                if 'components' in path_parts:
+                    components_idx = path_parts.index('components')
+                    if len(path_parts) > components_idx + 3:
+                        component_type = path_parts[components_idx + 1]  # agents, commands, etc.
+                        category = path_parts[components_idx + 2]
+                        file_name = path_parts[components_idx + 3]
+                        name = os.path.splitext(file_name)[0]
+
+                        # Create lookup key
+                        key = f"{component_type}/{category}/{name}"
+
+                        # Extract security metadata
+                        overall = component_result.get('overall', {})
+                        validators = component_result.get('validators', {})
+
+                        # Build validators object with detailed errors and warnings
+                        validators_data = {}
+                        for validator_name, validator_result in validators.items():
+                            # Process errors to extract line/column information
+                            processed_errors = []
+                            for error in validator_result.get('errors', []):
+                                error_data = {
+                                    'level': error.get('level', 'error'),
+                                    'code': error.get('code', ''),
+                                    'message': error.get('message', ''),
+                                    'timestamp': error.get('timestamp', '')
+                                }
+
+                                # Extract metadata with line/column info
+                                metadata = error.get('metadata', {})
+                                if metadata:
+                                    error_data['metadata'] = metadata
+
+                                    # Extract location info if available
+                                    if 'line' in metadata:
+                                        error_data['line'] = metadata['line']
+                                    if 'column' in metadata:
+                                        error_data['column'] = metadata['column']
+                                    if 'position' in metadata:
+                                        error_data['position'] = metadata['position']
+                                    if 'lineText' in metadata:
+                                        error_data['lineText'] = metadata['lineText']
+
+                                    # Extract examples array if present (for patterns with multiple matches)
+                                    if 'examples' in metadata:
+                                        error_data['examples'] = metadata['examples']
+
+                                processed_errors.append(error_data)
+
+                            # Process warnings similarly
+                            processed_warnings = []
+                            for warning in validator_result.get('warnings', []):
+                                warning_data = {
+                                    'level': warning.get('level', 'warning'),
+                                    'code': warning.get('code', ''),
+                                    'message': warning.get('message', ''),
+                                    'timestamp': warning.get('timestamp', '')
+                                }
+
+                                # Extract metadata with line/column info
+                                metadata = warning.get('metadata', {})
+                                if metadata:
+                                    warning_data['metadata'] = metadata
+
+                                    # Extract location info if available
+                                    if 'line' in metadata:
+                                        warning_data['line'] = metadata['line']
+                                    if 'column' in metadata:
+                                        warning_data['column'] = metadata['column']
+                                    if 'position' in metadata:
+                                        warning_data['position'] = metadata['position']
+                                    if 'lineText' in metadata:
+                                        warning_data['lineText'] = metadata['lineText']
+
+                                    # Extract examples array if present
+                                    if 'examples' in metadata:
+                                        warning_data['examples'] = metadata['examples']
+
+                                processed_warnings.append(warning_data)
+
+                            validators_data[validator_name] = {
+                                'valid': validator_result.get('valid', False),
+                                'score': validator_result.get('score', 0),
+                                'errorCount': validator_result.get('errorCount', 0),
+                                'warningCount': validator_result.get('warningCount', 0),
+                                'errors': processed_errors,
+                                'warnings': processed_warnings,
+                                'info': validator_result.get('info', [])
+                            }
+
+                        security_lookup[key] = {
+                            'validated': True,
+                            'valid': overall.get('valid', False),
+                            'score': overall.get('score', 0),
+                            'errorCount': overall.get('errorCount', 0),
+                            'warningCount': overall.get('warningCount', 0),
+                            'lastValidated': security_data.get('timestamp', ''),
+                            'validators': validators_data
+                        }
+
+                        # Add hash if available from integrity validator
+                        integrity_data = validators.get('integrity', {})
+                        if 'info' in integrity_data:
+                            for info_item in integrity_data['info']:
+                                # info_item is a dictionary with code, message, metadata
+                                if isinstance(info_item, dict):
+                                    metadata = info_item.get('metadata', {})
+                                    if 'fullHash' in metadata:
+                                        security_lookup[key]['hash'] = metadata['fullHash']
+                                        break
+                                    elif 'hash' in metadata:
+                                        security_lookup[key]['hash'] = metadata['hash']
+                                        break
+
+        print(f"✅ Security metadata extracted for {len(security_lookup)} components")
+        return security_lookup
+
+    except subprocess.TimeoutExpired:
+        print("⚠️ Security validation timed out after 5 minutes")
+        return {}
+    except FileNotFoundError:
+        print("⚠️ npm command not found, skipping security validation")
+        return {}
+    except Exception as e:
+        print(f"⚠️ Error running security validation: {e}")
+        return {}
 
 def fetch_download_stats():
     """
@@ -204,7 +385,10 @@ def generate_components_json():
     plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
     components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'templates': [], 'plugins': []}
-    
+
+    # Run security validation
+    security_metadata = run_security_validation()
+
     # Fetch download statistics
     download_stats = fetch_download_stats()
     component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox']
@@ -263,7 +447,18 @@ def generate_components_json():
                         # The key in download_stats uses the plural form: agents/category/name
                         download_key = f"{component_type}/{category}/{name}"
                         downloads = download_stats.get(download_key, 0)
-                        
+
+                        # Look up security metadata for this component
+                        security_key = f"{component_type}/{category}/{name}"
+                        security = security_metadata.get(security_key, {
+                            'validated': False,
+                            'valid': None,
+                            'score': None,
+                            'errorCount': 0,
+                            'warningCount': 0,
+                            'lastValidated': None
+                        })
+
                         component = {
                             'name': name,
                             'path': os.path.join(category, file_name).replace("\\", "/"),
@@ -271,7 +466,8 @@ def generate_components_json():
                             'type': component_type[:-1],  # singular form
                             'content': content,  # Add file content
                             'description': description,  # Add description for MCPs
-                            'downloads': downloads  # Add download count
+                            'downloads': downloads,  # Add download count
+                            'security': security  # Add security metadata
                         }
                         components_data[component_type].append(component)
 
@@ -361,12 +557,28 @@ def generate_components_json():
     else:
         print(f"Warning: Templates directory not found: {templates_base_path}")
 
-    # Scan plugins from marketplace.json
+    # Load components metadata from marketplace.json (Claude Code standard)
+    components_marketplace_path = 'cli-tool/components/.claude-plugin/marketplace.json'
+    components_marketplace = None
+    if os.path.isfile(components_marketplace_path):
+        print(f"Loading components metadata from {components_marketplace_path}...")
+        try:
+            with open(components_marketplace_path, 'r', encoding='utf-8') as f:
+                components_marketplace = json.load(f)
+            print(f"✅ Loaded metadata for {len(components_marketplace.get('agents', []))} agents")
+        except Exception as e:
+            print(f"⚠️ Error reading components metadata from {components_marketplace_path}: {e}")
+
+    # Scan plugins from marketplace.json and store marketplace data
+    marketplace_full_data = None
     if os.path.isfile(plugins_path):
         print(f"Scanning for plugins in {plugins_path}...")
         try:
             with open(plugins_path, 'r', encoding='utf-8') as f:
                 marketplace_data = json.load(f)
+
+            # Store full marketplace data for inclusion in components.json
+            marketplace_full_data = marketplace_data
 
             if 'plugins' in marketplace_data:
                 for plugin in marketplace_data['plugins']:
@@ -439,6 +651,16 @@ def generate_components_json():
             # Sort other components by path
             components_data[component_type].sort(key=lambda x: x['path'])
 
+    # Add marketplace metadata (root level - our public marketplace)
+    if marketplace_full_data:
+        components_data['marketplace'] = marketplace_full_data
+        print("✅ Added public marketplace metadata to components.json")
+
+    # Add components marketplace metadata (Claude Code standard)
+    if components_marketplace:
+        components_data['componentsMarketplace'] = components_marketplace
+        print("✅ Added components marketplace metadata to components.json")
+
     try:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(components_data, f, indent=2, ensure_ascii=False)
@@ -447,6 +669,10 @@ def generate_components_json():
         # Log summary
         print("\n--- Generation Summary ---")
         for component_type, components in components_data.items():
+            # Skip marketplace metadata in summary (it's not a component type)
+            if component_type in ['marketplace', 'componentsMarketplace']:
+                continue
+
             print(f"  - Found and processed {len(components)} {component_type}")
             if component_type == 'templates':
                 languages = len([t for t in components if t.get('subtype') == 'language'])
@@ -457,6 +683,14 @@ def generate_components_json():
                 total_agents = sum(p.get('agents', 0) for p in components)
                 total_mcps = sum(p.get('mcpServers', 0) for p in components)
                 print(f"    • {total_commands} commands, {total_agents} agents, {total_mcps} MCPs")
+
+            # Security statistics for components with security metadata
+            if component_type not in ['templates', 'plugins']:
+                validated = len([c for c in components if c.get('security', {}).get('validated', False)])
+                valid_components = len([c for c in components if c.get('security', {}).get('valid', False)])
+                avg_score = sum(c.get('security', {}).get('score', 0) for c in components if c.get('security', {}).get('validated', False)) / validated if validated > 0 else 0
+                print(f"    • Security: {validated} validated, {valid_components} passed, avg score: {avg_score:.1f}")
+
         print("--------------------------")
 
     except IOError as e:
