@@ -173,6 +173,12 @@
                             <div class="component-meta">
                                 <div class="component-type-badge-title" id="componentTypeBadge">AGENT</div>
                                 <span class="component-category-title" id="componentCategory">Development</span>
+                                <div class="component-validation-badge" id="componentValidationBadge" style="display: none;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                                    </svg>
+                                    <span id="validationScore">--</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -194,59 +200,109 @@
                     </div>
                 </section>
 
-                <!-- Installation Section -->
-                <section class="content-section" id="installationSection">
-                    <h2>Installation</h2>
-                    
-                    <!-- Basic Installation -->
-                    <div class="installation-method">
-                        <h3>📦 Basic Installation</h3>
-                        <p class="method-description">Install this component locally in your project. Works with your existing Claude Code setup.</p>
-                        <div class="command-block">
-                            <div class="command-header">
-                                <span class="command-label">Terminal</span>
-                            </div>
-                            <div class="command-content">
-                                <code id="basicInstallCommand">npx claude-code-templates@latest --agent=example --yes</code>
-                                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('basicInstallCommand').textContent)">Copy</button>
+                <!-- Metadata Section -->
+                <section class="content-section metadata-section" id="metadataSection" style="display: none;">
+                    <h2>📋 Metadata</h2>
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <span class="metadata-label">Version</span>
+                            <span class="metadata-value" id="metadataVersion">--</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Author</span>
+                            <span class="metadata-value" id="metadataAuthor">--</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">License</span>
+                            <span class="metadata-value" id="metadataLicense">--</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Repository</span>
+                            <a class="metadata-link" id="metadataRepository" href="#" target="_blank" style="display: none;">View Repository</a>
+                            <span class="metadata-value" id="metadataRepositoryNone" style="display: none;">--</span>
+                        </div>
+                        <div class="metadata-item metadata-item-full">
+                            <span class="metadata-label">Keywords</span>
+                            <div class="metadata-keywords" id="metadataKeywords">
+                                <!-- Keywords will be loaded here -->
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Global Agent Section (for agents only) -->
-                    <div class="installation-method" id="globalAgentSection" style="display: none;">
-                        <h3>🌍 Global Agent (Claude Code SDK)</h3>
-                        <p class="method-description">Create a global AI agent accessible from anywhere with zero configuration. Perfect for automation and CI/CD workflows.</p>
-                        <div class="command-block">
-                            <div class="command-header">
-                                <span class="command-label">Terminal</span>
-                            </div>
-                            <div class="command-content">
-                                <code id="globalAgentCommand">npx claude-code-templates@latest --create-agent example</code>
-                                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('globalAgentCommand').textContent)">Copy</button>
-                            </div>
-                        </div>
-                        
-                        <div class="usage-info">
-                            <h4>After installation, use from anywhere:</h4>
-                            <div class="command-block small">
+                </section>
+
+                <!-- Installation Section -->
+                <section class="content-section" id="installationSection">
+                    <h2>Installation</h2>
+
+                    <!-- Basic Installation -->
+                    <div class="installation-method accordion-item">
+                        <button class="accordion-header active" onclick="toggleAccordion(this)">
+                            <span class="accordion-title">📦 Basic Installation</span>
+                            <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7,10L12,15L17,10H7Z"/>
+                            </svg>
+                        </button>
+                        <div class="accordion-content" style="display: block;">
+                            <p class="method-description">Install this component locally in your project. Works with your existing Claude Code setup.</p>
+                            <div class="command-block">
+                                <div class="command-header">
+                                    <span class="command-label">Terminal</span>
+                                </div>
                                 <div class="command-content">
-                                    <code id="globalUsageCommand">example "your prompt here"</code>
-                                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('globalUsageCommand').textContent)">Copy</button>
+                                    <code id="basicInstallCommand">npx claude-code-templates@latest --agent=example --yes</code>
+                                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('basicInstallCommand').textContent)">Copy</button>
                                 </div>
                             </div>
-                            <div class="features-list">
-                                <div class="feature">✅ Works in scripts, CI/CD, npm tasks</div>
-                                <div class="feature">✅ Auto-detects project context</div>
-                                <div class="feature">✅ Powered by Claude Code SDK</div>
+                        </div>
+                    </div>
+
+                    <!-- Global Agent Section (for agents only) -->
+                    <div class="installation-method accordion-item" id="globalAgentSection" style="display: none;">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="accordion-title">🌍 Global Agent (Claude Code SDK)</span>
+                            <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7,10L12,15L17,10H7Z"/>
+                            </svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="method-description">Create a global AI agent accessible from anywhere with zero configuration. Perfect for automation and CI/CD workflows.</p>
+                            <div class="command-block">
+                                <div class="command-header">
+                                    <span class="command-label">Terminal</span>
+                                </div>
+                                <div class="command-content">
+                                    <code id="globalAgentCommand">npx claude-code-templates@latest --create-agent example</code>
+                                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('globalAgentCommand').textContent)">Copy</button>
+                                </div>
+                            </div>
+
+                            <div class="usage-info">
+                                <h4>After installation, use from anywhere:</h4>
+                                <div class="command-block small">
+                                    <div class="command-content">
+                                        <code id="globalUsageCommand">example "your prompt here"</code>
+                                        <button class="copy-btn" onclick="copyToClipboard(document.getElementById('globalUsageCommand').textContent)">Copy</button>
+                                    </div>
+                                </div>
+                                <div class="features-list">
+                                    <div class="feature">✅ Works in scripts, CI/CD, npm tasks</div>
+                                    <div class="feature">✅ Auto-detects project context</div>
+                                    <div class="feature">✅ Powered by Claude Code SDK</div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- E2B Sandbox Section (for agents only) -->
-                    <div class="installation-method" id="e2bSandboxSection" style="display: none;">
-                        <h3>☁️ Run in E2B Sandbox (Cloud Execution) <span class="new-badge">NEW</span></h3>
-                        <p class="method-description">Execute Claude Code with this component in an isolated cloud environment using E2B. Perfect for testing complex projects without affecting your local system.</p>
+                    <div class="installation-method accordion-item" id="e2bSandboxSection" style="display: none;">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="accordion-title">☁️ Run in E2B Sandbox (Cloud Execution)</span>
+                            <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7,10L12,15L17,10H7Z"/>
+                            </svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="method-description">Execute Claude Code with this component in an isolated cloud environment using E2B. Perfect for testing complex projects without affecting your local system.</p>
                         
                         <div class="setup-requirements">
                             <h4>🔑 Setup API Keys</h4>
@@ -282,17 +338,52 @@
                             </div>
                         </div>
 
-                        <div class="e2b-features">
-                            <div class="feature">☁️ Isolated cloud environment</div>
-                            <div class="feature">🔧 Full development tools</div>
-                            <div class="feature">📊 Real-time execution output</div>
+                            <div class="e2b-features">
+                                <div class="feature">☁️ Isolated cloud environment</div>
+                                <div class="feature">🔧 Full development tools</div>
+                                <div class="feature">📊 Real-time execution output</div>
+                            </div>
+
+                            <div class="e2b-requirements">
+                                <div class="requirements-title">Requirements:</div>
+                                <div class="feature">• Valid E2B API key</div>
+                                <div class="feature">• Internet connection</div>
+                                <div class="feature">• Claude Code v1.0.0+</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quality Validation Section - Compact -->
+                <section class="content-section validation-section" id="validationSection" style="display: none;">
+                    <h2>✓ Quality Validation</h2>
+                    <div class="validation-compact-content">
+                        <div class="validation-summary">
+                            <div class="validation-score-display">
+                                <div class="score-circle" id="scoreCircle">
+                                    <span id="scoreValue">--</span>
+                                </div>
+                                <div class="score-info">
+                                    <span class="score-label">Quality Score</span>
+                                    <span class="score-status" id="scoreStatus">Validated</span>
+                                </div>
+                            </div>
+                            <div class="validation-stats-inline">
+                                <div class="stat-inline">
+                                    <span class="stat-icon">❌</span>
+                                    <span class="stat-label">Errors:</span>
+                                    <span class="stat-number" id="inlineErrors">0</span>
+                                </div>
+                                <div class="stat-inline">
+                                    <span class="stat-icon">⚠️</span>
+                                    <span class="stat-label">Warnings:</span>
+                                    <span class="stat-number" id="inlineWarnings">0</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="e2b-requirements">
-                            <div class="requirements-title">Requirements:</div>
-                            <div class="feature">• Valid E2B API key</div>
-                            <div class="feature">• Internet connection</div>
-                            <div class="feature">• Claude Code v1.0.0+</div>
+                        <div class="validation-checks" id="validationChecks">
+                            <!-- Validation checks with tooltips will be loaded here -->
                         </div>
                     </div>
                 </section>
@@ -521,6 +612,8 @@
         <span class="cart-badge" id="cartBadge">0</span>
     </div>
 
+    <!-- Validation modal is now created dynamically in component-page.js -->
+
     <!-- Scripts -->
     <script src="/js/data-loader.js"></script>
     <script src="/js/cart-manager.js"></script>
@@ -528,6 +621,41 @@
     <script src="/js/utils.js"></script>
     
     <script>
+        // Accordion toggle function
+        function toggleAccordion(button) {
+            const accordionItem = button.closest('.accordion-item');
+            const content = accordionItem.querySelector('.accordion-content');
+            const isActive = button.classList.contains('active');
+
+            // Get all accordion items in the same section
+            const allAccordionItems = accordionItem.parentElement.querySelectorAll('.accordion-item');
+
+            // Close all other accordions
+            allAccordionItems.forEach(item => {
+                if (item !== accordionItem) {
+                    const otherButton = item.querySelector('.accordion-header');
+                    const otherContent = item.querySelector('.accordion-content');
+                    if (otherButton && otherContent) {
+                        otherButton.classList.remove('active');
+                        otherContent.style.display = 'none';
+                    }
+                }
+            });
+
+            // Toggle current accordion
+            button.classList.toggle('active');
+
+            // Toggle content visibility with smooth animation
+            if (isActive) {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        }
+
+        // Validation modal functions are now in component-page.js
+        // (Old inline modal code removed to use new modal system)
+
         // Debug script loading and ensure proper initialization
         window.addEventListener('DOMContentLoaded', () => {
             console.log('=== Component Page Debug ===');
@@ -538,13 +666,13 @@
                 CartManager: typeof CartManager,
                 windowAddToCart: typeof window.addToCart
             });
-            
+
             // Ensure cart manager is initialized
             if (typeof CartManager !== 'undefined' && !window.cartManager) {
                 console.log('Initializing CartManager...');
                 window.cartManager = new CartManager();
             }
-            
+
             // Ensure component page manager is initialized
             if (typeof ComponentPageManager !== 'undefined' && !window.componentPageManager) {
                 console.log('Initializing ComponentPageManager...');

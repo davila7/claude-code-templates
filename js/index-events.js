@@ -88,6 +88,9 @@ class IndexPageManager {
                 }
             }
 
+            // Update sort selector for initial filter
+            this.updateSortSelector();
+
             // Display components
             this.displayCurrentFilter();
 
@@ -227,11 +230,44 @@ class IndexPageManager {
             btn.classList.toggle('active', btn.dataset.filter === filter);
         });
 
+        // Update sort selector options based on filter
+        this.updateSortSelector();
+
         this.displayCurrentFilter();
 
         // Show category filters for the new filter
         if (typeof showCategoryFilters === 'function') {
             showCategoryFilters(filter);
+        }
+    }
+
+    // Update sort selector based on current filter
+    updateSortSelector() {
+        const sortSelector = document.getElementById('sortSelector');
+        if (!sortSelector) return;
+
+        const currentValue = sortSelector.value;
+
+        if (this.currentFilter === 'agents') {
+            // Add "Verified" option for agents if it doesn't exist
+            const verifiedOption = Array.from(sortSelector.options).find(opt => opt.value === 'verified');
+            if (!verifiedOption) {
+                const option = document.createElement('option');
+                option.value = 'verified';
+                option.textContent = 'Verified First';
+                sortSelector.insertBefore(option, sortSelector.options[0]);
+            }
+        } else {
+            // Remove "Verified" option for other filters
+            const verifiedOption = Array.from(sortSelector.options).find(opt => opt.value === 'verified');
+            if (verifiedOption) {
+                verifiedOption.remove();
+                // Reset to downloads if verified was selected
+                if (currentValue === 'verified') {
+                    sortSelector.value = 'downloads';
+                    this.currentSort = 'downloads';
+                }
+            }
         }
     }
 
@@ -328,7 +364,7 @@ class IndexPageManager {
     // Sort components based on current sort option
     sortComponents(components) {
         const sortedComponents = [...components]; // Create a copy to avoid mutating original
-        
+
         if (this.currentSort === 'downloads') {
             // Sort by downloads (descending) - components with no downloads go to the end
             sortedComponents.sort((a, b) => {
@@ -343,8 +379,24 @@ class IndexPageManager {
                 const nameB = (b.name || '').toLowerCase();
                 return nameA.localeCompare(nameB);
             });
+        } else if (this.currentSort === 'verified') {
+            // Sort by verified status first (100% score), then by downloads
+            sortedComponents.sort((a, b) => {
+                // Check if component has 100% validation score
+                const aVerified = a.security && a.security.validated && a.security.score === 100 && a.security.valid;
+                const bVerified = b.security && b.security.validated && b.security.score === 100 && b.security.valid;
+
+                // Verified components come first
+                if (aVerified && !bVerified) return -1;
+                if (!aVerified && bVerified) return 1;
+
+                // If both verified or both not verified, sort by downloads
+                const downloadsA = a.downloads || 0;
+                const downloadsB = b.downloads || 0;
+                return downloadsB - downloadsA;
+            });
         }
-        
+
         return sortedComponents;
     }
     
@@ -672,14 +724,17 @@ class IndexPageManager {
         const categoryLabel = `<div class="category-label">${this.formatComponentName(categoryName)}</div>`;
         
         // Create download badge if downloads data exists
-        const downloadBadge = component.downloads && component.downloads > 0 ? 
+        const downloadBadge = component.downloads && component.downloads > 0 ?
             `<div class="download-badge" title="${component.downloads} downloads">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/>
                 </svg>
                 ${this.formatNumber(component.downloads)}
             </div>` : '';
-        
+
+        // Create validation badge for agents with security data
+        const validationBadge = this.createValidationBadge(component.security);
+
         return `
             <div class="template-card" data-type="${component.type}">
                 <div class="card-inner">
@@ -688,6 +743,7 @@ class IndexPageManager {
                         ${categoryLabel}
                         <div class="framework-logo" style="color: ${config.color}">
                             <span class="component-icon">${config.icon}</span>
+                            ${validationBadge}
                         </div>
                         <h3 class="template-title">${this.formatComponentName(component.name)}</h3>
                         ${component.type === 'mcp' ? 
@@ -783,7 +839,7 @@ class IndexPageManager {
 
     getComponentDescription(component) {
         let description = '';
-        
+
         if (component.description) {
             description = component.description;
         } else if (component.content) {
@@ -800,17 +856,39 @@ class IndexPageManager {
                 }
             }
         }
-        
+
         if (!description) {
             description = `A ${component.type} component for Claude Code.`;
         }
-        
+
         // Truncate description to max 120 characters for proper card display
         if (description.length > 120) {
             description = description.substring(0, 117) + '...';
         }
-        
+
         return description;
+    }
+
+    /**
+     * Create validation badge HTML - Only for perfect 100% score
+     */
+    createValidationBadge(validation) {
+        if (!validation || !validation.validated) return '';
+
+        const score = validation.score || 0;
+        const isValid = validation.valid;
+
+        // ONLY show badge for perfect score (100%)
+        if (score === 100 && isValid) {
+            return `<div class="verified-checkmark" title="100% Validated - Perfect Security Score">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#1DA1F2">
+                    <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z"/>
+                </svg>
+            </div>`;
+        }
+
+        // Don't show anything for scores below 100
+        return '';
     }
 
     // Update filter button counts
