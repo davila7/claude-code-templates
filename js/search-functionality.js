@@ -139,8 +139,8 @@ async function loadComponentsForSearch() {
             
             if (data) {
                 // Process each category for search
-                const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps'];
-                
+                const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'skills'];
+
                 for (const category of categories) {
                     if (data[category] && Array.isArray(data[category])) {
                         // Process components to make them search-friendly
@@ -175,10 +175,10 @@ async function loadComponentsForSearch() {
         const response = await fetch('components.json');
         if (response.ok) {
             const data = await response.json();
-            
+
             // Process each category for search
-            const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps'];
-            
+            const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'skills'];
+
             for (const category of categories) {
                 if (data[category] && Array.isArray(data[category])) {
                     // Process components to make them search-friendly
@@ -212,7 +212,7 @@ async function loadComponentsForSearch() {
         
         // Fallback: try to use cached data if available
         if (window.getSearchData) {
-            const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps'];
+            const categories = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'skills'];
             for (const category of categories) {
                 const data = window.getSearchData(category);
                 if (data && data.length > 0) {
@@ -262,7 +262,7 @@ function getFilterFromURL() {
     const segments = path.split('/').filter(segment => segment);
 
     // Check if first segment is a valid filter
-    const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates', 'plugins'];
+    const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'skills', 'templates', 'plugins'];
     const firstSegment = segments[0];
 
     if (firstSegment && validFilters.includes(firstSegment)) {
@@ -423,7 +423,8 @@ function updateSearchResults(results, categoryMatches = new Set()) {
             commands: '⚡',
             settings: '⚙️',
             hooks: '🪝',
-            mcps: '🔌'
+            mcps: '🔌',
+            skills: '🎨'
         };
         
         const tags = Array.from(categoryMatches).map(category => {
@@ -480,8 +481,8 @@ function displaySearchResults(results) {
     
     // Render grouped results in specific order
     let html = '';
-    const categoryOrder = ['agents', 'commands', 'settings', 'hooks', 'mcps'];
-    
+    const categoryOrder = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'skills'];
+
     categoryOrder.forEach(category => {
         if (!groupedResults[category]) return;
         const categoryResults = groupedResults[category];
@@ -519,7 +520,8 @@ function getCategoryIcon(category) {
         commands: '⚡',
         settings: '⚙️',
         hooks: '🪝',
-        mcps: '🔌'
+        mcps: '🔌',
+        skills: '🎨'
     };
     return icons[category] || '📦';
 }
@@ -541,7 +543,8 @@ function generateComponentCard(component, category) {
         command: { icon: '⚡', color: '#4ecdc4' },
         mcp: { icon: '🔌', color: '#45b7d1' },
         setting: { icon: '⚙️', color: '#9c88ff' },
-        hook: { icon: '🪝', color: '#ff8c42' }
+        hook: { icon: '🪝', color: '#ff8c42' },
+        skill: { icon: '🎨', color: '#f59e0b' }
     };
     
     const config = typeConfig[component.type];
