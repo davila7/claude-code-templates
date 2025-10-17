@@ -249,14 +249,14 @@ class DataLoader {
     // Get all components as a flat array
     getAllComponents() {
         if (!this.componentsData) return [];
-        
+
         const allComponents = [];
-        ['agents', 'commands', 'mcps'].forEach(type => {
+        ['agents', 'commands', 'mcps', 'skills'].forEach(type => {
             if (this.componentsData[type]) {
                 allComponents.push(...this.componentsData[type]);
             }
         });
-        
+
         return allComponents;
     }
 
@@ -284,22 +284,23 @@ class DataLoader {
             agents: [],
             commands: [],
             mcps: [],
+            skills: [],
             templates: [] // Include templates in pagination structure
         };
-        
-        ['agents', 'commands', 'mcps'].forEach(type => {
+
+        ['agents', 'commands', 'mcps', 'skills'].forEach(type => {
             if (fullData[type]) {
                 const startIndex = (page - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
                 paginatedData[type] = fullData[type].slice(startIndex, endIndex);
             }
         });
-        
+
         // Templates don't need pagination - include all if available
         if (fullData.templates) {
             paginatedData.templates = fullData.templates;
         }
-        
+
         return paginatedData;
     }
     
@@ -369,10 +370,11 @@ class DataLoader {
                 mcps: this.fullComponentsData.mcps ? this.fullComponentsData.mcps.length : 0,
                 settings: this.fullComponentsData.settings ? this.fullComponentsData.settings.length : 0,
                 hooks: this.fullComponentsData.hooks ? this.fullComponentsData.hooks.length : 0,
+                skills: this.fullComponentsData.skills ? this.fullComponentsData.skills.length : 0,
                 templates: this.fullComponentsData.templates ? this.fullComponentsData.templates.length : 0
             };
         }
-        
+
         // Fallback to current loaded data
         return {
             agents: this.componentsData?.agents?.length || 0,
@@ -380,6 +382,7 @@ class DataLoader {
             mcps: this.componentsData?.mcps?.length || 0,
             settings: this.componentsData?.settings?.length || 0,
             hooks: this.componentsData?.hooks?.length || 0,
+            skills: this.componentsData?.skills?.length || 0,
             templates: this.componentsData?.templates?.length || 0
         };
     }

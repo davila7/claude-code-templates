@@ -22,6 +22,7 @@ class IndexPageManager {
             mcps: new Set(),
             settings: new Set(),
             hooks: new Set(),
+            skills: new Set(),
             templates: new Set(),
             plugins: new Set()
         };
@@ -113,7 +114,7 @@ class IndexPageManager {
         const segments = path.split('/').filter(segment => segment);
 
         // Check if first segment is a valid filter
-        const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates', 'plugins'];
+        const validFilters = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'skills', 'templates', 'plugins'];
         const firstSegment = segments[0];
 
         if (firstSegment && validFilters.includes(firstSegment)) {
@@ -415,6 +416,7 @@ class IndexPageManager {
         this.availableCategories.mcps.clear();
         this.availableCategories.settings.clear();
         this.availableCategories.hooks.clear();
+        this.availableCategories.skills.clear();
         this.availableCategories.templates.clear();
         
         // Collect categories from each component type
@@ -452,7 +454,14 @@ class IndexPageManager {
                 this.availableCategories.hooks.add(category);
             });
         }
-        
+
+        if (this.componentsData.skills && Array.isArray(this.componentsData.skills)) {
+            this.componentsData.skills.forEach(component => {
+                const category = component.category || 'general';
+                this.availableCategories.skills.add(category);
+            });
+        }
+
         // Collect categories from templates (use language as category for language templates)
         if (this.componentsData.templates && Array.isArray(this.componentsData.templates)) {
             this.componentsData.templates.forEach(template => {
@@ -491,6 +500,7 @@ class IndexPageManager {
             case 'mcps':
             case 'settings':
             case 'hooks':
+            case 'skills':
                 this.displayComponents(grid, this.currentFilter);
                 break;
             default:
@@ -707,7 +717,8 @@ class IndexPageManager {
             command: { icon: '⚡', color: '#4ecdc4' },
             mcp: { icon: '🔌', color: '#45b7d1' },
             setting: { icon: '⚙️', color: '#9c88ff' },
-            hook: { icon: '🪝', color: '#ff8c42' }
+            hook: { icon: '🪝', color: '#ff8c42' },
+            skill: { icon: '🎨', color: '#f59e0b' }
         };
         
         const config = typeConfig[component.type];
@@ -896,67 +907,77 @@ class IndexPageManager {
         // Get accurate total counts from data loader (includes full data counts)
         const totalCounts = window.dataLoader.getTotalCounts();
         if (!totalCounts) return;
-        
+
         // Update each filter button with accurate total count
         const agentsBtn = document.querySelector('[data-filter="agents"]');
         const commandsBtn = document.querySelector('[data-filter="commands"]');
         const mcpsBtn = document.querySelector('[data-filter="mcps"]');
         const settingsBtn = document.querySelector('[data-filter="settings"]');
         const hooksBtn = document.querySelector('[data-filter="hooks"]');
+        const skillsBtn = document.querySelector('[data-filter="skills"]');
         const templatesBtn = document.querySelector('[data-filter="templates"]');
-        
+
         if (agentsBtn) {
-            agentsBtn.innerHTML = `🤖 Agents (${totalCounts.agents})`;
+            agentsBtn.innerHTML = `<span class="chip-icon">🤖</span>agents (${totalCounts.agents})`;
         }
         if (commandsBtn) {
-            commandsBtn.innerHTML = `⚡ Commands (${totalCounts.commands})`;
+            commandsBtn.innerHTML = `<span class="chip-icon">⚡</span>commands (${totalCounts.commands})`;
         }
         if (mcpsBtn) {
-            mcpsBtn.innerHTML = `🔌 MCPs (${totalCounts.mcps})`;
+            mcpsBtn.innerHTML = `<span class="chip-icon">🔌</span>mcps (${totalCounts.mcps})`;
         }
         if (settingsBtn) {
-            settingsBtn.innerHTML = `⚙️ Settings (${totalCounts.settings})`;
+            settingsBtn.innerHTML = `<span class="chip-icon">⚙️</span>settings (${totalCounts.settings})`;
         }
         if (hooksBtn) {
-            hooksBtn.innerHTML = `🪝 Hooks (${totalCounts.hooks})`;
+            hooksBtn.innerHTML = `<span class="chip-icon">🪝</span>hooks (${totalCounts.hooks})`;
+        }
+        if (skillsBtn) {
+            skillsBtn.innerHTML = `<span class="new-label">NEW</span><span class="chip-icon">🎨</span>skills (${totalCounts.skills})`;
         }
         if (templatesBtn) {
-            templatesBtn.innerHTML = `📦 Templates (${totalCounts.templates})`;
+            templatesBtn.innerHTML = `<span class="chip-icon">📦</span>templates (${totalCounts.templates})`;
         }
     }
 
     // Create Add Component card
     createAddComponentCard(type) {
         const typeConfig = {
-            agents: { 
-                icon: '🤖', 
-                name: 'Agent', 
+            agents: {
+                icon: '🤖',
+                name: 'Agent',
                 description: 'Create a new AI specialist agent',
                 color: '#ff6b6b'
             },
-            commands: { 
-                icon: '⚡', 
-                name: 'Command', 
+            commands: {
+                icon: '⚡',
+                name: 'Command',
                 description: 'Add a custom slash command',
                 color: '#4ecdc4'
             },
-            mcps: { 
-                icon: '🔌', 
-                name: 'MCP', 
+            mcps: {
+                icon: '🔌',
+                name: 'MCP',
                 description: 'Build a Model Context Protocol integration',
                 color: '#45b7d1'
             },
-            settings: { 
-                icon: '⚙️', 
-                name: 'Setting', 
+            settings: {
+                icon: '⚙️',
+                name: 'Setting',
                 description: 'Configure Claude Code behavior',
                 color: '#9c88ff'
             },
-            hooks: { 
-                icon: '🪝', 
-                name: 'Hook', 
+            hooks: {
+                icon: '🪝',
+                name: 'Hook',
                 description: 'Automate tool execution workflows',
                 color: '#ff8c42'
+            },
+            skills: {
+                icon: '🎨',
+                name: 'Skill',
+                description: 'Add modular capabilities with progressive disclosure',
+                color: '#f59e0b'
             }
         };
         
@@ -1350,6 +1371,11 @@ function showCategoryFilters(componentType) {
                 const mcps = dataLoader.getComponentsByType('mcp');
                 console.log('MCPs data:', mcps);
                 categories = getUniqueCategories(mcps);
+                break;
+            case 'skills':
+                const skills = dataLoader.getComponentsByType('skill');
+                console.log('Skills data:', skills);
+                categories = getUniqueCategories(skills);
                 break;
             case 'templates':
                 const templates = dataLoader.getComponentsByType('template');

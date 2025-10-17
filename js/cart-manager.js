@@ -7,6 +7,7 @@ class CartManager {
             settings: [],
             hooks: [],
             mcps: [],
+            skills: [],
             templates: [] // Add templates support
         };
         this.init();
@@ -92,7 +93,7 @@ class CartManager {
         if (this.getTotalItems() === 0) return;
         
         if (confirm('Are you sure you want to clear your entire stack?')) {
-            this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [], templates: [] };
+            this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], templates: [] };
             this.saveCartToStorage();
             this.updateCartUI();
             this.updateFloatingButton();
@@ -103,11 +104,12 @@ class CartManager {
     // Get total items count
     getTotalItems() {
         this.initializeCartStructure();
-        return (this.cart.agents?.length || 0) + 
-               (this.cart.commands?.length || 0) + 
-               (this.cart.settings?.length || 0) + 
-               (this.cart.hooks?.length || 0) + 
-               (this.cart.mcps?.length || 0) + 
+        return (this.cart.agents?.length || 0) +
+               (this.cart.commands?.length || 0) +
+               (this.cart.settings?.length || 0) +
+               (this.cart.hooks?.length || 0) +
+               (this.cart.mcps?.length || 0) +
+               (this.cart.skills?.length || 0) +
                (this.cart.templates?.length || 0);
     }
     
@@ -118,6 +120,7 @@ class CartManager {
         if (!this.cart.settings) this.cart.settings = [];
         if (!this.cart.hooks) this.cart.hooks = [];
         if (!this.cart.mcps) this.cart.mcps = [];
+        if (!this.cart.skills) this.cart.skills = [];
         if (!this.cart.templates) this.cart.templates = [];
     }
     
@@ -244,12 +247,14 @@ class CartManager {
         const settingsCount = document.getElementById('settingsCount');
         const hooksCount = document.getElementById('hooksCount');
         const mcpsCount = document.getElementById('mcpsCount');
-        
+        const skillsCount = document.getElementById('skillsCount');
+
         if (agentsCount) agentsCount.textContent = this.cart.agents.length;
         if (commandsCount) commandsCount.textContent = this.cart.commands.length;
         if (settingsCount) settingsCount.textContent = this.cart.settings.length;
         if (hooksCount) hooksCount.textContent = this.cart.hooks.length;
         if (mcpsCount) mcpsCount.textContent = this.cart.mcps.length;
+        if (skillsCount) skillsCount.textContent = this.cart.skills.length;
 
         // Render sections
         this.renderSection('agents', 'agentsList');
@@ -257,6 +262,7 @@ class CartManager {
         this.renderSection('settings', 'settingsList');
         this.renderSection('hooks', 'hooksList');
         this.renderSection('mcps', 'mcpsList');
+        this.renderSection('skills', 'skillsList');
     }
 
     // Render a specific section
@@ -318,6 +324,11 @@ class CartManager {
         if (this.cart.mcps.length > 0) {
             const mcpPaths = this.cart.mcps.map(item => this.getCleanPath(item.path)).join(',');
             command += ` --mcp "${mcpPaths}"`;
+        }
+
+        if (this.cart.skills.length > 0) {
+            const skillPaths = this.cart.skills.map(item => this.getCleanPath(item.path)).join(',');
+            command += ` --skill "${skillPaths}"`;
         }
 
         const generatedCommand = document.getElementById('generatedCommand');
@@ -383,6 +394,7 @@ class CartManager {
             settings: '⚙️',
             hooks: '🪝',
             mcps: '🔌',
+            skills: '🎨',
             templates: '📦'
         };
         return icons[type] || '📦';
@@ -402,9 +414,10 @@ class CartManager {
                 // Ensure all arrays exist using centralized method
                 this.initializeCartStructure();
                 if (!this.cart.templates) this.cart.templates = [];
+                if (!this.cart.skills) this.cart.skills = [];
             } catch (e) {
                 console.warn('Failed to load cart from storage:', e);
-                this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [], templates: [] };
+                this.cart = { agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], templates: [] };
             }
         }
     }

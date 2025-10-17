@@ -219,8 +219,11 @@
                             <span class="chip-icon">🔌</span>mcps
                         </a>
                         <a href="/plugins" class="filter-chip" data-filter="plugins" onclick="handleFilterClick(event, 'plugins')">
-                            <span class="new-label">NEW</span>
                             <span class="chip-icon">🧩</span>plugins
+                        </a>
+                        <a href="/skills" class="filter-chip" data-filter="skills" onclick="handleFilterClick(event, 'skills')">
+                            <span class="new-label">NEW</span>
+                            <span class="chip-icon">🎨</span>skills
                         </a>
                         <a href="/templates" class="filter-chip" data-filter="templates" onclick="handleFilterClick(event, 'templates')" style="display: none;">
                             <span class="chip-icon">📦</span>templates
@@ -550,6 +553,14 @@
                             MCPs (<span id="mcpsCount">0</span>)
                         </h4>
                         <div class="cart-section-items" id="mcpsList"></div>
+                    </div>
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🎨</span>
+                            Skills (<span id="skillsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="skillsList"></div>
                     </div>
                 </div>
             </div>
