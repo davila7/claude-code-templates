@@ -33,6 +33,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/skills",
+      "destination": "/index.html"
+    },
+    {
       "source": "/plugin/:name",
       "destination": "/plugin.html"
     },
