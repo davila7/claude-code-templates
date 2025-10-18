@@ -1,0 +1,16 @@
+cve_id,title,cvss_score,affected_system,asset_criticality,exposure,data_sensitivity,exploit_available,exploit_in_wild,compensating_controls,discovered_date
+CVE-2021-44228,Apache Log4j Remote Code Execution (Log4Shell),10.0,prod-web-01.company.com,5,internet_facing,highly_confidential,true,true,false,2025-01-10
+CVE-2023-23397,Microsoft Outlook Elevation of Privilege,9.8,mail-server-01.company.com,4,internet_facing,highly_confidential,true,true,false,2025-01-12
+CVE-2024-12345,OpenSSL Information Disclosure,7.5,api-gateway.company.com,5,internet_facing,highly_confidential,true,false,false,2025-01-15
+CVE-2023-44487,HTTP/2 Rapid Reset DDoS,7.5,load-balancer-01.company.com,4,internet_facing,confidential,true,true,true,2025-01-08
+CVE-2024-23456,PostgreSQL SQL Injection,9.1,db-prod-01.company.com,5,internal,highly_confidential,false,false,false,2025-01-11
+CVE-2022-1234,Jenkins Remote Code Execution,8.8,jenkins.internal.company.com,3,internal,confidential,true,false,true,2025-01-14
+CVE-2023-56789,WordPress Cross-Site Scripting,6.1,blog.company.com,2,internet_facing,public,true,false,true,2025-01-09
+CVE-2024-99999,Custom App Authentication Bypass,8.2,customer-portal.company.com,5,internet_facing,highly_confidential,false,false,false,2025-01-16
+CVE-2023-11111,Nginx Path Traversal,7.3,proxy-server-01.company.com,3,internal,confidential,true,false,false,2025-01-13
+CVE-2024-22222,Docker Container Escape,8.6,k8s-node-03.company.com,4,internal,confidential,true,false,true,2025-01-10
+CVE-2023-33333,MySQL Privilege Escalation,6.7,db-dev-01.company.com,2,isolated,confidential,false,false,false,2025-01-12
+CVE-2024-44444,Python Flask CSRF Vulnerability,5.4,internal-tool.company.com,2,internal,confidential,true,false,false,2025-01-15
+CVE-2023-55555,Redis Unauthorized Access,7.8,cache-server-01.company.com,4,internal,confidential,true,false,true,2025-01-11
+CVE-2024-66666,VMware vCenter RCE,9.8,vcenter.company.com,5,internal,highly_confidential,true,true,false,2025-01-09
+CVE-2023-77777,Spring Framework Code Injection,7.4,app-server-02.company.com,3,internal,confidential,true,false,false,2025-01-14
