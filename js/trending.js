@@ -79,7 +79,7 @@ class TrendingPage {
             {
                 number: globalStats.totalComponents.toLocaleString(),
                 label: 'Unique Components',
-                change: 'Across 6 categories',
+                change: 'Across 7 categories',
                 positive: true
             },
             {
@@ -122,7 +122,8 @@ class TrendingPage {
             { key: 'commands', title: 'Commands', icon: 'M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM2.5 8a5.5 5.5 0 1 0 11 0 5.5 5.5 0 0 0-11 0z' },
             { key: 'mcps', title: 'MCPs', icon: 'M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c0 .026.009.051.025.072L2.5 7a.5.5 0 0 1 0 .708L1.025 9.133a.149.149 0 0 0-.025.072V10.5A1.5 1.5 0 0 0 2.5 12h2.793a.149.149 0 0 0 .072-.025L7 10.5a.5.5 0 0 1 .708 0l1.625 1.475c.021.016.046.025.072.025H12.5A1.5 1.5 0 0 0 14 10.5v-.793a.149.149 0 0 0-.025-.072L12.5 8a.5.5 0 0 1 0-.708l1.475-1.625a.149.149 0 0 0 .025-.072V4.5A1.5 1.5 0 0 0 12.5 3H9.707a.149.149 0 0 0-.072.025L8 4.5a.5.5 0 0 1-.708 0L5.867 3.025A.149.149 0 0 0 5.793 3H2.5z' },
             { key: 'settings', title: 'Settings', icon: 'M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z' },
-            { key: 'hooks', title: 'Hooks', icon: 'M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4.2-4.2a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z' }
+            { key: 'hooks', title: 'Hooks', icon: 'M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4.2-4.2a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z' },
+            { key: 'skills', title: 'Skills', icon: 'M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z' }
         ];
 
         container.innerHTML = '';
@@ -218,11 +219,12 @@ class TrendingPage {
             agents: '#f59e0b',      // amber (yellow)
             mcps: '#3b82f6',        // blue
             settings: '#8b5cf6',    // violet
-            hooks: '#f97316'        // orange
+            hooks: '#f97316',       // orange
+            skills: '#ec4899'       // pink
         };
 
         // Define the desired order for the legend (agents first - most popular, excluding templates)
-        const categoryOrder = ['agents', 'commands', 'mcps', 'settings', 'hooks'];
+        const categoryOrder = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'skills'];
 
         // Prepare datasets in the specified order
         const datasets = categoryOrder
@@ -476,7 +478,7 @@ class TrendingPage {
     getComponentTypeLabel(item) {
         // Determine the component type from the item ID or context
         const id = item.id || '';
-        
+
         if (id.includes('agent-') || id.startsWith('agent') || this.currentType === 'agents') {
             return 'Agent';
         } else if (id.includes('command-') || id.startsWith('command') || this.currentType === 'commands') {
@@ -487,14 +489,16 @@ class TrendingPage {
             return 'Hooks';
         } else if (id.includes('mcp-') || id.startsWith('mcp') || this.currentType === 'mcps') {
             return 'MCP';
+        } else if (id.includes('skill-') || id.startsWith('skill') || this.currentType === 'skills') {
+            return 'Skill';
         } else if (id.includes('template-') || id.startsWith('template') || this.currentType === 'templates') {
             return 'Template';
         }
-        
+
         // Fallback: try to determine from data structure
         if (item.expertise) return 'Agent';
         if (item.command) return 'Command';
-        
+
         return 'Component';
     }
 
@@ -555,6 +559,7 @@ class TrendingPage {
         if (item.type === 'settings') return 'settings';
         if (item.type === 'hooks') return 'hooks';
         if (item.type === 'mcps') return 'mcps';
+        if (item.type === 'skills') return 'skills';
         if (item.type === 'templates') return 'templates';
         return 'commands'; // default
     }
@@ -566,6 +571,7 @@ class TrendingPage {
             settings: 'M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z',
             hooks: 'M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4.2-4.2a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z',
             mcps: 'M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c0 .026.009.051.025.072L2.5 7a.5.5 0 0 1 0 .708L1.025 9.133a.149.149 0 0 0-.025.072V10.5A1.5 1.5 0 0 0 2.5 12h2.793a.149.149 0 0 0 .072-.025L7 10.5a.5.5 0 0 1 .708 0l1.625 1.475c.021.016.046.025.072.025H12.5A1.5 1.5 0 0 0 14 10.5v-.793a.149.149 0 0 0-.025-.072L12.5 8a.5.5 0 0 1 0-.708l1.475-1.625a.149.149 0 0 0 .025-.072V4.5A1.5 1.5 0 0 0 12.5 3H9.707a.149.149 0 0 0-.072.025L8 4.5a.5.5 0 0 1-.708 0L5.867 3.025A.149.149 0 0 0 5.793 3H2.5z',
+            skills: 'M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z',
             templates: 'M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25H1.75zM7.25 4a.75.75 0 0 1 1.5 0v4.25H12a.75.75 0 0 1 0 1.5H8.75V12a.75.75 0 0 1-1.5 0V9.75H4a.75.75 0 0 1 0-1.5h3.25V4z'
         };
 
@@ -642,6 +648,7 @@ function showInstallModal(componentName) {
         'settings': 'setting',
         'hooks': 'hook',
         'mcps': 'mcp',
+        'skills': 'skill',
         'templates': 'template'
     };
 
@@ -649,7 +656,7 @@ function showInstallModal(componentName) {
 
     // Clean the component name by removing prefixes
     let cleanName = componentName;
-    const prefixesToRemove = ['agent-', 'command-', 'setting-', 'hook-', 'mcp-', 'template-'];
+    const prefixesToRemove = ['agent-', 'command-', 'setting-', 'hook-', 'mcp-', 'skill-', 'template-'];
 
     for (const prefix of prefixesToRemove) {
         if (cleanName.startsWith(prefix)) {
