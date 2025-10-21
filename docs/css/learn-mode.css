@@ -1,4 +1,4 @@
-/* Learn Mode Styles */
+/* Learn Mode Styles - CLI Terminal Theme */
 
 /* Back Navigation Enhancement */
 .back-navigation-content {
@@ -8,20 +8,33 @@
     width: 100%;
 }
 
-/* Learn Mode Switch */
+/* Learn Mode Switch - Terminal Inspired */
 .learn-mode-switch-container {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 255, 0, 0.05);
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.learn-mode-switch-container:hover {
+    background: rgba(0, 255, 0, 0.08);
+    border-color: rgba(0, 255, 0, 0.3);
 }
 
 .switch-label {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: #374151;
+    font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #10b981;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-/* Toggle Switch */
+/* Toggle Switch - Terminal Style */
 .switch {
     position: relative;
     display: inline-block;
@@ -42,128 +55,232 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cbd5e1;
+    background: #1e293b;
+    border: 2px solid #334155;
     transition: 0.3s;
-    border-radius: 26px;
+    border-radius: 2px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background: #64748b;
     transition: 0.3s;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 1px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .switch input:checked + .slider {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.switch input:focus + .slider {
-    box-shadow: 0 0 1px linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #059669;
+    border-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3),
+                inset 0 0 10px rgba(16, 185, 129, 0.1);
 }
 
 .switch input:checked + .slider:before {
+    background: #ffffff;
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
     transform: translateX(24px);
 }
 
 /* Hover effect */
 .switch:hover .slider {
-    box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+    border-color: #10b981;
 }
 
-/* Learn Mode Container */
+.switch input:checked + .slider:hover {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5),
+                inset 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+/* Learn Mode Container - Terminal Theme */
 .learn-mode-container {
     min-height: 600px;
-    background: linear-gradient(135deg, #667eea10 0%, #764ba220 100%);
-    padding: 3rem 0;
-    animation: fadeIn 0.3s ease;
+    background: #0f172a;
+    padding: 2rem 0;
+    animation: terminalBoot 0.5s ease;
+    border-top: 2px solid #10b981;
 }
 
 .learn-mode-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    text-align: left;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-left: 4px solid #10b981;
+    position: relative;
+    font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+}
+
+.learn-mode-header::before {
+    content: '> ';
+    position: absolute;
+    left: 0.5rem;
+    top: 1.5rem;
+    color: #10b981;
+    font-weight: bold;
+    animation: blink 1s infinite;
 }
 
 .learn-mode-title {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
 }
 
 .learn-mode-title svg {
-    color: #667eea;
+    color: #10b981;
+    filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
 }
 
 .learn-mode-title h2 {
     margin: 0;
-    font-size: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 1.5rem;
+    font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+    color: #10b981;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
 .learn-mode-subtitle {
-    color: #6b7280;
-    font-size: 1.1rem;
+    color: #94a3b8;
+    font-size: 0.95rem;
     margin: 0;
+    padding-left: 1.5rem;
+    font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
 }
 
-/* LiaScript Preview Wrapper */
+/* LiaScript Preview Wrapper - Terminal Theme */
 .liascript-preview-wrapper {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1),
+                inset 0 0 50px rgba(16, 185, 129, 0.02);
     overflow: hidden;
     min-height: 800px;
+    position: relative;
 }
 
-.liascript-preview-wrapper preview-lia {
+.liascript-preview-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #10b981 50%,
+        transparent 100%);
+    animation: scanline 2s linear infinite;
+}
+
+.liascript-preview-wrapper iframe {
     display: block;
     width: 100%;
     min-height: 800px;
+    background: white;
 }
 
 /* Animations */
-@keyframes fadeIn {
+@keyframes terminalBoot {
     from {
         opacity: 0;
         transform: translateY(20px);
+        filter: blur(5px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
+}
+
+@keyframes blink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(800px);
+    }
+}
+
+/* Terminal Effects */
+.learn-mode-container::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 3px
+    );
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.05;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .learn-mode-title h2 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
 
     .learn-mode-subtitle {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
 
     .liascript-preview-wrapper {
         min-height: 600px;
     }
 
-    .liascript-preview-wrapper preview-lia {
+    .liascript-preview-wrapper iframe {
         min-height: 600px;
+    }
+
+    .learn-mode-switch-container {
+        padding: 0.4rem 0.75rem;
+    }
+
+    .switch-label {
+        font-size: 0.75rem;
+    }
+
+    .switch {
+        width: 44px;
+        height: 24px;
+    }
+
+    .slider:before {
+        height: 16px;
+        width: 16px;
+    }
+
+    .switch input:checked + .slider:before {
+        transform: translateX(20px);
     }
 }
 
@@ -173,15 +290,21 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: #10b981;
-    color: white;
-    border-radius: 20px;
+    background: #059669;
+    color: #ffffff;
+    border: 1px solid #10b981;
+    border-radius: 2px;
     font-size: 0.875rem;
     font-weight: 600;
     margin-top: 1rem;
+    font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
 .progress-badge svg {
     width: 16px;
     height: 16px;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
 }

@@ -445,7 +445,7 @@
 
                 <!-- LiaScript Preview Component -->
                 <div class="liascript-preview-wrapper">
-                    <preview-lia id="liaScriptPreview"></preview-lia>
+                    <!-- LiaScript iframe will be injected here -->
                 </div>
             </div>
         </div>
@@ -719,22 +719,25 @@
         }
 
         async function loadCourseContent() {
-            const liaPreview = document.getElementById('liaScriptPreview');
-            if (!liaPreview) return;
+            console.log('Loading course for:', { currentComponentType, currentComponentName });
 
             // Construct course file path
             const courseUrl = `/courses/${currentComponentType}s/${currentComponentName}.md`;
+            console.log('Course URL:', courseUrl);
 
             try {
                 // Try to load dedicated course file first
                 const response = await fetch(courseUrl);
+                console.log('Fetch response:', response.status, response.ok);
 
                 if (response.ok) {
                     const courseContent = await response.text();
+                    console.log('Course content loaded:', courseContent.substring(0, 100) + '...');
                     loadLiaScriptContent(courseContent);
                 } else {
                     // Fallback: auto-generate from component content
                     console.log('Course file not found, generating from component content');
+                    console.log('Component content available:', !!componentMarkdownContent);
                     const generatedCourse = convertToLiaScript(componentMarkdownContent);
                     loadLiaScriptContent(generatedCourse);
                 }
@@ -747,14 +750,28 @@
         }
 
         function loadLiaScriptContent(markdownContent) {
-            const liaPreview = document.getElementById('liaScriptPreview');
-            if (liaPreview) {
-                // Create a blob URL from the markdown content
-                const blob = new Blob([markdownContent], { type: 'text/markdown' });
-                const blobUrl = URL.createObjectURL(blob);
+            console.log('loadLiaScriptContent called with content length:', markdownContent?.length);
 
-                // Set the src attribute to load the content
-                liaPreview.setAttribute('src', blobUrl);
+            // Instead of using preview-lia, redirect to LiaScript viewer with data URI
+            const encodedContent = encodeURIComponent(markdownContent);
+            const dataUri = `data:text/markdown;charset=utf-8,${encodedContent}`;
+            const liaScriptUrl = `https://liascript.github.io/course/?${dataUri}`;
+
+            console.log('Opening LiaScript with data URI');
+
+            // Create iframe to display LiaScript
+            const wrapper = document.querySelector('.liascript-preview-wrapper');
+            if (wrapper) {
+                wrapper.innerHTML = `
+                    <iframe
+                        src="${liaScriptUrl}"
+                        style="width: 100%; height: 800px; border: none; border-radius: 8px;"
+                        allowfullscreen
+                    ></iframe>
+                `;
+                console.log('LiaScript iframe created');
+            } else {
+                console.error('LiaScript wrapper not found!');
             }
         }
 
