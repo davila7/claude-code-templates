@@ -650,7 +650,7 @@ class ComponentPageManager {
 
             // Store component content for Learn Mode
             if (typeof window.storeComponentContent === 'function') {
-                window.storeComponentContent(content);
+                window.storeComponentContent(content, this.component.type, this.component.name);
             }
 
             // Generate line numbers with error/warning indicators

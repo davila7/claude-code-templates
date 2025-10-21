@@ -1,18 +1,80 @@
 /* Learn Mode Styles */
 
-.learn-mode-btn {
+/* Back Navigation Enhancement */
+.back-navigation-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Learn Mode Switch */
+.learn-mode-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.switch-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Toggle Switch */
+.switch {
     position: relative;
-    transition: all 0.3s ease;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
 }
 
-.learn-mode-btn.active {
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch input:checked + .slider {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.learn-mode-btn:hover {
-    transform: translateY(-2px);
+.switch input:focus + .slider {
+    box-shadow: 0 0 1px linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Hover effect */
+.switch:hover .slider {
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
 }
 
 /* Learn Mode Container */
