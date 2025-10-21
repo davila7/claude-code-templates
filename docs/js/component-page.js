@@ -648,6 +648,11 @@ class ComponentPageManager {
                 codeElement.className = `language-${language}`;
             }
 
+            // Store component content for Learn Mode
+            if (typeof window.storeComponentContent === 'function') {
+                window.storeComponentContent(content);
+            }
+
             // Generate line numbers with error/warning indicators
             const lines = content.split('\n');
             const lineNumbers = lines.map((_, index) => {

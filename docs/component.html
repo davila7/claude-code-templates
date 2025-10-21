@@ -38,10 +38,14 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/component-page.css">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/learn-mode.css">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
+    <!-- LiaScript for interactive learning -->
+    <script type="text/javascript" src="https://liascript.github.io/course/preview-lia.js"></script>
+
     <!-- Hotjar Tracking Code for https://aitmpl.com -->
     <script>
         (function(h,o,t,j,a,r){
@@ -73,6 +77,12 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    <button id="learnModeToggle" class="header-btn learn-mode-btn" onclick="toggleLearnMode()" title="Toggle interactive learning mode">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/>
+                        </svg>
+                        Learn Mode
+                    </button>
                     <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="header-btn anthropic-btn" title="Learn about Anthropic's Claude Code">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -389,7 +399,7 @@
                 </section>
 
                 <!-- Component Code Section -->
-                <section class="component-code-section">
+                <section class="component-code-section" id="normalViewContent">
                     <h2>Component Code</h2>
                     <div class="code-editor">
                         <div class="code-header">
@@ -412,6 +422,26 @@
                     </div>
                 </section>
 
+            </div>
+        </div>
+
+        <!-- Learn Mode Container -->
+        <div class="learn-mode-container" id="learnModeContainer" style="display: none;">
+            <div class="container">
+                <div class="learn-mode-header">
+                    <div class="learn-mode-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/>
+                        </svg>
+                        <h2>Interactive Learning Mode</h2>
+                    </div>
+                    <p class="learn-mode-subtitle">Learn how to use this component with interactive tutorials, quizzes, and hands-on examples</p>
+                </div>
+
+                <!-- LiaScript Preview Component -->
+                <div class="liascript-preview-wrapper">
+                    <preview-lia id="liaScriptPreview"></preview-lia>
+                </div>
             </div>
         </div>
     </main>
@@ -655,6 +685,105 @@
 
         // Validation modal functions are now in component-page.js
         // (Old inline modal code removed to use new modal system)
+
+        // Learn Mode Toggle Function
+        let isLearnModeActive = false;
+        let componentMarkdownContent = '';
+
+        function toggleLearnMode() {
+            isLearnModeActive = !isLearnModeActive;
+            const normalView = document.getElementById('componentContent');
+            const learnView = document.getElementById('learnModeContainer');
+            const toggleBtn = document.getElementById('learnModeToggle');
+
+            if (isLearnModeActive) {
+                // Switch to Learn Mode
+                normalView.style.display = 'none';
+                learnView.style.display = 'block';
+                toggleBtn.classList.add('active');
+                toggleBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                    </svg>
+                    Exit Learn Mode
+                `;
+
+                // Load component content into LiaScript
+                if (componentMarkdownContent) {
+                    loadLiaScriptContent(componentMarkdownContent);
+                }
+            } else {
+                // Switch back to Normal View
+                normalView.style.display = 'block';
+                learnView.style.display = 'none';
+                toggleBtn.classList.remove('active');
+                toggleBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/>
+                    </svg>
+                    Learn Mode
+                `;
+            }
+        }
+
+        function loadLiaScriptContent(markdownContent) {
+            const liaPreview = document.getElementById('liaScriptPreview');
+            if (liaPreview) {
+                // Convert component markdown to LiaScript format
+                const liaScriptMarkdown = convertToLiaScript(markdownContent);
+
+                // Create a blob URL from the markdown content
+                const blob = new Blob([liaScriptMarkdown], { type: 'text/markdown' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                // Set the src attribute to load the content
+                liaPreview.setAttribute('src', blobUrl);
+            }
+        }
+
+        function convertToLiaScript(markdown) {
+            // Add LiaScript metadata header
+            const title = document.getElementById('componentTitle')?.textContent || 'Component Tutorial';
+            const description = document.getElementById('componentDescription')?.textContent || '';
+
+            const liaScriptHeader = `<!--
+author: Claude Code Templates
+email: support@aitmpl.com
+version: 1.0.0
+language: en
+narrator: US English Female
+
+comment: Interactive tutorial for learning how to use this Claude Code component
+
+-->
+
+# ${title}
+
+${description}
+
+---
+
+## 📚 What You'll Learn
+
+In this interactive tutorial, you'll learn:
+
+* How to install and configure this component
+* Best practices for using it in your projects
+* Common use cases and examples
+* Tips and tricks from the community
+
+---
+
+`;
+
+            // Add the original component content
+            return liaScriptHeader + markdown;
+        }
+
+        // Store component content when loaded
+        window.storeComponentContent = function(content) {
+            componentMarkdownContent = content;
+        };
 
         // Debug script loading and ensure proper initialization
         window.addEventListener('DOMContentLoaded', () => {
