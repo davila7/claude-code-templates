@@ -479,4 +479,48 @@ npm publish
 - Use relative paths (`.claude/scripts/`) instead of absolute paths
 - Review components for potential security vulnerabilities before publishing
 
+## Vercel Deployment
+
+### Critical Deployment Instructions
+
+**IMPORTANT:** Always deploy from the **root directory** of the project, NOT from `/docs/`.
+
+#### Correct Deployment Command
+```bash
+# From project root
+npx vercel --prod
+```
+
+#### ❌ WRONG (Do NOT use)
+```bash
+# This will fail because it doesn't include /api/ folder
+cd docs && npx vercel --prod
+```
+
+### Why This Matters
+- The `/api/` folder contains serverless functions (e.g., `track-download-supabase.js`)
+- Vercel needs to see both `/api/` (for functions) and `/docs/` (for static site)
+- The `vercel.json` config specifies `"outputDirectory": "docs"` for the static site
+- Deploying from root ensures:
+  1. ✅ API endpoints work correctly (`/api/track-download-supabase`)
+  2. ✅ Static site serves from `/docs/`
+  3. ✅ All dependencies are installed correctly from root `package.json`
+
+### Required Environment Variables in Vercel
+Ensure these are configured in Vercel Dashboard → Settings → Environment Variables:
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` - Service role key (NOT anon key)
+
+### Troubleshooting Deployment Issues
+If the Supabase tracking endpoint returns 500 errors:
+1. Verify deployment was from root directory
+2. Check environment variables are set in Vercel
+3. Ensure `@supabase/supabase-js` is in root `package.json` dependencies
+4. Check Vercel deployment logs for errors
+
+### GitHub Actions Deployment
+The automated GitHub Actions deployment may fail with credential errors. In that case:
+1. Use manual deployment: `npx vercel --prod` from root
+2. Or configure `VERCEL_TOKEN` in GitHub repository secrets
+
 This codebase represents a comprehensive Claude Code component ecosystem with real-time analytics, modular architecture, and extensive automation capabilities. The system is designed for scalability, maintainability, and ease of use while providing powerful development workflow enhancements.
