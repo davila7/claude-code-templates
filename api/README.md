@@ -19,31 +19,17 @@ The project is configured with `"outputDirectory": "docs"` in `vercel.json`, whi
 - Serverless functions must be located at `/docs/api/` to be recognized
 - Static files are also served from this same directory
 
-### Original Structure (Before Fix)
-
-Previously, there were **two separate API directories**:
+### Directory Structure
 
 ```
-/api/                              # ❌ Not detected by Vercel
-├── track-download-supabase.js     # Serverless function (404 error)
-└── package.json
-
-/docs/api/                         # ✅ Served correctly
-└── agents.json                    # Static file
-```
-
-**Problem:** The serverless function in `/api/` was not being detected by Vercel because the `outputDirectory` was set to `docs`, causing 404 errors when trying to track downloads.
-
-### Current Structure (After Fix)
-
-```
-/docs/api/                         # ✅ Everything in one place
+/docs/api/                         # ✅ All API files in one place
+├── README.md                      # Documentation (this file)
 ├── agents.json                    # Static file for queries
 ├── track-download-supabase.js     # Serverless function for tracking
-└── package.json                   # Dependencies
+└── package.json                   # Dependencies for serverless functions
 ```
 
-**Solution:** All API-related files (both static and serverless) are now in `/docs/api/`, ensuring Vercel can find and execute them correctly.
+**Why everything is in `/docs/api/`:** Vercel only serves content from the directory specified in `outputDirectory` (which is `docs`), so all API-related files must be located here.
 
 ---
 
@@ -241,34 +227,24 @@ npx claude-code-templates@latest --agent frontend-developer
 ## 🔄 Maintenance
 
 ### Updating the Serverless Function
-1. Edit `/api/track-download-supabase.js` (source of truth)
-2. Copy changes to `/docs/api/track-download-supabase.js`
-3. Test locally if possible
-4. Commit and push changes
-5. Verify deployment in Vercel dashboard
+1. Edit `/docs/api/track-download-supabase.js` directly
+2. Test locally if possible
+3. Commit and push changes
+4. Verify deployment in Vercel dashboard
 
 ### Updating Dependencies
 1. Edit `/docs/api/package.json`
 2. Commit changes
 3. Vercel will automatically install on next deployment
 
-### Syncing Files
-If you update `/api/track-download-supabase.js`, remember to sync:
-```bash
-cp api/track-download-supabase.js docs/api/
-cp api/package.json docs/api/
-git add docs/api/
-git commit -m "Sync API changes to docs/api"
-```
-
 ---
 
 ## 📝 Best Practices
 
-1. **Keep Both Directories in Sync:** If you modify `/api/`, copy changes to `/docs/api/`
+1. **Edit Directly:** All changes should be made directly in `/docs/api/`
 2. **Test Before Deploy:** Use debug mode to test tracking locally
 3. **Monitor Logs:** Check Vercel logs after deployment
-4. **Version Control:** Always commit both directories together
+4. **Version Control:** Commit changes with clear messages
 5. **Environment Variables:** Never commit sensitive keys
 
 ---
@@ -278,7 +254,6 @@ git commit -m "Sync API changes to docs/api"
 - `/vercel.json` - Vercel configuration (defines `outputDirectory: "docs"`)
 - `/cli-tool/src/tracking-service.js` - Client-side tracking implementation
 - `/generate_components_json.py` - Generates `agents.json`
-- `/api/` - Original API directory (keep as source of truth)
 
 ---
 
