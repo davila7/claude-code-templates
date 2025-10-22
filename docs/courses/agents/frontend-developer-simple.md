@@ -6,6 +6,8 @@ duration: 5 min
 
 # Frontend Developer Agent
 
+## Introduction
+
 Your AI partner for modern React development with TypeScript, responsive design, and accessibility.
 
 ## What is this agent?
@@ -37,7 +39,7 @@ This installs the agent configuration to `.claude/agents/frontend-developer.md` 
 Open your terminal in your project directory and run:
 
 ```bash
-claude-code
+claude
 ```
 
 ### 2. Agent is ready
@@ -91,45 +93,6 @@ Add dark mode toggle to my app
 - No context: "create component"
 - Missing important requirements
 - Assuming the agent knows your setup
-
-## Example: Card Component
-
-Here's what happens when you ask for a Card component:
-
-**Your prompt:**
-
-Create a Card component with header, body, footer sections, image support with lazy loading, hover effects, responsive padding, using TypeScript and Tailwind
-
-**What you get:**
-
-```typescript
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export function Card({ children, className }: CardProps) {
-  return (
-    <div className={cn("card", className)}>
-      {children}
-    </div>
-  );
-}
-
-Card.Header = function CardHeader({ children }: CardProps) {
-  return <div className="card-header">{children}</div>;
-};
-
-Card.Body = function CardBody({ children }: CardProps) {
-  return <div className="card-body">{children}</div>;
-};
-
-Card.Footer = function CardFooter({ children }: CardProps) {
-  return <div className="card-footer">{children}</div>;
-};
-```
-
-The agent creates **compound components** with proper TypeScript typing and composition patterns.
 
 ## Next Steps
 

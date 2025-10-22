@@ -72,6 +72,7 @@ class CourseRenderer {
         const lines = content.split('\n');
         const sections = [];
         let currentSection = null;
+        let hasContentBeforeFirstH2 = false;
 
         lines.forEach(line => {
             // Check if it's an H2 heading (section)
@@ -85,16 +86,9 @@ class CourseRenderer {
                 };
             } else if (currentSection) {
                 currentSection.content.push(line);
-            } else {
-                // Content before first H2
-                if (!sections[0] || sections[0].title !== 'Introduction') {
-                    sections.unshift({
-                        title: 'Introduction',
-                        content: [line]
-                    });
-                } else {
-                    sections[0].content.push(line);
-                }
+            } else if (line.trim() !== '' && !line.startsWith('#')) {
+                // Content before first H2 - only if it's not empty or H1
+                hasContentBeforeFirstH2 = true;
             }
         });
 
@@ -286,6 +280,7 @@ class CourseRenderer {
         const quizContainer = button.closest('.quiz-container');
         const selectedOption = quizContainer.querySelector('input[type="radio"]:checked');
         const feedback = quizContainer.querySelector('.quiz-feedback');
+        const allOptions = quizContainer.querySelectorAll('input[type="radio"]');
 
         if (!selectedOption) {
             feedback.innerHTML = '<span class="feedback-warning">⚠️ Please select an answer</span>';
@@ -298,8 +293,17 @@ class CourseRenderer {
             feedback.innerHTML = '<span class="feedback-correct">✓ Correct!</span>';
             selectedOption.parentElement.classList.add('correct');
         } else {
-            feedback.innerHTML = '<span class="feedback-incorrect">✗ Incorrect. Try again!</span>';
+            // Find and highlight the correct answer
+            let correctAnswer = null;
+            allOptions.forEach(option => {
+                if (option.hasAttribute('data-correct')) {
+                    correctAnswer = option.parentElement.querySelector('span').textContent;
+                    option.parentElement.classList.add('correct');
+                }
+            });
+
             selectedOption.parentElement.classList.add('incorrect');
+            feedback.innerHTML = `<span class="feedback-incorrect">✗ Incorrect. The correct answer is: <strong>${correctAnswer}</strong></span>`;
         }
 
         button.disabled = true;

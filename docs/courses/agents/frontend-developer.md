@@ -119,7 +119,7 @@ This installs the agent to `.claude/agents/frontend-developer.md`
 ### 1. Start Claude Code in your project
 
 ```bash
-claude-code
+claude
 ```
 
 ### 2. The agent is automatically available

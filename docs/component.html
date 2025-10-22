@@ -703,6 +703,15 @@
 
             isLearnModeActive = toggleCheckbox.checked;
 
+            // Update URL with learn mode state
+            const url = new URL(window.location);
+            if (isLearnModeActive) {
+                url.searchParams.set('learn', 'true');
+            } else {
+                url.searchParams.delete('learn');
+            }
+            window.history.pushState({}, '', url);
+
             if (isLearnModeActive) {
                 // Switch to Learn Mode
                 normalView.style.display = 'none';
@@ -850,6 +859,19 @@ In this interactive tutorial, you'll learn:
             if (typeof ComponentPageManager !== 'undefined' && !window.componentPageManager) {
                 console.log('Initializing ComponentPageManager...');
                 window.componentPageManager = new ComponentPageManager();
+            }
+
+            // Check if Learn Mode should be activated from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('learn') === 'true') {
+                // Wait a bit for the page to fully load
+                setTimeout(() => {
+                    const toggleCheckbox = document.getElementById('learnModeToggle');
+                    if (toggleCheckbox && !toggleCheckbox.checked) {
+                        toggleCheckbox.checked = true;
+                        toggleLearnMode();
+                    }
+                }, 500);
             }
         });
     </script>
