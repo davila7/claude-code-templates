@@ -18,19 +18,19 @@ logo: https://aitmpl.com/static/favicon/android-chrome-512x512.png
 
 /* Force dark theme with coral accent */
 :root {
-    --color-background: #0f172a;
+    --color-background: #0d1117;
     --color-text: #e2e8f0;
     --color-highlight: #d57455;
 }
 
 body {
-    background-color: #0f172a !important;
+    background-color: #0d1117 !important;
 }
 
 .lia-slide,
 .lia-content,
 main {
-    background-color: #0f172a !important;
+    background-color: #0d1117 !important;
 }
 
 /* 1. Hide main navbar */
@@ -57,14 +57,14 @@ aside.lia-toc,
 }
 
 .lia-toc a:hover {
-    color: #0f172a !important;
+    color: #0d1117 !important;
     background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Style active link */
 .lia-toc .lia-active {
     background-color: rgba(15, 23, 42, 0.3) !important;
-    border-left: 4px solid #0f172a !important;
+    border-left: 4px solid #0d1117 !important;
 }
 
 /* 3. Hide search in sidebar */

@@ -39,12 +39,10 @@
     <link rel="stylesheet" href="/css/component-page.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/learn-mode.css">
+    <link rel="stylesheet" href="/css/course-styles.css">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- LiaScript for interactive learning -->
-    <script type="text/javascript" src="https://liascript.github.io/course/preview-lia.js"></script>
 
     <!-- Hotjar Tracking Code for https://aitmpl.com -->
     <script>
@@ -654,6 +652,7 @@
     <script src="/js/cart-manager.js"></script>
     <script src="/js/component-page.js"></script>
     <script src="/js/utils.js"></script>
+    <script src="/js/course-renderer.js"></script>
     
     <script>
         // Accordion toggle function
@@ -749,27 +748,37 @@
             }
         }
 
-        function loadLiaScriptContent(markdownContent) {
-            console.log('loadLiaScriptContent called - using local LiaScript build');
+        async function loadLiaScriptContent(markdownContent) {
+            console.log('🎓 Loading custom course renderer...');
 
-            // Use locally built LiaScript course instead of external iframe
-            const courseUrl = `/courses-build/${currentComponentType}s/${currentComponentName}/index.html`;
-            console.log('Loading local course from:', courseUrl);
+            // Try to load simple course markdown first
+            let courseMarkdown = markdownContent;
+            const simpleCourseUrl = `/courses/${currentComponentType}s/${currentComponentName}-simple.md`;
 
-            // Create iframe to display locally built LiaScript
+            try {
+                const response = await fetch(simpleCourseUrl);
+                if (response.ok) {
+                    courseMarkdown = await response.text();
+                    console.log('✅ Loaded simple course from:', simpleCourseUrl);
+                } else {
+                    console.log('ℹ️ No simple course found, using component content');
+                }
+            } catch (error) {
+                console.log('ℹ️ Using component content as course');
+            }
+
+            // Create course container
             const wrapper = document.querySelector('.liascript-preview-wrapper');
             if (wrapper) {
-                wrapper.innerHTML = `
-                    <iframe
-                        src="${courseUrl}"
-                        style="width: 100%; height: 800px; border: none; border-radius: 4px;"
-                        allowfullscreen
-                        id="liaScriptFrame"
-                    ></iframe>
-                `;
-                console.log('✅ Local LiaScript course loaded');
+                wrapper.innerHTML = '<div id="courseContainer"></div>';
+
+                // Initialize course renderer
+                courseRenderer = new CourseRenderer('courseContainer');
+                await courseRenderer.render(courseMarkdown);
+
+                console.log('✅ Custom course loaded successfully');
             } else {
-                console.error('❌ LiaScript wrapper not found!');
+                console.error('❌ Course wrapper not found!');
             }
         }
 

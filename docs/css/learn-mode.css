@@ -100,7 +100,7 @@
 /* Learn Mode Container - Terminal Theme */
 .learn-mode-container {
     min-height: 600px;
-    background: #0f172a;
+    background: #0d1117;
     padding: 2rem 0;
     animation: terminalBoot 0.5s ease;
     border-top: 2px solid #d57455;

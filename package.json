@@ -9,9 +9,6 @@
   },
   "scripts": {
     "dev": "vercel dev",
-    "build": "npm run build:courses && echo 'Build complete'",
-    "build:courses": "npm run build:course:frontend-developer",
-    "build:course:frontend-developer": "liaex --input docs/courses/agents/frontend-developer.md --output docs/courses-build/agents/frontend-developer --format web",
     "start": "vercel dev",
     "test": "echo 'No tests specified'",
     "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'"
@@ -32,7 +29,6 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@liascript/exporter": "^2.6.44--0.17.7",
     "@vercel/node": "^3.0.0"
   },
   "keywords": [

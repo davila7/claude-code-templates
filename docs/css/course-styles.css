@@ -1,0 +1,423 @@
+/**
+ * Custom Course Styles - Terminal Theme with Coral Accent
+ */
+
+.course-container {
+    display: flex;
+    min-height: 600px;
+    background-color: #0d1117;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+.course-sidebar {
+    width: 280px;
+    background-color: #d57455;
+    padding: 2rem 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.course-header {
+    padding: 0 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1.5rem;
+}
+
+.course-header h3 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.course-duration {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+}
+
+.course-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    padding: 0.875rem 1.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    font-size: 1rem;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #0d1117;
+}
+
+.nav-item.active {
+    background-color: rgba(13, 17, 23, 0.3);
+    border-left-color: #0d1117;
+    font-weight: 600;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+
+.course-content {
+    flex: 1;
+    padding: 3rem 4rem;
+    max-width: 1000px;
+    overflow-y: auto;
+}
+
+.course-section {
+    display: none;
+}
+
+.course-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.course-content h2 {
+    color: #d57455;
+    font-size: 2.5rem;
+    margin: 0 0 2rem 0;
+    font-weight: 700;
+    border-bottom: 3px solid #d57455;
+    padding-bottom: 1rem;
+}
+
+.course-content h3 {
+    color: #d57455;
+    font-size: 1.875rem;
+    margin: 2rem 0 1rem 0;
+    font-weight: 600;
+}
+
+.course-content h4 {
+    color: #d57455;
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem 0;
+    font-weight: 600;
+}
+
+.course-content p {
+    font-size: 1.35rem;
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+    color: #e2e8f0;
+}
+
+.course-content strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.course-content em {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.course-content ul {
+    margin: 1.5rem 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.course-content li {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.course-content li::before {
+    content: '▸';
+    position: absolute;
+    left: 0.5rem;
+    color: #d57455;
+    font-weight: bold;
+}
+
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
+
+.code-block {
+    margin: 2rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+
+.code-lang {
+    color: #d57455;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    border: 1px solid #d57455;
+    color: #d57455;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background-color: #d57455;
+    color: #ffffff;
+}
+
+.copy-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 2rem 1.5rem;
+    overflow-x: auto;
+    background-color: #1e293b;
+}
+
+.code-block code {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 1.8rem;
+    line-height: 1.8;
+    color: #e2e8f0;
+}
+
+/* Inline code */
+.course-content code:not(.code-block code) {
+    background-color: rgba(213, 116, 85, 0.1);
+    color: #d57455;
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-family: 'Monaco', 'Courier New', monospace;
+    border: 1px solid rgba(213, 116, 85, 0.3);
+}
+
+/* ============================================
+   QUIZ COMPONENTS
+   ============================================ */
+
+.quiz-container {
+    margin: 2rem 0;
+    padding: 2rem;
+    background-color: #1e293b;
+    border-left: 4px solid #d57455;
+    border-radius: 8px;
+}
+
+.quiz-question {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.quiz-question::before {
+    content: '❓ ';
+    color: #d57455;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #0d1117;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
+}
+
+.quiz-option:hover {
+    border-color: #d57455;
+    background-color: rgba(213, 116, 85, 0.05);
+}
+
+.quiz-option input[type="radio"] {
+    margin-right: 1rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #d57455;
+}
+
+.quiz-option.correct {
+    border-color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.quiz-option.incorrect {
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.quiz-check {
+    background-color: #d57455;
+    color: #ffffff;
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quiz-check:hover:not(:disabled) {
+    background-color: #e08a6f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(213, 116, 85, 0.3);
+}
+
+.quiz-check:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quiz-feedback {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.feedback-correct {
+    color: #10b981;
+}
+
+.feedback-incorrect {
+    color: #ef4444;
+}
+
+.feedback-warning {
+    color: #f59e0b;
+}
+
+/* ============================================
+   SCROLLBARS
+   ============================================ */
+
+.course-sidebar::-webkit-scrollbar,
+.course-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.course-sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.course-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.course-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.course-content::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+.course-content::-webkit-scrollbar-thumb {
+    background: #d57455;
+    border-radius: 4px;
+}
+
+.course-content::-webkit-scrollbar-thumb:hover {
+    background: #e08a6f;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .course-container {
+        flex-direction: column;
+    }
+
+    .course-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .course-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .course-content h2 {
+        font-size: 2rem;
+    }
+
+    .course-content p {
+        font-size: 1.1rem;
+    }
+
+    .code-block code {
+        font-size: 1.2rem;
+    }
+}
