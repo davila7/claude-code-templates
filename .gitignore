@@ -32,6 +32,9 @@ node_modules
 dist
 coverage
 
+# LiaScript generated courses (build artifacts)
+docs/courses-build/
+
 # Sandbox output directories
 sandbox-*/
 cloudflare-*/

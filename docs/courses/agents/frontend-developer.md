@@ -4,6 +4,8 @@ email: support@aitmpl.com
 version: 1.0.0
 language: en
 narrator: US English Female
+mode: Textbook
+dark: true
 
 comment: Learn how to use the Frontend Developer agent for React development
 
@@ -12,6 +14,73 @@ logo: https://aitmpl.com/static/favicon/android-chrome-512x512.png
 @style
 .lia-slide {
     padding: 2rem;
+}
+
+/* Force dark theme with coral accent */
+:root {
+    --color-background: #0f172a;
+    --color-text: #e2e8f0;
+    --color-highlight: #d57455;
+}
+
+body {
+    background-color: #0f172a !important;
+}
+
+.lia-slide,
+.lia-content,
+main {
+    background-color: #0f172a !important;
+}
+
+/* 1. Hide main navbar */
+header.lia-toolbar,
+.lia-toolbar-main,
+nav.lia-toolbar,
+.lia-toolbar {
+    display: none !important;
+}
+
+/* 2. Customize sidebar with coral color */
+aside.lia-toc,
+.lia-toc,
+.lia-toc-container {
+    background-color: #d57455 !important;
+}
+
+/* Sidebar text colors */
+.lia-toc a,
+.lia-toc-container a,
+.lia-toc li,
+.lia-toc span {
+    color: #ffffff !important;
+}
+
+.lia-toc a:hover {
+    color: #0f172a !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Style active link */
+.lia-toc .lia-active {
+    background-color: rgba(15, 23, 42, 0.3) !important;
+    border-left: 4px solid #0f172a !important;
+}
+
+/* 3. Hide search in sidebar */
+.lia-toc .lia-input,
+.lia-toc input[type="search"],
+.lia-toc .lia-search,
+.lia-toc-search,
+.lia-toc [type="search"] {
+    display: none !important;
+}
+
+/* Hide Home button */
+.lia-toc .lia-btn-home,
+.lia-toc a[href="#1"],
+.lia-toc-home {
+    display: none !important;
 }
 @end
 

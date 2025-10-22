@@ -14,22 +14,22 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 1rem;
-    background: rgba(0, 255, 0, 0.05);
-    border: 1px solid rgba(0, 255, 0, 0.2);
+    background: rgba(213, 116, 85, 0.05);
+    border: 1px solid rgba(213, 116, 85, 0.2);
     border-radius: 4px;
     transition: all 0.3s ease;
 }
 
 .learn-mode-switch-container:hover {
-    background: rgba(0, 255, 0, 0.08);
-    border-color: rgba(0, 255, 0, 0.3);
+    background: rgba(213, 116, 85, 0.08);
+    border-color: rgba(213, 116, 85, 0.3);
 }
 
 .switch-label {
     font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #10b981;
+    color: #d57455;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -75,26 +75,26 @@
 }
 
 .switch input:checked + .slider {
-    background: #059669;
-    border-color: #10b981;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3),
-                inset 0 0 10px rgba(16, 185, 129, 0.1);
+    background: #d57455;
+    border-color: #e08a6f;
+    box-shadow: 0 0 10px rgba(213, 116, 85, 0.3),
+                inset 0 0 10px rgba(213, 116, 85, 0.1);
 }
 
 .switch input:checked + .slider:before {
     background: #ffffff;
-    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 5px rgba(213, 116, 85, 0.5);
     transform: translateX(24px);
 }
 
 /* Hover effect */
 .switch:hover .slider {
-    border-color: #10b981;
+    border-color: #d57455;
 }
 
 .switch input:checked + .slider:hover {
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5),
-                inset 0 0 10px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 15px rgba(213, 116, 85, 0.5),
+                inset 0 0 10px rgba(213, 116, 85, 0.2);
 }
 
 /* Learn Mode Container - Terminal Theme */
@@ -103,7 +103,7 @@
     background: #0f172a;
     padding: 2rem 0;
     animation: terminalBoot 0.5s ease;
-    border-top: 2px solid #10b981;
+    border-top: 2px solid #d57455;
 }
 
 .learn-mode-header {
@@ -112,7 +112,7 @@
     padding: 1.5rem;
     background: #1e293b;
     border: 1px solid #334155;
-    border-left: 4px solid #10b981;
+    border-left: 4px solid #d57455;
     position: relative;
     font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
 }
@@ -122,7 +122,7 @@
     position: absolute;
     left: 0.5rem;
     top: 1.5rem;
-    color: #10b981;
+    color: #d57455;
     font-weight: bold;
     animation: blink 1s infinite;
 }
@@ -136,18 +136,18 @@
 }
 
 .learn-mode-title svg {
-    color: #10b981;
-    filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+    color: #d57455;
+    filter: drop-shadow(0 0 5px rgba(213, 116, 85, 0.5));
 }
 
 .learn-mode-title h2 {
     margin: 0;
     font-size: 1.5rem;
     font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
-    color: #10b981;
+    color: #d57455;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    text-shadow: 0 0 10px rgba(213, 116, 85, 0.3);
 }
 
 .learn-mode-subtitle {
@@ -163,26 +163,14 @@
     background: #1e293b;
     border: 2px solid #334155;
     border-radius: 4px;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1),
-                inset 0 0 50px rgba(16, 185, 129, 0.02);
+    box-shadow: 0 0 20px rgba(213, 116, 85, 0.1),
+                inset 0 0 50px rgba(213, 116, 85, 0.02);
     overflow: hidden;
     min-height: 800px;
     position: relative;
 }
 
-.liascript-preview-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        #10b981 50%,
-        transparent 100%);
-    animation: scanline 2s linear infinite;
-}
+/* Scanline removed for better UX */
 
 .liascript-preview-wrapper iframe {
     display: block;
@@ -214,14 +202,7 @@
     }
 }
 
-@keyframes scanline {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(800px);
-    }
-}
+/* Scanline animation removed */
 
 /* Terminal Effects */
 .learn-mode-container::after {
@@ -290,9 +271,9 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: #059669;
+    background: #d57455;
     color: #ffffff;
-    border: 1px solid #10b981;
+    border: 1px solid #e08a6f;
     border-radius: 2px;
     font-size: 0.875rem;
     font-weight: 600;
@@ -300,7 +281,7 @@
     font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 10px rgba(213, 116, 85, 0.3);
 }
 
 .progress-badge svg {
