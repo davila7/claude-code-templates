@@ -1,0 +1,223 @@
+/**
+ * Authentication UI Styles - Terminal Theme
+ */
+
+/* Login Required Container */
+.login-required-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 600px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    padding: 4rem 2rem;
+    border-radius: 12px;
+    border: 2px solid #d57455;
+}
+
+.login-required-content {
+    max-width: 500px;
+    text-align: center;
+}
+
+.login-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+    background: rgba(213, 116, 85, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #d57455;
+}
+
+.login-icon svg {
+    width: 40px;
+    height: 40px;
+    color: #d57455;
+}
+
+.login-title {
+    font-size: 2rem;
+    color: #d57455;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+}
+
+.login-description {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    margin: 0 0 3rem 0;
+    line-height: 1.6;
+}
+
+/* GitHub Login Button */
+.github-login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2.5rem;
+    background: #d57455;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(213, 116, 85, 0.3);
+}
+
+.github-login-btn:hover {
+    background: #e08a6f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(213, 116, 85, 0.4);
+}
+
+.github-login-btn:active {
+    transform: translateY(0);
+}
+
+.github-login-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Benefits List */
+.login-benefits {
+    margin-top: 3rem;
+    text-align: left;
+}
+
+.login-benefits h3 {
+    color: #e2e8f0;
+    font-size: 1.3rem;
+    margin: 0 0 1.5rem 0;
+}
+
+.login-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.login-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    color: #94a3b8;
+    font-size: 1.1rem;
+}
+
+.login-benefits li::before {
+    content: '✓';
+    color: #d57455;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* User Profile Display */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(213, 116, 85, 0.1);
+    border: 1px solid rgba(213, 116, 85, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-profile:hover {
+    background: rgba(213, 116, 85, 0.15);
+    border-color: #d57455;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #d57455;
+}
+
+.user-name {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Logout Button */
+.logout-btn {
+    background: transparent;
+    border: 1px solid #d57455;
+    color: #d57455;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #d57455;
+    color: #ffffff;
+}
+
+/* Loading State */
+.auth-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 600px;
+    color: #94a3b8;
+}
+
+.auth-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(213, 116, 85, 0.2);
+    border-top-color: #d57455;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-required-container {
+        padding: 2rem 1rem;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    .login-description {
+        font-size: 1rem;
+    }
+
+    .github-login-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+    }
+}

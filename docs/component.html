@@ -40,9 +40,13 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/learn-mode.css">
     <link rel="stylesheet" href="/css/course-styles.css">
-    
+    <link rel="stylesheet" href="/css/auth.css">
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Hotjar Tracking Code for https://aitmpl.com -->
     <script>
@@ -653,7 +657,8 @@
     <script src="/js/component-page.js"></script>
     <script src="/js/utils.js"></script>
     <script src="/js/course-renderer.js"></script>
-    
+    <script src="/js/auth-manager.js"></script>
+
     <script>
         // Accordion toggle function
         function toggleAccordion(button) {
@@ -717,12 +722,74 @@
                 normalView.style.display = 'none';
                 learnView.style.display = 'block';
 
-                // Load course content
-                loadCourseContent();
+                // Check authentication before loading course
+                if (window.authManager && window.authManager.isAuthenticated()) {
+                    loadCourseContent();
+                } else {
+                    showLoginComponent();
+                }
             } else {
                 // Switch back to Normal View
                 normalView.style.display = 'block';
                 learnView.style.display = 'none';
+            }
+        }
+
+        function showLoginComponent() {
+            const wrapper = document.querySelector('.liascript-preview-wrapper');
+            if (!wrapper) return;
+
+            wrapper.innerHTML = `
+                <div class="login-required-container">
+                    <div class="login-required-content">
+                        <div class="login-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                        </div>
+                        <h2 class="login-title">Sign in to access courses</h2>
+                        <p class="login-description">Create a free account to start learning about Claude Code components</p>
+
+                        <button class="github-login-btn" onclick="handleGitHubLogin()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            Continue with GitHub
+                        </button>
+
+                        <div class="login-benefits">
+                            <h3>What you get:</h3>
+                            <ul>
+                                <li>Track your learning progress</li>
+                                <li>Save course completion status</li>
+                                <li>Access all 600+ component courses</li>
+                                <li>Interactive quizzes and exercises</li>
+                            </ul>
+                        </div>
+
+                        <p class="login-description" style="margin-top: 2rem; font-size: 1rem; opacity: 0.7;">
+                            <span class="coming-soon-badge">Coming Soon</span> Sign in with Gmail
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleGitHubLogin() {
+            if (!window.authManager) {
+                console.error('AuthManager not initialized');
+                return;
+            }
+
+            const result = await window.authManager.signInWithGitHub();
+            if (result.success) {
+                console.log('GitHub login initiated');
+                // The redirect will happen automatically
+            } else {
+                console.error('Login failed:', result.error);
+                alert('Failed to sign in. Please try again.');
             }
         }
 
@@ -839,14 +906,15 @@ In this interactive tutorial, you'll learn:
         };
 
         // Debug script loading and ensure proper initialization
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             console.log('=== Component Page Debug ===');
             console.log('Scripts loaded. Available objects:', {
                 DataLoader: typeof DataLoader,
                 ComponentPageManager: typeof ComponentPageManager,
                 addToCart: typeof addToCart,
                 CartManager: typeof CartManager,
-                windowAddToCart: typeof window.addToCart
+                windowAddToCart: typeof window.addToCart,
+                AuthManager: typeof AuthManager
             });
 
             // Ensure cart manager is initialized
@@ -859,6 +927,23 @@ In this interactive tutorial, you'll learn:
             if (typeof ComponentPageManager !== 'undefined' && !window.componentPageManager) {
                 console.log('Initializing ComponentPageManager...');
                 window.componentPageManager = new ComponentPageManager();
+            }
+
+            // Initialize AuthManager
+            if (typeof AuthManager !== 'undefined' && !window.authManager) {
+                console.log('Initializing AuthManager...');
+                window.authManager = new AuthManager();
+                await window.authManager.init();
+
+                // Listen for auth state changes
+                window.authManager.onStateChange((event, session) => {
+                    console.log('Auth state changed:', event);
+
+                    // If user just signed in and Learn Mode is active, load course
+                    if (event === 'SIGNED_IN' && isLearnModeActive) {
+                        loadCourseContent();
+                    }
+                });
             }
 
             // Check if Learn Mode should be activated from URL
