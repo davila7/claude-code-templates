@@ -18,9 +18,12 @@ class AuthManager {
      */
     async loadConfig() {
         try {
-            const response = await fetch('/api/config');
+            // Add timestamp to prevent caching
+            const response = await fetch(`/api/config?t=${Date.now()}`);
             if (!response.ok) {
-                throw new Error('Failed to load configuration');
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Config API error:', response.status, errorData);
+                throw new Error(`Failed to load configuration: ${response.status}`);
             }
             const config = await response.json();
             this.supabaseUrl = config.supabase.url;

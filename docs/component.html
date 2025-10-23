@@ -114,6 +114,28 @@
                         Back to Components
                     </a>
 
+                    <!-- User Profile (shown when logged in) -->
+                    <div id="userProfileContainer" style="display: none;">
+                        <div class="user-profile" onclick="toggleUserMenu(event)">
+                            <img id="userAvatar" class="user-avatar" src="" alt="User avatar">
+                            <span id="userName" class="user-name"></span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 0.5rem;">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                        <!-- User Menu Dropdown -->
+                        <div id="userMenu" class="user-menu" style="display: none;">
+                            <button class="logout-btn" onclick="handleLogout()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Learn Mode Switch -->
                     <div class="learn-mode-switch-container">
                         <span class="switch-label">Learn Mode</span>
@@ -793,6 +815,58 @@
             }
         }
 
+        function updateUserProfile() {
+            if (!window.authManager || !window.authManager.isAuthenticated()) {
+                document.getElementById('userProfileContainer').style.display = 'none';
+                return;
+            }
+
+            const userName = window.authManager.getUserName();
+            const userAvatar = window.authManager.getUserAvatar();
+
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userAvatar').src = userAvatar || '/static/default-avatar.png';
+            document.getElementById('userProfileContainer').style.display = 'block';
+        }
+
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function handleLogout() {
+            if (!window.authManager) {
+                console.error('AuthManager not initialized');
+                return;
+            }
+
+            const result = await window.authManager.signOut();
+            if (result.success) {
+                console.log('Logged out successfully');
+                document.getElementById('userProfileContainer').style.display = 'none';
+                document.getElementById('userMenu').style.display = 'none';
+
+                // If Learn Mode is active, show login component again
+                if (isLearnModeActive) {
+                    showLoginComponent();
+                }
+            } else {
+                console.error('Logout failed:', result.error);
+                alert('Failed to log out. Please try again.');
+            }
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const menu = document.getElementById('userMenu');
+            const profile = document.getElementById('userProfileContainer');
+
+            if (menu && profile && !profile.contains(event.target)) {
+                menu.style.display = 'none';
+            }
+        });
+
         async function loadCourseContent() {
             console.log('Loading course for:', { currentComponentType, currentComponentName });
 
@@ -935,9 +1009,15 @@ In this interactive tutorial, you'll learn:
                 window.authManager = new AuthManager();
                 await window.authManager.init();
 
+                // Update user profile on initial load
+                updateUserProfile();
+
                 // Listen for auth state changes
                 window.authManager.onStateChange((event, session) => {
                     console.log('Auth state changed:', event);
+
+                    // Update user profile display
+                    updateUserProfile();
 
                     // If user just signed in and Learn Mode is active, load course
                     if (event === 'SIGNED_IN' && isLearnModeActive) {

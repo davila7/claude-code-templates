@@ -11,7 +11,10 @@ export default function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+
+    // Disable cache in development, enable in production
+    const isDev = process.env.VERCEL_ENV === 'development' || !process.env.VERCEL_ENV;
+    res.setHeader('Cache-Control', isDev ? 'no-cache, no-store, must-revalidate' : 'public, max-age=3600');
 
     // Handle preflight request
     if (req.method === 'OPTIONS') {
