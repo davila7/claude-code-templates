@@ -6,119 +6,238 @@ duration: 5 min
 
 # Frontend Developer Agent
 
-## Introduction
-
-Your AI partner for modern React development with TypeScript, responsive design, and accessibility.
-
 ## What is this agent?
 
-The **Frontend Developer Agent** specializes in building production-ready React applications with:
+The **Frontend Developer Agent** is a specialized AI assistant that helps you build React applications. Think of it as having an expert React developer on your team.
 
-- React components with **TypeScript**
-- **Responsive design** (mobile-first approach)
-- **Accessibility** standards (WCAG 2.1)
-- **Performance optimization** techniques
-- Modern CSS frameworks (**Tailwind CSS**)
+**What it does:**
 
-This agent helps you write clean, maintainable frontend code following industry best practices.
+- Builds **React components** with TypeScript
+- Creates **responsive designs** for all devices
+- Manages **app state** (Redux, Zustand, Context)
+- Optimizes **performance** (lazy loading, code splitting)
+- Ensures **accessibility** (WCAG, ARIA labels)
+
+**How it works:**
+
+When you ask Claude for frontend help, it automatically delegates the task to this specialized agent. The agent works in its own context and returns the complete solution.
 
 ## Installation
 
-Install the agent in your project with a single command:
+One command installs it:
 
 ```bash
 npx claude-code-templates@latest --agent frontend-developer --yes
 ```
 
-This installs the agent configuration to `.claude/agents/frontend-developer.md` in your project directory.
+This creates `.claude/agents/frontend-developer.md` in your project.
 
-## How to use it
+## How subagents work
 
-### 1. Start Claude Code
+**Subagents** are specialized AI assistants. Each one:
 
-Open your terminal in your project directory and run:
+- Has **its own context** (keeps main conversation clean)
+- Uses **specific tools** (Read, Write, Edit, Bash)
+- Follows **custom instructions** for its specialty
+- Returns **complete solutions** to Claude
 
-```bash
-claude
+**Key benefit:** Your main chat stays focused while the specialist handles technical details.
+
+## Using the agent
+
+### Automatic (recommended)
+
+Just ask naturally:
+
+Create a Button with primary and secondary styles
+
+Build a navigation bar with logo and menu
+
+Add authentication flow to my app
+
+**Claude automatically:**
+1. Sees it's a frontend task
+2. Calls the frontend-developer agent
+3. Agent builds the solution
+4. Returns complete code
+
+### Explicit
+
+You can also request it directly:
+
+Use frontend-developer to create a Card component
+
+Ask the frontend-developer agent to optimize this code
+
+## What you get
+
+When the agent creates a component, you receive:
+
+**Complete React code:**
+```typescript
+interface ButtonProps {
+  variant: 'primary' | 'secondary';
+  children: React.ReactNode;
+}
+
+export function Button({ variant, children }: ButtonProps) {
+  return (
+    <button className={`btn btn-${variant}`}>
+      {children}
+    </button>
+  );
+}
 ```
 
-### 2. Agent is ready
+Plus:
+- **Styling** (Tailwind or CSS-in-JS)
+- **State management** (if needed)
+- **Accessibility** (ARIA labels, keyboard nav)
+- **Performance tips** (memoization, lazy loading)
+- **Usage example** in comments
 
-The Frontend Developer Agent is now available automatically. Claude Code will use its expertise when you ask for frontend help.
+## Agent configuration
 
-### 3. Example prompts
+The agent's configuration file looks like this:
 
-**Specific prompts work best:**
+```markdown
+---
+name: frontend-developer
+description: Use PROACTIVELY for UI components, state management,
+             performance, accessibility, and frontend architecture
+tools: Read, Write, Edit, Bash
+model: sonnet
+---
 
-Create a Button component with:
-- Variants: primary, secondary, outline
-- Sizes: sm, md, lg
-- Loading state with spinner
-- TypeScript + Tailwind CSS
-- Full accessibility (ARIA labels)
+You are a frontend developer specializing in modern React...
+```
 
-**Simple prompts also work:**
+**What each part means:**
 
-Create a responsive Card component
+- `name`: How you reference it
+- `description`: When Claude should use it ("PROACTIVELY" = automatic)
+- `tools`: Which Claude Code tools it can use
+- `model`: AI model powering it (sonnet/opus/haiku)
 
-Add dark mode toggle to my app
+## Managing agents
 
-## Quiz Time
+### View all agents
 
-?> Where is the agent installed after running the install command?
+```bash
+/agents
+```
+
+Shows:
+- Built-in agents
+- Your custom agents
+- Plugin agents
+
+### Edit the agent
+
+**Option 1:** Use the `/agents` command, select "Edit"
+
+**Option 2:** Edit the file directly:
+```bash
+.claude/agents/frontend-developer.md
+```
+
+**Customize it** to match your preferences! For example, force Tailwind CSS:
+
+```markdown
+---
+name: frontend-developer
+...
+---
+
+You are a frontend developer...
+
+IMPORTANT: Always use Tailwind CSS. Never use CSS-in-JS.
+```
+
+## Quiz
+
+?> Where is the agent file stored?
 - [ ] `node_modules/` folder
 - [x] `.claude/agents/` folder
-- [ ] `~/.config/claude/` folder
-- [ ] `/usr/local/bin/` folder
+- [ ] `~/.config/` folder
+- [ ] System directory
 
-?> What makes a good prompt for the agent?
-- [ ] "make a button"
-- [ ] "help me"
-- [x] "Create a Button with variants, sizes, TypeScript support"
-- [ ] "do the thing"
+?> What does "PROACTIVELY" mean?
+- [ ] Agent asks permission first
+- [x] Claude uses it automatically
+- [ ] Only works on request
+- [ ] Requires special flag
 
-## Best Practices
+?> Which tools can the agent use?
+- [ ] Only Read
+- [ ] All tools
+- [x] Read, Write, Edit, Bash
+- [ ] No tools
 
-### ✅ Do This
+## Best practices
 
-- **Be specific** about your requirements
-- **Mention your tech stack** (TypeScript, Tailwind, etc.)
-- **Ask for accessibility** features explicitly
-- **Request responsive design** when needed
-- **Provide context** about your project
+**Be specific in requests**
 
-### ❌ Avoid This
+✅ Good: "Create Button with loading state, sizes sm/md/lg, disabled state"
 
-- Vague requests like "make it nice"
-- No context: "create component"
-- Missing important requirements
-- Assuming the agent knows your setup
+❌ Vague: "make a button"
 
-## Next Steps
+**Start default, then customize**
 
-Ready to start building with the Frontend Developer Agent?
+1. Install default agent
+2. Use it a few times
+3. Note what you'd change
+4. Edit the agent file
 
-**Quick Start:**
+**Use with other agents**
 
-1. Install: `npx claude-code-templates@latest --agent frontend-developer --yes`
-2. Launch: `claude-code`
-3. Start creating components!
+Chain agents for complete workflows:
 
-**Learn More:**
+Use frontend-developer to create the component, then code-reviewer to check it
 
-- Browse more agents at **aitmpl.com**
-- Join our Discord community
-- Check documentation for advanced usage
+## Advanced: Custom tools
+
+Control which tools the agent can access:
+
+```markdown
+---
+tools: Read, Edit  # Only these two
+---
+```
+
+Or give all tools:
+
+```markdown
+---
+# Omit tools field = inherits all tools
+---
+```
+
+**Why limit tools?**
+- Security: prevent unwanted changes
+- Focus: keep agent in its expertise
+- Control: you decide what it modifies
 
 ## Summary
 
-You now know how to use the Frontend Developer Agent effectively!
-
 **What you learned:**
 
-- ✅ How to install and activate the agent
-- ✅ How to write effective, specific prompts
-- ✅ What technologies the agent specializes in
-- ✅ Best practices for getting great results
+✅ What subagents are (specialized AI assistants)
+✅ How to install frontend-developer
+✅ How Claude delegates automatically
+✅ How to customize the agent
+✅ Best practices for prompts
 
-**Happy coding!** 🚀
+**Next steps:**
+
+1. Install: `npx claude-code-templates@latest --agent frontend-developer --yes`
+2. Ask Claude: "Create a Card component"
+3. Watch it work!
+4. Customize to your needs
+
+**Explore more:**
+- 600+ agents at **aitmpl.com**
+- Backend, DevOps, testing agents
+- Create custom agents with `/agents`
+
+Happy coding! 🚀

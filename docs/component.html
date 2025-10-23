@@ -864,7 +864,6 @@ In this interactive tutorial, you'll learn:
             // Check if Learn Mode should be activated from URL
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('learn') === 'true') {
-                // Wait a bit for the page to fully load
                 setTimeout(() => {
                     const toggleCheckbox = document.getElementById('learnModeToggle');
                     if (toggleCheckbox && !toggleCheckbox.checked) {
