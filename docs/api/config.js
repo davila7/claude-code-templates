@@ -25,12 +25,20 @@ export default function handler(req, res) {
         return;
     }
 
+    // Check if environment variables are set
+    if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
+        res.status(500).json({
+            error: 'Server configuration error',
+            message: 'Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY in Vercel environment variables'
+        });
+        return;
+    }
+
     // Return public configuration
-    // These are public credentials safe to expose (Supabase anon key is designed for frontend use)
     const config = {
         supabase: {
-            url: process.env.REACT_APP_SUPABASE_URL || 'https://jljwamruwpyexzcftocx.supabase.co',
-            anonKey: process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsandhdXJ1d3B5ZXh6Y2Z0b2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA2NjA4OTQsImV4cCI6MjA0NjIzNjg5NH0.m8vO0FgQqUMQb2x6tKEW1VcZdEqRXHBdZqr-XQGZ0n8'
+            url: process.env.REACT_APP_SUPABASE_URL,
+            anonKey: process.env.REACT_APP_SUPABASE_ANON_KEY
         }
     };
 

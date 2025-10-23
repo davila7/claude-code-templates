@@ -29,11 +29,8 @@ class AuthManager {
             return true;
         } catch (error) {
             console.error('❌ Error loading configuration:', error);
-            // Fallback to hardcoded values for local development
-            this.supabaseUrl = 'https://jljwamruwpyexzcftocx.supabase.co';
-            this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsandhdXJ1d3B5ZXh6Y2Z0b2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA2NjA4OTQsImV4cCI6MjA0NjIzNjg5NH0.m8vO0FgQqUMQb2x6tKEW1VcZdEqRXHBdZqr-XQGZ0n8';
-            console.log('ℹ️ Using fallback configuration');
-            return true;
+            console.error('Please ensure REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY are set in Vercel environment variables');
+            return false;
         }
     }
 
@@ -42,10 +39,19 @@ class AuthManager {
      */
     async init() {
         // Load configuration first
-        await this.loadConfig();
+        const configLoaded = await this.loadConfig();
+        if (!configLoaded) {
+            console.error('Failed to load configuration. Authentication will not work.');
+            return false;
+        }
 
         if (typeof supabase === 'undefined') {
             console.error('Supabase client not loaded. Please include the Supabase CDN script.');
+            return false;
+        }
+
+        if (!this.supabaseUrl || !this.supabaseKey) {
+            console.error('Supabase credentials are missing. Please check environment variables.');
             return false;
         }
 
