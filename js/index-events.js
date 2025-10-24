@@ -1623,14 +1623,20 @@ function showComponentContributeModal(type) {
             example: 'format-on-save',
             structure: '- Hook description and trigger\n- Command to execute\n- PreToolUse or PostToolUse configuration\n- Error handling and examples'
         },
-        templates: { 
-            name: 'Template', 
+        templates: {
+            name: 'Template',
             description: 'Project template with language or framework setup',
             example: 'python or django-app',
             structure: 'For Languages: Create folder with base files\nFor Frameworks: Add to examples/ subfolder with specific setup'
+        },
+        skills: {
+            name: 'Skill',
+            description: 'Interactive skill for specialized tasks',
+            example: 'data-visualization-skill',
+            structure: '- Skill description and purpose\n- Interactive prompts and parameters\n- Input/output specifications\n- Usage examples and best practices'
         }
     };
-    
+
     const config = typeConfig[type];
     
     let modalHTML = '';
@@ -1781,10 +1787,10 @@ function showComponentContributeModal(type) {
                             <div class="step-number-contrib">5</div>
                             <div class="step-content-contrib">
                                 <h4>Submit Pull Request</h4>
-                                <p>Submit your template contribution:</p>
+                                <p>Submit your template contribution (replace with your actual language/framework folder):</p>
                                 <div class="step-command">
-                                    <code>git add cli-tool/templates/</code>
-                                    <button class="copy-btn" onclick="copyToClipboard('git add cli-tool/templates/')">Copy</button>
+                                    <code>git add cli-tool/templates/&lt;your-language&gt;/</code>
+                                    <button class="copy-btn" onclick="copyToClipboard('git add cli-tool/templates/<your-language>/')">Copy</button>
                                 </div>
                                 <div class="step-command">
                                     <code>git commit -m "feat: Add [language/framework] template"</code>
@@ -1822,13 +1828,13 @@ function showComponentContributeModal(type) {
                                 <div class="step-number-contrib">1</div>
                                 <div class="step-content-contrib">
                                     <h4>Create Your ${config.name}</h4>
-                                    <p>Add your ${config.name.toLowerCase()} to: <code>cli-tool/components/${type}/</code></p>
+                                    <p>Add your ${config.name.toLowerCase()} to a category folder in: <code>cli-tool/components/${type}/&lt;category&gt;/</code></p>
                                     <div class="component-structure">
                                         <strong>Structure should include:</strong>
                                         <pre>${config.structure}</pre>
                                     </div>
                                     <div class="step-command">
-                                        <strong>Example filename:</strong> <code>${config.example}.${(type === 'mcps' || type === 'settings' || type === 'hooks') ? 'json' : 'md'}</code>
+                                        <strong>Example path:</strong> <code>cli-tool/components/${type}/&lt;category&gt;/${config.example}.${(type === 'mcps' || type === 'settings' || type === 'hooks') ? 'json' : 'md'}</code>
                                     </div>
                                 </div>
                             </div>
@@ -1862,10 +1868,10 @@ function showComponentContributeModal(type) {
                                 <div class="step-number-contrib">4</div>
                                 <div class="step-content-contrib">
                                     <h4>Submit Pull Request</h4>
-                                    <p>Submit your contribution with proper documentation:</p>
+                                    <p>Submit your contribution with proper documentation (replace &lt;category&gt; with your actual category folder):</p>
                                     <div class="step-command">
-                                        <code>git add cli-tool/components/${type}/${config.example}.${(type === 'mcps' || type === 'settings' || type === 'hooks') ? 'json' : 'md'}</code>
-                                        <button class="copy-btn" onclick="copyToClipboard('git add cli-tool/components/${type}/${config.example}.${(type === 'mcps' || type === 'settings' || type === 'hooks') ? 'json' : 'md'}')">Copy</button>
+                                        <code>git add cli-tool/components/${type}/&lt;category&gt;/${config.example}.${(type === 'mcps' || type === 'settings' || type === 'hooks') ? 'json' : 'md'}</code>
+                                        <button class="copy-btn" onclick="copyToClipboard('git add cli-tool/components/${type}/<category>/${config.example}.${(type === 'mcps' || type === 'settings' || type === 'hooks') ? 'json' : 'md'}')">Copy</button>
                                     </div>
                                     <div class="step-command">
                                         <code>git commit -m "feat: Add ${config.example} ${config.name.toLowerCase()}"</code>
