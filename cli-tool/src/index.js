@@ -19,6 +19,42 @@ const { runPluginDashboard } = require('./plugin-dashboard');
 const { trackingService } = require('./tracking-service');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 
+/**
+ * Get platform-appropriate Python command candidates
+ * Returns array of commands to try in order
+ * @returns {string[]} Array of Python commands to try
+ */
+function getPlatformPythonCandidates() {
+  if (process.platform === 'win32') {
+    // Windows: Try py launcher (PEP 397) first, then python, then python3
+    return ['py', 'python', 'python3'];
+  } else {
+    // Unix/Linux/Mac: Try python3 first, then python
+    return ['python3', 'python'];
+  }
+}
+
+/**
+ * Replace python3 commands with platform-appropriate Python command in configuration
+ * Windows typically uses 'python' or 'py', while Unix/Linux uses 'python3'
+ * @param {Object} config - Configuration object to process
+ * @returns {Object} Processed configuration with platform-appropriate Python commands
+ */
+function replacePythonCommands(config) {
+  if (!config || typeof config !== 'object') {
+    return config;
+  }
+
+  // On Windows, replace python3 with python for better compatibility
+  if (process.platform === 'win32') {
+    const configString = JSON.stringify(config);
+    const replacedString = configString.replace(/python3\s/g, 'python ');
+    return JSON.parse(replacedString);
+  }
+
+  return config;
+}
+
 async function showMainMenu() {
   console.log('');
   
@@ -636,7 +672,10 @@ async function installIndividualSetting(settingName, targetDir, options) {
     }
     
     const settingConfigText = await response.text();
-    const settingConfig = JSON.parse(settingConfigText);
+    let settingConfig = JSON.parse(settingConfigText);
+
+    // Replace python3 with platform-appropriate command for Windows compatibility
+    settingConfig = replacePythonCommands(settingConfig);
 
     // Check if there are additional files to download (e.g., Python scripts)
     const additionalFiles = {};
@@ -965,7 +1004,10 @@ async function installIndividualHook(hookName, targetDir, options) {
     }
     
     const hookConfigText = await response.text();
-    const hookConfig = JSON.parse(hookConfigText);
+    let hookConfig = JSON.parse(hookConfigText);
+
+    // Replace python3 with platform-appropriate command for Windows compatibility
+    hookConfig = replacePythonCommands(hookConfig);
 
     // Check if there are additional files to download (e.g., Python scripts for hooks)
     const additionalFiles = {};
@@ -2892,21 +2934,30 @@ async function executeE2BSandbox(options, targetDir) {
           check.on('error', () => resolve(false));
         });
       };
-      
-      // Check for Python 3.11 first, fallback to python3
-      let pythonCmd = 'python3';
+
+      // Try to find Python 3.11 first (recommended for E2B)
+      let pythonCmd = null;
       const python311Available = await checkPythonVersion('python3.11');
       if (python311Available) {
         pythonCmd = 'python3.11';
         console.log(chalk.blue('✓ Using Python 3.11 (recommended for E2B)'));
       } else {
-        console.log(chalk.yellow('⚠ Python 3.11 not found, using python3 (may have package restrictions)'));
+        // Fall back to platform-appropriate Python commands
+        console.log(chalk.yellow('⚠ Python 3.11 not found, trying platform defaults...'));
+        const candidates = getPlatformPythonCandidates();
+
+        for (const candidate of candidates) {
+          if (await checkPythonVersion(candidate)) {
+            pythonCmd = candidate;
+            console.log(chalk.blue(`✓ Using ${candidate} for E2B`));
+            break;
+          }
+        }
       }
-      
-      // Verify chosen Python version works
-      const pythonAvailable = await checkPythonVersion(pythonCmd);
-      if (!pythonAvailable) {
-        pythonSpinner.fail('Python 3 not found');
+
+      // Verify we found a working Python installation
+      if (!pythonCmd) {
+        pythonSpinner.fail('Python not found');
         console.log(chalk.red('❌ Python 3.11+ is required for E2B sandbox'));
         console.log(chalk.yellow('💡 Please install Python 3.11+ and try again'));
         console.log(chalk.blue('   Visit: https://python.org/downloads'));
