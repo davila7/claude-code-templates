@@ -1,6 +1,20 @@
 {
   "articles": [
     {
+      "id": "e2b-claude-code-sandbox",
+      "title": "E2B + Claude Code Sandbox: Secure Cloud Development Environment Guide",
+      "description": "Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment, and develop without local system risks.",
+      "url": "https://www.aitmpl.com/blog/e2b-claude-code-sandbox/",
+      "image": "https://www.aitmpl.com/blog/assets/e2b-claude-code-sandbox-cover.png",
+      "category": "Cloud Development",
+      "publishDate": "2025-01-31",
+      "readTime": "6 min read",
+      "tags": ["E2B", "Cloud", "Sandbox", "Security", "Isolation"],
+      "difficulty": "advanced",
+      "featured": true,
+      "order": 1
+    },
+    {
       "id": "supabase-integration",
       "title": "Claude Code + Supabase Integration: Complete Guide with Agents, Commands and MCP",
       "description": "Learn how to integrate Supabase with Claude Code using MCP, Agents, and Commands for faster database development.",
@@ -12,7 +26,7 @@
       "tags": ["Supabase", "Database", "Agents", "Commands", "MCP"],
       "difficulty": "basic",
       "featured": true,
-      "order": 1
+      "order": 2
     },
     {
       "id": "git-flow-guide",
@@ -25,7 +39,7 @@
       "readTime": "7 min read",
       "tags": ["Git", "Workflow", "Version Control", "Automation"],
       "difficulty": "intermediate",
-      "order": 2
+      "order": 3
     },
     {
       "id": "google-cloud-vertex-ai",
@@ -38,7 +52,7 @@
       "readTime": "8 min read",
       "tags": ["Google Cloud", "Vertex AI", "Integration", "Cloud"],
       "difficulty": "advanced",
-      "order": 3
+      "order": 4
     },
     {
       "id": "automated-documentation",
@@ -51,7 +65,7 @@
       "readTime": "6 min read",
       "tags": ["Documentation", "Docusaurus", "Automation", "Agents"],
       "difficulty": "advanced",
-      "order": 4
+      "order": 5
     },
     {
       "id": "claude-code-templates-guide",
@@ -65,7 +79,7 @@
       "tags": ["Getting Started", "Templates", "Installation", "Configuration"],
       "difficulty": "basic",
       "featured": true,
-      "order": 5
+      "order": 6
     },
     {
       "id": "tunnel-vision-fix",
@@ -78,7 +92,7 @@
       "readTime": "3 min read",
       "tags": ["Hooks", "Automation", "Context", "Problem Solving"],
       "difficulty": "basic",
-      "order": 6
+      "order": 7
     },
     {
       "id": "telegram-integration",
@@ -92,7 +106,7 @@
       "tags": ["Telegram", "Hooks", "Notifications", "Integration"],
       "difficulty": "basic",
       "featured": true,
-      "order": 7
+      "order": 8
     },
     {
       "id": "vercel-statusline",
@@ -105,7 +119,20 @@
       "readTime": "3 min read",
       "tags": ["Vercel", "Statusline", "Deployment", "Monitoring"],
       "difficulty": "basic",
-      "order": 8
+      "order": 9
+    },
+    {
+      "id": "cloudflare-sandbox",
+      "title": "Claude Code Agents with Cloudflare Sandbox for Isolated Environments",
+      "description": "Learn how to run Claude Code agents in isolated Cloudflare Workers sandbox environments for secure and scalable development.",
+      "url": "https://medium.com/@dan.avila7/claude-code-agents-with-cloudflare-sandbox-for-isolated-environments-f89b2668a06d",
+      "image": "https://miro.medium.com/v2/resize:fit:640/format:webp/1*g9xeEVW_qaX8vfrFY8lxqg.png",
+      "category": "Cloud Development",
+      "publishDate": "2025-10-21",
+      "readTime": "7 min read",
+      "tags": ["Cloudflare", "Sandbox", "Agents", "Security", "Workers"],
+      "difficulty": "advanced",
+      "order": 10
     },
     {
       "id": "prepare-codebase",
@@ -118,16 +145,16 @@
       "readTime": "4 min read",
       "tags": ["Best Practices", "Code Organization", "Optimization", "Setup"],
       "difficulty": "advanced",
-      "order": 9
+      "order": 11
     }
   ],
   "metadata": {
-    "lastUpdated": "2025-02-03",
-    "totalArticles": 9,
+    "lastUpdated": "2025-10-26",
+    "totalArticles": 11,
     "difficultyLevels": {
       "basic": 5,
       "intermediate": 1,
-      "advanced": 3
+      "advanced": 5
     }
   }
 }
