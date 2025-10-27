@@ -10,6 +10,7 @@ const StateCalculator = require('./analytics/core/StateCalculator');
 const FileWatcher = require('./analytics/core/FileWatcher');
 const DataCache = require('./analytics/data/DataCache');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
+const SessionSharing = require('./session-sharing');
 
 class ChatsMobile {
   constructor(options = {}) {
@@ -28,7 +29,10 @@ class ChatsMobile {
     const homeDir = os.homedir();
     const claudeDir = path.join(homeDir, '.claude');
     this.conversationAnalyzer = new ConversationAnalyzer(claudeDir, this.dataCache);
-    
+
+    // Initialize SessionSharing for export/import functionality
+    this.sessionSharing = new SessionSharing(this.conversationAnalyzer);
+
     this.data = {
       conversations: [],
       conversationStates: {},
@@ -471,6 +475,39 @@ class ChatsMobile {
       } catch (error) {
         console.error('Error serving conversation messages:', error);
         res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    // API to share a conversation session
+    this.app.post('/api/conversations/:id/share', async (req, res) => {
+      try {
+        const conversationId = req.params.id;
+        const conversation = this.data.conversations.find(conv => conv.id === conversationId);
+
+        if (!conversation) {
+          return res.status(404).json({ error: 'Conversation not found' });
+        }
+
+        console.log(chalk.cyan(`📤 Sharing conversation ${conversationId}...`));
+
+        // Share the session using SessionSharing module
+        const shareResult = await this.sessionSharing.shareSession(conversationId, conversation);
+
+        res.json({
+          success: true,
+          conversationId: conversationId,
+          uploadUrl: shareResult.uploadUrl,
+          shareCommand: shareResult.shareCommand,
+          expiresIn: shareResult.expiresIn,
+          qrCode: shareResult.qrCode,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error sharing conversation:', error);
+        res.status(500).json({
+          error: 'Failed to share session',
+          message: error.message
+        });
       }
     });
 

@@ -18,6 +18,8 @@ const { runHealthCheck } = require('./health-check');
 const { runPluginDashboard } = require('./plugin-dashboard');
 const { trackingService } = require('./tracking-service');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
+const SessionSharing = require('./session-sharing');
+const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 
 async function showMainMenu() {
   console.log('');
@@ -222,7 +224,48 @@ async function createClaudeConfig(options = {}) {
     await startChatsMobile(options);
     return;
   }
-  
+
+  // Handle session clone (download and import shared session)
+  if (options.cloneSession) {
+    console.log(chalk.blue('📥 Cloning shared Claude Code session...'));
+
+    try {
+      const os = require('os');
+      const homeDir = os.homedir();
+      const claudeDir = path.join(homeDir, '.claude');
+
+      // Initialize ConversationAnalyzer and SessionSharing
+      const conversationAnalyzer = new ConversationAnalyzer(claudeDir);
+      const sessionSharing = new SessionSharing(conversationAnalyzer);
+
+      // Clone the session (cloneSession method handles all console output)
+      const result = await sessionSharing.cloneSession(options.cloneSession, {
+        projectPath: options.directory || process.cwd()
+      });
+
+      // Track session clone
+      trackingService.trackAnalyticsDashboard({
+        page: 'session-clone',
+        source: 'command_line',
+        success: true
+      });
+    } catch (error) {
+      console.error(chalk.red('❌ Failed to clone session:'), error.message);
+
+      // Track failed clone
+      trackingService.trackAnalyticsDashboard({
+        page: 'session-clone',
+        source: 'command_line',
+        success: false,
+        error: error.message
+      });
+
+      process.exit(1);
+    }
+
+    return;
+  }
+
   // Handle health check
   let shouldRunSetup = false;
   if (options.healthCheck || options.health || options.check || options.verify) {

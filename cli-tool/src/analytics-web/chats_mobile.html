@@ -1353,6 +1353,44 @@
             align-items: center;
             justify-content: center;
             flex: 0 0 auto;
+            gap: 8px;
+        }
+
+        /* Resume and Share button styles */
+        .resume-btn {
+            background: rgba(63, 185, 80, 0.12) !important;
+            border: 1px solid rgba(63, 185, 80, 0.3) !important;
+            color: rgba(63, 185, 80, 1) !important;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .resume-btn:hover {
+            background: rgba(63, 185, 80, 0.2) !important;
+            border-color: rgba(63, 185, 80, 0.4) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(63, 185, 80, 0.25);
+        }
+
+        .share-btn {
+            background: rgba(59, 130, 246, 0.12) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: rgba(59, 130, 246, 1) !important;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-btn:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25);
         }
 
         .header-right {
@@ -1360,6 +1398,7 @@
             align-items: center;
             justify-content: flex-end;
             flex: 1;
+            gap: 12px;
         }
 
         .chat-view-back {
@@ -1912,6 +1951,9 @@
                     <button class="header-btn resume-btn" id="resumeConversation" style="display: none;" onclick="resumeConversationWithClaude()">
                         ▶️ Resume
                     </button>
+                    <button class="header-btn share-btn" id="shareConversation" style="display: none;" onclick="shareConversation()">
+                        📤 Share
+                    </button>
                 </div>
                 <div class="header-right">
                     <button class="search-toggle-btn" id="chatSearchToggle">
@@ -1987,6 +2029,106 @@
             <div class="modal-actions">
                 <button class="modal-btn secondary" onclick="closeResumeModal()">Cancel</button>
                 <button class="modal-btn primary" id="copyCommandBtn" onclick="copyModalCommand()">Copy Command</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Share Modal (Security Warning) -->
+    <div class="modal-overlay" id="confirmShareModal">
+        <div class="modal">
+            <div class="modal-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                <span class="modal-icon">📤</span>
+                <h3 class="modal-title">Share Your Session</h3>
+            </div>
+            <div style="padding: 20px;">
+                <p class="modal-description" style="margin-bottom: 16px; line-height: 1.5;">
+                    Your conversation will be uploaded to <strong>x0.at</strong>, a temporary file hosting service.
+                    The generated link can be shared with others to clone your session.
+                </p>
+
+                <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                    <h4 style="color: #3b82f6; margin: 0 0 8px 0; font-size: 14px;">📋 What you're sharing</h4>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.4;">
+                        Last <strong>100 messages</strong> from this conversation (or all messages if less than 100)
+                    </p>
+                </div>
+
+                <div style="background: rgba(234, 179, 8, 0.08); border-left: 3px solid #eab308; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                    <h4 style="color: #eab308; margin: 0 0 8px 0; font-size: 14px;">ℹ️ About x0.at</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                        <li style="margin-bottom: 4px;">Simple temporary file hosting (open source)</li>
+                        <li style="margin-bottom: 4px;">Files available for 3-100 days depending on size</li>
+                        <li style="margin-bottom: 4px;">Anyone with the link can download your session</li>
+                        <li style="margin-bottom: 4px;">No encryption - avoid sharing sensitive data</li>
+                    </ul>
+                </div>
+
+                <div style="background: rgba(100, 116, 139, 0.08); border-left: 3px solid #64748b; padding: 12px; border-radius: 6px;">
+                    <p style="margin: 0; font-size: 12px; color: var(--text-secondary); line-height: 1.4;">
+                        💡 <strong>Tip:</strong> Only share links with people you trust. The session includes your conversation history and may contain project-specific information.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeConfirmShareModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="proceedWithShare()" style="background: #3b82f6;">
+                    Continue & Upload
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-icon">📤</span>
+                <h3 class="modal-title">Share Conversation</h3>
+            </div>
+            <div id="shareModalLoading" style="text-align: center; padding: 40px; display: none;">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 16px; color: var(--text-secondary);">Uploading session...</p>
+            </div>
+            <div id="shareModalContent" style="display: none;">
+                <p class="modal-description">
+                    Your conversation has been uploaded to x0.at. Share the command or QR code below with others.
+                </p>
+                <div id="shareMessageInfo" style="display: none; padding: 12px; background: var(--bg-tertiary); border-radius: 6px; margin-bottom: 16px;">
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+                        <span id="shareMessageCount"></span>
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 24px 0;">
+                    <div style="margin-bottom: 16px; display: flex; flex-direction: column; align-items: center;">
+                        <h4 style="margin-bottom: 12px; color: var(--text-primary);">📱 Scan QR Code</h4>
+                        <img id="shareQRCode" src="" alt="QR Code" style="max-width: 300px; border-radius: 8px; border: 2px solid var(--border-color); display: block; margin: 0 auto;">
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 12px; margin-bottom: 0;">
+                            Scan this QR code to get the share command
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 8px; color: var(--text-primary);">📋 Share Command</h4>
+                    <div class="modal-command" id="shareModalCommand">
+                        <!-- Command will be inserted here -->
+                    </div>
+                </div>
+                <div style="margin-top: 16px; padding: 12px; background: var(--bg-tertiary); border-radius: 6px;">
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">
+                        🔗 Direct URL: <a id="shareDirectUrl" href="#" target="_blank" style="color: var(--text-accent); word-break: break-all;"></a>
+                    </p>
+                    <p style="font-size: 12px; color: var(--text-warning); margin: 8px 0 0 0;">
+                        ⚠️ Files kept for 3-100 days (based on size)
+                    </p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                        🔓 Files are not encrypted by default
+                    </p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeShareModal()">Close</button>
+                <button class="modal-btn primary" id="copyShareCommandBtn" onclick="copyShareCommand()" style="display: none;">Copy Command</button>
             </div>
         </div>
     </div>
@@ -2334,10 +2476,13 @@
                     chatView.classList.remove('show-tools');
                 }
                 
-                // Show resume button
+                // Show resume and share buttons
                 const resumeBtn = document.getElementById('resumeConversation');
                 resumeBtn.style.display = 'block';
+                const shareBtn = document.getElementById('shareConversation');
+                shareBtn.style.display = 'block';
                 resumeBtn.setAttribute('data-conversation-id', conversationId);
+                shareBtn.setAttribute('data-conversation-id', conversationId);
 
                 // Load messages (placeholder for now)
                 this.loadChatMessages(conversationId);
@@ -4343,6 +4488,199 @@
                 }, 1500);
 
                 console.log('📋 Command copied using fallback method:', command);
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                alert(`Please copy this command manually:\n\n${command}`);
+            } finally {
+                document.body.removeChild(tempTextArea);
+            }
+        }
+
+        // Share conversation functions
+        function shareConversation() {
+            const shareBtn = document.getElementById('shareConversation');
+            const conversationId = shareBtn.getAttribute('data-conversation-id');
+
+            if (!conversationId) {
+                console.error('No conversation ID found');
+                return;
+            }
+
+            console.log('📤 Opening share confirmation for conversation:', conversationId);
+
+            // Show confirmation modal first
+            const confirmModal = document.getElementById('confirmShareModal');
+            confirmModal.classList.add('show');
+
+            // Close modal when clicking outside
+            confirmModal.addEventListener('click', (e) => {
+                if (e.target === confirmModal) {
+                    closeConfirmShareModal();
+                }
+            });
+        }
+
+        function closeConfirmShareModal() {
+            const confirmModal = document.getElementById('confirmShareModal');
+            confirmModal.classList.remove('show');
+        }
+
+        async function proceedWithShare() {
+            // Close confirmation modal
+            closeConfirmShareModal();
+
+            const shareBtn = document.getElementById('shareConversation');
+            const conversationId = shareBtn.getAttribute('data-conversation-id');
+
+            if (!conversationId) {
+                console.error('No conversation ID found');
+                return;
+            }
+
+            console.log('📤 User confirmed - Proceeding with share for conversation:', conversationId);
+
+            // Show share modal with loading state
+            const modal = document.getElementById('shareModal');
+            const loadingDiv = document.getElementById('shareModalLoading');
+            const contentDiv = document.getElementById('shareModalContent');
+            const copyBtn = document.getElementById('copyShareCommandBtn');
+
+            modal.classList.add('show');
+            loadingDiv.style.display = 'block';
+            contentDiv.style.display = 'none';
+            copyBtn.style.display = 'none';
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeShareModal();
+                }
+            });
+
+            try {
+                // Call API to share the conversation
+                const response = await fetch(`/api/conversations/${conversationId}/share`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to share session: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                console.log('✅ Session shared successfully:', data);
+
+                // Update modal with share data
+                const qrCodeImg = document.getElementById('shareQRCode');
+                const commandDiv = document.getElementById('shareModalCommand');
+                const directUrlLink = document.getElementById('shareDirectUrl');
+
+                // Set QR code
+                if (data.qrCode && data.qrCode.dataUrl) {
+                    qrCodeImg.src = data.qrCode.dataUrl;
+                    qrCodeImg.style.display = 'block';
+                } else {
+                    qrCodeImg.style.display = 'none';
+                }
+
+                // Set command
+                commandDiv.textContent = data.shareCommand;
+                commandDiv.setAttribute('data-command', data.shareCommand);
+
+                // Set direct URL
+                directUrlLink.textContent = data.uploadUrl;
+                directUrlLink.href = data.uploadUrl;
+
+                // Show message count information
+                const messageInfoDiv = document.getElementById('shareMessageInfo');
+                const messageCountSpan = document.getElementById('shareMessageCount');
+
+                if (data.wasLimited) {
+                    messageCountSpan.innerHTML = `⚠️ This session has <strong>${data.totalMessageCount}</strong> messages. Sharing last <strong>${data.messageCount}</strong> messages to keep file size manageable.`;
+                    messageInfoDiv.style.display = 'block';
+                } else {
+                    messageCountSpan.innerHTML = `✅ Sharing <strong>${data.messageCount}</strong> messages from this conversation.`;
+                    messageInfoDiv.style.display = 'block';
+                }
+
+                // Show content and hide loading
+                loadingDiv.style.display = 'none';
+                contentDiv.style.display = 'block';
+                copyBtn.style.display = 'block';
+
+            } catch (error) {
+                console.error('❌ Failed to share session:', error);
+                alert(`Failed to share session: ${error.message}`);
+                closeShareModal();
+            }
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('shareModal');
+            modal.classList.remove('show');
+        }
+
+        function copyShareCommand() {
+            const commandDiv = document.getElementById('shareModalCommand');
+            const copyBtn = document.getElementById('copyShareCommandBtn');
+            const command = commandDiv.getAttribute('data-command');
+
+            if (!command) {
+                console.error('No command found to copy');
+                return;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(command).then(() => {
+                    // Show success feedback
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '✅ Copied!';
+                    copyBtn.style.backgroundColor = 'rgba(63, 185, 80, 0.8)';
+                    copyBtn.style.borderColor = 'rgba(63, 185, 80, 1)';
+
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                        copyBtn.style.backgroundColor = '';
+                        copyBtn.style.borderColor = '';
+                    }, 1500);
+
+                    console.log('📋 Share command copied to clipboard:', command);
+                }).catch(err => {
+                    console.error('Failed to copy to clipboard:', err);
+                    fallbackCopyShare(command);
+                });
+            } else {
+                // Fallback for browsers without clipboard API
+                fallbackCopyShare(command);
+            }
+        }
+
+        function fallbackCopyShare(command) {
+            // Create a temporary text area to select and copy
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = command;
+            tempTextArea.style.position = 'fixed';
+            tempTextArea.style.left = '-9999px';
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.getElementById('copyShareCommandBtn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.style.backgroundColor = 'rgba(63, 185, 80, 0.8)';
+
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.backgroundColor = '';
+                }, 1500);
+
+                console.log('📋 Share command copied using fallback method:', command);
             } catch (err) {
                 console.error('Fallback copy failed:', err);
                 alert(`Please copy this command manually:\n\n${command}`);

@@ -78,6 +78,7 @@ program
   .option('--sandbox <provider>', 'execute Claude Code in isolated sandbox environment (e.g., e2b)')
   .option('--e2b-api-key <key>', 'E2B API key for sandbox execution (alternative to environment variable)')
   .option('--anthropic-api-key <key>', 'Anthropic API key for Claude Code (alternative to environment variable)')
+  .option('--clone-session <url>', 'download and import a shared Claude Code session from URL')
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands
