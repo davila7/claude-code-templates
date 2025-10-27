@@ -704,31 +704,82 @@
             box-shadow: 0 0 8px rgba(255, 170, 0, 0.6);
         }
 
-        /* Search toggle button in header */
-        .search-toggle-btn {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
-            color: var(--terminal-orange);
-            padding: 6px 12px;
-            border-radius: 6px;
+        /* Action buttons group - unified design with orange accent */
+        .action-buttons-group {
+            display: inline-flex;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 170, 0, 0.4);
+            background: rgba(255, 170, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(255, 170, 0, 0.15);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            border-right: 1px solid rgba(255, 170, 0, 0.2);
+            color: var(--text-primary);
+            padding: 10px 18px;
             cursor: pointer;
             font-size: 0.875rem;
+            font-weight: 600;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            white-space: nowrap;
         }
 
-        .search-toggle-btn:hover {
-            background: var(--terminal-orange);
-            color: white;
-            border-color: var(--terminal-orange);
+        .action-btn:last-child {
+            border-right: none;
         }
 
-        .search-toggle-btn.active {
-            background: var(--terminal-orange);
-            color: white;
-            border-color: var(--terminal-orange);
+        .action-btn svg {
+            width: 15px;
+            height: 15px;
+            transition: all 0.2s ease;
+            stroke: var(--text-primary);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 170, 0, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.resume-btn:hover {
+            background: rgba(63, 185, 80, 0.15);
+            color: rgba(63, 185, 80, 1);
+        }
+
+        .action-btn.resume-btn:hover svg {
+            stroke: rgba(63, 185, 80, 1);
+        }
+
+        .action-btn.share-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            color: rgba(59, 130, 246, 1);
+        }
+
+        .action-btn.share-btn:hover svg {
+            stroke: rgba(59, 130, 246, 1);
+        }
+
+        .action-btn.search-btn:hover {
+            background: rgba(251, 146, 60, 0.15);
+            color: rgba(251, 146, 60, 1);
+        }
+
+        .action-btn.search-btn:hover svg {
+            stroke: rgba(251, 146, 60, 1);
+        }
+
+        .action-btn.search-btn.active {
+            background: rgba(251, 146, 60, 0.2);
+            color: rgba(251, 146, 60, 1);
+        }
+
+        .action-btn.search-btn.active svg {
+            stroke: rgba(251, 146, 60, 1);
         }
 
         /* Conversations list */
@@ -814,6 +865,88 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 4px;
+        }
+
+        /* Project grouping styles */
+        .project-group {
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .project-header:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .project-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--terminal-orange) 0%, #e67e22 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+
+        .project-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .project-count {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .project-toggle {
+            margin-left: 8px;
+            color: var(--text-secondary);
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        /* Smaller avatar for conversations within groups */
+        .conversation-avatar-small {
+            width: 36px;
+            height: 36px;
+            font-size: 0.85rem;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Indent conversations within project groups */
+        .project-group .conversation-item {
+            padding-left: 36px;
         }
 
         .conversation-state {
@@ -1356,42 +1489,6 @@
             gap: 8px;
         }
 
-        /* Resume and Share button styles */
-        .resume-btn {
-            background: rgba(63, 185, 80, 0.12) !important;
-            border: 1px solid rgba(63, 185, 80, 0.3) !important;
-            color: rgba(63, 185, 80, 1) !important;
-            font-size: 0.85rem;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .resume-btn:hover {
-            background: rgba(63, 185, 80, 0.2) !important;
-            border-color: rgba(63, 185, 80, 0.4) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(63, 185, 80, 0.25);
-        }
-
-        .share-btn {
-            background: rgba(59, 130, 246, 0.12) !important;
-            border: 1px solid rgba(59, 130, 246, 0.3) !important;
-            color: rgba(59, 130, 246, 1) !important;
-            font-size: 0.85rem;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .share-btn:hover {
-            background: rgba(59, 130, 246, 0.2) !important;
-            border-color: rgba(59, 130, 246, 0.4) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25);
-        }
 
         .header-right {
             display: flex;
@@ -1943,23 +2040,36 @@
                         ←
                     </button>
                     <div class="chat-view-info">
-                        <h2 class="chat-view-title" id="chatViewTitle">Select a conversation</h2>
+                        <h2 class="chat-view-title" id="chatViewTitle">Select a session</h2>
                         <p class="chat-view-subtitle" id="chatViewSubtitle"></p>
                     </div>
                 </div>
                 <div class="header-center">
-                    <button class="header-btn resume-btn" id="resumeConversation" style="display: none;" onclick="resumeConversationWithClaude()">
-                        ▶️ Resume
-                    </button>
-                    <button class="header-btn share-btn" id="shareConversation" style="display: none;" onclick="shareConversation()">
-                        📤 Share
-                    </button>
+                    <div class="action-buttons-group" style="display: none;" id="actionButtonsGroup">
+                        <button class="action-btn resume-btn" id="resumeConversation" onclick="resumeConversationWithClaude()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            <span>Resume</span>
+                        </button>
+                        <button class="action-btn share-btn" id="shareConversation" onclick="shareConversation()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16 6 12 2 8 6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Share</span>
+                        </button>
+                        <button class="action-btn search-btn" id="chatSearchToggle">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <span>Search</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="header-right">
-                    <button class="search-toggle-btn" id="chatSearchToggle">
-                        <span>🔍</span>
-                        <span>Search</span>
-                    </button>
                     <div class="tools-toggle" id="toolsToggle">
                         <span class="tools-toggle-label" onclick="document.getElementById('showToolsSwitch').click()">Show Tools</span>
                         <label class="toggle-switch">
@@ -2381,55 +2491,100 @@
 
             renderConversations(conversations, states = {}) {
                 const conversationsList = document.getElementById('conversationsList');
-                
+
                 if (conversations.length === 0) {
                     conversationsList.innerHTML = `
                         <div class="no-conversations">
                             <div class="no-conversations-icon">💬</div>
-                            <h3>No conversations found</h3>
-                            <p>Start a conversation with Claude Code to see it here</p>
+                            <h3>No sessions found</h3>
+                            <p>Start a session with Claude Code to see it here</p>
                         </div>
                     `;
                     return;
                 }
 
-                conversationsList.innerHTML = conversations.map(conv => {
-                    const state = states[conv.id] || 'inactive';
-                    const stateClass = this.getStateClass(state);
-                    const stateLabel = this.getStateLabel(state);
-                    
-                    // Debug logging for first few conversations
-                    console.log(`🔍 Conversation ${conv.id.slice(-8)}: State="${state}" -> Label="${stateLabel}" Class="${stateClass}"`);
-                    
-                    const lastActivity = this.formatRelativeTime(new Date(conv.lastModified));
-                    const messageCount = conv.messageCount || 0;
+                // Group conversations by project
+                const groupedByProject = conversations.reduce((groups, conv) => {
                     const projectName = conv.project || 'Unknown Project';
-                    const conversationId = conv.id.slice(-8);
-                    
-                    // Get first letter of project name for avatar
+                    if (!groups[projectName]) {
+                        groups[projectName] = [];
+                    }
+                    groups[projectName].push(conv);
+                    return groups;
+                }, {});
+
+                // Sort projects alphabetically
+                const sortedProjects = Object.keys(groupedByProject).sort();
+
+                // Initialize expanded state if not exists
+                if (!this.expandedProjects) {
+                    this.expandedProjects = new Set(); // All collapsed by default
+                }
+
+                // Render grouped conversations
+                conversationsList.innerHTML = sortedProjects.map(projectName => {
+                    const projectConversations = groupedByProject[projectName];
+                    const isExpanded = this.expandedProjects.has(projectName);
                     const firstLetter = projectName.charAt(0).toUpperCase();
-                    
+                    const conversationCount = projectConversations.length;
+
+                    // Render conversations for this project
+                    const conversationsHTML = projectConversations.map(conv => {
+                        const state = states[conv.id] || 'inactive';
+                        const stateClass = this.getStateClass(state);
+                        const stateLabel = this.getStateLabel(state);
+
+                        const lastActivity = this.formatRelativeTime(new Date(conv.lastModified));
+                        const messageCount = conv.messageCount || 0;
+                        const conversationId = conv.id.slice(-8);
+
+                        return `
+                            <div class="conversation-item" data-conversation-id="${conv.id}" style="display: ${isExpanded ? 'flex' : 'none'}">
+                                <div class="conversation-avatar conversation-avatar-small">
+                                    ${conversationId.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div class="conversation-content">
+                                    <div class="conversation-header">
+                                        <div class="conversation-name">Session ${conversationId}</div>
+                                        <div class="conversation-time">${lastActivity}</div>
+                                    </div>
+                                    <div class="conversation-meta">
+                                        <span class="conversation-state ${stateClass}">${stateLabel}</span>
+                                        ${messageCount > 0 ? `<span class="message-count">${messageCount}</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
                     return `
-                        <div class="conversation-item" data-conversation-id="${conv.id}">
-                            <div class="conversation-avatar">
-                                ${firstLetter}
-                            </div>
-                            <div class="conversation-content">
-                                <div class="conversation-header">
-                                    <div class="conversation-name">${projectName}</div>
-                                    <div class="conversation-time">${lastActivity}</div>
+                        <div class="project-group" data-project="${projectName}">
+                            <div class="project-header" data-project="${projectName}">
+                                <div class="project-avatar">
+                                    ${firstLetter}
                                 </div>
-                                <div class="conversation-preview">
-                                    Conversation ${conversationId}
+                                <div class="project-info">
+                                    <div class="project-name">${projectName}</div>
+                                    <div class="project-count">${conversationCount} session${conversationCount !== 1 ? 's' : ''}</div>
                                 </div>
-                                <div class="conversation-meta">
-                                    <span class="conversation-state ${stateClass}">${stateLabel}</span>
-                                    ${messageCount > 0 ? `<span class="message-count">${messageCount}</span>` : ''}
+                                <div class="project-toggle">
+                                    <svg class="toggle-icon ${isExpanded ? 'expanded' : ''}" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
                             </div>
+                            ${conversationsHTML}
                         </div>
                     `;
                 }).join('');
+
+                // Bind project toggle events
+                conversationsList.querySelectorAll('.project-header').forEach(header => {
+                    header.addEventListener('click', (e) => {
+                        const projectName = header.dataset.project;
+                        this.toggleProject(projectName);
+                    });
+                });
 
                 // Bind conversation click events
                 conversationsList.querySelectorAll('.conversation-item').forEach(item => {
@@ -2438,6 +2593,17 @@
                         this.selectConversation(conversationId);
                     });
                 });
+            }
+
+            toggleProject(projectName) {
+                if (this.expandedProjects.has(projectName)) {
+                    this.expandedProjects.delete(projectName);
+                } else {
+                    this.expandedProjects.add(projectName);
+                }
+
+                // Re-render conversations with current states
+                this.renderConversations(this.conversations, this.conversationStates);
             }
 
             selectConversation(conversationId) {
@@ -2464,7 +2630,7 @@
                 const projectName = conversation.project || 'Unknown Project';
                 const convId = conversation.id.slice(-8);
                 chatViewTitle.textContent = projectName;
-                chatViewSubtitle.textContent = `Conversation ${convId}`;
+                chatViewSubtitle.textContent = `Session ${convId}`;
                 
                 // Show chat view with animation
                 chatView.classList.add('active');
@@ -2476,11 +2642,12 @@
                     chatView.classList.remove('show-tools');
                 }
                 
-                // Show resume and share buttons
+                // Show action buttons group
+                const actionButtonsGroup = document.getElementById('actionButtonsGroup');
+                actionButtonsGroup.style.display = 'inline-flex';
+
                 const resumeBtn = document.getElementById('resumeConversation');
-                resumeBtn.style.display = 'block';
                 const shareBtn = document.getElementById('shareConversation');
-                shareBtn.style.display = 'block';
                 resumeBtn.setAttribute('data-conversation-id', conversationId);
                 shareBtn.setAttribute('data-conversation-id', conversationId);
 
@@ -2497,9 +2664,9 @@
                 // Clean up scroll tracking when leaving conversation
                 this.removeScrollTracking();
 
-                // Hide resume button
-                const resumeBtn = document.getElementById('resumeConversation');
-                resumeBtn.style.display = 'none';
+                // Hide action buttons group
+                const actionButtonsGroup = document.getElementById('actionButtonsGroup');
+                actionButtonsGroup.style.display = 'none';
                 
                 // Remove active state from conversations
                 document.querySelectorAll('.conversation-item').forEach(item => {
@@ -3169,14 +3336,68 @@
 
 
             filterConversations(searchTerm) {
-                const items = document.querySelectorAll('.conversation-item');
-                const term = searchTerm.toLowerCase();
+                const term = searchTerm.toLowerCase().trim();
+                const projectGroups = document.querySelectorAll('.project-group');
 
-                items.forEach(item => {
-                    const name = item.querySelector('.conversation-name').textContent.toLowerCase();
-                    const preview = item.querySelector('.conversation-preview').textContent.toLowerCase();
-                    const matches = name.includes(term) || preview.includes(term);
-                    item.style.display = matches ? 'flex' : 'none';
+                if (!term) {
+                    // If search is empty, collapse all projects and reset
+                    this.expandedProjects.clear(); // Close all projects
+
+                    projectGroups.forEach(group => {
+                        group.style.display = 'block';
+
+                        // Hide all conversations
+                        const conversations = group.querySelectorAll('.conversation-item');
+                        conversations.forEach(conv => {
+                            conv.style.display = 'none';
+                        });
+
+                        // Update toggle icon to collapsed state
+                        const toggleIcon = group.querySelector('.toggle-icon');
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('expanded');
+                        }
+                    });
+                    return;
+                }
+
+                // Filter projects and conversations
+                projectGroups.forEach(group => {
+                    const projectName = group.dataset.project;
+                    const projectNameLower = projectName.toLowerCase();
+                    const conversations = group.querySelectorAll('.conversation-item');
+
+                    let hasMatchingConversation = false;
+
+                    // Check each conversation in this project
+                    conversations.forEach(item => {
+                        const nameElement = item.querySelector('.conversation-name');
+                        const name = nameElement ? nameElement.textContent.toLowerCase() : '';
+                        const matches = name.includes(term) || projectNameLower.includes(term);
+
+                        if (matches) {
+                            item.style.display = 'flex';
+                            hasMatchingConversation = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Show project group if it has matching conversations or if project name matches
+                    if (hasMatchingConversation || projectNameLower.includes(term)) {
+                        group.style.display = 'block';
+                        // Auto-expand project when searching
+                        if (!this.expandedProjects.has(projectName)) {
+                            this.expandedProjects.add(projectName);
+                            // Update toggle icon
+                            const toggleIcon = group.querySelector('.toggle-icon');
+                            if (toggleIcon) {
+                                toggleIcon.classList.add('expanded');
+                            }
+                        }
+                    } else {
+                        group.style.display = 'none';
+                    }
                 });
             }
 
@@ -3791,6 +4012,11 @@
 
                 // Clear advanced search filters
                 this.resetAdvancedSearch();
+
+                // Reset expanded projects state (close all projects)
+                if (this.expandedProjects) {
+                    this.expandedProjects.clear();
+                }
 
                 // Hide search results info
                 searchResultsInfo.classList.remove('active');
