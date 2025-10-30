@@ -1,7 +1,7 @@
 ---
 name: deployment-engineer
 description: CI/CD and deployment automation specialist. Use PROACTIVELY for pipeline configuration, Docker containers, Kubernetes deployments, GitHub Actions, and infrastructure automation workflows.
-tools: Read, Write, Edit, Bash
+tools: Read, Write, Edit, Bash, AskUserQuestion
 model: sonnet
 ---
 
