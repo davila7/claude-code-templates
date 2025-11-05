@@ -103,14 +103,13 @@ This collection includes components from multiple sources:
 - **wshobson/agents Collection** by [wshobson](https://github.com/wshobson/agents) - Licensed under MIT License (48 agents)
 
 **Commands Collection:**
-- **awesome-claude-code Commands** by [hesreallyhim](https://github.com/hesreallyhim/awesome-claude-code) - Licensed under CC0 1.0 Universal (21 commands)
+- **awesome-claude-code Commands** by [hesreallyhim](https://github.com/hesreallyhim/awesome-claude-code) - Licensed under CC0 1.0 Universal (21 commands) (Current license: CC BY-NC-ND)
 
 Some of the commands and resources included in this marketplace come from open-source community repositories originally listed in [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code).
 
 Each of these resources retains its **original license and attribution**, as defined by their respective authors (mostly MIT-licensed).  
 
-Please note that **awesome-claude-code** is **no longer licensed under CC 1.0**.  
-We respect and credit all original creators for their work and contributions to the Claude ecosystem.
+We respect and credit all original creators for their work and contributions to the Claude ecosystem - you may find complete original license information [here](https://github.com/davila7/claude-code-templates/.claude-plug/third-party-licenses). Thank you to @hesreallyhim for ensuring proper attribution to all third-party authors and for contributing all necessary documentation for compliance with those licenses.
 
 ## 📄 License
 
