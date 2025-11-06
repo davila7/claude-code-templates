@@ -8,6 +8,11 @@
   <a href="https://trendshift.io/repositories/15113" target="_blank">
     <img src="https://trendshift.io/api/badge/repositories/15113" alt="davila7%2Fclaude-code-templates | Trendshift" style="width: 200px; height: 40px;" width="125" height="40"/>
   </a>
+  <br />
+  <br />
+  <a href="https://vercel.com/oss">
+  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
+  </a>
 </p>
 
 
