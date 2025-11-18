@@ -34,7 +34,7 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@vercel/node": "^3.0.0"
+    "@vercel/node": "^4.0.0"
   },
   "keywords": [
     "claude-code",
