@@ -235,17 +235,23 @@ async function runMCPStats(options) {
   if (!analysis) {
     console.log(chalk.yellow('\n💡 No MCP servers found.'));
     console.log(chalk.gray('Would you like to set up Claude Code Templates to add MCP servers?'));
-    
-    const { setupMCP } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'setupMCP',
-      message: 'Set up MCP servers with Claude Code Templates?',
-      default: true
-    }]);
+
+    let setupMCP = true; // Default when --yes is used
+
+    // Only prompt if --yes flag is not set
+    if (!options.yes) {
+      const response = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'setupMCP',
+        message: 'Set up MCP servers with Claude Code Templates?',
+        default: true
+      }]);
+      setupMCP = response.setupMCP;
+    }
 
     if (setupMCP) {
       console.log(chalk.blue('\n🚀 Starting Claude Code Templates setup...'));
-      
+
       // Import and run the main setup
       const createClaudeConfig = require('./index');
       await createClaudeConfig({ ...options, directory: targetDir });
@@ -258,13 +264,19 @@ async function runMCPStats(options) {
   // Ask if user wants Claude Code to review and optimize MCP configuration
   console.log(chalk.blue('\n🤖 Optimization Opportunity'));
   console.log(chalk.gray('Claude Code can analyze your MCP server configuration and suggest optimizations.'));
-  
-  const { optimizeMCP } = await inquirer.prompt([{
-    type: 'confirm',
-    name: 'optimizeMCP',
-    message: 'Would you like Claude Code to review and optimize your MCP server configuration?',
-    default: true
-  }]);
+
+  let optimizeMCP = false; // Default to false when --yes is used (don't auto-launch Claude)
+
+  // Only prompt if --yes flag is not set
+  if (!options.yes) {
+    const response = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'optimizeMCP',
+      message: 'Would you like Claude Code to review and optimize your MCP server configuration?',
+      default: true
+    }]);
+    optimizeMCP = response.optimizeMCP;
+  }
 
   if (optimizeMCP) {
     console.log(chalk.blue('\n🔍 Launching Claude Code for MCP optimization...'));

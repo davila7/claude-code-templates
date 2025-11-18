@@ -173,17 +173,23 @@ async function runHookStats(options) {
   if (!analysis) {
     console.log(chalk.yellow('\n💡 No automation hooks found.'));
     console.log(chalk.gray('Would you like to set up Claude Code Templates to add automation hooks?'));
-    
-    const { setupHooks } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'setupHooks',
-      message: 'Set up automation hooks with Claude Code Templates?',
-      default: true
-    }]);
+
+    let setupHooks = true; // Default when --yes is used
+
+    // Only prompt if --yes flag is not set
+    if (!options.yes) {
+      const response = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'setupHooks',
+        message: 'Set up automation hooks with Claude Code Templates?',
+        default: true
+      }]);
+      setupHooks = response.setupHooks;
+    }
 
     if (setupHooks) {
       console.log(chalk.blue('\n🚀 Starting Claude Code Templates setup...'));
-      
+
       // Import and run the main setup
       const createClaudeConfig = require('./index');
       await createClaudeConfig({ ...options, directory: targetDir });
@@ -196,13 +202,19 @@ async function runHookStats(options) {
   // Ask if user wants Claude Code to review and optimize hooks
   console.log(chalk.blue('\n🤖 Optimization Opportunity'));
   console.log(chalk.gray('Claude Code can analyze your automation hooks and suggest optimizations.'));
-  
-  const { optimizeHooks } = await inquirer.prompt([{
-    type: 'confirm',
-    name: 'optimizeHooks',
-    message: 'Would you like Claude Code to review and optimize your automation hooks?',
-    default: true
-  }]);
+
+  let optimizeHooks = false; // Default to false when --yes is used (don't auto-launch Claude)
+
+  // Only prompt if --yes flag is not set
+  if (!options.yes) {
+    const response = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'optimizeHooks',
+      message: 'Would you like Claude Code to review and optimize your automation hooks?',
+      default: true
+    }]);
+    optimizeHooks = response.optimizeHooks;
+  }
 
   if (optimizeHooks) {
     console.log(chalk.blue('\n🔍 Launching Claude Code for hook optimization...'));

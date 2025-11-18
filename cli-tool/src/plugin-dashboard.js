@@ -328,14 +328,16 @@ class PluginDashboard {
       // Count hooks
       const hooksFile = path.join(pluginPath, 'hooks', 'hooks.json');
       if (await fs.pathExists(hooksFile)) {
-        const hooksData = JSON.parse(await fs.readFile(hooksFile, 'utf8'));
+        const content = await fs.readFile(hooksFile, 'utf8');
+        const hooksData = JSON.parse(this.stripJsonComments(content));
         components.hooks = Object.values(hooksData.hooks || {}).flat().length;
       }
 
       // Count MCPs
       const mcpFile = path.join(pluginPath, '.mcp.json');
       if (await fs.pathExists(mcpFile)) {
-        const mcpData = JSON.parse(await fs.readFile(mcpFile, 'utf8'));
+        const content = await fs.readFile(mcpFile, 'utf8');
+        const mcpData = JSON.parse(this.stripJsonComments(content));
         components.mcps = Object.keys(mcpData.mcpServers || {}).length;
       }
     } catch (error) {
@@ -380,6 +382,96 @@ class PluginDashboard {
     }
   }
 
+  /**
+   * Strip comments from JSON content (supports // and /* *\/ style comments)
+   * Uses a state machine to avoid stripping // from inside strings (e.g., URLs)
+   * Also handles trailing commas that may be left after comment removal
+   */
+  stripJsonComments(jsonString) {
+    let result = '';
+    let inString = false;
+    let inComment = false;
+    let commentType = null; // 'line' or 'block'
+    let escapeNext = false;
+
+    for (let i = 0; i < jsonString.length; i++) {
+      const char = jsonString[i];
+      const nextChar = jsonString[i + 1];
+
+      // Handle escape sequences in strings
+      if (inString && escapeNext) {
+        result += char;
+        escapeNext = false;
+        continue;
+      }
+
+      // Track escape character
+      if (inString && char === '\\') {
+        result += char;
+        escapeNext = true;
+        continue;
+      }
+
+      // Toggle string state (only when not in comment)
+      if (!inComment && char === '"') {
+        inString = !inString;
+        result += char;
+        continue;
+      }
+
+      // If we're in a string, preserve everything
+      if (inString) {
+        result += char;
+        continue;
+      }
+
+      // Start of block comment
+      if (!inComment && char === '/' && nextChar === '*') {
+        inComment = true;
+        commentType = 'block';
+        i++; // Skip the *
+        continue;
+      }
+
+      // End of block comment
+      if (inComment && commentType === 'block' && char === '*' && nextChar === '/') {
+        inComment = false;
+        commentType = null;
+        i++; // Skip the /
+        continue;
+      }
+
+      // Start of line comment
+      if (!inComment && char === '/' && nextChar === '/') {
+        inComment = true;
+        commentType = 'line';
+        i++; // Skip the second /
+        continue;
+      }
+
+      // End of line comment
+      if (inComment && commentType === 'line' && (char === '\n' || char === '\r')) {
+        inComment = false;
+        commentType = null;
+        result += char; // Preserve the newline
+        continue;
+      }
+
+      // If we're in a comment, skip the character
+      if (inComment) {
+        continue;
+      }
+
+      // Otherwise, keep the character
+      result += char;
+    }
+
+    // Remove trailing commas before closing braces/brackets
+    result = result.replace(/,(\s*[}\]])/g, '$1');
+
+    return result;
+  }
+
   async loadUserPermissions() {
     const permissions = {
       agents: [],
@@ -420,7 +512,8 @@ class PluginDashboard {
       // Load user-level hooks
       const userHooksFile = path.join(this.claudeDir, 'hooks', 'hooks.json');
       if (await fs.pathExists(userHooksFile)) {
-        const hooksData = JSON.parse(await fs.readFile(userHooksFile, 'utf8'));
+        const content = await fs.readFile(userHooksFile, 'utf8');
+        const hooksData = JSON.parse(this.stripJsonComments(content));
         for (const [event, hooks] of Object.entries(hooksData.hooks || {})) {
           for (const hook of hooks) {
             permissions.hooks.push({
@@ -437,7 +530,8 @@ class PluginDashboard {
       // Load user-level MCPs
       const userMcpFile = path.join(this.claudeDir, '.mcp.json');
       if (await fs.pathExists(userMcpFile)) {
-        const mcpData = JSON.parse(await fs.readFile(userMcpFile, 'utf8'));
+        const content = await fs.readFile(userMcpFile, 'utf8');
+        const mcpData = JSON.parse(this.stripJsonComments(content));
         for (const [name, config] of Object.entries(mcpData.mcpServers || {})) {
           permissions.mcps.push({
             name,
@@ -494,7 +588,8 @@ class PluginDashboard {
       // Load plugin hooks
       const hooksFile = path.join(plugin.path, 'hooks', 'hooks.json');
       if (await fs.pathExists(hooksFile)) {
-        const hooksData = JSON.parse(await fs.readFile(hooksFile, 'utf8'));
+        const content = await fs.readFile(hooksFile, 'utf8');
+        const hooksData = JSON.parse(this.stripJsonComments(content));
         for (const [event, hooks] of Object.entries(hooksData.hooks || {})) {
           for (const hook of hooks) {
             permissions.hooks.push({
@@ -511,7 +606,8 @@ class PluginDashboard {
       // Load plugin MCPs
       const mcpFile = path.join(plugin.path, '.mcp.json');
       if (await fs.pathExists(mcpFile)) {
-        const mcpData = JSON.parse(await fs.readFile(mcpFile, 'utf8'));
+        const content = await fs.readFile(mcpFile, 'utf8');
+        const mcpData = JSON.parse(this.stripJsonComments(content));
         for (const [name, config] of Object.entries(mcpData.mcpServers || {})) {
           permissions.mcps.push({
             name,

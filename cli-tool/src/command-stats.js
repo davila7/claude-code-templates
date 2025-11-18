@@ -191,20 +191,26 @@ function displayCommandStats(analysis) {
  * Prompts user to setup Claude Code Templates when no commands are found
  * @param {string} targetDir - Project directory
  */
-async function promptSetupWhenNoCommands(targetDir) {
+async function promptSetupWhenNoCommands(targetDir, options = {}) {
   const inquirer = require('inquirer');
-  
+
   console.log(chalk.cyan('\n🚀 Claude Code Templates Setup'));
   console.log(chalk.gray('No Claude Code commands found in this project. You can set up Claude Code Templates to get started.'));
-  
+
   try {
-    const { setupNow } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'setupNow',
-      message: 'Would you like to start the Claude Code Templates setup now?',
-      default: true,
-      prefix: chalk.blue('🤖')
-    }]);
+    let setupNow = true; // Default when --yes is used
+
+    // Only prompt if --yes flag is not set
+    if (!options.yes) {
+      const response = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'setupNow',
+        message: 'Would you like to start the Claude Code Templates setup now?',
+        default: true,
+        prefix: chalk.blue('🤖')
+      }]);
+      setupNow = response.setupNow;
+    }
 
     if (!setupNow) {
       console.log(chalk.yellow('⏭️  Setup skipped. Run "npx claude-code-templates" anytime to set up your project.'));
@@ -216,8 +222,8 @@ async function promptSetupWhenNoCommands(targetDir) {
 
     // Import and run the main setup function
     const createClaudeConfig = require('./index');
-    await createClaudeConfig({ directory: targetDir });
-    
+    await createClaudeConfig({ ...options, directory: targetDir });
+
     return true;
 
   } catch (error) {
@@ -232,24 +238,30 @@ async function promptSetupWhenNoCommands(targetDir) {
  * @param {Object} analysis - Result from analyzeCommands()
  * @param {string} targetDir - Project directory
  */
-async function promptCommandOptimization(analysis, targetDir) {
+async function promptCommandOptimization(analysis, targetDir, options = {}) {
   if (!analysis.exists || analysis.commands.length === 0) {
     return;
   }
 
   const inquirer = require('inquirer');
-  
+
   console.log(chalk.cyan('\n🔧 Command Optimization'));
   console.log(chalk.gray('Claude Code can analyze your commands and suggest improvements based on your project structure.'));
-  
+
   try {
-    const { optimize } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'optimize',
-      message: 'Would you like Claude Code to review and optimize your commands?',
-      default: true,
-      prefix: chalk.blue('🤖')
-    }]);
+    let optimize = false; // Default to false when --yes is used (don't auto-launch Claude)
+
+    // Only prompt if --yes flag is not set
+    if (!options.yes) {
+      const response = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'optimize',
+        message: 'Would you like Claude Code to review and optimize your commands?',
+        default: true,
+        prefix: chalk.blue('🤖')
+      }]);
+      optimize = response.optimize;
+    }
 
     if (!optimize) {
       console.log(chalk.yellow('⏭️  Skipping optimization. You can run this anytime with --command-stats'));
@@ -335,12 +347,12 @@ async function runCommandStats(options = {}) {
   
   // If no commands found, offer to start setup
   if (!hasCommands) {
-    await promptSetupWhenNoCommands(targetDir);
+    await promptSetupWhenNoCommands(targetDir, options);
     return;
   }
-  
+
   // Prompt for optimization
-  await promptCommandOptimization(analysis, targetDir);
+  await promptCommandOptimization(analysis, targetDir, options);
 }
 
 module.exports = {
