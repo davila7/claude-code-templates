@@ -1,75 +1,78 @@
-# ⚡ Copilot CLI Arsenal
+# GitHub Copilot CLI Agent Arsenal
 
 <div align="center">
 
 ```ascii
-╔═══════════════════════════════════════════════════════════════════════════╗
-║                                                                           ║
-║   ██████╗ ██████╗ ██████╗ ██╗██╗      ██████╗ ████████╗                 ║
-║  ██╔════╝██╔═══██╗██╔══██╗██║██║     ██╔═══██╗╚══██╔══╝                 ║
-║  ██║     ██║   ██║██████╔╝██║██║     ██║   ██║   ██║                    ║
-║  ██║     ██║   ██║██╔═══╝ ██║██║     ██║   ██║   ██║                    ║
-║  ╚██████╗╚██████╔╝██║     ██║███████╗╚██████╔╝   ██║                    ║
-║   ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝ ╚═════╝    ╚═╝                    ║
-║                                                                           ║
-║              ██████╗██╗     ██╗                                          ║
-║             ██╔════╝██║     ██║                                          ║
-║             ██║     ██║     ██║                                          ║
-║             ██║     ██║     ██║                                          ║
-║             ╚██████╗███████╗██║                                          ║
-║              ╚═════╝╚══════╝╚═╝                                          ║
-║                                                                           ║
-║              ╔═══════════════════════════════╗                           ║
-║              ║   🤖 AGENTS ARSENAL 🤖       ║                           ║
-║              ╚═══════════════════════════════╝                           ║
-║                                                                           ║
-║         20 Specialized AI Agents for GitHub Copilot CLI                  ║
-║                                                                           ║
-╚═══════════════════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║    ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗██████╗                        ║
+║   ██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║██╔══██╗                       ║
+║   ██║  ███╗██║   ██║   ███████║██║   ██║██████╔╝                       ║
+║   ██║   ██║██║   ██║   ██╔══██║██║   ██║██╔══██╗                       ║
+║   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝                       ║
+║    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝                        ║
+║                                                                          ║
+║    ██████╗ ██████╗ ██████╗ ██╗██╗      ██████╗ ████████╗               ║
+║   ██╔════╝██╔═══██╗██╔══██╗██║██║     ██╔═══██╗╚══██╔══╝               ║
+║   ██║     ██║   ██║██████╔╝██║██║     ██║   ██║   ██║                  ║
+║   ██║     ██║   ██║██╔═══╝ ██║██║     ██║   ██║   ██║                  ║
+║   ╚██████╗╚██████╔╝██║     ██║███████╗╚██████╔╝   ██║                  ║
+║    ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝ ╚═════╝    ╚═╝                  ║
+║                                                                          ║
+║              ╔═══════════════════════════════════╗                      ║
+║              ║   🤖 AGENT ARSENAL 🤖            ║                      ║
+║              ╚═══════════════════════════════════╝                      ║
+║                                                                          ║
+║          20 Specialized AI Agents for GitHub Copilot CLI                ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Copilot](https://img.shields.io/badge/GitHub-Copilot-blue?logo=github)](https://github.com/features/copilot)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org)
+[![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-CLI-blue?logo=github)](https://github.com/features/copilot)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen?logo=node.js)](https://nodejs.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/RLuf/copilot-cli-arsenal/graphs/commit-activity)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
-[![AI Powered](https://img.shields.io/badge/AI-Powered-orange)](https://github.com/features/copilot)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-FF6F00)](https://github.com/features/copilot)
 
-**Your AI-powered development companion with 20+ specialized agents**
+**Your AI development arsenal with 20 specialized agents for GitHub Copilot CLI**
 
 👤 **Criado por**: [Roger Luft (RLuf)](https://fcc.rogerluft.com.br) | 🌐 [fcc.rogerluft.com.br](https://fcc.rogerluft.com.br)
 
-[🚀 Quick Start](#-quick-start) • [📚 Documentation](./MANUAL.md) • [🤖 Agent Catalog](./.copilot/AGENTS_CATALOG.md) • [⚡ Examples](./QUICKSTART.md)
+[🚀 Quick Start](#-quick-start) • [🤖 Agents](#-agents) • [📚 Documentation](./MANUAL.md) • [⚡ Examples](./QUICKSTART.md)
 
 </div>
 
 ---
 
-## 🎯 What is Copilot CLI Arsenal?
+## 🎯 What is This?
 
-A **comprehensive multi-agent system** for GitHub Copilot CLI that provides specialized AI assistance across every aspect of software development. Each agent is an expert in specific domains, automatically activating based on your code context, file patterns, and development tasks.
+**GitHub Copilot CLI Agent Arsenal** is a comprehensive collection of **20 specialized AI agents** designed to supercharge your development workflow with GitHub Copilot CLI. Each agent is an expert in specific domains, automatically activating based on your code context, file patterns, and development tasks.
 
-### ✨ Highlights
+### ✨ Key Features
 
 <table>
 <tr>
 <td width="50%">
 
 **🤖 20 Specialized Agents**
-- Frontend, Backend, Full-Stack
-- DevOps, Infrastructure, Deployment
-- Testing, Security, Performance
-- AI/ML, Mobile, Documentation
+- Frontend (React, Vue, Angular)
+- Backend (APIs, Microservices)
+- DevOps (CI/CD, Docker, K8s)
+- Security (OWASP, Compliance)
+- Performance (Optimization)
+- AI/ML (LLMs, RAG)
+- And 14 more!
 
 </td>
 <td width="50%">
 
-**⚡ Auto-Activation**
+**⚡ Smart Auto-Activation**
 - File pattern recognition
 - Keyword detection
 - Context-aware triggers
 - Git integration
+- Priority-based selection
 
 </td>
 </tr>
@@ -77,19 +80,24 @@ A **comprehensive multi-agent system** for GitHub Copilot CLI that provides spec
 <td width="50%">
 
 **🔄 8 Pre-built Workflows**
-- Feature Implementation
-- Bug Investigation
-- Performance Optimization
-- Security Audits
+- Full feature implementation
+- Bug investigation & fixing
+- Performance optimization
+- Security audits
+- CI/CD pipeline setup
+- AI/LLM integration
+- Mobile app development
+- Code quality improvement
 
 </td>
 <td width="50%">
 
 **🎛️ Fully Customizable**
 - Configure triggers
-- Adjust priorities
-- Create workflows
-- Set preferences
+- Adjust agent priorities
+- Create custom workflows
+- Set tech stack preferences
+- Override auto-activation
 
 </td>
 </tr>
@@ -99,78 +107,136 @@ A **comprehensive multi-agent system** for GitHub Copilot CLI that provides spec
 
 ## 🚀 Quick Start
 
-Get up and running in **3 simple steps**:
+### Prerequisites
 
-### Step 1️⃣: Install GitHub Copilot CLI
+- **Node.js** >= 14.0.0
+- **GitHub Copilot** subscription
+- **Git** for cloning
+
+### Installation
+
+#### Step 1: Install GitHub Copilot CLI
 
 ```bash
+# Install globally via npm
 npm install -g @github/copilot-cli
+
+# Verify installation
+copilot-cli --version
 ```
 
-### Step 2️⃣: Clone & Configure
+#### Step 2: Clone This Repository
 
 ```bash
-# Clone this repository
+# Clone the agent arsenal
 git clone https://github.com/RLuf/copilot-cli-arsenal.git
 cd copilot-cli-arsenal
-
-# The .copilot directory is already configured!
 ```
 
-### Step 3️⃣: Start Using Agents
+#### Step 3: Configure Copilot CLI
 
 ```bash
-# Agents activate automatically based on context
-copilot "create a responsive navbar component"
+# Copy the .copilot directory to your project
+cp -r .copilot /path/to/your/project/
+
+# Or use it directly from this repository
+cd copilot-cli-arsenal
+```
+
+#### Step 4: Start Using Agents
+
+```bash
+# Agents activate automatically based on your context
+copilot "create a responsive React navbar component"
 # ✅ Activates: frontend-developer
 
-copilot "design a RESTful API for user management"
+copilot "design a RESTful API for user authentication"
 # ✅ Activates: backend-architect
 
-copilot "audit for security vulnerabilities"
+copilot "audit my code for security vulnerabilities"
 # ✅ Activates: security-specialist
+
+copilot "optimize my database queries"
+# ✅ Activates: database-architect
 ```
 
 **That's it!** 🎉 Your agents are ready to assist you.
 
 ---
 
-## 🤖 Meet Your 20 AI Agents
+## 🤖 The 20 Agents
 
 <div align="center">
 
+### Development Agents
+
 | Agent | Specialty | Use When | Priority |
 |:------|:----------|:---------|:--------:|
-| 🎨 **[frontend-developer](./.copilot/AGENTS_CATALOG.md#frontend-developer)** | React, Vue, Angular, UI/UX | Building UI components, styling, state management | ⭐⭐⭐⭐⭐ |
+| 🎨 **[frontend-developer](./.copilot/AGENTS_CATALOG.md#frontend-developer)** | React, Vue, Angular, UI/UX | Building components, styling, state management | ⭐⭐⭐⭐⭐ |
 | 🏗️ **[backend-architect](./.copilot/AGENTS_CATALOG.md#backend-architect)** | APIs, Microservices, Architecture | Designing APIs, backend services, system design | ⭐⭐⭐⭐⭐ |
-| 📱 **[mobile-developer](./.copilot/AGENTS_CATALOG.md#mobile-developer)** | React Native, Flutter, iOS/Android | Mobile app development, native features | ⭐⭐⭐⭐ |
+| 📱 **[mobile-developer](./.copilot/AGENTS_CATALOG.md#mobile-developer)** | React Native, Flutter, iOS/Android | Mobile apps, native features | ⭐⭐⭐⭐ |
 | 🔄 **[fullstack-developer](./.copilot/AGENTS_CATALOG.md#fullstack-developer)** | Next.js, Remix, End-to-End | Complete features, full-stack apps | ⭐⭐⭐⭐⭐ |
-| 🚀 **[devops-engineer](./.copilot/AGENTS_CATALOG.md#devops-engineer)** | CI/CD, Docker, Kubernetes | Pipeline setup, containerization, automation | ⭐⭐⭐⭐ |
-| 🏛️ **[infrastructure-architect](./.copilot/AGENTS_CATALOG.md#infrastructure-architect)** | AWS, Terraform, Cloud | Infrastructure design, IaC, cloud architecture | ⭐⭐⭐⭐ |
-| 📦 **[deployment-engineer](./.copilot/AGENTS_CATALOG.md#deployment-engineer)** | Releases, Rollouts, Feature Flags | Production deployments, canary releases | ⭐⭐⭐⭐ |
-| 🗄️ **[database-architect](./.copilot/AGENTS_CATALOG.md#database-architect)** | SQL, NoSQL, Query Optimization | Database design, migrations, performance | ⭐⭐⭐⭐ |
-| ✅ **[test-engineer](./.copilot/AGENTS_CATALOG.md#test-engineer)** | Jest, Playwright, E2E Testing | Writing tests, coverage, automation | ⭐⭐⭐⭐ |
-| 👁️ **[code-reviewer](./.copilot/AGENTS_CATALOG.md#code-reviewer)** | Code Quality, Best Practices | PR reviews, refactoring, quality checks | ⭐⭐⭐⭐ |
-| 🐛 **[debugger](./.copilot/AGENTS_CATALOG.md#debugger)** | Bug Investigation, Debugging | Fixing bugs, analyzing errors, troubleshooting | ⭐⭐⭐⭐⭐ |
-| 🔍 **[error-detective](./.copilot/AGENTS_CATALOG.md#error-detective)** | Error Handling, Monitoring | Error boundaries, Sentry integration | ⭐⭐⭐⭐⭐ |
-| 🔒 **[security-specialist](./.copilot/AGENTS_CATALOG.md#security-specialist)** | OWASP, Vulnerabilities, Security | Security audits, fixing vulnerabilities | ⭐⭐⭐⭐⭐ |
-| 📋 **[compliance-auditor](./.copilot/AGENTS_CATALOG.md#compliance-auditor)** | GDPR, HIPAA, SOC2 | Regulatory compliance, data privacy | ⭐⭐⭐⭐ |
-| ⚡ **[performance-optimizer](./.copilot/AGENTS_CATALOG.md#performance-optimizer)** | Speed, Caching, Web Vitals | Performance tuning, optimization | ⭐⭐⭐ |
+
+### Infrastructure & DevOps
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
+| 🚀 **[devops-engineer](./.copilot/AGENTS_CATALOG.md#devops-engineer)** | CI/CD, Docker, Kubernetes | Pipelines, containerization, automation | ⭐⭐⭐⭐ |
+| 🏛️ **[infrastructure-architect](./.copilot/AGENTS_CATALOG.md#infrastructure-architect)** | AWS, Terraform, Cloud | Infrastructure design, IaC | ⭐⭐⭐⭐ |
+| 📦 **[deployment-engineer](./.copilot/AGENTS_CATALOG.md#deployment-engineer)** | Releases, Rollouts, Feature Flags | Production deployments | ⭐⭐⭐⭐ |
+
+### Data & Database
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
+| 🗄️ **[database-architect](./.copilot/AGENTS_CATALOG.md#database-architect)** | SQL, NoSQL, Query Optimization | Database design, performance | ⭐⭐⭐⭐ |
+
+### Quality & Testing
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
+| ✅ **[test-engineer](./.copilot/AGENTS_CATALOG.md#test-engineer)** | Jest, Playwright, E2E Testing | Writing tests, coverage | ⭐⭐⭐⭐ |
+| 👁️ **[code-reviewer](./.copilot/AGENTS_CATALOG.md#code-reviewer)** | Code Quality, Best Practices | PR reviews, refactoring | ⭐⭐⭐⭐ |
+| 🐛 **[debugger](./.copilot/AGENTS_CATALOG.md#debugger)** | Bug Investigation, Debugging | Fixing bugs, troubleshooting | ⭐⭐⭐⭐⭐ |
+| 🔍 **[error-detective](./.copilot/AGENTS_CATALOG.md#error-detective)** | Error Handling, Monitoring | Error boundaries, Sentry | ⭐⭐⭐⭐⭐ |
+
+### Security & Compliance
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
+| 🔒 **[security-specialist](./.copilot/AGENTS_CATALOG.md#security-specialist)** | OWASP, Vulnerabilities | Security audits, fixes | ⭐⭐⭐⭐⭐ |
+| 📋 **[compliance-auditor](./.copilot/AGENTS_CATALOG.md#compliance-auditor)** | GDPR, HIPAA, SOC2 | Regulatory compliance | ⭐⭐⭐⭐ |
+
+### Performance
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
+| ⚡ **[performance-optimizer](./.copilot/AGENTS_CATALOG.md#performance-optimizer)** | Speed, Caching, Web Vitals | Performance tuning | ⭐⭐⭐ |
+
+### AI & Machine Learning
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
 | 🤖 **[ai-engineer](./.copilot/AGENTS_CATALOG.md#ai-engineer)** | LLMs, RAG, Machine Learning | AI integration, ML pipelines | ⭐⭐⭐⭐ |
 | 💬 **[prompt-engineer](./.copilot/AGENTS_CATALOG.md#prompt-engineer)** | Prompt Design, LLM Optimization | Crafting effective prompts | ⭐⭐⭐ |
+
+### Specialized Tools
+
+| Agent | Specialty | Use When | Priority |
+|:------|:----------|:---------|:--------:|
 | 🔌 **[mcp-expert](./.copilot/AGENTS_CATALOG.md#mcp-expert)** | Model Context Protocol | MCP server development | ⭐⭐⭐ |
 | 💻 **[cli-ui-designer](./.copilot/AGENTS_CATALOG.md#cli-ui-designer)** | Terminal UI, CLI Tools | Building CLI applications | ⭐⭐⭐ |
-| 📚 **[documentation-specialist](./.copilot/AGENTS_CATALOG.md#documentation-specialist)** | Technical Writing, API Docs | Documentation, README files | ⭐⭐⭐ |
+| 📚 **[documentation-specialist](./.copilot/AGENTS_CATALOG.md#documentation-specialist)** | Technical Writing, API Docs | Documentation, READMEs | ⭐⭐⭐ |
 
 </div>
 
-> 💡 **Tip**: Click on any agent name to see detailed documentation, examples, and use cases!
+> 💡 **Tip**: Click on any agent name to see detailed documentation, code examples, and use cases!
 
 ---
 
-## 🔥 Features
+## 🔥 How It Works
 
-### 🎯 Automatic Agent Activation
+### 1. Automatic Agent Activation
 
 Agents intelligently activate based on:
 
@@ -188,22 +254,22 @@ Agents intelligently activate based on:
 ✅ Activates: performance-optimizer
 ```
 
-### 🔄 Multi-Agent Workflows
+### 2. Multi-Agent Workflows
 
-Pre-configured workflows for complex tasks:
+Pre-configured workflows orchestrate multiple agents for complex tasks:
 
-| Workflow | Agents | Duration | Use Case |
-|:---------|:-------|:---------|:---------|
-| 🚀 **Feature Implementation** | 9 agents | 2-4h | End-to-end feature development |
-| 🐛 **Bug Investigation** | 5 agents | 30-90m | Systematic bug fixing |
-| ⚡ **Performance Optimization** | 5 agents | 1-3h | Comprehensive optimization |
-| 🔒 **Security Audit** | 7 agents | 2-4h | Security review & hardening |
-| 🏗️ **CI/CD Pipeline** | 7 agents | 3-6h | Complete pipeline setup |
-| 🤖 **AI Integration** | 7 agents | 4-8h | LLM & RAG implementation |
-| 📱 **Mobile App** | 7 agents | 6-12h | Mobile development |
-| 📊 **Code Quality** | 6 agents | 2-4h | Quality improvements |
+| Workflow | Agents | Duration | Description |
+|:---------|:-------|:---------|:------------|
+| 🚀 **Feature Implementation** | 9 agents | 2-4h | End-to-end feature development from design to deployment |
+| 🐛 **Bug Investigation** | 5 agents | 30-90m | Systematic debugging and fixing |
+| ⚡ **Performance Optimization** | 5 agents | 1-3h | Comprehensive optimization (frontend, backend, DB) |
+| 🔒 **Security Audit** | 7 agents | 2-4h | Complete security review and hardening |
+| 🏗️ **CI/CD Pipeline** | 7 agents | 3-6h | Full pipeline setup with testing and deployment |
+| 🤖 **AI Integration** | 7 agents | 4-8h | LLM integration with RAG and vector databases |
+| 📱 **Mobile App** | 7 agents | 6-12h | Complete mobile app development |
+| 📊 **Code Quality** | 6 agents | 2-4h | Quality improvements and refactoring |
 
-### 🎛️ Highly Configurable
+### 3. Customizable Configuration
 
 ```json
 {
@@ -212,115 +278,78 @@ Pre-configured workflows for complex tasks:
       "preferredFramework": "react",
       "stylePreference": "tailwind",
       "stateManagement": "zustand"
+    },
+    "backend-architect": {
+      "preferredLanguage": "typescript",
+      "apiStyle": "rest",
+      "database": "postgresql"
     }
   }
 }
-```
-
-Customize triggers, priorities, and agent behavior to match your stack!
-
----
-
-## 📦 Installation
-
-### Prerequisites
-
-- **Node.js** >= 14.0.0
-- **GitHub Copilot CLI** subscription
-- **Git** (for cloning)
-
-### Full Installation
-
-```bash
-# 1. Install GitHub Copilot CLI
-npm install -g @github/copilot-cli
-
-# 2. Clone the repository
-git clone https://github.com/RLuf/copilot-cli-arsenal.git
-cd copilot-cli-arsenal
-
-# 3. (Optional) Install dependencies for local development
-npm install
-
-# 4. Verify installation
-copilot --version
-
-# 5. Start using agents!
-copilot "help me build a REST API"
-```
-
-### Quick Copy Setup
-
-If you want to add this to an existing project:
-
-```bash
-# Copy the .copilot directory to your project
-cp -r .copilot /path/to/your/project/
-
-# Done! Agents will now work in your project
 ```
 
 ---
 
 ## 💡 Usage Examples
 
-### Example 1: Build a Feature
+### Example 1: Build a Complete Feature
 
 ```bash
-copilot "create a user dashboard with real-time charts"
+copilot "create a user authentication system with:
+- JWT token authentication
+- Password hashing with bcrypt
+- Login and registration endpoints
+- Input validation
+- Error handling
+- Unit tests"
 ```
 
-**Agents Activated**: frontend-developer, backend-architect, performance-optimizer
-
-**Expected Output**: Complete dashboard with components, API endpoints, and optimizations
+**Agents Activated**: backend-architect, database-architect, security-specialist, test-engineer
 
 ---
 
-### Example 2: Fix a Bug
+### Example 2: Fix a Production Bug
 
 ```bash
-copilot "users can't login, getting 401 unauthorized"
+copilot "Users are getting 'Invalid credentials' error even with correct password.
+Error logs show:
+Error: Invalid credentials at AuthService.login (auth.service.ts:45)
+
+Investigate and fix this issue."
 ```
 
 **Agents Activated**: debugger, error-detective, security-specialist
 
-**Expected Output**: Root cause analysis, fix implementation, and security improvements
+---
+
+### Example 3: Optimize Performance
+
+```bash
+copilot "My React app is slow:
+- Initial load: 8 seconds
+- Bundle size: 5MB
+- Lighthouse score: 45/100
+- LCP: 6.5s
+
+Optimize for production."
+```
+
+**Agents Activated**: performance-optimizer, frontend-developer, backend-architect
 
 ---
 
-### Example 3: Security Audit
+### Example 4: Security Audit
 
 ```bash
-copilot "audit my application for security vulnerabilities"
+copilot "Audit my application for:
+- OWASP Top 10 vulnerabilities
+- Authentication/authorization issues
+- Data exposure risks
+- Dependency vulnerabilities
+- GDPR compliance"
 ```
 
-**Agents Activated**: security-specialist, backend-architect, compliance-auditor
-
-**Expected Output**: Vulnerability report, fixes, and compliance recommendations
-
----
-
-### Example 4: Performance Optimization
-
-```bash
-copilot "my app is slow, optimize it"
-```
-
-**Agents Activated**: performance-optimizer, frontend-developer, database-architect
-
-**Expected Output**: Bundle optimization, query improvements, caching strategies
-
----
-
-### Example 5: Deploy to Production
-
-```bash
-copilot --workflow=deployment-pipeline "setup production deployment"
-```
-
-**Agents Activated**: 7 agents in sequence
-
-**Expected Output**: Complete CI/CD pipeline with monitoring and rollout strategy
+**Agents Activated**: security-specialist, compliance-auditor, backend-architect
 
 ---
 
@@ -328,10 +357,10 @@ copilot --workflow=deployment-pipeline "setup production deployment"
 
 | Document | Description |
 |:---------|:------------|
-| 📘 **[MANUAL.md](./MANUAL.md)** | Complete documentation with setup, agent details, workflows, and customization |
+| 📘 **[MANUAL.md](./MANUAL.md)** | Complete guide with setup, agent details, and workflows |
 | ⚡ **[QUICKSTART.md](./QUICKSTART.md)** | Quick reference with copy-paste examples |
-| 🤖 **[AGENTS_CATALOG.md](./.copilot/AGENTS_CATALOG.md)** | Detailed catalog of all 20 agents with examples |
-| 📋 **[.copilot/README.md](./.copilot/README.md)** | Technical documentation for the agent system |
+| 🤖 **[AGENTS_CATALOG.md](./.copilot/AGENTS_CATALOG.md)** | Detailed catalog of all 20 agents |
+| 📋 **[.copilot/README.md](./.copilot/README.md)** | Technical documentation |
 
 ---
 
@@ -342,7 +371,8 @@ copilot --workflow=deployment-pipeline "setup production deployment"
 ├── agents/              # 20 agent definitions (JSON)
 │   ├── frontend-developer.json
 │   ├── backend-architect.json
-│   └── ... (18 more)
+│   ├── security-specialist.json
+│   └── ... (17 more)
 ├── config.json          # Main configuration
 ├── triggers.json        # Auto-activation rules
 ├── workflows.json       # Multi-agent workflows
@@ -351,78 +381,75 @@ copilot --workflow=deployment-pipeline "setup production deployment"
 
 ---
 
-## 🤝 Contributing
+## 🎯 Agent Activation Triggers
 
-We welcome contributions! Here's how you can help:
+Agents activate based on:
 
-### Adding New Agents
+### File Patterns
+- `*.jsx`, `*.tsx`, `*.vue` → frontend-developer
+- `*.controller.js`, `*.service.js` → backend-architect
+- `Dockerfile`, `docker-compose.yml` → devops-engineer
+- `*.test.js`, `*.spec.js` → test-engineer
+- `*.sql`, `migrations/**` → database-architect
 
-1. **Create agent file**: `.copilot/agents/your-agent.json`
-2. **Define triggers**: Update `.copilot/triggers.json`
-3. **Add to catalog**: Document in `.copilot/AGENTS_CATALOG.md`
-4. **Test**: Verify activation and functionality
-5. **Submit PR**: Include examples and documentation
+### Keywords
+- "security", "vulnerability" → security-specialist
+- "performance", "optimize" → performance-optimizer
+- "test", "coverage" → test-engineer
+- "deploy", "release" → deployment-engineer
+- "ai", "llm", "rag" → ai-engineer
 
-### Improving Existing Agents
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b improve-agent-name`
-3. Make your changes
-4. Add tests/examples
-5. Submit a pull request
-
-### Reporting Issues
-
-Found a bug or have a suggestion?
-
-- 🐛 [Report a Bug](https://github.com/RLuf/copilot-cli-arsenal/issues/new?labels=bug)
-- 💡 [Request a Feature](https://github.com/RLuf/copilot-cli-arsenal/issues/new?labels=enhancement)
-- 📖 [Improve Documentation](https://github.com/RLuf/copilot-cli-arsenal/issues/new?labels=documentation)
-
-### Code of Conduct
-
-Be respectful, inclusive, and collaborative. We're all here to learn and improve!
+### Context
+- Git status and branch names
+- Recent error logs
+- Current working directory
+- Project dependencies
 
 ---
 
-## 🎓 Learning Resources
+## 🚀 Advanced Usage
 
-### Official Documentation
+### Manual Agent Selection
 
-- [GitHub Copilot CLI Docs](https://docs.github.com/en/copilot/github-copilot-in-the-cli)
-- [Agent Architecture Guide](./MANUAL.md)
-- [Workflow Configuration](./MANUAL.md#workflows)
+```bash
+# Force specific agent
+copilot --agent=backend-architect "design user API"
 
-### Video Tutorials
+# Use workflow
+copilot --workflow=security-audit "check my app"
 
-_(Coming soon! Star ⭐ to get notified)_
+# Multiple agents
+copilot --agents=frontend-developer,backend-architect "build feature"
+```
 
-### Community
+### Custom Workflows
 
-- 💬 [Discussions](https://github.com/RLuf/copilot-cli-arsenal/discussions)
-- 🐦 [Twitter Updates](#)
-- 📺 [YouTube Channel](#)
+Create your own in `.copilot/workflows.json`:
+
+```json
+{
+  "my-custom-workflow": {
+    "name": "My Workflow",
+    "agents": [
+      {
+        "agent": "backend-architect",
+        "phase": "design",
+        "tasks": ["Design API"]
+      },
+      {
+        "agent": "frontend-developer",
+        "phase": "ui",
+        "tasks": ["Build UI"],
+        "dependsOn": ["backend-architect"]
+      }
+    ]
+  }
+}
+```
 
 ---
 
-## 📊 Project Stats
-
-<div align="center">
-
-| Metric | Value |
-|:-------|:------|
-| 🤖 **Agents** | 20 specialized |
-| 🔄 **Workflows** | 8 pre-configured |
-| 🎯 **Triggers** | 100+ patterns |
-| 📝 **Lines of Config** | 3,000+ |
-| ⚡ **Auto-activation** | Yes |
-| 🔧 **Customizable** | Fully |
-
-</div>
-
----
-
-## 🌟 Why Use Copilot CLI Arsenal?
+## 🌟 Why Use This Arsenal?
 
 <table>
 <tr>
@@ -430,7 +457,7 @@ _(Coming soon! Star ⭐ to get notified)_
 
 ### 🚀 **Productivity**
 
-Specialized agents provide expert-level assistance across all development domains
+20 specialized agents provide expert-level assistance across all development domains
 
 </td>
 <td width="33%" align="center">
@@ -453,7 +480,7 @@ Workflows orchestrate multiple agents for complex tasks
 
 ### 🛡️ **Secure**
 
-Always-active security specialist catches vulnerabilities
+Always-active security specialist catches vulnerabilities early
 
 </td>
 <td width="33%" align="center">
@@ -475,61 +502,81 @@ Fully customizable triggers, priorities, and preferences
 
 ---
 
+## 📊 Project Stats
+
+<div align="center">
+
+| Metric | Value |
+|:-------|:------|
+| 🤖 **Agents** | 20 specialized |
+| 🔄 **Workflows** | 8 pre-configured |
+| 🎯 **Triggers** | 100+ patterns |
+| 📝 **Lines of Config** | 3,000+ |
+| ⚡ **Auto-activation** | Yes |
+| 🔧 **Customizable** | Fully |
+| 📖 **Documentation** | Complete |
+
+</div>
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Add New Agents**: Create JSON files in `.copilot/agents/`
+2. **Improve Triggers**: Update `.copilot/triggers.json`
+3. **Create Workflows**: Add to `.copilot/workflows.json`
+4. **Documentation**: Improve guides and examples
+5. **Bug Reports**: [Open an issue](https://github.com/RLuf/copilot-cli-arsenal/issues)
+
+### Steps to Contribute
+
+```bash
+# Fork and clone
+git clone https://github.com/YOUR-USERNAME/copilot-cli-arsenal.git
+
+# Create branch
+git checkout -b feature/my-new-agent
+
+# Make changes and test
+# ...
+
+# Commit and push
+git commit -m "feat: Add my-new-agent"
+git push origin feature/my-new-agent
+
+# Open Pull Request
+```
+
+---
+
 ## 📜 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE.md](LICENSE.md) file for details.
 
-```
-MIT License
-
-Copyright (c) 2025 Copilot CLI Arsenal
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+**Copyright (c) 2025 Roger Luft (RLuf)**
 
 ---
 
 ## 🙏 Acknowledgments
 
 - **GitHub** for Copilot and the CLI tool
-- **The Open Source Community** for inspiration
-- **All Contributors** who make this project better
+- **Microsoft** for advancing AI-assisted development
+- **Open Source Community** for inspiration and contributions
+- **Original inspiration**: [davila7/claude-code-templates](https://github.com/davila7/claude-code-templates)
 
 ---
 
 ## 📞 Support & Contact
 
-Need help? We've got you covered!
+Need help? Have questions?
 
 - 📖 **Documentation**: [Read the Manual](./MANUAL.md)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/RLuf/copilot-cli-arsenal/discussions)
-- 🐛 **Issues**: [Report a Bug](https://github.com/RLuf/copilot-cli-arsenal/issues)
-- 📧 **Email**: support@copilot-cli-arsenal.dev
-- 🐦 **Twitter**: [@copilot_arsenal](#)
-
----
-
-## ⭐ Star History
-
-If you find this project useful, please consider giving it a star! ⭐
-
-It helps others discover the project and motivates us to keep improving it.
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/RLuf/copilot-cli-arsenal/issues)
+- 🌐 **Website**: [fcc.rogerluft.com.br](https://fcc.rogerluft.com.br)
+- 👤 **Creator**: Roger Luft (RLuf)
 
 ---
 
@@ -542,31 +589,30 @@ It helps others discover the project and motivates us to keep improving it.
 - [ ] 📊 Agent performance analytics
 - [ ] 🔌 Plugin system for custom agents
 - [ ] 🤖 AI-powered agent recommendations
-- [ ] 📱 Mobile app for monitoring agents
-- [ ] 🎨 VS Code extension
-- [ ] 🌍 Internationalization (i18n)
+- [ ] 🎨 VS Code extension integration
+- [ ] 🌍 Multi-language support
 
-### Future Plans
+### Future Ideas
 
 - Integration with more AI models (Claude, GPT-4, local models)
 - Agent marketplace for sharing custom agents
 - Team collaboration features
 - Advanced workflow orchestration
-- Real-time agent performance monitoring
+- Real-time performance monitoring
 
 ---
 
 <div align="center">
 
-## 🚀 Ready to Get Started?
+## 🚀 Ready to Supercharge Your Development?
 
-**[📖 Read the Manual](./MANUAL.md)** • **[⚡ Quick Start Guide](./QUICKSTART.md)** • **[🤖 Browse Agents](./.copilot/AGENTS_CATALOG.md)**
+**[📖 Read the Manual](./MANUAL.md)** • **[⚡ Quick Start](./QUICKSTART.md)** • **[🤖 Browse All Agents](./.copilot/AGENTS_CATALOG.md)**
 
 ---
 
 **Made with ❤️ by developers, for developers**
 
-**Powered by GitHub Copilot CLI** 🤖
+**Desenvolvido por [RLuf](https://fcc.rogerluft.com.br)** | 🌐 [fcc.rogerluft.com.br](https://fcc.rogerluft.com.br)
 
 ---
 
@@ -575,5 +621,7 @@ It helps others discover the project and motivates us to keep improving it.
 [![GitHub stars](https://img.shields.io/github/stars/RLuf/copilot-cli-arsenal.svg?style=social&label=Star)](https://github.com/RLuf/copilot-cli-arsenal)
 [![GitHub forks](https://img.shields.io/github/forks/RLuf/copilot-cli-arsenal.svg?style=social&label=Fork)](https://github.com/RLuf/copilot-cli-arsenal/fork)
 [![GitHub watchers](https://img.shields.io/github/watchers/RLuf/copilot-cli-arsenal.svg?style=social&label=Watch)](https://github.com/RLuf/copilot-cli-arsenal)
+
+**GitHub Copilot CLI Agent Arsenal** - Your AI development companion 🤖✨
 
 </div>
