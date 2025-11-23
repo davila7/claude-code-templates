@@ -1,0 +1,473 @@
+{
+  "version": "1.0.0",
+  "description": "Agent orchestration workflows for complex multi-agent tasks",
+  "workflows": {
+    "full-feature-implementation": {
+      "name": "Full Feature Implementation",
+      "description": "End-to-end feature development from design to deployment",
+      "agents": [
+        {
+          "agent": "backend-architect",
+          "phase": "design",
+          "tasks": ["Design API endpoints", "Define data models", "Plan architecture"],
+          "outputs": ["api-spec", "schema-design", "architecture-doc"]
+        },
+        {
+          "agent": "database-architect",
+          "phase": "database",
+          "tasks": ["Create database schema", "Write migrations", "Design indexes"],
+          "outputs": ["migration-files", "schema-sql"],
+          "dependsOn": ["backend-architect"]
+        },
+        {
+          "agent": "backend-architect",
+          "phase": "implementation",
+          "tasks": ["Implement API endpoints", "Write business logic", "Add validation"],
+          "outputs": ["api-code", "services", "controllers"],
+          "dependsOn": ["database-architect"]
+        },
+        {
+          "agent": "frontend-developer",
+          "phase": "ui",
+          "tasks": ["Build UI components", "Integrate API", "Add state management"],
+          "outputs": ["components", "pages", "hooks"],
+          "dependsOn": ["backend-architect"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "testing",
+          "tasks": ["Write unit tests", "Add integration tests", "Create E2E tests"],
+          "outputs": ["test-files", "coverage-report"],
+          "dependsOn": ["backend-architect", "frontend-developer"],
+          "parallel": true
+        },
+        {
+          "agent": "security-specialist",
+          "phase": "security",
+          "tasks": ["Security audit", "Fix vulnerabilities", "Add authentication"],
+          "outputs": ["security-report", "fixes"],
+          "dependsOn": ["test-engineer"]
+        },
+        {
+          "agent": "code-reviewer",
+          "phase": "review",
+          "tasks": ["Review code quality", "Check best practices", "Suggest improvements"],
+          "outputs": ["review-comments", "refactor-suggestions"],
+          "dependsOn": ["security-specialist"]
+        },
+        {
+          "agent": "documentation-specialist",
+          "phase": "documentation",
+          "tasks": ["Write API docs", "Update README", "Add code comments"],
+          "outputs": ["api-docs", "readme", "inline-docs"],
+          "dependsOn": ["code-reviewer"]
+        },
+        {
+          "agent": "deployment-engineer",
+          "phase": "deployment",
+          "tasks": ["Configure deployment", "Set up monitoring", "Deploy to staging"],
+          "outputs": ["deployment-config", "monitoring-setup"],
+          "dependsOn": ["documentation-specialist"]
+        }
+      ],
+      "estimatedDuration": "2-4 hours",
+      "parallel": false
+    },
+    "bug-fix-workflow": {
+      "name": "Bug Investigation and Fix",
+      "description": "Systematic bug investigation, fix, and verification",
+      "agents": [
+        {
+          "agent": "debugger",
+          "phase": "investigation",
+          "tasks": ["Reproduce bug", "Analyze stack trace", "Identify root cause"],
+          "outputs": ["bug-analysis", "reproduction-steps"]
+        },
+        {
+          "agent": "error-detective",
+          "phase": "analysis",
+          "tasks": ["Analyze error patterns", "Check similar issues", "Review logs"],
+          "outputs": ["error-report", "pattern-analysis"],
+          "dependsOn": ["debugger"]
+        },
+        {
+          "agent": "fullstack-developer",
+          "phase": "fix",
+          "tasks": ["Implement fix", "Add error handling", "Update logic"],
+          "outputs": ["fix-code", "updated-files"],
+          "dependsOn": ["error-detective"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "testing",
+          "tasks": ["Write regression test", "Verify fix", "Check edge cases"],
+          "outputs": ["regression-tests", "test-results"],
+          "dependsOn": ["fullstack-developer"]
+        },
+        {
+          "agent": "code-reviewer",
+          "phase": "review",
+          "tasks": ["Review fix quality", "Check for side effects", "Approve changes"],
+          "outputs": ["review-approval"],
+          "dependsOn": ["test-engineer"]
+        }
+      ],
+      "estimatedDuration": "30-90 minutes",
+      "parallel": false
+    },
+    "performance-optimization-workflow": {
+      "name": "Performance Optimization",
+      "description": "Comprehensive performance analysis and optimization",
+      "agents": [
+        {
+          "agent": "performance-optimizer",
+          "phase": "analysis",
+          "tasks": ["Profile application", "Identify bottlenecks", "Measure metrics"],
+          "outputs": ["performance-report", "bottleneck-analysis"]
+        },
+        {
+          "agent": "frontend-developer",
+          "phase": "frontend-optimization",
+          "tasks": ["Optimize bundle", "Add lazy loading", "Improve Core Web Vitals"],
+          "outputs": ["optimized-frontend"],
+          "dependsOn": ["performance-optimizer"],
+          "parallel": true
+        },
+        {
+          "agent": "backend-architect",
+          "phase": "backend-optimization",
+          "tasks": ["Optimize queries", "Add caching", "Improve API performance"],
+          "outputs": ["optimized-backend"],
+          "dependsOn": ["performance-optimizer"],
+          "parallel": true
+        },
+        {
+          "agent": "database-architect",
+          "phase": "database-optimization",
+          "tasks": ["Add indexes", "Optimize queries", "Tune database"],
+          "outputs": ["optimized-database"],
+          "dependsOn": ["performance-optimizer"],
+          "parallel": true
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "verification",
+          "tasks": ["Run performance tests", "Measure improvements", "Load testing"],
+          "outputs": ["performance-metrics", "improvement-report"],
+          "dependsOn": ["frontend-developer", "backend-architect", "database-architect"]
+        }
+      ],
+      "estimatedDuration": "1-3 hours",
+      "parallel": true
+    },
+    "security-audit-workflow": {
+      "name": "Security Audit and Hardening",
+      "description": "Comprehensive security review and vulnerability remediation",
+      "agents": [
+        {
+          "agent": "security-specialist",
+          "phase": "audit",
+          "tasks": ["Scan for vulnerabilities", "Review OWASP Top 10", "Check dependencies"],
+          "outputs": ["vulnerability-report", "security-findings"]
+        },
+        {
+          "agent": "backend-architect",
+          "phase": "backend-fixes",
+          "tasks": ["Fix API vulnerabilities", "Strengthen auth", "Add rate limiting"],
+          "outputs": ["secured-backend"],
+          "dependsOn": ["security-specialist"],
+          "parallel": true
+        },
+        {
+          "agent": "frontend-developer",
+          "phase": "frontend-fixes",
+          "tasks": ["Fix XSS issues", "Add CSP", "Secure client-side"],
+          "outputs": ["secured-frontend"],
+          "dependsOn": ["security-specialist"],
+          "parallel": true
+        },
+        {
+          "agent": "database-architect",
+          "phase": "database-security",
+          "tasks": ["Fix SQL injection", "Review permissions", "Encrypt sensitive data"],
+          "outputs": ["secured-database"],
+          "dependsOn": ["security-specialist"],
+          "parallel": true
+        },
+        {
+          "agent": "devops-engineer",
+          "phase": "infrastructure-security",
+          "tasks": ["Harden infrastructure", "Configure firewalls", "Set up secrets management"],
+          "outputs": ["secured-infrastructure"],
+          "dependsOn": ["security-specialist"],
+          "parallel": true
+        },
+        {
+          "agent": "compliance-auditor",
+          "phase": "compliance",
+          "tasks": ["Check compliance", "Review data handling", "Verify regulations"],
+          "outputs": ["compliance-report"],
+          "dependsOn": ["backend-architect", "frontend-developer", "database-architect", "devops-engineer"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "security-testing",
+          "tasks": ["Run security tests", "Penetration testing", "Verify fixes"],
+          "outputs": ["security-test-results"],
+          "dependsOn": ["compliance-auditor"]
+        }
+      ],
+      "estimatedDuration": "2-4 hours",
+      "parallel": true
+    },
+    "deployment-pipeline-workflow": {
+      "name": "CI/CD Pipeline Setup",
+      "description": "Complete CI/CD pipeline configuration and deployment",
+      "agents": [
+        {
+          "agent": "devops-engineer",
+          "phase": "pipeline-design",
+          "tasks": ["Design CI/CD pipeline", "Choose tools", "Plan stages"],
+          "outputs": ["pipeline-design"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "test-automation",
+          "tasks": ["Configure test runners", "Set up coverage", "Add quality gates"],
+          "outputs": ["test-config", "quality-gates"],
+          "dependsOn": ["devops-engineer"]
+        },
+        {
+          "agent": "security-specialist",
+          "phase": "security-scanning",
+          "tasks": ["Add security scans", "Configure SAST/DAST", "Set up secret scanning"],
+          "outputs": ["security-pipeline"],
+          "dependsOn": ["devops-engineer"]
+        },
+        {
+          "agent": "devops-engineer",
+          "phase": "deployment-config",
+          "tasks": ["Configure deployments", "Set up environments", "Add health checks"],
+          "outputs": ["deployment-config"],
+          "dependsOn": ["test-engineer", "security-specialist"]
+        },
+        {
+          "agent": "deployment-engineer",
+          "phase": "rollout-strategy",
+          "tasks": ["Configure canary", "Set up feature flags", "Add rollback"],
+          "outputs": ["rollout-config"],
+          "dependsOn": ["devops-engineer"]
+        },
+        {
+          "agent": "infrastructure-architect",
+          "phase": "infrastructure",
+          "tasks": ["Provision infrastructure", "Configure monitoring", "Set up alerts"],
+          "outputs": ["infrastructure-code", "monitoring"],
+          "dependsOn": ["deployment-engineer"]
+        },
+        {
+          "agent": "documentation-specialist",
+          "phase": "documentation",
+          "tasks": ["Document pipeline", "Create runbooks", "Add troubleshooting"],
+          "outputs": ["pipeline-docs", "runbooks"],
+          "dependsOn": ["infrastructure-architect"]
+        }
+      ],
+      "estimatedDuration": "3-6 hours",
+      "parallel": false
+    },
+    "ai-integration-workflow": {
+      "name": "AI/LLM Integration",
+      "description": "Complete AI feature implementation with RAG and optimization",
+      "agents": [
+        {
+          "agent": "ai-engineer",
+          "phase": "design",
+          "tasks": ["Design AI architecture", "Choose models", "Plan data flow"],
+          "outputs": ["ai-architecture"]
+        },
+        {
+          "agent": "prompt-engineer",
+          "phase": "prompts",
+          "tasks": ["Design prompts", "Create templates", "Optimize for quality"],
+          "outputs": ["prompt-templates"],
+          "dependsOn": ["ai-engineer"]
+        },
+        {
+          "agent": "database-architect",
+          "phase": "vector-db",
+          "tasks": ["Set up vector database", "Design embeddings", "Configure search"],
+          "outputs": ["vector-db-setup"],
+          "dependsOn": ["ai-engineer"]
+        },
+        {
+          "agent": "backend-architect",
+          "phase": "implementation",
+          "tasks": ["Implement RAG", "Add LLM integration", "Build API"],
+          "outputs": ["ai-backend"],
+          "dependsOn": ["prompt-engineer", "database-architect"]
+        },
+        {
+          "agent": "frontend-developer",
+          "phase": "ui",
+          "tasks": ["Build chat interface", "Add streaming", "Create UX"],
+          "outputs": ["ai-frontend"],
+          "dependsOn": ["backend-architect"]
+        },
+        {
+          "agent": "performance-optimizer",
+          "phase": "optimization",
+          "tasks": ["Optimize latency", "Add caching", "Reduce costs"],
+          "outputs": ["optimized-ai"],
+          "dependsOn": ["frontend-developer"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "testing",
+          "tasks": ["Test AI responses", "Validate quality", "Performance testing"],
+          "outputs": ["ai-tests"],
+          "dependsOn": ["performance-optimizer"]
+        }
+      ],
+      "estimatedDuration": "4-8 hours",
+      "parallel": false
+    },
+    "mobile-app-workflow": {
+      "name": "Mobile App Development",
+      "description": "Complete mobile application development workflow",
+      "agents": [
+        {
+          "agent": "mobile-developer",
+          "phase": "setup",
+          "tasks": ["Initialize project", "Configure tooling", "Set up navigation"],
+          "outputs": ["mobile-setup"]
+        },
+        {
+          "agent": "frontend-developer",
+          "phase": "components",
+          "tasks": ["Build UI components", "Create screens", "Add styling"],
+          "outputs": ["mobile-ui"],
+          "dependsOn": ["mobile-developer"]
+        },
+        {
+          "agent": "backend-architect",
+          "phase": "api",
+          "tasks": ["Build mobile API", "Add offline sync", "Optimize for mobile"],
+          "outputs": ["mobile-api"],
+          "dependsOn": ["mobile-developer"],
+          "parallel": true
+        },
+        {
+          "agent": "mobile-developer",
+          "phase": "native-features",
+          "tasks": ["Add native modules", "Implement push notifications", "Camera/GPS integration"],
+          "outputs": ["native-features"],
+          "dependsOn": ["frontend-developer", "backend-architect"]
+        },
+        {
+          "agent": "performance-optimizer",
+          "phase": "optimization",
+          "tasks": ["Optimize bundle", "Improve performance", "Reduce battery usage"],
+          "outputs": ["optimized-mobile"],
+          "dependsOn": ["mobile-developer"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "testing",
+          "tasks": ["E2E tests", "Device testing", "Performance testing"],
+          "outputs": ["mobile-tests"],
+          "dependsOn": ["performance-optimizer"]
+        },
+        {
+          "agent": "deployment-engineer",
+          "phase": "distribution",
+          "tasks": ["Configure app stores", "Set up TestFlight", "Create release builds"],
+          "outputs": ["distribution-config"],
+          "dependsOn": ["test-engineer"]
+        }
+      ],
+      "estimatedDuration": "6-12 hours",
+      "parallel": false
+    },
+    "code-quality-workflow": {
+      "name": "Code Quality Improvement",
+      "description": "Comprehensive code quality enhancement and refactoring",
+      "agents": [
+        {
+          "agent": "code-reviewer",
+          "phase": "analysis",
+          "tasks": ["Analyze codebase", "Identify issues", "Create improvement plan"],
+          "outputs": ["quality-report"]
+        },
+        {
+          "agent": "fullstack-developer",
+          "phase": "refactoring",
+          "tasks": ["Refactor code", "Remove duplication", "Improve structure"],
+          "outputs": ["refactored-code"],
+          "dependsOn": ["code-reviewer"]
+        },
+        {
+          "agent": "test-engineer",
+          "phase": "test-coverage",
+          "tasks": ["Add missing tests", "Improve coverage", "Fix flaky tests"],
+          "outputs": ["improved-tests"],
+          "dependsOn": ["code-reviewer"],
+          "parallel": true
+        },
+        {
+          "agent": "documentation-specialist",
+          "phase": "documentation",
+          "tasks": ["Add code comments", "Update docs", "Create examples"],
+          "outputs": ["improved-docs"],
+          "dependsOn": ["code-reviewer"],
+          "parallel": true
+        },
+        {
+          "agent": "performance-optimizer",
+          "phase": "performance",
+          "tasks": ["Fix performance issues", "Optimize algorithms", "Reduce complexity"],
+          "outputs": ["performance-improvements"],
+          "dependsOn": ["fullstack-developer"]
+        },
+        {
+          "agent": "code-reviewer",
+          "phase": "final-review",
+          "tasks": ["Review improvements", "Verify quality", "Approve changes"],
+          "outputs": ["final-approval"],
+          "dependsOn": ["performance-optimizer", "test-engineer", "documentation-specialist"]
+        }
+      ],
+      "estimatedDuration": "2-4 hours",
+      "parallel": true
+    }
+  },
+  "workflowSettings": {
+    "parallelExecution": true,
+    "maxConcurrentAgents": 3,
+    "failureHandling": {
+      "retryOnFailure": true,
+      "maxRetries": 2,
+      "fallbackAgent": "fullstack-developer"
+    },
+    "progressTracking": {
+      "enabled": true,
+      "notifications": true,
+      "milestones": true
+    },
+    "collaboration": {
+      "agentCommunication": true,
+      "sharedContext": true,
+      "handoffProtocol": "structured"
+    }
+  },
+  "customWorkflows": {
+    "enabled": true,
+    "userDefined": [],
+    "templates": [
+      "full-feature-implementation",
+      "bug-fix-workflow",
+      "performance-optimization-workflow",
+      "security-audit-workflow"
+    ]
+  }
+}

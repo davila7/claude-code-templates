@@ -1,0 +1,229 @@
+{
+  "version": "1.0.0",
+  "copilot": {
+    "agents": {
+      "enabled": true,
+      "autoActivate": true,
+      "directory": ".copilot/agents",
+      "defaultAgent": "fullstack-developer",
+      "multiAgentMode": true,
+      "agentSwitching": {
+        "enabled": true,
+        "method": "automatic",
+        "fallback": "manual"
+      }
+    },
+    "triggers": {
+      "enabled": true,
+      "configFile": ".copilot/triggers.json",
+      "priority": "file-pattern-over-keyword"
+    },
+    "workflows": {
+      "enabled": true,
+      "configFile": ".copilot/workflows.json",
+      "parallelExecution": true,
+      "maxConcurrentAgents": 3
+    },
+    "context": {
+      "maxTokens": 128000,
+      "includeFileTree": true,
+      "includeGitStatus": true,
+      "includeDependencies": true,
+      "autoLoadRelatedFiles": true
+    },
+    "output": {
+      "format": "markdown",
+      "includeAgentName": true,
+      "includeTimestamps": false,
+      "colorize": true,
+      "verbose": false
+    },
+    "performance": {
+      "caching": true,
+      "cacheTTL": 3600,
+      "rateLimiting": {
+        "enabled": true,
+        "maxRequestsPerMinute": 60
+      }
+    }
+  },
+  "activeAgents": [
+    {
+      "name": "frontend-developer",
+      "enabled": true,
+      "priority": 10,
+      "activationScore": 0.8
+    },
+    {
+      "name": "backend-architect",
+      "enabled": true,
+      "priority": 10,
+      "activationScore": 0.8
+    },
+    {
+      "name": "code-reviewer",
+      "enabled": true,
+      "priority": 8,
+      "activationScore": 0.7
+    },
+    {
+      "name": "devops-engineer",
+      "enabled": true,
+      "priority": 9,
+      "activationScore": 0.75
+    },
+    {
+      "name": "database-architect",
+      "enabled": true,
+      "priority": 9,
+      "activationScore": 0.75
+    },
+    {
+      "name": "test-engineer",
+      "enabled": true,
+      "priority": 8,
+      "activationScore": 0.7
+    },
+    {
+      "name": "security-specialist",
+      "enabled": true,
+      "priority": 10,
+      "activationScore": 0.9
+    },
+    {
+      "name": "performance-optimizer",
+      "enabled": true,
+      "priority": 7,
+      "activationScore": 0.65
+    },
+    {
+      "name": "ai-engineer",
+      "enabled": true,
+      "priority": 8,
+      "activationScore": 0.7
+    },
+    {
+      "name": "prompt-engineer",
+      "enabled": true,
+      "priority": 7,
+      "activationScore": 0.65
+    },
+    {
+      "name": "deployment-engineer",
+      "enabled": true,
+      "priority": 9,
+      "activationScore": 0.75
+    },
+    {
+      "name": "mobile-developer",
+      "enabled": true,
+      "priority": 8,
+      "activationScore": 0.7
+    },
+    {
+      "name": "fullstack-developer",
+      "enabled": true,
+      "priority": 10,
+      "activationScore": 0.8
+    },
+    {
+      "name": "debugger",
+      "enabled": true,
+      "priority": 9,
+      "activationScore": 0.85
+    },
+    {
+      "name": "error-detective",
+      "enabled": true,
+      "priority": 9,
+      "activationScore": 0.85
+    },
+    {
+      "name": "mcp-expert",
+      "enabled": true,
+      "priority": 7,
+      "activationScore": 0.7
+    },
+    {
+      "name": "cli-ui-designer",
+      "enabled": true,
+      "priority": 7,
+      "activationScore": 0.65
+    },
+    {
+      "name": "documentation-specialist",
+      "enabled": true,
+      "priority": 6,
+      "activationScore": 0.6
+    },
+    {
+      "name": "compliance-auditor",
+      "enabled": true,
+      "priority": 8,
+      "activationScore": 0.75
+    },
+    {
+      "name": "infrastructure-architect",
+      "enabled": true,
+      "priority": 9,
+      "activationScore": 0.8
+    }
+  ],
+  "agentPreferences": {
+    "frontend-developer": {
+      "preferredFramework": "react",
+      "stylePreference": "tailwind",
+      "stateManagement": "zustand"
+    },
+    "backend-architect": {
+      "preferredLanguage": "typescript",
+      "apiStyle": "rest",
+      "database": "postgresql"
+    },
+    "test-engineer": {
+      "testFramework": "jest",
+      "e2eFramework": "playwright",
+      "coverageThreshold": 80
+    },
+    "devops-engineer": {
+      "cicdPlatform": "github-actions",
+      "containerOrchestration": "kubernetes",
+      "iacTool": "terraform"
+    },
+    "mobile-developer": {
+      "platform": "react-native",
+      "targetOS": "both"
+    }
+  },
+  "integrations": {
+    "github": {
+      "enabled": true,
+      "prReview": true,
+      "issueAnalysis": true
+    },
+    "vscode": {
+      "enabled": true,
+      "inlineHints": true,
+      "quickActions": true
+    },
+    "terminal": {
+      "enabled": true,
+      "shellIntegration": true,
+      "commandSuggestions": true
+    }
+  },
+  "security": {
+    "sandboxing": true,
+    "allowFileSystem": true,
+    "allowNetwork": true,
+    "allowedDomains": ["*"],
+    "secretsDetection": true,
+    "auditLogging": true
+  },
+  "experimental": {
+    "multiAgentCollaboration": true,
+    "agentLearning": false,
+    "predictiveActivation": true,
+    "contextSharing": true
+  }
+}
