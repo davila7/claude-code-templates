@@ -12,6 +12,13 @@ See complete license below.
 
 ---
 
+## 👤 Criador
+
+**Roger Luft (RLuf)**
+🌐 [fcc.rogerluft.com.br](https://fcc.rogerluft.com.br)
+
+---
+
 ## 🙏 Credits
 
 - **Original templates**: [davila7/claude-code-templates](https://github.com/davila7/claude-code-templates)

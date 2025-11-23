@@ -38,6 +38,8 @@
 
 **Your AI-powered development companion with 20+ specialized agents**
 
+👤 **Criado por**: [Roger Luft (RLuf)](https://fcc.rogerluft.com.br) | 🌐 [fcc.rogerluft.com.br](https://fcc.rogerluft.com.br)
+
 [🚀 Quick Start](#-quick-start) • [📚 Documentation](./MANUAL.md) • [🤖 Agent Catalog](./.copilot/AGENTS_CATALOG.md) • [⚡ Examples](./QUICKSTART.md)
 
 </div>

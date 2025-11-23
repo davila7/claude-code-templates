@@ -1299,4 +1299,8 @@ All agents are configured in:
 
 **Made with ❤️ by developers, for developers**
 
+---
+
+**Desenvolvido por RLuf** | 🌐 [https://fcc.rogerluft.com.br](https://fcc.rogerluft.com.br)
+
 </div>
