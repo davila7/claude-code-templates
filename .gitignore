@@ -1,56 +1,70 @@
-# Environment files
+# Environment variables
 .env
 .env.local
-.env.production
-.env.development
-.env*.local
+.env.*.local
 
-# Database related files
-*.db
-*.sqlite
-*.sqlite3
-database.json
-db_backup.*
-supabase_data.*
-trending_cache.*
-analytics_data.*
-update_trending.sh
-
-# Python cache and virtual environments  
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
 venv/
-env/
 ENV/
+env/
+.venv
 
-# Dependencies
-node_modules
-dist
-coverage
+# Scraped data (you may want to version control this, remove if so)
+.claude/data/*.csv
+.claude/data/*.json
+*.csv
+*.json
 
-# Sandbox output directories
-sandbox-*/
-cloudflare-*/
+# Logs
+*.log
+logs/
 
-# Test directories (local only)
-test-agent-sdk/
-test-cloudflare/
-
-# System files
-.DS_Store
-.DS_Store?
-._*
-.DS_Storetemp-gh-pages/
-
-# IDE files
-.vscode
-.vscode/*
+# IDE
+.vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# Deployment
-.vercel
+# OS
+.DS_Store
+Thumbs.db
+
+# Node modules (if using Node.js)
+node_modules/
+
+# Playwright
+.playwright/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Credentials and secrets
+credentials.json
+secrets.json
+cookies.json
+session.json
