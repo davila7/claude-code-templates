@@ -18,6 +18,9 @@
 
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
 
+[![Run in Smithery](https://smithery.ai/badge/skills/davila7)](https://smithery.ai/skills?ns=davila7&utm_source=github&utm_medium=badge)
+
+
 **Ready-to-use configurations for Anthropic's Claude Code.** A comprehensive collection of AI agents, custom commands, settings, hooks, external integrations (MCPs), and project templates to enhance your development workflow.
 
 ## Browse & Install Components and Templates
