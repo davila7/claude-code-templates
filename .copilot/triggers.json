@@ -1,0 +1,638 @@
+{
+  "version": "1.0.0",
+  "description": "Automatic agent activation triggers based on file patterns, keywords, and context",
+  "triggerRules": {
+    "frontend-developer": {
+      "filePatterns": [
+        "**/*.jsx",
+        "**/*.tsx",
+        "**/*.vue",
+        "**/components/**",
+        "**/pages/**",
+        "**/app/**",
+        "**/*.css",
+        "**/*.scss",
+        "**/*.module.css"
+      ],
+      "keywords": [
+        "react",
+        "vue",
+        "angular",
+        "component",
+        "frontend",
+        "ui",
+        "interface",
+        "responsive",
+        "tailwind",
+        "css",
+        "html"
+      ],
+      "directoryPatterns": [
+        "**/src/components/**",
+        "**/src/pages/**",
+        "**/src/app/**",
+        "**/client/**",
+        "**/frontend/**"
+      ],
+      "contextMatchers": [
+        "build.*ui",
+        "create.*component",
+        "add.*styling",
+        "responsive.*design"
+      ]
+    },
+    "backend-architect": {
+      "filePatterns": [
+        "**/*.controller.js",
+        "**/*.service.js",
+        "**/*.api.js",
+        "**/*.route.js",
+        "**/server/**",
+        "**/api/**",
+        "**/*.graphql"
+      ],
+      "keywords": [
+        "api",
+        "backend",
+        "server",
+        "microservice",
+        "endpoint",
+        "rest",
+        "graphql",
+        "controller",
+        "service",
+        "middleware"
+      ],
+      "directoryPatterns": [
+        "**/src/api/**",
+        "**/src/server/**",
+        "**/src/services/**",
+        "**/backend/**"
+      ],
+      "contextMatchers": [
+        "create.*api",
+        "build.*endpoint",
+        "design.*architecture",
+        "implement.*service"
+      ]
+    },
+    "code-reviewer": {
+      "filePatterns": [],
+      "keywords": [
+        "review",
+        "pr",
+        "pull request",
+        "code quality",
+        "refactor",
+        "improve",
+        "analyze"
+      ],
+      "gitEvents": [
+        "pre-commit",
+        "pre-push",
+        "pull-request-opened",
+        "pull-request-updated"
+      ],
+      "contextMatchers": [
+        "review.*code",
+        "check.*quality",
+        "analyze.*changes",
+        "suggest.*improvements"
+      ]
+    },
+    "devops-engineer": {
+      "filePatterns": [
+        "**/Dockerfile",
+        "**/docker-compose.yml",
+        "**/.github/workflows/**",
+        "**/.gitlab-ci.yml",
+        "**/kubernetes/**",
+        "**/*.tf",
+        "**/terraform/**",
+        "**/helm/**"
+      ],
+      "keywords": [
+        "docker",
+        "kubernetes",
+        "ci/cd",
+        "terraform",
+        "deployment",
+        "pipeline",
+        "container",
+        "orchestration",
+        "helm",
+        "cicd"
+      ],
+      "directoryPatterns": [
+        "**/.github/**",
+        "**/k8s/**",
+        "**/infrastructure/**",
+        "**/deploy/**"
+      ],
+      "contextMatchers": [
+        "setup.*pipeline",
+        "deploy.*application",
+        "create.*dockerfile",
+        "configure.*kubernetes"
+      ]
+    },
+    "database-architect": {
+      "filePatterns": [
+        "**/*.sql",
+        "**/migrations/**",
+        "**/schema.prisma",
+        "**/*.model.js",
+        "**/models/**"
+      ],
+      "keywords": [
+        "database",
+        "sql",
+        "nosql",
+        "migration",
+        "schema",
+        "query",
+        "postgresql",
+        "mysql",
+        "mongodb",
+        "prisma",
+        "orm"
+      ],
+      "directoryPatterns": [
+        "**/src/database/**",
+        "**/src/models/**",
+        "**/migrations/**",
+        "**/db/**"
+      ],
+      "contextMatchers": [
+        "design.*schema",
+        "optimize.*query",
+        "create.*migration",
+        "database.*design"
+      ]
+    },
+    "test-engineer": {
+      "filePatterns": [
+        "**/*.test.js",
+        "**/*.spec.js",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/tests/**",
+        "**/__tests__/**",
+        "**/e2e/**"
+      ],
+      "keywords": [
+        "test",
+        "testing",
+        "coverage",
+        "e2e",
+        "integration test",
+        "unit test",
+        "jest",
+        "playwright",
+        "cypress"
+      ],
+      "directoryPatterns": [
+        "**/tests/**",
+        "**/__tests__/**",
+        "**/test/**"
+      ],
+      "contextMatchers": [
+        "write.*test",
+        "add.*coverage",
+        "test.*component",
+        "e2e.*test"
+      ]
+    },
+    "security-specialist": {
+      "filePatterns": [
+        "**/auth/**",
+        "**/*.security.js",
+        "**/middleware/auth.js"
+      ],
+      "keywords": [
+        "security",
+        "vulnerability",
+        "auth",
+        "authentication",
+        "authorization",
+        "owasp",
+        "xss",
+        "injection",
+        "csrf",
+        "jwt",
+        "oauth"
+      ],
+      "directoryPatterns": [
+        "**/src/auth/**",
+        "**/src/security/**"
+      ],
+      "contextMatchers": [
+        "security.*audit",
+        "fix.*vulnerability",
+        "implement.*auth",
+        "secure.*endpoint"
+      ],
+      "alwaysActive": true,
+      "priority": "high"
+    },
+    "performance-optimizer": {
+      "filePatterns": [],
+      "keywords": [
+        "performance",
+        "optimization",
+        "slow",
+        "cache",
+        "bundle",
+        "web vitals",
+        "speed",
+        "optimize",
+        "lazy load"
+      ],
+      "contextMatchers": [
+        "optimize.*performance",
+        "improve.*speed",
+        "reduce.*bundle",
+        "add.*caching",
+        "lazy.*load"
+      ],
+      "metrics": {
+        "loadTime": "> 3s",
+        "bundleSize": "> 1MB",
+        "memoryUsage": "> 100MB"
+      }
+    },
+    "ai-engineer": {
+      "filePatterns": [
+        "**/*llm*.js",
+        "**/*ai*.js",
+        "**/*openai*.js",
+        "**/*anthropic*.js",
+        "**/ml/**",
+        "**/ai/**"
+      ],
+      "keywords": [
+        "ai",
+        "ml",
+        "machine learning",
+        "llm",
+        "openai",
+        "anthropic",
+        "embedding",
+        "rag",
+        "vector",
+        "gpt",
+        "claude"
+      ],
+      "directoryPatterns": [
+        "**/src/ai/**",
+        "**/src/ml/**",
+        "**/src/llm/**"
+      ],
+      "contextMatchers": [
+        "integrate.*llm",
+        "build.*rag",
+        "implement.*ai",
+        "ml.*model"
+      ]
+    },
+    "prompt-engineer": {
+      "filePatterns": [
+        "**/prompts/**",
+        "**/*.prompt.js",
+        "**/*.prompt.md"
+      ],
+      "keywords": [
+        "prompt",
+        "llm",
+        "gpt",
+        "claude",
+        "ai prompt",
+        "few-shot",
+        "chain-of-thought"
+      ],
+      "directoryPatterns": [
+        "**/prompts/**",
+        "**/src/prompts/**"
+      ],
+      "contextMatchers": [
+        "create.*prompt",
+        "optimize.*prompt",
+        "design.*prompt",
+        "few.*shot"
+      ]
+    },
+    "deployment-engineer": {
+      "filePatterns": [
+        "**/vercel.json",
+        "**/netlify.toml",
+        "**/render.yaml",
+        "**/fly.toml"
+      ],
+      "keywords": [
+        "deployment",
+        "release",
+        "rollout",
+        "canary",
+        "blue-green",
+        "feature flag",
+        "deploy"
+      ],
+      "gitEvents": [
+        "tag-created",
+        "release-published"
+      ],
+      "contextMatchers": [
+        "deploy.*application",
+        "create.*release",
+        "rollout.*feature",
+        "canary.*deployment"
+      ]
+    },
+    "mobile-developer": {
+      "filePatterns": [
+        "**/*.native.js",
+        "**/*.ios.js",
+        "**/*.android.js",
+        "**/ios/**",
+        "**/android/**",
+        "**/*.dart"
+      ],
+      "keywords": [
+        "mobile",
+        "react native",
+        "flutter",
+        "ios",
+        "android",
+        "native",
+        "mobile app"
+      ],
+      "directoryPatterns": [
+        "**/mobile/**",
+        "**/app/**",
+        "**/ios/**",
+        "**/android/**"
+      ],
+      "contextMatchers": [
+        "mobile.*app",
+        "react.*native",
+        "flutter.*app",
+        "native.*module"
+      ]
+    },
+    "fullstack-developer": {
+      "filePatterns": [
+        "**/pages/**",
+        "**/app/**",
+        "**/*.page.tsx"
+      ],
+      "keywords": [
+        "fullstack",
+        "full stack",
+        "nextjs",
+        "remix",
+        "trpc",
+        "end-to-end"
+      ],
+      "directoryPatterns": [
+        "**/app/**",
+        "**/pages/**"
+      ],
+      "contextMatchers": [
+        "full.*stack",
+        "end.*to.*end",
+        "complete.*feature",
+        "frontend.*backend"
+      ],
+      "multiFile": true
+    },
+    "debugger": {
+      "filePatterns": [],
+      "keywords": [
+        "debug",
+        "error",
+        "bug",
+        "fix",
+        "issue",
+        "problem",
+        "crash",
+        "not working"
+      ],
+      "errorEvents": [
+        "runtime-error",
+        "build-error",
+        "test-failure"
+      ],
+      "contextMatchers": [
+        "fix.*bug",
+        "debug.*issue",
+        "resolve.*error",
+        "why.*not.*working"
+      ],
+      "priority": "urgent"
+    },
+    "error-detective": {
+      "filePatterns": [
+        "**/*.error.js",
+        "**/errors/**",
+        "**/middleware/error*.js"
+      ],
+      "keywords": [
+        "error handling",
+        "exception",
+        "monitoring",
+        "sentry",
+        "error boundary",
+        "try-catch"
+      ],
+      "directoryPatterns": [
+        "**/src/errors/**",
+        "**/src/middleware/**"
+      ],
+      "contextMatchers": [
+        "error.*handling",
+        "implement.*monitoring",
+        "error.*boundary",
+        "exception.*handling"
+      ]
+    },
+    "mcp-expert": {
+      "filePatterns": [
+        "**/*.mcp.js",
+        "**/mcp/**",
+        "**/mcp-servers/**"
+      ],
+      "keywords": [
+        "mcp",
+        "model context protocol",
+        "mcp server",
+        "integration",
+        "claude integration"
+      ],
+      "directoryPatterns": [
+        "**/mcp/**",
+        "**/src/mcp/**"
+      ],
+      "contextMatchers": [
+        "create.*mcp",
+        "mcp.*server",
+        "mcp.*integration",
+        "model.*context.*protocol"
+      ]
+    },
+    "cli-ui-designer": {
+      "filePatterns": [
+        "**/bin/**",
+        "**/cli/**",
+        "**/*.cli.js"
+      ],
+      "keywords": [
+        "cli",
+        "command line",
+        "terminal",
+        "bin",
+        "interactive",
+        "prompt"
+      ],
+      "directoryPatterns": [
+        "**/bin/**",
+        "**/cli/**",
+        "**/src/cli/**"
+      ],
+      "contextMatchers": [
+        "cli.*tool",
+        "command.*line",
+        "terminal.*ui",
+        "interactive.*prompt"
+      ],
+      "shebang": "#!/usr/bin/env node"
+    },
+    "documentation-specialist": {
+      "filePatterns": [
+        "**/*.md",
+        "**/README.md",
+        "**/docs/**",
+        "**/*.mdx"
+      ],
+      "keywords": [
+        "documentation",
+        "docs",
+        "readme",
+        "api docs",
+        "jsdoc",
+        "guide"
+      ],
+      "directoryPatterns": [
+        "**/docs/**",
+        "**/documentation/**"
+      ],
+      "contextMatchers": [
+        "write.*docs",
+        "create.*readme",
+        "document.*api",
+        "add.*documentation"
+      ]
+    },
+    "compliance-auditor": {
+      "filePatterns": [
+        "**/privacy/**",
+        "**/compliance/**"
+      ],
+      "keywords": [
+        "compliance",
+        "gdpr",
+        "hipaa",
+        "soc2",
+        "privacy",
+        "data protection",
+        "audit"
+      ],
+      "directoryPatterns": [
+        "**/src/compliance/**",
+        "**/src/privacy/**"
+      ],
+      "contextMatchers": [
+        "gdpr.*compliance",
+        "privacy.*policy",
+        "compliance.*audit",
+        "data.*protection"
+      ],
+      "regulatoryContext": true
+    },
+    "infrastructure-architect": {
+      "filePatterns": [
+        "**/*.tf",
+        "**/terraform/**",
+        "**/infrastructure/**",
+        "**/*.pulumi.js"
+      ],
+      "keywords": [
+        "infrastructure",
+        "cloud",
+        "aws",
+        "azure",
+        "gcp",
+        "terraform",
+        "architecture",
+        "iac"
+      ],
+      "directoryPatterns": [
+        "**/infrastructure/**",
+        "**/terraform/**",
+        "**/cloud/**"
+      ],
+      "contextMatchers": [
+        "infrastructure.*design",
+        "cloud.*architecture",
+        "terraform.*config",
+        "iac.*setup"
+      ]
+    }
+  },
+  "triggerSettings": {
+    "priorityOrder": [
+      "security-specialist",
+      "debugger",
+      "error-detective",
+      "frontend-developer",
+      "backend-architect",
+      "fullstack-developer",
+      "devops-engineer",
+      "database-architect",
+      "test-engineer",
+      "infrastructure-architect",
+      "deployment-engineer",
+      "performance-optimizer",
+      "ai-engineer",
+      "mobile-developer",
+      "prompt-engineer",
+      "mcp-expert",
+      "cli-ui-designer",
+      "compliance-auditor",
+      "code-reviewer",
+      "documentation-specialist"
+    ],
+    "activationThreshold": 0.6,
+    "multiAgentMode": {
+      "enabled": true,
+      "maxConcurrent": 3,
+      "collaborationEnabled": true
+    },
+    "contextWindow": {
+      "lookback": 10,
+      "includeFileHistory": true,
+      "includeGitContext": true
+    },
+    "fallbackAgent": "fullstack-developer",
+    "manualOverride": true
+  },
+  "advancedMatching": {
+    "semanticMatching": true,
+    "patternLearning": false,
+    "userPreferences": true,
+    "projectContext": true,
+    "timeBasedActivation": {
+      "enabled": false,
+      "schedules": {}
+    }
+  }
+}
