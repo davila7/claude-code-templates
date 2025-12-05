@@ -50,6 +50,16 @@ class Sidebar {
                 <span class="nav-text">Dashboard</span>
               </a>
             </li>
+            <li class="nav-item ${this.currentPage === 'agents' ? 'active' : ''}" data-page="agents" title="Agents & Conversations">
+              <a href="#agents" class="nav-link">
+                <div class="nav-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                  </svg>
+                </div>
+                <span class="nav-text">Agents</span>
+              </a>
+            </li>
           </ul>
         </div>
         
