@@ -31,7 +31,7 @@ RUN useradd -m -u ${USER_ID} -s /bin/bash appuser && \
 
 # Install claude-code-templates globally
 # Using global install avoids npx network calls at runtime
-RUN npm install -g claude-code-templates@latest
+RUN npm install -g claude-code-templates@1.28.3
 
 # Switch to non-root user (security best practice)
 USER appuser

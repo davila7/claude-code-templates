@@ -89,7 +89,7 @@ services:
 
   # Auto-healer - restarts containers that fail health checks
   autoheal:
-    image: willfarrell/autoheal:latest
+    image: willfarrell/autoheal:1.2.0
     container_name: claude-chats-autoheal
     restart: always
     volumes:
@@ -103,7 +103,7 @@ services:
   # Lightweight proxy - bridges localhost to isolated container
   # This container has network access ONLY to forward traffic, not to read data
   proxy:
-    image: alpine/socat:latest
+    image: alpine/socat:1.8.0.3
     container_name: claude-chats-proxy
     restart: unless-stopped
     ports:
