@@ -34,13 +34,14 @@ class DataCache {
     };
     
     // Cache configuration - balanced for performance vs memory
+    // Sized to handle large conversation counts (1000+) without excessive eviction
     this.config = {
-      fileContentTTL: 60000, // 1 minute for file content
-      parsedDataTTL: 30000, // 30 seconds for parsed data
-      computationTTL: 20000, // 20 seconds for expensive computations
-      metadataTTL: 10000, // 10 seconds for metadata
+      fileContentTTL: 120000, // 2 minutes for file content
+      parsedDataTTL: 60000, // 1 minute for parsed data (was 30 seconds)
+      computationTTL: 30000, // 30 seconds for expensive computations (was 20 seconds)
+      metadataTTL: 15000, // 15 seconds for metadata (was 10 seconds)
       processTTL: 1000, // 1 second for process data
-      maxCacheSize: 50, // Increased to reduce evictions
+      maxCacheSize: 500, // Increased from 50 to handle 1000+ conversations without thrashing
     };
     
     // Dependency tracking for smart invalidation
