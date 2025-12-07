@@ -1,0 +1,132 @@
+# Security-hardened Docker deployment for claude-code-templates chats-mobile server
+#
+# ARCHITECTURE:
+# This setup uses a sidecar proxy pattern for maximum security:
+#
+#   [localhost:9876] -> [proxy container] -> [isolated app container]
+#                         (external net)       (internal net, no internet)
+#
+# SECURITY FEATURES:
+# 1. Network Isolation: App container has NO internet access (internal: true network)
+# 2. Read-only Filesystem: Container cannot modify itself
+# 3. Dropped Capabilities: All Linux capabilities removed
+# 4. No Privilege Escalation: Prevents container breakouts
+# 5. Non-root User: Runs as unprivileged appuser
+# 6. Health Checks: Auto-restarts via autoheal if unresponsive
+# 7. Memory Limits: Prevents resource exhaustion
+#
+# USAGE:
+#   # Build and start
+#   docker-compose up -d --build
+#
+#   # View logs
+#   docker-compose logs -f claude-chats
+#
+#   # Stop
+#   docker-compose down
+#
+# ACCESS:
+#   Open http://localhost:9876 in your browser
+
+services:
+  # Main application - completely isolated from internet
+  claude-chats:
+    build:
+      context: .
+      args:
+        # Match your host user ID to avoid permission issues with volume mounts
+        # Find your UID with: id -u
+        USER_ID: ${USER_ID:-1000}
+    container_name: claude-chats-monitor
+    restart: always
+    # NO ports exposed - only accessible via internal network
+    volumes:
+      # Mount at SAME absolute path so symlinks resolve correctly
+      # Claude creates absolute symlinks like /Users/username/.claude/debug/latest
+      - ${HOME}/.claude:${HOME}/.claude:ro
+    environment:
+      - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=2048
+      - HOME=${HOME}
+      - CLAUDE_HOME=${HOME}/.claude
+
+    # Health check - auto-restart if API stops responding
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:9876/api/conversations').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    # === SECURITY HARDENING ===
+
+    # CRITICAL: internal network = NO internet access
+    networks:
+      - isolated
+
+    # Drop ALL Linux capabilities - container needs none of them
+    cap_drop:
+      - ALL
+
+    # Prevent privilege escalation
+    security_opt:
+      - no-new-privileges:true
+
+    # Read-only root filesystem (container can't modify itself)
+    read_only: true
+
+    # Tmpfs for temp files and npm cache
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+      - /home/appuser/.npm:size=64m
+
+    deploy:
+      resources:
+        limits:
+          memory: 2.5G
+        reservations:
+          memory: 256M
+
+  # Auto-healer - restarts containers that fail health checks
+  autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: claude-chats-autoheal
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+      - AUTOHEAL_INTERVAL=30
+      - AUTOHEAL_START_PERIOD=60
+    network_mode: none  # No network needed
+
+  # Lightweight proxy - bridges localhost to isolated container
+  # This container has network access ONLY to forward traffic, not to read data
+  proxy:
+    image: alpine/socat:latest
+    container_name: claude-chats-proxy
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9876:9876"  # Localhost only - not exposed to network
+    # Connects to both networks: external for port binding, internal to reach app
+    networks:
+      - isolated
+      - external
+    command: TCP-LISTEN:9876,fork,reuseaddr TCP:claude-chats:9876
+    depends_on:
+      - claude-chats
+    # Proxy hardening
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+
+networks:
+  # Internal network - NO internet access (internal: true)
+  isolated:
+    driver: bridge
+    internal: true  # This blocks all external/internet traffic
+  # External network - for proxy port binding only
+  external:
+    driver: bridge
