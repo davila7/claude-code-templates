@@ -34,7 +34,12 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@vercel/node": "^2.3.0"
+    "@vercel/node": "^5.5.15"
+  },
+  "overrides": {
+    "undici": "^7.0.0",
+    "esbuild": "^0.25.0",
+    "path-to-regexp": "^8.0.0"
   },
   "keywords": [
     "claude-code",
