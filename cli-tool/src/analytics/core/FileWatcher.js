@@ -117,6 +117,44 @@ class FileWatcher {
     }, 30000); // Every 30 seconds (reduced from 10 seconds)
 
     this.intervals.push(processRefreshInterval);
+
+    // Periodic cleanup of stale file activity tracking (memory management)
+    const cleanupInterval = setInterval(() => {
+      this.cleanupStaleFileActivity();
+    }, 300000); // Every 5 minutes
+
+    this.intervals.push(cleanupInterval);
+  }
+
+  /**
+   * Clean up stale file activity entries to prevent memory growth
+   * Removes entries that haven't been updated in the last 10 minutes
+   */
+  cleanupStaleFileActivity() {
+    const now = Date.now();
+    const staleThreshold = 600000; // 10 minutes
+    let cleanedCount = 0;
+
+    // Clean up fileActivity entries
+    for (const [conversationId, activity] of this.fileActivity.entries()) {
+      if (activity.lastMessageCheck && (now - activity.lastMessageCheck) > staleThreshold) {
+        this.fileActivity.delete(conversationId);
+        cleanedCount++;
+      }
+    }
+
+    // Clean up any orphaned typing timeouts
+    for (const [conversationId, timeout] of this.typingTimeout.entries()) {
+      if (!this.fileActivity.has(conversationId)) {
+        clearTimeout(timeout);
+        this.typingTimeout.delete(conversationId);
+        cleanedCount++;
+      }
+    }
+
+    if (cleanedCount > 0) {
+      console.log(chalk.gray(`🧹 Cleaned up ${cleanedCount} stale file activity entries`));
+    }
   }
 
   /**
