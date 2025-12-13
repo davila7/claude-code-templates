@@ -1,0 +1,2249 @@
+{
+  "commands": {
+    "total": 210,
+    "likely_from_awesome_claude_code": [
+      {
+        "name": "husky",
+        "path": "commands/automation/husky.md",
+        "category": "automation"
+      },
+      {
+        "name": "pr-review",
+        "path": "commands/git-workflow/pr-review.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "create-worktrees",
+        "path": "commands/git-workflow/create-worktrees.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "update-branch-name",
+        "path": "commands/git-workflow/update-branch-name.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "fix-github-issue",
+        "path": "commands/git-workflow/fix-github-issue.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "commit",
+        "path": "commands/git-workflow/commit.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "create-pull-request",
+        "path": "commands/git-workflow/create-pull-request.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "create-pr",
+        "path": "commands/git-workflow/create-pr.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "create-jtbd",
+        "path": "commands/project-management/create-jtbd.md",
+        "category": "project-management"
+      },
+      {
+        "name": "add-to-changelog",
+        "path": "commands/project-management/add-to-changelog.md",
+        "category": "project-management"
+      },
+      {
+        "name": "create-prd",
+        "path": "commands/project-management/create-prd.md",
+        "category": "project-management"
+      },
+      {
+        "name": "create-prp",
+        "path": "commands/project-management/create-prp.md",
+        "category": "project-management"
+      },
+      {
+        "name": "update-docs",
+        "path": "commands/documentation/update-docs.md",
+        "category": "documentation"
+      },
+      {
+        "name": "load-llms-txt",
+        "path": "commands/documentation/load-llms-txt.md",
+        "category": "documentation"
+      },
+      {
+        "name": "commit",
+        "path": "commands/orchestration/commit.md",
+        "category": "orchestration"
+      }
+    ],
+    "other": [
+      {
+        "name": "decision-quality-analyzer",
+        "path": "commands/team/decision-quality-analyzer.md",
+        "category": "team"
+      },
+      {
+        "name": "retrospective-analyzer",
+        "path": "commands/team/retrospective-analyzer.md",
+        "category": "team"
+      },
+      {
+        "name": "session-learning-capture",
+        "path": "commands/team/session-learning-capture.md",
+        "category": "team"
+      },
+      {
+        "name": "standup-report",
+        "path": "commands/team/standup-report.md",
+        "category": "team"
+      },
+      {
+        "name": "team-workload-balancer",
+        "path": "commands/team/team-workload-balancer.md",
+        "category": "team"
+      },
+      {
+        "name": "sprint-planning",
+        "path": "commands/team/sprint-planning.md",
+        "category": "team"
+      },
+      {
+        "name": "issue-triage",
+        "path": "commands/team/issue-triage.md",
+        "category": "team"
+      },
+      {
+        "name": "dependency-mapper",
+        "path": "commands/team/dependency-mapper.md",
+        "category": "team"
+      },
+      {
+        "name": "memory-spring-cleaning",
+        "path": "commands/team/memory-spring-cleaning.md",
+        "category": "team"
+      },
+      {
+        "name": "estimate-assistant",
+        "path": "commands/team/estimate-assistant.md",
+        "category": "team"
+      },
+      {
+        "name": "migration-assistant",
+        "path": "commands/team/migration-assistant.md",
+        "category": "team"
+      },
+      {
+        "name": "architecture-review",
+        "path": "commands/team/architecture-review.md",
+        "category": "team"
+      },
+      {
+        "name": "team-knowledge-mapper",
+        "path": "commands/team/team-knowledge-mapper.md",
+        "category": "team"
+      },
+      {
+        "name": "team-velocity-tracker",
+        "path": "commands/team/team-velocity-tracker.md",
+        "category": "team"
+      },
+      {
+        "name": "sync-linear-to-issues",
+        "path": "commands/sync/sync-linear-to-issues.md",
+        "category": "sync"
+      },
+      {
+        "name": "issue-to-linear-task",
+        "path": "commands/sync/issue-to-linear-task.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-automation-setup",
+        "path": "commands/sync/sync-automation-setup.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-status",
+        "path": "commands/sync/sync-status.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-issues-to-linear",
+        "path": "commands/sync/sync-issues-to-linear.md",
+        "category": "sync"
+      },
+      {
+        "name": "bulk-import-issues",
+        "path": "commands/sync/bulk-import-issues.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-conflict-resolver",
+        "path": "commands/sync/sync-conflict-resolver.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-migration-assistant",
+        "path": "commands/sync/sync-migration-assistant.md",
+        "category": "sync"
+      },
+      {
+        "name": "task-from-pr",
+        "path": "commands/sync/task-from-pr.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-health-monitor",
+        "path": "commands/sync/sync-health-monitor.md",
+        "category": "sync"
+      },
+      {
+        "name": "linear-task-to-issue",
+        "path": "commands/sync/linear-task-to-issue.md",
+        "category": "sync"
+      },
+      {
+        "name": "cross-reference-manager",
+        "path": "commands/sync/cross-reference-manager.md",
+        "category": "sync"
+      },
+      {
+        "name": "sync-pr-to-task",
+        "path": "commands/sync/sync-pr-to-task.md",
+        "category": "sync"
+      },
+      {
+        "name": "bidirectional-sync",
+        "path": "commands/sync/bidirectional-sync.md",
+        "category": "sync"
+      },
+      {
+        "name": "prepare-release",
+        "path": "commands/deployment/prepare-release.md",
+        "category": "deployment"
+      },
+      {
+        "name": "ci-setup",
+        "path": "commands/deployment/ci-setup.md",
+        "category": "deployment"
+      },
+      {
+        "name": "setup-automated-releases",
+        "path": "commands/deployment/setup-automated-releases.md",
+        "category": "deployment"
+      },
+      {
+        "name": "containerize-application",
+        "path": "commands/deployment/containerize-application.md",
+        "category": "deployment"
+      },
+      {
+        "name": "blue-green-deployment",
+        "path": "commands/deployment/blue-green-deployment.md",
+        "category": "deployment"
+      },
+      {
+        "name": "changelog-demo-command",
+        "path": "commands/deployment/changelog-demo-command.md",
+        "category": "deployment"
+      },
+      {
+        "name": "add-changelog",
+        "path": "commands/deployment/add-changelog.md",
+        "category": "deployment"
+      },
+      {
+        "name": "rollback-deploy",
+        "path": "commands/deployment/rollback-deploy.md",
+        "category": "deployment"
+      },
+      {
+        "name": "hotfix-deploy",
+        "path": "commands/deployment/hotfix-deploy.md",
+        "category": "deployment"
+      },
+      {
+        "name": "setup-kubernetes-deployment",
+        "path": "commands/deployment/setup-kubernetes-deployment.md",
+        "category": "deployment"
+      },
+      {
+        "name": "deployment-monitoring",
+        "path": "commands/deployment/deployment-monitoring.md",
+        "category": "deployment"
+      },
+      {
+        "name": "setup-comprehensive-testing",
+        "path": "commands/testing/setup-comprehensive-testing.md",
+        "category": "testing"
+      },
+      {
+        "name": "test-coverage",
+        "path": "commands/testing/test-coverage.md",
+        "category": "testing"
+      },
+      {
+        "name": "generate-test-cases",
+        "path": "commands/testing/generate-test-cases.md",
+        "category": "testing"
+      },
+      {
+        "name": "test-changelog-automation",
+        "path": "commands/testing/test-changelog-automation.md",
+        "category": "testing"
+      },
+      {
+        "name": "setup-visual-testing",
+        "path": "commands/testing/setup-visual-testing.md",
+        "category": "testing"
+      },
+      {
+        "name": "setup-load-testing",
+        "path": "commands/testing/setup-load-testing.md",
+        "category": "testing"
+      },
+      {
+        "name": "test-quality-analyzer",
+        "path": "commands/testing/test-quality-analyzer.md",
+        "category": "testing"
+      },
+      {
+        "name": "add-mutation-testing",
+        "path": "commands/testing/add-mutation-testing.md",
+        "category": "testing"
+      },
+      {
+        "name": "e2e-setup",
+        "path": "commands/testing/e2e-setup.md",
+        "category": "testing"
+      },
+      {
+        "name": "test-automation-orchestrator",
+        "path": "commands/testing/test-automation-orchestrator.md",
+        "category": "testing"
+      },
+      {
+        "name": "add-property-based-testing",
+        "path": "commands/testing/add-property-based-testing.md",
+        "category": "testing"
+      },
+      {
+        "name": "testing_plan_integration",
+        "path": "commands/testing/testing_plan_integration.md",
+        "category": "testing"
+      },
+      {
+        "name": "write-tests",
+        "path": "commands/testing/write-tests.md",
+        "category": "testing"
+      },
+      {
+        "name": "generate-tests",
+        "path": "commands/testing/generate-tests.md",
+        "category": "testing"
+      },
+      {
+        "name": "monte-carlo-simulator",
+        "path": "commands/simulation/monte-carlo-simulator.md",
+        "category": "simulation"
+      },
+      {
+        "name": "market-response-modeler",
+        "path": "commands/simulation/market-response-modeler.md",
+        "category": "simulation"
+      },
+      {
+        "name": "business-scenario-explorer",
+        "path": "commands/simulation/business-scenario-explorer.md",
+        "category": "simulation"
+      },
+      {
+        "name": "constraint-modeler",
+        "path": "commands/simulation/constraint-modeler.md",
+        "category": "simulation"
+      },
+      {
+        "name": "system-dynamics-modeler",
+        "path": "commands/simulation/system-dynamics-modeler.md",
+        "category": "simulation"
+      },
+      {
+        "name": "future-scenario-generator",
+        "path": "commands/simulation/future-scenario-generator.md",
+        "category": "simulation"
+      },
+      {
+        "name": "simulation-calibrator",
+        "path": "commands/simulation/simulation-calibrator.md",
+        "category": "simulation"
+      },
+      {
+        "name": "digital-twin-creator",
+        "path": "commands/simulation/digital-twin-creator.md",
+        "category": "simulation"
+      },
+      {
+        "name": "decision-tree-explorer",
+        "path": "commands/simulation/decision-tree-explorer.md",
+        "category": "simulation"
+      },
+      {
+        "name": "timeline-compressor",
+        "path": "commands/simulation/timeline-compressor.md",
+        "category": "simulation"
+      },
+      {
+        "name": "setup-linting",
+        "path": "commands/setup/setup-linting.md",
+        "category": "setup"
+      },
+      {
+        "name": "create-database-migrations",
+        "path": "commands/setup/create-database-migrations.md",
+        "category": "setup"
+      },
+      {
+        "name": "design-database-schema",
+        "path": "commands/setup/design-database-schema.md",
+        "category": "setup"
+      },
+      {
+        "name": "implement-graphql-api",
+        "path": "commands/setup/implement-graphql-api.md",
+        "category": "setup"
+      },
+      {
+        "name": "design-rest-api",
+        "path": "commands/setup/design-rest-api.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-monorepo",
+        "path": "commands/setup/setup-monorepo.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-rate-limiting",
+        "path": "commands/setup/setup-rate-limiting.md",
+        "category": "setup"
+      },
+      {
+        "name": "migrate-to-typescript",
+        "path": "commands/setup/migrate-to-typescript.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-monitoring-observability",
+        "path": "commands/setup/setup-monitoring-observability.md",
+        "category": "setup"
+      },
+      {
+        "name": "update-dependencies",
+        "path": "commands/setup/update-dependencies.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-docker-containers",
+        "path": "commands/setup/setup-docker-containers.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-formatting",
+        "path": "commands/setup/setup-formatting.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-ci-cd-pipeline",
+        "path": "commands/setup/setup-ci-cd-pipeline.md",
+        "category": "setup"
+      },
+      {
+        "name": "setup-development-environment",
+        "path": "commands/setup/setup-development-environment.md",
+        "category": "setup"
+      },
+      {
+        "name": "workflow-orchestrator",
+        "path": "commands/automation/workflow-orchestrator.md",
+        "category": "automation"
+      },
+      {
+        "name": "act",
+        "path": "commands/automation/act.md",
+        "category": "automation"
+      },
+      {
+        "name": "ci-pipeline",
+        "path": "commands/automation/ci-pipeline.md",
+        "category": "automation"
+      },
+      {
+        "name": "vercel-env-sync",
+        "path": "commands/nextjs-vercel/vercel-env-sync.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-performance-audit",
+        "path": "commands/nextjs-vercel/nextjs-performance-audit.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-api-tester",
+        "path": "commands/nextjs-vercel/nextjs-api-tester.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-bundle-analyzer",
+        "path": "commands/nextjs-vercel/nextjs-bundle-analyzer.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-middleware-creator",
+        "path": "commands/nextjs-vercel/nextjs-middleware-creator.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-migration-helper",
+        "path": "commands/nextjs-vercel/nextjs-migration-helper.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "vercel-edge-function",
+        "path": "commands/nextjs-vercel/vercel-edge-function.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-component-generator",
+        "path": "commands/nextjs-vercel/nextjs-component-generator.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "vercel-deploy-optimize",
+        "path": "commands/nextjs-vercel/vercel-deploy-optimize.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "nextjs-scaffold",
+        "path": "commands/nextjs-vercel/nextjs-scaffold.md",
+        "category": "nextjs-vercel"
+      },
+      {
+        "name": "release",
+        "path": "commands/git/release.md",
+        "category": "git"
+      },
+      {
+        "name": "feature",
+        "path": "commands/git/feature.md",
+        "category": "git"
+      },
+      {
+        "name": "hotfix",
+        "path": "commands/git/hotfix.md",
+        "category": "git"
+      },
+      {
+        "name": "flow-status",
+        "path": "commands/git/flow-status.md",
+        "category": "git"
+      },
+      {
+        "name": "finish",
+        "path": "commands/git/finish.md",
+        "category": "git"
+      },
+      {
+        "name": "branch-cleanup",
+        "path": "commands/git-workflow/branch-cleanup.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "gemini-review",
+        "path": "commands/git-workflow/gemini-review.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "git-bisect-helper",
+        "path": "commands/git-workflow/git-bisect-helper.md",
+        "category": "git-workflow"
+      },
+      {
+        "name": "svelte-storybook-migrate",
+        "path": "commands/svelte/svelte-storybook-migrate.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-component",
+        "path": "commands/svelte/svelte-component.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-storybook",
+        "path": "commands/svelte/svelte-storybook.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-test-setup",
+        "path": "commands/svelte/svelte-test-setup.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-storybook-setup",
+        "path": "commands/svelte/svelte-storybook-setup.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-test-coverage",
+        "path": "commands/svelte/svelte-test-coverage.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-optimize",
+        "path": "commands/svelte/svelte-optimize.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-storybook-mock",
+        "path": "commands/svelte/svelte-storybook-mock.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-migrate",
+        "path": "commands/svelte/svelte-migrate.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-debug",
+        "path": "commands/svelte/svelte-debug.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-test",
+        "path": "commands/svelte/svelte-test.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-test-fix",
+        "path": "commands/svelte/svelte-test-fix.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-a11y",
+        "path": "commands/svelte/svelte-a11y.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-storybook-troubleshoot",
+        "path": "commands/svelte/svelte-storybook-troubleshoot.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-scaffold",
+        "path": "commands/svelte/svelte-scaffold.md",
+        "category": "svelte"
+      },
+      {
+        "name": "svelte-storybook-story",
+        "path": "commands/svelte/svelte-storybook-story.md",
+        "category": "svelte"
+      },
+      {
+        "name": "init-project",
+        "path": "commands/project-management/init-project.md",
+        "category": "project-management"
+      },
+      {
+        "name": "release",
+        "path": "commands/project-management/release.md",
+        "category": "project-management"
+      },
+      {
+        "name": "project-health-check",
+        "path": "commands/project-management/project-health-check.md",
+        "category": "project-management"
+      },
+      {
+        "name": "pac-validate",
+        "path": "commands/project-management/pac-validate.md",
+        "category": "project-management"
+      },
+      {
+        "name": "pac-update-status",
+        "path": "commands/project-management/pac-update-status.md",
+        "category": "project-management"
+      },
+      {
+        "name": "milestone-tracker",
+        "path": "commands/project-management/milestone-tracker.md",
+        "category": "project-management"
+      },
+      {
+        "name": "add-package",
+        "path": "commands/project-management/add-package.md",
+        "category": "project-management"
+      },
+      {
+        "name": "pac-configure",
+        "path": "commands/project-management/pac-configure.md",
+        "category": "project-management"
+      },
+      {
+        "name": "project-to-linear",
+        "path": "commands/project-management/project-to-linear.md",
+        "category": "project-management"
+      },
+      {
+        "name": "create-feature",
+        "path": "commands/project-management/create-feature.md",
+        "category": "project-management"
+      },
+      {
+        "name": "pac-create-epic",
+        "path": "commands/project-management/pac-create-epic.md",
+        "category": "project-management"
+      },
+      {
+        "name": "pac-create-ticket",
+        "path": "commands/project-management/pac-create-ticket.md",
+        "category": "project-management"
+      },
+      {
+        "name": "project-timeline-simulator",
+        "path": "commands/project-management/project-timeline-simulator.md",
+        "category": "project-management"
+      },
+      {
+        "name": "todo",
+        "path": "commands/project-management/todo.md",
+        "category": "project-management"
+      },
+      {
+        "name": "optimize-memory-usage",
+        "path": "commands/performance/optimize-memory-usage.md",
+        "category": "performance"
+      },
+      {
+        "name": "optimize-api-performance",
+        "path": "commands/performance/optimize-api-performance.md",
+        "category": "performance"
+      },
+      {
+        "name": "system-behavior-simulator",
+        "path": "commands/performance/system-behavior-simulator.md",
+        "category": "performance"
+      },
+      {
+        "name": "add-performance-monitoring",
+        "path": "commands/performance/add-performance-monitoring.md",
+        "category": "performance"
+      },
+      {
+        "name": "setup-cdn-optimization",
+        "path": "commands/performance/setup-cdn-optimization.md",
+        "category": "performance"
+      },
+      {
+        "name": "optimize-database-performance",
+        "path": "commands/performance/optimize-database-performance.md",
+        "category": "performance"
+      },
+      {
+        "name": "implement-caching-strategy",
+        "path": "commands/performance/implement-caching-strategy.md",
+        "category": "performance"
+      },
+      {
+        "name": "optimize-build",
+        "path": "commands/performance/optimize-build.md",
+        "category": "performance"
+      },
+      {
+        "name": "performance-audit",
+        "path": "commands/performance/performance-audit.md",
+        "category": "performance"
+      },
+      {
+        "name": "optimize-bundle-size",
+        "path": "commands/performance/optimize-bundle-size.md",
+        "category": "performance"
+      },
+      {
+        "name": "dependency-audit",
+        "path": "commands/security/dependency-audit.md",
+        "category": "security"
+      },
+      {
+        "name": "security-hardening",
+        "path": "commands/security/security-hardening.md",
+        "category": "security"
+      },
+      {
+        "name": "penetration-test",
+        "path": "commands/security/penetration-test.md",
+        "category": "security"
+      },
+      {
+        "name": "add-authentication-system",
+        "path": "commands/security/add-authentication-system.md",
+        "category": "security"
+      },
+      {
+        "name": "secrets-scanner",
+        "path": "commands/security/secrets-scanner.md",
+        "category": "security"
+      },
+      {
+        "name": "security-audit",
+        "path": "commands/security/security-audit.md",
+        "category": "security"
+      },
+      {
+        "name": "doc-api",
+        "path": "commands/documentation/doc-api.md",
+        "category": "documentation"
+      },
+      {
+        "name": "docs-maintenance",
+        "path": "commands/documentation/docs-maintenance.md",
+        "category": "documentation"
+      },
+      {
+        "name": "troubleshooting-guide",
+        "path": "commands/documentation/troubleshooting-guide.md",
+        "category": "documentation"
+      },
+      {
+        "name": "create-onboarding-guide",
+        "path": "commands/documentation/create-onboarding-guide.md",
+        "category": "documentation"
+      },
+      {
+        "name": "migration-guide",
+        "path": "commands/documentation/migration-guide.md",
+        "category": "documentation"
+      },
+      {
+        "name": "create-architecture-documentation",
+        "path": "commands/documentation/create-architecture-documentation.md",
+        "category": "documentation"
+      },
+      {
+        "name": "generate-api-documentation",
+        "path": "commands/documentation/generate-api-documentation.md",
+        "category": "documentation"
+      },
+      {
+        "name": "interactive-documentation",
+        "path": "commands/documentation/interactive-documentation.md",
+        "category": "documentation"
+      },
+      {
+        "name": "find",
+        "path": "commands/orchestration/find.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "resume",
+        "path": "commands/orchestration/resume.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "optimize",
+        "path": "commands/orchestration/optimize.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "status",
+        "path": "commands/orchestration/status.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "archive",
+        "path": "commands/orchestration/archive.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "log",
+        "path": "commands/orchestration/log.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "start",
+        "path": "commands/orchestration/start.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "report",
+        "path": "commands/orchestration/report.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "remove",
+        "path": "commands/orchestration/remove.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "sync",
+        "path": "commands/orchestration/sync.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "move",
+        "path": "commands/orchestration/move.md",
+        "category": "orchestration"
+      },
+      {
+        "name": "unity-project-setup",
+        "path": "commands/game-development/unity-project-setup.md",
+        "category": "game-development"
+      },
+      {
+        "name": "game-performance-profiler",
+        "path": "commands/game-development/game-performance-profiler.md",
+        "category": "game-development"
+      },
+      {
+        "name": "game-analytics-integration",
+        "path": "commands/game-development/game-analytics-integration.md",
+        "category": "game-development"
+      },
+      {
+        "name": "game-asset-pipeline",
+        "path": "commands/game-development/game-asset-pipeline.md",
+        "category": "game-development"
+      },
+      {
+        "name": "game-testing-framework",
+        "path": "commands/game-development/game-testing-framework.md",
+        "category": "game-development"
+      },
+      {
+        "name": "git-status",
+        "path": "commands/utilities/git-status.md",
+        "category": "utilities"
+      },
+      {
+        "name": "generate-linear-worklog",
+        "path": "commands/utilities/generate-linear-worklog.md",
+        "category": "utilities"
+      },
+      {
+        "name": "prime",
+        "path": "commands/utilities/prime.md",
+        "category": "utilities"
+      },
+      {
+        "name": "debug-error",
+        "path": "commands/utilities/debug-error.md",
+        "category": "utilities"
+      },
+      {
+        "name": "all-tools",
+        "path": "commands/utilities/all-tools.md",
+        "category": "utilities"
+      },
+      {
+        "name": "code-permutation-tester",
+        "path": "commands/utilities/code-permutation-tester.md",
+        "category": "utilities"
+      },
+      {
+        "name": "check-file",
+        "path": "commands/utilities/check-file.md",
+        "category": "utilities"
+      },
+      {
+        "name": "refactor-code",
+        "path": "commands/utilities/refactor-code.md",
+        "category": "utilities"
+      },
+      {
+        "name": "architecture-scenario-explorer",
+        "path": "commands/utilities/architecture-scenario-explorer.md",
+        "category": "utilities"
+      },
+      {
+        "name": "ultra-think",
+        "path": "commands/utilities/ultra-think.md",
+        "category": "utilities"
+      },
+      {
+        "name": "initref",
+        "path": "commands/utilities/initref.md",
+        "category": "utilities"
+      },
+      {
+        "name": "code-to-task",
+        "path": "commands/utilities/code-to-task.md",
+        "category": "utilities"
+      },
+      {
+        "name": "clean",
+        "path": "commands/utilities/clean.md",
+        "category": "utilities"
+      },
+      {
+        "name": "clean-branches",
+        "path": "commands/utilities/clean-branches.md",
+        "category": "utilities"
+      },
+      {
+        "name": "directory-deep-dive",
+        "path": "commands/utilities/directory-deep-dive.md",
+        "category": "utilities"
+      },
+      {
+        "name": "context-prime",
+        "path": "commands/utilities/context-prime.md",
+        "category": "utilities"
+      },
+      {
+        "name": "fix-issue",
+        "path": "commands/utilities/fix-issue.md",
+        "category": "utilities"
+      },
+      {
+        "name": "code-review",
+        "path": "commands/utilities/code-review.md",
+        "category": "utilities"
+      },
+      {
+        "name": "explain-code",
+        "path": "commands/utilities/explain-code.md",
+        "category": "utilities"
+      },
+      {
+        "name": "supabase-type-generator",
+        "path": "commands/database/supabase-type-generator.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-schema-sync",
+        "path": "commands/database/supabase-schema-sync.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-security-audit",
+        "path": "commands/database/supabase-security-audit.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-data-explorer",
+        "path": "commands/database/supabase-data-explorer.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-migration-assistant",
+        "path": "commands/database/supabase-migration-assistant.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-realtime-monitor",
+        "path": "commands/database/supabase-realtime-monitor.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-backup-manager",
+        "path": "commands/database/supabase-backup-manager.md",
+        "category": "database"
+      },
+      {
+        "name": "supabase-performance-optimizer",
+        "path": "commands/database/supabase-performance-optimizer.md",
+        "category": "database"
+      }
+    ]
+  },
+  "agents": {
+    "total": 163,
+    "likely_from_wshobson": [
+      {
+        "name": "frontend-developer",
+        "path": "agents/development-team/frontend-developer.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "devops-engineer",
+        "path": "agents/development-team/devops-engineer.md",
+        "category": "development-team",
+        "has_explicit_attribution": true
+      },
+      {
+        "name": "backend-architect",
+        "path": "agents/development-team/backend-architect.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "test-automator",
+        "path": "agents/performance-testing/test-automator.md",
+        "category": "performance-testing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "fact-checker",
+        "path": "agents/deep-research-team/fact-checker.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": true
+      },
+      {
+        "name": "nia-oracle",
+        "path": "agents/deep-research-team/nia-oracle.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": true
+      },
+      {
+        "name": "security-auditor",
+        "path": "agents/security/security-auditor.md",
+        "category": "security",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "deployment-engineer",
+        "path": "agents/devops-infrastructure/deployment-engineer.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "marketing-attribution-analyst",
+        "path": "agents/business-marketing/marketing-attribution-analyst.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": true
+      },
+      {
+        "name": "database-architect",
+        "path": "agents/database/database-architect.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      }
+    ],
+    "other": [
+      {
+        "name": "video-editor",
+        "path": "agents/ffmpeg-clip-team/video-editor.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "audio-mixer",
+        "path": "agents/ffmpeg-clip-team/audio-mixer.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "podcast-content-analyzer",
+        "path": "agents/ffmpeg-clip-team/podcast-content-analyzer.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "podcast-transcriber",
+        "path": "agents/ffmpeg-clip-team/podcast-transcriber.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "timestamp-precision-specialist",
+        "path": "agents/ffmpeg-clip-team/timestamp-precision-specialist.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "audio-quality-controller",
+        "path": "agents/ffmpeg-clip-team/audio-quality-controller.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "social-media-clip-creator",
+        "path": "agents/ffmpeg-clip-team/social-media-clip-creator.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "podcast-metadata-specialist",
+        "path": "agents/ffmpeg-clip-team/podcast-metadata-specialist.md",
+        "category": "ffmpeg-clip-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "cli-ui-designer",
+        "path": "agents/development-team/cli-ui-designer.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "fullstack-developer",
+        "path": "agents/development-team/fullstack-developer.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mobile-developer",
+        "path": "agents/development-team/mobile-developer.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ios-developer",
+        "path": "agents/development-team/ios-developer.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ui-ux-designer",
+        "path": "agents/development-team/ui-ux-designer.md",
+        "category": "development-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "supabase-realtime-optimizer",
+        "path": "agents/realtime/supabase-realtime-optimizer.md",
+        "category": "realtime",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "connection-agent",
+        "path": "agents/obsidian-ops-team/connection-agent.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "review-agent",
+        "path": "agents/obsidian-ops-team/review-agent.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "metadata-agent",
+        "path": "agents/obsidian-ops-team/metadata-agent.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "vault-optimizer",
+        "path": "agents/obsidian-ops-team/vault-optimizer.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "tag-agent",
+        "path": "agents/obsidian-ops-team/tag-agent.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "moc-agent",
+        "path": "agents/obsidian-ops-team/moc-agent.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "content-curator",
+        "path": "agents/obsidian-ops-team/content-curator.md",
+        "category": "obsidian-ops-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "social-media-copywriter",
+        "path": "agents/podcast-creator-team/social-media-copywriter.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "project-supervisor-orchestrator",
+        "path": "agents/podcast-creator-team/project-supervisor-orchestrator.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "comprehensive-researcher",
+        "path": "agents/podcast-creator-team/comprehensive-researcher.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "episode-orchestrator",
+        "path": "agents/podcast-creator-team/episode-orchestrator.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "podcast-trend-scout",
+        "path": "agents/podcast-creator-team/podcast-trend-scout.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "market-research-analyst",
+        "path": "agents/podcast-creator-team/market-research-analyst.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "seo-podcast-optimizer",
+        "path": "agents/podcast-creator-team/seo-podcast-optimizer.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "podcast-editor",
+        "path": "agents/podcast-creator-team/podcast-editor.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "twitter-ai-influencer-manager",
+        "path": "agents/podcast-creator-team/twitter-ai-influencer-manager.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "academic-research-synthesizer",
+        "path": "agents/podcast-creator-team/academic-research-synthesizer.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "guest-outreach-coordinator",
+        "path": "agents/podcast-creator-team/guest-outreach-coordinator.md",
+        "category": "podcast-creator-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "load-testing-specialist",
+        "path": "agents/performance-testing/load-testing-specialist.md",
+        "category": "performance-testing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "performance-engineer",
+        "path": "agents/performance-testing/performance-engineer.md",
+        "category": "performance-testing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "web-vitals-optimizer",
+        "path": "agents/performance-testing/web-vitals-optimizer.md",
+        "category": "performance-testing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "react-performance-optimization",
+        "path": "agents/performance-testing/react-performance-optimization.md",
+        "category": "performance-testing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "git-flow-manager",
+        "path": "agents/git/git-flow-manager.md",
+        "category": "git",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "data-scientist",
+        "path": "agents/data-ai/data-scientist.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "quant-analyst",
+        "path": "agents/data-ai/quant-analyst.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ml-engineer",
+        "path": "agents/data-ai/ml-engineer.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "computer-vision-engineer",
+        "path": "agents/data-ai/computer-vision-engineer.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mlops-engineer",
+        "path": "agents/data-ai/mlops-engineer.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "nlp-engineer",
+        "path": "agents/data-ai/nlp-engineer.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "data-engineer",
+        "path": "agents/data-ai/data-engineer.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ai-engineer",
+        "path": "agents/data-ai/ai-engineer.md",
+        "category": "data-ai",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-expert",
+        "path": "agents/development-tools/mcp-expert.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "test-engineer",
+        "path": "agents/development-tools/test-engineer.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "flutter-go-reviewer",
+        "path": "agents/development-tools/flutter-go-reviewer.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "context-manager",
+        "path": "agents/development-tools/context-manager.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "code-reviewer",
+        "path": "agents/development-tools/code-reviewer.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "debugger",
+        "path": "agents/development-tools/debugger.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "performance-profiler",
+        "path": "agents/development-tools/performance-profiler.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "dx-optimizer",
+        "path": "agents/development-tools/dx-optimizer.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "command-expert",
+        "path": "agents/development-tools/command-expert.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "unused-code-cleaner",
+        "path": "agents/development-tools/unused-code-cleaner.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "error-detective",
+        "path": "agents/development-tools/error-detective.md",
+        "category": "development-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "markdown-syntax-formatter",
+        "path": "agents/ocr-extraction-team/markdown-syntax-formatter.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "visual-analysis-ocr",
+        "path": "agents/ocr-extraction-team/visual-analysis-ocr.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ocr-preprocessing-optimizer",
+        "path": "agents/ocr-extraction-team/ocr-preprocessing-optimizer.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "text-comparison-validator",
+        "path": "agents/ocr-extraction-team/text-comparison-validator.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ocr-quality-assurance",
+        "path": "agents/ocr-extraction-team/ocr-quality-assurance.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ocr-grammar-fixer",
+        "path": "agents/ocr-extraction-team/ocr-grammar-fixer.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "document-structure-analyzer",
+        "path": "agents/ocr-extraction-team/document-structure-analyzer.md",
+        "category": "ocr-extraction-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "golang-pro",
+        "path": "agents/programming-languages/golang-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "c-sharp-pro",
+        "path": "agents/programming-languages/c-sharp-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "php-pro",
+        "path": "agents/programming-languages/php-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "rust-pro",
+        "path": "agents/programming-languages/rust-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "javascript-pro",
+        "path": "agents/programming-languages/javascript-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "c-pro",
+        "path": "agents/programming-languages/c-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "shell-scripting-pro",
+        "path": "agents/programming-languages/shell-scripting-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "typescript-pro",
+        "path": "agents/programming-languages/typescript-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "cpp-pro",
+        "path": "agents/programming-languages/cpp-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "python-pro",
+        "path": "agents/programming-languages/python-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "sql-pro",
+        "path": "agents/programming-languages/sql-pro.md",
+        "category": "programming-languages",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "query-clarifier",
+        "path": "agents/deep-research-team/query-clarifier.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "data-analyst",
+        "path": "agents/deep-research-team/data-analyst.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "agent-overview",
+        "path": "agents/deep-research-team/agent-overview.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "research-synthesizer",
+        "path": "agents/deep-research-team/research-synthesizer.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "competitive-intelligence-analyst",
+        "path": "agents/deep-research-team/competitive-intelligence-analyst.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "research-brief-generator",
+        "path": "agents/deep-research-team/research-brief-generator.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "report-generator",
+        "path": "agents/deep-research-team/report-generator.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "academic-researcher",
+        "path": "agents/deep-research-team/academic-researcher.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "technical-researcher",
+        "path": "agents/deep-research-team/technical-researcher.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "research-orchestrator",
+        "path": "agents/deep-research-team/research-orchestrator.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "research-coordinator",
+        "path": "agents/deep-research-team/research-coordinator.md",
+        "category": "deep-research-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "smart-contract-auditor",
+        "path": "agents/blockchain-web3/smart-contract-auditor.md",
+        "category": "blockchain-web3",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "web3-integration-specialist",
+        "path": "agents/blockchain-web3/web3-integration-specialist.md",
+        "category": "blockchain-web3",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "smart-contract-specialist",
+        "path": "agents/blockchain-web3/smart-contract-specialist.md",
+        "category": "blockchain-web3",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-testing-engineer",
+        "path": "agents/mcp-dev-team/mcp-testing-engineer.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-protocol-specialist",
+        "path": "agents/mcp-dev-team/mcp-protocol-specialist.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-registry-navigator",
+        "path": "agents/mcp-dev-team/mcp-registry-navigator.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-server-architect",
+        "path": "agents/mcp-dev-team/mcp-server-architect.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-deployment-orchestrator",
+        "path": "agents/mcp-dev-team/mcp-deployment-orchestrator.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-integration-engineer",
+        "path": "agents/mcp-dev-team/mcp-integration-engineer.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "mcp-security-auditor",
+        "path": "agents/mcp-dev-team/mcp-security-auditor.md",
+        "category": "mcp-dev-team",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "compliance-specialist",
+        "path": "agents/security/compliance-specialist.md",
+        "category": "security",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "incident-responder",
+        "path": "agents/security/incident-responder.md",
+        "category": "security",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "api-security-audit",
+        "path": "agents/security/api-security-audit.md",
+        "category": "security",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "penetration-tester",
+        "path": "agents/security/penetration-tester.md",
+        "category": "security",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "docusaurus-expert",
+        "path": "agents/documentation/docusaurus-expert.md",
+        "category": "documentation",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "technical-writer",
+        "path": "agents/documentation/technical-writer.md",
+        "category": "documentation",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "api-documenter",
+        "path": "agents/documentation/api-documenter.md",
+        "category": "documentation",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "changelog-generator",
+        "path": "agents/documentation/changelog-generator.md",
+        "category": "documentation",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "seo-analyzer",
+        "path": "agents/web-tools/seo-analyzer.md",
+        "category": "web-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "web-accessibility-checker",
+        "path": "agents/web-tools/web-accessibility-checker.md",
+        "category": "web-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "url-context-validator",
+        "path": "agents/web-tools/url-context-validator.md",
+        "category": "web-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "nextjs-architecture-expert",
+        "path": "agents/web-tools/nextjs-architecture-expert.md",
+        "category": "web-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "react-performance-optimizer",
+        "path": "agents/web-tools/react-performance-optimizer.md",
+        "category": "web-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "url-link-extractor",
+        "path": "agents/web-tools/url-link-extractor.md",
+        "category": "web-tools",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "devops-troubleshooter",
+        "path": "agents/devops-infrastructure/devops-troubleshooter.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "security-engineer",
+        "path": "agents/devops-infrastructure/security-engineer.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "vercel-deployment-specialist",
+        "path": "agents/devops-infrastructure/vercel-deployment-specialist.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "network-engineer",
+        "path": "agents/devops-infrastructure/network-engineer.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "terraform-specialist",
+        "path": "agents/devops-infrastructure/terraform-specialist.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "cloud-architect",
+        "path": "agents/devops-infrastructure/cloud-architect.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "monitoring-specialist",
+        "path": "agents/devops-infrastructure/monitoring-specialist.md",
+        "category": "devops-infrastructure",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "unreal-engine-developer",
+        "path": "agents/game-development/unreal-engine-developer.md",
+        "category": "game-development",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "unity-game-developer",
+        "path": "agents/game-development/unity-game-developer.md",
+        "category": "game-development",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "3d-artist",
+        "path": "agents/game-development/3d-artist.md",
+        "category": "game-development",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "game-designer",
+        "path": "agents/game-development/game-designer.md",
+        "category": "game-development",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "task-decomposition-expert",
+        "path": "agents/ai-specialists/task-decomposition-expert.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "model-evaluator",
+        "path": "agents/ai-specialists/model-evaluator.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "ai-ethics-advisor",
+        "path": "agents/ai-specialists/ai-ethics-advisor.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "prompt-engineer",
+        "path": "agents/ai-specialists/prompt-engineer.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "llms-maintainer",
+        "path": "agents/ai-specialists/llms-maintainer.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "search-specialist",
+        "path": "agents/ai-specialists/search-specialist.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "hackathon-ai-strategist",
+        "path": "agents/ai-specialists/hackathon-ai-strategist.md",
+        "category": "ai-specialists",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "customer-support",
+        "path": "agents/business-marketing/customer-support.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "payment-integration",
+        "path": "agents/business-marketing/payment-integration.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "product-strategist",
+        "path": "agents/business-marketing/product-strategist.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "legal-advisor",
+        "path": "agents/business-marketing/legal-advisor.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "sales-automator",
+        "path": "agents/business-marketing/sales-automator.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "risk-manager",
+        "path": "agents/business-marketing/risk-manager.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "business-analyst",
+        "path": "agents/business-marketing/business-analyst.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "content-marketer",
+        "path": "agents/business-marketing/content-marketer.md",
+        "category": "business-marketing",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "graphql-performance-optimizer",
+        "path": "agents/api-graphql/graphql-performance-optimizer.md",
+        "category": "api-graphql",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "graphql-security-specialist",
+        "path": "agents/api-graphql/graphql-security-specialist.md",
+        "category": "api-graphql",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "graphql-architect",
+        "path": "agents/api-graphql/graphql-architect.md",
+        "category": "api-graphql",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "neon-expert",
+        "path": "agents/database/neon-expert.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "database-optimization",
+        "path": "agents/database/database-optimization.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "supabase-schema-architect",
+        "path": "agents/database/supabase-schema-architect.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "neon-auth-specialist",
+        "path": "agents/database/neon-auth-specialist.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "database-admin",
+        "path": "agents/database/database-admin.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "nosql-specialist",
+        "path": "agents/database/nosql-specialist.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "neon-database-architect",
+        "path": "agents/database/neon-database-architect.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "database-optimizer",
+        "path": "agents/database/database-optimizer.md",
+        "category": "database",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "documentation-expert",
+        "path": "agents/expert-advisors/documentation-expert.md",
+        "category": "expert-advisors",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "architect-review",
+        "path": "agents/expert-advisors/architect-review.md",
+        "category": "expert-advisors",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "agent-expert",
+        "path": "agents/expert-advisors/agent-expert.md",
+        "category": "expert-advisors",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "dependency-manager",
+        "path": "agents/expert-advisors/dependency-manager.md",
+        "category": "expert-advisors",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "cloud-migration-specialist",
+        "path": "agents/modernization/cloud-migration-specialist.md",
+        "category": "modernization",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "legacy-modernizer",
+        "path": "agents/modernization/legacy-modernizer.md",
+        "category": "modernization",
+        "has_explicit_attribution": false
+      },
+      {
+        "name": "architecture-modernizer",
+        "path": "agents/modernization/architecture-modernizer.md",
+        "category": "modernization",
+        "has_explicit_attribution": false
+      }
+    ]
+  },
+  "mcps": {
+    "total": 0,
+    "files": []
+  },
+  "hooks": {
+    "total": 0,
+    "files": []
+  },
+  "settings": {
+    "total": 0,
+    "files": []
+  },
+  "skills": {
+    "total": 47,
+    "files": [
+      {
+        "name": "ooxml",
+        "path": "skills/document-processing/pptx/ooxml.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/document-processing/pptx/SKILL.md"
+      },
+      {
+        "name": "html2pptx",
+        "path": "skills/document-processing/pptx/html2pptx.md"
+      },
+      {
+        "name": "ooxml",
+        "path": "skills/document-processing/docx/ooxml.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/document-processing/docx/SKILL.md"
+      },
+      {
+        "name": "docx-js",
+        "path": "skills/document-processing/docx/docx-js.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/document-processing/xlsx/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/document-processing/pdf-processing-pro/SKILL.md"
+      },
+      {
+        "name": "FORMS",
+        "path": "skills/document-processing/pdf-processing-pro/FORMS.md"
+      },
+      {
+        "name": "TABLES",
+        "path": "skills/document-processing/pdf-processing-pro/TABLES.md"
+      },
+      {
+        "name": "OCR",
+        "path": "skills/document-processing/pdf-processing-pro/OCR.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/document-processing/pdf-processing/SKILL.md"
+      },
+      {
+        "name": "FORMS",
+        "path": "skills/document-processing/pdf-processing/FORMS.md"
+      },
+      {
+        "name": "reference",
+        "path": "skills/document-processing/pdf-anthropic/reference.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/document-processing/pdf-anthropic/SKILL.md"
+      },
+      {
+        "name": "forms",
+        "path": "skills/document-processing/pdf-anthropic/forms.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/enterprise-communication/brand-guidelines/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/enterprise-communication/excel-analysis/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/enterprise-communication/email-composer/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/enterprise-communication/internal-comms/SKILL.md"
+      },
+      {
+        "name": "company-newsletter",
+        "path": "skills/enterprise-communication/internal-comms/examples/company-newsletter.md"
+      },
+      {
+        "name": "3p-updates",
+        "path": "skills/enterprise-communication/internal-comms/examples/3p-updates.md"
+      },
+      {
+        "name": "general-comms",
+        "path": "skills/enterprise-communication/internal-comms/examples/general-comms.md"
+      },
+      {
+        "name": "faq-answers",
+        "path": "skills/enterprise-communication/internal-comms/examples/faq-answers.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/creative-design/algorithmic-art/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/creative-design/theme-factory/SKILL.md"
+      },
+      {
+        "name": "sunset-boulevard",
+        "path": "skills/creative-design/theme-factory/themes/sunset-boulevard.md"
+      },
+      {
+        "name": "ocean-depths",
+        "path": "skills/creative-design/theme-factory/themes/ocean-depths.md"
+      },
+      {
+        "name": "golden-hour",
+        "path": "skills/creative-design/theme-factory/themes/golden-hour.md"
+      },
+      {
+        "name": "desert-rose",
+        "path": "skills/creative-design/theme-factory/themes/desert-rose.md"
+      },
+      {
+        "name": "botanical-garden",
+        "path": "skills/creative-design/theme-factory/themes/botanical-garden.md"
+      },
+      {
+        "name": "midnight-galaxy",
+        "path": "skills/creative-design/theme-factory/themes/midnight-galaxy.md"
+      },
+      {
+        "name": "forest-canopy",
+        "path": "skills/creative-design/theme-factory/themes/forest-canopy.md"
+      },
+      {
+        "name": "modern-minimalist",
+        "path": "skills/creative-design/theme-factory/themes/modern-minimalist.md"
+      },
+      {
+        "name": "arctic-frost",
+        "path": "skills/creative-design/theme-factory/themes/arctic-frost.md"
+      },
+      {
+        "name": "tech-innovation",
+        "path": "skills/creative-design/theme-factory/themes/tech-innovation.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/creative-design/slack-gif-creator/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/creative-design/canvas-design/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/development/webapp-testing/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/development/artifacts-builder/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/development/mcp-builder/SKILL.md"
+      },
+      {
+        "name": "node_mcp_server",
+        "path": "skills/development/mcp-builder/reference/node_mcp_server.md"
+      },
+      {
+        "name": "mcp_best_practices",
+        "path": "skills/development/mcp-builder/reference/mcp_best_practices.md"
+      },
+      {
+        "name": "evaluation",
+        "path": "skills/development/mcp-builder/reference/evaluation.md"
+      },
+      {
+        "name": "python_mcp_server",
+        "path": "skills/development/mcp-builder/reference/python_mcp_server.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/development/git-commit-helper/SKILL.md"
+      },
+      {
+        "name": "SKILL",
+        "path": "skills/development/skill-creator/SKILL.md"
+      }
+    ]
+  }
+}
