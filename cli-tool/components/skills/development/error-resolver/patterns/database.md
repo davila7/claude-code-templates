@@ -307,9 +307,9 @@ SELECT * FROM users WHERE email = 'test@example.com';
 INSERT INTO users (email, name) VALUES ('test@example.com', 'Test')
 ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
 
--- MySQL
-INSERT INTO users (email, name) VALUES ('test@example.com', 'Test')
-ON DUPLICATE KEY UPDATE name = VALUES(name);
+-- MySQL (8.0.20+)
+INSERT INTO users (email, name) VALUES ('test@example.com', 'Test') AS new_values
+ON DUPLICATE KEY UPDATE name = new_values.name;
 ```
 
 #### Foreign Key Constraint
@@ -383,6 +383,9 @@ SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 ```
 
 ```javascript
+// Helper function
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
 // Retry on deadlock
 async function withRetry(fn, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {

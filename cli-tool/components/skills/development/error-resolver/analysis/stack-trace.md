@@ -333,25 +333,21 @@ RangeError: Maximum call stack size exceeded
 # Enable long stack traces
 node --stack-trace-limit=100 app.js
 
-# Enable async stack traces
-node --async-stack-traces app.js
-
 # V8 flags for debugging
 node --trace-warnings app.js
 ```
 
+Note: Async stack traces are enabled by default in Node.js 12+.
+
 ### Python
 
 ```bash
-# Verbose traceback
-python -v script.py
+# Low-level crash debugging
+python -X faulthandler script.py
+```
 
-# Limit recursion for debugging
-import sys
-sys.setrecursionlimit(50)
-
-# Rich traceback
-pip install rich
+```python
+# Rich traceback (pip install rich)
 from rich import traceback
 traceback.install()
 ```

@@ -245,9 +245,6 @@ npm ls --depth=0
 
 ### Python
 ```bash
-# Verbose traceback
-python -v script.py
-
 # Debug mode
 python -m pdb script.py
 

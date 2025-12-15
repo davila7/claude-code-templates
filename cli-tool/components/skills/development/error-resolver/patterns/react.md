@@ -366,14 +366,17 @@ useEffect(() => {
 ```
 
 ```jsx
-// For objects, stringify or use specific properties
+// For objects, use specific properties directly
+const { id, name } = config
+useEffect(() => {
+  // use id, name
+}, [id, name])
+
+// Or stringify (use sparingly, can be expensive)
 const configStr = JSON.stringify(config)
 useEffect(() => {
   // ...
 }, [configStr])
-
-// Or useMemo to stabilize reference
-const stableConfig = useMemo(() => config, [config.id])
 ```
 
 ---

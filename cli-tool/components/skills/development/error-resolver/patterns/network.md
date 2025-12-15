@@ -262,6 +262,9 @@ HTTP 503 Service Unavailable
 
 **Solutions**:
 ```javascript
+// Helper function
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
 // Retry with exponential backoff
 async function fetchWithBackoff(url) {
   const maxRetries = 5
@@ -279,6 +282,7 @@ async function fetchWithBackoff(url) {
       await sleep(Math.pow(2, i) * 1000)
     }
   }
+  throw new Error('Max retries exceeded')
 }
 ```
 

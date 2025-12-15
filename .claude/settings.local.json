@@ -42,7 +42,10 @@
       "Bash(gh pr create:*)",
       "Bash(mv:*)",
       "Read(//private/tmp/anthropic-skills/**)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(xargs:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": []
   },
