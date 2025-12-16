@@ -151,7 +151,10 @@ class PluginDashboard {
 
     if (source.source === 'github') return 'GitHub';
     if (source.source === 'git') return 'Git';
-    if (source.source === 'local') return 'Local';
+    // Support both 'local' and 'directory' for filesystem-based marketplaces
+    // 'directory' is used by Claude Code, 'local' for legacy compatibility
+    if (source.source === 'local' || source.source === 'directory') return 'Local';
+    if (source.source === 'url') return 'URL';
     return 'Unknown';
   }
 
@@ -249,7 +252,12 @@ class PluginDashboard {
             mcps: 0
           };
 
-          const pluginSourcePath = pluginDef.source ? path.join(marketplacePath, pluginDef.source) : marketplacePath;
+          // Handle both string paths and object-based sources
+          // Marketplace aggregators use object format {source: "url", url: "..."} to reference external repos
+          // Individual plugins use string paths like "./" or "./plugins/name"
+          const pluginSourcePath = typeof pluginDef.source === 'string'
+            ? path.join(marketplacePath, pluginDef.source)
+            : marketplacePath;
 
           // Check if plugin has inline component definitions (claude-code-templates style)
           if (pluginDef.agents || pluginDef.commands || pluginDef.mcpServers) {
@@ -261,7 +269,7 @@ class PluginDashboard {
             };
           }
           // Otherwise, try to count from source directory (claude-code-plugins style)
-          else if (pluginDef.source) {
+          else if (typeof pluginDef.source === 'string') {
             if (await fs.pathExists(pluginSourcePath)) {
               components = await this.countPluginComponents(pluginSourcePath);
             }
