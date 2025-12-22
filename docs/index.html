@@ -148,6 +148,8 @@
                         </svg>
                         GitHub
                     </a>
+                    <!-- Clerk User Button (shown when signed in) -->
+                    <div id="clerk-user-button" data-clerk-signed-in style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -680,5 +682,27 @@
     <script src="js/generate-search-data.js"></script>
     <script src="js/search-functionality.js"></script>
     <script src="js/partnership-banner.js"></script>
+
+    <!-- Clerk Authentication -->
+    <script type="module">
+        import { initializeClerk } from './js/clerk-auth.js';
+
+        // Initialize Clerk when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    await initializeClerk();
+                    console.log('Clerk initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize Clerk:', error);
+                }
+            });
+        } else {
+            // DOM already loaded
+            initializeClerk()
+                .then(() => console.log('Clerk initialized successfully'))
+                .catch(error => console.error('Failed to initialize Clerk:', error));
+        }
+    </script>
 </body>
 </html>

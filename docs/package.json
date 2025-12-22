@@ -1,0 +1,17 @@
+{
+  "name": "claude-code-templates-docs",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@clerk/clerk-js": "^5.37.4"
+  },
+  "devDependencies": {
+    "vite": "^6.0.5"
+  }
+}
