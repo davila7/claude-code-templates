@@ -1,0 +1,26 @@
+{
+  "description": "Test hook that logs every tool execution to a text file. Creates a log file and appends tool names with timestamps.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$(date '+%Y-%m-%d %H:%M:%S') - Tool: $CLAUDE_TOOL_NAME\" >> \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-execution.log"
+          }
+        ]
+      }
+    ]
+  },
+  "files": {
+    ".claude/hooks/tool-execution.log": {
+      "content": "=== Claude Code Tool Execution Log ===\nCreated: $(date '+%Y-%m-%d %H:%M:%S')\n\n",
+      "executable": false
+    },
+    ".claude/hooks/README-tool-logger.txt": {
+      "content": "Tool Logger Hook\n================\n\nThis hook logs every tool execution to tool-execution.log\n\nThe log file will contain:\n- Timestamp of each tool execution\n- Name of the tool that was executed\n\nLog location: .claude/hooks/tool-execution.log\n\nTo view the log:\n  cat .claude/hooks/tool-execution.log\n\nTo clear the log:\n  echo \"\" > .claude/hooks/tool-execution.log\n",
+      "executable": false
+    }
+  }
+}
