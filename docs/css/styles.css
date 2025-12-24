@@ -94,10 +94,31 @@ body {
     margin-right: 0.5rem;
 }
 
+/* Header actions - default (for component.html and other pages) */
 .header-actions {
     display: flex;
     gap: 1rem;
     align-items: center;
+}
+
+/* Header actions - main page only (index.html with auth) */
+.header > .container > .header-content > .header-actions {
+    justify-content: space-between;
+    gap: 2rem;
+    width: 100%;
+}
+
+.header-nav-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.header-auth-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-left: auto;
 }
 
 .github-link, .header-btn {
@@ -113,12 +134,30 @@ body {
     transition: all 0.2s ease;
     font-size: 0.85rem;
     font-weight: normal;
+    cursor: pointer;
 }
 
 .github-link:hover, .header-btn:hover {
     background: var(--bg-primary);
     border-color: var(--border-secondary);
     transform: translateY(-1px);
+}
+
+/* Primary CTA button (Sign In) */
+.header-btn-primary {
+    background: linear-gradient(135deg, #d97706 0%, #c2410c 100%);
+    border-color: #c2410c;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
+.header-btn-primary:hover {
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+    border-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.4);
+    color: #ffffff;
 }
 
 /* Terminal main content */
@@ -1046,6 +1085,16 @@ body {
     flex-shrink: 0;
 }
 
+/* Highlighted footer link (Sign In) */
+.footer-link-highlight {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.footer-link-highlight:hover {
+    color: #ea580c;
+}
+
 /* Loading and error states */
 .loading {
     text-align: center;
@@ -1134,16 +1183,35 @@ body {
         gap: 1rem;
         align-items: flex-start;
     }
-    
-    .header-actions {
-        gap: 0.75rem;
+
+    /* Only for main page header with auth */
+    .header > .container > .header-content > .header-actions {
+        flex-direction: column;
+        gap: 1rem;
         width: 100%;
-        justify-content: flex-start;
+        align-items: stretch;
     }
-    
+
+    .header-nav-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .header-auth-buttons {
+        width: 100%;
+        margin-left: 0;
+    }
+
     .github-link, .header-btn {
-        padding: 0.35rem 0.7rem;
+        padding: 0.5rem 0.8rem;
         font-size: 0.8rem;
+        justify-content: center;
+    }
+
+    .header-btn-primary {
+        width: 100%;
+        justify-content: center;
     }
     
     .header .ascii-art {
@@ -3500,11 +3568,8 @@ body {
     color: var(--text-accent);
 }
 
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
+/* Responsive adjustments */
+@media (max-width: 768px) {
     .unified-filter-bar .filter-btn {
         width: 100%;
         max-width: 280px;

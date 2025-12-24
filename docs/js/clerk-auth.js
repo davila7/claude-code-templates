@@ -82,5 +82,64 @@ export function mountUserButton(elementId) {
   }
 }
 
+// Mount User Profile component
+export function mountUserProfile(elementId) {
+  const userProfileDiv = document.getElementById(elementId);
+  if (userProfileDiv) {
+    clerk.mountUserProfile(userProfileDiv);
+  }
+}
+
+// Open Sign In modal
+export function openSignIn() {
+  clerk.openSignIn({
+    appearance: {
+      elements: {
+        rootBox: 'clerk-modal',
+        card: 'clerk-card'
+      }
+    }
+  });
+}
+
+// Open Sign Up modal
+export function openSignUp() {
+  clerk.openSignUp({
+    appearance: {
+      elements: {
+        rootBox: 'clerk-modal',
+        card: 'clerk-card'
+      }
+    }
+  });
+}
+
+// Open User Profile modal
+export function openUserProfile() {
+  clerk.openUserProfile({
+    appearance: {
+      elements: {
+        rootBox: 'clerk-modal',
+        card: 'clerk-card'
+      }
+    }
+  });
+}
+
+// Get current user info
+export function getCurrentUser() {
+  return clerk.user;
+}
+
+// Sign out current user
+export async function signOut() {
+  try {
+    await clerk.signOut();
+    updateAuthUI();
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+}
+
 // Export clerk instance for use in other modules
 export { clerk };
