@@ -5,12 +5,12 @@
 # Read JSON input from stdin
 INPUT=$(cat)
 
-# Extract session_id using jq (if available) or grep
+# Extract session_id using jq (if available) or sed
 if command -v jq &> /dev/null; then
     SESSION_ID=$(echo "$INPUT" | jq -r '.session_id')
 else
-    # Fallback to grep if jq is not available
-    SESSION_ID=$(echo "$INPUT" | grep -oP '"session_id"\s*:\s*"\K[^"]+')
+    # Fallback to sed (works on both BSD and GNU)
+    SESSION_ID=$(echo "$INPUT" | sed -n 's/.*"session_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
 fi
 
 # Exit if session_id is not found
