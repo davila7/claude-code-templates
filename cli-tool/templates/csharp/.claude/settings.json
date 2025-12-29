@@ -1,0 +1,145 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Edit",
+      "MultiEdit",
+      "Write",
+      "Bash(dotnet:*)",
+      "Bash(git:*)",
+      "Bash(docker:*)",
+      "Bash(nuget:*)"
+    ],
+    "deny": [
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(rm -rf:*)"
+    ],
+    "defaultMode": "allowEdits"
+  },
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "60000",
+    "BASH_MAX_OUTPUT_LENGTH": "20000",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "ASPNETCORE_ENVIRONMENT": "Development"
+  },
+  "includeCoAuthoredBy": true,
+  "cleanupPeriodDays": 30,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"\\(.tool_input.command) - \\(.tool_input.description // \"No description\")\"' >> ~/.claude/bash-command-log.txt"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"); CONTENT=$(echo $STDIN_JSON | jq -r '.tool_input.content // \"\"); if [[ \"$FILE\" =~ \\.cs$ ]] && echo \"$CONTENT\" | grep -q 'Console\\.WriteLine'; then echo 'Warning: Console.WriteLine should be replaced with proper logging' >&2; exit 2; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" == *\".csproj\" ]] || [[ \"$FILE\" == \"*.sln\" ]]; then echo 'Checking for vulnerable NuGet packages...'; if command -v dotnet >/dev/null 2>&1; then dotnet list package --vulnerable 2>/dev/null || echo 'Package vulnerability check completed'; else echo 'dotnet CLI not found for security check'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.cs$ ]]; then echo 'Checking C# syntax...'; if command -v dotnet >/dev/null 2>&1; then dotnet build --verbosity quiet --nologo 2>/dev/null || echo 'Build check completed with issues'; fi; fi",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.cs$ ]]; then if command -v dotnet >/dev/null 2>&1; then dotnet format --include \"$FILE\" --verbosity quiet 2>/dev/null || echo 'Code formatting skipped (dotnet format not available)'; fi; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.cs$ && \"$FILE\" != *\"Test\"* && \"$FILE\" != *\".test.\"* ]]; then DIR=$(dirname \"$FILE\"); BASENAME=$(basename \"$FILE\" .cs); for TEST_FILE in \"$DIR/${BASENAME}Tests.cs\" \"$DIR/${BASENAME}.test.cs\" \"tests/${BASENAME}Tests.cs\"; do if [ -f \"$TEST_FILE\" ]; then echo \"Running tests for $TEST_FILE...\"; if command -v dotnet >/dev/null 2>&1; then dotnet test \"$TEST_FILE\" --verbosity quiet --nologo 2>/dev/null || echo 'Tests completed with issues'; fi; break; fi; done; fi",
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.cs$ ]]; then if command -v dotnet >/dev/null 2>&1; then RESULT=$(dotnet build --verbosity quiet --nologo 2>&1); if [ $? -ne 0 ]; then echo \"Build errors found: $RESULT\" >&2; exit 2; fi; fi; fi",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code notification: $(date)\" >> ~/.claude/notifications.log"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f *.csproj || -f *.sln ]] && [[ $(git status --porcelain | grep '\\.cs$') ]]; then echo 'Running final build verification...'; if command -v dotnet >/dev/null 2>&1; then dotnet build --configuration Release --verbosity quiet --nologo || echo 'Release build completed with issues'; else echo 'dotnet CLI not found for build verification'; fi; fi",
+            "timeout": 120
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f *.csproj || -f *.sln ]] && [[ $(git status --porcelain | grep '\\.cs$') ]]; then echo 'Running code formatting check...'; if command -v dotnet >/dev/null 2>&1; then dotnet format --verify-no-changes --verbosity quiet 2>/dev/null || echo 'Code formatting check completed - some files may need formatting'; else echo 'dotnet format not available for formatting check'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f *.csproj || -f *.sln ]] && [[ $(git status --porcelain | grep '\\.cs$') ]]; then echo 'Running test suite...'; if command -v dotnet >/dev/null 2>&1; then dotnet test --verbosity quiet --nologo || echo 'Test suite completed with failures'; else echo 'dotnet CLI not found for testing'; fi; fi",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}
