@@ -1,6 +1,62 @@
 {
   "articles": [
     {
+      "id": "frontend-developer-agent",
+      "title": "Claude Code Frontend Developer Agent: Complete 2025 Tutorial",
+      "description": "Complete guide to the #1 most downloaded Claude Code component. Build modern web applications with React, Vue, and Next.js using AI-powered frontend development. 7,553+ installations.",
+      "url": "https://www.aitmpl.com/blog/frontend-developer-agent/",
+      "image": "https://www.aitmpl.com/blog/assets/frontend-developer-agent-cover.png",
+      "category": "Agents",
+      "publishDate": "2025-01-15",
+      "readTime": "12 min read",
+      "tags": ["Agents", "Frontend", "React", "Vue", "Next.js", "AI Development"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 1
+    },
+    {
+      "id": "code-reviewer-agent",
+      "title": "AI Code Review Automation with Claude Code: 2025 Complete Guide",
+      "description": "Complete guide to the Code Reviewer Agent - automate code reviews, enforce best practices, and improve code quality with AI-powered analysis. 5,516+ installations.",
+      "url": "https://www.aitmpl.com/blog/code-reviewer-agent/",
+      "image": "https://www.aitmpl.com/blog/assets/code-reviewer-agent-cover.png",
+      "category": "Agents",
+      "publishDate": "2025-01-15",
+      "readTime": "14 min read",
+      "tags": ["Agents", "Code Review", "Security", "Best Practices", "Automation"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 2
+    },
+    {
+      "id": "context7-mcp",
+      "title": "Context7 MCP for Claude Code: Real-Time Documentation Integration 2025",
+      "description": "Complete guide to Context7 MCP - real-time library documentation integration for Claude Code. Access up-to-date docs for React, Next.js, Supabase, and 1000+ libraries. 3,288+ installations.",
+      "url": "https://www.aitmpl.com/blog/context7-mcp/",
+      "image": "https://www.aitmpl.com/blog/assets/context7-mcp-cover.png",
+      "category": "MCP",
+      "publishDate": "2025-01-15",
+      "readTime": "12 min read",
+      "tags": ["MCP", "Documentation", "Context7", "Real-time", "Libraries"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 3
+    },
+    {
+      "id": "skills-creator",
+      "title": "Claude Code Skills Tutorial: Create Custom AI Workflows in 2025",
+      "description": "Complete guide to Claude Code Skills system - create custom AI workflows with progressive context loading. Learn to build reusable automation for your development workflow. 2,298+ installations.",
+      "url": "https://www.aitmpl.com/blog/skills-creator/",
+      "image": "https://www.aitmpl.com/blog/assets/skills-creator-cover.png",
+      "category": "Skills",
+      "publishDate": "2025-01-15",
+      "readTime": "15 min read",
+      "tags": ["Skills", "Workflows", "Automation", "Progressive Loading", "Custom AI"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 4
+    },
+    {
       "id": "e2b-claude-code-sandbox",
       "title": "E2B + Claude Code Sandbox: Secure Cloud Development Environment Guide",
       "description": "Complete guide to run Claude Code in isolated E2B cloud sandbox. Install components safely, execute prompts in secure environment, and develop without local system risks.",
@@ -12,7 +68,7 @@
       "tags": ["E2B", "Cloud", "Sandbox", "Security", "Isolation"],
       "difficulty": "advanced",
       "featured": true,
-      "order": 1
+      "order": 5
     },
     {
       "id": "supabase-integration",
@@ -26,7 +82,7 @@
       "tags": ["Supabase", "Database", "Agents", "Commands", "MCP"],
       "difficulty": "basic",
       "featured": true,
-      "order": 2
+      "order": 6
     },
     {
       "id": "git-flow-guide",
@@ -39,7 +95,7 @@
       "readTime": "7 min read",
       "tags": ["Git", "Workflow", "Version Control", "Automation"],
       "difficulty": "intermediate",
-      "order": 3
+      "order": 7
     },
     {
       "id": "google-cloud-vertex-ai",
@@ -52,7 +108,7 @@
       "readTime": "8 min read",
       "tags": ["Google Cloud", "Vertex AI", "Integration", "Cloud"],
       "difficulty": "advanced",
-      "order": 4
+      "order": 8
     },
     {
       "id": "automated-documentation",
@@ -65,7 +121,7 @@
       "readTime": "6 min read",
       "tags": ["Documentation", "Docusaurus", "Automation", "Agents"],
       "difficulty": "advanced",
-      "order": 5
+      "order": 9
     },
     {
       "id": "claude-code-templates-guide",
@@ -79,7 +135,7 @@
       "tags": ["Getting Started", "Templates", "Installation", "Configuration"],
       "difficulty": "basic",
       "featured": true,
-      "order": 6
+      "order": 10
     },
     {
       "id": "tunnel-vision-fix",
@@ -92,7 +148,7 @@
       "readTime": "3 min read",
       "tags": ["Hooks", "Automation", "Context", "Problem Solving"],
       "difficulty": "basic",
-      "order": 7
+      "order": 11
     },
     {
       "id": "telegram-integration",
@@ -106,7 +162,7 @@
       "tags": ["Telegram", "Hooks", "Notifications", "Integration"],
       "difficulty": "basic",
       "featured": true,
-      "order": 8
+      "order": 12
     },
     {
       "id": "vercel-statusline",
@@ -119,7 +175,7 @@
       "readTime": "3 min read",
       "tags": ["Vercel", "Statusline", "Deployment", "Monitoring"],
       "difficulty": "basic",
-      "order": 9
+      "order": 13
     },
     {
       "id": "cloudflare-sandbox",
@@ -132,7 +188,7 @@
       "readTime": "7 min read",
       "tags": ["Cloudflare", "Sandbox", "Agents", "Security", "Workers"],
       "difficulty": "advanced",
-      "order": 10
+      "order": 14
     },
     {
       "id": "prepare-codebase",
@@ -145,15 +201,15 @@
       "readTime": "4 min read",
       "tags": ["Best Practices", "Code Organization", "Optimization", "Setup"],
       "difficulty": "advanced",
-      "order": 11
+      "order": 15
     }
   ],
   "metadata": {
-    "lastUpdated": "2025-10-26",
-    "totalArticles": 11,
+    "lastUpdated": "2025-01-15",
+    "totalArticles": 15,
     "difficultyLevels": {
-      "basic": 5,
-      "intermediate": 1,
+      "basic": 7,
+      "intermediate": 3,
       "advanced": 5
     }
   }

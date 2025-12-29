@@ -272,34 +272,6 @@
                         </tr>
                     </tbody>
                 </table>
-                <!-- Newsletter CTA - Middle -->
-                <div class="newsletter-cta middle-newsletter">
-                    <div class="newsletter-cta-content">
-                        <h3>Stay Updated</h3>
-                        <p>Get new articles, components and templates for Claude Code delivered to your inbox.</p>
-                        
-                        <div id="middle-newsletter-success" class="newsletter-message success-message" style="display: none;">
-                            ✓ Subscribed successfully
-                        </div>
-                        
-                        <div id="middle-newsletter-error" class="newsletter-message error-message" style="display: none;">
-                            ✗ Error. Try again.
-                        </div>
-                        
-                        <form id="middle-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="middle_hidden_iframe">
-                            <div class="input-group">
-                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
-                                <button type="submit" class="newsletter-submit">
-                                    <span class="submit-text">→</span>
-                                </button>
-                            </div>
-                            <input type="text" name="email_address_check" value="" style="display: none;">
-                            <input type="hidden" name="locale" value="en">
-                        </form>
-                        <iframe name="middle_hidden_iframe" style="display: none;"></iframe>
-                    </div>
-                </div>
-
                 <h2>Prerequisites</h2>
 
                 <p>You'll need two API keys to use the E2B sandbox:</p>
@@ -467,32 +439,15 @@ npx claude-code-templates@latest --sandbox e2b \
                     </tbody>
                 </table>
 
-                <!-- Newsletter CTA - End -->
-                <div class="newsletter-cta end-newsletter">
-                    <div class="newsletter-cta-content">
-                        <h3>Want More?</h3>
-                        <p>Subscribe to receive new Claude Code articles, components and integration tutorials.</p>
-                        
-                        <div id="end-newsletter-success" class="newsletter-message success-message" style="display: none;">
-                            ✓ Subscribed successfully
-                        </div>
-                        
-                        <div id="end-newsletter-error" class="newsletter-message error-message" style="display: none;">
-                            ✗ Error. Try again.
-                        </div>
-                        
-                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="end_hidden_iframe">
-                            <div class="input-group">
-                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
-                                <button type="submit" class="newsletter-submit">
-                                    <span class="submit-text">→</span>
-                                </button>
-                            </div>
-                            <input type="text" name="email_address_check" value="" style="display: none;">
-                            <input type="hidden" name="locale" value="en">
-                        </form>
-                        <iframe name="end_hidden_iframe" style="display: none;"></iframe>
-                    </div>
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
+                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 800+ Claude Code Components</h3>
+                    <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
+                        Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow
+                    </p>
+                    <a href="../../index.html" style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
+                        Browse All Components →
+                    </a>
                 </div>
 
             </div>
@@ -721,40 +676,19 @@ if (document.readyState === 'loading') {
     new CodeCopy();
 }
 
-// Newsletter forms handler
-function initNewsletterForm(formId, successId, errorId) {
-    const form = document.getElementById(formId);
-    const successMessage = document.getElementById(successId);
-    const errorMessage = document.getElementById(errorId);
-    
-    if (!form) return;
-    
-    const submitButton = form.querySelector('.newsletter-submit');
-    const submitText = submitButton.querySelector('.submit-text');
-    
-    form.addEventListener('submit', (e) => {
-        // Set loading state
-        submitButton.disabled = true;
-        submitText.textContent = '...';
-        
-        // Hide messages initially
-        successMessage.style.display = 'none';
-        errorMessage.style.display = 'none';
-        
-        // Show success message after form submits to iframe
-        setTimeout(() => {
-            successMessage.style.display = 'block';
-            submitButton.disabled = false;
-            submitText.textContent = '→';
-            form.reset();
-        }, 1500);
-    });
-}
-
-// Initialize both newsletter forms
+// Explore components banner hover effect
 document.addEventListener('DOMContentLoaded', () => {
-    initNewsletterForm('middle-newsletter-form', 'middle-newsletter-success', 'middle-newsletter-error');
-    initNewsletterForm('end-newsletter-form', 'end-newsletter-success', 'end-newsletter-error');
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
 });
 
 // Copy Markdown functionality
