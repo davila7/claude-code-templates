@@ -300,6 +300,44 @@ The analytics dashboard has been refactored into a modular architecture in 4 pha
 
 ## Security Guidelines
 
+### ⛔ CRITICAL: NEVER Hardcode Secrets
+
+**NEVER write API keys, tokens, passwords, or any secrets directly in code. This is a non-negotiable rule.**
+
+```python
+# ❌ WRONG - NEVER DO THIS
+API_KEY = "AIzaSy..."
+SECRET_TOKEN = "ghp_..."
+PASSWORD = "mypassword123"
+
+# ✅ CORRECT - Always use environment variables
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.environ.get("GOOGLE_API_KEY")
+```
+
+```javascript
+// ❌ WRONG - NEVER DO THIS
+const API_KEY = "AIzaSy...";
+
+// ✅ CORRECT - Always use environment variables
+const API_KEY = process.env.GOOGLE_API_KEY;
+```
+
+**When creating scripts that need API keys:**
+1. Use `os.environ.get()` (Python) or `process.env` (Node.js)
+2. Load from `.env` file using `dotenv` library
+3. Add the variable name to `.env.example` with placeholder value
+4. Verify `.env` is in `.gitignore`
+
+**If you accidentally commit a secret:**
+1. Revoke the key IMMEDIATELY
+2. Generate a new key
+3. Update `.env` with new key
+4. The old key is compromised forever (git history)
+
 ### Dependencies
 - Regularly update dependencies with `npm audit` and `npm update`
 - Use `npm audit` to check for known vulnerabilities

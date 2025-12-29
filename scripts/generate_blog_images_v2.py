@@ -6,11 +6,19 @@ Generates banners and workflow diagrams for Claude Code component blogs
 
 import os
 import base64
+from pathlib import Path
+from dotenv import load_dotenv
 from google import genai
 
+# Load environment variables from .env file
+load_dotenv(Path(__file__).parent.parent / '.env')
+
 # Configuration
-API_KEY = "AIzaSyBNOILwpdgwXbhl2CV73In9Q13CIxYmby0"
-OUTPUT_DIR = "/Users/danipower/Proyectos/Github/claude-code-templates/docs/blog/assets"
+API_KEY = os.environ.get("GOOGLE_API_KEY")
+if not API_KEY:
+    raise ValueError("GOOGLE_API_KEY not found in environment variables. Check your .env file.")
+
+OUTPUT_DIR = Path(__file__).parent.parent / "docs/blog/assets"
 MODEL = "gemini-2.0-flash-exp-image-generation"  # Using Gemini 2.0 Flash Exp with image generation
 
 # Blog definitions with prompts
