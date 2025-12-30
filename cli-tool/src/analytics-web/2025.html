@@ -359,7 +359,6 @@
             <div class="stat-line">Conversations: <span class="stat-value" id="statConversations">0</span></div>
             <div class="stat-line">Components: <span class="stat-value" id="statComponents">0</span></div>
             <div class="stat-line">Tool Calls: <span class="stat-value" id="statTools">0</span></div>
-            <div class="stat-line">Active Days: <span class="stat-value" id="statDays">0</span></div>
         </div>
 
         <div class="legend">
@@ -412,7 +411,7 @@
         let speedMultiplier = 5; // Fixed at 5x speed
         let startTime = null;
         let currentDayIndex = 0;
-        let stats = { conversations: 0, components: 0, tools: 0, days: 0 };
+        let stats = { conversations: 0, components: 0, tools: 0 };
         let processedEvents = new Set();
         let shownMilestones = new Set();
         let toolNodes = new Map(); // Map of tool name -> tool node
@@ -1939,14 +1938,6 @@
                             updateModelsList();
                         }
 
-                        const uniqueDays = new Set();
-                        animationData.timeline.forEach((e, i) => {
-                            if (processedEvents.has(i)) {
-                                uniqueDays.add(Math.floor(e.dayOfYear));
-                            }
-                        });
-                        stats.days = uniqueDays.size;
-
                     } else if (event.type === 'component') {
                         console.log(`📦 Processing component: ${event.name} (${event.componentType})`);
                         addComponent(event.name, event.componentType);
@@ -1985,6 +1976,9 @@
                             node.addUse();
                         }
 
+                        // Update stats
+                        stats.components += useCount;
+
                         // Create beam to this component node - OPTIMIZED: Add to queue
                         const beam = new Beam(node, event.name);
                         beamQueue.push(beam);
@@ -2007,7 +2001,6 @@
             document.getElementById('statConversations').textContent = stats.conversations;
             document.getElementById('statComponents').textContent = stats.components;
             document.getElementById('statTools').textContent = stats.tools;
-            document.getElementById('statDays').textContent = stats.days;
 
             // Check milestones
             const milestones = [
@@ -2134,7 +2127,7 @@
 
         // Controls
         function restartAnimation() {
-            stats = { conversations: 0, components: 0, tools: 0, days: 0 };
+            stats = { conversations: 0, components: 0, tools: 0 };
             processedEvents.clear();
             shownMilestones.clear();
             currentDayIndex = 0;
