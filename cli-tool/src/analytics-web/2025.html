@@ -434,6 +434,16 @@
         let hoveredNode = null;
         let componentNodes = new Map(); // Map of component name -> component node (second layer)
 
+        // Zoom and pan state
+        let zoom = 1;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let draggedNode = null;
+        let isPanning = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
         // Graph structure
         const centerNode = { x: 0, y: 0, name: 'Claude', color: '#d97706' };
         const branches = {
@@ -443,8 +453,10 @@
             skills: { nodes: [], angle: 3 * Math.PI / 2, color: '#ec4899' }
         };
 
-        // Active beams (tool calls)
+        // Active beams (tool calls) - animating beams
         let beams = [];
+        // Permanent connections (one per node) - Map of nodeId -> beam
+        let permanentConnections = new Map();
 
         // Resize canvas
         function resizeCanvas() {
@@ -462,12 +474,16 @@
             mouseX = e.clientX - rect.left;
             mouseY = e.clientY - rect.top;
 
+            // Transform mouse coordinates to account for zoom and pan
+            const transformedMouseX = (mouseX - panX) / zoom;
+            const transformedMouseY = (mouseY - panY) / zoom;
+
             // Find hovered node
             hoveredNode = null;
 
             // Check model nodes (pie slices in center)
-            const dx = mouseX - centerNode.x;
-            const dy = mouseY - centerNode.y;
+            const dx = transformedMouseX - centerNode.x;
+            const dy = transformedMouseY - centerNode.y;
             const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
             const mouseAngle = Math.atan2(dy, dx) + Math.PI / 2; // Offset by -90 degrees to match pie drawing
             const normalizedAngle = (mouseAngle + Math.PI * 2) % (Math.PI * 2); // Normalize to 0-2π
@@ -487,8 +503,8 @@
             // Check tool nodes
             if (!hoveredNode) {
                 toolNodes.forEach((node) => {
-                    const dx = mouseX - node.x;
-                    const dy = mouseY - node.y;
+                    const dx = transformedMouseX - node.x;
+                    const dy = transformedMouseY - node.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < node.size + 5) {
                         hoveredNode = { type: 'tool', node };
@@ -499,8 +515,8 @@
             // Check component nodes (second layer)
             if (!hoveredNode) {
                 componentNodes.forEach((node) => {
-                    const dx = mouseX - node.x;
-                    const dy = mouseY - node.y;
+                    const dx = transformedMouseX - node.x;
+                    const dy = transformedMouseY - node.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < node.size + 5) {
                         hoveredNode = { type: 'component', node };
@@ -510,11 +526,106 @@
 
             // Update tooltip
             updateTooltip();
+
+            // Update cursor based on hover state
+            if (!isDragging && !isPanning) {
+                if (hoveredNode && (hoveredNode.type === 'tool' || hoveredNode.type === 'component')) {
+                    canvas.style.cursor = 'grab';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
+            }
         });
 
         canvas.addEventListener('mouseleave', () => {
             hoveredNode = null;
+            isDragging = false;
+            draggedNode = null;
+            isPanning = false;
             updateTooltip();
+        });
+
+        // Zoom with mouse wheel
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseXCanvas = e.clientX - rect.left;
+            const mouseYCanvas = e.clientY - rect.top;
+
+            // Calculate zoom factor
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            const newZoom = Math.max(0.3, Math.min(3, zoom * zoomFactor));
+
+            // Adjust pan to zoom towards mouse position
+            const zoomRatio = newZoom / zoom;
+            panX = mouseXCanvas - (mouseXCanvas - panX) * zoomRatio;
+            panY = mouseYCanvas - (mouseYCanvas - panY) * zoomRatio;
+
+            zoom = newZoom;
+        }, { passive: false });
+
+        // Mouse down - start drag or pan
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            lastMouseX = e.clientX - rect.left;
+            lastMouseY = e.clientY - rect.top;
+
+            // Check if clicking on a node
+            if (hoveredNode && (hoveredNode.type === 'tool' || hoveredNode.type === 'component')) {
+                isDragging = true;
+                draggedNode = hoveredNode.node;
+                canvas.style.cursor = 'grabbing';
+            } else {
+                // Start panning
+                isPanning = true;
+                canvas.style.cursor = 'move';
+            }
+        });
+
+        // Mouse move - drag node or pan canvas
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging && !isPanning) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            const deltaX = (currentX - lastMouseX) / zoom;
+            const deltaY = (currentY - lastMouseY) / zoom;
+
+            if (isDragging && draggedNode) {
+                // Move the dragged node
+                draggedNode.x += deltaX;
+                draggedNode.y += deltaY;
+                draggedNode.targetX = draggedNode.x;
+                draggedNode.targetY = draggedNode.y;
+                // Update random angle to match new position (for future percentage updates)
+                draggedNode.randomAngle = Math.atan2(
+                    draggedNode.y - centerNode.y,
+                    draggedNode.x - centerNode.x
+                );
+            } else if (isPanning) {
+                // Pan the canvas
+                panX += (currentX - lastMouseX);
+                panY += (currentY - lastMouseY);
+            }
+
+            lastMouseX = currentX;
+            lastMouseY = currentY;
+        });
+
+        // Mouse up - stop drag or pan
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            draggedNode = null;
+            isPanning = false;
+            canvas.style.cursor = 'default';
+        });
+
+        // Double click to reset zoom and pan
+        canvas.addEventListener('dblclick', () => {
+            zoom = 1;
+            panX = 0;
+            panY = 0;
         });
 
         // Update tooltip display
@@ -530,14 +641,17 @@
             let content = '';
 
             if (hoveredNode.type === 'model') {
+                const percentage = node.count > 0 ? node.percentage || 0 : 0;
+                const percentDisplay = percentage >= 1 ? Math.round(percentage) + '%' : percentage.toFixed(1) + '%';
                 content = `
                     <div class="tooltip-title">${node.displayName}</div>
-                    <div class="tooltip-info">Model • Used ${node.count} times</div>
+                    <div class="tooltip-info">Model • ${percentDisplay} of activity (${node.count.toLocaleString()} calls)</div>
                 `;
             } else if (hoveredNode.type === 'tool') {
+                const percentDisplay = node.percentage >= 1 ? Math.round(node.percentage) + '%' : node.percentage.toFixed(1) + '%';
                 content = `
                     <div class="tooltip-title">${node.toolName}</div>
-                    <div class="tooltip-info">Tool • Used ${node.count} times</div>
+                    <div class="tooltip-info">Tool • ${percentDisplay} of tool calls (${node.count.toLocaleString()})</div>
                 `;
             } else if (hoveredNode.type === 'component') {
                 const typeLabels = {
@@ -547,9 +661,10 @@
                     'subagent': 'Subagent'
                 };
                 const typeLabel = typeLabels[node.type] || node.type;
+                const percentDisplay = node.percentage >= 1 ? Math.round(node.percentage) + '%' : node.percentage.toFixed(1) + '%';
                 content = `
                     <div class="tooltip-title">${node.name}</div>
-                    <div class="tooltip-info">${typeLabel} • Used ${node.count} times</div>
+                    <div class="tooltip-info">${typeLabel} • ${percentDisplay} of components (${node.count})</div>
                 `;
             }
 
@@ -657,6 +772,7 @@
                 this.displayName = this.formatModelName(modelName);
                 this.color = color;
                 this.count = 0; // Number of conversations using this model
+                this.percentage = 0; // Percentage of total model activity
                 this.size = 0;
                 this.targetSize = 50; // Base size, will grow with usage
                 this.alpha = 0;
@@ -678,6 +794,10 @@
                     'Unknown': 'Unknown'
                 };
                 return nameMap[modelName] || modelName;
+            }
+
+            updatePercentage(totalModelActivity) {
+                this.percentage = totalModelActivity > 0 ? (this.count / totalModelActivity) * 100 : 0;
             }
 
             addUse() {
@@ -797,17 +917,25 @@
                 this.toolName = toolName;
                 this.color = color;
                 this.count = 0; // Number of times this tool was used
+                this.percentage = 0; // Percentage of total tool calls
                 this.size = 0;
                 this.targetSize = 10; // Will grow with each use
                 this.alpha = 0;
                 this.targetAlpha = 1;
                 this.pulsePhase = Math.random() * Math.PI * 2;
 
-                // Position in circle around Claude
-                const radius = 250;
-                const angle = (index / total) * Math.PI * 2;
-                this.x = centerNode.x + Math.cos(angle) * radius;
-                this.y = centerNode.y + Math.sin(angle) * radius;
+                // Random angle for this node (stays fixed)
+                this.randomAngle = Math.random() * Math.PI * 2;
+                // Small random offset for organic feel
+                this.randomOffset = {
+                    x: (Math.random() - 0.5) * 40,
+                    y: (Math.random() - 0.5) * 40
+                };
+
+                // Initial position (will be updated based on percentage)
+                const radius = 350; // Start far, will move closer based on %
+                this.x = centerNode.x + Math.cos(this.randomAngle) * radius + this.randomOffset.x;
+                this.y = centerNode.y + Math.sin(this.randomAngle) * radius + this.randomOffset.y;
                 this.targetX = this.x;
                 this.targetY = this.y;
             }
@@ -816,6 +944,23 @@
                 this.count++;
                 // Grow size with each use (cap at 40)
                 this.targetSize = Math.min(10 + this.count * 2, 40);
+            }
+
+            updatePercentage(totalToolCalls) {
+                this.percentage = totalToolCalls > 0 ? (this.count / totalToolCalls) * 100 : 0;
+                // Recalculate position based on percentage
+                // Higher percentage = closer to center (min 150px, max 350px)
+                const minRadius = 150;
+                const maxRadius = 350;
+                // Invert: high % -> low radius (closer to center)
+                const radius = maxRadius - (this.percentage / 100) * (maxRadius - minRadius) * 2;
+                const clampedRadius = Math.max(minRadius, Math.min(maxRadius, radius));
+
+                this.targetX = centerNode.x + Math.cos(this.randomAngle) * clampedRadius + this.randomOffset.x;
+                this.targetY = centerNode.y + Math.sin(this.randomAngle) * clampedRadius + this.randomOffset.y;
+
+                // Also scale size based on percentage
+                this.targetSize = Math.min(15 + this.percentage * 1.5, 50);
             }
 
             update() {
@@ -831,16 +976,13 @@
 
                 this.pulsePhase += 0.05;
 
-                // Update position (if canvas resizes)
-                this.x += (this.targetX - this.x) * 0.1;
-                this.y += (this.targetY - this.y) * 0.1;
+                // Smooth position transition
+                this.x += (this.targetX - this.x) * 0.05;
+                this.y += (this.targetY - this.y) * 0.05;
             }
 
             updatePosition(index, total) {
-                const radius = 250;
-                const angle = (index / total) * Math.PI * 2;
-                this.targetX = centerNode.x + Math.cos(angle) * radius;
-                this.targetY = centerNode.y + Math.sin(angle) * radius;
+                // Keep for compatibility, but position is now based on percentage
             }
 
             draw(ctx) {
@@ -882,15 +1024,18 @@
                     ctx.restore();
                 }
 
-                // Count badge (always visible when count > 1)
-                if (this.count > 1 && this.size > 5) {
+                // Percentage badge (show when percentage > 0)
+                if (this.percentage > 0 && this.size > 5) {
                     ctx.save();
                     ctx.globalAlpha = this.alpha;
                     ctx.font = 'bold 10px Monaco';
                     ctx.fillStyle = '#ffffff';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText(this.count, this.x, this.y);
+                    const displayPercent = this.percentage >= 1 ?
+                        Math.round(this.percentage) + '%' :
+                        this.percentage.toFixed(1) + '%';
+                    ctx.fillText(displayPercent, this.x, this.y);
                     ctx.restore();
                 }
             }
@@ -903,19 +1048,27 @@
                 this.type = type; // 'command', 'skill', 'mcp', 'subagent'
                 this.color = color;
                 this.count = 0;
+                this.percentage = 0; // Percentage within its type category
                 this.size = 0;
                 this.targetSize = 8; // Smaller base size for second layer
                 this.alpha = 0;
                 this.targetAlpha = 1;
                 this.pulsePhase = Math.random() * Math.PI * 2;
 
+                // Random angle for this node (stays fixed)
+                this.randomAngle = Math.random() * Math.PI * 2;
+                // Small random offset for organic feel
+                this.randomOffset = {
+                    x: (Math.random() - 0.5) * 30,
+                    y: (Math.random() - 0.5) * 30
+                };
+
                 // Position in circle around center (farther than tools)
                 this.index = index;
                 this.total = total;
-                const radius = 400; // Farther from center than tools (250px)
-                const angle = (index / total) * Math.PI * 2;
-                this.x = centerNode.x + Math.cos(angle) * radius;
-                this.y = centerNode.y + Math.sin(angle) * radius;
+                const radius = 450; // Start far, will move closer based on %
+                this.x = centerNode.x + Math.cos(this.randomAngle) * radius + this.randomOffset.x;
+                this.y = centerNode.y + Math.sin(this.randomAngle) * radius + this.randomOffset.y;
                 this.targetX = this.x;
                 this.targetY = this.y;
             }
@@ -926,13 +1079,27 @@
                 this.targetSize = Math.min(8 + this.count * 1.5, 30);
             }
 
+            updatePercentage(totalInCategory) {
+                this.percentage = totalInCategory > 0 ? (this.count / totalInCategory) * 100 : 0;
+                // Recalculate position based on percentage
+                // Higher percentage = closer to center (min 250px, max 450px)
+                const minRadius = 250;
+                const maxRadius = 450;
+                // Invert: high % -> low radius (closer to center)
+                const radius = maxRadius - (this.percentage / 100) * (maxRadius - minRadius) * 2;
+                const clampedRadius = Math.max(minRadius, Math.min(maxRadius, radius));
+
+                this.targetX = centerNode.x + Math.cos(this.randomAngle) * clampedRadius + this.randomOffset.x;
+                this.targetY = centerNode.y + Math.sin(this.randomAngle) * clampedRadius + this.randomOffset.y;
+
+                // Also scale size based on percentage
+                this.targetSize = Math.min(10 + this.percentage * 1.2, 40);
+            }
+
             updatePosition(index, total) {
+                // Keep for compatibility, but position is now based on percentage
                 this.index = index;
                 this.total = total;
-                const radius = 400;
-                const angle = (index / total) * Math.PI * 2;
-                this.targetX = centerNode.x + Math.cos(angle) * radius;
-                this.targetY = centerNode.y + Math.sin(angle) * radius;
             }
 
             update() {
@@ -947,9 +1114,9 @@
 
                 this.pulsePhase += 0.05;
 
-                // Update position
-                this.x += (this.targetX - this.x) * 0.1;
-                this.y += (this.targetY - this.y) * 0.1;
+                // Smooth position transition
+                this.x += (this.targetX - this.x) * 0.05;
+                this.y += (this.targetY - this.y) * 0.05;
             }
 
             draw(ctx) {
@@ -993,15 +1160,18 @@
                     ctx.restore();
                 }
 
-                // Count badge
-                if (this.count > 1 && this.size > 5) {
+                // Percentage badge (show when percentage > 0)
+                if (this.percentage > 0 && this.size > 5) {
                     ctx.save();
                     ctx.globalAlpha = this.alpha;
                     ctx.font = 'bold 8px Monaco';
                     ctx.fillStyle = '#ffffff';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText(this.count, this.x, this.y);
+                    const displayPercent = this.percentage >= 1 ?
+                        Math.round(this.percentage) + '%' :
+                        this.percentage.toFixed(1) + '%';
+                    ctx.fillText(displayPercent, this.x, this.y);
                     ctx.restore();
                 }
             }
@@ -1009,14 +1179,16 @@
 
         // Beam class (tool call visualization)
         class Beam {
-            constructor(targetNode, toolName) {
+            constructor(targetNode, toolName, isPermanent = false) {
                 this.targetNode = targetNode;
                 this.toolName = toolName;
-                this.progress = 0;
+                this.progress = isPermanent ? 1 : 0; // Permanent starts complete
                 this.speed = 0.02; // Slower for better visibility
-                this.life = 1;
                 this.color = '#3b82f6';
-                this.pointCreated = false;
+                this.pointCreated = isPermanent; // Permanent already counted
+                this.isComplete = isPermanent;
+                this.shouldDie = false; // Flag to remove animating beam
+                this.pulsePhase = Math.random() * Math.PI * 2; // For subtle animation
 
                 // Random color based on tool type
                 const toolColors = {
@@ -1033,28 +1205,35 @@
             }
 
             update() {
-                this.progress += this.speed;
+                if (!this.isComplete) {
+                    this.progress += this.speed;
 
-                // When beam reaches destination, grow the tool node
-                if (this.progress >= 1 && !this.pointCreated) {
-                    this.pointCreated = true;
+                    // When beam reaches destination
+                    if (this.progress >= 1 && !this.pointCreated) {
+                        this.pointCreated = true;
+                        this.isComplete = true;
 
-                    // Increment the tool node's usage count
-                    if (this.targetNode.addUse) {
-                        this.targetNode.addUse();
+                        // Increment the tool node's usage count
+                        if (this.targetNode.addUse) {
+                            this.targetNode.addUse();
+                        }
+
+                        stats.components++;
+
+                        // Create or update permanent connection for this node
+                        const nodeId = this.targetNode.toolName || this.targetNode.name || 'unknown';
+                        permanentConnections.set(nodeId, new Beam(this.targetNode, this.toolName, true));
+
+                        // Mark this animating beam to be removed
+                        this.shouldDie = true;
                     }
-
-                    stats.components++; // Increment components counter
                 }
 
-                if (this.progress >= 1) {
-                    this.life -= 0.02; // Slower fade for better visibility
-                }
+                // Subtle pulse animation for permanent connections
+                this.pulsePhase += 0.02;
             }
 
             draw(ctx) {
-                if (this.life <= 0) return;
-
                 const startX = centerNode.x;
                 const startY = centerNode.y;
                 const endX = this.targetNode.x;
@@ -1063,18 +1242,23 @@
                 const currentX = startX + (endX - startX) * Math.min(this.progress, 1);
                 const currentY = startY + (endY - startY) * Math.min(this.progress, 1);
 
-                // Debug log (only log first time progress > 0)
-                if (this.progress < 0.1 && !this.logged) {
-                    console.log(`🎨 Drawing beam: ${this.toolName}, from (${startX},${startY}) to (${endX},${endY}), progress: ${this.progress}, life: ${this.life}`);
-                    this.logged = true;
+                // Calculate opacity based on state
+                let opacity;
+                if (this.isComplete) {
+                    // Permanent connection: subtle pulse effect
+                    const pulse = Math.sin(this.pulsePhase) * 0.1 + 0.25;
+                    opacity = pulse;
+                } else {
+                    // Animating beam: full opacity
+                    opacity = 0.8;
                 }
 
-                // Beam
+                // Beam line
                 ctx.save();
                 ctx.strokeStyle = this.color;
-                ctx.globalAlpha = this.life * 0.8;
-                ctx.lineWidth = 2;
-                ctx.shadowBlur = 10;
+                ctx.globalAlpha = opacity;
+                ctx.lineWidth = this.isComplete ? 1 : 2;
+                ctx.shadowBlur = this.isComplete ? 5 : 10;
                 ctx.shadowColor = this.color;
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
@@ -1082,31 +1266,33 @@
                 ctx.stroke();
                 ctx.restore();
 
-                // Tool label
-                if (this.progress > 0.3 && this.progress < 0.9) {
+                // Tool label (only during animation)
+                if (!this.isComplete && this.progress > 0.3 && this.progress < 0.9) {
                     ctx.save();
                     ctx.font = '10px Monaco';
                     ctx.fillStyle = this.color;
-                    ctx.globalAlpha = this.life;
+                    ctx.globalAlpha = 0.8;
                     ctx.textAlign = 'center';
                     ctx.fillText(this.toolName, currentX, currentY - 10);
                     ctx.restore();
                 }
 
-                // Particle at tip
-                ctx.save();
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.life;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = this.color;
-                ctx.beginPath();
-                ctx.arc(currentX, currentY, 3, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
+                // Particle at tip (only during animation)
+                if (!this.isComplete) {
+                    ctx.save();
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = 0.8;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = this.color;
+                    ctx.beginPath();
+                    ctx.arc(currentX, currentY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
 
             isDead() {
-                return this.life <= 0;
+                return this.shouldDie;
             }
         }
 
@@ -1220,6 +1406,60 @@
             }
 
             return componentNodes.get(key);
+        }
+
+        // Recalculate all tool percentages and update positions
+        function recalculateToolPercentages() {
+            // Calculate total tool calls
+            let totalToolCalls = 0;
+            toolNodes.forEach(node => {
+                totalToolCalls += node.count;
+            });
+
+            // Update each tool node's percentage and position
+            toolNodes.forEach(node => {
+                node.updatePercentage(totalToolCalls);
+            });
+        }
+
+        // Recalculate all model percentages
+        function recalculateModelPercentages() {
+            // Calculate total model activity
+            let totalModelActivity = 0;
+            modelNodes.forEach(node => {
+                totalModelActivity += node.count;
+            });
+
+            // Update each model node's percentage
+            modelNodes.forEach(node => {
+                node.updatePercentage(totalModelActivity);
+            });
+        }
+
+        // Recalculate all component percentages and update positions
+        function recalculateComponentPercentages() {
+            // Calculate totals by type
+            const typeTotals = {
+                'command': 0,
+                'skill': 0,
+                'mcp': 0,
+                'subagent': 0
+            };
+
+            componentNodes.forEach(node => {
+                if (typeTotals[node.type] !== undefined) {
+                    typeTotals[node.type] += node.count;
+                }
+            });
+
+            // Calculate grand total for all components
+            const grandTotal = Object.values(typeTotals).reduce((a, b) => a + b, 0);
+
+            // Update each component node's percentage and position
+            // Using grand total so all components compete for center position
+            componentNodes.forEach(node => {
+                node.updatePercentage(grandTotal);
+            });
         }
 
         // Add tool call beam
@@ -1481,7 +1721,7 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            // Clear canvas
+            // Clear canvas (before transform)
             ctx.fillStyle = '#0a0a0f';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1489,14 +1729,19 @@
                 updateAnimationState();
             }
 
+            // Apply zoom and pan transformations
+            ctx.save();
+            ctx.translate(panX, panY);
+            ctx.scale(zoom, zoom);
+
             // Draw grid lines (subtle)
             ctx.save();
             ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < canvas.width; i += 50) {
+            ctx.lineWidth = 1 / zoom; // Keep grid lines same thickness regardless of zoom
+            for (let i = -1000; i < canvas.width / zoom + 1000; i += 50) {
                 ctx.beginPath();
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, canvas.height);
+                ctx.moveTo(i, -1000);
+                ctx.lineTo(i, canvas.height / zoom + 1000);
                 ctx.stroke();
             }
             for (let i = 0; i < canvas.height; i += 50) {
@@ -1507,7 +1752,13 @@
             }
             ctx.restore();
 
-            // Update and draw beams
+            // Update and draw permanent connections first (behind everything)
+            permanentConnections.forEach(beam => {
+                beam.update();
+                beam.draw(ctx);
+            });
+
+            // Update and draw animating beams
             for (let i = beams.length - 1; i >= 0; i--) {
                 beams[i].update();
                 beams[i].draw(ctx);
@@ -1560,6 +1811,19 @@
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('Claude', centerNode.x, centerNode.y);
+                ctx.restore();
+            }
+
+            // Restore zoom/pan transformation
+            ctx.restore();
+
+            // Draw zoom indicator (outside transform so it stays in corner)
+            if (zoom !== 1 || panX !== 0 || panY !== 0) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.font = '11px Monaco';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Zoom: ${Math.round(zoom * 100)}% | Double-click to reset`, 20, canvas.height - 20);
                 ctx.restore();
             }
         }
@@ -1671,6 +1935,11 @@
 
             if (eventsThisFrame > 0) {
                 console.log(`✅ Processed ${eventsThisFrame} events this frame. Current day: ${currentDayIndex}`);
+
+                // Recalculate percentages and positions after processing events
+                recalculateToolPercentages();
+                recalculateComponentPercentages();
+                recalculateModelPercentages();
             }
 
             // Update stats
