@@ -1553,97 +1553,122 @@
                 });
             }
 
+            // Collect all tools and conversations
+            const allTools = new Map(); // tool name -> total count
+            let totalConversations = 0;
+            const allModels = [];
+
             if (data.activityHeatmap) {
                 data.activityHeatmap.forEach(week => {
                     week.forEach(day => {
                         if (day.count > 0) {
-                            const date = new Date(day.date);
-                            timeline.push({
-                                type: 'conversation',
-                                date,
-                                count: day.count,
-                                tools: day.tools || [],
-                                models: day.models || [],
-                                dayOfYear: getDayOfYear(date)
-                            });
+                            totalConversations += day.count;
+
+                            // Collect models
+                            if (day.models) {
+                                day.models.forEach(model => {
+                                    if (!allModels.includes(model)) {
+                                        allModels.push(model);
+                                    }
+                                });
+                            }
+
+                            // Aggregate all tools
+                            if (day.toolCounts) {
+                                Object.entries(day.toolCounts).forEach(([toolName, count]) => {
+                                    allTools.set(toolName, (allTools.get(toolName) || 0) + count);
+                                });
+                            }
                         }
                     });
                 });
             }
 
-            // Add commands, skills, MCPs, and subagents based on their actual timestamps
-            console.log('🔍 DEBUG: Component layer events:');
+            // Create ONE conversation event at the beginning with all models
+            timeline.push({
+                type: 'conversation',
+                date: new Date(),
+                count: totalConversations,
+                models: allModels,
+                dayOfYear: 0 // First thing to process
+            });
+
+            // Create separate timeline events for each tool, distributed over time
+            let toolDayOffset = 10; // Start after models (which are at dayOfYear 0-5)
+            const toolIncrement = 3; // Larger increment for more spacing
+
+            allTools.forEach((totalCount, toolName) => {
+                timeline.push({
+                    type: 'tool-use',
+                    toolName: toolName,
+                    count: totalCount,
+                    date: new Date(),
+                    dayOfYear: toolDayOffset
+                });
+                toolDayOffset += toolIncrement; // Distribute tools gradually
+            });
+
+            // Remember where tools ended
+            const componentsStartDay = toolDayOffset;
+
+            // Add components sequentially after tools (no delays)
+            let componentDayOffset = componentsStartDay;
+            const componentIncrement = 3; // Same spacing as tools
 
             if (data.commands && data.commands.events) {
-                console.log(`📋 Adding ${data.commands.events.length} command events to timeline`);
-                data.commands.events.forEach((event, index) => {
-                    const eventDate = new Date(event.timestamp);
-                    const eventDayOfYear = getDayOfYear(eventDate);
+                console.log(`📋 Adding ${data.commands.events.length} command events`);
+                data.commands.events.forEach((event) => {
                     timeline.push({
                         type: 'component-layer2',
                         componentType: 'command',
                         name: event.name,
-                        date: eventDate,
-                        dayOfYear: eventDayOfYear
+                        date: new Date(),
+                        dayOfYear: componentDayOffset
                     });
-                    if (index === 0) {
-                        console.log(`  - First command "${event.name}": date=${eventDate.toLocaleDateString()}, dayOfYear=${eventDayOfYear.toFixed(3)}`);
-                    }
+                    componentDayOffset += componentIncrement;
                 });
             }
 
             if (data.skills && data.skills.events) {
-                console.log(`📚 Adding ${data.skills.events.length} skill events to timeline`);
-                data.skills.events.forEach((event, index) => {
-                    const eventDate = new Date(event.timestamp);
-                    const eventDayOfYear = getDayOfYear(eventDate);
+                console.log(`📚 Adding ${data.skills.events.length} skill events`);
+                data.skills.events.forEach((event) => {
                     timeline.push({
                         type: 'component-layer2',
                         componentType: 'skill',
                         name: event.name,
-                        date: eventDate,
-                        dayOfYear: eventDayOfYear
+                        date: new Date(),
+                        dayOfYear: componentDayOffset
                     });
-                    if (index === 0) {
-                        console.log(`  - First skill "${event.name}": date=${eventDate.toLocaleDateString()}, dayOfYear=${eventDayOfYear.toFixed(3)}`);
-                    }
+                    componentDayOffset += componentIncrement;
                 });
             }
 
             if (data.mcps && data.mcps.events) {
-                console.log(`🔌 Adding ${data.mcps.events.length} MCP events to timeline`);
-                data.mcps.events.forEach((event, index) => {
-                    const eventDate = new Date(event.timestamp);
-                    const eventDayOfYear = getDayOfYear(eventDate);
+                console.log(`🔌 Adding ${data.mcps.events.length} MCP events`);
+                data.mcps.events.forEach((event) => {
                     timeline.push({
                         type: 'component-layer2',
                         componentType: 'mcp',
                         name: event.name,
-                        date: eventDate,
-                        dayOfYear: eventDayOfYear
+                        date: new Date(),
+                        dayOfYear: componentDayOffset
                     });
-                    if (index === 0) {
-                        console.log(`  - First MCP "${event.name}": date=${eventDate.toLocaleDateString()}, dayOfYear=${eventDayOfYear.toFixed(3)}`);
-                    }
+                    componentDayOffset += componentIncrement;
                 });
             }
 
             if (data.subagents && data.subagents.events) {
-                console.log(`🤖 Adding ${data.subagents.events.length} subagent events to timeline (grouped by type)`);
-                data.subagents.events.forEach((event, index) => {
-                    const eventDate = new Date(event.timestamp);
-                    const eventDayOfYear = getDayOfYear(eventDate);
+                console.log(`🤖 Adding ${data.subagents.events.length} subagent events`);
+                data.subagents.events.forEach((event) => {
                     timeline.push({
                         type: 'component-layer2',
                         componentType: 'subagent',
-                        name: event.name, // Now just "Plan" or "Explore", not "Plan-a68a"
-                        date: eventDate,
-                        dayOfYear: eventDayOfYear,
-                        count: event.count || 1 // How many times used that day
+                        name: event.name,
+                        date: new Date(),
+                        dayOfYear: componentDayOffset,
+                        count: event.count || 1
                     });
-                    if (index === 0) {
-                        console.log(`  - First subagent "${event.name}": date=${eventDate.toLocaleDateString()}, dayOfYear=${eventDayOfYear.toFixed(3)}, count=${event.count || 1}`);
-                    }
+                    componentDayOffset += componentIncrement;
                 });
             }
 
@@ -1775,20 +1800,6 @@
                 recalculateToolPercentages();
                 recalculateComponentPercentages();
                 recalculateModelPercentages();
-            }
-
-            // Process tool queue gradually (1 tool every 5 frames = ~12 tools/second)
-            if (frameCount % 5 === 0 && toolQueue.length > 0) {
-                const { tool, count, color } = toolQueue.shift();
-                const node = getOrCreateToolNode(tool, color);
-
-                // Add all uses at once
-                for (let j = 0; j < count; j++) {
-                    node.addUse();
-                }
-
-                // Create only ONE visual beam per tool
-                setTimeout(() => addToolBeam(tool), Math.random() * 300);
             }
 
             // Apply zoom and pan transformations
@@ -1924,43 +1935,8 @@
                     eventsThisFrame++;
 
                     if (event.type === 'conversation') {
-                        // Calculate actual tool count from toolCounts
-                        const actualToolCount = event.toolCounts ?
-                            Object.values(event.toolCounts).reduce((sum, count) => sum + count, 0) :
-                            event.tools.length * event.count;
-
-                        console.log(`🎬 Processing conversation on day ${event.dayOfYear}: ${event.count} conversations, ${actualToolCount} tool calls`);
+                        console.log(`🎬 Processing conversation: ${event.count} conversations`);
                         stats.conversations += event.count;
-                        stats.tools += actualToolCount;
-
-                        // Add tool counts to queue for gradual processing
-                        if (event.toolCounts) {
-                            Object.entries(event.toolCounts).forEach(([tool, count]) => {
-                                const toolColors = {
-                                    'Read': '#60a5fa', 'Write': '#34d399', 'Edit': '#fbbf24',
-                                    'Bash': '#f87171', 'TodoWrite': '#a78bfa', 'Task': '#fb923c',
-                                    'Glob': '#2dd4bf', 'Grep': '#c084fc', 'WebFetch': '#f472b6',
-                                    'WebSearch': '#818cf8', 'KillShell': '#ef4444', 'TaskOutput': '#06b6d4'
-                                };
-                                const color = toolColors[tool] || '#3b82f6';
-
-                                // Add to queue for gradual processing
-                                toolQueue.push({ tool, count, color });
-                            });
-                        } else {
-                            // Fallback to old method if toolCounts not available
-                            event.tools.forEach(tool => {
-                                const toolColors = {
-                                    'Read': '#60a5fa', 'Write': '#34d399', 'Edit': '#fbbf24',
-                                    'Bash': '#f87171', 'TodoWrite': '#a78bfa', 'Task': '#fb923c',
-                                    'Glob': '#2dd4bf', 'Grep': '#c084fc'
-                                };
-                                const color = toolColors[tool] || '#3b82f6';
-                                const node = getOrCreateToolNode(tool, color);
-                                node.addUse();
-                                setTimeout(() => addToolBeam(tool), Math.random() * 300);
-                            });
-                        }
 
                         // Process models using actual counts
                         if (event.models && event.models.length > 0) {
@@ -1995,6 +1971,31 @@
                         console.log(`📦 Processing component: ${event.name} (${event.componentType})`);
                         addComponent(event.name, event.componentType);
                         // showEvent(`Installed: ${event.name}`); // Disabled - notifications removed
+                    } else if (event.type === 'tool-use') {
+                        // Process tool event (one tool at a time, like components)
+                        const toolColors = {
+                            'Read': '#60a5fa', 'Write': '#34d399', 'Edit': '#fbbf24',
+                            'Bash': '#f87171', 'TodoWrite': '#a78bfa', 'Task': '#fb923c',
+                            'Glob': '#2dd4bf', 'Grep': '#c084fc', 'WebFetch': '#f472b6',
+                            'WebSearch': '#818cf8', 'KillShell': '#ef4444', 'TaskOutput': '#06b6d4'
+                        };
+                        const color = toolColors[event.toolName] || '#3b82f6';
+                        const node = getOrCreateToolNode(event.toolName, color);
+
+                        // Add all uses for this tool
+                        for (let j = 0; j < event.count; j++) {
+                            node.addUse();
+                        }
+
+                        // Update stats
+                        stats.tools += event.count;
+
+                        // Create beam
+                        const beam = new Beam(node, event.toolName);
+                        beams.push(beam);
+
+                        console.log(`🔷 tool: ${event.toolName} (added: ${event.count}, total: ${node.count})`);
+
                     } else if (event.type === 'component-layer2') {
                         const node = getOrCreateComponentNode(event.name, event.componentType);
 
