@@ -447,6 +447,9 @@
 
         // Active beams (tool calls) - animating beams
         let beams = [];
+        // Beam queue for performance (limit active beams)
+        let beamQueue = [];
+        const MAX_ACTIVE_BEAMS = 10; // OPTIMIZED: Limit simultaneous beams for performance
         // Permanent connections (one per node) - Map of nodeId -> beam
         let permanentConnections = new Map();
 
@@ -1175,7 +1178,7 @@
                 this.targetNode = targetNode;
                 this.toolName = toolName;
                 this.progress = isPermanent ? 1 : 0; // Permanent starts complete
-                this.speed = 0.02; // Slower for better visibility
+                this.speed = 0.1; // OPTIMIZED: 5x faster (was 0.02)
                 this.color = '#3b82f6';
                 this.pointCreated = isPermanent; // Permanent already counted
                 this.isComplete = isPermanent;
@@ -1205,14 +1208,8 @@
                         this.pointCreated = true;
                         this.isComplete = true;
 
-                        // Increment the tool node's usage count
-                        if (this.targetNode.addUse) {
-                            this.targetNode.addUse();
-                        }
-
-                        stats.components++;
-
-                        // Create or update permanent connection for this node
+                        // OPTIMIZED: Counter already updated before beam creation, don't duplicate
+                        // Just create permanent connection
                         const nodeId = this.targetNode.toolName || this.targetNode.name || 'unknown';
                         permanentConnections.set(nodeId, new Beam(this.targetNode, this.toolName, true));
 
@@ -1242,45 +1239,22 @@
                     opacity = pulse;
                 } else {
                     // Animating beam: full opacity
-                    opacity = 0.8;
+                    opacity = 0.6;
                 }
 
-                // Beam line
+                // Beam line - OPTIMIZED: No shadows for better performance
                 ctx.save();
                 ctx.strokeStyle = this.color;
                 ctx.globalAlpha = opacity;
                 ctx.lineWidth = this.isComplete ? 1 : 2;
-                ctx.shadowBlur = this.isComplete ? 5 : 10;
-                ctx.shadowColor = this.color;
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(currentX, currentY);
                 ctx.stroke();
                 ctx.restore();
 
-                // Tool label (only during animation)
-                if (!this.isComplete && this.progress > 0.3 && this.progress < 0.9) {
-                    ctx.save();
-                    ctx.font = '10px Monaco';
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = 0.8;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(this.toolName, currentX, currentY - 10);
-                    ctx.restore();
-                }
-
-                // Particle at tip (only during animation)
-                if (!this.isComplete) {
-                    ctx.save();
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = 0.8;
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = this.color;
-                    ctx.beginPath();
-                    ctx.arc(currentX, currentY, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
+                // OPTIMIZED: Removed tool label text for performance
+                // OPTIMIZED: Removed particle at tip for performance
             }
 
             isDead() {
@@ -1479,9 +1453,9 @@
             // Get or create the tool node
             const targetNode = getOrCreateToolNode(toolName, color);
 
-            // Create beam to this tool node
+            // Create beam to this tool node - OPTIMIZED: Add to queue
             const beam = new Beam(targetNode, toolName);
-            beams.push(beam);
+            beamQueue.push(beam);
         }
 
         // Load data from API ONLY (no mock data)
@@ -1831,6 +1805,12 @@
                 beam.draw(ctx);
             });
 
+            // OPTIMIZED: Process beam queue - add beams from queue if under limit
+            while (beams.length < MAX_ACTIVE_BEAMS && beamQueue.length > 0) {
+                const queuedBeam = beamQueue.shift();
+                beams.push(queuedBeam);
+            }
+
             // Update and draw animating beams
             for (let i = beams.length - 1; i >= 0; i--) {
                 beams[i].update();
@@ -1990,9 +1970,9 @@
                         // Update stats
                         stats.tools += event.count;
 
-                        // Create beam
+                        // Create beam - OPTIMIZED: Add to queue instead of directly to beams
                         const beam = new Beam(node, event.toolName);
-                        beams.push(beam);
+                        beamQueue.push(beam);
 
                         console.log(`🔷 tool: ${event.toolName} (added: ${event.count}, total: ${node.count})`);
 
@@ -2005,9 +1985,9 @@
                             node.addUse();
                         }
 
-                        // Create beam to this component node
+                        // Create beam to this component node - OPTIMIZED: Add to queue
                         const beam = new Beam(node, event.name);
-                        beams.push(beam);
+                        beamQueue.push(beam);
 
                         console.log(`🔷 ${event.componentType}: ${event.name} at ${event.date?.toLocaleDateString()} (added: ${useCount}, total: ${node.count}, size: ${node.targetSize.toFixed(1)})`);
                     }
@@ -2159,8 +2139,8 @@
             shownMilestones.clear();
             currentDayIndex = 0;
             beams = [];
+            beamQueue = []; // OPTIMIZED: Clear beam queue
             permanentConnections.clear(); // Clear permanent connection beams
-            toolQueue = []; // Clear tool processing queue
             toolNodes.clear(); // Clear tool nodes
             uniqueTools.clear(); // Clear unique tools
             modelNodes.clear(); // Clear model nodes
