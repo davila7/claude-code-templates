@@ -60,10 +60,7 @@
         }
 
         .current-date {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-accent);
-            margin-bottom: 15px;
+            display: none;
         }
 
         .stat-line {
@@ -134,13 +131,7 @@
         }
 
         .timeline {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            max-width: 1000px;
-            pointer-events: auto;
+            display: none;
         }
 
         .timeline-bar {
@@ -1718,9 +1709,57 @@
             animate();
         }
 
+        // Frame counter for periodic recalculations
+        let frameCount = 0;
+
         // Animation loop
+        // Collision detection and resolution
+        function resolveCollisions() {
+            const allNodes = [];
+
+            // Collect all nodes
+            toolNodes.forEach(node => allNodes.push(node));
+            componentNodes.forEach(node => allNodes.push(node));
+            modelNodes.forEach(node => allNodes.push(node));
+
+            // Check each pair for collision
+            for (let i = 0; i < allNodes.length; i++) {
+                for (let j = i + 1; j < allNodes.length; j++) {
+                    const nodeA = allNodes[i];
+                    const nodeB = allNodes[j];
+
+                    const dx = nodeB.x - nodeA.x;
+                    const dy = nodeB.y - nodeA.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const minDistance = nodeA.size + nodeB.size + 10; // 10px padding
+
+                    if (distance < minDistance && distance > 0) {
+                        // Nodes are overlapping, push them apart
+                        const overlap = minDistance - distance;
+                        const angle = Math.atan2(dy, dx);
+
+                        // Move each node half the overlap distance
+                        const moveX = Math.cos(angle) * overlap * 0.5;
+                        const moveY = Math.sin(angle) * overlap * 0.5;
+
+                        nodeA.x -= moveX;
+                        nodeA.y -= moveY;
+                        nodeB.x += moveX;
+                        nodeB.y += moveY;
+
+                        // Also update target positions to prevent snapping back
+                        nodeA.targetX -= moveX * 0.1;
+                        nodeA.targetY -= moveY * 0.1;
+                        nodeB.targetX += moveX * 0.1;
+                        nodeB.targetY += moveY * 0.1;
+                    }
+                }
+            }
+        }
+
         function animate() {
             requestAnimationFrame(animate);
+            frameCount++;
 
             // Clear canvas (before transform)
             ctx.fillStyle = '#0a0a0f';
@@ -1728,6 +1767,13 @@
 
             if (isPlaying) {
                 updateAnimationState();
+            }
+
+            // Recalculate percentages periodically (every 30 frames ~0.5s)
+            if (frameCount % 30 === 0) {
+                recalculateToolPercentages();
+                recalculateComponentPercentages();
+                recalculateModelPercentages();
             }
 
             // Apply zoom and pan transformations
@@ -1785,6 +1831,9 @@
                 node.update();
                 node.draw(ctx);
             });
+
+            // Resolve collisions between all nodes
+            resolveCollisions();
 
             // Update and draw all nodes
             Object.values(branches).forEach(branch => {
@@ -1844,15 +1893,13 @@
 
             currentDayIndex = rangeStart + Math.floor(progress * rangeDuration);
 
-            document.getElementById('timelineProgress').style.width = `${progress * 100}%`;
-
-            // Use startDate from data
-            const date = new Date(animationData.startDate);
-            const dayOffset = currentDayIndex - rangeStart;
-            date.setDate(date.getDate() + dayOffset);
-
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            document.getElementById('currentDate').textContent = `${monthNames[date.getMonth()]} ${date.getDate()}`;
+            // Timeline and date display removed - no need to update
+            // document.getElementById('timelineProgress').style.width = `${progress * 100}%`;
+            // const date = new Date(animationData.startDate);
+            // const dayOffset = currentDayIndex - rangeStart;
+            // date.setDate(date.getDate() + dayOffset);
+            // const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            // document.getElementById('currentDate').textContent = `${monthNames[date.getMonth()]} ${date.getDate()}`;
 
             // Process events
             let eventsThisFrame = 0;
@@ -1871,20 +1918,41 @@
                         stats.conversations += event.count;
                         stats.tools += actualToolCount;
 
-                        // Add tool beams using actual counts
+                        // Add tool counts directly (optimized - no individual beams)
                         if (event.toolCounts) {
                             Object.entries(event.toolCounts).forEach(([tool, count]) => {
-                                console.log(`  🔧 Adding ${count} beams for tool: ${tool}`);
-                                // Create multiple beams based on actual usage count
+                                // Get or create tool node and update count directly
+                                const toolColors = {
+                                    'Read': '#60a5fa', 'Write': '#34d399', 'Edit': '#fbbf24',
+                                    'Bash': '#f87171', 'TodoWrite': '#a78bfa', 'Task': '#fb923c',
+                                    'Glob': '#2dd4bf', 'Grep': '#c084fc', 'WebFetch': '#f472b6',
+                                    'WebSearch': '#818cf8', 'KillShell': '#ef4444', 'TaskOutput': '#06b6d4'
+                                };
+                                const color = toolColors[tool] || '#3b82f6';
+                                const node = getOrCreateToolNode(tool, color);
+
+                                // Add all uses at once (much faster than creating beams)
                                 for (let i = 0; i < count; i++) {
-                                    setTimeout(() => addToolBeam(tool), Math.random() * 1000 + i * 50);
+                                    node.addUse();
                                 }
+
+                                // Create only ONE visual beam per tool (not per use)
+                                setTimeout(() => addToolBeam(tool), Math.random() * 300);
+
+                                console.log(`  🔧 Tool ${tool}: +${count} uses (total: ${node.count})`);
                             });
                         } else {
                             // Fallback to old method if toolCounts not available
                             event.tools.forEach(tool => {
-                                console.log(`  🔧 Adding tool beam: ${tool}`);
-                                setTimeout(() => addToolBeam(tool), Math.random() * 500);
+                                const toolColors = {
+                                    'Read': '#60a5fa', 'Write': '#34d399', 'Edit': '#fbbf24',
+                                    'Bash': '#f87171', 'TodoWrite': '#a78bfa', 'Task': '#fb923c',
+                                    'Glob': '#2dd4bf', 'Grep': '#c084fc'
+                                };
+                                const color = toolColors[tool] || '#3b82f6';
+                                const node = getOrCreateToolNode(tool, color);
+                                node.addUse();
+                                setTimeout(() => addToolBeam(tool), Math.random() * 300);
                             });
                         }
 
@@ -2007,7 +2075,6 @@
                 item.innerHTML = `
                     <div class="legend-dot" style="background: ${model.color};"></div>
                     <span>${model.name}</span>
-                    <span style="margin-left: auto; color: rgba(255,255,255,0.5); font-size: 11px;">${model.count}</span>
                 `;
                 modelsList.appendChild(item);
             });
@@ -2037,7 +2104,6 @@
                 item.innerHTML = `
                     <div class="legend-dot" style="background: ${tool.color};"></div>
                     <span>${tool.name}</span>
-                    <span style="margin-left: auto; color: rgba(255,255,255,0.5); font-size: 11px;">${tool.count}</span>
                 `;
                 toolsList.appendChild(item);
             });
@@ -2074,7 +2140,6 @@
                 item.innerHTML = `
                     <div class="legend-dot" style="background: ${component.color};"></div>
                     <span>${component.name}</span>
-                    <span style="margin-left: auto; color: rgba(255,255,255,0.5); font-size: 11px;">${component.count}</span>
                 `;
                 componentsList.appendChild(item);
             });
@@ -2087,6 +2152,7 @@
             shownMilestones.clear();
             currentDayIndex = 0;
             beams = [];
+            permanentConnections.clear(); // Clear permanent connection beams
             toolNodes.clear(); // Clear tool nodes
             uniqueTools.clear(); // Clear unique tools
             modelNodes.clear(); // Clear model nodes

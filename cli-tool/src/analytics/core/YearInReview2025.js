@@ -348,22 +348,40 @@ class YearInReview2025 {
    * @returns {Array} Heatmap data by week
    */
   generateActivityHeatmap(conversations) {
+    console.log(`\n🔥🔥🔥 GENERATING HEATMAP for ${conversations.length} conversations\n`);
+
     // Create map of day -> activity count, tools, and models
     const dailyActivity = new Map();
 
-    conversations.forEach(conv => {
+    conversations.forEach((conv, idx) => {
       if (conv.lastModified) {
         const date = new Date(conv.lastModified);
         const dayKey = date.toISOString().split('T')[0];
+
+        if (idx < 3) {
+          console.log(`  📝 Conv ${idx}: id=${conv.id}, tokens=${conv.tokens}, tokenUsage.total=${conv.tokenUsage?.total}`);
+        }
 
         const current = dailyActivity.get(dayKey) || {
           count: 0,
           tools: [],
           models: [],
           modelCounts: {},
-          toolCounts: {}
+          toolCounts: {},
+          tokens: 0
         };
         current.count += 1;
+
+        // Add tokens from this conversation
+        if (conv.tokenUsage && conv.tokenUsage.total) {
+          current.tokens += conv.tokenUsage.total;
+          if (idx < 3) console.log(`  💎 Added ${conv.tokenUsage.total} tokens from conv ${conv.id} to ${dayKey}`);
+        } else if (conv.tokens) {
+          current.tokens += conv.tokens;
+          if (idx < 3) console.log(`  💎 Added ${conv.tokens} tokens (fallback) from conv ${conv.id} to ${dayKey}`);
+        } else {
+          if (idx < 3) console.log(`  ⚠️  Conv ${conv.id} has NO token data`);
+        }
 
         // Count tool usage with actual numbers from toolStats
         if (conv.toolUsage && conv.toolUsage.toolStats) {
@@ -411,7 +429,8 @@ class YearInReview2025 {
         tools: [],
         models: [],
         toolCounts: {},
-        modelCounts: {}
+        modelCounts: {},
+        tokens: 0
       };
 
       // Determine intensity level (0-4 like GitHub)
@@ -428,6 +447,7 @@ class YearInReview2025 {
         models: dayData.models,
         toolCounts: dayData.toolCounts,
         modelCounts: dayData.modelCounts,
+        tokens: dayData.tokens,
         level,
         day: currentDate.getDay()
       });
