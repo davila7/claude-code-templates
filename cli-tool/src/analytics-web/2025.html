@@ -1637,19 +1637,20 @@
             }
 
             if (data.subagents && data.subagents.events) {
-                console.log(`🤖 Adding ${data.subagents.events.length} subagent events to timeline`);
+                console.log(`🤖 Adding ${data.subagents.events.length} subagent events to timeline (grouped by type)`);
                 data.subagents.events.forEach((event, index) => {
                     const eventDate = new Date(event.timestamp);
                     const eventDayOfYear = getDayOfYear(eventDate);
                     timeline.push({
                         type: 'component-layer2',
                         componentType: 'subagent',
-                        name: event.name,
+                        name: event.name, // Now just "Plan" or "Explore", not "Plan-a68a"
                         date: eventDate,
-                        dayOfYear: eventDayOfYear
+                        dayOfYear: eventDayOfYear,
+                        count: event.count || 1 // How many times used that day
                     });
                     if (index === 0) {
-                        console.log(`  - First subagent "${event.name}": date=${eventDate.toLocaleDateString()}, dayOfYear=${eventDayOfYear.toFixed(3)}`);
+                        console.log(`  - First subagent "${event.name}": date=${eventDate.toLocaleDateString()}, dayOfYear=${eventDayOfYear.toFixed(3)}, count=${event.count || 1}`);
                     }
                 });
             }
@@ -1922,13 +1923,18 @@
                         // showEvent(`Installed: ${event.name}`); // Disabled - notifications removed
                     } else if (event.type === 'component-layer2') {
                         const node = getOrCreateComponentNode(event.name, event.componentType);
-                        node.addUse();
+
+                        // Add uses based on event count (for grouped subagents)
+                        const useCount = event.count || 1;
+                        for (let j = 0; j < useCount; j++) {
+                            node.addUse();
+                        }
 
                         // Create beam to this component node
                         const beam = new Beam(node, event.name);
                         beams.push(beam);
 
-                        console.log(`🔷 ${event.componentType}: ${event.name} at ${event.date?.toLocaleDateString()} (count: ${node.count}, size: ${node.targetSize.toFixed(1)})`);
+                        console.log(`🔷 ${event.componentType}: ${event.name} at ${event.date?.toLocaleDateString()} (added: ${useCount}, total: ${node.count}, size: ${node.targetSize.toFixed(1)})`);
                     }
                 }
             });

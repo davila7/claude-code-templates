@@ -904,19 +904,54 @@ class YearInReview2025 {
       }
 
       const subagents = Array.from(agentData.values());
-      const subagentEvents = subagents
-        .filter(agent => agent.timestamp && agent.timestamp.getFullYear() === 2025)
-        .map(agent => ({
-          name: `${agent.type}-${agent.id.substring(0, 4)}`, // e.g., "Plan-a68a" or "Explore-a1e4"
-          timestamp: agent.timestamp,
-          type: agent.type
-        }))
-        .sort((a, b) => a.timestamp - b.timestamp);
+
+      // Group subagents by type for cleaner visualization
+      const groupedByType = {};
+      subagents.forEach(agent => {
+        const type = agent.type || 'Unknown';
+        if (!groupedByType[type]) {
+          groupedByType[type] = { count: 0, timestamps: [] };
+        }
+        groupedByType[type].count++;
+        if (agent.timestamp && agent.timestamp.getFullYear() === 2025) {
+          groupedByType[type].timestamps.push(agent.timestamp);
+        }
+      });
+
+      // Create events grouped by type (one event per type per day)
+      const subagentEvents = [];
+      Object.entries(groupedByType).forEach(([type, data]) => {
+        // Group timestamps by day to avoid too many events
+        const dayMap = new Map();
+        data.timestamps.forEach(ts => {
+          const dayKey = ts.toISOString().split('T')[0];
+          if (!dayMap.has(dayKey)) {
+            dayMap.set(dayKey, { count: 0, timestamp: ts });
+          }
+          dayMap.get(dayKey).count++;
+        });
+
+        // Create one event per day per type
+        dayMap.forEach((dayData, dayKey) => {
+          subagentEvents.push({
+            name: type, // Just "Plan" or "Explore", not "Plan-a68a"
+            timestamp: dayData.timestamp,
+            type: type,
+            count: dayData.count // How many times used that day
+          });
+        });
+      });
+
+      subagentEvents.sort((a, b) => a.timestamp - b.timestamp);
 
       return {
-        subagents: subagents.map(a => ({ id: a.id, type: a.type })),
+        subagents: Object.entries(groupedByType).map(([type, data]) => ({
+          type,
+          count: data.count
+        })),
         total: subagents.length,
-        events: subagentEvents
+        events: subagentEvents,
+        grouped: groupedByType // Include grouped data for display
       };
     } catch (error) {
       console.warn('Could not analyze subagents:', error.message);
