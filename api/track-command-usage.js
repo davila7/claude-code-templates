@@ -34,7 +34,9 @@ function validateCommandData(data) {
     'studio',
     'command-stats',
     'hook-stats',
-    'mcp-stats'
+    'mcp-stats',
+    'skills-manager',
+    '2025-year-in-review'
   ];
 
   if (!validCommands.includes(command)) {
