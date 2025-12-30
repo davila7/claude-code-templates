@@ -1777,9 +1777,8 @@
                 recalculateModelPercentages();
             }
 
-            // Process tool queue gradually (max 3 tools per frame to avoid lag)
-            const toolsToProcessPerFrame = 3;
-            for (let i = 0; i < toolsToProcessPerFrame && toolQueue.length > 0; i++) {
+            // Process tool queue gradually (1 tool every 5 frames = ~12 tools/second)
+            if (frameCount % 5 === 0 && toolQueue.length > 0) {
                 const { tool, count, color } = toolQueue.shift();
                 const node = getOrCreateToolNode(tool, color);
 
