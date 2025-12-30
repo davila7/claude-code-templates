@@ -418,6 +418,7 @@
         let toolNodes = new Map(); // Map of tool name -> tool node
         let uniqueTools = new Map(); // Track unique tools with their colors
         let modelNodes = new Map(); // Map of model name -> model node
+        let toolQueue = []; // Queue for gradual tool processing
 
         // Mouse tracking
         let mouseX = 0;
@@ -1776,6 +1777,21 @@
                 recalculateModelPercentages();
             }
 
+            // Process tool queue gradually (max 3 tools per frame to avoid lag)
+            const toolsToProcessPerFrame = 3;
+            for (let i = 0; i < toolsToProcessPerFrame && toolQueue.length > 0; i++) {
+                const { tool, count, color } = toolQueue.shift();
+                const node = getOrCreateToolNode(tool, color);
+
+                // Add all uses at once
+                for (let j = 0; j < count; j++) {
+                    node.addUse();
+                }
+
+                // Create only ONE visual beam per tool
+                setTimeout(() => addToolBeam(tool), Math.random() * 300);
+            }
+
             // Apply zoom and pan transformations
             ctx.save();
             ctx.translate(panX, panY);
@@ -1918,10 +1934,9 @@
                         stats.conversations += event.count;
                         stats.tools += actualToolCount;
 
-                        // Add tool counts directly (optimized - no individual beams)
+                        // Add tool counts to queue for gradual processing
                         if (event.toolCounts) {
                             Object.entries(event.toolCounts).forEach(([tool, count]) => {
-                                // Get or create tool node and update count directly
                                 const toolColors = {
                                     'Read': '#60a5fa', 'Write': '#34d399', 'Edit': '#fbbf24',
                                     'Bash': '#f87171', 'TodoWrite': '#a78bfa', 'Task': '#fb923c',
@@ -1929,17 +1944,9 @@
                                     'WebSearch': '#818cf8', 'KillShell': '#ef4444', 'TaskOutput': '#06b6d4'
                                 };
                                 const color = toolColors[tool] || '#3b82f6';
-                                const node = getOrCreateToolNode(tool, color);
 
-                                // Add all uses at once (much faster than creating beams)
-                                for (let i = 0; i < count; i++) {
-                                    node.addUse();
-                                }
-
-                                // Create only ONE visual beam per tool (not per use)
-                                setTimeout(() => addToolBeam(tool), Math.random() * 300);
-
-                                console.log(`  🔧 Tool ${tool}: +${count} uses (total: ${node.count})`);
+                                // Add to queue for gradual processing
+                                toolQueue.push({ tool, count, color });
                             });
                         } else {
                             // Fallback to old method if toolCounts not available
@@ -2153,6 +2160,7 @@
             currentDayIndex = 0;
             beams = [];
             permanentConnections.clear(); // Clear permanent connection beams
+            toolQueue = []; // Clear tool processing queue
             toolNodes.clear(); // Clear tool nodes
             uniqueTools.clear(); // Clear unique tools
             modelNodes.clear(); // Clear model nodes
