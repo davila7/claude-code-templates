@@ -52,11 +52,12 @@
             top: 20px;
             left: 20px;
             background: rgba(10, 10, 15, 0.8);
-            padding: 20px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             pointer-events: auto;
+            min-width: 280px;
         }
 
         .current-date {
@@ -64,14 +65,15 @@
         }
 
         .stat-line {
-            font-size: 13px;
-            margin: 5px 0;
+            font-size: 16px;
+            margin: 8px 0;
             opacity: 0.9;
         }
 
         .stat-value {
             color: var(--text-accent);
             font-weight: 600;
+            font-size: 18px;
         }
 
         .legend {
@@ -412,6 +414,8 @@
         let startTime = null;
         let currentDayIndex = 0;
         let stats = { conversations: 0, components: 0, tools: 0 };
+        let statsTarget = { conversations: 0, components: 0, tools: 0 }; // Target values for animation
+        let statsDisplay = { conversations: 0, components: 0, tools: 0 }; // Current animated values
         let processedEvents = new Set();
         let shownMilestones = new Set();
         let toolNodes = new Map(); // Map of tool name -> tool node
@@ -1915,7 +1919,7 @@
 
                     if (event.type === 'conversation') {
                         console.log(`🎬 Processing conversation: ${event.count} conversations`);
-                        stats.conversations += event.count;
+                        statsTarget.conversations += event.count;
 
                         // Process models using actual counts
                         if (event.models && event.models.length > 0) {
@@ -1958,8 +1962,8 @@
                             node.addUse();
                         }
 
-                        // Update stats
-                        stats.tools += event.count;
+                        // Update stats target (will animate gradually)
+                        statsTarget.tools += event.count;
 
                         // Create beam - OPTIMIZED: Add to queue instead of directly to beams
                         const beam = new Beam(node, event.toolName);
@@ -1976,8 +1980,8 @@
                             node.addUse();
                         }
 
-                        // Update stats
-                        stats.components += useCount;
+                        // Update stats target (will animate gradually)
+                        statsTarget.components += useCount;
 
                         // Create beam to this component node - OPTIMIZED: Add to queue
                         const beam = new Beam(node, event.name);
@@ -1997,10 +2001,16 @@
                 recalculateModelPercentages();
             }
 
-            // Update stats
-            document.getElementById('statConversations').textContent = stats.conversations;
-            document.getElementById('statComponents').textContent = stats.components;
-            document.getElementById('statTools').textContent = stats.tools;
+            // Animate stats display towards target values (smooth counting up)
+            const animationSpeed = 0.1; // Speed of counter animation
+            statsDisplay.conversations += (statsTarget.conversations - statsDisplay.conversations) * animationSpeed;
+            statsDisplay.components += (statsTarget.components - statsDisplay.components) * animationSpeed;
+            statsDisplay.tools += (statsTarget.tools - statsDisplay.tools) * animationSpeed;
+
+            // Update stats display (rounded to integers)
+            document.getElementById('statConversations').textContent = Math.floor(statsDisplay.conversations);
+            document.getElementById('statComponents').textContent = Math.floor(statsDisplay.components);
+            document.getElementById('statTools').textContent = Math.floor(statsDisplay.tools);
 
             // Check milestones
             const milestones = [
@@ -2011,7 +2021,7 @@
             ];
 
             milestones.forEach(m => {
-                if (stats.conversations >= m.threshold && !shownMilestones.has(m.threshold)) {
+                if (statsTarget.conversations >= m.threshold && !shownMilestones.has(m.threshold)) {
                     shownMilestones.add(m.threshold);
                     // showEvent(m.msg); // Disabled - notifications removed
                 }
@@ -2128,6 +2138,8 @@
         // Controls
         function restartAnimation() {
             stats = { conversations: 0, components: 0, tools: 0 };
+            statsTarget = { conversations: 0, components: 0, tools: 0 };
+            statsDisplay = { conversations: 0, components: 0, tools: 0 };
             processedEvents.clear();
             shownMilestones.clear();
             currentDayIndex = 0;
