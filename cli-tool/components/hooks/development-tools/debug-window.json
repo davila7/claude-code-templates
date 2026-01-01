@@ -1,0 +1,16 @@
+{
+  "description": "Auto Debug Log Viewer. Automatically opens a new window with live debug log output when a Claude Code session starts.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/debug-window.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
