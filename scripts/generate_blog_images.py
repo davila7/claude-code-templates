@@ -39,41 +39,79 @@ def check_google_api_key():
     return api_key
 
 
-def generate_blog_image(title, description, output_path, api_key):
+def generate_blog_image(title, description, component_type, component_name, install_command, output_path, api_key):
     """
     Generate a blog cover image using Google's Imagen API via AI Studio.
 
     Args:
         title: Article title
         description: Article description
+        component_type: Type of component (Agent, MCP, Skill, etc.)
+        component_name: Name of the component
+        install_command: Installation command
         output_path: Path to save the generated image
         api_key: Google API key
     """
-    # Create detailed prompt for blog cover image
-    prompt = f"""Create a professional, modern blog cover image for a technical tutorial.
+    # Split install command into two lines for better readability
+    if "--agent" in install_command:
+        cmd_parts = install_command.split("--agent ")
+        cmd_line1 = cmd_parts[0].strip()
+        cmd_line2 = "--agent " + cmd_parts[1]
+    elif "--mcp" in install_command:
+        cmd_parts = install_command.split("--mcp ")
+        cmd_line1 = cmd_parts[0].strip()
+        cmd_line2 = "--mcp " + cmd_parts[1]
+    elif "--skill" in install_command:
+        cmd_parts = install_command.split("--skill ")
+        cmd_line1 = cmd_parts[0].strip()
+        cmd_line2 = "--skill " + cmd_parts[1]
+    else:
+        cmd_line1 = install_command
+        cmd_line2 = ""
 
-Title: {title}
+    # Simplify the command display to avoid text rendering issues
+    # Show just the essential part
+    if cmd_line2:
+        simple_cmd = cmd_line2.strip()  # Just show "--agent folder/name" etc
+    else:
+        simple_cmd = cmd_line1
 
-Description: {description}
+    # Create detailed prompt similar to supabase-claude-code-templates-cover.png
+    prompt = f"""Create a professional blog cover image with this EXACT layout and text:
 
-Style requirements:
-- Clean, modern design with a tech/developer aesthetic
-- Use terminal/code theme with dark background
-- Include subtle circuit board or code patterns
-- Professional color scheme (orange #F97316 as accent, dark gray/black background)
-- Bold, readable typography
-- Technical but approachable feel
-- 16:9 aspect ratio (1200x675px ideal)
-- High contrast for readability
-- Minimalist composition
+LEFT SIDE (40% width):
+- Black background (#000000)
+- Text exactly as "CLAUDE CODE TEMPLATES" in pixelated/retro orange font (#F97316)
+- Font style: Bold, blocky, retro gaming aesthetic similar to arcade game fonts
+- Stacked vertically with equal spacing between words
+- Centered vertically on left side
 
-Visual elements:
-- Terminal window or IDE interface subtle in background
-- Abstract tech patterns (lines, nodes, circuits)
-- Modern gradient overlays
-- Clean geometric shapes
+CENTER:
+- Vertical line divider in dark gray (#333333) 2px width
+- Full height of image from top to bottom
 
-NO text in the image - just visual design elements."""
+RIGHT SIDE (60% width):
+- Black background (#000000)
+- At top: Small badge with text "{component_type}" in solid orange rectangle (#F97316) with rounded corners, black text inside
+- Below badge: Large bold white text saying "{component_name}"
+- At bottom: Small gray monospace text showing: "{simple_cmd}"
+
+CRITICAL TEXT RENDERING REQUIREMENTS:
+- All text must be perfectly readable and not corrupted
+- Use clear, legible fonts
+- Ensure proper spacing so text doesn't overlap or get cut off
+- The installation command at bottom should be clearly visible
+
+Overall specifications:
+- Exact dimensions: 1200x675 pixels (16:9 aspect ratio)
+- Background: Pure black (#000000)
+- Primary accent color: Orange (#F97316)
+- Text colors: White (#FFFFFF) for component name, Gray (#999999) for command
+- Minimalist, professional design
+- No decorative elements, gradients, or patterns - just text and divider
+- Clean, modern tech aesthetic similar to terminal/CLI interfaces
+
+The layout divides the image into two sections with a vertical line: left side shows "CLAUDE CODE TEMPLATES" in retro orange font, right side shows component type, name, and install command."""
 
     print(f"🎨 Generating image for: {title}")
     print(f"📝 Prompt length: {len(prompt)} chars")
@@ -199,14 +237,66 @@ def main():
         filename = item["filename"]
         output_path = item["output_path"]
 
+        # Extract component information from article ID
+        article_id = article.get("id", "")
+
+        # Determine component type and name based on article category
+        category = article.get("category", "")
+
+        if "agent" in article_id.lower() or category == "Agents":
+            component_type = "AGENT"
+            # Extract agent name from ID (e.g., frontend-developer-agent -> frontend-developer)
+            agent_name = article_id.replace("-agent", "")
+            component_name = agent_name.replace("-", " ").title()
+
+            # Find actual agent path in components/agents/
+            import subprocess
+            try:
+                result = subprocess.run(
+                    ["find", "cli-tool/components/agents", "-name", f"{agent_name}.md", "-type", "f"],
+                    capture_output=True,
+                    text=True
+                )
+                agent_path = result.stdout.strip()
+                if agent_path:
+                    # Extract folder/name from path (e.g., development-team/frontend-developer)
+                    parts = agent_path.split("/agents/")[1].replace(".md", "")
+                    install_command = f"npx claude-code-templates@latest --agent {parts}"
+                else:
+                    install_command = f"npx claude-code-templates@latest --agent {agent_name}"
+            except:
+                install_command = f"npx claude-code-templates@latest --agent {agent_name}"
+        elif "mcp" in article_id.lower() or category == "MCP":
+            component_type = "MCP"
+            component_name = article_id.replace("-mcp", "").replace("-", " ").title()
+            install_command = f"npx claude-code-templates@latest --mcp {article_id.replace('-mcp', '')}"
+        elif "skill" in article_id.lower() or category == "Skills":
+            component_type = "SKILL"
+            component_name = article_id.replace("-skill", "").replace("-", " ").title()
+            install_command = f"npx claude-code-templates@latest --skill {article_id}"
+        elif "sandbox" in article_id.lower() or "e2b" in article_id.lower():
+            component_type = "SANDBOX"
+            component_name = article_id.replace("-", " ").title()
+            install_command = f"npx claude-code-templates@latest --sandbox e2b"
+        else:
+            component_type = "COMPONENT"
+            component_name = article_id.replace("-", " ").title()
+            install_command = f"npx claude-code-templates@latest"
+
         print(f"\n{'='*60}")
         print(f"📄 Article: {article['title']}")
+        print(f"🏷️  Type: {component_type}")
+        print(f"📦 Component: {component_name}")
+        print(f"💻 Command: {install_command}")
         print(f"💾 Output: {filename}")
         print(f"{'='*60}\n")
 
         success = generate_blog_image(
             title=article["title"],
             description=article["description"],
+            component_type=component_type,
+            component_name=component_name,
+            install_command=install_command,
             output_path=str(output_path),
             api_key=api_key
         )
