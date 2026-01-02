@@ -52,9 +52,9 @@ function buildGitHubUrl(componentType, componentName, extension) {
  * @returns {string} Full GitHub API URL
  */
 function buildGitHubApiUrl(componentType, subPath = '') {
-  const { owner, repo, componentsPath } = GITHUB_CONFIG;
+  const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
   const fullPath = subPath ? `${componentType}/${subPath}` : componentType;
-  return `https://api.github.com/repos/${owner}/${repo}/contents/${componentsPath}/${fullPath}`;
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${componentsPath}/${fullPath}?ref=${branch}`;
 }
 
 /**
