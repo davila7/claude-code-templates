@@ -33,7 +33,7 @@ function buildGitHubUrl(componentPath, extension) {
  */
 function buildGitHubApiUrl(contentPath) {
   const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
-  return `https://api.github.com/repos/${owner}/${repo}/contents/${componentsPath}/${contentPath}?ref=${branch}`;
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${componentsPath}/${contentPath}?ref=${encodeURIComponent(branch)}`;
 }
 
 // Global agents directory
