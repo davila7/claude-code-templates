@@ -150,18 +150,7 @@ class BlogLoader {
     sortArticles(sortBy) {
         const difficultyOrder = { basic: 1, intermediate: 2, advanced: 3 };
 
-        // Helper function to parse date as local time
-        const parseDate = (dateString) => {
-            const [year, month, day] = dateString.split('-').map(Number);
-            return new Date(year, month - 1, day);
-        };
-
         switch (sortBy) {
-            case 'date-asc':
-                this.filteredArticles.sort((a, b) =>
-                    parseDate(a.publishDate) - parseDate(b.publishDate)
-                );
-                break;
             case 'difficulty-asc':
                 this.filteredArticles.sort((a, b) =>
                     difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]
@@ -172,12 +161,9 @@ class BlogLoader {
                     difficultyOrder[b.difficulty] - difficultyOrder[a.difficulty]
                 );
                 break;
-            case 'date-desc':
             default:
-                // Newest first is now the default
-                this.filteredArticles.sort((a, b) =>
-                    parseDate(b.publishDate) - parseDate(a.publishDate)
-                );
+                // Keep original order from JSON (by order field)
+                this.filteredArticles.sort((a, b) => (a.order || 0) - (b.order || 0));
                 break;
         }
     }
@@ -312,9 +298,6 @@ class BlogLoader {
                 </div>
                 <div class="article-content">
                     <div class="article-meta">
-                        <time datetime="${this.escapeHtml(article.publishDate)}">
-                            ${this.formatDate(article.publishDate)}
-                        </time>
                         <span class="read-time">${this.escapeHtml(article.readTime)}</span>
                         ${difficultyBadge}
                     </div>
@@ -394,19 +377,6 @@ class BlogLoader {
     }
 
     /**
-     * Format date string to readable format
-     * @param {string} dateString - ISO date string (YYYY-MM-DD)
-     * @returns {string} Formatted date
-     */
-    formatDate(dateString) {
-        // Parse date as local time to avoid timezone issues
-        const [year, month, day] = dateString.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString('en-US', options);
-    }
-
-    /**
      * Escape HTML to prevent XSS
      * @param {string} text - Text to escape
      * @returns {string} Escaped text
@@ -472,9 +442,6 @@ class BlogLoader {
                 </div>
                 <div class="featured-content">
                     <div class="featured-meta">
-                        <time datetime="${this.escapeHtml(article.publishDate)}">
-                            ${this.formatDate(article.publishDate)}
-                        </time>
                         <span class="read-time">${this.escapeHtml(article.readTime)}</span>
                     </div>
                     <h3>${this.escapeHtml(article.title)}</h3>

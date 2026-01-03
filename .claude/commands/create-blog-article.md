@@ -95,11 +95,61 @@ Create directory:
 mkdir -p docs/blog/[blog-id]
 ```
 
-Create `docs/blog/[blog-id]/index.html` with this structure:
+**CRITICAL PROCESS:**
+
+1. **First, READ the template file completely:**
+   ```bash
+   Read docs/blog/code-reviewer-agent/index.html
+   ```
+
+2. **Copy the ENTIRE content** to the new file location:
+   ```bash
+   Write docs/blog/[blog-id]/index.html
+   ```
+
+3. **Then, ONLY replace the specific content sections** (listed below)
+
+**DO NOT:**
+- ❌ Create HTML from scratch
+- ❌ Use a different template
+- ❌ Simplify or remove any scripts
+- ❌ Change the header/footer structure
+- ❌ Modify CSS paths or class names
+
+Create `docs/blog/[blog-id]/index.html` using this process:
 
 ### HTML Template Structure
 
-Use `docs/blog/frontend-developer-agent/index.html` as the base template.
+**CRITICAL**: Use `docs/blog/code-reviewer-agent/index.html` as the EXACT base template.
+
+This template includes ALL required components:
+- ✅ Header with `class="header"` (NOT "blog-header")
+- ✅ ASCII art logo in terminal-header
+- ✅ Copy as Markdown button (`id="copy-markdown-btn"`)
+- ✅ Proper article structure: `article-header` → `article-body` → `article-content-full`
+- ✅ "Explore Components" banner at the end of content
+- ✅ Footer with ASCII art and links
+- ✅ CodeCopy script (adds copy buttons to code blocks)
+- ✅ MarkdownCopier script (copy entire article as markdown)
+- ✅ Mermaid diagram support script
+
+**DO NOT create custom HTML structure** - copy the template EXACTLY and only replace the content-specific parts.
+
+#### How to Use the Template:
+
+1. **Copy the entire file** from `code-reviewer-agent/index.html`
+2. **Only replace these specific content areas**:
+   - SEO meta tags (title, description, keywords, Open Graph)
+   - Article title and subtitle in `<h1>` and `<p class="article-subtitle">`
+   - Tags in `<div class="article-tags">`
+   - Main content inside `<div class="article-content-full">` (everything between the opening and closing div)
+   - Cover image src and alt text
+3. **Keep EVERYTHING else unchanged**:
+   - Header structure and navigation
+   - Copy Markdown button
+   - Footer with ASCII art
+   - All three scripts at the end (CodeCopy, MarkdownCopier, Mermaid)
+   - CSS links and paths
 
 #### Key SEO Elements to Customize:
 
@@ -289,38 +339,43 @@ Update the temporary entry in `docs/blog/blog-articles.json` with complete infor
 - intermediate: Requires some setup or understanding
 - advanced: Complex workflows or configuration
 
-**Mermaid Script** (Before closing `</body>` tag):
-Add Mermaid support script at the end of the HTML, just before `</body>`:
+**Scripts at End of HTML**:
 
-```html
-<!-- Mermaid Diagram Support -->
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#F97316',
-      primaryTextColor: '#fff',
-      primaryBorderColor: '#F97316',
-      lineColor: '#00ff41',
-      secondaryColor: '#1a1a1a',
-      tertiaryColor: '#2d2d2d'
-    }
-  });
-</script>
-</body>
-</html>
-```
+The template already includes ALL required scripts before `</body>`:
+
+1. **CodeCopy script** (~180 lines) - Adds copy buttons to code blocks
+2. **MarkdownCopier script** (~160 lines) - Copy article as Markdown functionality
+3. **Mermaid script** (~15 lines) - Diagram rendering support
+
+**CRITICAL**: These scripts are ALREADY in the template. DO NOT:
+- ❌ Remove them
+- ❌ Modify them
+- ❌ Duplicate them
+- ❌ Create simplified versions
+
+If you copy the template correctly, these scripts will already be present and working.
 
 ## Step 6: Final Checklist
 
 Verify before completion:
 
+**Files & Structure:**
 - [ ] Cover image exists at `docs/blog/assets/[blog-id]-cover.png`
 - [ ] Blog article exists at `docs/blog/[blog-id]/index.html`
+- [ ] HTML file copied from `code-reviewer-agent/index.html` template
+- [ ] Header has `class="header"` (NOT "blog-header")
+- [ ] Copy Markdown button present with `id="copy-markdown-btn"`
+- [ ] Article structure: `article-header` → `article-body` → `article-content-full`
+- [ ] "Explore Components" banner present at end of content
+- [ ] Footer with ASCII art and links present
+
+**Scripts (verify all 3 are present):**
+- [ ] CodeCopy script present (~180 lines before Mermaid)
+- [ ] MarkdownCopier script present (~160 lines before Mermaid)
+- [ ] Mermaid script present (last script before `</body>`)
+
+**Content:**
 - [ ] Mermaid diagram added after "What is..." section
-- [ ] Mermaid script added before closing `</body>` tag
 - [ ] All paths are relative (images, CSS, links)
 - [ ] Installation command shows correct folder/name structure
 - [ ] File tree shows correct installation path
