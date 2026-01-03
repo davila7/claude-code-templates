@@ -19,7 +19,7 @@ Clean temporary files and caches to free disk space: $ARGUMENTS
 
 Based on the arguments provided, execute the appropriate cleanup level:
 
-### Option 1: Conservative Cleanup (default, ~10GB)
+### Option 1: Conservative Cleanup (default)
 
 Safe cleanup of package manager caches that can be easily rebuilt:
 
@@ -44,7 +44,7 @@ rm -rf ~/Library/Caches/Yarn
 df -h / | tail -1 | awk '{print "After: " $4 " free"}'
 ```
 
-### Option 2: Aggressive Cleanup (--aggressive flag, ~25GB)
+### Option 2: Aggressive Cleanup (--aggressive flag)
 
 Includes all conservative cleanup plus browser and development tool caches:
 
@@ -81,7 +81,7 @@ rm -rf ~/.cache/whisper
 df -h / | tail -1 | awk '{print "After aggressive cleanup: " $4 " free"}'
 ```
 
-### Option 3: Maximum Cleanup (--maximum flag, ~29GB+)
+### Option 3: Maximum Cleanup (--maximum flag)
 
 Includes all aggressive cleanup plus Docker and old node_modules:
 
