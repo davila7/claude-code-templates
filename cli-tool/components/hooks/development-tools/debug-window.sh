@@ -15,7 +15,7 @@ check_debug_flag() {
             cmdline=$(ps -p "$pid" -o args= 2>/dev/null)
         fi
 
-        if [[ "$cmdline" == *"--debug"* ]]; then
+        if [[ "$cmdline" =~ (^|[[:space:]])--debug($|[[:space:]]) ]]; then
             return 0
         fi
 
