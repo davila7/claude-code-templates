@@ -14,6 +14,7 @@ const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 const FileWatcher = require('./analytics/core/FileWatcher');
 const SessionAnalyzer = require('./analytics/core/SessionAnalyzer');
 const AgentAnalyzer = require('./analytics/core/AgentAnalyzer');
+const YearInReview2025 = require('./analytics/core/YearInReview2025');
 const DataCache = require('./analytics/data/DataCache');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const NotificationManager = require('./analytics/notifications/NotificationManager');
@@ -32,6 +33,7 @@ class ClaudeAnalytics {
     this.fileWatcher = new FileWatcher();
     this.sessionAnalyzer = new SessionAnalyzer();
     this.agentAnalyzer = new AgentAnalyzer();
+    this.yearInReview2025 = new YearInReview2025();
     this.dataCache = new DataCache();
     this.performanceMonitor = new PerformanceMonitor({
       enabled: true,
@@ -1244,6 +1246,37 @@ class ClaudeAnalytics {
       }
     });
 
+    // Year in Review 2025 API endpoint
+    this.app.get('/api/2025', async (req, res) => {
+      try {
+        console.log('📅 Generating 2025 Year in Review...');
+
+        // Load all conversations for analysis
+        const allConversations = await this.conversationAnalyzer.loadConversations(this.stateCalculator);
+
+        // Generate year in review statistics
+        const yearInReview = await this.yearInReview2025.generateYearInReview(allConversations, this.claudeDir);
+
+        console.log(`✅ 2025 Year in Review generated with ${yearInReview.totalConversations} conversations`);
+
+        res.json({
+          ...yearInReview,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error generating 2025 year in review:', error);
+        res.status(500).json({
+          error: 'Failed to generate year in review',
+          message: error.message
+        });
+      }
+    });
+
+    // Year in Review 2025 page route
+    this.app.get('/2025', (req, res) => {
+      res.sendFile(path.join(__dirname, 'analytics-web', '2025.html'));
+    });
+
     // Main dashboard route
     this.app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'analytics-web', 'index.html'));
@@ -1268,15 +1301,18 @@ class ClaudeAnalytics {
   async openBrowser(openTo = null) {
     const baseUrl = this.publicUrl || `http://localhost:${this.port}`;
     let fullUrl = baseUrl;
-    
-    // Add fragment/hash for specific page
+
+    // Add fragment/hash or path for specific page
     if (openTo === 'agents') {
       fullUrl = `${baseUrl}/#agents`;
       console.log(chalk.blue('🌐 Opening browser to Claude Code Chats...'));
+    } else if (openTo === '2025') {
+      fullUrl = `${baseUrl}/2025`;
+      console.log(chalk.blue('🎉 Opening browser to 2025 Year in Review...'));
     } else {
       console.log(chalk.blue('🌐 Opening browser to Claude Code Analytics...'));
     }
-    
+
     try {
       await open(fullUrl);
     } catch (error) {

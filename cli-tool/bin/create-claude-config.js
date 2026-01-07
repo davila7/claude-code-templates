@@ -60,6 +60,7 @@ program
   .option('--chats-mobile', 'launch mobile-first chats interface (AI-optimized for mobile devices)')
   .option('--plugins', 'launch Plugin Dashboard to view marketplaces, installed plugins, and permissions')
   .option('--skills-manager', 'launch Skills Dashboard to view and explore installed Claude Code Skills')
+  .option('--2025', 'launch 2025 Year in Review dashboard (showcase your Claude Code usage statistics)')
   .option('--tunnel', 'enable Cloudflare Tunnel for remote access (use with --analytics or --chats)')
   .option('--verbose', 'enable verbose logging for debugging and development')
   .option('--health-check, --health, --check, --verify', 'run comprehensive health check to verify Claude Code setup')

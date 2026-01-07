@@ -45,7 +45,14 @@
       "Bash(sed:*)",
       "Bash(xargs:*)",
       "Bash(git checkout:*)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(lsof:*)",
+      "Bash(done)",
+      "Bash(head:*)"
     ],
     "deny": []
   },

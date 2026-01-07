@@ -146,11 +146,12 @@ async function createClaudeConfig(options = {}) {
   const targetDir = options.directory || process.cwd();
   
   // Validate --tunnel usage
-  if (options.tunnel && !options.analytics && !options.chats && !options.agents && !options.chatsMobile) {
-    console.log(chalk.red('❌ Error: --tunnel can only be used with --analytics, --chats, or --chats-mobile'));
+  if (options.tunnel && !options.analytics && !options.chats && !options.agents && !options.chatsMobile && !options['2025']) {
+    console.log(chalk.red('❌ Error: --tunnel can only be used with --analytics, --chats, --2025, or --chats-mobile'));
     console.log(chalk.yellow('💡 Examples:'));
     console.log(chalk.gray('  cct --analytics --tunnel'));
     console.log(chalk.gray('  cct --chats --tunnel'));
+    console.log(chalk.gray('  cct --2025 --tunnel'));
     console.log(chalk.gray('  cct --chats-mobile'));
     return;
   }
@@ -239,6 +240,14 @@ async function createClaudeConfig(options = {}) {
     trackingService.trackCommandExecution('analytics', { tunnel: options.tunnel || false });
     trackingService.trackAnalyticsDashboard({ page: 'dashboard', source: 'command_line' });
     await runAnalytics(options);
+    return;
+  }
+
+  // Handle 2025 Year in Review dashboard
+  if (options['2025']) {
+    trackingService.trackCommandExecution('2025-year-in-review');
+    trackingService.trackAnalyticsDashboard({ page: '2025', source: 'command_line' });
+    await runAnalytics({ ...options, openTo: '2025' });
     return;
   }
 
