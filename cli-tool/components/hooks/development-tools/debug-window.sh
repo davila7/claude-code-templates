@@ -1,6 +1,37 @@
 #!/bin/bash
 # SessionStart Hook
-# Opens debug log in a new window
+# Opens debug log in a new window only when --debug flag is present
+
+# Check if --debug flag is present in parent process tree
+check_debug_flag() {
+    local pid=$$
+    while [[ $pid -ne 1 ]]; do
+        local cmdline
+        if [[ -f "/proc/$pid/cmdline" ]]; then
+            # Linux
+            cmdline=$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)
+        else
+            # macOS
+            cmdline=$(ps -p "$pid" -o args= 2>/dev/null)
+        fi
+
+        if [[ "$cmdline" =~ (^|[[:space:]])--debug($|[[:space:]]) ]]; then
+            return 0
+        fi
+
+        # Get parent PID
+        local ppid
+        ppid=$(ps -p "$pid" -o ppid= 2>/dev/null | tr -d ' ')
+        [[ -z "$ppid" || "$ppid" == "$pid" ]] && break
+        pid=$ppid
+    done
+    return 1
+}
+
+# Exit early if --debug flag is not present
+if ! check_debug_flag; then
+    exit 0
+fi
 
 # Read JSON input from stdin
 INPUT=$(cat)
