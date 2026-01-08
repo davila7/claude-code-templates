@@ -54,3 +54,6 @@ test-cloudflare/
 
 # Deployment
 .vercel
+
+# Local analysis (not for git)
+analysis/
