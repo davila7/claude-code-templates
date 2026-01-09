@@ -1105,6 +1105,24 @@ async function installIndividualHook(hookName, targetDir, options) {
       // Python file is optional, silently continue if not found
     }
 
+    // Check if there's a corresponding Bash script for ANY hook
+    const bashUrl = githubUrl.replace('.json', '.sh');
+
+    try {
+      console.log(chalk.gray(`📥 Checking for additional bash script...`));
+      const bashResponse = await fetch(bashUrl);
+      if (bashResponse.ok) {
+        const bashContent = await bashResponse.text();
+        additionalFiles[`.claude/hooks/${hookBaseName}.sh`] = {
+          content: bashContent,
+          executable: true
+        };
+        console.log(chalk.green(`✓ Found bash script: ${hookBaseName}.sh`));
+      }
+    } catch (error) {
+      // Bash file is optional, silently continue if not found
+    }
+
     // Remove description field before merging
     if (hookConfig && typeof hookConfig === 'object') {
       delete hookConfig.description;
