@@ -164,7 +164,7 @@ class FeaturedCarousel {
         this.carousel = document.getElementById('featuredCarousel');
         this.leftBtn = document.querySelector('.featured-section .carousel-btn-left');
         this.rightBtn = document.querySelector('.featured-section .carousel-btn-right');
-        this.scrollAmount = 370; // Width of one featured card plus gap
+        this.scrollAmount = 304; // Width of one featured card (280px) plus gap (24px)
         this.init();
     }
 
