@@ -1,18 +1,6 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "docs",
-  "git": {
-    "deploymentEnabled": {
-      "main": true,
-      "master": true
-    }
-  },
-  "github": {
-    "enabled": true,
-    "autoAlias": true,
-    "silent": false,
-    "autoJobCancelation": true
-  },
   "crons": [
     {
       "path": "/api/claude-code-check",

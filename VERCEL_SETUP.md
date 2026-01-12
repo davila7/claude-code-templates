@@ -19,13 +19,18 @@ La forma más sencilla es usar la integración nativa de Vercel con GitHub:
    - Selecciona tu proyecto
    - Ve a **Settings** → **Git**
 
-3. **Habilitar Preview Deployments:**
-   - En la sección **"Production Branch"**, asegúrate que esté configurado `main` o `master`
-   - En **"Preview Deployments"**, activa:
-     - ✅ **Deploy on Pull Request**
-     - ✅ **Automatic Updates from Git**
+3. **Configurar las ramas:**
+   - En **"Production Branch"**: Deja `main` o `master`
+   - ⚠️ **IMPORTANTE**: Solo los pushes a esta rama irán a producción
+   - Los PRs y otras ramas crearán SOLO preview deployments (no afectan producción)
 
-4. **Configurar permisos de GitHub:**
+4. **Habilitar Preview Deployments:**
+   - En **"Git"**, verifica que esté activado:
+     - ✅ **All Branches** (para preview de todas las ramas)
+     - ✅ **Pull Requests** (para preview en PRs)
+   - **NO modifiques** las opciones de auto-deployment de producción
+
+5. **Configurar permisos de GitHub:**
    - Ve a **Settings** → **Git** → **GitHub Integration**
    - Asegúrate que Vercel tenga permisos para:
      - Leer el repositorio
@@ -35,9 +40,13 @@ La forma más sencilla es usar la integración nativa de Vercel con GitHub:
 ### Resultado:
 
 Cada vez que se abra o actualice un PR, Vercel automáticamente:
-- ✅ Creará un preview deployment
-- ✅ Agregará un comentario en el PR con el link
+- ✅ Creará un preview deployment (NO afecta producción)
+- ✅ Agregará un comentario en el PR con el preview link
 - ✅ Mostrará el status en los checks del PR
+
+**Producción** solo se actualiza cuando:
+- Haces merge del PR a `main`/`master`
+- O ejecutas manualmente `vercel --prod`
 
 ---
 
@@ -110,19 +119,23 @@ node_modules
 .DS_Store
 ```
 
-### Deshabilitar previews para branches específicos:
+### Deshabilitar auto-deploy a producción (solo previews):
+
+Si quieres SOLO preview deployments y deshabilitar auto-deploy a producción:
 
 En `vercel.json`:
 ```json
 {
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "master": true
+      "main": false,
+      "master": false
     }
   }
 }
 ```
+
+⚠️ **Nota**: Esto deshabilitará auto-deploy a producción. Tendrás que hacer deploy manual con `vercel --prod`.
 
 ### Variables de entorno para previews:
 
