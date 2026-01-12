@@ -200,13 +200,27 @@
       "difficulty": "basic",
       "featured": true,
       "order": 16
+    },
+    {
+      "id": "webflow-mcp",
+      "title": "Webflow MCP for Claude Code: Website Builder & Design Automation 2026",
+      "description": "Complete guide to Webflow MCP for Claude Code - automate website building, manage Webflow sites programmatically, and control CMS operations with AI-powered integration.",
+      "url": "webflow-mcp/",
+      "image": "assets/webflow-mcp-cover.png",
+      "category": "MCP",
+      "publishDate": "2026-01-12",
+      "readTime": "4 min read",
+      "tags": ["Claude Code", "MCP", "Webflow", "Website Builder", "CMS", "Design Automation"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 17
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-01-02",
-    "totalArticles": 16,
+    "lastUpdated": "2026-01-12",
+    "totalArticles": 17,
     "difficultyLevels": {
-      "basic": 8,
+      "basic": 9,
       "intermediate": 3,
       "advanced": 5
     }
