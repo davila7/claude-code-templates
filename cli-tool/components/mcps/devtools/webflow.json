@@ -1,8 +1,9 @@
 {
   "mcpServers": {
     "webflow": {
-      "description":"Enable AI agents to interact with Webflow APIs.",
-      "command": "npx mcp-remote https://mcp.webflow.com/sse"
+      "description": "Webflow website builder integration enabling AI agents to interact with Webflow APIs for site management, content updates, CMS operations, and design automation. Build and manage websites programmatically with full access to Webflow's visual development platform.",
+      "command": "npx",
+      "args": ["mcp-remote", "https://mcp.webflow.com/sse"]
     }
   }
 }
