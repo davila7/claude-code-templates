@@ -115,5 +115,8 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 
 elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
     # Windows Git Bash / Cygwin
-    taskkill //F //FI "COMMANDLINE eq *${DEBUG_LOG}*" 2>/dev/null
+    # Note: taskkill /FI does not support COMMANDLINE filter
+    # Use ps and kill instead, which work in Git Bash/Cygwin environments
+    TAIL_PID=$(ps -s | grep "tail.*${DEBUG_LOG}" | grep -v grep | awk '{print $1}' | head -1)
+    [[ -n "$TAIL_PID" ]] && kill "$TAIL_PID" 2>/dev/null
 fi
