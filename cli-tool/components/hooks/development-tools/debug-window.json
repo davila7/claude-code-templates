@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/close-debug-window.sh"
+            "command": ".claude/hooks/debug-window.sh"
           }
         ]
       }
