@@ -1,0 +1,20 @@
+{
+  "description": "Automatically loads Superpowers skills system at session start using a bash script. Injects the 'using-superpowers' skill content to provide context about available development workflows, TDD practices, and systematic debugging approaches. This version uses the companion superpowers-loader.sh script for more robust handling.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/superpowers-loader.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "additionalFiles": {
+    ".claude/hooks/superpowers-loader.sh": "superpowers-loader.sh"
+  }
+}

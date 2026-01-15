@@ -1,0 +1,17 @@
+{
+  "description": "Automatically loads Superpowers skills system at session start. Injects the 'using-superpowers' skill content to provide context about available development workflows, TDD practices, and systematic debugging approaches.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json, sys, os; skill_path = os.path.expanduser('~/.claude/skills/using-superpowers.md'); skill_content = open(skill_path, 'r').read() if os.path.exists(skill_path) else ''; context = f'<EXTREMELY_IMPORTANT>\\nYou have superpowers.\\n\\n**Below is the full content of your \\'superpowers:using-superpowers\\' skill - your introduction to using skills. For all other skills, use the \\'Skill\\' tool:**\\n\\n{skill_content}\\n</EXTREMELY_IMPORTANT>' if skill_content else ''; output = {'hookSpecificOutput': {'hookEventName': 'SessionStart', 'additionalContext': context}}; print(json.dumps(output))\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
