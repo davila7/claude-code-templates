@@ -2,6 +2,52 @@
 
 This file provides guidance to Claude Code when working with this repository.
 
+## ⛔ CRITICAL RULES - READ FIRST ⛔
+
+### 🚫 NEVER PUSH TO MAIN/PRODUCTION
+
+**ABSOLUTELY FORBIDDEN to push directly to main, master, or production branches.**
+
+**ALWAYS work in feature branches:**
+- ✅ CORRECT: `git push origin claude/feature-name-xxxxx`
+- ❌ WRONG: `git push origin main`
+- ❌ WRONG: `git push origin master`
+
+**Mandatory workflow:**
+1. Create/use feature branch (must start with `claude/`)
+2. Make commits on the feature branch
+3. Push to feature branch ONLY
+4. Create Pull Request from the feature branch
+5. NEVER merge directly - human will review the PR
+
+**If you accidentally push to main:**
+1. ⚠️ STOP IMMEDIATELY
+2. ⚠️ ALERT THE USER
+3. ⚠️ DO NOT attempt to revert without supervision
+
+### 🌍 ALWAYS USE ENGLISH
+
+**ALL code, comments, documentation, commit messages, and communication MUST be in English.**
+
+**This includes:**
+- ✅ Code comments
+- ✅ Variable/function names
+- ✅ Commit messages
+- ✅ Documentation
+- ✅ Error messages
+- ✅ Console logs
+- ✅ PR descriptions
+- ✅ Issues
+
+**Never use:**
+- ❌ Spanish
+- ❌ Any other language besides English
+
+**If you accidentally write in another language:**
+1. ⚠️ Rewrite immediately in English
+2. ⚠️ Amend the commit if already committed
+3. ⚠️ Never push non-English content
+
 ## Project Overview
 
 Node.js CLI tool for managing Claude Code components (agents, commands, MCPs, hooks, settings) with a static website for browsing and installing components. The project includes Vercel API endpoints for download tracking and Discord integration.
