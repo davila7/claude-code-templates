@@ -108,6 +108,57 @@ describe('API Endpoints - Critical Tests', () => {
 
   });
 
+  describe('🟣 Telegram PR Notifications', () => {
+
+    test('POST /api/github-pr-webhook should be available', async () => {
+      const response = await axios.post(
+        `${BASE_URL}/api/github-pr-webhook`,
+        {},
+        {
+          timeout: TIMEOUT,
+          validateStatus: () => true
+        }
+      );
+
+      // Endpoint should respond (even if GitHub validation fails)
+      expect(response.status).toBeLessThan(500);
+    }, TIMEOUT);
+
+    test('POST /api/github-pr-webhook should handle CORS preflight', async () => {
+      const response = await axios.options(
+        `${BASE_URL}/api/github-pr-webhook`,
+        {
+          timeout: TIMEOUT,
+          validateStatus: () => true
+        }
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.headers['access-control-allow-origin']).toBeDefined();
+    }, TIMEOUT);
+
+    test('POST /api/github-pr-webhook should ignore non-PR events', async () => {
+      const response = await axios.post(
+        `${BASE_URL}/api/github-pr-webhook`,
+        {
+          action: 'created',
+          issue: { number: 1 }
+        },
+        {
+          headers: {
+            'X-GitHub-Event': 'issues'
+          },
+          timeout: TIMEOUT,
+          validateStatus: () => true
+        }
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.data.message).toContain('ignored');
+    }, TIMEOUT);
+
+  });
+
   describe('🔵 Command Usage Tracking', () => {
 
     test('POST /api/track-command-usage should be available', async () => {
@@ -181,11 +232,12 @@ describe('API Endpoints - Critical Tests', () => {
         '/api/track-download-supabase',
         '/api/track-command-usage',
         '/api/discord/interactions',
-        '/api/claude-code-check'
+        '/api/claude-code-check',
+        '/api/github-pr-webhook'
       ];
 
       for (const endpoint of endpoints) {
-        const method = endpoint.includes('track-') || endpoint.includes('discord')
+        const method = endpoint.includes('track-') || endpoint.includes('discord') || endpoint.includes('webhook')
           ? 'post'
           : 'get';
 
