@@ -1005,21 +1005,32 @@ class ChatsMobile {
     try {
       const homeDir = os.homedir();
       const claudeDataDir = path.join(homeDir, '.claude');
-      
+
       if (await fs.pathExists(claudeDataDir)) {
         // Use ConversationAnalyzer to load conversations
         const conversations = await this.conversationAnalyzer.loadConversations(this.stateCalculator);
-        
+
         this.data.conversations = conversations || [];
         this.data.conversationStates = {}; // Will be populated by state calculation if needed
         this.data.lastUpdate = new Date().toISOString();
-        
+
+        // Build a set of current conversation IDs for cleanup
+        const currentConversationIds = new Set(conversations.map(c => c.id));
+
+        // Clean up stale entries from Maps (conversations that no longer exist)
+        for (const existingId of this.conversationMessageCounts.keys()) {
+          if (!currentConversationIds.has(existingId)) {
+            this.conversationMessageCounts.delete(existingId);
+            this.conversationMessageSnapshots.delete(existingId);
+          }
+        }
+
         // Initialize message counts and snapshots for each conversation
         for (const conversation of conversations) {
           try {
             const parsedMessages = await this.conversationAnalyzer.getParsedConversation(conversation.filePath);
             this.conversationMessageCounts.set(conversation.id, parsedMessages.length);
-            
+
             // Initialize snapshots for change detection
             const snapshots = parsedMessages.map(msg => this.generateMessageSnapshot(msg));
             this.conversationMessageSnapshots.set(conversation.id, snapshots);
@@ -1029,7 +1040,7 @@ class ChatsMobile {
             this.conversationMessageSnapshots.set(conversation.id, []);
           }
         }
-        
+
         console.log(chalk.green(`📂 Loaded ${this.data.conversations.length} conversations`));
         console.log(chalk.gray(`📊 Initialized message counts for ${this.conversationMessageCounts.size} conversations`));
       } else {
