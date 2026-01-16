@@ -61,3 +61,6 @@ test-cloudflare/
 
 # Local analysis (not for git)
 analysis/
+
+# Webhook secrets
+.webhook-secret
