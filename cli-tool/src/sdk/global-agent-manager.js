@@ -4,6 +4,38 @@ const os = require('os');
 const chalk = require('chalk');
 const ora = require('ora');
 
+/**
+ * GitHub configuration for downloading components
+ * Can be overridden via environment variables for custom forks
+ */
+const GITHUB_CONFIG = {
+  owner: process.env.CCT_REPO_OWNER || 'davila7',
+  repo: process.env.CCT_REPO_NAME || 'claude-code-templates',
+  branch: process.env.CCT_REPO_BRANCH || 'main',
+  componentsPath: process.env.CCT_COMPONENTS_PATH || 'cli-tool/components'
+};
+
+/**
+ * Build GitHub raw content URL for a component
+ * @param {string} componentPath - Full path to component (e.g., 'agents/security-auditor')
+ * @param {string} extension - File extension (md, json, py)
+ * @returns {string} Full GitHub raw content URL
+ */
+function buildGitHubUrl(componentPath, extension) {
+  const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${componentsPath}/${componentPath}.${extension}`;
+}
+
+/**
+ * Build GitHub API URL for repository contents
+ * @param {string} contentPath - Path within the repository
+ * @returns {string} Full GitHub API URL
+ */
+function buildGitHubApiUrl(contentPath) {
+  const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${componentsPath}/${contentPath}?ref=${encodeURIComponent(branch)}`;
+}
+
 // Global agents directory
 const GLOBAL_AGENTS_DIR = path.join(os.homedir(), '.claude-code-templates');
 const AGENTS_DIR = path.join(GLOBAL_AGENTS_DIR, 'agents');
@@ -44,12 +76,13 @@ async function createGlobalAgent(agentName, options = {}) {
     }
     
     // Download agent from GitHub
-    const spinner = ora('Downloading agent from GitHub...').start();
-    
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const spinner = ora(`Downloading agent from GitHub (${GITHUB_CONFIG.branch} branch)...`).start();
+
     let githubUrl;
     if (agentName.includes('/')) {
       // Category/agent format
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/agents/${agentName}.md`;
+      githubUrl = buildGitHubUrl(`agents/${agentName}`, 'md');
     } else {
       // Direct agent format - try to find it in any category
       githubUrl = await findAgentUrl(agentName);
@@ -532,27 +565,29 @@ async function addToPath() {
 
 /**
  * Find agent URL by searching in all categories
+ * Uses GITHUB_CONFIG for custom repository support via environment variables
  */
 async function findAgentUrl(agentName) {
   try {
     // First try root level
-    const rootUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/agents/${agentName}.md`;
+    const rootUrl = buildGitHubUrl(`agents/${agentName}`, 'md');
     const rootResponse = await fetch(rootUrl);
     if (rootResponse.ok) {
       return rootUrl;
     }
-    
+
     // Search in categories
-    const categoriesResponse = await fetch('https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents');
+    const categoriesApiUrl = buildGitHubApiUrl('agents');
+    const categoriesResponse = await fetch(categoriesApiUrl);
     if (!categoriesResponse.ok) {
       return null;
     }
-    
+
     const contents = await categoriesResponse.json();
-    
+
     for (const item of contents) {
       if (item.type === 'dir') {
-        const categoryUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/agents/${item.name}/${agentName}.md`;
+        const categoryUrl = buildGitHubUrl(`agents/${item.name}/${agentName}`, 'md');
         try {
           const categoryResponse = await fetch(categoryUrl);
           if (categoryResponse.ok) {
@@ -563,7 +598,7 @@ async function findAgentUrl(agentName) {
         }
       }
     }
-    
+
     return null;
   } catch (error) {
     return null;
@@ -572,27 +607,30 @@ async function findAgentUrl(agentName) {
 
 /**
  * Show available agents for user selection
+ * Uses GITHUB_CONFIG for custom repository support via environment variables
  */
 async function showAvailableAgents() {
   console.log(chalk.yellow('\n📋 Available Agents:'));
   console.log(chalk.gray('Use format: category/agent-name or just agent-name\n'));
-  
+
   try {
-    const response = await fetch('https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents');
+    const agentsApiUrl = buildGitHubApiUrl('agents');
+    const response = await fetch(agentsApiUrl);
     if (!response.ok) {
       console.log(chalk.red('❌ Could not fetch available agents from GitHub'));
       return;
     }
-    
+
     const contents = await response.json();
     const agents = [];
-    
+
     for (const item of contents) {
       if (item.type === 'file' && item.name.endsWith('.md')) {
         agents.push({ name: item.name.replace('.md', ''), category: 'root' });
       } else if (item.type === 'dir') {
         try {
-          const categoryResponse = await fetch(`https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents/${item.name}`);
+          const categoryApiUrl = buildGitHubApiUrl(`agents/${item.name}`);
+          const categoryResponse = await fetch(categoryApiUrl);
           if (categoryResponse.ok) {
             const categoryContents = await categoryResponse.json();
             for (const categoryItem of categoryContents) {
