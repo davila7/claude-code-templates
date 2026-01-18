@@ -36,7 +36,7 @@ Status: 🟢 Ready for Implementation
 ### New Approach (Simple)
 - ✅ **1 Skill** that auto-activates
 - ✅ Works with ALL existing agents (no modifications)
-- ✅ Single install: `--skill neon-instagres`
+- ✅ Single install: `--skill database/neon-instagres`
 - ✅ Easy to maintain
 - ✅ Seamless user experience
 
@@ -69,7 +69,7 @@ Skills are **model-invoked**: Claude automatically activates them based on conte
 
 **Installation:**
 ```bash
-npx claude-code-templates@latest --skill neon-instagres
+npx claude-code-templates@latest --skill database/neon-instagres
 ```
 
 **Auto-Activation Triggers:**
@@ -343,7 +343,7 @@ npx get-db claim
 3. **Quick Start**
    ```bash
    # Install Skill
-   npx claude-code-templates@latest --skill neon-instagres
+   npx claude-code-templates@latest --skill database/neon-instagres
 
    # Ask Claude to setup database
    "I need a Postgres database for my Next.js app"
@@ -438,7 +438,7 @@ npx get-db claim
 
 8. **Getting Started**
    ```bash
-   npx claude-code-templates@latest --skill neon-instagres
+   npx claude-code-templates@latest --skill database/neon-instagres
    ```
 
 9. **Conclusion**
@@ -565,7 +565,7 @@ PUBLIC_INSTAGRES_CLAIM_URL=https://neon.new/database/abc
 Install the Neon Instagres Skill for automatic database provisioning:
 
 \`\`\`bash
-npx claude-code-templates@latest --skill neon-instagres
+npx claude-code-templates@latest --skill database/neon-instagres
 \`\`\`
 
 Once installed, Claude automatically provisions Neon Postgres databases when needed:
@@ -591,7 +591,7 @@ Once installed, Claude automatically provisions Neon Postgres databases when nee
 
 - [ ] **Skill Installation**
   ```bash
-  npx claude-code-templates@latest --skill neon-instagres
+  npx claude-code-templates@latest --skill database/neon-instagres
   ```
 
 - [ ] **Skill Activation**
