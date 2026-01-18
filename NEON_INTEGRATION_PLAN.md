@@ -1,937 +1,557 @@
-# Neon OSS Program Integration Plan
+# Neon OSS Program Integration Plan (Simplified)
 **Claude Code Templates x Neon Instagres Partnership**
+
+Version: 2.0 (Simplified)
+Date: 2026-01-18
+Status: 🟢 Ready for Implementation
 
 ---
 
 ## 📋 Executive Summary
 
-This plan integrates Neon's Instagres instant Postgres provisioning into the Claude Code component marketplace, addressing the current gap between database recommendations and actual database availability.
+**Approach:** Create **1 powerful Skill** instead of 11 separate components for maximum simplicity and user adoption.
 
 **Partnership Deliverables (30-day deadline):**
-1. ✅ Include Neon referral link in documentation: `https://get.neon.com/4eCjZDz`
-2. ✅ Add Neon logo to GitHub README
-3. ✅ Optional: Instagres integration (RECOMMENDED - adds significant value)
+1. ✅ Neon referral link integration: `https://get.neon.com/4eCjZDz`
+2. ✅ Neon logo in GitHub README
+3. ✅ Neon Instagres Skill (auto-activates when database needed)
+4. ✅ Featured integration page + blog article
 
 **Business Value:**
-- $5,000 annual sponsorship + $20 referral payouts per customer
-- Eliminates database provisioning friction for 300+ agents
-- Co-marketing with Neon's 100K+ developer community
+- $5,000 annual sponsorship + $20 referral commissions
+- Instant database provisioning for ALL Claude Code users
+- Co-marketing with Neon's developer community
 
 ---
 
-## 🎯 Integration Strategy
+## 🎯 Why Simplify?
 
-### Current State Analysis
+### Old Approach (Complex)
+- ❌ 4 new components to create
+- ❌ 7 existing components to modify
+- ❌ Users must discover and install multiple pieces
+- ❌ Maintenance overhead
+- ❌ Fragmented user experience
 
-**Existing Neon Components:**
-- 4 Neon-specific agents (expert, database-architect, auth-specialist, migration-specialist)
-- 1 Neon MCP (neon.json) for Management API
-- Manual setup required for all database provisioning
+### New Approach (Simple)
+- ✅ **1 Skill** that auto-activates
+- ✅ Works with ALL existing agents (no modifications)
+- ✅ Single install: `--skill neon-instagres`
+- ✅ Easy to maintain
+- ✅ Seamless user experience
 
-**Gap Identified:**
-- Agents recommend PostgreSQL/Neon but require manual provisioning
-- No instant "database ready" workflow
-- 5-15 minute setup time vs. instant with Instagres
+### How Skills Work Magic
+Skills are **model-invoked**: Claude automatically activates them based on context. When a user mentions "database", "postgres", "setup database", etc., Claude loads the Neon Instagres Skill and provisions a database instantly.
 
-**Opportunity:**
-- Integrate `npx get-db` provisioning into agent workflows
-- Create "featured" Instagres components for instant adoption
-- Establish Neon as default Postgres provider across 310+ agents
+**Zero friction = Maximum adoption**
 
 ---
 
-## 🏗️ Component Architecture Plan
+## 🏗️ Implementation Plan
 
-### Phase 1: Core Component Creation (Days 1-7)
+### Total Components: **1 Skill** + Marketing Content
 
-#### 1.1 New Command: `provision-neon-database`
+| Component | Type | Purpose |
+|-----------|------|---------|
+| `neon-instagres` | **Skill** | Auto-activating database provisioning expert |
+| Featured Page | Marketing | Showcase integration at `/featured/neon-instagres/` |
+| Blog Article | Content | Partnership announcement + technical deep dive |
+| README Logo | Documentation | Neon sponsor visibility |
+| Homepage Banner | Marketing | Featured integration callout |
 
-**File:** `cli-tool/components/commands/database/provision-neon-database.md`
-
-**Purpose:** One-click Neon Postgres provisioning with automatic .env setup
-
-**Features:**
-- Executes `npx get-db --yes --ref 4eCjZDz`
-- Writes DATABASE_URL to .env
-- Optionally seeds with SQL file
-- Displays claim URL for persistence
-- Auto-detects Vite/Node.js projects
-
-**YAML Frontmatter:**
-```yaml
 ---
-name: provision-neon-database
-category: database
-description: Instantly provision a Neon Postgres database with zero configuration using Instagres
-downloads: 0
-version: 1.0.0
-tags:
-  - database
-  - neon
-  - postgresql
-  - provisioning
-  - instant-setup
-featured: true
----
-```
 
-**Implementation Pattern:**
+## 🚀 Phase 1: Core Skill (Days 1-5)
+
+### Create the Neon Instagres Skill
+
+**Location:** `cli-tool/components/skills/neon-instagres/SKILL.md`
+
+**Installation:**
 ```bash
-#!/bin/bash
-# Check if DATABASE_URL already exists
-if grep -q "DATABASE_URL" .env 2>/dev/null; then
-  echo "✅ Database already configured in .env"
-  exit 0
-fi
-
-# Provision Neon database with referral
-echo "🚀 Provisioning Neon Postgres database..."
-npx get-db --yes --ref 4eCjZDz --seed ${SEED_FILE:-}
-
-echo "✅ Database provisioned! Check .env for credentials"
-echo "💾 Claim URL saved as PUBLIC_INSTAGRES_CLAIM_URL"
-echo "⏰ Database expires in 72 hours unless claimed"
+npx claude-code-templates@latest --skill neon-instagres
 ```
 
-#### 1.2 New Agent: `neon-provisioning-specialist`
+**Auto-Activation Triggers:**
+- User mentions: "database", "postgres", "postgresql", "SQL", "Drizzle", "Prisma"
+- Commands like: "setup database", "create database", "need a database"
+- Framework contexts: Next.js, Vite, Express, SvelteKit, Remix
+- When building: fullstack apps, APIs, backends
 
-**File:** `cli-tool/components/agents/database/neon-provisioning-specialist.md`
+**What the Skill Does:**
+1. Detects when database is needed
+2. Checks if `DATABASE_URL` exists in `.env`
+3. If not, runs: `npx get-db --yes --ref 4eCjZDz`
+4. Provisions Neon Postgres in 5 seconds
+5. Guides user through ORM setup (Drizzle, Prisma, etc.)
+6. Reminds about 72-hour claim window
 
-**Purpose:** Specialized agent for instant database setup + schema initialization
+**Key Features:**
+- ⚡ Instant provisioning (5 seconds)
+- 🔄 Framework-specific instructions (Next.js, Vite, Express)
+- 🛠️ ORM integration guides (Drizzle, Prisma, TypeORM, Kysely)
+- 📦 Seeding support (`--seed schema.sql`)
+- 🔐 Security best practices (environment variables)
+- 💾 Claiming instructions for permanent access
 
-**Capabilities:**
-- Provision Neon database via Instagres
-- Generate Drizzle ORM schema
-- Seed initial data
-- Set up connection pooling
-- Hand off to neon-database-architect for complex schemas
+**Complete Skill Content:**
 
-**YAML Frontmatter:**
-```yaml
+````markdown
 ---
-name: neon-provisioning-specialist
-category: database
-description: Instant Neon Postgres provisioning specialist using Instagres for zero-config database setup
-downloads: 0
-version: 1.0.0
+name: neon-instagres
+description: Instantly provision production-ready Postgres databases with Neon Instagres. Use when setting up databases, when users mention PostgreSQL/Postgres, database setup, or need a development database. Works with Drizzle, Prisma, raw SQL.
+allowed-tools: Read, Write, Bash, Grep, Glob
 model: sonnet
-tags:
-  - database
-  - neon
-  - postgresql
-  - provisioning
-  - drizzle
-  - instagres
-featured: true
+user-invocable: true
 ---
+
+# Neon Instagres - Instant Postgres Provisioning
+
+You are an expert at provisioning instant, production-ready PostgreSQL databases using Neon's Instagres service.
+
+## Core Command
+
+```bash
+npx get-db --yes --ref 4eCjZDz
 ```
 
-**Agent Instructions (Key Sections):**
-
-```markdown
-# Neon Provisioning Specialist
-
-You are an expert at instantly provisioning Neon Postgres databases using Instagres.
+This provisions a Neon Postgres database in **5 seconds** and creates:
+- `DATABASE_URL` - Connection pooler (for app queries)
+- `DATABASE_URL_DIRECT` - Direct connection (for migrations)
+- `PUBLIC_INSTAGRES_CLAIM_URL` - Claim URL (72-hour window)
 
 ## Workflow
 
-### 1. Instant Provisioning
-Execute: `npx get-db --yes --ref 4eCjZDz`
+### 1. Check Existing Database
+```bash
+cat .env 2>/dev/null | grep DATABASE_URL
+```
 
-This creates:
-- DATABASE_URL (connection pooler)
-- DATABASE_URL_DIRECT (direct connection)
-- PUBLIC_INSTAGRES_CLAIM_URL (72-hour claim window)
+If found, ask user if they want to use existing or create new.
 
-### 2. Schema Initialization
-After provisioning, offer to:
-- Generate Drizzle ORM schema
-- Create SQL migration files
-- Seed initial data
+### 2. Provision Database
 
-### 3. Handoff Protocol
-For complex requirements, delegate to:
-- `neon-database-architect` - Schema design
-- `neon-migration-specialist` - Migration patterns
-- `neon-auth-specialist` - Stack Auth integration
+For new database:
+```bash
+npx get-db --yes --ref 4eCjZDz
+```
 
-## Integration Examples
+**Common Options:**
+- `--env .env.local` - Custom env file (Next.js, Remix)
+- `--seed schema.sql` - Seed with initial data
+- `--key DB_URL` - Custom variable name
 
-### With Drizzle ORM
-\`\`\`typescript
+### 3. Confirm Success
+
+Tell the user:
+```
+✅ Neon Postgres database provisioned!
+
+📁 Connection details in .env:
+   DATABASE_URL - Use in your app
+   DATABASE_URL_DIRECT - Use for migrations
+   PUBLIC_INSTAGRES_CLAIM_URL - Claim within 72h
+
+⚡ Ready for: Drizzle, Prisma, TypeORM, Kysely, raw SQL
+
+⏰ IMPORTANT: Database expires in 72 hours.
+   To claim: npx get-db claim
+```
+
+## Framework Integration
+
+### Next.js
+```bash
+npx get-db --env .env.local --yes --ref 4eCjZDz
+```
+
+### Vite / SvelteKit
+Option 1: Manual
+```bash
+npx get-db --yes --ref 4eCjZDz
+```
+
+Option 2: Auto-provisioning with vite-plugin-db
+```typescript
+// vite.config.ts
+import { postgres } from 'vite-plugin-db';
+
+export default defineConfig({
+  plugins: [postgres()]
+});
+```
+
+### Express / Node.js
+```bash
+npx get-db --yes --ref 4eCjZDz
+```
+
+Then load with dotenv:
+```javascript
+import 'dotenv/config';
+import postgres from 'postgres';
+const sql = postgres(process.env.DATABASE_URL);
+```
+
+## ORM Setup
+
+### Drizzle (Recommended)
+```typescript
 // drizzle.config.ts
 import { defineConfig } from 'drizzle-kit';
+
 export default defineConfig({
   schema: './src/db/schema.ts',
   out: './drizzle',
   dialect: 'postgresql',
-  dbCredentials: {
-    url: process.env.DATABASE_URL!,
-  },
+  dbCredentials: { url: process.env.DATABASE_URL! }
 });
-\`\`\`
-
-### With Next.js
-\`\`\`bash
-npx get-db --env .env.local --key DATABASE_URL
-\`\`\`
-
-### With Vite
-Use vite-plugin-db for automatic provisioning on dev server start.
-
-## Claiming the Database
-To persist beyond 72 hours:
-1. Open PUBLIC_INSTAGRES_CLAIM_URL from .env
-2. Sign in to Neon account (or create one)
-3. Database transfers to your account permanently
-
-## Reference
-- Instagres Docs: https://neon.tech/docs/guides/instagres
-- Neon Console: https://console.neon.tech
-- Drizzle + Neon: https://orm.drizzle.team/docs/get-started-postgresql#neon
 ```
 
-#### 1.3 Enhanced MCP: `neon-instagres.json`
+```typescript
+// src/db/index.ts
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
-**File:** `cli-tool/components/mcps/database/neon-instagres.json`
-
-**Purpose:** MCP server for Instagres CLI automation
-
-**Configuration:**
-```json
-{
-  "mcpServers": {
-    "neon-instagres": {
-      "description": "Instant Neon Postgres provisioning via Instagres CLI",
-      "command": "npx",
-      "args": [
-        "-y",
-        "get-db",
-        "--yes",
-        "--ref",
-        "4eCjZDz"
-      ],
-      "env": {
-        "DATABASE_URL": "",
-        "NODE_ENV": "development"
-      }
-    }
-  }
-}
+const client = postgres(process.env.DATABASE_URL!);
+export const db = drizzle(client);
 ```
 
-**Component Metadata:**
-```json
-{
-  "name": "neon-instagres",
-  "category": "database",
-  "description": "MCP server for instant Neon Postgres database provisioning using Instagres",
-  "version": "1.0.0",
-  "tags": ["database", "neon", "postgresql", "instagres", "mcp"],
-  "featured": true
-}
+### Prisma
+```bash
+npx prisma init
+# DATABASE_URL already set by get-db
+npx prisma db push
 ```
 
-#### 1.4 New Hook: `auto-provision-database.json`
+### TypeORM
+```typescript
+import { DataSource } from 'typeorm';
 
-**File:** `cli-tool/components/hooks/automation/auto-provision-database.json`
-
-**Purpose:** Automatically provision database when database agents are invoked
-
-**Hook Configuration:**
-```json
-{
-  "hooks": {
-    "AgentStart": [
-      {
-        "command": "bash -c 'if [ ! -f .env ] || ! grep -q DATABASE_URL .env; then npx get-db --yes --ref 4eCjZDz; fi'",
-        "description": "Auto-provision Neon database if not exists"
-      }
-    ]
-  }
-}
+export const AppDataSource = new DataSource({
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  entities: ['src/entity/*.ts'],
+  synchronize: true
+});
 ```
 
-**Trigger Conditions:**
-- Agent type contains "database" or "fullstack"
-- No DATABASE_URL in environment
-- .env file exists or can be created
+## Seeding
+
+```bash
+npx get-db --seed ./schema.sql --yes --ref 4eCjZDz
+```
+
+Example schema.sql:
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+INSERT INTO users (email) VALUES ('demo@example.com');
+```
+
+## Claiming (Make Permanent)
+
+**Option 1: CLI**
+```bash
+npx get-db claim
+```
+
+**Option 2: Manual**
+1. Copy `PUBLIC_INSTAGRES_CLAIM_URL` from .env
+2. Open in browser
+3. Sign in to Neon (or create account)
+4. Database becomes permanent
+
+**After claiming:**
+- No expiration
+- Included in Neon Free Tier (0.5 GB)
+- Can use database branching (dev/staging/prod)
+
+## Best Practices
+
+**Connection Pooling:**
+- Use `DATABASE_URL` (pooler) for app queries
+- Use `DATABASE_URL_DIRECT` for migrations/admin
+- Prevents connection exhaustion
+
+**Environment Security:**
+- Never commit `.env` to git
+- Add `.env` to `.gitignore`
+- Use `.env.example` with placeholders
+
+**Database Branching:**
+- After claiming, create branches for dev/staging
+- Test migrations safely before production
+
+## Troubleshooting
+
+**"npx get-db not found"**
+- Ensure Node.js 18+ installed
+- Check internet connection
+
+**"Connection refused"**
+- Use `DATABASE_URL` (pooler), not `_DIRECT`
+- Add `?sslmode=require` if needed
+
+**Database expired**
+- Provision new: `npx get-db --yes --ref 4eCjZDz`
+- Remember to claim databases you want to keep
+
+## Resources
+
+- 📖 [Instagres Docs](https://neon.tech/docs/guides/instagres)
+- 🎛️ [Neon Console](https://console.neon.tech)
+- 🚀 [Get Started](https://get.neon.com/4eCjZDz)
+
+## Key Reminders
+
+- **Always use `--ref 4eCjZDz`** for referral tracking
+- **Remind about 72h expiration** and claiming
+- **DATABASE_URL contains credentials** - keep .env private
+- **Logical replication enabled** by default
+````
 
 ---
 
-### Phase 2: Enhancement of Existing Components (Days 8-14)
+## 🎨 Phase 2: Featured Page (Days 6-12)
 
-#### 2.1 Update Existing Neon Agents
+### Create Featured Integration Page
 
-**Files to Modify:**
-1. `cli-tool/components/agents/database/neon-expert.md`
-2. `cli-tool/components/agents/database/neon-database-architect.md`
-3. `cli-tool/components/agents/database/neon-auth-specialist.md`
-4. `cli-tool/components/agents/database/neon-migration-specialist.md`
+**Location:** `docs/featured/neon-instagres/`
 
-**Enhancement Pattern:**
+**Files:**
+- `index.html` - Main landing page
+- `style.css` - Neon-themed styling
+- `assets/` - Logos and images
 
-Add "Quick Start with Instagres" section to each:
+**Key Sections:**
 
-```markdown
-## Quick Start (Instant Provisioning)
+1. **Hero Section**
+   - "Instant Postgres for AI Development"
+   - CTA: "Get Started Free" → `https://get.neon.com/4eCjZDz`
+   - Terminal demo showing `npx get-db`
 
-Before starting any Neon project, instantly provision a database:
+2. **Before/After Comparison**
+   - Traditional setup: 10-15 minutes
+   - With Instagres: 5 seconds
+   - **180x faster**
 
-\`\`\`bash
-npx get-db --yes --ref 4eCjZDz
-\`\`\`
+3. **Quick Start**
+   ```bash
+   # Install Skill
+   npx claude-code-templates@latest --skill neon-instagres
 
-This creates a production-ready Neon Postgres database in seconds with:
-- ✅ Connection pooler (DATABASE_URL)
-- ✅ Direct connection (DATABASE_URL_DIRECT)
-- ✅ 72-hour free tier (claim for permanent access)
-- ✅ Logical replication enabled
+   # Ask Claude to setup database
+   "I need a Postgres database for my Next.js app"
 
-For complex schemas, delegate to `@neon-provisioning-specialist` first.
+   # Claude automatically provisions with Instagres
+   ```
 
-Learn more: https://neon.tech/docs/guides/instagres
-```
+4. **Features Grid**
+   - ⚡ Instant provisioning (< 5s)
+   - 🌐 Serverless Postgres
+   - 🔄 Database branching
+   - 💰 Generous free tier
+   - 🔌 All ORMs supported
+   - 🤖 AI-native integration
 
-#### 2.2 Update Generic Database Agents
+5. **Use Cases**
+   - 🚀 Rapid prototyping
+   - 🧪 Testing & CI/CD
+   - 📚 Learning & tutorials
+   - 🏢 Enterprise dev workflows
 
-**Files to Modify:**
-1. `cli-tool/components/agents/database/database-architect.md`
-2. `cli-tool/components/agents/development-team/fullstack-developer.md`
-3. `cli-tool/components/agents/development-team/backend-architect.md`
+6. **Integration Examples**
+   - Fullstack developer agent workflow
+   - Vite plugin auto-provisioning
+   - Next.js + Drizzle setup
 
-**Enhancement:**
-Add Neon as **recommended** Postgres provider:
+7. **Resources**
+   - Link to Instagres docs
+   - Neon Console
+   - Drizzle + Neon guide
+   - Component marketplace
 
-```markdown
-## Database Provisioning
+**Design:**
+- Neon brand colors: `#00E599` (green), `#0F0F0F` (dark)
+- ASCII art header (Neon Instagres logo)
+- Code demos with terminal styling
+- Responsive grid layout
+- SEO optimized (Open Graph, Twitter cards)
 
-### Recommended: Neon Serverless Postgres
+---
 
-For instant PostgreSQL setup with zero configuration:
+## 📝 Phase 3: Blog Article (Days 13-18)
 
-\`\`\`bash
-npx get-db --yes --ref 4eCjZDz
-\`\`\`
+### Create Partnership Announcement Article
 
-**Why Neon:**
-- ⚡ Instant provisioning (< 5 seconds)
-- 🌐 Serverless with autoscaling
-- 🔄 Database branching for dev/staging
-- 💰 Generous free tier
+**Location:** `docs/blog/neon-instagres-integration.html`
 
-Alternative providers: Supabase, AWS RDS, Railway
+**Title:** "Instant Postgres Provisioning for Claude Code: Neon Partnership"
+
+**Outline:**
+
+1. **Introduction**
+   - Announcing Neon OSS Program partnership
+   - The database provisioning problem (15-30 min setup)
+
+2. **The Solution**
+   - Neon Instagres: 5-second database provisioning
+   - One Skill to rule them all
+
+3. **How It Works**
+   - Auto-activating Skills explanation
+   - `npx get-db --ref 4eCjZDz` deep dive
+   - Claimable databases architecture
+
+4. **Integration Examples**
+   ```bash
+   # Example 1: Fullstack app
+   @fullstack-developer build a todo app with auth
+
+   # Claude automatically:
+   # 1. Provisions Neon database (5s)
+   # 2. Sets up Drizzle ORM
+   # 3. Generates schema
+   # 4. Creates Next.js API routes
+   ```
+
+5. **Real-World Use Cases**
+   - Prototyping: Instant databases for experimentation
+   - Testing: Ephemeral databases for CI/CD
+   - Education: Zero-friction learning environment
+   - Enterprise: Database branching for safe migrations
+
+6. **Performance Benchmarks**
+   - Traditional: 17-30 minutes
+   - Instagres: 5 seconds
+   - **180x-360x faster**
+
+7. **Partnership Details**
+   - $5K sponsorship + referral program
+   - Co-marketing initiatives
+   - Neon as recommended Postgres provider
+
+8. **Getting Started**
+   ```bash
+   npx claude-code-templates@latest --skill neon-instagres
+   ```
+
+9. **Conclusion**
+   - Try Neon: `https://get.neon.com/4eCjZDz`
+   - Featured page link
+   - Component marketplace
+
+**Assets:**
+- AI-generated cover image (database + lightning bolt theme)
+- Code screenshots
+- Before/After diagrams
+- Neon + Claude Code logos
+
+**Metadata:**
+```json
+{
+  "id": "neon-instagres-integration",
+  "title": "Instant Postgres for Claude Code: Neon Partnership",
+  "description": "Provision production-ready Postgres in 5 seconds with Neon Instagres Skill - 180x faster database setup for AI development.",
+  "date": "2026-01-25",
+  "tags": ["neon", "postgres", "integration", "skills", "partnership"],
+  "featured": true,
+  "author": "Claude Code Team"
+}
 ```
 
 ---
 
-### Phase 3: Featured Integration Page (Days 15-21)
+## 🏠 Phase 4: Homepage Integration (Days 19-22)
 
-#### 3.1 Featured Landing Page
+### Add Featured Banner to Main Homepage
 
-**File:** `docs/featured/neon-instagres/index.html`
+**Location:** `docs/index.html`
 
-**Structure:** (Based on BrainGrid pattern)
+**Featured Section** (before component grid):
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neon Instagres x Claude Code | Instant Postgres Provisioning</title>
+<section class="featured-integration neon">
+  <div class="featured-badge">✨ Featured Partnership</div>
 
-  <!-- SEO -->
-  <meta name="description" content="Provision production-ready Postgres databases in seconds with Neon Instagres integration for Claude Code. Zero configuration required.">
+  <div class="featured-content">
+    <div class="featured-text">
+      <img src="/featured/neon-instagres/assets/neon-logo.svg" class="partner-logo">
+      <h2>Instant Postgres with Neon Instagres</h2>
+      <p>Provision production-ready Postgres databases in <strong>5 seconds</strong> with zero configuration. Perfect for AI development workflows.</p>
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Neon Instagres x Claude Code">
-  <meta property="og:description" content="Instant Postgres provisioning for AI development workflows">
-  <meta property="og:image" content="https://aitmpl.com/featured/neon-instagres/assets/og-image.png">
-  <meta property="og:url" content="https://aitmpl.com/featured/neon-instagres/">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Neon Instagres x Claude Code">
-  <meta name="twitter:description" content="Provision Postgres databases in seconds with AI agents">
-  <meta name="twitter:image" content="https://aitmpl.com/featured/neon-instagres/assets/twitter-card.png">
-
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <div class="container">
-    <!-- ASCII Art Header -->
-    <pre class="ascii-art">
- _   _                   ___           _
-| \ | | ___  ___  _ __  |_ _|_ __  ___| |_ __ _  __ _ _ __ ___  ___
-|  \| |/ _ \/ _ \| '_ \  | || '_ \/ __| __/ _` |/ _` | '__/ _ \/ __|
-| |\  |  __/ (_) | | | | | || | | \__ \ || (_| | (_| | | |  __/\__ \
-|_| \_|\___|\___/|_| |_|___|_| |_|___/\__\__,_|\__, |_|  \___||___/
-                                                |___/
-    </pre>
-
-    <!-- Hero Section -->
-    <section class="hero">
-      <h1>Instant Postgres for AI Development</h1>
-      <p class="tagline">Provision production-ready databases in 5 seconds with Claude Code + Neon Instagres</p>
-
-      <div class="cta-buttons">
-        <a href="https://get.neon.com/4eCjZDz" class="btn btn-primary">Get Started Free →</a>
-        <a href="#quick-start" class="btn btn-secondary">View Integration ↓</a>
-      </div>
-    </section>
-
-    <!-- Problem/Solution -->
-    <section class="comparison">
-      <h2>Before vs. After</h2>
-      <div class="comparison-grid">
-        <div class="before">
-          <h3>❌ Traditional Setup</h3>
-          <ul>
-            <li>Sign up for database provider</li>
-            <li>Wait for instance provisioning</li>
-            <li>Configure connection strings</li>
-            <li>Set up environment variables</li>
-            <li>Initialize schema manually</li>
-          </ul>
-          <p class="time">⏱️ 10-15 minutes</p>
+      <div class="stats">
+        <div class="stat">
+          <span class="number">⚡ 5s</span>
+          <span class="label">Database Ready</span>
         </div>
-
-        <div class="after">
-          <h3>✅ With Neon Instagres</h3>
-          <ul>
-            <li>Run: <code>npx get-db</code></li>
-            <li>Database ready instantly</li>
-            <li>Connection strings auto-configured</li>
-            <li>Environment auto-populated</li>
-            <li>Optional SQL seeding included</li>
-          </ul>
-          <p class="time">⚡ 5 seconds</p>
+        <div class="stat">
+          <span class="number">180x</span>
+          <span class="label">Faster Setup</span>
+        </div>
+        <div class="stat">
+          <span class="number">1 Skill</span>
+          <span class="label">Auto-Activating</span>
         </div>
       </div>
-    </section>
 
-    <!-- Quick Start -->
-    <section id="quick-start" class="quick-start">
-      <h2>Quick Start</h2>
-
-      <div class="installation">
-        <h3>1. Install Components</h3>
-        <pre><code>npx claude-code-templates@latest \
-  --agent neon-provisioning-specialist \
-  --command provision-neon-database \
-  --mcp neon-instagres</code></pre>
+      <div class="cta">
+        <a href="/featured/neon-instagres/" class="btn primary">Learn More →</a>
+        <a href="https://get.neon.com/4eCjZDz" class="btn secondary">Try Neon Free →</a>
       </div>
+    </div>
 
-      <div class="usage">
-        <h3>2. Provision Database</h3>
-        <pre><code>npx get-db --yes</code></pre>
+    <div class="featured-demo">
+      <pre class="terminal"><code>$ npx get-db --yes
 
-        <p>✅ Creates <code>DATABASE_URL</code> in <code>.env</code><br>
-        ✅ Provides claim URL for permanent access<br>
-        ✅ Ready for Drizzle, Prisma, TypeORM</p>
-      </div>
+🚀 Provisioning Neon Postgres...
+✅ Database ready in 3.2s!
 
-      <div class="agent-usage">
-        <h3>3. Use with Claude Code Agents</h3>
-        <pre><code>@neon-provisioning-specialist create a users table with auth</code></pre>
+DATABASE_URL=postgresql://user@ep-cool.neon.tech/db
+PUBLIC_INSTAGRES_CLAIM_URL=https://neon.new/database/abc
 
-        <p>The agent will:</p>
-        <ul>
-          <li>Check for existing DATABASE_URL</li>
-          <li>Provision if needed</li>
-          <li>Generate Drizzle schema</li>
-          <li>Run migrations</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Features Grid -->
-    <section class="features">
-      <h2>Why Neon Instagres?</h2>
-      <div class="feature-grid">
-        <div class="feature">
-          <span class="icon">⚡</span>
-          <h3>Instant Provisioning</h3>
-          <p>Database ready in < 5 seconds. No signup, no waiting.</p>
-        </div>
-
-        <div class="feature">
-          <span class="icon">🌐</span>
-          <h3>Serverless Postgres</h3>
-          <p>Autoscaling, branching, and connection pooling built-in.</p>
-        </div>
-
-        <div class="feature">
-          <span class="icon">🔄</span>
-          <h3>Database Branches</h3>
-          <p>Create isolated dev/staging environments from production.</p>
-        </div>
-
-        <div class="feature">
-          <span class="icon">💰</span>
-          <h3>Generous Free Tier</h3>
-          <p>72-hour trial databases. Claim for permanent free tier.</p>
-        </div>
-
-        <div class="feature">
-          <span class="icon">🔌</span>
-          <h3>Framework Support</h3>
-          <p>Drizzle, Prisma, TypeORM, Kysely, and raw SQL.</p>
-        </div>
-
-        <div class="feature">
-          <span class="icon">🤖</span>
-          <h3>AI-Native Integration</h3>
-          <p>Works seamlessly with 300+ Claude Code agents.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Use Cases -->
-    <section class="use-cases">
-      <h2>Perfect For</h2>
-      <div class="use-case-grid">
-        <div class="use-case">
-          <h3>🚀 Rapid Prototyping</h3>
-          <p>Spin up databases instantly during agent-driven development.</p>
-        </div>
-
-        <div class="use-case">
-          <h3>🧪 Testing & CI/CD</h3>
-          <p>Ephemeral databases for test suites and preview deployments.</p>
-        </div>
-
-        <div class="use-case">
-          <h3>📚 Learning & Tutorials</h3>
-          <p>Zero-friction database access for educational content.</p>
-        </div>
-
-        <div class="use-case">
-          <h3>🏢 Enterprise Development</h3>
-          <p>Database branching for safe schema migrations.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Integration Examples -->
-    <section class="examples">
-      <h2>Integration Examples</h2>
-
-      <div class="example">
-        <h3>With Fullstack Developer Agent</h3>
-        <pre><code>@fullstack-developer build a todo app with user auth
-
-Agent will:
-1. Provision Neon database via Instagres
-2. Set up Drizzle ORM with users/todos schema
-3. Generate Next.js API routes
-4. Connect Stack Auth for authentication
-5. Deploy to Vercel with DATABASE_URL</code></pre>
-      </div>
-
-      <div class="example">
-        <h3>With Vite Plugin (Auto-Provisioning)</h3>
-        <pre><code>// vite.config.ts
-import { postgres } from 'vite-plugin-db';
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  plugins: [
-    postgres({
-      env: '.env.local',
-      seed: {
-        type: 'sql-script',
-        path: './schema.sql'
-      }
-    })
-  ]
-});</code></pre>
-        <p>Database auto-provisions on <code>npm run dev</code> if missing.</p>
-      </div>
-    </section>
-
-    <!-- Resources -->
-    <section class="resources">
-      <h2>Resources</h2>
-      <div class="resource-links">
-        <a href="https://neon.tech/docs/guides/instagres" class="resource-card">
-          <h3>📖 Instagres Documentation</h3>
-          <p>Complete guide to instant Postgres provisioning</p>
-        </a>
-
-        <a href="https://console.neon.tech" class="resource-card">
-          <h3>🎛️ Neon Console</h3>
-          <p>Manage your claimed databases</p>
-        </a>
-
-        <a href="https://orm.drizzle.team/docs/get-started-postgresql#neon" class="resource-card">
-          <h3>🔗 Drizzle + Neon</h3>
-          <p>Best-in-class TypeScript ORM integration</p>
-        </a>
-
-        <a href="https://aitmpl.com" class="resource-card">
-          <h3>🤖 Browse Components</h3>
-          <p>Explore 1,000+ Claude Code components</p>
-        </a>
-      </div>
-    </section>
-
-    <!-- CTA Footer -->
-    <section class="cta-footer">
-      <h2>Ready to Build Faster?</h2>
-      <p>Start provisioning instant Postgres databases with Claude Code today.</p>
-      <a href="https://get.neon.com/4eCjZDz" class="btn btn-large btn-primary">Get Started Free →</a>
-    </section>
-
-    <!-- Sponsors Footer -->
-    <footer class="sponsors">
-      <p>Powered by</p>
-      <div class="sponsor-logos">
-        <img src="./assets/neon-logo.svg" alt="Neon" class="neon-logo">
-        <span class="separator">×</span>
-        <img src="/images/claude-code-logo.svg" alt="Claude Code" class="claude-logo">
-      </div>
-    </footer>
+⏰ Claim within 72h for permanent access</code></pre>
+    </div>
   </div>
-
-  <script src="./script.js"></script>
-</body>
-</html>
+</section>
 ```
 
-#### 3.2 Featured Page Styling
-
-**File:** `docs/featured/neon-instagres/style.css`
-
-```css
-/* Neon Brand Colors */
-:root {
-  --neon-green: #00E599;
-  --neon-dark: #0F0F0F;
-  --neon-gray: #1A1A1A;
-  --neon-light: #FFFFFF;
-}
-
-.ascii-art {
-  color: var(--neon-green);
-  font-size: 0.7rem;
-  text-align: center;
-  margin-bottom: 2rem;
-  font-family: monospace;
-}
-
-.hero {
-  text-align: center;
-  padding: 3rem 0;
-}
-
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, var(--neon-green), #00B8D4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.tagline {
-  font-size: 1.3rem;
-  color: #888;
-  margin-bottom: 2rem;
-}
-
-.cta-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.btn {
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: transform 0.2s;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn-primary {
-  background: var(--neon-green);
-  color: var(--neon-dark);
-}
-
-.btn-secondary {
-  border: 2px solid var(--neon-green);
-  color: var(--neon-green);
-}
-
-.comparison-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.before, .after {
-  padding: 2rem;
-  border-radius: 12px;
-  border: 2px solid #333;
-}
-
-.before {
-  border-color: #ff4444;
-}
-
-.after {
-  border-color: var(--neon-green);
-  background: linear-gradient(135deg, rgba(0, 229, 153, 0.05), transparent);
-}
-
-.time {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-top: 1rem;
-}
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.feature {
-  text-align: center;
-  padding: 2rem;
-  border: 1px solid #333;
-  border-radius: 12px;
-  transition: border-color 0.3s;
-}
-
-.feature:hover {
-  border-color: var(--neon-green);
-}
-
-.icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-pre code {
-  background: var(--neon-gray);
-  padding: 1rem;
-  border-radius: 8px;
-  display: block;
-  overflow-x: auto;
-  border-left: 4px solid var(--neon-green);
-}
-
-.resource-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.resource-card {
-  padding: 1.5rem;
-  border: 2px solid #333;
-  border-radius: 12px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s;
-}
-
-.resource-card:hover {
-  border-color: var(--neon-green);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 229, 153, 0.1);
-}
-
-.cta-footer {
-  text-align: center;
-  padding: 4rem 0;
-  margin-top: 4rem;
-  border-top: 1px solid #333;
-}
-
-.btn-large {
-  font-size: 1.2rem;
-  padding: 1.5rem 3rem;
-}
-
-.sponsors {
-  text-align: center;
-  padding: 2rem 0;
-  border-top: 1px solid #333;
-}
-
-.sponsor-logos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
-}
-
-.sponsor-logos img {
-  height: 40px;
-}
-
-.separator {
-  font-size: 2rem;
-  color: #666;
-}
-
-@media (max-width: 768px) {
-  .comparison-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero h1 {
-    font-size: 2rem;
-  }
-
-  .cta-buttons {
-    flex-direction: column;
-  }
-}
-```
+**Styling:**
+- Neon green gradient background
+- Terminal-style code demo
+- Responsive two-column layout
+- Hover effects on CTAs
 
 ---
 
-### Phase 4: Blog Article (Days 22-25)
+## 📚 Phase 5: Documentation (Days 23-25)
 
-#### 4.1 Blog Article Structure
-
-**File:** `docs/blog/neon-instagres-integration.html`
-
-**Content Outline:**
-
-```markdown
-# Instant Postgres Provisioning for Claude Code: Neon Instagres Integration
-
-## The Database Provisioning Problem
-
-Traditional workflow:
-1. Sign up for database provider (5 min)
-2. Create project/instance (2-5 min)
-3. Configure connection strings (3 min)
-4. Set up environment variables (2 min)
-5. Initialize schema (5-10 min)
-
-Total: 17-30 minutes before writing first line of business logic.
-
-## The Solution: Neon Instagres
-
-One command: `npx get-db`
-
-Result: Production-ready Postgres in 5 seconds.
-
-## How It Works
-
-### Technology Deep Dive
-
-[Explain Instagres architecture]
-- Neon's serverless Postgres platform
-- Claimable database API
-- 72-hour ephemeral vs. permanent claimed databases
-- Connection pooling and direct connections
-
-### Integration with Claude Code
-
-[Show component architecture]
-- neon-provisioning-specialist agent
-- provision-neon-database command
-- neon-instagres MCP
-- auto-provision-database hook
-
-## Real-World Use Cases
-
-### Use Case 1: Fullstack Prototype in 5 Minutes
-[Step-by-step example with @fullstack-developer]
-
-### Use Case 2: Testing Suite with Fresh Database
-[CI/CD integration example]
-
-### Use Case 3: Tutorial Content Creation
-[Educational use case]
-
-## Performance Benchmarks
-
-Traditional Setup: 17-30 min
-Neon Instagres: 5 seconds
-
-**180x-360x faster** database provisioning.
-
-## Getting Started
-
-[Installation instructions]
-[Integration examples]
-[Claiming databases]
-
-## Conclusion
-
-Partnership announcement:
-- Claude Code Templates joins Neon OSS Program
-- $5K sponsorship + referral program
-- Co-marketing initiatives
-
-Try it now: [CTA]
-```
-
-#### 4.2 Blog Article Metadata
-
-**Update:** `docs/blog/blog-articles.json`
-
-```json
-{
-  "articles": [
-    {
-      "id": "neon-instagres-integration",
-      "title": "Instant Postgres Provisioning for Claude Code: Neon Instagres Integration",
-      "description": "How we integrated Neon's Instagres to provision production-ready Postgres databases in 5 seconds, making database setup 180x faster for AI development workflows.",
-      "author": "Claude Code Team",
-      "date": "2026-01-20",
-      "tags": ["integration", "database", "neon", "postgres", "partnership"],
-      "featured": true,
-      "coverImage": "/blog/assets/neon-instagres-cover.jpg",
-      "url": "/blog/neon-instagres-integration.html"
-    }
-  ]
-}
-```
-
----
-
-### Phase 5: README & Documentation Updates (Days 26-28)
-
-#### 5.1 GitHub README Logo Addition
+### 5.1 Add Neon Logo to README
 
 **File:** `README.md`
 
-**Add Neon Logo to Sponsors Section:**
+**Add to Sponsors Section:**
 
 ```markdown
 ## 💎 Sponsors
 
 <div align="center">
   <a href="https://get.neon.com/4eCjZDz">
-    <img src="https://drive.google.com/uc?export=view&id=NEON_LOGO_ID" alt="Neon" height="60px">
+    <img src="https://neon.tech/brand/neon-logo-dark.svg" alt="Neon" height="60">
   </a>
 </div>
 
-**Sponsored by [Neon](https://get.neon.com/4eCjZDz)** - Serverless Postgres with instant provisioning via Instagres. Provision databases in 5 seconds with `npx get-db`.
+**Sponsored by [Neon](https://get.neon.com/4eCjZDz)** - Serverless Postgres with instant provisioning via Instagres. Get a production-ready database in 5 seconds with `npx get-db`.
 
 ---
 ```
 
-#### 5.2 Main Documentation Updates
+### 5.2 Update CLAUDE.md
 
 **File:** `CLAUDE.md`
 
@@ -940,347 +560,264 @@ Try it now: [CTA]
 ```markdown
 ## Database Integration: Neon Instagres
 
-### Quick Provisioning
+### Instant Postgres Provisioning
 
-Instantly provision Postgres databases with zero configuration:
-
-\`\`\`bash
-npx get-db --yes --ref 4eCjZDz
-\`\`\`
-
-Creates:
-- `DATABASE_URL` - Connection pooler
-- `DATABASE_URL_DIRECT` - Direct connection
-- `PUBLIC_INSTAGRES_CLAIM_URL` - Claim URL (72-hour window)
-
-### Component Integration
-
-**Recommended Components:**
-- `@neon-provisioning-specialist` - Instant setup + schema generation
-- `/provision-neon-database` - One-click provisioning command
-- `neon-instagres` MCP - CLI automation
-
-**Agents with Built-in Support:**
-- fullstack-developer
-- backend-architect
-- database-architect
-- All Neon-specific agents
-
-### Claiming Databases
-
-Trial databases expire after 72 hours. To persist:
+Install the Neon Instagres Skill for automatic database provisioning:
 
 \`\`\`bash
-npx get-db claim
-# Opens browser to claim via Neon account
+npx claude-code-templates@latest --skill neon-instagres
 \`\`\`
 
-Learn more: https://aitmpl.com/featured/neon-instagres/
+Once installed, Claude automatically provisions Neon Postgres databases when needed:
+- Just ask: "I need a database for my Next.js app"
+- Claude runs: `npx get-db --yes --ref 4eCjZDz`
+- Database ready in 5 seconds
+
+**Features:**
+- ⚡ 5-second provisioning
+- 🔄 Works with all frameworks (Next.js, Vite, Express)
+- 🛠️ Supports all ORMs (Drizzle, Prisma, TypeORM)
+- 💾 72-hour trial (claim for permanent access)
+
+**Learn more:** https://aitmpl.com/featured/neon-instagres/
+**Try Neon:** https://get.neon.com/4eCjZDz
 ```
 
 ---
 
-### Phase 6: Homepage Featured Section (Days 29-30)
+## 📊 Phase 6: Testing & Deployment (Days 26-30)
 
-#### 6.1 Update Main Homepage
+### 6.1 Testing Checklist
 
-**File:** `docs/index.html`
+- [ ] **Skill Installation**
+  ```bash
+  npx claude-code-templates@latest --skill neon-instagres
+  ```
 
-**Add Featured Section (before component grid):**
+- [ ] **Skill Activation**
+  - Ask: "I need a Postgres database"
+  - Verify Claude loads the Skill
+  - Verify `npx get-db` executes
+  - Verify `.env` created with DATABASE_URL
 
-```html
-<!-- Featured Integration -->
-<section class="featured-integration" id="featured-neon">
-  <div class="featured-badge">✨ Featured Integration</div>
-  <div class="featured-content">
-    <div class="featured-text">
-      <h2>
-        <img src="/featured/neon-instagres/assets/neon-logo.svg" alt="Neon" class="inline-logo">
-        Instant Postgres with Neon Instagres
-      </h2>
-      <p class="featured-description">
-        Provision production-ready Postgres databases in <strong>5 seconds</strong> with zero configuration.
-        Perfect for AI development workflows with Claude Code agents.
-      </p>
-      <div class="featured-stats">
-        <div class="stat">
-          <span class="stat-number">⚡ 5s</span>
-          <span class="stat-label">Database Ready</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number">180x</span>
-          <span class="stat-label">Faster Setup</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number">300+</span>
-          <span class="stat-label">Compatible Agents</span>
-        </div>
-      </div>
-      <div class="featured-cta">
-        <a href="/featured/neon-instagres/" class="btn btn-primary">Learn More →</a>
-        <a href="https://get.neon.com/4eCjZDz" class="btn btn-secondary">Try Neon Free →</a>
-      </div>
-    </div>
-    <div class="featured-visual">
-      <pre class="code-demo"><code>$ npx get-db --yes
+- [ ] **Framework Integration**
+  - Test with Next.js project
+  - Test with Vite project
+  - Test with Express app
 
-🚀 Provisioning Neon Postgres...
-✅ Database ready!
+- [ ] **ORM Integration**
+  - Test Drizzle setup
+  - Test Prisma setup
+  - Verify schema generation
 
-DATABASE_URL=postgresql://user:pass@ep-cool-db.neon.tech/main
-PUBLIC_INSTAGRES_CLAIM_URL=https://neon.new/database/abc123
+- [ ] **Featured Page**
+  - Check responsive design
+  - Test all CTAs link correctly
+  - Verify SEO metadata
+  - Check mobile view
 
-⏰ Claim within 72h for permanent access
-💾 Use with Drizzle, Prisma, or raw SQL</code></pre>
-    </div>
-  </div>
-</section>
+- [ ] **Blog Article**
+  - Proofread content
+  - Check code examples
+  - Verify image loading
+  - Test social sharing
 
-<style>
-.featured-integration {
-  background: linear-gradient(135deg, rgba(0, 229, 153, 0.05), rgba(0, 184, 212, 0.05));
-  border: 2px solid #00E599;
-  border-radius: 16px;
-  padding: 3rem;
-  margin: 3rem 0;
-  position: relative;
-}
+- [ ] **Homepage**
+  - Featured banner displays correctly
+  - CTAs work
+  - Stats are accurate
 
-.featured-badge {
-  position: absolute;
-  top: -12px;
-  left: 2rem;
-  background: #00E599;
-  color: #0F0F0F;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
+- [ ] **README**
+  - Neon logo displays
+  - Link works
+  - Formatting correct
 
-.featured-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-}
+### 6.2 Deployment Steps
 
-.inline-logo {
-  height: 32px;
-  vertical-align: middle;
-  margin-right: 0.5rem;
-}
+```bash
+# 1. Regenerate component catalog
+python scripts/generate_components_json.py
 
-.featured-description {
-  font-size: 1.1rem;
-  margin: 1.5rem 0;
-  line-height: 1.6;
-}
+# 2. Run tests
+npm test
 
-.featured-stats {
-  display: flex;
-  gap: 2rem;
-  margin: 2rem 0;
-}
+# 3. Test API endpoints
+cd api && npm test && cd ..
 
-.stat {
-  display: flex;
-  flex-direction: column;
-}
+# 4. Commit all changes
+git add .
+git commit -m "feat: Neon Instagres integration - instant Postgres provisioning
 
-.stat-number {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #00E599;
-}
+- Add neon-instagres Skill for auto-provisioning
+- Create featured integration page
+- Add blog article announcing partnership
+- Update homepage with featured banner
+- Add Neon logo to README sponsors
 
-.stat-label {
-  font-size: 0.9rem;
-  color: #888;
-}
+Partnership deliverables completed for Neon OSS Program."
 
-.featured-cta {
-  display: flex;
-  gap: 1rem;
-}
+# 5. Push to branch
+git push -u origin claude/review-neon-oss-proposal-YpoGW
 
-.code-demo {
-  background: #1A1A1A;
-  border-radius: 12px;
-  padding: 1.5rem;
-  border-left: 4px solid #00E599;
-  font-family: 'Monaco', 'Courier New', monospace;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  overflow-x: auto;
-}
+# 6. Deploy to production
+vercel --prod
 
-@media (max-width: 968px) {
-  .featured-content {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+# 7. Monitor
+vercel logs aitmpl.com --follow
 ```
 
 ---
 
-## 📊 Success Metrics
+## 📈 Success Metrics
 
-### Component Adoption Targets (30-day)
-- [ ] neon-provisioning-specialist: 100+ downloads
-- [ ] provision-neon-database command: 150+ downloads
-- [ ] neon-instagres MCP: 50+ downloads
+### 30-Day Targets
 
-### Website Engagement (30-day)
-- [ ] Featured page: 500+ visits
-- [ ] Blog article: 300+ reads
-- [ ] Referral link clicks: 200+ (via https://get.neon.com/4eCjZDz)
+**Component Adoption:**
+- `neon-instagres` Skill: **200+ downloads**
+- Featured page visits: **1,000+ visits**
+- Blog article reads: **500+ reads**
 
-### Partnership Deliverables
-- [x] Neon referral link integration
-- [x] Logo in GitHub README
-- [x] Instagres component integration
-- [ ] Co-marketing content published
-- [ ] Partnership announcement (Neon blog + our blog)
+**Business Impact:**
+- Referral link clicks: **300+ clicks**
+- Database provisioning time saved: **10,000+ minutes** (collective)
+- Neon signups from referrals: **50+ accounts**
+
+**Developer Experience:**
+- Average time to first database: **< 1 minute** (from Skill install)
+- User satisfaction: **4.5+ stars** (from feedback)
+
+### Tracking
+
+```javascript
+// Track Skill downloads via Supabase
+{
+  "component_type": "skill",
+  "component_name": "neon-instagres",
+  "referrer": "https://aitmpl.com",
+  "timestamp": "2026-01-20T10:30:00Z"
+}
+
+// Track referral link clicks
+{
+  "event": "neon_referral_click",
+  "source": "featured_page",
+  "url": "https://get.neon.com/4eCjZDz"
+}
+```
 
 ---
 
-## 🚀 Implementation Timeline
+## ✅ Implementation Checklist
 
-| Phase | Tasks | Days | Owner |
-|-------|-------|------|-------|
-| **Phase 1** | Create core components (agent, command, MCP, hook) | 1-7 | Dev Team |
-| **Phase 2** | Enhance existing components with Instagres quick start | 8-14 | Dev Team |
-| **Phase 3** | Build featured integration page + assets | 15-21 | Marketing + Design |
-| **Phase 4** | Write blog article with AI-generated cover | 22-25 | Content Team |
-| **Phase 5** | Update README and documentation | 26-28 | Dev Team |
-| **Phase 6** | Add homepage featured section | 29-30 | Frontend + Marketing |
-| **Deploy** | Regenerate catalog, publish, deploy | 30 | DevOps |
+### Core Skill
+- [ ] Create `cli-tool/components/skills/neon-instagres/SKILL.md`
+- [ ] Test Skill activation with database requests
+- [ ] Verify `npx get-db --ref 4eCjZDz` execution
+- [ ] Test with Next.js, Vite, Express
+- [ ] Validate Drizzle, Prisma integration
+- [ ] Review with component-reviewer agent
 
----
-
-## 🔧 Technical Checklist
-
-### Component Creation
-- [ ] Create `provision-neon-database.md` command
-- [ ] Create `neon-provisioning-specialist.md` agent
-- [ ] Create `neon-instagres.json` MCP
-- [ ] Create `auto-provision-database.json` hook
-- [ ] Review all components with component-reviewer agent
-
-### Component Enhancement
-- [ ] Update neon-expert.md with Instagres quick start
-- [ ] Update neon-database-architect.md
-- [ ] Update neon-auth-specialist.md
-- [ ] Update neon-migration-specialist.md
-- [ ] Update database-architect.md with Neon recommendation
-- [ ] Update fullstack-developer.md with Neon recommendation
-- [ ] Update backend-architect.md with Neon recommendation
-
-### Website Updates
+### Featured Page
 - [ ] Create `/docs/featured/neon-instagres/index.html`
 - [ ] Create `/docs/featured/neon-instagres/style.css`
-- [ ] Create `/docs/featured/neon-instagres/script.js`
-- [ ] Download Neon logo assets (SVG, PNG)
+- [ ] Add Neon logo assets to `/docs/featured/neon-instagres/assets/`
 - [ ] Create Open Graph image (1200x630)
 - [ ] Create Twitter Card image (1200x600)
-- [ ] Update `docs/index.html` with featured section
-- [ ] Create blog article HTML
-- [ ] Generate AI cover image for blog
-- [ ] Update `docs/blog/blog-articles.json`
+- [ ] Test responsive design
+- [ ] Verify all links work
 
-### Documentation Updates
-- [ ] Add Neon logo to README.md sponsors section
-- [ ] Update CLAUDE.md with Instagres integration guide
-- [ ] Add referral link (https://get.neon.com/4eCjZDz) to all touchpoints
+### Blog Article
+- [ ] Create `/docs/blog/neon-instagres-integration.html`
+- [ ] Generate AI cover image
+- [ ] Add to `/docs/blog/blog-articles.json`
+- [ ] Proofread and edit
+- [ ] Add code examples
+- [ ] Test social sharing
+
+### Homepage Integration
+- [ ] Add featured banner to `/docs/index.html`
+- [ ] Style with Neon theme
+- [ ] Test responsive layout
+- [ ] Verify CTAs work
+
+### Documentation
+- [ ] Add Neon logo to README sponsors section
+- [ ] Update CLAUDE.md with integration guide
+- [ ] Verify referral link in all locations
 
 ### Testing & Deployment
-- [ ] Test component installation via CLI
-- [ ] Test `npx get-db` provisioning flow
-- [ ] Test agent interactions with provisioned databases
-- [ ] Regenerate `docs/components.json` catalog
+- [ ] Regenerate components.json catalog
 - [ ] Run `npm test`
 - [ ] Run `cd api && npm test`
+- [ ] Full QA testing
 - [ ] Deploy to Vercel production
-- [ ] Verify analytics tracking
-- [ ] Monitor error logs
+- [ ] Monitor analytics and logs
 
 ---
 
-## 💡 Key Messaging Points
+## 📞 Communication Plan
 
-### For Developers
-- "Database provisioning in 5 seconds vs. 15-30 minutes"
-- "Zero configuration - just `npx get-db`"
-- "Works with all 300+ Claude Code agents"
-- "Free 72-hour trial, claim for permanent access"
+### Internal Team
 
-### For Content
-- "180x faster database setup"
-- "Neon OSS Program partnership: $5K sponsorship"
-- "Instant Postgres for AI development workflows"
-- "Production-ready serverless Postgres"
-
-### Technical Differentiators
-- Serverless with autoscaling
-- Database branching (dev/staging/prod)
-- Logical replication enabled by default
-- Connection pooling built-in
-- Supports all popular ORMs (Drizzle, Prisma, TypeORM)
-
----
-
-## 📞 Stakeholder Communication
-
-### Internal Announcement
+**Kick-off Message:**
 ```
 Team,
 
-We're excited to announce our partnership with Neon as part of their OSS Program!
+We're simplifying the Neon integration to a single Skill instead of 11 components!
 
-What we're getting:
-- $5,000 annual sponsorship
-- $20 referral commission per customer
-- Co-marketing opportunities
-
-What we're delivering:
-1. Instagres integration across our component marketplace
-2. Featured integration page at aitmpl.com/featured/neon-instagres
-3. Blog article showcasing instant database provisioning
-4. Neon logo in README
-
-This eliminates database provisioning friction for our 300+ agents and provides significant value to our users.
+What we're building:
+✅ 1 auto-activating Skill (neon-instagres)
+✅ Featured integration page
+✅ Blog article
+✅ Homepage banner
+✅ README logo
 
 Timeline: 30 days
-Kick-off: [DATE]
+Benefits: $5K sponsorship + referral commissions
 
-Questions? Reach out!
+This eliminates database setup friction for ALL our users.
+Much simpler than the original plan!
+
+Questions? Let's discuss.
 ```
 
 ### Neon Partnership Update
+
+**Email to Taraneh:**
 ```
+Subject: Simplified Neon Integration Plan - Skills Approach
+
 Hi Taraneh,
 
-Thanks for the partnership proposal! We've created a comprehensive integration plan.
+Great news! We've simplified the integration plan based on your team's feedback.
 
-Deliverables (all within 30 days):
+**New Approach:**
+Instead of 11 components, we're creating 1 powerful Skill that:
+- Auto-activates when database is needed
+- Works seamlessly with ALL our agents
+- Zero friction for users - just works
+
+**Deliverables (all within 30 days):**
 ✅ Referral link integration (https://get.neon.com/4eCjZDz)
-✅ Logo in GitHub README
-✅ Full Instagres integration with 4 new components
+✅ Neon logo in GitHub README
+✅ neon-instagres Skill (auto-provisioning)
 ✅ Featured page: aitmpl.com/featured/neon-instagres
-✅ Blog article with AI-generated cover
-✅ Homepage featured section
+✅ Blog article announcing partnership
+✅ Homepage featured banner
 
-Our approach:
-- Created neon-provisioning-specialist agent for instant setup
-- Integrated provisioning into fullstack/backend workflows
-- Added "Quick Start with Instagres" sections to all database agents
-- Built beautiful featured page showcasing the integration
+**Why this is better:**
+- Easier to install (1 command vs multiple)
+- Works with existing agents (no modifications needed)
+- Simpler to maintain
+- Better user experience
 
-Timeline: [START DATE] → [END DATE]
+Example usage:
+User: "I need a database for my Next.js app"
+Claude: *Automatically activates Skill and provisions Neon database*
 
-We're excited to showcase Neon as the recommended Postgres provider across our entire component marketplace!
+Timeline: Starting [DATE], completing by [DATE + 30 days]
+
+Excited to showcase Neon as the go-to Postgres solution!
 
 Best,
 [Your Name]
@@ -1288,88 +825,61 @@ Best,
 
 ---
 
-## 🎨 Design Assets Needed
+## 🎯 Timeline Summary
 
-### Logos
-- [ ] Neon logo SVG (from Google Drive)
-- [ ] Neon logo PNG (1x, 2x, 3x)
-- [ ] Neon + Claude Code combined logo
+| Phase | Days | Deliverables |
+|-------|------|--------------|
+| **Phase 1** | 1-5 | Neon Instagres Skill |
+| **Phase 2** | 6-12 | Featured integration page |
+| **Phase 3** | 13-18 | Blog article |
+| **Phase 4** | 19-22 | Homepage banner |
+| **Phase 5** | 23-25 | Documentation updates |
+| **Phase 6** | 26-30 | Testing & deployment |
 
-### Images
-- [ ] Open Graph image (1200x630) - Featured page
-- [ ] Twitter Card (1200x600) - Featured page
-- [ ] Blog cover image (AI-generated, 1600x900)
-- [ ] Component screenshots for blog article
-
-### Icons
-- [ ] Database provisioning icon
-- [ ] Lightning bolt (speed) icon
-- [ ] Branch icon (database branching)
+**Total:** 30 days from kickoff to production
 
 ---
 
-## 🔗 Reference Links
+## 🔑 Key Advantages of This Plan
 
-### Neon Resources
-- Instagres Docs: https://neon.tech/docs/guides/instagres
-- Neon Console: https://console.neon.tech
-- Referral Link: https://get.neon.com/4eCjZDz
-- Logo Assets: https://drive.google.com/drive/folders/1clLtjcg_rUR2TOtzbz8DLnVPY4kY_8Se
+1. **Simplicity**
+   - 1 Skill vs. 11 components
+   - Single install command
+   - Zero configuration
 
-### Internal Resources
-- Component Marketplace: https://aitmpl.com
-- BrainGrid Featured Example: https://aitmpl.com/featured/braingrid/
-- Component Guidelines: CLAUDE.md
-- Component Reviewer Agent: Use for all component validation
+2. **Auto-Activation**
+   - Claude detects database needs automatically
+   - No user discovery required
+   - Works with ALL existing agents
 
----
+3. **Maintainability**
+   - Single source of truth
+   - Easy to update
+   - Less testing surface
 
-## ✅ Final Pre-Launch Checklist
+4. **User Experience**
+   - Seamless integration
+   - No learning curve
+   - Just works™
 
-### Week 1: Components
-- [ ] All components created and reviewed
-- [ ] Component-reviewer validation passed
-- [ ] Components.json regenerated
-- [ ] CLI installation tested
-
-### Week 2: Website
-- [ ] Featured page live and responsive
-- [ ] Homepage integration complete
-- [ ] Blog article published
-- [ ] SEO metadata verified
-
-### Week 3: Documentation
-- [ ] README logo added
-- [ ] CLAUDE.md updated
-- [ ] All referral links verified
-- [ ] Component installation guides updated
-
-### Week 4: Launch
-- [ ] Full QA testing complete
-- [ ] Analytics tracking verified
-- [ ] Partnership announcement drafted
-- [ ] Social media posts scheduled
-- [ ] Email to Neon team sent
-
-### Post-Launch
-- [ ] Monitor component downloads
-- [ ] Track referral conversions
-- [ ] Gather user feedback
-- [ ] Iterate on integration based on usage
+5. **Marketing Impact**
+   - Featured prominently on homepage
+   - Dedicated landing page
+   - Blog amplification
 
 ---
 
-## 🎯 Next Steps
+## 🚀 Next Steps
 
-1. **Approve this plan** with stakeholders
-2. **Assign owners** to each phase
-3. **Set kick-off date** (within 30-day window)
-4. **Begin Phase 1** component creation
-5. **Schedule weekly check-ins** with Neon team
+1. **Approve this simplified plan**
+2. **Set kick-off date** (within 30-day Neon deadline)
+3. **Assign Phase 1** (Skill creation) to dev team
+4. **Download Neon logo assets** from Google Drive
+5. **Begin implementation**
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 2.0 (Simplified)
 **Last Updated:** 2026-01-18
-**Contact:** [Your Email]
-**Status:** 🟡 Awaiting Approval
+**Status:** 🟢 Ready for Implementation
+**Estimated Completion:** [Kick-off Date + 30 days]
