@@ -9,36 +9,74 @@ Status: 🟢 Ready for Implementation
 
 ## 📋 Executive Summary
 
-**Approach:** Create **1 powerful Skill** instead of 11 separate components for maximum simplicity and user adoption.
+**Approach:** Create **Complete Neon Template** featuring a new auto-activating Skill that integrates seamlessly with **9 existing Neon components**.
 
 **Partnership Deliverables (30-day deadline):**
 1. ✅ Neon referral link integration: `https://get.neon.com/4eCjZDz`
 2. ✅ Neon logo in GitHub README
-3. ✅ Neon Instagres Skill (auto-activates when database needed)
-4. ✅ Featured integration page + blog article
+3. ✅ **NEW** Neon Instagres Skill (instant provisioning entry point)
+4. ✅ Featured template page showcasing complete ecosystem
+5. ✅ Blog article: Complete template walkthrough + partnership
+
+**Complete Template (9 Components):**
+- 🆕 **1 NEW Skill** - `neon-instagres` (auto-provisioning)
+- ✅ **5 Existing Agents** - Expert specialists for schema, auth, migrations, optimization
+- ✅ **1 Existing MCP** - Neon Management API integration
+- ✅ **2 Existing Settings** - Statusline monitoring tools
 
 **Business Value:**
 - $5,000 annual sponsorship + $20 referral commissions
-- Instant database provisioning for ALL Claude Code users
+- Complete Neon ecosystem (provisioning → production optimization)
 - Co-marketing with Neon's developer community
+- Neon as recommended Postgres provider across Claude Code
 
 ---
 
-## 🎯 Why Simplify?
+## 🎯 Integration Strategy
 
-### Old Approach (Complex)
-- ❌ 4 new components to create
-- ❌ 7 existing components to modify
-- ❌ Users must discover and install multiple pieces
-- ❌ Maintenance overhead
-- ❌ Fragmented user experience
+### The Challenge
+- Users don't know about existing Neon components (5 agents, 1 MCP, 2 settings)
+- No easy way to get started with Neon instantly
+- Components exist but lack cohesive entry point
+- Database provisioning still requires manual setup
 
-### New Approach (Simple)
-- ✅ **1 Skill** that auto-activates
-- ✅ Works with ALL existing agents (no modifications)
+### New Approach (Integrated)
+- ✅ **1 Skill** that auto-activates (neon-instagres)
+- ✅ Integrates with **5 existing Neon agents**
+- ✅ Works with **1 existing Neon MCP**
+- ✅ Includes **2 statusline settings**
 - ✅ Single install: `--skill database/neon-instagres`
-- ✅ Easy to maintain
-- ✅ Seamless user experience
+- ✅ Complete template for Neon ecosystem
+
+### Existing Neon Components
+
+**Agents (5):**
+- `neon-expert` - General Neon consultant and coordinator
+- `neon-database-architect` - Schema design with Drizzle ORM
+- `neon-auth-specialist` - Stack Auth & Neon Auth integration
+- `neon-migration-specialist` - Database migration patterns
+- `neon-optimization-analyzer` - Query optimization and performance
+
+**MCP (1):**
+- `neon` - Neon Management API integration
+
+**Settings (2):**
+- `neon-database-dev` - Statusline for development metrics
+- `neon-database-resources` - Statusline for resource monitoring
+
+### Integration Strategy
+
+The **neon-instagres Skill** becomes the **entry point** for instant provisioning, then delegates to existing agents for specialized tasks:
+
+```
+User: "Setup a Neon database with auth"
+  ↓
+neon-instagres Skill activates
+  ↓
+Provisions database (npx get-db)
+  ↓
+Delegates to neon-auth-specialist for auth setup
+```
 
 ### How Skills Work Magic
 Skills are **model-invoked**: Claude automatically activates them based on context. When a user mentions "database", "postgres", "setup database", etc., Claude loads the Neon Instagres Skill and provisions a database instantly.
@@ -49,13 +87,26 @@ Skills are **model-invoked**: Claude automatically activates them based on conte
 
 ## 🏗️ Implementation Plan
 
-### Total Components: **1 Skill** + Marketing Content
+### Complete Neon Template
 
-| Component | Type | Purpose |
-|-----------|------|---------|
-| `neon-instagres` | **Skill** | Auto-activating database provisioning expert |
-| Featured Page | Marketing | Showcase integration at `/featured/neon-instagres/` |
-| Blog Article | Content | Partnership announcement + technical deep dive |
+| Component | Type | Status | Purpose |
+|-----------|------|--------|---------|
+| `neon-instagres` | **Skill** | 🆕 NEW | Auto-provisioning entry point |
+| `neon-expert` | Agent | ✅ Existing | General Neon consultant |
+| `neon-database-architect` | Agent | ✅ Existing | Schema design with Drizzle |
+| `neon-auth-specialist` | Agent | ✅ Existing | Auth integration (Stack Auth) |
+| `neon-migration-specialist` | Agent | ✅ Existing | Migration patterns |
+| `neon-optimization-analyzer` | Agent | ✅ Existing | Query optimization |
+| `neon` | MCP | ✅ Existing | Neon Management API |
+| `neon-database-dev` | Setting | ✅ Existing | Dev metrics statusline |
+| `neon-database-resources` | Setting | ✅ Existing | Resource monitoring statusline |
+
+### Marketing & Documentation
+
+| Deliverable | Type | Purpose |
+|-------------|------|---------|
+| Featured Page | Marketing | Complete Neon template showcase |
+| Blog Article | Content | Full template walkthrough + partnership |
 | README Logo | Documentation | Neon sponsor visibility |
 | Homepage Banner | Marketing | Featured integration callout |
 
@@ -365,16 +416,53 @@ npx get-db claim
    - 📚 Learning & tutorials
    - 🏢 Enterprise dev workflows
 
-6. **Integration Examples**
-   - Fullstack developer agent workflow
-   - Vite plugin auto-provisioning
-   - Next.js + Drizzle setup
+6. **Complete Template Components**
 
-7. **Resources**
+   **🆕 Instant Provisioning:**
+   - `neon-instagres` Skill - Auto-activating database provisioning
+
+   **✅ Expert Agents:**
+   - `neon-expert` - Orchestrates Neon workflows
+   - `neon-database-architect` - Schema design with Drizzle
+   - `neon-auth-specialist` - Auth integration (Stack Auth)
+   - `neon-migration-specialist` - Migration patterns
+   - `neon-optimization-analyzer` - Query optimization
+
+   **✅ Management & Monitoring:**
+   - `neon` MCP - Neon Management API
+   - `neon-database-dev` - Dev metrics statusline
+   - `neon-database-resources` - Resource monitoring
+
+   **Installation:**
+   ```bash
+   # Quick Start (Skill only)
+   npx claude-code-templates@latest --skill database/neon-instagres
+
+   # Full Template (all 9 components)
+   npx claude-code-templates@latest \
+     --skill database/neon-instagres \
+     --agent database/neon-expert \
+     --agent database/neon-database-architect \
+     --agent database/neon-auth-specialist \
+     --agent data-ai/neon-migration-specialist \
+     --agent data-ai/neon-optimization-analyzer \
+     --mcp database/neon \
+     --setting statusline/neon-database-dev \
+     --setting statusline/neon-database-resources \
+     --yes
+   ```
+
+7. **Workflow Examples**
+   - **Fullstack App**: Skill provisions → architect designs schema → auth specialist adds auth
+   - **Production Migration**: Migration specialist creates safe migration → branching tests → optimization review
+   - **Performance Tuning**: Optimization analyzer identifies bottlenecks → MCP monitors resources → implements fixes
+
+8. **Resources**
    - Link to Instagres docs
    - Neon Console
    - Drizzle + Neon guide
    - Component marketplace
+   - Template documentation
 
 **Design:**
 - Neon brand colors: `#00E599` (green), `#0F0F0F` (dark)
@@ -387,64 +475,149 @@ npx get-db claim
 
 ## 📝 Phase 3: Blog Article (Days 13-18)
 
-### Create Partnership Announcement Article
+### Create Complete Template Article
 
-**Location:** `docs/blog/neon-instagres-integration.html`
+**Location:** `docs/blog/neon-complete-template-integration.html`
 
-**Title:** "Instant Postgres Provisioning for Claude Code: Neon Partnership"
+**Title:** "Complete Neon Template for Claude Code: Instant Provisioning + Expert Agents"
 
 **Outline:**
 
-1. **Introduction**
-   - Announcing Neon OSS Program partnership
-   - The database provisioning problem (15-30 min setup)
+1. **Introduction: Neon OSS Program Partnership**
+   - Announcing partnership with Neon
+   - The complete Neon ecosystem for Claude Code
+   - From instant provisioning to production optimization
 
-2. **The Solution**
-   - Neon Instagres: 5-second database provisioning
-   - One Skill to rule them all
+2. **The Database Setup Problem**
+   - Traditional workflow: 15-30 minutes
+   - Manual configuration, trial and error
+   - Fragmented tools and knowledge
 
-3. **How It Works**
-   - Auto-activating Skills explanation
-   - `npx get-db --ref 4eCjZDz` deep dive
+3. **The Complete Solution: Neon Template**
+
+   **3.1 Instant Provisioning (New Skill)**
+   - `neon-instagres` Skill: Auto-activating database provisioning
+   - `npx get-db --ref 4eCjZDz` - 5 seconds to production-ready Postgres
    - Claimable databases architecture
 
-4. **Integration Examples**
+   **3.2 Expert Agents (Existing)**
+   - `neon-expert` - Orchestrates complex Neon workflows
+   - `neon-database-architect` - Schema design with Drizzle ORM
+   - `neon-auth-specialist` - Stack Auth & Neon Auth integration
+   - `neon-migration-specialist` - Safe migration patterns
+   - `neon-optimization-analyzer` - Query performance tuning
+
+   **3.3 Management API (Existing MCP)**
+   - `neon` MCP - Programmatic Neon control
+   - Project management, branch creation, metrics
+
+   **3.4 Development Tools (Existing Settings)**
+   - `neon-database-dev` - Real-time dev metrics in statusline
+   - `neon-database-resources` - Resource monitoring
+
+4. **Complete Workflow Examples**
+
+   **Example 1: Fullstack App from Zero**
    ```bash
-   # Example 1: Fullstack app
-   @fullstack-developer build a todo app with auth
+   # User: "Build a todo app with auth using Neon"
 
    # Claude automatically:
-   # 1. Provisions Neon database (5s)
-   # 2. Sets up Drizzle ORM
-   # 3. Generates schema
-   # 4. Creates Next.js API routes
+   # 1. neon-instagres Skill provisions database (5s)
+   # 2. neon-database-architect generates Drizzle schema
+   # 3. neon-auth-specialist sets up Stack Auth
+   # 4. Creates Next.js app with API routes
    ```
 
-5. **Real-World Use Cases**
-   - Prototyping: Instant databases for experimentation
-   - Testing: Ephemeral databases for CI/CD
-   - Education: Zero-friction learning environment
-   - Enterprise: Database branching for safe migrations
+   **Example 2: Production Migration**
+   ```bash
+   # User: "Migrate our users table to add email verification"
 
-6. **Performance Benchmarks**
-   - Traditional: 17-30 minutes
-   - Instagres: 5 seconds
-   - **180x-360x faster**
+   # Claude automatically:
+   # 1. neon-migration-specialist creates safe migration
+   # 2. Uses Neon branching to test migration
+   # 3. neon-optimization-analyzer reviews performance impact
+   # 4. Executes migration with rollback plan
+   ```
 
-7. **Partnership Details**
-   - $5K sponsorship + referral program
-   - Co-marketing initiatives
-   - Neon as recommended Postgres provider
+   **Example 3: Performance Optimization**
+   ```bash
+   # User: "My queries are slow, help optimize"
 
-8. **Getting Started**
+   # Claude automatically:
+   # 1. neon-optimization-analyzer analyzes query patterns
+   # 2. Recommends indexes and schema changes
+   # 3. Uses neon MCP to check resource usage
+   # 4. Implements optimizations with benchmarks
+   ```
+
+5. **Template Installation**
+
+   **Quick Start (Skill Only):**
    ```bash
    npx claude-code-templates@latest --skill database/neon-instagres
    ```
 
-9. **Conclusion**
-   - Try Neon: `https://get.neon.com/4eCjZDz`
-   - Featured page link
-   - Component marketplace
+   **Full Template (All Components):**
+   ```bash
+   npx claude-code-templates@latest \
+     --skill database/neon-instagres \
+     --agent database/neon-expert \
+     --agent database/neon-database-architect \
+     --agent database/neon-auth-specialist \
+     --agent data-ai/neon-migration-specialist \
+     --agent data-ai/neon-optimization-analyzer \
+     --mcp database/neon \
+     --setting statusline/neon-database-dev \
+     --setting statusline/neon-database-resources \
+     --yes
+   ```
+
+6. **Real-World Use Cases**
+   - **Rapid Prototyping**: Instant databases + expert schema design
+   - **Testing & CI/CD**: Ephemeral databases with automated migrations
+   - **Education**: Zero-friction learning with best practices built-in
+   - **Enterprise Production**: Branching + optimization + monitoring
+
+7. **Performance Benchmarks**
+   - **Provisioning**: Traditional 17-30 min → Neon 5 seconds (**180x-360x faster**)
+   - **Schema Design**: Manual trial → Expert agent guidance
+   - **Migration Safety**: Risky production changes → Branching + testing
+   - **Optimization**: Guesswork → Data-driven analysis
+
+8. **Partnership Details**
+   - $5K annual sponsorship + referral program
+   - Co-marketing with Neon's developer community
+   - Neon as recommended Postgres provider across Claude Code
+   - Complete template maintained and updated
+
+9. **Component Deep Dives**
+
+   **9.1 neon-instagres Skill**
+   - Auto-activation triggers
+   - Framework integration (Next.js, Vite, Express)
+   - ORM support (Drizzle, Prisma, TypeORM)
+
+   **9.2 Agent Ecosystem**
+   - How agents delegate to each other
+   - Specialization vs. orchestration
+   - Custom workflow examples
+
+   **9.3 MCP Integration**
+   - Programmatic Neon control
+   - Branch management
+   - Metrics and monitoring
+
+10. **Getting Started Guide**
+    - Install Skill for instant provisioning
+    - Add agents as needed for specialization
+    - Enable MCP for advanced workflows
+    - Monitor with statusline settings
+
+11. **Conclusion**
+    - Complete Neon ecosystem in Claude Code
+    - From zero to production in minutes
+    - Try Neon: `https://get.neon.com/4eCjZDz`
+    - Explore template: `https://aitmpl.com/featured/neon-instagres/`
 
 **Assets:**
 - AI-generated cover image (database + lightning bolt theme)
@@ -455,13 +628,26 @@ npx get-db claim
 **Metadata:**
 ```json
 {
-  "id": "neon-instagres-integration",
-  "title": "Instant Postgres for Claude Code: Neon Partnership",
-  "description": "Provision production-ready Postgres in 5 seconds with Neon Instagres Skill - 180x faster database setup for AI development.",
+  "id": "neon-complete-template-integration",
+  "title": "Complete Neon Template for Claude Code: Instant Provisioning + Expert Agents",
+  "description": "Complete Neon ecosystem for Claude Code: 1 auto-provisioning Skill + 5 expert agents + MCP + monitoring tools. From zero to production-optimized Postgres in minutes.",
   "date": "2026-01-25",
-  "tags": ["neon", "postgres", "integration", "skills", "partnership"],
+  "tags": ["neon", "postgres", "template", "skills", "agents", "mcp", "partnership"],
   "featured": true,
-  "author": "Claude Code Team"
+  "author": "Claude Code Team",
+  "components": {
+    "new": ["database/neon-instagres"],
+    "existing": [
+      "database/neon-expert",
+      "database/neon-database-architect",
+      "database/neon-auth-specialist",
+      "data-ai/neon-migration-specialist",
+      "data-ai/neon-optimization-analyzer",
+      "database/neon",
+      "statusline/neon-database-dev",
+      "statusline/neon-database-resources"
+    ]
+  }
 }
 ```
 
@@ -482,8 +668,8 @@ npx get-db claim
   <div class="featured-content">
     <div class="featured-text">
       <img src="/featured/neon-instagres/assets/neon-logo.svg" class="partner-logo">
-      <h2>Instant Postgres with Neon Instagres</h2>
-      <p>Provision production-ready Postgres databases in <strong>5 seconds</strong> with zero configuration. Perfect for AI development workflows.</p>
+      <h2>Complete Neon Template</h2>
+      <p>Instant provisioning + expert agents + monitoring tools. The complete Neon ecosystem for Claude Code: <strong>9 components</strong> working together seamlessly.</p>
 
       <div class="stats">
         <div class="stat">
@@ -491,12 +677,12 @@ npx get-db claim
           <span class="label">Database Ready</span>
         </div>
         <div class="stat">
-          <span class="number">180x</span>
-          <span class="label">Faster Setup</span>
+          <span class="number">9 Components</span>
+          <span class="label">Complete Template</span>
         </div>
         <div class="stat">
-          <span class="number">1 Skill</span>
-          <span class="label">Auto-Activating</span>
+          <span class="number">5 Agents</span>
+          <span class="label">Expert Specialists</span>
         </div>
       </div>
 
@@ -710,12 +896,23 @@ vercel logs aitmpl.com --follow
 ## ✅ Implementation Checklist
 
 ### Core Skill
-- [ ] Create `cli-tool/components/skills/neon-instagres/SKILL.md`
+- [ ] Create `cli-tool/components/skills/database/neon-instagres/SKILL.md`
+- [ ] Add delegation logic to existing Neon agents in Skill instructions
 - [ ] Test Skill activation with database requests
 - [ ] Verify `npx get-db --ref 4eCjZDz` execution
 - [ ] Test with Next.js, Vite, Express
 - [ ] Validate Drizzle, Prisma integration
+- [ ] Test integration with `neon-database-architect` agent
+- [ ] Test integration with `neon-auth-specialist` agent
+- [ ] Verify Skill works alongside Neon MCP
 - [ ] Review with component-reviewer agent
+
+### Template Integration Testing
+- [ ] Install full template (9 components)
+- [ ] Test workflow: Skill → agent delegation
+- [ ] Verify statusline settings display correctly
+- [ ] Test MCP + Skill coordination
+- [ ] Validate component interoperability
 
 ### Featured Page
 - [ ] Create `/docs/featured/neon-instagres/index.html`
@@ -785,39 +982,66 @@ Questions? Let's discuss.
 
 **Email to Taraneh:**
 ```
-Subject: Simplified Neon Integration Plan - Skills Approach
+Subject: Complete Neon Template Integration Plan - 9 Components Working Together
 
 Hi Taraneh,
 
-Great news! We've simplified the integration plan based on your team's feedback.
+Excellent news! We've designed a comprehensive integration that showcases the complete Neon ecosystem within Claude Code.
 
-**New Approach:**
-Instead of 11 components, we're creating 1 powerful Skill that:
-- Auto-activates when database is needed
-- Works seamlessly with ALL our agents
-- Zero friction for users - just works
+**The Complete Neon Template:**
+Instead of creating isolated components, we're building a cohesive template featuring:
+- 🆕 1 NEW Skill (neon-instagres) - Auto-provisioning entry point
+- ✅ 5 Existing Agents - Expert specialists already in our library
+- ✅ 1 Existing MCP - Neon Management API integration
+- ✅ 2 Existing Settings - Statusline monitoring tools
+
+**Total: 9 components working as a unified ecosystem**
 
 **Deliverables (all within 30 days):**
 ✅ Referral link integration (https://get.neon.com/4eCjZDz)
 ✅ Neon logo in GitHub README
-✅ neon-instagres Skill (auto-provisioning)
-✅ Featured page: aitmpl.com/featured/neon-instagres
-✅ Blog article announcing partnership
+✅ neon-instagres Skill (instant provisioning)
+✅ Featured template page: aitmpl.com/featured/neon-instagres
+✅ Blog article: Complete template walkthrough + partnership
 ✅ Homepage featured banner
 
-**Why this is better:**
-- Easier to install (1 command vs multiple)
-- Works with existing agents (no modifications needed)
-- Simpler to maintain
-- Better user experience
+**Complete Workflow Example:**
+User: "Build a todo app with auth using Neon"
+1. neon-instagres Skill provisions database (5 seconds)
+2. neon-database-architect designs schema with Drizzle
+3. neon-auth-specialist integrates Stack Auth
+4. neon MCP manages branches and metrics
+5. Statusline displays real-time database stats
 
-Example usage:
-User: "I need a database for my Next.js app"
-Claude: *Automatically activates Skill and provisions Neon database*
+**Why this approach is powerful:**
+- Showcases entire Neon ecosystem (provisioning → production optimization)
+- Leverages 5 existing expert agents (no need to create from scratch)
+- Single entry point (Skill) that orchestrates specialist agents
+- Complete template users can install with one command
+- Better than competitors - no other Postgres provider has this integration depth
+
+**Installation Options:**
+```bash
+# Quick Start (Skill only)
+npx claude-code-templates@latest --skill database/neon-instagres
+
+# Full Template (all 9 components)
+npx claude-code-templates@latest \
+  --skill database/neon-instagres \
+  --agent database/neon-expert \
+  --agent database/neon-database-architect \
+  --agent database/neon-auth-specialist \
+  --agent data-ai/neon-migration-specialist \
+  --agent data-ai/neon-optimization-analyzer \
+  --mcp database/neon \
+  --setting statusline/neon-database-dev \
+  --setting statusline/neon-database-resources \
+  --yes
+```
 
 Timeline: Starting [DATE], completing by [DATE + 30 days]
 
-Excited to showcase Neon as the go-to Postgres solution!
+This positions Neon not just as a database provider, but as a complete development ecosystem within Claude Code!
 
 Best,
 [Your Name]
@@ -840,32 +1064,41 @@ Best,
 
 ---
 
-## 🔑 Key Advantages of This Plan
+## 🔑 Key Advantages of This Template
 
-1. **Simplicity**
-   - 1 Skill vs. 11 components
-   - Single install command
-   - Zero configuration
+1. **Complete Ecosystem**
+   - 9 components working together
+   - From instant provisioning to production optimization
+   - No other Postgres provider offers this depth
 
-2. **Auto-Activation**
-   - Claude detects database needs automatically
-   - No user discovery required
-   - Works with ALL existing agents
+2. **Auto-Activation + Delegation**
+   - Skill detects database needs automatically
+   - Delegates to specialist agents seamlessly
+   - Works with existing Neon components
 
-3. **Maintainability**
-   - Single source of truth
-   - Easy to update
-   - Less testing surface
+3. **Leverages Existing Assets**
+   - 5 Neon agents already exist
+   - 1 Neon MCP already integrated
+   - 2 statusline settings ready
+   - Only 1 new Skill needed
 
-4. **User Experience**
-   - Seamless integration
-   - No learning curve
+4. **Flexible Installation**
+   - Quick start: Skill only
+   - Full template: All 9 components
+   - Users choose their level of depth
+
+5. **User Experience**
+   - Single entry point (Skill)
+   - Specialist agents for advanced workflows
+   - Real-time monitoring in statusline
    - Just works™
 
-5. **Marketing Impact**
+6. **Marketing Impact**
+   - Complete template showcase (not just one tool)
    - Featured prominently on homepage
    - Dedicated landing page
-   - Blog amplification
+   - Blog covers entire ecosystem
+   - Positions Neon as complete solution
 
 ---
 
