@@ -95,7 +95,6 @@ Use the component-reviewer agent to review [component-path]
 4. **REVIEW with component-reviewer agent** (validates format, security, naming)
 5. Fix any issues identified by the reviewer
 6. Run `python scripts/generate_components_json.py` to update catalog
-7. Test installation: `npx claude-code-templates@latest --{type} {name}`
 
 **The component-reviewer agent checks:**
 - ✅ Valid YAML frontmatter and required fields
