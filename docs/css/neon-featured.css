@@ -1,0 +1,236 @@
+/* ===================================
+   Neon Featured Integration Section
+   =================================== */
+
+.neon-featured-integration {
+    position: relative;
+    margin: 0;
+    padding: 3rem;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(0, 229, 153, 0.08), rgba(0, 184, 212, 0.08));
+    border-top: 1px solid rgba(0, 229, 153, 0.2);
+    border-bottom: 1px solid rgba(0, 229, 153, 0.2);
+    box-sizing: border-box;
+}
+
+.neon-featured-badge {
+    display: inline-block;
+    background: rgba(0, 229, 153, 0.15);
+    color: #00E599;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0, 229, 153, 0.3);
+}
+
+.neon-featured-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.neon-featured-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.neon-partner-logo {
+    height: 40px;
+    width: auto;
+}
+
+.neon-featured-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00E599, #00B8D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.neon-featured-description {
+    font-size: 1.2rem;
+    color: #c9d1d9;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.neon-featured-description strong {
+    color: #00E599;
+    font-weight: 600;
+}
+
+.neon-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+    max-width: 600px;
+}
+
+.neon-stat {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(15, 15, 15, 0.5);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 229, 153, 0.2);
+    transition: all 0.3s ease;
+}
+
+.neon-stat:hover {
+    border-color: #00E599;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 229, 153, 0.2);
+}
+
+.neon-stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #00E599;
+    margin-bottom: 0.25rem;
+}
+
+.neon-stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.neon-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.neon-btn {
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.neon-btn-primary {
+    background: #00E599;
+    color: #0F0F0F;
+    border: 2px solid #00E599;
+}
+
+.neon-btn-primary:hover {
+    background: #00CC88;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 229, 153, 0.3);
+}
+
+.neon-btn-secondary {
+    background: transparent;
+    color: #00E599;
+    border: 2px solid #00E599;
+}
+
+.neon-btn-secondary:hover {
+    background: rgba(0, 229, 153, 0.1);
+    border-color: #00CC88;
+    color: #00CC88;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .neon-featured-integration {
+        padding: 2.5rem 2rem;
+    }
+
+    .neon-featured-title {
+        font-size: 2.2rem;
+    }
+
+    .neon-featured-description {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .neon-featured-integration {
+        padding: 2rem 1.5rem;
+    }
+
+    .neon-featured-title {
+        font-size: 1.8rem;
+    }
+
+    .neon-featured-description {
+        font-size: 1rem;
+    }
+
+    .neon-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .neon-stat-number {
+        font-size: 1.5rem;
+    }
+
+    .neon-cta-buttons {
+        flex-direction: column;
+    }
+
+    .neon-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .neon-featured-integration {
+        padding: 1.5rem 1rem;
+    }
+
+    .neon-featured-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .neon-partner-logo {
+        height: 32px;
+    }
+
+    .neon-featured-title {
+        font-size: 1.5rem;
+    }
+
+    .neon-featured-description {
+        font-size: 0.95rem;
+    }
+
+    .neon-stats-row {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+
+    .neon-stat {
+        padding: 0.75rem;
+    }
+
+    .neon-stat-number {
+        font-size: 1.3rem;
+    }
+
+    .neon-stat-label {
+        font-size: 0.8rem;
+    }
+}
