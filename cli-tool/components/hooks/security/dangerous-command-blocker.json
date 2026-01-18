@@ -1,5 +1,12 @@
 {
-  "description": "Block dangerous shell commands like 'rm -rf', 'rm *', and other destructive operations to prevent accidental data loss.",
+  "description": "Advanced protection against dangerous shell commands with multi-level security. Blocks catastrophic operations (rm -rf /, dd, mkfs), protects critical paths (.claude/, .git/, node_modules/), and warns about suspicious patterns. Features: catastrophic command blocking, critical path protection, smart pattern detection, and detailed safety messages.",
+  "supportingFiles": [
+    {
+      "source": "dangerous-command-blocker.py",
+      "destination": ".claude/scripts/dangerous-command-blocker.py",
+      "executable": true
+    }
+  ],
   "hooks": {
     "PreToolUse": [
       {
@@ -7,7 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c \"import json, sys, re; data=json.load(sys.stdin); cmd=data.get('tool_input',{}).get('command',''); dangerous_patterns=[r'\\brm\\s+(-[rfRF]*[rfRF]+[^\\s]*\\s+)?(/|~|\\*|\\.\\.)', r'\\brm\\s+-[rfRF]*[rfRF]+.*\\*', r'\\brm\\s+.*\\s+/(?!tmp|var/tmp)', r'\\b(dd\\s+if=|mkfs\\.|format\\s+)', r'\\b:(\\(\\))?\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}', r'>\\s*/dev/sd[a-z]']; matches=[p for p in dangerous_patterns if re.search(p, cmd, re.IGNORECASE)]; sys.exit(2) if matches else sys.exit(0)\" && echo '' || { echo 'BLOCKED: Dangerous command detected! This command could cause irreversible data loss.' >&2; echo 'Detected: Potentially destructive operation (rm -rf, dd, mkfs, fork bomb, or direct disk access)' >&2; echo '' >&2; echo 'Safety guidelines:' >&2; echo '• Use specific file paths instead of wildcards (*, /)' >&2; echo '• Avoid recursive deletion of system or home directories' >&2; echo '• For /tmp cleanup, use: rm -rf /tmp/specific-folder' >&2; echo '• Consider safer alternatives or request manual confirmation' >&2; exit 2; }"
+            "command": "python3 .claude/scripts/dangerous-command-blocker.py 2>&1"
           }
         ]
       }
