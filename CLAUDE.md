@@ -79,11 +79,50 @@ npx claude-code-templates@latest
 
 #### Adding New Components
 
+**CRITICAL: Use the component-reviewer agent for ALL component changes**
+
+When adding or modifying components, you MUST use the `component-reviewer` subagent to validate the component before committing:
+
+```
+Use the component-reviewer agent to review [component-path]
+```
+
+**Component Creation Workflow:**
+
 1. Create component file in `cli-tool/components/{type}/{category}/{name}.md`
-2. Use descriptive hyphenated names
+2. Use descriptive hyphenated names (kebab-case)
 3. Include clear descriptions and usage examples
-4. Run `python scripts/generate_components_json.py` to update catalog
-5. Test installation: `npx claude-code-templates@latest --{type} {name}`
+4. **REVIEW with component-reviewer agent** (validates format, security, naming)
+5. Fix any issues identified by the reviewer
+6. Run `python scripts/generate_components_json.py` to update catalog
+7. Test installation: `npx claude-code-templates@latest --{type} {name}`
+
+**The component-reviewer agent checks:**
+- ✅ Valid YAML frontmatter and required fields
+- ✅ Proper kebab-case naming conventions
+- ✅ No hardcoded secrets (API keys, tokens, passwords)
+- ✅ Relative paths only (no absolute paths)
+- ✅ Supporting files exist (for hooks with scripts)
+- ✅ Clear, specific descriptions
+- ✅ Correct category placement
+- ✅ Security best practices
+
+**Example Usage:**
+```
+# After creating a new agent
+Use the component-reviewer agent to review cli-tool/components/agents/development-team/react-expert.md
+
+# Before committing hook changes
+Use the component-reviewer agent to review cli-tool/components/hooks/git/prevent-force-push.json
+
+# For PR reviews with multiple components
+Use the component-reviewer agent to review all modified components in cli-tool/components/
+```
+
+The agent will provide prioritized feedback:
+- **❌ Critical Issues**: Must fix before merge (security, missing fields)
+- **⚠️ Warnings**: Should fix (clarity, best practices)
+- **📋 Suggestions**: Nice to have improvements
 
 #### Statuslines with Python Scripts
 
