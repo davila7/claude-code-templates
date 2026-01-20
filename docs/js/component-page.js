@@ -376,9 +376,11 @@ class ComponentPageManager {
         console.log('Component type:', this.component.type);
         console.log('Component name:', this.component.name);
         console.log('Component author:', this.component.author);
+        console.log('Component repo:', this.component.repo);
 
-        // Check if component has author field directly from frontmatter
+        // Check if component has author or repo field directly from frontmatter
         const hasDirectAuthor = this.component.author && this.component.author.trim() !== '';
+        const hasDirectRepo = this.component.repo && this.component.repo.trim() !== '';
 
         // For agents, try to load marketplace data
         let agentMetadata = null;
@@ -401,8 +403,8 @@ class ComponentPageManager {
             }
         }
 
-        // Show metadata section if we have either direct author or agent metadata
-        const hasMetadata = hasDirectAuthor || agentMetadata;
+        // Show metadata section if we have author, repo, or agent metadata
+        const hasMetadata = hasDirectAuthor || hasDirectRepo || agentMetadata;
 
         if (!hasMetadata) {
             console.log('No metadata available, hiding metadata section');
@@ -422,19 +424,13 @@ class ComponentPageManager {
         // Populate author - prioritize direct author field, then marketplace
         const authorElement = document.getElementById('metadataAuthor');
         if (authorElement) {
-            let authorDisplay = '--';
-
             if (hasDirectAuthor) {
-                // Check if author is a URL
-                if (this.component.author.startsWith('http://') || this.component.author.startsWith('https://')) {
-                    // Create a link for the author
-                    authorElement.innerHTML = `<a href="${this.component.author}" target="_blank" class="metadata-link" style="display: inline-flex;">View Original</a>`;
-                } else {
-                    authorElement.textContent = this.component.author;
-                }
+                authorElement.textContent = this.component.author;
             } else if (agentMetadata) {
                 const authorName = agentMetadata.author?.name || agentMetadata.author || '--';
                 authorElement.textContent = authorName;
+            } else {
+                authorElement.textContent = '--';
             }
         }
 
@@ -444,15 +440,19 @@ class ComponentPageManager {
             licenseElement.textContent = agentMetadata?.license || '--';
         }
 
-        // Populate repository (from marketplace for agents, or direct author if it's a URL)
+        // Populate repository - prioritize direct repo field, then marketplace
         const repositoryLink = document.getElementById('metadataRepository');
         const repositoryNone = document.getElementById('metadataRepositoryNone');
 
-        let repositoryUrl = agentMetadata?.repository;
+        let repositoryUrl = null;
 
-        // If component has author as URL and no marketplace repository, use author as repository
-        if (!repositoryUrl && hasDirectAuthor && (this.component.author.startsWith('http://') || this.component.author.startsWith('https://'))) {
-            repositoryUrl = this.component.author;
+        // Priority 1: Direct repo field
+        if (hasDirectRepo) {
+            repositoryUrl = this.component.repo;
+        }
+        // Priority 2: Marketplace repository
+        else if (agentMetadata?.repository) {
+            repositoryUrl = agentMetadata.repository;
         }
 
         if (repositoryUrl) {
@@ -484,11 +484,6 @@ class ComponentPageManager {
             });
         } else if (keywordsContainer) {
             keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
-        }
-
-        } catch (error) {
-            console.error('Error loading marketplace metadata:', error);
-            if (metadataSection) metadataSection.style.display = 'none';
         }
     }
 

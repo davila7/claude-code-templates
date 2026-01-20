@@ -420,8 +420,9 @@ def generate_components_json():
                                     with open(skill_file_path, 'r', encoding='utf-8') as f:
                                         content = f.read()
 
-                                    # Extract description and author from frontmatter if available
+                                    # Extract description, author and repo from frontmatter if available
                                     author = ''
+                                    repo = ''
                                     if content.startswith('---'):
                                         frontmatter_end = content.find('---', 3)
                                         if frontmatter_end != -1:
@@ -431,6 +432,8 @@ def generate_components_json():
                                                     description = line.split('description:', 1)[1].strip()
                                                 elif line.startswith('author:'):
                                                     author = line.split('author:', 1)[1].strip()
+                                                elif line.startswith('repo:'):
+                                                    repo = line.split('repo:', 1)[1].strip()
 
                                 except Exception as e:
                                     print(f"Warning: Could not read file {skill_file_path}: {e}")
@@ -459,6 +462,7 @@ def generate_components_json():
                                     'content': content,
                                     'description': description,
                                     'author': author,
+                                    'repo': repo,
                                     'downloads': downloads,
                                     'security': security
                                 }
@@ -479,11 +483,12 @@ def generate_components_json():
                         content = ''
                         description = ''
                         author = ''
+                        repo = ''
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
 
-                            # Extract description and author from JSON files
+                            # Extract description, author and repo from JSON files
                             if file_name.endswith('.json'):
                                 try:
                                     import json
@@ -497,16 +502,18 @@ def generate_components_json():
                                                     description = server_config['description']
                                                     break  # Use the first description found
                                     elif component_type in ['settings', 'hooks']:
-                                        # Extract description and author from settings/hooks JSON files
+                                        # Extract description, author and repo from settings/hooks JSON files
                                         if 'description' in json_data:
                                             description = json_data['description']
                                         if 'author' in json_data:
                                             author = json_data['author']
+                                        if 'repo' in json_data:
+                                            repo = json_data['repo']
 
                                 except json.JSONDecodeError:
                                     print(f"Warning: Invalid JSON in {file_path}")
 
-                            # Extract description and author from markdown frontmatter
+                            # Extract description, author and repo from markdown frontmatter
                             elif file_name.endswith('.md'):
                                 if content.startswith('---'):
                                     frontmatter_end = content.find('---', 3)
@@ -517,6 +524,8 @@ def generate_components_json():
                                                 description = line.split('description:', 1)[1].strip()
                                             elif line.startswith('author:'):
                                                 author = line.split('author:', 1)[1].strip()
+                                            elif line.startswith('repo:'):
+                                                repo = line.split('repo:', 1)[1].strip()
 
                         except Exception as e:
                             print(f"Warning: Could not read file {file_path}: {e}")
@@ -545,6 +554,7 @@ def generate_components_json():
                             'content': content,  # Add file content
                             'description': description,  # Add description for MCPs
                             'author': author,  # Add author field
+                            'repo': repo,  # Add repository field
                             'downloads': downloads,  # Add download count
                             'security': security  # Add security metadata
                         }
