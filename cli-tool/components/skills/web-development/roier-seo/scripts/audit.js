@@ -46,9 +46,11 @@ function formatScore(score) {
 async function runAudit(url, options = {}) {
   const { output = 'json', save } = options;
 
-  console.log(`${colors.cyan}🔍 Starting Lighthouse audit for: ${url}${colors.reset}\n`);
+  // Use stderr for status messages to avoid polluting JSON output on stdout
+  console.error(`${colors.cyan}🔍 Starting Lighthouse audit for: ${url}${colors.reset}\n`);
 
   let chrome;
+  let exitCode = 0;
 
   try {
     // Launch Chrome
@@ -156,18 +158,22 @@ async function runAudit(url, options = {}) {
     if (save) {
       const savePath = path.resolve(save);
       fs.writeFileSync(savePath, JSON.stringify(auditResult, null, 2));
-      console.log(`\n${colors.green}✅ Results saved to: ${savePath}${colors.reset}`);
+      console.error(`\n${colors.green}✅ Results saved to: ${savePath}${colors.reset}`);
     }
 
     return auditResult;
 
   } catch (error) {
     console.error(`${colors.red}❌ Audit failed: ${error.message}${colors.reset}`);
-    process.exit(1);
+    exitCode = 1;
   } finally {
     if (chrome) {
       await chrome.kill();
     }
+  }
+
+  if (exitCode !== 0) {
+    process.exit(exitCode);
   }
 }
 

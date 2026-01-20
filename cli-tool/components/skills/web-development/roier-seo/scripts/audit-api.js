@@ -11,7 +11,17 @@
  *
  * Note: Without an API key, you're limited to ~5 requests/minute.
  * Get a free API key at: https://developers.google.com/speed/docs/insights/v5/get-started
+ *
+ * Requirements: Node.js 18+ (uses native fetch)
  */
+
+// Check Node.js version - native fetch requires Node 18+
+const nodeVersion = parseInt(process.versions.node.split('.')[0], 10);
+if (nodeVersion < 18) {
+  console.error('Error: This script requires Node.js 18 or higher (for native fetch support).');
+  console.error(`Current version: ${process.versions.node}`);
+  process.exit(1);
+}
 
 const API_URL = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
 
