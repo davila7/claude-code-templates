@@ -375,97 +375,116 @@ class ComponentPageManager {
         console.log('=== Metadata Section Debug ===');
         console.log('Component type:', this.component.type);
         console.log('Component name:', this.component.name);
+        console.log('Component author:', this.component.author);
 
-        // Only show metadata for agents (since marketplace.json only contains agent metadata)
-        if (this.component.type !== 'agent') {
-            console.log('Not an agent, hiding metadata section');
+        // Check if component has author field directly from frontmatter
+        const hasDirectAuthor = this.component.author && this.component.author.trim() !== '';
+
+        // For agents, try to load marketplace data
+        let agentMetadata = null;
+        if (this.component.type === 'agent') {
+            try {
+                const marketplace = await this.loadComponentsMarketplace();
+                console.log('Components marketplace loaded:', marketplace);
+
+                if (marketplace && marketplace.agents) {
+                    const componentName = this.component.name.replace('.md', '');
+                    console.log('Looking for component:', componentName);
+
+                    agentMetadata = marketplace.agents.find(
+                        agent => agent.name === componentName
+                    );
+                    console.log('Found agent metadata:', agentMetadata);
+                }
+            } catch (error) {
+                console.error('Error loading marketplace metadata:', error);
+            }
+        }
+
+        // Show metadata section if we have either direct author or agent metadata
+        const hasMetadata = hasDirectAuthor || agentMetadata;
+
+        if (!hasMetadata) {
+            console.log('No metadata available, hiding metadata section');
             if (metadataSection) metadataSection.style.display = 'none';
             return;
         }
 
-        try {
-            // Load components marketplace (Claude Code standard)
-            const marketplace = await this.loadComponentsMarketplace();
-            console.log('Components marketplace loaded:', marketplace);
+        // Show metadata section
+        if (metadataSection) metadataSection.style.display = 'block';
 
-            if (!marketplace || !marketplace.agents) {
-                console.log('No components marketplace or agents found');
-                if (metadataSection) metadataSection.style.display = 'none';
-                return;
-            }
+        // Populate version (from marketplace for agents)
+        const versionElement = document.getElementById('metadataVersion');
+        if (versionElement) {
+            versionElement.textContent = agentMetadata?.version || '--';
+        }
 
-            // Find the component in marketplace
-            const componentName = this.component.name.replace('.md', '');
-            console.log('Looking for component:', componentName);
-            console.log('Available agents:', marketplace.agents.map(a => a.name));
+        // Populate author - prioritize direct author field, then marketplace
+        const authorElement = document.getElementById('metadataAuthor');
+        if (authorElement) {
+            let authorDisplay = '--';
 
-            const agentMetadata = marketplace.agents.find(
-                agent => agent.name === componentName
-            );
-
-            console.log('Found agent metadata:', agentMetadata);
-
-            if (!agentMetadata) {
-                console.log('No metadata found for component:', componentName);
-                if (metadataSection) metadataSection.style.display = 'none';
-                return;
-            }
-
-            // Show metadata section
-            if (metadataSection) metadataSection.style.display = 'block';
-
-            // Populate version
-            const versionElement = document.getElementById('metadataVersion');
-            if (versionElement) {
-                versionElement.textContent = agentMetadata.version || '--';
-            }
-
-            // Populate author
-            const authorElement = document.getElementById('metadataAuthor');
-            if (authorElement) {
+            if (hasDirectAuthor) {
+                // Check if author is a URL
+                if (this.component.author.startsWith('http://') || this.component.author.startsWith('https://')) {
+                    // Create a link for the author
+                    authorElement.innerHTML = `<a href="${this.component.author}" target="_blank" class="metadata-link" style="display: inline-flex;">View Original</a>`;
+                } else {
+                    authorElement.textContent = this.component.author;
+                }
+            } else if (agentMetadata) {
                 const authorName = agentMetadata.author?.name || agentMetadata.author || '--';
                 authorElement.textContent = authorName;
             }
+        }
 
-            // Populate license
-            const licenseElement = document.getElementById('metadataLicense');
-            if (licenseElement) {
-                licenseElement.textContent = agentMetadata.license || '--';
-            }
+        // Populate license (from marketplace for agents)
+        const licenseElement = document.getElementById('metadataLicense');
+        if (licenseElement) {
+            licenseElement.textContent = agentMetadata?.license || '--';
+        }
 
-            // Populate repository
-            const repositoryLink = document.getElementById('metadataRepository');
-            const repositoryNone = document.getElementById('metadataRepositoryNone');
-            if (agentMetadata.repository) {
-                if (repositoryLink) {
-                    repositoryLink.href = agentMetadata.repository;
-                    repositoryLink.style.display = 'inline-flex';
-                }
-                if (repositoryNone) {
-                    repositoryNone.style.display = 'none';
-                }
-            } else {
-                if (repositoryLink) {
-                    repositoryLink.style.display = 'none';
-                }
-                if (repositoryNone) {
-                    repositoryNone.style.display = 'inline';
-                }
-            }
+        // Populate repository (from marketplace for agents, or direct author if it's a URL)
+        const repositoryLink = document.getElementById('metadataRepository');
+        const repositoryNone = document.getElementById('metadataRepositoryNone');
 
-            // Populate keywords
-            const keywordsContainer = document.getElementById('metadataKeywords');
-            if (keywordsContainer && agentMetadata.keywords && agentMetadata.keywords.length > 0) {
-                keywordsContainer.innerHTML = '';
-                agentMetadata.keywords.forEach(keyword => {
-                    const keywordChip = document.createElement('span');
-                    keywordChip.className = 'metadata-keyword';
-                    keywordChip.textContent = keyword;
-                    keywordsContainer.appendChild(keywordChip);
-                });
-            } else if (keywordsContainer) {
-                keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
+        let repositoryUrl = agentMetadata?.repository;
+
+        // If component has author as URL and no marketplace repository, use author as repository
+        if (!repositoryUrl && hasDirectAuthor && (this.component.author.startsWith('http://') || this.component.author.startsWith('https://'))) {
+            repositoryUrl = this.component.author;
+        }
+
+        if (repositoryUrl) {
+            if (repositoryLink) {
+                repositoryLink.href = repositoryUrl;
+                repositoryLink.style.display = 'inline-flex';
             }
+            if (repositoryNone) {
+                repositoryNone.style.display = 'none';
+            }
+        } else {
+            if (repositoryLink) {
+                repositoryLink.style.display = 'none';
+            }
+            if (repositoryNone) {
+                repositoryNone.style.display = 'inline';
+            }
+        }
+
+        // Populate keywords (from marketplace for agents)
+        const keywordsContainer = document.getElementById('metadataKeywords');
+        if (keywordsContainer && agentMetadata?.keywords && agentMetadata.keywords.length > 0) {
+            keywordsContainer.innerHTML = '';
+            agentMetadata.keywords.forEach(keyword => {
+                const keywordChip = document.createElement('span');
+                keywordChip.className = 'metadata-keyword';
+                keywordChip.textContent = keyword;
+                keywordsContainer.appendChild(keywordChip);
+            });
+        } else if (keywordsContainer) {
+            keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
+        }
 
         } catch (error) {
             console.error('Error loading marketplace metadata:', error);
