@@ -7,13 +7,27 @@ const path = require('path');
  * Extracted from monolithic analytics.js for better maintainability
  */
 class ProcessDetector {
-  constructor() {
+  constructor(options = {}) {
     // Cache for process detection to avoid repeated shell commands
     this.processCache = {
       data: null,
       timestamp: 0,
       ttl: 500 // 500ms cache
     };
+
+    // Enable verbose logging only when explicitly enabled
+    this.verbose = options.verbose || process.env.CCT_DEBUG === 'true';
+  }
+
+  /**
+   * Log debug messages only when verbose mode is enabled
+   * @param {string} message - Message to log
+   * @param {...any} args - Additional arguments
+   */
+  debug(message, ...args) {
+    if (this.verbose) {
+      console.log(message, ...args);
+    }
   }
 
   /**
@@ -35,7 +49,7 @@ class ProcessDetector {
           return;
         }
         
-        console.log('🔍 Raw Claude processes output:', stdout); // Debug output
+        this.debug('🔍 Raw Claude processes output:', stdout);
         
         const processes = stdout.split('\n')
           .filter(line => line.trim())
@@ -57,7 +71,7 @@ class ProcessDetector {
             );
             
             if (isClaudeProcess) {
-              console.log('✅ Found Claude process:', fullCommand);
+              this.debug('✅ Found Claude process:', fullCommand);
             }
             
             return isClaudeProcess;

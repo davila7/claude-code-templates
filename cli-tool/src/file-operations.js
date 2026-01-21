@@ -180,7 +180,13 @@ async function downloadDirectoryFromGitHub(dirPath, retryCount = 0) {
 
 // Helper functions for processing downloaded content
 async function processSettingsFileFromContent(settingsContent, destPath, templateConfig) {
-  const settings = JSON.parse(settingsContent);
+  let settings;
+  try {
+    settings = JSON.parse(settingsContent);
+  } catch (error) {
+    console.error(chalk.red(`Failed to parse settings JSON: ${error.message}`));
+    throw new Error(`Invalid settings JSON: ${error.message}`);
+  }
   
   // Filter hooks based on selection
   if (templateConfig.selectedHooks && settings.hooks) {
@@ -193,7 +199,13 @@ async function processSettingsFileFromContent(settingsContent, destPath, templat
 }
 
 async function mergeSettingsFileFromContent(settingsContent, destPath, templateConfig) {
-  const newSettings = JSON.parse(settingsContent);
+  let newSettings;
+  try {
+    newSettings = JSON.parse(settingsContent);
+  } catch (error) {
+    console.error(chalk.red(`Failed to parse settings JSON: ${error.message}`));
+    throw new Error(`Invalid settings JSON: ${error.message}`);
+  }
   let existingSettings = {};
   
   if (await fs.pathExists(destPath)) {
@@ -221,7 +233,13 @@ async function mergeSettingsFileFromContent(settingsContent, destPath, templateC
 }
 
 async function processMCPFileFromContent(mcpContent, destPath, templateConfig) {
-  const mcpConfig = JSON.parse(mcpContent);
+  let mcpConfig;
+  try {
+    mcpConfig = JSON.parse(mcpContent);
+  } catch (error) {
+    console.error(chalk.red(`Failed to parse MCP JSON: ${error.message}`));
+    throw new Error(`Invalid MCP JSON: ${error.message}`);
+  }
   
   // Clean and prepare MCP config (only keep mcpServers without descriptions)
   const cleanMcpConfig = { mcpServers: {} };
@@ -246,7 +264,13 @@ async function processMCPFileFromContent(mcpContent, destPath, templateConfig) {
 }
 
 async function mergeMCPFileFromContent(mcpContent, destPath, templateConfig) {
-  const newMcpConfig = JSON.parse(mcpContent);
+  let newMcpConfig;
+  try {
+    newMcpConfig = JSON.parse(mcpContent);
+  } catch (error) {
+    console.error(chalk.red(`Failed to parse MCP JSON: ${error.message}`));
+    throw new Error(`Invalid MCP JSON: ${error.message}`);
+  }
   let existingMcpConfig = {};
   
   if (await fs.pathExists(destPath)) {
