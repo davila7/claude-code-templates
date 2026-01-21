@@ -378,9 +378,12 @@ class ComponentPageManager {
         console.log('Component author:', this.component.author);
         console.log('Component repo:', this.component.repo);
 
-        // Check if component has author or repo field directly from frontmatter
+        // Check if component has metadata fields directly from frontmatter
         const hasDirectAuthor = this.component.author && this.component.author.trim() !== '';
         const hasDirectRepo = this.component.repo && this.component.repo.trim() !== '';
+        const hasDirectVersion = this.component.version && this.component.version.trim() !== '';
+        const hasDirectLicense = this.component.license && this.component.license.trim() !== '';
+        const hasDirectKeywords = this.component.keywords && this.component.keywords.length > 0;
 
         // For agents, try to load marketplace data
         let agentMetadata = null;
@@ -403,8 +406,8 @@ class ComponentPageManager {
             }
         }
 
-        // Show metadata section if we have author, repo, or agent metadata
-        const hasMetadata = hasDirectAuthor || hasDirectRepo || agentMetadata;
+        // Show metadata section if we have any metadata
+        const hasMetadata = hasDirectAuthor || hasDirectRepo || hasDirectVersion || hasDirectLicense || hasDirectKeywords || agentMetadata;
 
         if (!hasMetadata) {
             console.log('No metadata available, hiding metadata section');
@@ -415,10 +418,11 @@ class ComponentPageManager {
         // Show metadata section
         if (metadataSection) metadataSection.style.display = 'block';
 
-        // Populate version (from marketplace for agents)
+        // Populate version - prioritize direct version field, then marketplace
         const versionElement = document.getElementById('metadataVersion');
         if (versionElement) {
-            versionElement.textContent = agentMetadata?.version || '--';
+            const version = this.component.version || agentMetadata?.version || '--';
+            versionElement.textContent = version;
         }
 
         // Populate author - prioritize direct author field, then marketplace
@@ -434,10 +438,11 @@ class ComponentPageManager {
             }
         }
 
-        // Populate license (from marketplace for agents)
+        // Populate license - prioritize direct license field, then marketplace
         const licenseElement = document.getElementById('metadataLicense');
         if (licenseElement) {
-            licenseElement.textContent = agentMetadata?.license || '--';
+            const license = this.component.license || agentMetadata?.license || '--';
+            licenseElement.textContent = license;
         }
 
         // Populate repository - prioritize direct repo field, then marketplace
@@ -472,18 +477,21 @@ class ComponentPageManager {
             }
         }
 
-        // Populate keywords (from marketplace for agents)
+        // Populate keywords - prioritize direct keywords field, then marketplace
         const keywordsContainer = document.getElementById('metadataKeywords');
-        if (keywordsContainer && agentMetadata?.keywords && agentMetadata.keywords.length > 0) {
-            keywordsContainer.innerHTML = '';
-            agentMetadata.keywords.forEach(keyword => {
-                const keywordChip = document.createElement('span');
-                keywordChip.className = 'metadata-keyword';
-                keywordChip.textContent = keyword;
-                keywordsContainer.appendChild(keywordChip);
-            });
-        } else if (keywordsContainer) {
-            keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
+        if (keywordsContainer) {
+            const keywords = this.component.keywords || agentMetadata?.keywords || [];
+            if (keywords && keywords.length > 0) {
+                keywordsContainer.innerHTML = '';
+                keywords.forEach(keyword => {
+                    const keywordChip = document.createElement('span');
+                    keywordChip.className = 'metadata-keyword';
+                    keywordChip.textContent = keyword;
+                    keywordsContainer.appendChild(keywordChip);
+                });
+            } else {
+                keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
+            }
         }
     }
 
