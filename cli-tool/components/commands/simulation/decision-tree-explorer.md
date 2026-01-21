@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, WebSearch
 argument-hint: [decision-context] | --strategic | --investment | --operational | --crisis-response
 description: Explore complex decision branches with probability analysis, expected value calculation, and optimization
-model: sonnet
 ---
 
 # Decision Tree Explorer

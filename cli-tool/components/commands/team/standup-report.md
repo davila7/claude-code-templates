@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Glob, Grep
 argument-hint: [time-range] | --yesterday | --last-24h | --since-friday | --custom-range
 description: Generate comprehensive daily standup reports with team activity analysis and progress tracking
-model: sonnet
 ---
 
 # Standup Report

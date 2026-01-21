@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [project-name] | --minimal | --epic-name | --owner
 description: Initialize Product as Code (PAC) project structure with templates and configuration
-model: sonnet
 ---
 
 # Configure PAC Project

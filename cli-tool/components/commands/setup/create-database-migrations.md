@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [migration-name] | --create-table | --add-column | --alter-table
 description: Create and manage database migrations with proper versioning and rollback support
-model: sonnet
 ---
 
 # Create Database Migrations

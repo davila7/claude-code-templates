@@ -59,6 +59,8 @@ program
   .option('--agents', 'launch Claude Code agents dashboard (opens directly to conversations)')
   .option('--chats-mobile', 'launch mobile-first chats interface (AI-optimized for mobile devices)')
   .option('--plugins', 'launch Plugin Dashboard to view marketplaces, installed plugins, and permissions')
+  .option('--skills-manager', 'launch Skills Dashboard to view and explore installed Claude Code Skills')
+  .option('--2025', 'launch 2025 Year in Review dashboard (showcase your Claude Code usage statistics)')
   .option('--tunnel', 'enable Cloudflare Tunnel for remote access (use with --analytics or --chats)')
   .option('--verbose', 'enable verbose logging for debugging and development')
   .option('--health-check, --health, --check, --verify', 'run comprehensive health check to verify Claude Code setup')
@@ -78,6 +80,7 @@ program
   .option('--sandbox <provider>', 'execute Claude Code in isolated sandbox environment (e.g., e2b)')
   .option('--e2b-api-key <key>', 'E2B API key for sandbox execution (alternative to environment variable)')
   .option('--anthropic-api-key <key>', 'Anthropic API key for Claude Code (alternative to environment variable)')
+  .option('--clone-session <url>', 'download and import a shared Claude Code session from URL')
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands

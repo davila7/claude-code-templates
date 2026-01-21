@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [api-version] | --v1 | --v2 | --graphql-hybrid | --openapi
 description: Design RESTful API architecture with comprehensive endpoints, authentication, and documentation
-model: sonnet
 ---
 
 # Design REST API

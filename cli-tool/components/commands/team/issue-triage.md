@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Bash
 argument-hint: [scope] | --github-issues | --linear-tasks | --priority-analysis | --team-assignment
 description: Intelligent issue triage with automatic categorization, prioritization, and team assignment
-model: sonnet
 ---
 
 # Issue Triage

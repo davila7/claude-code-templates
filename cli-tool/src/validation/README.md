@@ -443,7 +443,7 @@ validatorScore = max(0, 100 - (errors * 25) - (warnings * 5))
 
 ## Integration with Component Generation
 
-The security validation system integrates with `generate_components_json.py`:
+The security validation system integrates with `scripts/generate_components_json.py`:
 
 1. **Automatic Validation** - Runs before generating components.json
 2. **Metadata Inclusion** - Security scores, hashes, validation status

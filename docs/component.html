@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Component - Claude Code Templates</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="static/favicon/favicon.ico">
     <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
@@ -293,63 +304,256 @@
                         </div>
                     </div>
 
-                    <!-- E2B Sandbox Section (for agents only) -->
-                    <div class="installation-method accordion-item" id="e2bSandboxSection" style="display: none;">
+                    <!-- Cloud Sandbox Execution Section (for agents only) -->
+                    <div class="installation-method accordion-item" id="cloudSandboxSection" style="display: none;">
                         <button class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">☁️ Run in E2B Sandbox (Cloud Execution)</span>
+                            <span class="accordion-title">☁️ Run in Cloud Sandbox (Isolated Execution)</span>
                             <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M7,10L12,15L17,10H7Z"/>
                             </svg>
                         </button>
                         <div class="accordion-content">
-                            <p class="method-description">Execute Claude Code with this component in an isolated cloud environment using E2B. Perfect for testing complex projects without affecting your local system.</p>
-                        
-                        <div class="setup-requirements">
-                            <h4>🔑 Setup API Keys</h4>
-                            <p>Add to your .env file:</p>
-                            <div class="env-block">
-                                <code>ANTHROPIC_API_KEY=your_anthropic_key_here</code>
-                                <div class="env-comment"># Required for Claude Code access</div>
-                                <code>E2B_API_KEY=your_e2b_key_here</code>
+                            <p class="method-description">Execute Claude Code with this component in an isolated cloud environment. Perfect for testing complex projects without affecting your local system. Choose from multiple providers based on your needs.</p>
+
+                        <!-- Provider Tabs -->
+                        <div class="sandbox-provider-tabs">
+                            <button class="sandbox-tab active" onclick="switchSandboxProvider('e2b')">
+                                <span class="tab-icon">🚀</span>
+                                <span class="tab-name">E2B</span>
+                                <span class="tab-badge">Full Stack</span>
+                            </button>
+                            <button class="sandbox-tab" onclick="switchSandboxProvider('cloudflare')">
+                                <span class="tab-icon">⚡</span>
+                                <span class="tab-name">Cloudflare</span>
+                                <span class="tab-badge">Serverless</span>
+                            </button>
+                            <button class="sandbox-tab" onclick="switchSandboxProvider('docker')">
+                                <span class="tab-icon">🐳</span>
+                                <span class="tab-name">Docker</span>
+                                <span class="tab-badge">Local</span>
+                            </button>
+                        </div>
+
+                        <!-- E2B Provider Content -->
+                        <div class="sandbox-provider-content" id="e2b-content" style="display: block;">
+                            <div class="provider-description">
+                                <h4>E2B Cloud Sandbox</h4>
+                                <p>Full-featured cloud development environment with complete isolation and all development tools pre-installed.</p>
                             </div>
-                            <div class="api-key-links">
-                                <a href="https://console.anthropic.com" target="_blank" class="api-key-link">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
-                                    </svg>
-                                    Get Anthropic API Key
-                                </a>
-                                <a href="https://e2b.dev" target="_blank" class="api-key-link">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
-                                    </svg>
-                                    Get E2B API Key
-                                </a>
+
+                            <div class="setup-requirements">
+                                <h4>🔑 Setup API Keys</h4>
+                                <p>Add to your .env file:</p>
+                                <div class="env-block">
+                                    <code>ANTHROPIC_API_KEY=your_anthropic_key_here</code>
+                                    <div class="env-comment"># Required for Claude Code access</div>
+                                    <code>E2B_API_KEY=your_e2b_key_here</code>
+                                </div>
+                                <div class="api-key-links">
+                                    <a href="https://console.anthropic.com" target="_blank" class="api-key-link">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                        </svg>
+                                        Get Anthropic API Key
+                                    </a>
+                                    <a href="https://e2b.dev" target="_blank" class="api-key-link">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                        </svg>
+                                        Get E2B API Key
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="command-block">
+                                <div class="command-header">
+                                    <span class="command-label">Terminal</span>
+                                </div>
+                                <div class="command-content">
+                                    <code id="e2bSandboxCommand">npx claude-code-templates@latest --sandbox e2b --agent=example --prompt "your development task"</code>
+                                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('e2bSandboxCommand').textContent)">Copy</button>
+                                </div>
+                            </div>
+
+                            <div class="sandbox-features-grid">
+                                <div class="feature-item">
+                                    <span class="feature-icon">☁️</span>
+                                    <span class="feature-text">Isolated cloud environment</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">🔧</span>
+                                    <span class="feature-text">Full development tools</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">📊</span>
+                                    <span class="feature-text">Real-time execution output</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">🔒</span>
+                                    <span class="feature-text">Secure & sandboxed</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="command-block">
-                            <div class="command-header">
-                                <span class="command-label">Terminal</span>
+                        <!-- Cloudflare Provider Content -->
+                        <div class="sandbox-provider-content" id="cloudflare-content" style="display: none;">
+                            <div class="provider-description">
+                                <h4>Cloudflare Workers Sandbox</h4>
+                                <p>Serverless execution environment perfect for lightweight tasks, API development, and edge computing scenarios.</p>
                             </div>
-                            <div class="command-content">
-                                <code id="e2bSandboxCommand">npx claude-code-templates@latest --sandbox e2b --agent=example --prompt "your development task"</code>
-                                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('e2bSandboxCommand').textContent)">Copy</button>
+
+                            <div class="setup-requirements">
+                                <h4>🔑 Setup API Key</h4>
+                                <p>Add to your .env file:</p>
+                                <div class="env-block">
+                                    <code>ANTHROPIC_API_KEY=your_anthropic_key_here</code>
+                                    <div class="env-comment"># Required for Claude Code access</div>
+                                </div>
+                                <div class="api-key-links">
+                                    <a href="https://console.anthropic.com" target="_blank" class="api-key-link">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                        </svg>
+                                        Get Anthropic API Key
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="command-block">
+                                <div class="command-header">
+                                    <span class="command-label">Terminal</span>
+                                </div>
+                                <div class="command-content">
+                                    <code id="cloudflareSandboxCommand">npx claude-code-templates@latest --sandbox cloudflare --agent=example --prompt "your development task"</code>
+                                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('cloudflareSandboxCommand').textContent)">Copy</button>
+                                </div>
+                            </div>
+
+                            <div class="sandbox-features-grid">
+                                <div class="feature-item">
+                                    <span class="feature-icon">⚡</span>
+                                    <span class="feature-text">Ultra-fast serverless execution</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">🌍</span>
+                                    <span class="feature-text">Global edge network</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">💰</span>
+                                    <span class="feature-text">Cost-effective for small tasks</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">🚀</span>
+                                    <span class="feature-text">Instant cold starts</span>
+                                </div>
                             </div>
                         </div>
 
-                            <div class="e2b-features">
-                                <div class="feature">☁️ Isolated cloud environment</div>
-                                <div class="feature">🔧 Full development tools</div>
-                                <div class="feature">📊 Real-time execution output</div>
+                        <!-- Docker Provider Content -->
+                        <div class="sandbox-provider-content" id="docker-content" style="display: none;">
+                            <div class="provider-description">
+                                <h4>Docker Local Sandbox</h4>
+                                <p>Run Claude Code in a local Docker container. Perfect for offline development, custom environments, and maximum control over the execution environment.</p>
                             </div>
 
-                            <div class="e2b-requirements">
-                                <div class="requirements-title">Requirements:</div>
-                                <div class="feature">• Valid E2B API key</div>
-                                <div class="feature">• Internet connection</div>
-                                <div class="feature">• Claude Code v1.0.0+</div>
+                            <div class="setup-requirements">
+                                <h4>🔧 Prerequisites</h4>
+                                <div class="prerequisites-list">
+                                    <div class="prerequisite-item">
+                                        <span class="prerequisite-icon">🐳</span>
+                                        <span>Docker Desktop installed and running</span>
+                                    </div>
+                                    <div class="prerequisite-item">
+                                        <span class="prerequisite-icon">🔑</span>
+                                        <span>Anthropic API key configured</span>
+                                    </div>
+                                </div>
+                                <div class="api-key-links">
+                                    <a href="https://www.docker.com/products/docker-desktop" target="_blank" class="api-key-link">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                        </svg>
+                                        Download Docker Desktop
+                                    </a>
+                                    <a href="https://console.anthropic.com" target="_blank" class="api-key-link">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                        </svg>
+                                        Get Anthropic API Key
+                                    </a>
+                                </div>
                             </div>
+
+                            <div class="command-block">
+                                <div class="command-header">
+                                    <span class="command-label">Terminal</span>
+                                </div>
+                                <div class="command-content">
+                                    <code id="dockerSandboxCommand">npx claude-code-templates@latest --sandbox docker --agent=example --prompt "your development task"</code>
+                                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('dockerSandboxCommand').textContent)">Copy</button>
+                                </div>
+                            </div>
+
+                            <div class="sandbox-features-grid">
+                                <div class="feature-item">
+                                    <span class="feature-icon">🏠</span>
+                                    <span class="feature-text">Fully local execution</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">🔒</span>
+                                    <span class="feature-text">Complete isolation</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">⚙️</span>
+                                    <span class="feature-text">Custom container images</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-icon">💾</span>
+                                    <span class="feature-text">Local data & file access</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Provider Comparison -->
+                        <div class="provider-comparison">
+                            <h4>📊 Provider Comparison</h4>
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>E2B</th>
+                                        <th>Cloudflare</th>
+                                        <th>Docker</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Execution Location</td>
+                                        <td>☁️ Cloud</td>
+                                        <td>🌍 Edge</td>
+                                        <td>🏠 Local</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Setup Complexity</td>
+                                        <td>Easy</td>
+                                        <td>Easy</td>
+                                        <td>Medium</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Best For</td>
+                                        <td>Full stack projects</td>
+                                        <td>Serverless & APIs</td>
+                                        <td>Local dev & custom envs</td>
+                                    </tr>
+                                    <tr>
+                                        <td>API Keys Needed</td>
+                                        <td>Anthropic + E2B</td>
+                                        <td>Anthropic only</td>
+                                        <td>Anthropic only</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         </div>
                     </div>
                 </section>
@@ -655,6 +859,30 @@
 
         // Validation modal functions are now in component-page.js
         // (Old inline modal code removed to use new modal system)
+
+        // Sandbox provider switcher function
+        function switchSandboxProvider(provider) {
+            console.log('Switching sandbox provider to:', provider);
+
+            // Update tab active states
+            const tabs = document.querySelectorAll('.sandbox-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.sandbox-tab').classList.add('active');
+
+            // Hide all provider contents
+            const contents = document.querySelectorAll('.sandbox-provider-content');
+            contents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Show selected provider content
+            const selectedContent = document.getElementById(`${provider}-content`);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+        }
 
         // Debug script loading and ensure proper initialization
         window.addEventListener('DOMContentLoaded', () => {

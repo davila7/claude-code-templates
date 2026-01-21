@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [monitoring-type] | --connections | --subscriptions | --performance | --debug | --analytics
 description: Monitor and optimize Supabase realtime connections with performance analysis and debugging
-model: sonnet
 ---
 
 # Supabase Realtime Monitor

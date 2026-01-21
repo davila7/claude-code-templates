@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [action] | audit | repair | map | validate | export
 description: Manage cross-platform reference links between GitHub and Linear with integrity checking
-model: sonnet
 ---
 
 # Cross-Reference Manager

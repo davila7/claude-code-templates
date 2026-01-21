@@ -1,0 +1,19 @@
+name,channel,content_type,variant,description
+Q3_Product_Launch,email,newsletter,hero_section,Email to existing customers announcing new product
+Q3_Product_Launch,email,newsletter,button_variant,Alternative button text A/B test
+Q3_Product_Launch,linkedin,sponsored_content,,Sponsored LinkedIn post targeting IT directors
+Q3_Product_Launch,google,search,brand_keywords,Google search ads for branded keywords
+Q3_Product_Launch,google,search,competitor_keywords,Google search ads targeting competitor keywords
+Q3_Product_Launch,facebook,carousel_ad,carousel_v1,Facebook carousel ad with product features
+Q3_Product_Launch,facebook,carousel_ad,carousel_v2,Facebook carousel ad with customer testimonials
+Q3_Product_Launch,twitter,organic_tweet,,Organic Twitter announcement
+LeadGen_Webinar,email,invite,segment_a,Webinar invite - segment A personalization
+LeadGen_Webinar,email,invite,segment_b,Webinar invite - segment B personalization
+LeadGen_Webinar,linkedin,organic_post,,LinkedIn organic post promoting webinar
+LeadGen_Webinar,facebook,event,,Facebook event for webinar registration
+RetentionCampaign,email,newsletter,upsell,Email encouraging feature upgrade
+RetentionCampaign,email,winback,,Win-back email for inactive users
+RetentionCampaign,linkedin,update,,LinkedIn company update about new features
+AwarenessContentPillar,blog,blog_post,,Blog post for awareness stage content
+AwarenessContentPillar,linkedin,document,,LinkedIn document share of blog content
+AwarenessContentPillar,facebook,organic,,Facebook organic post linking to blog

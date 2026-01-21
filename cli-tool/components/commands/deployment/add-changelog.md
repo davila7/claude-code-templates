@@ -2,7 +2,6 @@
 allowed-tools: Read, Edit, Write, Bash
 argument-hint: [version] | [entry-type] [description]
 description: Generate and maintain project changelog with Keep a Changelog format
-model: sonnet
 ---
 
 # Add Changelog Entry

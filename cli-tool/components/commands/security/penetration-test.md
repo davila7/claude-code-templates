@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: [target] | --web-app | --api | --auth | --full-scan
 description: Perform penetration testing and vulnerability assessment on application
-model: sonnet
 ---
 
 # Penetration Test

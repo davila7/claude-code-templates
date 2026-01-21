@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit
 argument-hint: [function-name] [--auth] [--geo] [--transform] [--proxy]
 description: Generate optimized Vercel Edge Functions with geolocation, authentication, and data transformation
-model: sonnet
 ---
 
 ## Vercel Edge Function Generator

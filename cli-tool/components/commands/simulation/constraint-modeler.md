@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, WebSearch
 argument-hint: [constraint-domain] | --business | --technical | --regulatory | --resource
 description: Model system constraints with validation, dependency mapping, and optimization strategies
-model: sonnet
 ---
 
 # Constraint Modeler

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "zread": {
+      "description": "Zread MCP Server - Z.AI implementation based on the Model Context Protocol (MCP). Powered by zread.ai, it provides Claude Code, Cline, and other MCP-compatible clients with knowledge documentation and code access capabilities for open source repositories.",
+      "type": "http",
+      "url": "https://api.z.ai/api/mcp/zread/mcp",
+      "headers": {
+        "Authorization": "Bearer your_api_key"
+      }
+    }
+  }
+}

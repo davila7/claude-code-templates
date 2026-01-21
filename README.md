@@ -1,15 +1,47 @@
 [![npm version](https://img.shields.io/npm/v/claude-code-templates.svg)](https://www.npmjs.com/package/claude-code-templates)
 [![npm downloads](https://img.shields.io/npm/dt/claude-code-templates.svg)](https://www.npmjs.com/package/claude-code-templates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Sponsored by Z.AI](https://img.shields.io/badge/Sponsored%20by-Z.AI-2563eb?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMiAyMkgyMkwxMiAyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+)](https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/daniavila)
 [![GitHub stars](https://img.shields.io/github/stars/davila7/claude-code-templates.svg?style=social&label=Star)](https://github.com/davila7/claude-code-templates)
-[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/hesreallyhim/awesome-claude-code)
-[![Buy Me a Coffee](https://img.shields.io/badge/☕-Buy%20me%20a%20coffee-ffdd00?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/daniavila)
 
+<p align="center">
+  <a href="https://trendshift.io/repositories/15113" target="_blank">
+    <img src="https://trendshift.io/api/badge/repositories/15113" alt="davila7%2Fclaude-code-templates | Trendshift" style="width: 200px; height: 40px;" width="125" height="40"/>
+  </a>
+  <br />
+  <br />
+  <a href="https://vercel.com/oss">
+  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
+  </a>
+</p>
 
+---
 
-# Claude Code Templates (aitmpl.com)
+<div align="center">
+  <h3>🤝 Partnership</h3>
+  <p>
+    <strong>This project is sponsored by <a href="https://z.ai" target="_blank">Z.AI</a></strong><br/>
+    Supporting Claude Code Templates with the <strong>GLM CODING PLAN</strong>
+  </p>
+  <p>
+    <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=readme&utm_campaign=partnership" target="_blank">
+      <img src="https://img.shields.io/badge/Get%2010%25%20OFF-GLM%20Coding%20Plan-2563eb?style=for-the-badge" alt="GLM Coding Plan" />
+    </a>
+  </p>
+  <p>
+    <em>Top-tier coding performance powered by GLM-4.6 • Starting at $3/month</em><br/>
+    <em>Seamlessly integrates with Claude Code, Cursor, Cline & 10+ AI coding tools</em>
+  </p>
+  <p>
+    <code>npx claude-code-templates@latest --setting partnerships/glm-coding-plan --yes</code>
+  </p>
+</div>
+
+---
+
+# Claude Code Templates ([aitmpl.com](https://aitmpl.com))
 
 **Ready-to-use configurations for Anthropic's Claude Code.** A comprehensive collection of AI agents, custom commands, settings, hooks, external integrations (MCPs), and project templates to enhance your development workflow.
 
@@ -23,17 +55,17 @@
 
 ```bash
 # Install a complete development stack
-npx claude-code-templates@latest --agent development-team/frontend-developer --command testing/generate-tests --mcp development/github-integration
+npx claude-code-templates@latest --agent development-team/frontend-developer --command testing/generate-tests --mcp development/github-integration --yes
 
 # Browse and install interactively
 npx claude-code-templates@latest
 
 # Install specific components
-npx claude-code-templates@latest --agent business-marketing/security-auditor
-npx claude-code-templates@latest --command performance/optimize-bundle
-npx claude-code-templates@latest --setting performance/mcp-timeouts
-npx claude-code-templates@latest --hook git/pre-commit-validation
-npx claude-code-templates@latest --mcp database/postgresql-integration
+npx claude-code-templates@latest --agent development-tools/code-reviewer --yes
+npx claude-code-templates@latest --command performance/optimize-bundle --yes
+npx claude-code-templates@latest --setting performance/mcp-timeouts --yes
+npx claude-code-templates@latest --hook git/pre-commit-validation --yes
+npx claude-code-templates@latest --mcp database/postgresql-integration --yes
 ```
 
 ## What You Get
@@ -45,7 +77,7 @@ npx claude-code-templates@latest --mcp database/postgresql-integration
 | **🔌 MCPs** | External service integrations | GitHub, PostgreSQL, Stripe, AWS, OpenAI |
 | **⚙️ Settings** | Claude Code configurations | Timeouts, memory settings, output styles |
 | **🪝 Hooks** | Automation triggers | Pre-commit validation, post-completion actions |
-| **📦 Templates** | Complete project configurations with CLAUDE.md, .claude/* files and .mcp.json | Framework-specific setups, project best practices |
+| **🎨 Skills** | Reusable capabilities with progressive disclosure | PDF processing, Excel automation, custom workflows |
 
 ## 🛠️ Additional Tools
 
@@ -97,11 +129,27 @@ We welcome contributions! **[Browse existing templates](https://aitmpl.com)** to
 
 This collection includes components from multiple sources:
 
-**Agents Collection:**
-- **wshobson/agents Collection** by [wshobson](https://github.com/wshobson/agents) - Licensed under MIT License (48 agents)
+**Scientific Skills:**
+- **[K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)** by K-Dense Inc. - MIT License (139 scientific skills for biology, chemistry, medicine, and computational research)
 
-**Commands Collection:**
-- **awesome-claude-code Commands** by [hesreallyhim](https://github.com/hesreallyhim/awesome-claude-code) - Licensed under CC0 1.0 Universal (21 commands)
+**Official Anthropic:**
+- **[anthropics/skills](https://github.com/anthropics/skills)** - Official Anthropic skills (21 skills)
+- **[anthropics/claude-code](https://github.com/anthropics/claude-code)** - Development guides and examples (10 skills)
+
+**Community Skills & Agents:**
+- **[obra/superpowers](https://github.com/obra/superpowers)** by Jesse Obra - MIT License (14 workflow skills)
+- **[alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)** by Alireza Rezvani - MIT License (36 professional role skills)
+- **[wshobson/agents](https://github.com/wshobson/agents)** by wshobson - MIT License (48 agents)
+- **NerdyChefsAI Skills** - Community contribution - MIT License (specialized enterprise skills)
+
+**Commands & Tools:**
+- **[awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code)** by hesreallyhim - CC0 1.0 Universal (21 commands)
+- **[awesome-claude-skills](https://github.com/mehdi-lamrani/awesome-claude-skills)** - Apache 2.0 (community skills)
+- **move-code-quality-skill** - MIT License
+- **cocoindex-claude** - Apache 2.0
+
+Each of these resources retains its **original license and attribution**, as defined by their respective authors.
+We respect and credit all original creators for their work and contributions to the Claude ecosystem.
 
 ## 📄 License
 
@@ -114,15 +162,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **💬 Community**: [GitHub Discussions](https://github.com/davila7/claude-code-templates/discussions)
 - **🐛 Issues**: [GitHub Issues](https://github.com/davila7/claude-code-templates/issues)
 
-## ⭐ Star History
-
-<a href="https://star-history.com/#davila7/claude-code-templates&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=davila7/claude-code-templates&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=davila7/claude-code-templates&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=davila7/claude-code-templates&type=Date" />
-  </picture>
-</a>
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/davila7/claude-code-templates.svg?variant=adaptive)](https://starchart.cc/davila7/claude-code-templates)
 
 ---
 

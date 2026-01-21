@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [environment-type] | --local | --docker | --cloud | --full-stack
 description: Setup comprehensive development environment with tools, configurations, and workflows
-model: sonnet
 ---
 
 # Setup Development Environment

@@ -1,7 +1,23 @@
 {
   "type": "module",
+  "name": "claude-code-templates-api",
+  "version": "1.0.0",
+  "description": "API endpoints for claude-code-templates",
+  "scripts": {
+    "test": "jest --config jest.config.cjs",
+    "test:api": "jest __tests__/endpoints.test.js --config jest.config.cjs",
+    "test:watch": "jest --watch --config jest.config.cjs",
+    "test:coverage": "jest --coverage --config jest.config.cjs"
+  },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "@neondatabase/serverless": "^0.10.1",
+    "axios": "^1.6.2",
+    "discord-interactions": "^3.4.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11"
   }
 }

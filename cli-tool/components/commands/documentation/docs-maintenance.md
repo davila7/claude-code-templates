@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash, Grep
 argument-hint: [maintenance-type] | --audit | --update | --validate | --optimize | --comprehensive
 description: Use PROACTIVELY to implement comprehensive documentation maintenance systems with quality assurance, validation, and automated updates
-model: sonnet
 ---
 
 # Documentation Maintenance & Quality Assurance

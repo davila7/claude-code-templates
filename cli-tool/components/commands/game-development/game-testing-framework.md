@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [test-type] | --unit | --integration | --performance | --automation | --comprehensive
 description: Use PROACTIVELY to implement comprehensive game testing frameworks with automated validation, performance testing, and multi-platform verification
-model: sonnet
 ---
 
 # Game Testing Framework & Automation

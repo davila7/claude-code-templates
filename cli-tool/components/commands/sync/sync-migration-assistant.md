@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [migration-type] | --github-to-linear | --linear-to-github | --bidirectional | --validate
 description: Comprehensive migration assistant for large-scale GitHub-Linear data transitions with validation and rollback
-model: sonnet
 ---
 
 # Sync Migration Assistant

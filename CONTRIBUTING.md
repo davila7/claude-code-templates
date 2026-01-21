@@ -130,6 +130,7 @@ MCPs provide external service integrations for Claude Code.
    ```
 
 3. **MCP Categories**
+   - `audio/` - Audio processing, text-to-speech, transcription services
    - `integration/` - GitHub, GitLab, Jira
    - `database/` - PostgreSQL, MySQL, MongoDB
    - `cloud/` - AWS, Azure, GCP services

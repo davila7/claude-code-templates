@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [sync-scope] | --team | --project | --priority | --states
 description: Sync Linear tasks to GitHub issues with state mapping and attachment handling
-model: sonnet
 ---
 
 # Sync Linear to Issues

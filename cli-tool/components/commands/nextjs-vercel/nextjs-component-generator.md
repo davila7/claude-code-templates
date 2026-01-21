@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit
 argument-hint: [component-name] [--client] [--server] [--page] [--layout]
 description: Generate optimized React components for Next.js with TypeScript and best practices
-model: sonnet
 ---
 
 ## Next.js Component Generator

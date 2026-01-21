@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: [file-path] | [commit-hash] | --full
 description: Comprehensive code quality review with security, performance, and architecture analysis
-model: sonnet
 ---
 
 # Code Quality Review

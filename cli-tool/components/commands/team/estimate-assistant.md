@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Glob, Grep
 argument-hint: [task-description] | --historical | --complexity-analysis | --team-velocity | --confidence-intervals
 description: Generate accurate task estimates using historical data, complexity analysis, and team velocity metrics
-model: sonnet
 ---
 
 # Estimate Assistant

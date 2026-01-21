@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, WebSearch
 argument-hint: [simulation-target] | --financial-projections | --project-timelines | --market-scenarios | --risk-assessment
 description: Run Monte Carlo simulations with probability distributions, confidence intervals, and statistical analysis
-model: sonnet
 ---
 
 # Monte Carlo Simulator

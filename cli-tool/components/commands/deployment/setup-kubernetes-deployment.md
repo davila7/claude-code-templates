@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [deployment-type] | --microservices | --monolith | --stateful | --full-stack | --production-ready
 description: Configure comprehensive Kubernetes deployment with manifests, security, scaling, and production best practices
-model: sonnet
 ---
 
 # Kubernetes Deployment Configuration

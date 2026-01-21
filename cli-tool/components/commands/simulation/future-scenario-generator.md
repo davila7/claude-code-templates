@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, WebSearch
 argument-hint: [time-horizon] | --near-term | --medium-term | --long-term | --disruption-focus
 description: Generate comprehensive future scenarios with plausibility scoring, trend integration, and strategic implications
-model: sonnet
 ---
 
 # Future Scenario Generator

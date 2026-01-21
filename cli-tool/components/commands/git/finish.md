@@ -2,7 +2,6 @@
 allowed-tools: Bash(git:*), Read, Edit
 argument-hint: [--no-delete] [--no-tag]
 description: Complete and merge current Git Flow branch (feature/release/hotfix) with proper cleanup and tagging
-model: sonnet
 ---
 
 # Git Flow Finish Branch

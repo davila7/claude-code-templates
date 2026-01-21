@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: [project-description] | --team-id | --create-new | --epic-name
 description: Sync project structure and requirements to Linear workspace with comprehensive task breakdown
-model: sonnet
 ---
 
 # Project to Linear

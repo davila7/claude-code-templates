@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [audit-scope] | --rls | --permissions | --auth | --api-keys | --comprehensive
 description: Conduct comprehensive Supabase security audit with RLS analysis and vulnerability assessment
-model: sonnet
 ---
 
 # Supabase Security Audit

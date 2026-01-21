@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash
 argument-hint: [--detailed] | [--health-check] | [--diagnostics]
 description: Monitor GitHub-Linear sync health status with performance metrics and diagnostics
-model: sonnet
 ---
 
 # Sync Status Monitor

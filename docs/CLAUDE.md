@@ -22,7 +22,7 @@ npx http-server
 ```bash
 # From project root - regenerate components.json
 cd ..
-python generate_components_json.py
+python scripts/generate_components_json.py
 
 # This creates/updates docs/components.json with all components
 ```
@@ -35,7 +35,7 @@ python generate_components_json.py
 ## Architecture
 
 ### Data Flow
-1. **Component Generation**: Python script (`generate_components_json.py`) scans `cli-tool/components/` and generates `docs/components.json` (~2MB file with embedded content)
+1. **Component Generation**: Python script (`scripts/generate_components_json.py`) scans `cli-tool/components/` and generates `docs/components.json` (~2MB file with embedded content)
 2. **Static Loading**: Website loads `components.json` on page load (with mobile optimization and progress indicators)
 3. **Dynamic Rendering**: JavaScript renders component cards based on user filters and search
 4. **Download Tracking**: Supabase integration tracks component installations via backend API
@@ -224,7 +224,7 @@ When components are added/modified in `cli-tool/components/`:
 1. Run component generation script:
    ```bash
    cd /path/to/project/root
-   python generate_components_json.py
+   python scripts/generate_components_json.py
    ```
 
 2. This script:
@@ -287,7 +287,7 @@ Before committing:
 
 Before deploying to production:
 
-1. **Component Data**: Run `python generate_components_json.py` to update components.json
+1. **Component Data**: Run `python scripts/generate_components_json.py` to update components.json
 2. **Test Locally**: Verify all pages load correctly
 3. **Check Links**: Ensure GitHub links point to correct paths
 4. **Verify Search**: Test search functionality with various queries
@@ -299,7 +299,7 @@ Before deploying to production:
 
 ### Adding New Component Type
 
-1. Update `generate_components_json.py` to scan new component directory
+1. Update `scripts/generate_components_json.py` to scan new component directory
 2. Add new filter button in `index.html`
 3. Add icon configuration in `js/script.js` typeConfig
 4. Update cart-manager.js to handle new type

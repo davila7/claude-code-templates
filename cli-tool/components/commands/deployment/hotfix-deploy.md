@@ -2,7 +2,6 @@
 allowed-tools: Read, Edit, Bash
 argument-hint: [hotfix-type] | --security | --critical | --rollback-ready | --emergency
 description: Deploy critical hotfixes with emergency procedures, validation, and rollback capabilities
-model: sonnet
 ---
 
 # Emergency Hotfix Deployment

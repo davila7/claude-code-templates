@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [language] | --javascript | --typescript | --python | --multi-language
 description: Configure comprehensive code linting and quality analysis tools with automated enforcement
-model: sonnet
 ---
 
 # Setup Code Linting

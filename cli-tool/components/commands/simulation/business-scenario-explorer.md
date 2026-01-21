@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, WebSearch
 argument-hint: [business-context] | --market-expansion | --product-launch | --funding-scenarios
 description: Explore multiple business timeline scenarios with comprehensive risk analysis and strategic optimization
-model: sonnet
 ---
 
 # Business Scenario Explorer

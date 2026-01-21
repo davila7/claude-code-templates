@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [environment] [--analyze] [--preview]
 description: Optimize and deploy Next.js application to Vercel with performance monitoring
-model: sonnet
 ---
 
 ## Vercel Deployment Optimization

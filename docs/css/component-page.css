@@ -737,6 +737,222 @@
     margin-bottom: 0.25rem;
 }
 
+/* Sandbox Provider Tabs */
+.sandbox-provider-tabs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-secondary);
+    padding-bottom: 0.5rem;
+}
+
+.sandbox-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.sandbox-tab:hover {
+    background: var(--bg-primary);
+    border-color: var(--border-primary);
+    transform: translateY(-2px);
+}
+
+.sandbox-tab.active {
+    background: var(--bg-primary);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.sandbox-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-color);
+}
+
+.tab-icon {
+    font-size: 1.5rem;
+}
+
+.tab-name {
+    font-weight: 600;
+}
+
+.tab-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    background: rgba(var(--accent-rgb), 0.1);
+    border-radius: 4px;
+    color: var(--text-secondary);
+}
+
+.sandbox-tab.active .tab-badge {
+    background: rgba(var(--accent-rgb), 0.2);
+    color: var(--accent-color);
+}
+
+/* Sandbox Provider Content */
+.sandbox-provider-content {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.provider-description {
+    margin-bottom: 1.5rem;
+}
+
+.provider-description h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.provider-description p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Sandbox Features Grid */
+.sandbox-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.feature-item:hover {
+    background: var(--bg-primary);
+    border-color: var(--border-primary);
+    transform: translateY(-2px);
+}
+
+.feature-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.feature-text {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Prerequisites List */
+.prerequisites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.prerequisite-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 6px;
+}
+
+.prerequisite-icon {
+    font-size: 1.5rem;
+}
+
+/* Provider Note (Coming Soon) */
+.provider-note {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 165, 0, 0.1);
+    border-left: 3px solid var(--accent-orange);
+    border-radius: 4px;
+}
+
+.provider-note strong {
+    color: var(--accent-orange);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.provider-note p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Provider Comparison Table */
+.provider-comparison {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-secondary);
+}
+
+.provider-comparison h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.comparison-table thead {
+    background: var(--bg-primary);
+}
+
+.comparison-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-primary);
+}
+
+.comparison-table td {
+    padding: 0.875rem 1rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.comparison-table tbody tr:hover {
+    background: var(--bg-primary);
+}
+
+.comparison-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Legacy E2B styles (for compatibility) */
 .e2b-features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

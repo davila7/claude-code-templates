@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: [project-type] | --duration | --team-size | --risk-level
 description: Simulate project outcomes with variable modeling, risk assessment, and resource optimization
-model: sonnet
 ---
 
 # Project Timeline Simulator

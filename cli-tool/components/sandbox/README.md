@@ -14,8 +14,22 @@ Run Claude Code in E2B's secure cloud environment with pre-configured developmen
 - `.claude/sandbox/requirements.txt` - Python dependencies
 - `.claude/sandbox/.env.example` - Environment variables template
 
+### Cloudflare Sandbox (`cloudflare`)
+Execute AI-powered code in Cloudflare Workers with global edge deployment and sub-second cold starts.
+
+**Component**: `cloudflare/claude-code-sandbox.md`
+
+**Files Created**:
+- `.claude/sandbox/cloudflare/src/index.ts` - Cloudflare Worker source
+- `.claude/sandbox/cloudflare/launcher.ts` - TypeScript launcher
+- `.claude/sandbox/cloudflare/monitor.ts` - Monitoring tool
+- `.claude/sandbox/cloudflare/wrangler.toml` - Cloudflare configuration
+- `.claude/sandbox/cloudflare/package.json` - Dependencies
+- `.claude/sandbox/cloudflare/README.md` - Complete documentation
+
 ## Quick Start
 
+### E2B Sandbox
 ```bash
 # Simple execution with API keys as parameters (recommended)
 npx claude-code-templates@latest --sandbox e2b \
@@ -33,6 +47,25 @@ npx claude-code-templates@latest --sandbox e2b \
 
 # Or use environment variables (set E2B_API_KEY and ANTHROPIC_API_KEY)
 npx claude-code-templates@latest --sandbox e2b --prompt "Create a React todo app"
+```
+
+### Cloudflare Sandbox
+```bash
+# Execute via deployed Cloudflare Worker
+npx claude-code-templates@latest --sandbox cloudflare \
+  --anthropic-api-key your_anthropic_key \
+  --prompt "Calculate the 10th Fibonacci number"
+
+# Local development and deployment
+cd .claude/sandbox/cloudflare
+npm install
+npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler deploy
+
+# Test your deployment
+curl -X POST https://your-worker.workers.dev/execute \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Calculate factorial of 5"}'
 ```
 
 ## Environment Setup
@@ -120,11 +153,27 @@ npx claude-code-templates@latest --sandbox e2b \
 
 The system is designed to support multiple sandbox providers:
 
-- **E2B** (`--sandbox e2b`) - ✅ **Fully Implemented** - Cloud-based isolated execution environment
+- **E2B** (`--sandbox e2b`) - ✅ **Fully Implemented** - Cloud-based isolated execution environment with full Linux access
+- **Cloudflare** (`--sandbox cloudflare`) - ✅ **Fully Implemented** - Edge-based sandbox with global deployment and AI code execution
 - **Docker** (`--sandbox docker`) - 🔄 Future - Local containerized execution
 - **AWS CodeBuild** (`--sandbox aws`) - 🔄 Future - AWS-based sandbox environment
 - **GitHub Codespaces** (`--sandbox github`) - 🔄 Future - GitHub's cloud development environment
 - **Custom** (`--sandbox custom`) - 🔄 Future - User-defined sandbox configurations
+
+## Sandbox Comparison
+
+| Feature | E2B | Cloudflare | Best For |
+|---------|-----|------------|----------|
+| **Cold Start** | 2-3 seconds | ~100ms | Cloudflare for speed |
+| **Max Duration** | Hours | 30 seconds (Workers) | E2B for long tasks |
+| **Environment** | Full Linux VM | V8 isolates + containers | E2B for flexibility |
+| **Languages** | Any (full OS) | Python, Node.js | E2B for variety |
+| **Global Distribution** | Single region | Edge network | Cloudflare for latency |
+| **Pricing Model** | Usage-based | $5/month flat | Depends on volume |
+| **Setup Complexity** | Low | Medium | E2B for simplicity |
+| **Local Development** | Cloud only | Docker required | E2B for quick start |
+| **Claude Integration** | Native template | API-based | E2B for turnkey |
+| **File Downloads** | Automatic | API-based | E2B for ease |
 
 ## Troubleshooting
 
@@ -156,14 +205,47 @@ claude-code-templates/
 └── cli-tool/
     └── components/
         └── sandbox/
-            ├── e2b/                           # E2B provider
-            │   ├── claude-code-sandbox.md     # Component documentation
-            │   ├── e2b-launcher.py            # Python launcher script
-            │   ├── requirements.txt           # Python dependencies
-            │   └── .env.example               # Environment template
-            ├── docker/                        # Future: Docker provider
-            ├── aws/                           # Future: AWS provider
-            └── README.md                      # This file
+            ├── e2b/                              # E2B provider
+            │   ├── claude-code-sandbox.md        # Component documentation
+            │   ├── e2b-launcher.py               # Python launcher script
+            │   ├── e2b-monitor.py                # Monitoring tool
+            │   ├── requirements.txt              # Python dependencies
+            │   ├── SANDBOX_DEBUGGING.md          # Debug guide
+            │   └── .env.example                  # Environment template
+            ├── cloudflare/                       # Cloudflare provider
+            │   ├── claude-code-sandbox.md        # Component documentation
+            │   ├── src/
+            │   │   └── index.ts                  # Worker source code
+            │   ├── launcher.ts                   # TypeScript launcher
+            │   ├── monitor.ts                    # Monitoring tool
+            │   ├── wrangler.toml                 # Cloudflare config
+            │   ├── package.json                  # Dependencies
+            │   ├── tsconfig.json                 # TypeScript config
+            │   ├── README.md                     # Documentation
+            │   ├── QUICKSTART.md                 # Quick start guide
+            │   ├── SANDBOX_DEBUGGING.md          # Debug guide
+            │   └── .dev.vars.example             # Environment template
+            ├── docker/                           # Future: Docker provider
+            ├── aws/                              # Future: AWS provider
+            └── README.md                         # This file
 ```
 
 The sandbox system integrates seamlessly with the existing Claude Code Templates component architecture, allowing any combination of agents, commands, MCPs, settings, and hooks to be installed and used within the secure sandbox environment.
+
+## Choosing the Right Sandbox
+
+### Use E2B when you need:
+- ✅ Long-running operations (hours)
+- ✅ Full Linux environment access
+- ✅ Quick setup with minimal configuration
+- ✅ Multiple programming languages
+- ✅ Automatic file downloads
+- ✅ Native Claude Code integration
+
+### Use Cloudflare when you need:
+- ✅ Sub-second cold starts
+- ✅ Global edge distribution
+- ✅ Predictable flat-rate pricing
+- ✅ High request volume
+- ✅ Python/Node.js execution
+- ✅ Production-grade reliability

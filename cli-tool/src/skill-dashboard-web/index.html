@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Skills Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-icon">🎯</span>
+                    <span class="logo-text">Skills Manager</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <span class="toggle-icon">☰</span>
+                </button>
+            </div>
+
+            <div class="sidebar-stats">
+                <div class="sidebar-stat">
+                    <span class="stat-number" id="sidebarTotalSkills">-</span>
+                    <span class="stat-text">Total Skills</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="stat-number" id="sidebarPersonalSkills">-</span>
+                    <span class="stat-text">Personal</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <span class="section-title">Filter by Source</span>
+                </div>
+                <div class="source-filters">
+                    <button class="source-filter-btn active" data-filter="all">
+                        All Sources
+                    </button>
+                    <button class="source-filter-btn" data-filter="personal">
+                        Personal
+                    </button>
+                    <button class="source-filter-btn" data-filter="project">
+                        Project
+                    </button>
+                    <button class="source-filter-btn" data-filter="plugin">
+                        Plugin
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="https://docs.claude.com/en/docs/agents-and-tools/agent-skills" target="_blank" class="sidebar-link">
+                    <span class="link-icon">📚</span>
+                    <span class="link-text">Skills Documentation</span>
+                </a>
+                <a href="https://aitmpl.com/skills" target="_blank" class="sidebar-link">
+                    <span class="link-icon">🔍</span>
+                    <span class="link-text">Browse Skills</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title">
+                        <span class="title-icon">🧠</span>
+                        <span id="currentViewName">All Skills</span>
+                    </h1>
+                    <div class="breadcrumb" id="breadcrumb"></div>
+                </div>
+                <div class="top-bar-right">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            id="skillSearch"
+                            placeholder="Search skills..."
+                            class="search-input"
+                        >
+                    </div>
+                    <div class="view-controls">
+                        <button class="refresh-btn" id="refreshBtn" title="Refresh data">
+                            <span class="refresh-icon">🔄</span>
+                        </button>
+                        <button class="view-btn active" data-view="grid" title="Grid view">
+                            <span class="view-icon">▦</span>
+                        </button>
+                        <button class="view-btn" data-view="list" title="List view">
+                            <span class="view-icon">☰</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Filters Bar -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <button class="filter-chip active" data-filter="all">
+                        All Skills
+                        <span class="chip-badge" id="countAll">0</span>
+                    </button>
+                    <button class="filter-chip" data-filter="personal">
+                        <span class="status-dot personal"></span>
+                        Personal
+                        <span class="chip-badge" id="countPersonal">0</span>
+                    </button>
+                    <button class="filter-chip" data-filter="project">
+                        <span class="status-dot project"></span>
+                        Project
+                        <span class="chip-badge" id="countProject">0</span>
+                    </button>
+                    <button class="filter-chip" data-filter="plugin">
+                        <span class="status-dot plugin"></span>
+                        Plugin
+                        <span class="chip-badge" id="countPlugin">0</span>
+                    </button>
+                </div>
+                <div class="sort-controls">
+                    <label for="sortSelect" class="sort-label">Sort by:</label>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="name">Name</option>
+                        <option value="files">File Count</option>
+                        <option value="modified">Last Modified</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Skills Grid/List -->
+            <div class="skills-container" id="skillsContainer">
+                <div class="content-loading">
+                    <div class="spinner-large"></div>
+                    <p class="loading-text">Loading skills...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state-container" id="emptyState" style="display: none;">
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <h2 class="empty-title">No skills found</h2>
+                    <p class="empty-description" id="emptyDescription">
+                        Try adjusting your filters or search terms
+                    </p>
+                    <button class="btn-primary" id="clearFiltersBtn" style="display: none;">
+                        Clear Filters
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Skill Detail Modal -->
+    <div class="modal-overlay" id="skillModal">
+        <div class="modal-container skill-modal">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2 class="modal-title" id="modalSkillName">Skill Name</h2>
+                    <div class="modal-badges">
+                        <span class="source-badge" id="modalSourceBadge">Personal</span>
+                    </div>
+                </div>
+                <button class="modal-close" id="closeModal" aria-label="Close modal">
+                    ✕
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Skills Loading Levels -->
+                <div class="skill-levels-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">📊</span>
+                        Progressive Context Loading
+                    </h3>
+                    <p class="section-description">
+                        Skills load content in three levels, minimizing context usage while maximizing flexibility
+                    </p>
+
+                    <div class="loading-levels">
+                        <!-- Level 1: Metadata -->
+                        <div class="level-card level-1" data-level="1">
+                            <div class="level-header">
+                                <div class="level-number">1</div>
+                                <div class="level-info">
+                                    <div class="level-title">METADATA</div>
+                                    <div class="level-timing">Always loaded (at startup)</div>
+                                </div>
+                                <div class="level-cost">~100 tokens</div>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-description">
+                                    Name and description from YAML frontmatter for Skill discovery
+                                </div>
+                                <div class="metadata-display">
+                                    <div class="metadata-field">
+                                        <span class="field-label">name:</span>
+                                        <span class="field-value" id="metadataName">-</span>
+                                    </div>
+                                    <div class="metadata-field">
+                                        <span class="field-label">description:</span>
+                                        <span class="field-value" id="metadataDescription">-</span>
+                                    </div>
+                                    <div class="metadata-field" id="metadataToolsField" style="display: none;">
+                                        <span class="field-label">allowed-tools:</span>
+                                        <div class="field-value-chips" id="metadataTools"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flow Arrow -->
+                        <div class="level-arrow">
+                            <div class="arrow-connector"></div>
+                            <div class="arrow-label">When Skill triggers on relevant context</div>
+                        </div>
+
+                        <!-- Level 2: Instructions -->
+                        <div class="level-card level-2" data-level="2">
+                            <div class="level-header">
+                                <div class="level-number">2</div>
+                                <div class="level-info">
+                                    <div class="level-title">INSTRUCTIONS</div>
+                                    <div class="level-timing">When Skill is triggered</div>
+                                </div>
+                                <div class="level-cost">&lt;5k tokens</div>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-description">
+                                    SKILL.md body with procedural knowledge, workflows, and guidance
+                                </div>
+                                <div class="instructions-display">
+                                    <div class="file-item">
+                                        <span class="file-icon">📄</span>
+                                        <span class="file-name">SKILL.md</span>
+                                        <span class="file-meta" id="level2FileSize">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flow Arrow -->
+                        <div class="level-arrow">
+                            <div class="arrow-connector"></div>
+                            <div class="arrow-label">As files are referenced or executed</div>
+                        </div>
+
+                        <!-- Level 3+: Resources -->
+                        <div class="level-card level-3" data-level="3">
+                            <div class="level-header">
+                                <div class="level-number">3+</div>
+                                <div class="level-info">
+                                    <div class="level-title">RESOURCES & CODE</div>
+                                    <div class="level-timing">Loaded as needed</div>
+                                </div>
+                                <div class="level-cost">Effectively unlimited</div>
+                            </div>
+                            <div class="level-content">
+                                <div class="level-description">
+                                    Additional markdown files, executable scripts, and reference materials
+                                </div>
+                                <div class="resources-display" id="resourcesDisplay">
+                                    <div class="resource-category" id="instructionsCategory" style="display: none;">
+                                        <div class="category-header">
+                                            <span class="category-icon">📝</span>
+                                            <span class="category-name">Instructions</span>
+                                            <span class="category-count" id="instructionsCount">0</span>
+                                        </div>
+                                        <div class="category-description">Additional markdown files with specialized guidance and workflows</div>
+                                        <div class="category-files" id="instructionsFiles"></div>
+                                    </div>
+                                    <div class="resource-category" id="codeCategory" style="display: none;">
+                                        <div class="category-header">
+                                            <span class="category-icon">💻</span>
+                                            <span class="category-name">Code</span>
+                                            <span class="category-count" id="codeCount">0</span>
+                                        </div>
+                                        <div class="category-description">Executable scripts that Claude runs via bash without loading into context</div>
+                                        <div class="category-files" id="codeFiles"></div>
+                                    </div>
+                                    <div class="resource-category" id="resourcesCategory" style="display: none;">
+                                        <div class="category-header">
+                                            <span class="category-icon">📋</span>
+                                            <span class="category-name">Resources</span>
+                                            <span class="category-count" id="resourcesCount">0</span>
+                                        </div>
+                                        <div class="category-description">Reference materials like schemas, API docs, templates, and examples</div>
+                                        <div class="category-files" id="resourcesFiles"></div>
+                                    </div>
+                                    <div class="empty-resources" id="emptyResources">
+                                        <span class="empty-icon">📭</span>
+                                        <span class="empty-text">No additional resources</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="modal-meta">
+                    <span class="meta-item">
+                        <span class="meta-label">Total Files:</span>
+                        <span class="meta-value" id="modalFileCount">-</span>
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-label">Last Modified:</span>
+                        <span class="meta-value" id="modalLastModified">-</span>
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-label">Source:</span>
+                        <span class="meta-value" id="modalSource">-</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

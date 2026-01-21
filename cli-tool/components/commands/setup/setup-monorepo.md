@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [monorepo-tool] | --nx | --lerna | --rush | --turborepo | --yarn-workspaces
 description: Configure monorepo project structure with comprehensive workspace management and build orchestration
-model: sonnet
 ---
 
 # Setup Monorepo

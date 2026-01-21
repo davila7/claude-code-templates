@@ -1,0 +1,135 @@
+/* ===================================
+   Partnership Banner - GLM Z.AI (Image Banner)
+   =================================== */
+
+.partnership-banner {
+    position: relative;
+    margin: 0;
+    padding: 1.5rem 3rem;
+    width: 100%;
+    background: #0d1117;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.partnership-sponsor-text {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.sponsor-label {
+    color: #8b949e;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sponsor-name {
+    color: #58a6ff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.sponsor-name:hover {
+    color: #79c0ff;
+    text-decoration: underline;
+}
+
+.partnership-banner a {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.partnership-banner a:hover {
+    opacity: 0.95;
+}
+
+.partnership-banner img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .partnership-banner {
+        padding: 1.25rem 2.5rem;
+    }
+
+    .partnership-banner img {
+        max-height: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .partnership-banner {
+        padding: 1rem 2rem;
+    }
+
+    .partnership-sponsor-text {
+        margin-bottom: 0.75rem;
+    }
+
+    .sponsor-label,
+    .sponsor-name {
+        font-size: 0.8125rem;
+    }
+
+    .partnership-banner img {
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .partnership-banner {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .partnership-sponsor-text {
+        margin-bottom: 0.5rem;
+    }
+
+    .sponsor-label,
+    .sponsor-name {
+        font-size: 0.75rem;
+    }
+
+    .partnership-banner img {
+        max-height: 120px;
+    }
+}
+
+@media (max-width: 360px) {
+    .partnership-banner {
+        padding: 0.5rem 1rem;
+    }
+
+    .partnership-sponsor-text {
+        margin-bottom: 0.5rem;
+    }
+
+    .sponsor-label,
+    .sponsor-name {
+        font-size: 0.7rem;
+        display: block;
+        margin: 0;
+    }
+
+    .sponsor-label {
+        margin-bottom: 0.25rem;
+    }
+
+    .partnership-banner img {
+        max-height: 100px;
+    }
+}

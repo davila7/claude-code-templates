@@ -2,7 +2,6 @@
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: [scope] | --api-keys | --passwords | --certificates | --fix
 description: Scan codebase for exposed secrets, credentials, and sensitive information
-model: sonnet
 ---
 
 # Secrets Scanner

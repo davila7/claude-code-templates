@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [ticket-id] | --status | --assignee | --comment
 description: Update PAC ticket status and track progress in Product as Code workflow
-model: sonnet
 ---
 
 # Update PAC Ticket Status

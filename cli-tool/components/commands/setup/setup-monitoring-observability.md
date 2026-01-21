@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [monitoring-type] | --metrics | --logging | --tracing | --full-stack
 description: Setup comprehensive monitoring and observability with metrics, logging, tracing, and alerting
-model: sonnet
 ---
 
 # Setup Monitoring & Observability

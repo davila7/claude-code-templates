@@ -1,0 +1,13 @@
+# Local Development Environment Variables
+# Copy this file to .dev.vars and fill in your actual values
+
+# Anthropic API Key (required)
+# Get your key from: https://console.anthropic.com/
+ANTHROPIC_API_KEY=sk-ant-your-anthropic-api-key-here
+
+# Optional: Debug mode
+# DEBUG=true
+
+# Optional: Custom settings
+# MAX_EXECUTION_TIME=30000
+# MAX_CODE_TOKENS=2048

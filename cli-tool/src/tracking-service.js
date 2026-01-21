@@ -214,6 +214,78 @@ class TrackingService {
             ...metadata
         });
     }
+
+    /**
+     * Track CLI command execution
+     * @param {string} commandName - Command name (chats, analytics, health-check, plugins, sandbox, etc.)
+     * @param {object} metadata - Additional context (optional)
+     */
+    async trackCommandExecution(commandName, metadata = {}) {
+        if (!this.trackingEnabled) {
+            return;
+        }
+
+        try {
+            const payload = {
+                command: commandName,
+                cliVersion: this.getCliVersion(),
+                nodeVersion: process.version,
+                platform: process.platform,
+                arch: process.arch,
+                sessionId: this.generateSessionId(),
+                metadata: metadata
+            };
+
+            // Fire-and-forget to Neon Database
+            this.sendCommandTracking(payload)
+                .catch(error => {
+                    if (process.env.CCT_DEBUG === 'true') {
+                        console.debug('📊 Command tracking info (non-critical):', error.message);
+                    }
+                });
+
+        } catch (error) {
+            if (process.env.CCT_DEBUG === 'true') {
+                console.debug('📊 Command tracking error (non-critical):', error.message);
+            }
+        }
+    }
+
+    /**
+     * Send command tracking to Neon Database
+     */
+    async sendCommandTracking(payload) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+        try {
+            const response = await fetch('https://www.aitmpl.com/api/track-command-usage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Agent': `claude-code-templates/${payload.cliVersion}`
+                },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (process.env.CCT_DEBUG === 'true') {
+                if (response.ok) {
+                    console.debug('📊 Command execution tracked successfully');
+                } else {
+                    console.debug(`📊 Command tracking failed with status: ${response.status}`);
+                }
+            }
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (process.env.CCT_DEBUG === 'true') {
+                console.debug('📊 Command tracking failed (non-critical):', error.message);
+            }
+        }
+    }
 }
 
 // Export singleton instance

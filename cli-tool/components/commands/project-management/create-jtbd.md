@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Grep, Glob
 argument-hint: [feature-name] | --template | --interactive
 description: Create Jobs-to-be-Done (JTBD) analysis for product features
-model: sonnet
 ---
 
 # Create Jobs-to-be-Done Document

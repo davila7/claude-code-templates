@@ -1,0 +1,23 @@
+{
+  "description": "Advanced protection against dangerous shell commands with multi-level security. Blocks catastrophic operations (rm -rf /, dd, mkfs), protects critical paths (.claude/, .git/, node_modules/), and warns about suspicious patterns. Features: catastrophic command blocking, critical path protection, smart pattern detection, and detailed safety messages.",
+  "supportingFiles": [
+    {
+      "source": "dangerous-command-blocker.py",
+      "destination": ".claude/scripts/dangerous-command-blocker.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/dangerous-command-blocker.py 2>&1"
+          }
+        ]
+      }
+    ]
+  }
+}

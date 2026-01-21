@@ -51,19 +51,13 @@ jobs:
         working-directory: ./cli-tool
         run: npm test
 
-      - name: Bump version
+      - name: Get current version
         working-directory: ./cli-tool
         run: |
-          if [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Specific version provided
-            npm version ${{ github.event.inputs.version }} --no-git-tag-version
-          else
-            # Semver bump (patch, minor, major)
-            npm version ${{ github.event.inputs.version || 'patch' }} --no-git-tag-version
-          fi
-          
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          # Use existing version from package.json (no bump)
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "NEW_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+          echo "Using version: $CURRENT_VERSION"
 
       - name: Publish to GitHub Packages
         working-directory: ./cli-tool
@@ -71,55 +65,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create and push git tag
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          git add cli-tool/package.json
-          git commit -m "chore: bump version to ${{ env.NEW_VERSION }}"
-          git tag "v${{ env.NEW_VERSION }}"
-          git push origin main
-          git push origin "v${{ env.NEW_VERSION }}"
-
-      - name: Create GitHub Release
-        run: |
-          gh release create "v${{ env.NEW_VERSION }}" \
-            --title "Claude Code Templates v${{ env.NEW_VERSION }}" \
-            --notes "## 📦 New Release: v${{ env.NEW_VERSION }}
-
-          **Installation:**
-          \`\`\`bash
-          npm install -g @davila7/claude-code-templates
-          \`\`\`
-
-          **GitHub Packages:**
-          \`\`\`bash
-          npm install -g @davila7/claude-code-templates --registry=https://npm.pkg.github.com
-          \`\`\`
-
-          **What's Changed:**
-          - Package published to GitHub Packages
-          - Available as @davila7/claude-code-templates
-          - Full CLI functionality with all aliases (cct, claude-init, etc.)
-
-          **Usage:**
-          \`\`\`bash
-          npx @davila7/claude-code-templates --help
-          cct --help  # If installed globally
-          \`\`\`
-
-          🤖 Generated automatically by GitHub Actions"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Summary
         run: |
-          echo "🎉 Package Published Successfully!"
-          echo "================================="
+          echo "🎉 Package Published to GitHub Packages!"
+          echo "========================================"
           echo "Package: @davila7/claude-code-templates"
           echo "Version: ${{ env.NEW_VERSION }}"
           echo "Registry: GitHub Packages"
           echo ""
           echo "Install with:"
           echo "npm install -g @davila7/claude-code-templates --registry=https://npm.pkg.github.com"
+          echo ""
+          echo "Note: This workflow only publishes to GitHub Packages."
+          echo "Main npm registry publication is handled manually."

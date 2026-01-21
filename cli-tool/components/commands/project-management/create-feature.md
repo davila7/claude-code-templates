@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [feature-name] | [feature-type] [name]
 description: Scaffold new feature with boilerplate code, tests, and documentation
-model: sonnet
 ---
 
 # Create Feature

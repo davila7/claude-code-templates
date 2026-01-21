@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [project-name] | --2d | --3d | --mobile | --vr | --console
 description: Use PROACTIVELY to set up professional Unity game development projects with industry-standard structure, essential packages, and platform-optimized configurations
-model: sonnet
 ---
 
 # Unity Project Setup & Development Environment

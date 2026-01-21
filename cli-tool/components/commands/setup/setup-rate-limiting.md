@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [rate-limit-type] | --api | --authentication | --file-upload | --database
 description: Implement comprehensive API rate limiting with advanced algorithms and user-specific policies
-model: sonnet
 ---
 
 # Setup Rate Limiting

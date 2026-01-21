@@ -2,7 +2,6 @@
 allowed-tools: Read, Write, Edit
 argument-hint: [middleware-type] [--auth] [--rate-limit] [--redirect] [--rewrite]
 description: Create optimized Next.js middleware with authentication, rate limiting, and routing logic
-model: sonnet
 ---
 
 ## Next.js Middleware Creator

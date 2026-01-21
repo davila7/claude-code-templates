@@ -1,0 +1,16 @@
+id,name,asset_value,exposure_factor,aro,likelihood,impact,category,owner
+R-001,Ransomware Attack on Production Infrastructure,10000000,0.6,0.15,4,5,Cybersecurity,CISO
+R-002,Data Breach - Customer PII Exposure,5000000,0.8,0.2,4,5,Data Privacy,CISO
+R-003,Phishing Attack Leading to Credential Compromise,2000000,0.3,0.5,5,3,Cybersecurity,Security Manager
+R-004,Unpatched Critical Vulnerabilities,3000000,0.4,0.3,4,4,Vulnerability Management,IT Security
+R-005,Insider Threat - Malicious Employee,4000000,0.5,0.1,2,5,Insider Risk,HR
+R-006,DDoS Attack on Public Services,1500000,0.2,0.25,3,3,Availability,IT Operations
+R-007,Third-Party Vendor Breach,3500000,0.6,0.2,3,4,Third-Party Risk,Procurement
+R-008,Cloud Misconfiguration Exposure,2500000,0.7,0.4,4,4,Cloud Security,Cloud Architect
+R-009,SQL Injection in Customer Portal,4500000,0.9,0.15,3,5,Application Security,AppSec Lead
+R-010,Physical Security Breach at Data Center,8000000,0.3,0.05,2,5,Physical Security,Facilities
+R-011,Lost or Stolen Laptop with Unencrypted Data,500000,0.8,0.3,3,3,Endpoint Security,IT Security
+R-012,Compliance Violation - GDPR,2000000,0.3,0.15,3,4,Compliance,Privacy Officer
+R-013,Social Engineering Attack,1000000,0.2,0.6,5,2,Human Factor,Security Awareness
+R-014,Zero-Day Exploit,6000000,0.5,0.05,2,5,Vulnerability Management,CISO
+R-015,Supply Chain Attack,7000000,0.6,0.1,2,5,Supply Chain,Procurement

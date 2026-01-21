@@ -1,0 +1,50 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "cloudflare-claude-sandbox"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Durable Objects configuration for sandbox persistence
+[[durable_objects.bindings]]
+name = "Sandbox"
+class_name = "Sandbox"
+
+# Durable Object migration (required for first deployment)
+[[migrations]]
+tag = "v1"
+new_classes = ["Sandbox"]
+
+# Environment variables (non-secret)
+[vars]
+ENVIRONMENT = "production"
+
+# Development environment configuration
+[env.development]
+vars = { ENVIRONMENT = "development" }
+
+# Staging environment configuration
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+
+# Resource limits
+[limits]
+# CPU time limit per request (milliseconds)
+cpu_ms = 50
+
+# Build configuration
+[build]
+command = ""
+
+# Observability
+[observability]
+enabled = true
+
+# Usage model - required for Durable Objects
+[usage_model]
+# Use 'bundled' for Workers Paid plan ($5/month)
+# Includes 10M requests/month and unlimited Durable Objects
+# For free tier, comment this out (limited functionality)
+# usage_model = "bundled"
+
+# Note: Uncomment the line above after setting up Workers Paid plan
+# Or remove this section entirely for the free tier (sandbox will be limited)

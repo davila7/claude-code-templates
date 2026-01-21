@@ -1,0 +1,26 @@
+{
+  "name": "claude-code-docker-sandbox",
+  "version": "1.0.0",
+  "description": "Docker sandbox for Claude Code execution with Claude Agent SDK",
+  "main": "docker-launcher.js",
+  "type": "module",
+  "scripts": {
+    "build": "docker build -t claude-sandbox .",
+    "clean": "docker rmi claude-sandbox || true"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.1.30"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "claude",
+    "docker",
+    "sandbox",
+    "ai",
+    "agent"
+  ],
+  "author": "Claude Code Templates",
+  "license": "MIT"
+}

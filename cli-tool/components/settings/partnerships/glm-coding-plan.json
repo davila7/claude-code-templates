@@ -1,0 +1,11 @@
+{
+  "description": "GLM Coding Plan - Top-tier open-source coding performance powered by GLM-4.6, the top-ranked model on Code Arena leaderboard. Starting at $3/month with state-of-the-art reasoning, debugging, and code generation. Seamlessly integrates with Claude Code and 10+ AI coding tools. Includes native MCP support for image recognition and web search. Get 10% OFF with code: https://z.ai/subscribe?ic=8JVLJQFSKB",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR-API-KEY",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.5-air",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-4.7",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-4.7"
+  },
+  "alwaysThinkingEnabled": true
+}

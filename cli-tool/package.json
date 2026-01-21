@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.24.1",
+  "version": "1.28.13",
   "description": "CLI tool to setup Claude Code configurations with framework-specific commands, automation hooks and MCP Servers for your projects",
   "main": "src/index.js",
   "bin": {
@@ -74,6 +74,7 @@
     "js-yaml": "^4.1.0",
     "open": "^8.4.2",
     "ora": "^5.4.1",
+    "qrcode": "^1.5.3",
     "uuid": "^11.1.0",
     "ws": "^8.18.3"
   },
@@ -92,6 +93,8 @@
     "bin/",
     "src/",
     "components/sandbox/e2b/",
+    "components/sandbox/cloudflare/",
+    "components/sandbox/docker/",
     "README.md"
   ],
   "devDependencies": {
