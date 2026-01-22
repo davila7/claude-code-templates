@@ -3,7 +3,7 @@ name: remotion
 description: Best practices and comprehensive guide for Remotion - programmatic video creation in React with animations, compositions, and media handling
 version: 1.0.0
 author: remotion-dev
-repository: https://github.com/remotion-dev/skills
+repo: https://github.com/remotion-dev/skills
 license: MIT
 tags: [Video, React, Animation, Remotion, Composition, Media, 3D, Audio, Captions, Charts, Lottie, Tailwind]
 dependencies: [remotion>=4.0.0, react>=18.0.0]
