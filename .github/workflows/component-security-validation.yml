@@ -81,38 +81,38 @@ jobs:
 
             let comment = `## ${emoji} Security Audit Report\n\n`;
             comment += `**Status**: ${status}\n\n`;
-            comment += `### Summary\n`;
-            comment += `- **Total components**: ${total}\n`;
-            comment += `- ✅ **Passed**: ${passed}\n`;
-            comment += `- ❌ **Failed**: ${failed}\n`;
-            comment += `- ⚠️ **Warnings**: ${warnings}\n\n`;
+
+            // Summary table
+            comment += `| Metric | Count |\n`;
+            comment += `|--------|-------|\n`;
+            comment += `| Total Components | ${total} |\n`;
+            comment += `| ✅ Passed | ${passed} |\n`;
+            comment += `| ❌ Failed | ${failed} |\n`;
+            comment += `| ⚠️ Warnings | ${warnings} |\n\n`;
 
             if (failed > 0) {
-              comment += `### ❌ Failed Components\n\n`;
+              comment += `### ❌ Failed Components (Top 5)\n\n`;
+              comment += `| Component | Errors | Warnings | Score |\n`;
+              comment += `|-----------|--------|----------|-------|\n`;
 
-              for (const component of report.components) {
-                if (!component.overall.valid) {
-                  comment += `**${component.component.path}**\n`;
-                  comment += `- Errors: ${component.overall.errorCount}\n`;
-                  comment += `- Warnings: ${component.overall.warningCount}\n`;
-                  comment += `- Score: ${component.overall.score}/100\n\n`;
+              const failedComponents = report.components
+                .filter(c => !c.overall.valid)
+                .sort((a, b) => b.overall.errorCount - a.overall.errorCount)
+                .slice(0, 5);
 
-                  // Show top errors
-                  for (const [validator, result] of Object.entries(component.validators)) {
-                    if (result.errors && result.errors.length > 0) {
-                      comment += `  **${validator}**: ${result.errors.length} error(s)\n`;
-                      for (const error of result.errors.slice(0, 2)) {
-                        comment += `  - \`${error.code}\`: ${error.message}\n`;
-                      }
-                    }
-                  }
-                  comment += `\n`;
-                }
+              for (const component of failedComponents) {
+                const name = component.component.path.split('/').pop().replace('.md', '');
+                comment += `| \`${name}\` | ${component.overall.errorCount} | ${component.overall.warningCount} | ${component.overall.score}/100 |\n`;
+              }
+
+              if (report.components.filter(c => !c.overall.valid).length > 5) {
+                const remaining = report.components.filter(c => !c.overall.valid).length - 5;
+                comment += `\n*...and ${remaining} more failed component(s)*\n`;
               }
             }
 
             comment += `\n---\n`;
-            comment += `📊 View full report in [workflow artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+            comment += `📊 **[View Full Report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})** for detailed error messages and all components`;
 
             // Post comment
             github.rest.issues.createComment({
