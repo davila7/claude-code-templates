@@ -200,14 +200,27 @@
       "difficulty": "basic",
       "featured": true,
       "order": 16
+    },
+    {
+      "id": "react-best-practices-skill",
+      "title": "React Best Practices Skill: 40+ Performance Optimization Rules",
+      "description": "Master React and Next.js performance optimization with 40+ proven rules. Learn to eliminate waterfalls, optimize bundles, and improve rendering performance in your applications.",
+      "url": "react-best-practices-skill/",
+      "image": "assets/react-best-practices-skill-cover.svg",
+      "category": "Skills",
+      "readTime": "8 min read",
+      "tags": ["React", "Next.js", "Performance", "Optimization", "Best Practices", "Skills"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 17
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-01-02",
-    "totalArticles": 16,
+    "lastUpdated": "2026-01-23",
+    "totalArticles": 17,
     "difficultyLevels": {
       "basic": 8,
-      "intermediate": 3,
+      "intermediate": 4,
       "advanced": 5
     }
   }
