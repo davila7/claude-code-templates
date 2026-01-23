@@ -197,7 +197,7 @@
 
                 <p>The React Best Practices skill is a comprehensive performance optimization guide for React and Next.js applications. It provides Claude Code with 40+ actionable rules organized by impact level, helping you eliminate performance bottlenecks, reduce bundle sizes, and improve user experience.</p>
 
-                <p>This skill was created by Vercel Engineering and includes real-world examples, code comparisons, and specific impact metrics for each optimization rule.</p>
+                <p>This skill was created by Vercel Engineering and includes real-world examples and code comparisons for each optimization rule.</p>
 
                 <!-- Mermaid Diagram -->
                 <div class="mermaid-diagram" style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
@@ -227,14 +227,14 @@ graph TD
                 <ul>
                     <li><strong>Prioritizing optimizations</strong> - Rules are organized by impact (CRITICAL, HIGH, MEDIUM, LOW)</li>
                     <li><strong>Providing proven patterns</strong> - Each rule includes correct/incorrect code examples</li>
-                    <li><strong>Measuring impact</strong> - Specific metrics help you understand the value of each optimization</li>
+                    <li><strong>Measuring impact</strong> - Clear guidelines help you understand the value of each optimization</li>
                     <li><strong>Progressive context loading</strong> - The skill loads detailed guidelines on-demand to minimize token usage</li>
                 </ul>
 
                 <h2>Key Optimization Categories</h2>
 
                 <h3>1. Eliminating Waterfalls (CRITICAL)</h3>
-                <p>Waterfalls are the #1 performance killer. Each sequential await adds full network latency. This category teaches you to:</p>
+                <p>Waterfalls are a major performance killer. Each sequential await adds full network latency. This category teaches you to:</p>
                 <ul>
                     <li>Defer await until needed</li>
                     <li>Use Promise.all() for parallel operations</li>
@@ -263,10 +263,10 @@ const [user, posts, comments] = await Promise.all([
                     <li>Preload based on user intent</li>
                 </ul>
 
-                <pre><code class="language-typescript">// ❌ Loads entire library (200KB+)
+                <pre><code class="language-typescript">// ❌ Loads entire library
 import { Check } from 'lucide-react'
 
-// ✅ Loads only what you need (2KB)
+// ✅ Loads only what you need
 import Check from 'lucide-react/dist/esm/icons/check'</code></pre>
 
                 <h3>3. Server-Side Performance (HIGH)</h3>
@@ -389,23 +389,12 @@ async function Dashboard() {
                 <p>One of the unique features of this skill is its progressive context loading system:</p>
 
                 <ol>
-                    <li><strong>Quick Reference</strong> - Loads first with critical priorities and common patterns (~500 tokens)</li>
-                    <li><strong>Category Overview</strong> - High-level description of all 8 optimization categories</li>
-                    <li><strong>Detailed Guidelines</strong> - Full documentation with 40+ rules, loaded on-demand from references folder</li>
+                    <li><strong>Quick Reference</strong> - Loads first with critical priorities and common patterns</li>
+                    <li><strong>Category Overview</strong> - High-level description of optimization categories</li>
+                    <li><strong>Detailed Guidelines</strong> - Full documentation loaded on-demand from references folder</li>
                 </ol>
 
                 <p>This approach ensures you get the information you need without overwhelming Claude's context window.</p>
-
-                <h2>Real-World Impact</h2>
-
-                <p>These optimization rules come from Vercel Engineering's experience building production applications. Following these best practices can result in:</p>
-
-                <ul>
-                    <li><strong>50-80% reduction</strong> in bundle size with proper imports</li>
-                    <li><strong>2-5x faster</strong> page loads by eliminating waterfalls</li>
-                    <li><strong>30-60% improvement</strong> in TTI with server-side optimizations</li>
-                    <li><strong>Smoother UX</strong> with re-render and rendering optimizations</li>
-                </ul>
 
                 <h2>Official Documentation</h2>
                 <p>For more information about skills in Claude Code, see the <a href="https://code.claude.com/docs/en/skills?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">official skills documentation</a>.</p>
@@ -420,12 +409,12 @@ async function Dashboard() {
 
                 <!-- Explore Components Banner -->
                 <div class="explore-components-banner" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
-                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Descubre más de 900+ Componentes para Claude Code</h3>
+                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 900+ Claude Code Components</h3>
                     <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
-                        Explora más Skills, Subagents, Hooks, MCPs, Commands, Settings y Templates para potenciar tu flujo de trabajo con Claude Code
+                        Discover more Skills, Agents, Hooks, MCPs, Commands, Settings and Templates to supercharge your Claude Code workflow
                     </p>
                     <a href="https://aitmpl.com" style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
-                        Explorar Componentes en aitmpl.com →
+                        Browse All Components at aitmpl.com →
                     </a>
                 </div>
 
