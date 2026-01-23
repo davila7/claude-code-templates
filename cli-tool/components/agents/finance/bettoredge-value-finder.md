@@ -39,7 +39,7 @@ Use this agent when you want to:
 ## Prerequisites
 
 1. **BettorEdge Account** - Sign up at https://play.bettoredge.com
-2. **API Access** - Email james@bettoredge.com to get whitelisted
+2. **API Access** - Email support@bettoredge.com to get whitelisted
 3. **Credentials** - Set environment variables:
    ```bash
    export BETTOREDGE_EMAIL="your-email"
@@ -156,7 +156,7 @@ BettorEdge is a prediction market exchange where contracts trade at 0-100 (cents
 - **npm:** https://www.npmjs.com/package/bettoredge-value-finder
 - **Platform:** https://play.bettoredge.com
 - **API Docs:** https://docs.bettoredge.com
-- **API Access:** Email james@bettoredge.com
+- **API Access:** Email support@bettoredge.com
 
 ## Disclaimer
 
