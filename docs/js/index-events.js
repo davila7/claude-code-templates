@@ -11,7 +11,7 @@ function focusSearchInput() {
 
 class IndexPageManager {
     constructor() {
-        this.currentFilter = 'agents';
+        this.currentFilter = 'skills';
         this.currentCategoryFilter = 'all';
         this.currentSort = 'downloads'; // Default sort by downloads
         this.templatesData = null;
@@ -121,8 +121,8 @@ class IndexPageManager {
             return firstSegment;
         }
 
-        // Default to agents
-        return 'agents';
+        // Default to skills
+        return 'skills';
     }
 
     async loadTemplatesData() {

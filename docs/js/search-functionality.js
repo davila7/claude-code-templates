@@ -155,7 +155,7 @@ async function loadComponentsForSearch() {
                                 component.description,
                                 component.category,
                                 ...(component.tags || []),
-                                component.keywords || '',
+                                ...(Array.isArray(component.keywords) ? component.keywords : [component.keywords || '']),
                                 component.path || ''
                             ].filter(Boolean).join(' ').toLowerCase(),
                             
@@ -193,7 +193,7 @@ async function loadComponentsForSearch() {
                             component.description,
                             component.category,
                             ...(component.tags || []),
-                            component.keywords || '',
+                            ...(Array.isArray(component.keywords) ? component.keywords : [component.keywords || '']),
                             component.path || ''
                         ].filter(Boolean).join(' ').toLowerCase(),
                         
@@ -269,12 +269,12 @@ function getFilterFromURL() {
         return firstSegment;
     }
 
-    // If no valid filter found and we're on root, default to agents
+    // If no valid filter found and we're on root, default to skills
     if (path === '/' || path === '') {
-        return 'agents';
+        return 'skills';
     }
 
-    return 'agents'; // Default fallback
+    return 'skills'; // Default fallback
 }
 
 /**
@@ -363,7 +363,10 @@ function calculateMatchScore(component, query, category) {
     
     // Keywords match (for settings/hooks)
     if (component.keywords) {
-        const keywordMatch = component.keywords.toLowerCase().includes(query);
+        const keywords = Array.isArray(component.keywords)
+            ? component.keywords.join(' ').toLowerCase()
+            : String(component.keywords).toLowerCase();
+        const keywordMatch = keywords.includes(query);
         if (keywordMatch) {
             score += 25;
         }
@@ -391,7 +394,12 @@ function getMatchType(component, query, category) {
     if (name.includes(query)) return 'name';
     if (description.includes(query)) return 'description';
     if (component.tags && component.tags.some(tag => tag.toLowerCase().includes(query))) return 'tag';
-    if (component.keywords && component.keywords.toLowerCase().includes(query)) return 'keyword';
+    if (component.keywords) {
+        const keywords = Array.isArray(component.keywords)
+            ? component.keywords.join(' ').toLowerCase()
+            : String(component.keywords).toLowerCase();
+        if (keywords.includes(query)) return 'keyword';
+    }
     if (component.path && component.path.toLowerCase().includes(query)) return 'path';
     
     return 'other';

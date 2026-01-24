@@ -5047,6 +5047,167 @@ body {
     padding: 0;
 }
 
+/* Featured Compact Version */
+.featured-compact {
+    margin: 1rem 0 1.5rem 0;
+    padding: 0 2rem;
+}
+
+.featured-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding: 0 0.5rem;
+}
+
+.featured-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.carousel-nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.carousel-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.carousel-nav-btn:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--bg-primary);
+}
+
+.carousel-track-compact {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.5rem;
+}
+
+.carousel-track-compact::-webkit-scrollbar {
+    display: none;
+}
+
+.featured-card-compact {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 280px;
+    max-width: 280px;
+    padding: 0.85rem 1.25rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.featured-card-compact:hover {
+    border-color: var(--accent-color);
+    background: var(--bg-tertiary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-primary);
+}
+
+.featured-logo-compact {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.featured-logo-compact img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.featured-info-compact {
+    flex: 1;
+    min-width: 0;
+}
+
+.featured-info-compact h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.featured-info-compact p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.featured-arrow-compact {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.featured-card-compact:hover .featured-arrow-compact {
+    transform: translateX(3px);
+    color: var(--accent-color);
+}
+
+/* Mobile responsive for compact featured */
+@media (max-width: 768px) {
+    .featured-compact {
+        margin: 0.75rem 0 1rem 0;
+        padding: 0 1rem;
+    }
+
+    .featured-card-compact {
+        min-width: 240px;
+        max-width: 240px;
+        padding: 0.75rem 1rem;
+    }
+
+    .featured-logo-compact {
+        width: 40px;
+        height: 40px;
+    }
+
+    .featured-info-compact h3 {
+        font-size: 0.9rem;
+    }
+
+    .featured-info-compact p {
+        font-size: 0.75rem;
+    }
+}
+
 .featured-title {
     color: var(--text-primary);
     font-size: 1.5rem;

@@ -189,6 +189,38 @@
         
 
 
+        <!-- Featured Projects - Compact -->
+        <section class="featured-section featured-compact" id="featuredSection">
+            <div class="featured-header">
+                <span class="featured-label">Featured</span>
+                <div class="carousel-nav">
+                    <button class="carousel-nav-btn" onclick="scrollFeaturedCarousel('left')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
+                        </svg>
+                    </button>
+                    <button class="carousel-nav-btn" onclick="scrollFeaturedCarousel('right')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="carousel-track-compact" id="featuredCarousel">
+                <!-- BrainGrid Featured Card -->
+                <a href="featured/braingrid/index.html" class="featured-card-compact" target="_blank">
+                    <div class="featured-logo-compact">
+                        <img src="https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png" alt="BrainGrid Logo" onerror="this.style.display='none';">
+                    </div>
+                    <div class="featured-info-compact">
+                        <h3>BrainGrid</h3>
+                        <p>Product Management Agent</p>
+                    </div>
+                    <span class="featured-arrow-compact">→</span>
+                </a>
+            </div>
+        </section>
+
         <section class="unified-filter-section">
             <!-- Search Section Header -->
             <div class="search-header">
@@ -233,7 +265,11 @@
             <div class="component-type-filters">
                 <div class="filter-group">
                     <div class="filter-chips">
-                        <a href="/agents" class="filter-chip active" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
+                        <a href="/skills" class="filter-chip active" data-filter="skills" onclick="handleFilterClick(event, 'skills')">
+                            <span class="new-label">NEW</span>
+                            <span class="chip-icon">🎨</span>skills
+                        </a>
+                        <a href="/agents" class="filter-chip" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
                             <span class="chip-icon">🤖</span>agents
                         </a>
                         <a href="/commands" class="filter-chip" data-filter="commands" onclick="handleFilterClick(event, 'commands')">
@@ -247,10 +283,6 @@
                         </a>
                         <a href="/mcps" class="filter-chip" data-filter="mcps" onclick="handleFilterClick(event, 'mcps')">
                             <span class="chip-icon">🔌</span>mcps
-                        </a>
-                        <a href="/skills" class="filter-chip" data-filter="skills" onclick="handleFilterClick(event, 'skills')">
-                            <span class="new-label">NEW</span>
-                            <span class="chip-icon">🎨</span>skills
                         </a>
                         <a href="/templates" class="filter-chip" data-filter="templates" onclick="handleFilterClick(event, 'templates')" style="display: none;">
                             <span class="chip-icon">📦</span>templates
@@ -269,36 +301,6 @@
                 </div>
             </div>
 
-        </section>
-
-        <!-- Featured Projects Carousel -->
-        <section class="featured-section" id="featuredSection">
-            <h2 class="featured-title">Featured Projects</h2>
-            <div class="carousel-container">
-                <button class="carousel-btn carousel-btn-left" onclick="scrollFeaturedCarousel('left')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
-                    </svg>
-                </button>
-                <div class="carousel-track" id="featuredCarousel">
-                    <!-- BrainGrid Featured Card -->
-                    <a href="featured/braingrid/index.html" class="featured-card" target="_blank">
-                        <div class="featured-logo">
-                            <img src="https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png" alt="BrainGrid Logo" onerror="this.style.display='none';">
-                        </div>
-                        <div class="featured-info">
-                            <h3>BrainGrid</h3>
-                            <p>Product Management Agent for Claude Code</p>
-                        </div>
-                        <div class="featured-arrow">→</div>
-                    </a>
-                </div>
-                <button class="carousel-btn carousel-btn-right" onclick="scrollFeaturedCarousel('right')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                    </svg>
-                </button>
-            </div>
         </section>
 
         <section class="content-grid" id="contentGrid">
