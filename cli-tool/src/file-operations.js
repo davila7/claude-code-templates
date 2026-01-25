@@ -5,11 +5,12 @@ const inquirer = require('inquirer');
 const { getHooksForLanguage, filterHooksBySelection, getMCPsForLanguage, filterMCPsBySelection } = require('./hook-scanner');
 
 // GitHub configuration for downloading templates
+// Can be overridden via environment variables for custom forks
 const GITHUB_CONFIG = {
-  owner: 'davila7',
-  repo: 'claude-code-templates',
-  branch: 'main',
-  templatesPath: 'cli-tool/templates'
+  owner: process.env.CCT_REPO_OWNER || 'davila7',
+  repo: process.env.CCT_REPO_NAME || 'claude-code-templates',
+  branch: process.env.CCT_REPO_BRANCH || 'main',
+  templatesPath: process.env.CCT_TEMPLATES_PATH || 'cli-tool/templates'
 };
 
 // Cache for downloaded files to avoid repeated downloads

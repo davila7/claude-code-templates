@@ -23,6 +23,41 @@ const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 
 /**
+ * GitHub configuration for downloading components
+ * Can be overridden via environment variables for custom forks
+ */
+const GITHUB_CONFIG = {
+  owner: process.env.CCT_REPO_OWNER || 'davila7',
+  repo: process.env.CCT_REPO_NAME || 'claude-code-templates',
+  branch: process.env.CCT_REPO_BRANCH || 'main',
+  componentsPath: process.env.CCT_COMPONENTS_PATH || 'cli-tool/components'
+};
+
+/**
+ * Build GitHub raw content URL for a component
+ * @param {string} componentType - Type of component (agents, commands, mcps, settings, hooks, sandbox)
+ * @param {string} componentName - Name of the component (may include category path)
+ * @param {string} extension - File extension (md, json, py)
+ * @returns {string} Full GitHub raw content URL
+ */
+function buildGitHubUrl(componentType, componentName, extension) {
+  const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${componentsPath}/${componentType}/${componentName}.${extension}`;
+}
+
+/**
+ * Build GitHub API URL for repository contents
+ * @param {string} componentType - Type of component (agents, commands, mcps, settings, hooks)
+ * @param {string} subPath - Optional sub-path within the component type
+ * @returns {string} Full GitHub API URL
+ */
+function buildGitHubApiUrl(componentType, subPath = '') {
+  const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
+  const fullPath = subPath ? `${componentType}/${subPath}` : componentType;
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${componentsPath}/${fullPath}?ref=${encodeURIComponent(branch)}`;
+}
+
+/**
  * Get platform-appropriate Python command candidates
  * Returns array of commands to try in order
  * @returns {string[]} Array of Python commands to try
@@ -506,16 +541,10 @@ async function installIndividualAgent(agentName, targetDir, options) {
   
   try {
     // Support both category/agent-name and direct agent-name formats
-    let githubUrl;
-    if (agentName.includes('/')) {
-      // Category/agent format: deep-research-team/academic-researcher
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/agents/${agentName}.md`;
-    } else {
-      // Direct agent format: api-security-audit
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/agents/${agentName}.md`;
-    }
-    
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const githubUrl = buildGitHubUrl('agents', agentName, 'md');
+
+    console.log(chalk.gray(`📥 Downloading from GitHub (${GITHUB_CONFIG.branch} branch)...`));
     
     const response = await fetch(githubUrl);
     if (!response.ok) {
@@ -571,17 +600,11 @@ async function installIndividualCommand(commandName, targetDir, options) {
   
   try {
     // Support both category/command-name and direct command-name formats
-    let githubUrl;
-    if (commandName.includes('/')) {
-      // Category/command format: security/vulnerability-scan
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/commands/${commandName}.md`;
-    } else {
-      // Direct command format: check-file
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/commands/${commandName}.md`;
-    }
-    
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
-    
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const githubUrl = buildGitHubUrl('commands', commandName, 'md');
+
+    console.log(chalk.gray(`📥 Downloading from GitHub (${GITHUB_CONFIG.branch} branch)...`));
+
     const response = await fetch(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
@@ -637,16 +660,10 @@ async function installIndividualMCP(mcpName, targetDir, options) {
   
   try {
     // Support both category/mcp-name and direct mcp-name formats
-    let githubUrl;
-    if (mcpName.includes('/')) {
-      // Category/mcp format: database/mysql-integration
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/mcps/${mcpName}.json`;
-    } else {
-      // Direct mcp format: web-fetch
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/mcps/${mcpName}.json`;
-    }
-    
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const githubUrl = buildGitHubUrl('mcps', mcpName, 'json');
+
+    console.log(chalk.gray(`📥 Downloading from GitHub (${GITHUB_CONFIG.branch} branch)...`));
     
     const response = await fetch(githubUrl);
     if (!response.ok) {
@@ -723,16 +740,10 @@ async function installIndividualSetting(settingName, targetDir, options) {
   
   try {
     // Support both category/setting-name and direct setting-name formats
-    let githubUrl;
-    if (settingName.includes('/')) {
-      // Category/setting format: permissions/allow-npm-commands
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/settings/${settingName}.json`;
-    } else {
-      // Direct setting format: allow-npm-commands
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/settings/${settingName}.json`;
-    }
-    
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const githubUrl = buildGitHubUrl('settings', settingName, 'json');
+
+    console.log(chalk.gray(`📥 Downloading from GitHub (${GITHUB_CONFIG.branch} branch)...`));
     
     const response = await fetch(githubUrl);
     if (!response.ok) {
@@ -1056,16 +1067,10 @@ async function installIndividualHook(hookName, targetDir, options) {
   
   try {
     // Support both category/hook-name and direct hook-name formats
-    let githubUrl;
-    if (hookName.includes('/')) {
-      // Category/hook format: pre-tool/backup-before-edit
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/hooks/${hookName}.json`;
-    } else {
-      // Direct hook format: backup-before-edit
-      githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/hooks/${hookName}.json`;
-    }
-    
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const githubUrl = buildGitHubUrl('hooks', hookName, 'json');
+
+    console.log(chalk.gray(`📥 Downloading from GitHub (${GITHUB_CONFIG.branch} branch)...`));
     
     const response = await fetch(githubUrl);
     if (!response.ok) {
@@ -1446,8 +1451,9 @@ async function getAvailableAgentsFromGitHub() {
     }
     
     // If aitmpl.com API fails, try GitHub API as secondary fallback
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
     console.log(chalk.yellow('⚠️  Falling back to GitHub API...'));
-    const response = await fetch('https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents');
+    const response = await fetch(buildGitHubApiUrl('agents'));
     if (!response.ok) {
       // Check for rate limit error
       if (response.status === 403) {
@@ -1491,7 +1497,7 @@ async function getAvailableAgentsFromGitHub() {
       } else if (item.type === 'dir') {
         // Category directory, fetch its contents
         try {
-          const categoryResponse = await fetch(`https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents/${item.name}`);
+          const categoryResponse = await fetch(buildGitHubApiUrl('agents', item.name));
           if (categoryResponse.ok) {
             const categoryContents = await categoryResponse.json();
             for (const categoryItem of categoryContents) {
@@ -1534,9 +1540,10 @@ async function installIndividualSkill(skillName, targetDir, options) {
     const skillBaseName = skillName.includes('/') ? skillName.split('/').pop() : skillName;
 
     // Use GitHub API to download ALL files and directories for the skill
-    const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/skills/${skillName}`;
+    // Uses GITHUB_CONFIG for custom repository support via environment variables
+    const githubApiUrl = buildGitHubApiUrl('skills', skillName);
 
-    console.log(chalk.gray(`📥 Downloading skill from GitHub (main branch)...`));
+    console.log(chalk.gray(`📥 Downloading skill from GitHub (${GITHUB_CONFIG.branch} branch)...`));
 
     const downloadedFiles = {};
 
@@ -3188,8 +3195,10 @@ async function executeE2BSandbox(options, targetDir) {
       } else {
         // Fallback to downloading from GitHub if not found locally
         console.log(chalk.gray('📥 Downloading E2B component files from GitHub...'));
-        
-        const baseUrl = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/sandbox/e2b';
+
+        // Uses GITHUB_CONFIG for custom repository support via environment variables
+        const { owner, repo, branch, componentsPath } = GITHUB_CONFIG;
+        const baseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${componentsPath}/sandbox/e2b`;
         
         // Download launcher script
         const launcherResponse = await fetch(`${baseUrl}/e2b-launcher.py`);
