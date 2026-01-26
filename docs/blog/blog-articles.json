@@ -213,14 +213,27 @@
       "difficulty": "intermediate",
       "featured": true,
       "order": 17
+    },
+    {
+      "id": "heygen-best-practices-skill",
+      "title": "HeyGen Best Practices Skill: AI Avatar Video Creation Guide",
+      "description": "Master HeyGen API integration with 18+ best practice rules. Learn to create AI avatar videos, manage voices, handle video generation workflows, and implement streaming avatars.",
+      "url": "heygen-best-practices-skill/",
+      "image": "assets/heygen-best-practices-skill-cover.svg",
+      "category": "Skills",
+      "readTime": "10 min read",
+      "tags": ["HeyGen", "AI Video", "Avatar", "Text-to-Video", "API Integration", "Skills"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 18
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-01-23",
-    "totalArticles": 17,
+    "lastUpdated": "2026-01-25",
+    "totalArticles": 18,
     "difficultyLevels": {
       "basic": 8,
-      "intermediate": 4,
+      "intermediate": 5,
       "advanced": 5
     }
   }
