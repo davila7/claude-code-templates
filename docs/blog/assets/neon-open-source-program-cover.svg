@@ -1,0 +1,116 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F0F0F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A1A1A;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00E599;stop-opacity:0.2" />
+      <stop offset="50%" style="stop-color:#00E599;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#00E599;stop-opacity:0.2" />
+    </linearGradient>
+
+    <!-- Glow filter for Neon effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.05">
+    <path d="M0 0 L1200 0 M0 50 L1200 50 M0 100 L1200 100 M0 150 L1200 150 M0 200 L1200 200 M0 250 L1200 250 M0 300 L1200 300 M0 350 L1200 350 M0 400 L1200 400 M0 450 L1200 450 M0 500 L1200 500 M0 550 L1200 550 M0 600 L1200 600" stroke="#00E599" stroke-width="1"/>
+    <path d="M0 0 L0 630 M50 0 L50 630 M100 0 L100 630 M150 0 L150 630 M200 0 L200 630 M250 0 L250 630 M300 0 L300 630 M350 0 L350 630 M400 0 L400 630 M450 0 L450 630 M500 0 L500 630 M550 0 L550 630 M600 0 L600 630 M650 0 L650 630 M700 0 L700 630 M750 0 L750 630 M800 0 L800 630 M850 0 L850 630 M900 0 L900 630 M950 0 L950 630 M1000 0 L1000 630 M1050 0 L1050 630 M1100 0 L1100 630 M1150 0 L1150 630 M1200 0 L1200 630" stroke="#00E599" stroke-width="1"/>
+  </g>
+
+  <!-- Terminal window mockup -->
+  <g>
+    <!-- Terminal header -->
+    <rect x="100" y="80" width="1000" height="40" rx="8" fill="#1A1A1A"/>
+    <circle cx="120" cy="100" r="6" fill="#FF5F56"/>
+    <circle cx="140" cy="100" r="6" fill="#FFBD2E"/>
+    <circle cx="160" cy="100" r="6" fill="#27C93F"/>
+
+    <!-- Terminal body -->
+    <rect x="100" y="120" width="1000" height="430" fill="#0F0F0F" opacity="0.9"/>
+    <rect x="100" y="120" width="1000" height="430" fill="none" stroke="#00E599" stroke-width="2" opacity="0.3"/>
+  </g>
+
+  <!-- Terminal content -->
+  <g font-family="'Courier New', monospace" fill="#00E599">
+    <!-- Command prompt line -->
+    <text x="130" y="165" font-size="18" fill="#888">$</text>
+    <text x="155" y="165" font-size="18">npx claude-code-templates@latest --skill database/neon-instagres</text>
+
+    <!-- Success output -->
+    <text x="130" y="200" font-size="16" fill="#00E599" filter="url(#glow)">✓ Provisioning Neon database...</text>
+    <text x="130" y="230" font-size="16" fill="#00E599" filter="url(#glow)">✓ Database ready in 5 seconds</text>
+    <text x="130" y="260" font-size="16" fill="#888">→ Connection string saved to .env</text>
+  </g>
+
+  <!-- Neon logo area (simplified stylized text) -->
+  <g>
+    <text x="130" y="340" font-family="'Courier New', monospace" font-size="56" font-weight="bold" fill="#00E599" filter="url(#strongGlow)">NEON</text>
+    <text x="340" y="340" font-family="'Courier New', monospace" font-size="32" fill="#888">Open Source</text>
+  </g>
+
+  <!-- Subtitle -->
+  <g>
+    <text x="130" y="385" font-family="'Courier New', monospace" font-size="28" font-weight="600" fill="#FFFFFF">Claude Code Templates</text>
+  </g>
+
+  <!-- Partnership badge -->
+  <g>
+    <rect x="130" y="410" width="280" height="45" rx="8" fill="#00E599" opacity="0.15"/>
+    <rect x="130" y="410" width="280" height="45" rx="8" fill="none" stroke="#00E599" stroke-width="2"/>
+    <text x="150" y="440" font-family="'Inter', sans-serif" font-size="20" font-weight="600" fill="#00E599">Partnership Announced</text>
+  </g>
+
+  <!-- Feature highlights -->
+  <g font-family="'Courier New', monospace" font-size="16" fill="#AAAAAA">
+    <text x="130" y="495">→ $5,000 annual support</text>
+    <text x="130" y="520">→ Instant Postgres provisioning</text>
+  </g>
+
+  <!-- Decorative elements - corner brackets -->
+  <g stroke="#00E599" stroke-width="3" fill="none" opacity="0.5">
+    <!-- Top left -->
+    <path d="M 80 80 L 80 50 L 110 50"/>
+    <!-- Top right -->
+    <path d="M 1120 50 L 1120 80"/>
+    <path d="M 1090 50 L 1120 50"/>
+    <!-- Bottom left -->
+    <path d="M 80 570 L 80 600 L 110 600"/>
+    <!-- Bottom right -->
+    <path d="M 1090 600 L 1120 600 L 1120 570"/>
+  </g>
+
+  <!-- Animated dots indicator -->
+  <g>
+    <circle cx="950" cy="495" r="4" fill="#00E599" opacity="0.8"/>
+    <circle cx="970" cy="495" r="4" fill="#00E599" opacity="0.5"/>
+    <circle cx="990" cy="495" r="4" fill="#00E599" opacity="0.3"/>
+  </g>
+
+  <!-- Bottom glow line -->
+  <line x1="100" y1="550" x2="1100" y2="550" stroke="url(#neonGlow)" stroke-width="2"/>
+
+  <!-- Branding footer -->
+  <text x="600" y="595" font-family="'Courier New', monospace" font-size="14" fill="#666" text-anchor="middle">aitmpl.com/blog</text>
+</svg>
