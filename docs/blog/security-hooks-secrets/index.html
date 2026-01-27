@@ -470,6 +470,29 @@
 
             <img src="../assets/secrets-hook-cover.png" alt="Block API Keys & Secrets from Your Commits" class="cover-image">
 
+            <h2>Installation</h2>
+
+            <p>Install the Secret Scanner Hook using the Claude Code Templates CLI:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terminal</span>
+                    <button class="copy-btn" onclick="copyCode(this)">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <pre><code>npx claude-code-templates@latest --hook security/secret-scanner</code></pre>
+            </div>
+
+            <p>This command automatically installs the hook in your project's <code>.claude/settings.json</code> and creates the detection script at <code>.claude/hooks/secret-scanner.py</code>.</p>
+
+            <div class="alert alert-info">
+                <strong>Prefer manual setup?</strong> Follow the step-by-step instructions below to configure the hook yourself.
+            </div>
+
             <h2>The Problem: Accidental Secret Exposure</h2>
 
             <p>We've all been there. You're working fast, testing something locally, and suddenly you realize you've committed an API key, password, or secret token to your repository. By the time you notice, it might already be in your git history or worse—pushed to a public repo.</p>
@@ -826,6 +849,18 @@ SECRET_PATTERNS+=(
             const markdown = `# Block API Keys & Secrets from Your Commits with Claude Code Hooks
 
 Prevent accidental credential leaks with a PreToolUse hook that scans your code for sensitive data before every commit.
+
+## Installation
+
+Install the Secret Scanner Hook using the Claude Code Templates CLI:
+
+\`\`\`bash
+npx claude-code-templates@latest --hook security/secret-scanner
+\`\`\`
+
+This command automatically installs the hook in your project's \`.claude/settings.json\` and creates the detection script.
+
+> **Prefer manual setup?** Follow the step-by-step instructions below to configure the hook yourself.
 
 ## The Problem: Accidental Secret Exposure
 
