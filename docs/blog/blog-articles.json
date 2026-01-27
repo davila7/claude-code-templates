@@ -1,6 +1,32 @@
 {
   "articles": [
     {
+      "id": "neon-open-source-program",
+      "title": "Claude Code Templates Joins the Neon Open Source Program",
+      "description": "We're excited to announce that Claude Code Templates has been accepted into the Neon Open Source Program, bringing $5,000 annual sponsorship, co-marketing opportunities, and instant Postgres provisioning to all users.",
+      "url": "neon-open-source-program/",
+      "image": "assets/neon-open-source-program-cover.svg",
+      "category": "Partnership",
+      "readTime": "5 min read",
+      "tags": ["Neon", "Postgres", "Open Source", "Partnership", "Sponsorship"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 0
+    },
+    {
+      "id": "neon-complete-template-integration",
+      "title": "Complete Neon Template for Claude Code: Instant Provisioning + Expert Agents",
+      "description": "Complete Neon ecosystem for Claude Code: 1 auto-provisioning Skill + 5 expert agents + MCP + monitoring tools. From zero to production-optimized Postgres in minutes.",
+      "url": "neon-complete-template-integration.html",
+      "image": "assets/neon-template-cover.png",
+      "category": "Partnership",
+      "readTime": "12 min read",
+      "tags": ["Neon", "Postgres", "Template", "Skills", "Agents", "MCP", "Partnership"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 1
+    },
+    {
       "id": "frontend-developer-agent",
       "title": "Claude Code Frontend Developer Agent: Complete 2025 Tutorial",
       "description": "Complete guide to the #1 most downloaded Claude Code component. Build modern web applications with React, Vue, and Next.js using AI-powered frontend development. 7,553+ installations.",
@@ -243,7 +269,7 @@
   ],
   "metadata": {
     "lastUpdated": "2026-01-27",
-    "totalArticles": 19,
+    "totalArticles": 20,
     "difficultyLevels": {
       "basic": 8,
       "intermediate": 6,

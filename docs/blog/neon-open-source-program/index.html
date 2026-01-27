@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Templates Joins the Neon Open Source Program</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Claude Code Templates has been accepted into the Neon Open Source Program, bringing $5,000 annual support and instant Postgres provisioning to the community. Learn about our partnership and how you can benefit from free serverless Postgres.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/neon-open-source-program/">
+    <meta property="og:title" content="Claude Code Templates Joins the Neon Open Source Program">
+    <meta property="og:description" content="$5,000 annual support, instant Postgres provisioning, and co-marketing opportunities. Discover how our partnership with Neon benefits the Claude Code community.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/neon-open-source-program-cover.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Partnership">
+    <meta property="article:tag" content="Neon">
+    <meta property="article:tag" content="Partnership">
+    <meta property="article:tag" content="Open Source">
+    <meta property="article:tag" content="Database">
+    <meta property="article:tag" content="Postgres">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/neon-open-source-program/">
+    <meta name="twitter:title" content="Claude Code Templates Joins the Neon Open Source Program">
+    <meta name="twitter:description" content="$5,000 annual support, instant Postgres provisioning, and co-marketing opportunities. Discover how our partnership with Neon benefits the Claude Code community.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/neon-open-source-program-cover.svg">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Neon, Postgres, Open Source Program, Claude Code, Database, Serverless, Instagres, Developer Tools, OSS Sponsorship">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/neon-open-source-program/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Claude Code Templates Joins the Neon Open Source Program",
+        "description": "Claude Code Templates has been accepted into the Neon Open Source Program, bringing $5,000 annual support and instant Postgres provisioning to the community.",
+        "image": "https://aitmpl.com/blog/assets/neon-open-source-program-cover.svg",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/neon-open-source-program/"
+        },
+        "keywords": "Neon, Postgres, Open Source Program, Claude Code, Database, Serverless",
+        "wordCount": "1200",
+        "articleSection": "Partnership",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Open Source Sponsorship"
+            },
+            {
+                "@type": "Thing",
+                "name": "Serverless Database"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Neon",
+                "applicationCategory": "DatabaseApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Claude Code Templates Joins the Neon Open Source Program</h1>
+                <p class="article-subtitle">We're proud to announce that Claude Code Templates has been accepted into the Neon Open Source Program, bringing financial support, instant Postgres provisioning, and co-marketing opportunities to our community of developers.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">5 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Partnership</span>
+                        <span class="tag">Neon</span>
+                        <span class="tag">Open Source</span>
+                        <span class="tag">Database</span>
+                        <span class="tag">Postgres</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/neon-open-source-program-cover.svg" alt="Claude Code Templates joins Neon Open Source Program" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>Announcing Our Partnership with Neon</h2>
+
+                <p>We're thrilled to share that Claude Code Templates has been officially accepted into the <strong>Neon Open Source Program</strong>. This partnership represents a significant milestone for our project and brings substantial benefits to the entire Claude Code community.</p>
+
+                <p>This collaboration combines the power of AI-assisted development with instant, serverless Postgres provisioning, making database setup as simple as asking Claude for help.</p>
+
+                <h2>What is the Neon Open Source Program?</h2>
+
+                <p>The <a href="https://get.neon.com/4eCjZDz" target="_blank">Neon Open Source Program</a> provides comprehensive support to open source projects that integrate with Neon's serverless Postgres platform. The program includes:</p>
+
+                <ul>
+                    <li><strong>$5,000 Annual Financial Support</strong> - Direct funding to support Claude Code Templates development and infrastructure costs</li>
+                    <li><strong>$20 Referral Payouts per Customer</strong> - Revenue sharing for every developer from our community who becomes a Neon customer</li>
+                    <li><strong>Co-Marketing Opportunities</strong> - Joint promotion through blog posts, social media, and community outreach</li>
+                    <li><strong>Technical Support</strong> - Direct access to Neon's engineering team for integration assistance</li>
+                    <li><strong>Early Access</strong> - Preview upcoming Neon features before public release</li>
+                </ul>
+
+                <p>This partnership enables us to dedicate more resources to developing high-quality components and improving the Claude Code Templates ecosystem.</p>
+
+                <h2>What Neon Provides: Serverless Postgres Made Simple</h2>
+
+                <p><a href="https://get.neon.com/4eCjZDz" target="_blank">Neon</a> is a serverless Postgres platform that fundamentally changes how developers work with databases. Instead of spending 15-30 minutes setting up a database manually, Neon provisions production-ready Postgres instances in seconds.</p>
+
+                <h3>Key Neon Features</h3>
+
+                <ul>
+                    <li><strong>Instant Provisioning</strong> - Get a fully configured Postgres database in under 5 seconds</li>
+                    <li><strong>Database Branching</strong> - Create instant copies of your database for testing, perfect for development workflows</li>
+                    <li><strong>Autoscaling</strong> - Resources scale automatically based on demand, from zero to maximum capacity</li>
+                    <li><strong>Generous Free Tier</strong> - 10 GB storage, unlimited projects, and serverless compute at no cost</li>
+                    <li><strong>Modern Developer Experience</strong> - Connect via standard Postgres connection strings, works with all ORMs</li>
+                    <li><strong>Built for CI/CD</strong> - Ephemeral databases for testing, with automatic cleanup</li>
+                </ul>
+
+                <p>Neon eliminates the friction of database setup, allowing developers to focus on building features instead of managing infrastructure.</p>
+
+                <h2>What Claude Code Templates Delivers</h2>
+
+                <p>As part of our commitment to the Neon Open Source Program, we're providing several key integrations and promotional efforts:</p>
+
+                <h3>1. Featured Documentation Integration</h3>
+
+                <p>Neon is now the recommended database provider throughout Claude Code Templates documentation. All database-related guides, tutorials, and examples feature Neon with our <a href="https://get.neon.com/4eCjZDz" target="_blank">referral link</a> prominently displayed.</p>
+
+                <h3>2. GitHub README Visibility</h3>
+
+                <p>The Neon logo appears in our <a href="https://github.com/davila7/claude-code-templates" target="_blank">GitHub README</a>, providing visibility to thousands of monthly visitors and establishing Neon as our preferred database partner.</p>
+
+                <h3>3. Instagres Integration</h3>
+
+                <p>We've integrated <strong>Instagres</strong>, Neon's instant database provisioning tool, making it trivially easy to get a Postgres database:</p>
+
+                <pre><code class="language-bash"># Instant Postgres with our referral
+npx get-db --yes --ref 4eCjZDz
+
+# Result: Production-ready Postgres in 5 seconds
+# Connection string automatically saved to .env</code></pre>
+
+                <p>This single command replaces 15-30 minutes of manual setup work, including account creation, instance configuration, and environment variable management.</p>
+
+                <h3>4. Component Ecosystem Integration</h3>
+
+                <p>We've created a comprehensive ecosystem of Neon components:</p>
+
+                <ul>
+                    <li><strong>neon-instagres Skill</strong> - Auto-triggers when Claude detects database needs</li>
+                    <li><strong>neon-expert Agent</strong> - Specialized agent for Neon workflows and best practices</li>
+                    <li><strong>neon-database-architect Agent</strong> - Schema design with Drizzle ORM integration</li>
+                    <li><strong>neon-auth-specialist Agent</strong> - Authentication setup with Stack Auth and Neon Auth</li>
+                    <li><strong>neon-migration-specialist Agent</strong> - Safe database migrations using branching</li>
+                    <li><strong>neon-optimization-analyzer Agent</strong> - Query performance analysis and tuning</li>
+                    <li><strong>Neon MCP</strong> - Programmatic API access for advanced workflows</li>
+                    <li><strong>Statusline Settings</strong> - Real-time database metrics in your terminal</li>
+                </ul>
+
+                <h2>The neon-instagres Skill: Database Setup in Seconds</h2>
+
+                <p>The centerpiece of our Neon integration is the <code>neon-instagres</code> Skill. This skill fundamentally changes how Claude Code users set up databases.</p>
+
+                <h3>How It Works</h3>
+
+                <p>When you mention needing a database while working with Claude, the skill automatically activates and provisions a Neon Postgres instance:</p>
+
+                <pre><code class="language-bash"># Install the skill
+npx claude-code-templates@latest --skill database/neon-instagres
+
+# Then just ask Claude:
+"I need a Postgres database for my Next.js app"
+
+# Claude automatically:
+# 1. Runs: npx get-db --yes --ref 4eCjZDz
+# 2. Provisions Neon database in 5 seconds
+# 3. Saves connection string to .env.local
+# 4. Installs and configures Drizzle ORM
+# 5. Creates initial schema files</code></pre>
+
+                <h3>Framework Integration</h3>
+
+                <p>The skill intelligently adapts to your framework:</p>
+
+                <ul>
+                    <li><strong>Next.js</strong> - Saves to <code>.env.local</code>, configures for Server Actions and Route Handlers</li>
+                    <li><strong>Vite/React</strong> - Uses <code>vite-plugin-db</code> for auto-provisioning</li>
+                    <li><strong>Express/Node.js</strong> - Standard <code>.env</code> setup with connection pooling</li>
+                    <li><strong>CLI/Scripts</strong> - Direct connection string for standalone tools</li>
+                </ul>
+
+                <h3>Install the Skill</h3>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill database/neon-instagres --yes</code></pre>
+
+                <p>Once installed, Claude will automatically detect when you need a database and provision one instantly using Neon.</p>
+
+                <h2>What This Means for Users</h2>
+
+                <p>This partnership delivers concrete benefits to every Claude Code Templates user:</p>
+
+                <h3>1. Free Instant Postgres for Prototyping</h3>
+
+                <p>No credit card required. No manual setup. Just ask Claude for a database and get a production-ready Postgres instance in seconds. Perfect for:</p>
+
+                <ul>
+                    <li>Trying out new project ideas</li>
+                    <li>Building proof-of-concepts</li>
+                    <li>Learning database development</li>
+                    <li>Testing integration patterns</li>
+                </ul>
+
+                <h3>2. Professional Development Workflows</h3>
+
+                <p>Database branching enables best practices like:</p>
+
+                <ul>
+                    <li>Testing migrations on branch databases before production</li>
+                    <li>Isolated development environments for each feature</li>
+                    <li>Automated testing with fresh database copies</li>
+                    <li>Safe experimentation without affecting production data</li>
+                </ul>
+
+                <h3>3. Expert Guidance Built-In</h3>
+
+                <p>The Neon agent ecosystem provides specialized expertise:</p>
+
+                <ul>
+                    <li>Schema design following PostgreSQL best practices</li>
+                    <li>Authentication setup with proven patterns</li>
+                    <li>Migration strategies that minimize downtime</li>
+                    <li>Performance optimization based on query patterns</li>
+                </ul>
+
+                <h3>4. Reduced Infrastructure Complexity</h3>
+
+                <p>Serverless Postgres eliminates common pain points:</p>
+
+                <ul>
+                    <li>No server management or provisioning</li>
+                    <li>Automatic scaling from zero to maximum capacity</li>
+                    <li>Built-in connection pooling</li>
+                    <li>No idle resource costs</li>
+                </ul>
+
+                <h2>Getting Started with Neon and Claude Code</h2>
+
+                <h3>Step 1: Sign Up for Neon (Optional)</h3>
+
+                <p>While the <code>neon-instagres</code> skill can provision databases without an account, signing up for <a href="https://get.neon.com/4eCjZDz" target="_blank">Neon</a> gives you access to:</p>
+
+                <ul>
+                    <li>Dashboard for managing databases</li>
+                    <li>Database branching features</li>
+                    <li>Team collaboration tools</li>
+                    <li>Advanced monitoring and analytics</li>
+                </ul>
+
+                <h3>Step 2: Install the neon-instagres Skill</h3>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill database/neon-instagres --yes</code></pre>
+
+                <h3>Step 3: Ask Claude for a Database</h3>
+
+                <p>Simply mention that you need a database while working on your project:</p>
+
+                <ul>
+                    <li>"I need a Postgres database for this todo app"</li>
+                    <li>"Set up a database with user authentication"</li>
+                    <li>"Create a database for my Next.js blog"</li>
+                </ul>
+
+                <p>Claude will automatically provision a Neon database and configure your project.</p>
+
+                <h3>Step 4: Optional - Install Expert Agents</h3>
+
+                <p>For advanced database workflows, install specialist agents:</p>
+
+                <pre><code class="language-bash"># Database architecture
+npx claude-code-templates@latest --agent database/neon-database-architect
+
+# Authentication integration
+npx claude-code-templates@latest --agent database/neon-auth-specialist
+
+# Migration management
+npx claude-code-templates@latest --agent data-ai/neon-migration-specialist
+
+# Performance optimization
+npx claude-code-templates@latest --agent data-ai/neon-optimization-analyzer</code></pre>
+
+                <h2>Real-World Examples</h2>
+
+                <h3>Example 1: Building a SaaS App</h3>
+
+                <pre><code class="language-bash">claude
+
+> Build a multi-tenant SaaS app with user auth and billing
+
+# Claude automatically:
+# 1. Provisions Neon database via neon-instagres skill
+# 2. Uses neon-auth-specialist to set up Stack Auth
+# 3. Uses neon-database-architect to design tenant schema
+# 4. Creates Next.js app with API routes and database
+# 5. Sets up row-level security for tenant isolation
+
+# Result: Production-ready SaaS foundation in minutes</code></pre>
+
+                <h3>Example 2: Learning Database Development</h3>
+
+                <pre><code class="language-bash">claude
+
+> I want to learn about database indexes and query optimization
+
+# Claude:
+# 1. Provisions practice database
+# 2. Loads neon-optimization-analyzer agent
+# 3. Creates sample schema with performance issues
+# 4. Demonstrates EXPLAIN ANALYZE
+# 5. Shows before/after metrics for index additions
+
+# Result: Hands-on learning environment ready instantly</code></pre>
+
+                <h3>Example 3: Testing Database Migrations</h3>
+
+                <pre><code class="language-bash">claude
+
+> I need to add email verification to my users table, but I'm worried about breaking production
+
+# Claude:
+# 1. Uses neon-migration-specialist agent
+# 2. Creates database branch via Neon MCP
+# 3. Tests migration on branch
+# 4. Validates with sample data
+# 5. Provides rollback plan
+# 6. Executes on production after approval
+
+# Result: Safe migration with zero downtime</code></pre>
+
+                <h2>Why This Partnership Matters</h2>
+
+                <p>This partnership exemplifies our vision for Claude Code Templates: making professional development practices accessible to everyone through intelligent automation.</p>
+
+                <p>By combining Claude's AI capabilities with Neon's instant provisioning, we've eliminated one of the most frustrating parts of software development: database setup and management.</p>
+
+                <p>The $5,000 annual support enables us to:</p>
+
+                <ul>
+                    <li>Develop more database-focused components and agents</li>
+                    <li>Improve documentation and tutorials</li>
+                    <li>Maintain infrastructure for the component catalog</li>
+                    <li>Support the open source community</li>
+                </ul>
+
+                <p>The referral program creates a sustainable model where community success directly supports project development.</p>
+
+                <h2>Looking Forward</h2>
+
+                <p>This is just the beginning of our Neon integration. We're planning:</p>
+
+                <ul>
+                    <li><strong>Enhanced Monitoring</strong> - Real-time query performance tracking in Claude Code</li>
+                    <li><strong>AI-Powered Schema Evolution</strong> - Agents that suggest schema improvements based on usage patterns</li>
+                    <li><strong>Template Expansions</strong> - Pre-configured project templates with Neon and popular frameworks</li>
+                    <li><strong>Educational Content</strong> - Tutorials and guides for database best practices using Neon</li>
+                    <li><strong>Community Features</strong> - Shared database templates and schemas</li>
+                </ul>
+
+                <h2>Try It Today</h2>
+
+                <p>Experience instant Postgres provisioning with the neon-instagres skill:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill database/neon-instagres --yes</code></pre>
+
+                <p>Or sign up for a free Neon account to access advanced features like database branching and team collaboration:</p>
+
+                <p><a href="https://get.neon.com/4eCjZDz" target="_blank" style="display: inline-block; padding: 0.875rem 2rem; background: #00E599; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem;">Get Started with Neon - Free</a></p>
+
+                <h2>Resources</h2>
+
+                <ul>
+                    <li><a href="https://get.neon.com/4eCjZDz" target="_blank">Neon Official Website</a></li>
+                    <li><a href="https://neon.tech/docs" target="_blank">Neon Documentation</a></li>
+                    <li><a href="https://neon.tech/docs/guides/instagres" target="_blank">Instagres Documentation</a></li>
+                    <li><a href="https://neon.tech/oss" target="_blank">Neon Open Source Program</a></li>
+                    <li><a href="https://github.com/davila7/claude-code-templates" target="_blank">Claude Code Templates on GitHub</a></li>
+                    <li><a href="../../index.html">Browse All Components at aitmpl.com</a></li>
+                </ul>
+
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
+                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 900+ Claude Code Components</h3>
+                    <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
+                        Discover more Skills, Agents, Hooks, MCPs, Commands, Settings and Templates to supercharge your Claude Code workflow
+                    </p>
+                    <a href="https://aitmpl.com" style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
+                        Browse All Components at aitmpl.com →
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.30.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        // Check content patterns
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('npx ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('interface ') || content.includes(': string') || content.includes(': number')) {
+            return 'typescript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                // Remove output/result comments
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Explore components banner hover effect
+document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip banner and other divs
+                if (element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>
