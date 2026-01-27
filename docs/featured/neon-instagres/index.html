@@ -178,21 +178,15 @@
 
                         <h3>Option 1: Skills Only</h3>
                         <p>Install both Neon skills (provisioning + best practices):</p>
-                        <pre><code>npx claude-code-templates@latest --skill database/neon-instagres --skill database/using-neon</code></pre>
+                        <pre><code>npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon</code></pre>
 
                         <h3>Option 2: Complete Template</h3>
                         <p>Install all 10 components:</p>
                         <pre><code>npx claude-code-templates@latest \
-  --skill database/neon-instagres \
-  --skill database/using-neon \
-  --agent database/neon-expert \
-  --agent database/neon-database-architect \
-  --agent database/neon-auth-specialist \
-  --agent data-ai/neon-migration-specialist \
-  --agent data-ai/neon-optimization-analyzer \
+  --skill database/neon-instagres,database/using-neon \
+  --agent database/neon-expert,database/neon-database-architect,database/neon-auth-specialist,data-ai/neon-migration-specialist,data-ai/neon-optimization-analyzer \
   --mcp database/neon \
-  --setting statusline/neon-database-dev \
-  --setting statusline/neon-database-resources \
+  --setting statusline/neon-database-dev,statusline/neon-database-resources \
   --yes</code></pre>
 
                         <!-- Usage -->
