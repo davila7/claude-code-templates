@@ -232,7 +232,7 @@
       "title": "Block API Keys & Secrets from Your Commits with Claude Code Hooks",
       "description": "Learn how to set up a PreToolUse hook in Claude Code that automatically detects and blocks commits containing API keys, passwords, and secrets.",
       "url": "security-hooks-secrets/",
-      "image": "assets/secrets-hook-cover.png",
+      "image": "assets/security-hooks-secrets-cover.svg",
       "category": "Security",
       "readTime": "4 min read",
       "tags": ["Security", "Hooks", "Git", "Secrets", "Best Practices"],
