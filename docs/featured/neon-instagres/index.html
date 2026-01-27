@@ -126,7 +126,7 @@
 
                         <!-- Architecture -->
                         <h2>Template Architecture</h2>
-                        <p>The template consists of 9 components organized into four layers:</p>
+                        <p>The template consists of 10 components organized into four layers:</p>
 
                         <h3>1. Provisioning Layer</h3>
                         <p><strong>neon-instagres Skill</strong> - Auto-activating skill that provisions Postgres databases via the <code>npx get-db</code> CLI. Triggers on keywords like "database", "postgres", or "PostgreSQL".</p>
@@ -138,6 +138,18 @@
                             <li><code>DATABASE_URL</code> - Connection pooler endpoint (recommended for application queries)</li>
                             <li><code>DATABASE_URL_DIRECT</code> - Direct connection (required for migrations and schema changes)</li>
                             <li><code>PUBLIC_INSTAGRES_CLAIM_URL</code> - Claim URL with 72-hour validity window</li>
+                        </ul>
+
+                        <p><strong>using-neon Skill</strong> - Comprehensive guides and best practices for working with Neon Serverless Postgres. Covers getting started, local development, connection methods, authentication (<code>@neondatabase/auth</code>), PostgREST-style data API (<code>@neondatabase/neon-js</code>), Neon CLI, and Platform API/SDKs. Includes 28 reference documents.</p>
+
+                        <pre><code>npx claude-code-templates@latest --skill database/using-neon</code></pre>
+
+                        <p>Reference documentation covers:</p>
+                        <ul>
+                            <li><strong>Core Guides</strong> - What is Neon, getting started, features, connection methods, devtools</li>
+                            <li><strong>Database Drivers</strong> - Neon Serverless Driver (<code>@neondatabase/serverless</code>), Drizzle ORM integration</li>
+                            <li><strong>Auth & Data API</strong> - Neon Auth (<code>@neondatabase/auth</code>), Neon JS (<code>@neondatabase/neon-js</code>)</li>
+                            <li><strong>Platform API & CLI</strong> - TypeScript/Python SDKs, REST API, Neon CLI reference</li>
                         </ul>
 
                         <h3>2. Agent Layer</h3>
@@ -164,14 +176,15 @@
                         <!-- Installation -->
                         <h2>Installation</h2>
 
-                        <h3>Option 1: Skill Only</h3>
-                        <p>Install just the auto-provisioning skill:</p>
-                        <pre><code>npx claude-code-templates@latest --skill database/neon-instagres</code></pre>
+                        <h3>Option 1: Skills Only</h3>
+                        <p>Install both Neon skills (provisioning + best practices):</p>
+                        <pre><code>npx claude-code-templates@latest --skill database/neon-instagres --skill database/using-neon</code></pre>
 
                         <h3>Option 2: Complete Template</h3>
-                        <p>Install all 9 components:</p>
+                        <p>Install all 10 components:</p>
                         <pre><code>npx claude-code-templates@latest \
   --skill database/neon-instagres \
+  --skill database/using-neon \
   --agent database/neon-expert \
   --agent database/neon-database-architect \
   --agent database/neon-auth-specialist \
