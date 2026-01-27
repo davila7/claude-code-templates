@@ -44,25 +44,6 @@
   </p>
 </div>
 
-<div align="center">
-  <h3>🐘 Neon Open Source Program</h3>
-  <p>
-    <strong>Claude Code Templates is part of the <a href="https://get.neon.com/4eCjZDz" target="_blank">Neon Open Source Program</a></strong><br/>
-    Instant serverless Postgres provisioning for all users
-  </p>
-  <p>
-    <a href="https://get.neon.com/4eCjZDz" target="_blank">
-      <img src="https://img.shields.io/badge/Try%20Neon-Serverless%20Postgres-00E599?style=for-the-badge" alt="Try Neon" />
-    </a>
-  </p>
-  <p>
-    <em>Database ready in 5 seconds • 10 components • Skills, Agents, MCP & Monitoring</em>
-  </p>
-  <p>
-    <code>npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon --yes</code>
-  </p>
-</div>
-
 ---
 
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
