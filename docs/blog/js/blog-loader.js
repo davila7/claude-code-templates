@@ -162,8 +162,8 @@ class BlogLoader {
                 );
                 break;
             default:
-                // Keep original order from JSON (by order field)
-                this.filteredArticles.sort((a, b) => (a.order || 0) - (b.order || 0));
+                // Keep original order from JSON (by order field, newest first)
+                this.filteredArticles.sort((a, b) => (b.order || 0) - (a.order || 0));
                 break;
         }
     }
@@ -209,8 +209,8 @@ class BlogLoader {
 
             const data = await response.json();
 
-            // Sort articles by order field initially
-            this.articles = data.articles.sort((a, b) => a.order - b.order);
+            // Sort articles by order field descending (newest first)
+            this.articles = data.articles.sort((a, b) => b.order - a.order);
             this.filteredArticles = [...this.articles];
 
             // Extract featured articles
