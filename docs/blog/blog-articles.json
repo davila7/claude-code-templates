@@ -226,14 +226,27 @@
       "difficulty": "intermediate",
       "featured": true,
       "order": 18
+    },
+    {
+      "id": "security-hooks-secrets",
+      "title": "Block API Keys & Secrets from Your Commits with Claude Code Hooks",
+      "description": "Learn how to set up a PreToolUse hook in Claude Code that automatically detects and blocks commits containing API keys, passwords, and secrets.",
+      "url": "security-hooks-secrets/",
+      "image": "assets/secrets-hook-cover.png",
+      "category": "Security",
+      "readTime": "4 min read",
+      "tags": ["Security", "Hooks", "Git", "Secrets", "Best Practices"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 19
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-01-25",
-    "totalArticles": 18,
+    "lastUpdated": "2026-01-27",
+    "totalArticles": 19,
     "difficultyLevels": {
       "basic": 8,
-      "intermediate": 5,
+      "intermediate": 6,
       "advanced": 5
     }
   }
