@@ -21,7 +21,7 @@
     <meta property="og:url" content="https://aitmpl.com/">
     <meta property="og:title" content="Claude Code Templates - Supercharge Your AI Development with Anthropic Claude">
     <meta property="og:description" content="Professional templates for Anthropic's Claude Code. Deep coding at terminal velocity with Claude Opus 4.1. Install 100+ agents, commands, settings & hooks. Transform your AI-powered development workflow.">
-    <meta property="og:image" content="https://aitmpl.com/social-preview.png">
+    <meta property="og:image" content="https://aitmpl.com/images/social-preview.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Claude Code Templates - Supercharge Your AI Development with Anthropic Claude">
@@ -32,7 +32,7 @@
     <meta name="twitter:url" content="https://aitmpl.com/">
     <meta name="twitter:title" content="Claude Code Templates - Supercharge Your AI Development">
     <meta name="twitter:description" content="Professional templates for Anthropic's Claude Code. Deep coding at terminal velocity with Claude Opus 4.1. Install 100+ agents, commands, settings & hooks.">
-    <meta name="twitter:image" content="https://aitmpl.com/social-preview.png">
+    <meta name="twitter:image" content="https://aitmpl.com/images/social-preview.png">
     <meta name="twitter:image:alt" content="Claude Code Templates - Supercharge Your AI Development with Anthropic Claude">
     <meta name="twitter:creator" content="@davila7">
     <meta name="twitter:site" content="@davila7">
@@ -89,7 +89,7 @@
       "description": "Professional templates and configurations for Anthropic's Claude Code. Transform your AI-powered development workflow with Claude Opus 4.1 at terminal velocity.",
       "operatingSystem": ["Windows", "macOS", "Linux"],
       "softwareVersion": "1.18.0",
-      "url": "https://davila7.github.io/claude-code-templates/",
+      "url": "https://aitmpl.com/",
       "downloadUrl": "https://www.npmjs.com/package/claude-code-templates",
       "author": {
         "@type": "Organization",
@@ -189,6 +189,38 @@
         
 
 
+        <!-- Featured Projects - Compact -->
+        <section class="featured-section featured-compact" id="featuredSection">
+            <div class="featured-header">
+                <span class="featured-label">Featured</span>
+                <div class="carousel-nav">
+                    <button class="carousel-nav-btn" onclick="scrollFeaturedCarousel('left')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
+                        </svg>
+                    </button>
+                    <button class="carousel-nav-btn" onclick="scrollFeaturedCarousel('right')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="carousel-track-compact" id="featuredCarousel">
+                <!-- BrainGrid Featured Card -->
+                <a href="featured/braingrid/index.html" class="featured-card-compact" target="_blank">
+                    <div class="featured-logo-compact">
+                        <img src="https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png" alt="BrainGrid Logo" onerror="this.style.display='none';">
+                    </div>
+                    <div class="featured-info-compact">
+                        <h3>BrainGrid</h3>
+                        <p>Product Management Agent</p>
+                    </div>
+                    <span class="featured-arrow-compact">→</span>
+                </a>
+            </div>
+        </section>
+
         <section class="unified-filter-section">
             <!-- Search Section Header -->
             <div class="search-header">
@@ -233,7 +265,11 @@
             <div class="component-type-filters">
                 <div class="filter-group">
                     <div class="filter-chips">
-                        <a href="/agents" class="filter-chip active" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
+                        <a href="/skills" class="filter-chip active" data-filter="skills" onclick="handleFilterClick(event, 'skills')">
+                            <span class="new-label">NEW</span>
+                            <span class="chip-icon">🎨</span>skills
+                        </a>
+                        <a href="/agents" class="filter-chip" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
                             <span class="chip-icon">🤖</span>agents
                         </a>
                         <a href="/commands" class="filter-chip" data-filter="commands" onclick="handleFilterClick(event, 'commands')">
@@ -247,13 +283,6 @@
                         </a>
                         <a href="/mcps" class="filter-chip" data-filter="mcps" onclick="handleFilterClick(event, 'mcps')">
                             <span class="chip-icon">🔌</span>mcps
-                        </a>
-                        <a href="/plugins" class="filter-chip" data-filter="plugins" onclick="handleFilterClick(event, 'plugins')">
-                            <span class="chip-icon">🧩</span>plugins
-                        </a>
-                        <a href="/skills" class="filter-chip" data-filter="skills" onclick="handleFilterClick(event, 'skills')">
-                            <span class="new-label">NEW</span>
-                            <span class="chip-icon">🎨</span>skills
                         </a>
                         <a href="/templates" class="filter-chip" data-filter="templates" onclick="handleFilterClick(event, 'templates')" style="display: none;">
                             <span class="chip-icon">📦</span>templates

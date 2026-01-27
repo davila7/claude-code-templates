@@ -990,7 +990,7 @@ let componentsData = {
     mcps: []
 };
 
-let currentFilter = 'agents';
+let currentFilter = 'skills';
 let currentCategoryFilter = 'all';
 let allDataLoaded = false;
 let downloadStats = null;

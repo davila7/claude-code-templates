@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Best Practices Skill for Claude Code: 40+ Performance Optimization Rules</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Master React and Next.js performance optimization with 40+ proven rules. Learn to eliminate waterfalls, optimize bundles, and improve rendering performance with Claude Code's React Best Practices skill.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/react-best-practices-skill/">
+    <meta property="og:title" content="React Best Practices Skill: 40+ Performance Optimization Rules">
+    <meta property="og:description" content="Master React and Next.js performance optimization with 40+ proven rules. Learn to eliminate waterfalls, optimize bundles, and improve rendering performance.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/react-best-practices-skill-cover.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Skills">
+    <meta property="article:tag" content="React">
+    <meta property="article:tag" content="Next.js">
+    <meta property="article:tag" content="Performance">
+    <meta property="article:tag" content="Optimization">
+    <meta property="article:tag" content="Best Practices">
+    <meta property="article:tag" content="Bundle Size">
+    <meta property="article:tag" content="Rendering">
+    <meta property="article:tag" content="Server Components">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/react-best-practices-skill/">
+    <meta name="twitter:title" content="React Best Practices Skill: 40+ Performance Optimization Rules">
+    <meta name="twitter:description" content="Master React and Next.js performance optimization with 40+ proven rules. Learn to eliminate waterfalls, optimize bundles, and improve rendering performance.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/react-best-practices-skill-cover.svg">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="React performance, Next.js optimization, bundle size, React best practices, waterfalls, rendering optimization, Server Components, Claude Code, React skills, performance optimization, web performance, JavaScript optimization, React hooks, memoization, code splitting">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/react-best-practices-skill/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "React Best Practices Skill for Claude Code: 40+ Performance Optimization Rules",
+        "description": "Master React and Next.js performance optimization with 40+ proven rules. Learn to eliminate waterfalls, optimize bundles, and improve rendering performance.",
+        "image": "https://aitmpl.com/blog/assets/react-best-practices-skill-cover.svg",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/react-best-practices-skill/"
+        },
+        "keywords": "React performance, Next.js optimization, bundle size, React best practices, waterfalls, rendering optimization, Server Components, Claude Code",
+        "wordCount": "1500",
+        "articleSection": "Claude Code Skills",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "React Performance Optimization"
+            },
+            {
+                "@type": "Thing",
+                "name": "Next.js Best Practices"
+            },
+            {
+                "@type": "Thing",
+                "name": "Web Performance"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">React Best Practices Skill: 40+ Performance Optimization Rules</h1>
+                <p class="article-subtitle">Master React and Next.js performance optimization with a comprehensive skill that provides 40+ proven rules for eliminating waterfalls, optimizing bundles, and improving rendering performance in your applications.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">8 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Skill</span>
+                        <span class="tag">React</span>
+                        <span class="tag">Next.js</span>
+                        <span class="tag">Performance</span>
+                        <span class="tag">Optimization</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/react-best-practices-skill-cover.svg" alt="React Best Practices Skill for Claude Code" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>What is the React Best Practices Skill?</h2>
+
+                <p>The React Best Practices skill is a comprehensive performance optimization guide for React and Next.js applications. It provides Claude Code with 40+ actionable rules organized by impact level, helping you eliminate performance bottlenecks, reduce bundle sizes, and improve user experience.</p>
+
+                <p>This skill was created by Vercel Engineering and includes real-world examples and code comparisons for each optimization rule.</p>
+
+                <!-- Mermaid Diagram -->
+                <div class="mermaid-diagram" style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
+                    <pre class="mermaid">
+graph TD
+    A[🎯 Performance Issue] --> B[🤖 Claude + React Best Practices]
+    B --> C[📊 Analyze Bottleneck]
+    C --> D{Issue Type?}
+    D -->|Critical| E[⚡ Eliminate Waterfalls]
+    D -->|Critical| F[📦 Optimize Bundle Size]
+    D -->|High| G[🚀 Server-Side Performance]
+    D -->|Medium| H[🔄 Re-render Optimization]
+    E --> I[✅ Optimized App]
+    F --> I
+    G --> I
+    H --> I
+
+    style B fill:#F97316,stroke:#fff,color:#000
+    style I fill:#00ff41,stroke:#fff,color:#000
+                    </pre>
+                </div>
+
+                <h2>Why You Need This Skill</h2>
+
+                <p>Performance optimization can be overwhelming. With so many possible improvements, it's hard to know where to start. This skill solves that problem by:</p>
+
+                <ul>
+                    <li><strong>Prioritizing optimizations</strong> - Rules are organized by impact (CRITICAL, HIGH, MEDIUM, LOW)</li>
+                    <li><strong>Providing proven patterns</strong> - Each rule includes correct/incorrect code examples</li>
+                    <li><strong>Measuring impact</strong> - Clear guidelines help you understand the value of each optimization</li>
+                    <li><strong>Progressive context loading</strong> - The skill loads detailed guidelines on-demand to minimize token usage</li>
+                </ul>
+
+                <h2>Key Optimization Categories</h2>
+
+                <h3>1. Eliminating Waterfalls (CRITICAL)</h3>
+                <p>Waterfalls are a major performance killer. Each sequential await adds full network latency. This category teaches you to:</p>
+                <ul>
+                    <li>Defer await until needed</li>
+                    <li>Use Promise.all() for parallel operations</li>
+                    <li>Prevent waterfall chains in API routes</li>
+                    <li>Implement strategic Suspense boundaries</li>
+                </ul>
+
+                <pre><code class="language-typescript">// ❌ Sequential waterfalls (slow)
+const user = await fetchUser()
+const posts = await fetchPosts()
+const comments = await fetchComments()
+
+// ✅ Parallel fetching (fast)
+const [user, posts, comments] = await Promise.all([
+  fetchUser(),
+  fetchPosts(),
+  fetchComments()
+])</code></pre>
+
+                <h3>2. Bundle Size Optimization (CRITICAL)</h3>
+                <p>Reducing initial bundle size improves Time to Interactive (TTI) and Largest Contentful Paint (LCP):</p>
+                <ul>
+                    <li>Avoid barrel file imports</li>
+                    <li>Use dynamic imports for heavy components</li>
+                    <li>Defer non-critical third-party libraries</li>
+                    <li>Preload based on user intent</li>
+                </ul>
+
+                <pre><code class="language-typescript">// ❌ Loads entire library
+import { Check } from 'lucide-react'
+
+// ✅ Loads only what you need
+import Check from 'lucide-react/dist/esm/icons/check'</code></pre>
+
+                <h3>3. Server-Side Performance (HIGH)</h3>
+                <p>Optimize React Server Components and data fetching:</p>
+                <ul>
+                    <li>Cross-request LRU caching</li>
+                    <li>Minimize serialization at RSC boundaries</li>
+                    <li>Parallel data fetching with component composition</li>
+                    <li>Per-request deduplication with React.cache()</li>
+                </ul>
+
+                <h3>4. Re-render Optimization (MEDIUM)</h3>
+                <p>Reduce unnecessary re-renders to minimize wasted computation:</p>
+                <ul>
+                    <li>Defer state reads to usage point</li>
+                    <li>Extract to memoized components</li>
+                    <li>Narrow effect dependencies</li>
+                    <li>Use transitions for non-urgent updates</li>
+                </ul>
+
+                <h2>Installation</h2>
+
+                <p>Install the React Best Practices skill using the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill=web-development/react-best-practices --yes</code></pre>
+
+                <p><strong>Where is the skill installed?</strong></p>
+                <p>The skill is saved in <code>.claude/skills/react-best-practices/</code> in your project directory:</p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   └── skills/
+│       └── react-best-practices/    # ← Skill installed here
+│           ├── SKILL.md
+│           └── references/
+│               └── react-performance-guidelines.md
+├── src/
+│   └── components/
+├── package.json
+└── README.md</code></pre>
+
+                <h2>How to Use the Skill</h2>
+
+                <p>The skill uses progressive context loading - it provides a quick reference first, then loads detailed guidelines only when needed. This approach minimizes token usage while giving you access to comprehensive information.</p>
+
+                <h3>Basic Usage</h3>
+                <pre><code class="language-bash"># Start Claude Code
+claude
+
+# Request optimization help
+> Use the react-best-practices skill to optimize my ProductList component that's loading slowly</code></pre>
+
+                <p>Claude will:</p>
+                <ol>
+                    <li>Load the skill's quick reference</li>
+                    <li>Analyze your component</li>
+                    <li>Identify the optimization category (e.g., waterfalls, bundle size)</li>
+                    <li>Load detailed guidelines for that specific category</li>
+                    <li>Provide specific recommendations with code examples</li>
+                </ol>
+
+                <h2>Usage Examples</h2>
+
+                <h3>Example 1: Eliminate Data Fetching Waterfalls</h3>
+                <pre><code class="language-bash">claude
+
+> Use the react-best-practices skill to review this component and eliminate any waterfalls:
+
+async function Dashboard() {
+  const user = await fetchUser()
+  const posts = await fetchPosts(user.id)
+  const stats = await fetchStats(user.id)
+  return &lt;div&gt;...&lt;/div&gt;
+}</code></pre>
+
+                <p><strong>Result:</strong> Claude identifies the sequential awaits, loads the "Eliminating Waterfalls" guidelines, and refactors the code to use Promise.all() for parallel fetching.</p>
+
+                <h3>Example 2: Reduce Bundle Size</h3>
+                <pre><code class="language-bash">claude
+
+> Use the react-best-practices skill to optimize the bundle size of my app. I'm importing lucide-react and lodash</code></pre>
+
+                <p><strong>Result:</strong> Claude loads the "Bundle Size Optimization" guidelines and recommends direct imports instead of barrel imports, potentially saving hundreds of KB.</p>
+
+                <h3>Example 3: Optimize Re-renders</h3>
+                <pre><code class="language-bash">claude
+
+> Use the react-best-practices skill to fix unnecessary re-renders in my form component</code></pre>
+
+                <p><strong>Result:</strong> Claude analyzes the component, loads "Re-render Optimization" rules, and suggests extracting to memoized components, narrowing dependencies, or using transitions.</p>
+
+                <h2>Key Metrics to Track</h2>
+
+                <p>The skill helps you optimize for these critical web performance metrics:</p>
+
+                <ul>
+                    <li><strong>Time to Interactive (TTI)</strong> - When page becomes fully interactive</li>
+                    <li><strong>Largest Contentful Paint (LCP)</strong> - When main content is visible</li>
+                    <li><strong>First Input Delay (FID)</strong> - Responsiveness to user interactions</li>
+                    <li><strong>Cumulative Layout Shift (CLS)</strong> - Visual stability</li>
+                    <li><strong>Bundle size</strong> - Initial JavaScript payload</li>
+                    <li><strong>Server response time</strong> - TTFB for server-rendered content</li>
+                </ul>
+
+                <h2>Common Pitfalls Avoided</h2>
+
+                <p>The skill helps you avoid these common React performance mistakes:</p>
+
+                <ul>
+                    <li>❌ Using barrel imports from large libraries</li>
+                    <li>❌ Blocking parallel operations with sequential awaits</li>
+                    <li>❌ Re-rendering entire trees when only part needs updating</li>
+                    <li>❌ Loading analytics/tracking in the critical path</li>
+                    <li>❌ Mutating arrays with .sort() instead of .toSorted()</li>
+                    <li>❌ Creating RegExp or heavy objects inside render</li>
+                </ul>
+
+                <h2>Progressive Context Loading</h2>
+
+                <p>One of the unique features of this skill is its progressive context loading system:</p>
+
+                <ol>
+                    <li><strong>Quick Reference</strong> - Loads first with critical priorities and common patterns</li>
+                    <li><strong>Category Overview</strong> - High-level description of optimization categories</li>
+                    <li><strong>Detailed Guidelines</strong> - Full documentation loaded on-demand from references folder</li>
+                </ol>
+
+                <p>This approach ensures you get the information you need without overwhelming Claude's context window.</p>
+
+                <h2>Official Documentation</h2>
+                <p>For more information about skills in Claude Code, see the <a href="https://code.claude.com/docs/en/skills?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">official skills documentation</a>.</p>
+
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
+                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 900+ Claude Code Components</h3>
+                    <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
+                        Discover more Skills, Agents, Hooks, MCPs, Commands, Settings and Templates to supercharge your Claude Code workflow
+                    </p>
+                    <a href="https://aitmpl.com" style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
+                        Browse All Components at aitmpl.com →
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.30.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mermaid for diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#00ff41',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#00ff41',
+                lineColor: '#00ff41',
+                secondaryColor: '#1a1a1a',
+                tertiaryColor: '#2d2d2d',
+                background: '#1a1a1a',
+                mainBkg: '#1a1a1a',
+                secondBkg: '#2d2d2d',
+                labelBackground: '#1a1a1a',
+                labelTextColor: '#fff',
+                nodeBorder: '#00ff41',
+                clusterBkg: '#2d2d2d',
+                clusterBorder: '#00ff41',
+                edgeLabelBackground: '#1a1a1a',
+                fontFamily: '"Courier New", monospace'
+            }
+        });
+    </script>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        // Check content patterns
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('npx ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('interface ') || content.includes(': string') || content.includes(': number')) {
+            return 'typescript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Explore components banner hover effect
+document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip banner and other divs
+                if (element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

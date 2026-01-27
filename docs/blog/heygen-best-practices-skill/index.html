@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeyGen Best Practices Skill for Claude Code: AI Avatar Video Creation Guide</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Master HeyGen API integration with 18+ best practice rules. Learn to create AI avatar videos, manage voices, handle video generation workflows, and implement streaming avatars with Claude Code.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/heygen-best-practices-skill/">
+    <meta property="og:title" content="HeyGen Best Practices Skill: AI Avatar Video Creation Guide">
+    <meta property="og:description" content="Master HeyGen API integration with 18+ best practice rules. Learn to create AI avatar videos, manage voices, and handle video generation workflows.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/heygen-best-practices-skill-cover.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Skills">
+    <meta property="article:tag" content="HeyGen">
+    <meta property="article:tag" content="AI Video">
+    <meta property="article:tag" content="Avatar">
+    <meta property="article:tag" content="Text-to-Video">
+    <meta property="article:tag" content="API Integration">
+    <meta property="article:tag" content="Video Generation">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/heygen-best-practices-skill/">
+    <meta name="twitter:title" content="HeyGen Best Practices Skill: AI Avatar Video Creation Guide">
+    <meta name="twitter:description" content="Master HeyGen API integration with 18+ best practice rules. Learn to create AI avatar videos, manage voices, and handle video generation workflows.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/heygen-best-practices-skill-cover.svg">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="HeyGen API, AI avatar, video generation, text-to-video, avatar video, Claude Code, HeyGen skill, video automation, AI presenter, talking head video, streaming avatar, video translation, webhook integration">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/heygen-best-practices-skill/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "HeyGen Best Practices Skill for Claude Code: AI Avatar Video Creation Guide",
+        "description": "Master HeyGen API integration with 18+ best practice rules. Learn to create AI avatar videos, manage voices, and handle video generation workflows.",
+        "image": "https://aitmpl.com/blog/assets/heygen-best-practices-skill-cover.svg",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/heygen-best-practices-skill/"
+        },
+        "keywords": "HeyGen API, AI avatar, video generation, text-to-video, Claude Code, avatar video, streaming avatar",
+        "wordCount": "1800",
+        "articleSection": "Claude Code Skills",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "HeyGen API Integration"
+            },
+            {
+                "@type": "Thing",
+                "name": "AI Video Generation"
+            },
+            {
+                "@type": "Thing",
+                "name": "Avatar Technology"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">HeyGen Best Practices Skill: AI Avatar Video Creation Guide</h1>
+                <p class="article-subtitle">Master HeyGen API integration with 18+ comprehensive rules for creating AI avatar videos, managing voices, handling video generation workflows, and implementing advanced features like streaming avatars and video translation.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">10 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Skill</span>
+                        <span class="tag">HeyGen</span>
+                        <span class="tag">AI Video</span>
+                        <span class="tag">Avatar</span>
+                        <span class="tag">API</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/heygen-best-practices-skill-cover.svg" alt="HeyGen Best Practices Skill for Claude Code" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>What is the HeyGen Best Practices Skill?</h2>
+
+                <p>The HeyGen Best Practices skill is a comprehensive guide for integrating with HeyGen's AI avatar video creation API. It provides Claude Code with 18+ actionable rules organized by functionality, helping you create professional AI presenter videos, manage avatars and voices, handle video generation workflows, and implement advanced features.</p>
+
+                <p>This skill was created by the HeyGen community and includes real-world examples, TypeScript/Python code samples, and best practices for every aspect of the HeyGen API.</p>
+
+                <!-- Mermaid Diagram -->
+                <div class="mermaid-diagram" style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
+                    <pre class="mermaid">
+graph TD
+    A[Video Request] --> B[Claude + HeyGen Skill]
+    B --> C[Select Avatar]
+    B --> D[Choose Voice]
+    B --> E[Write Script]
+    C --> F[POST /v2/video/generate]
+    D --> F
+    E --> F
+    F --> G[Poll Status]
+    G --> H{Completed?}
+    H -->|Yes| I[Download Video URL]
+    H -->|No| G
+
+    style B fill:#7c3aed,stroke:#fff,color:#fff
+    style I fill:#00ff41,stroke:#fff,color:#000
+                    </pre>
+                </div>
+
+                <h2>Why You Need This Skill</h2>
+
+                <p>Creating AI avatar videos programmatically requires understanding multiple API endpoints, matching avatars with voices, handling asynchronous video generation, and implementing proper error handling. This skill simplifies everything by:</p>
+
+                <ul>
+                    <li><strong>Organizing knowledge by function</strong> - Rules are grouped into Foundation, Core Video Creation, Customization, and Advanced Features</li>
+                    <li><strong>Providing production-ready code</strong> - Each rule includes TypeScript and Python examples you can use directly</li>
+                    <li><strong>Teaching best practices</strong> - Learn to use avatar's default voice, implement proper polling, and handle rate limits</li>
+                    <li><strong>Progressive context loading</strong> - The skill loads detailed guidelines on-demand to minimize token usage</li>
+                </ul>
+
+                <h2>Key Feature Categories</h2>
+
+                <h3>1. Foundation (Required)</h3>
+                <p>Essential knowledge for any HeyGen integration:</p>
+                <ul>
+                    <li><strong>Authentication</strong> - API key setup, X-Api-Key header patterns</li>
+                    <li><strong>Quota Management</strong> - Credit system, usage limits, checking remaining quota</li>
+                    <li><strong>Video Status</strong> - Polling patterns, status types, retrieving download URLs</li>
+                    <li><strong>Assets</strong> - Uploading images, videos, and audio for use in videos</li>
+                </ul>
+
+                <pre><code class="language-typescript">// Authenticated request example
+const response = await fetch("https://api.heygen.com/v2/avatars", {
+  headers: {
+    "X-Api-Key": process.env.HEYGEN_API_KEY!,
+  },
+});
+const { data } = await response.json();</code></pre>
+
+                <h3>2. Core Video Creation</h3>
+                <p>The main workflow for generating AI avatar videos:</p>
+                <ul>
+                    <li><strong>Avatars</strong> - Listing avatars, styles (normal, closeUp, circle), avatar_id selection</li>
+                    <li><strong>Voices</strong> - Listing voices, locales, speed/pitch configuration</li>
+                    <li><strong>Scripts</strong> - Writing scripts, pauses/breaks, pacing, structure templates</li>
+                    <li><strong>Video Generation</strong> - POST /v2/video/generate workflow, multi-scene videos</li>
+                    <li><strong>Dimensions</strong> - Resolution options (720p/1080p) and aspect ratios</li>
+                </ul>
+
+                <pre><code class="language-typescript">// Basic video generation
+const videoId = await generateVideo({
+  video_inputs: [{
+    character: {
+      type: "avatar",
+      avatar_id: "josh_lite3_20230714",
+      avatar_style: "normal",
+    },
+    voice: {
+      type: "text",
+      input_text: "Hello! Welcome to our product demo.",
+      voice_id: avatar.default_voice_id, // Use avatar's default voice
+      speed: 1.0,
+    },
+    background: {
+      type: "color",
+      value: "#1a1a2e",
+    },
+  }],
+  dimension: { width: 1920, height: 1080 },
+});</code></pre>
+
+                <h3>3. Video Customization</h3>
+                <p>Make your videos visually appealing:</p>
+                <ul>
+                    <li><strong>Backgrounds</strong> - Solid colors, images, and video backgrounds</li>
+                    <li><strong>Text Overlays</strong> - Adding text with fonts and positioning</li>
+                    <li><strong>Captions</strong> - Auto-generated captions and subtitle options</li>
+                </ul>
+
+                <h3>4. Advanced Features</h3>
+                <p>Take your integration to the next level:</p>
+                <ul>
+                    <li><strong>Templates</strong> - Template listing and variable replacement</li>
+                    <li><strong>Video Translation</strong> - Translating videos, quality/fast modes, dubbing</li>
+                    <li><strong>Streaming Avatars</strong> - Real-time interactive avatar sessions</li>
+                    <li><strong>Photo Avatars</strong> - Creating avatars from photos (talking photos)</li>
+                    <li><strong>Webhooks</strong> - Registering webhook endpoints for async notifications</li>
+                    <li><strong>Remotion Integration</strong> - Using HeyGen videos in Remotion compositions</li>
+                </ul>
+
+                <h2>Installation</h2>
+
+                <p>Install the HeyGen Best Practices skill using the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill=development/heygen-best-practices --yes</code></pre>
+
+                <p><strong>Where is the skill installed?</strong></p>
+                <p>The skill is saved in <code>.claude/skills/heygen-best-practices/</code> in your project directory:</p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   └── skills/
+│       └── heygen-best-practices/    # Skill installed here
+│           ├── SKILL.md
+│           └── rules/
+│               ├── authentication.md
+│               ├── avatars.md
+│               ├── voices.md
+│               ├── video-generation.md
+│               ├── video-status.md
+│               └── ... (18+ rule files)
+├── src/
+├── package.json
+└── README.md</code></pre>
+
+                <h2>How to Use the Skill</h2>
+
+                <p>The skill uses progressive context loading - it provides a quick reference first, then loads detailed guidelines only when needed. This approach minimizes token usage while giving you access to comprehensive information.</p>
+
+                <h3>Basic Usage</h3>
+                <pre><code class="language-bash"># Start Claude Code
+claude
+
+# Request HeyGen help
+> Use the heygen-best-practices skill to create a video with an AI avatar presenting our product</code></pre>
+
+                <p>Claude will:</p>
+                <ol>
+                    <li>Load the skill's quick reference</li>
+                    <li>Identify the relevant rules (avatars, voices, video-generation)</li>
+                    <li>Load detailed guidelines for those specific areas</li>
+                    <li>Generate production-ready code with proper error handling</li>
+                </ol>
+
+                <h2>Usage Examples</h2>
+
+                <h3>Example 1: Create a Simple Avatar Video</h3>
+                <pre><code class="language-bash">claude
+
+> Use the heygen-best-practices skill to create a 30-second product demo video with a professional male avatar</code></pre>
+
+                <p><strong>Result:</strong> Claude loads the avatars, voices, and video-generation rules, then generates code that lists available avatars, selects a professional one, uses its default voice, and creates the video with proper status polling.</p>
+
+                <h3>Example 2: Multi-Scene Video with Different Backgrounds</h3>
+                <pre><code class="language-bash">claude
+
+> Use the heygen-best-practices skill to create a video with 3 scenes: intro, features, and conclusion. Each scene should have a different background color.</code></pre>
+
+                <p><strong>Result:</strong> Claude generates multi-scene video configuration with proper scene transitions and background customization.</p>
+
+                <h3>Example 3: Implement Webhook Notifications</h3>
+                <pre><code class="language-bash">claude
+
+> Use the heygen-best-practices skill to set up webhooks so I get notified when my video is ready</code></pre>
+
+                <p><strong>Result:</strong> Claude loads the webhooks rule and provides code for registering webhook endpoints and handling completion events.</p>
+
+                <h2>Best Practices Highlights</h2>
+
+                <h3>Always Use Avatar's Default Voice</h3>
+                <p>Most avatars have a pre-matched <code>default_voice_id</code> that provides the best lip-sync quality:</p>
+
+                <pre><code class="language-typescript">// Get avatar details to find default voice
+const details = await getAvatarDetails(avatarId);
+
+// Use the default voice for best results
+const voiceId = details.default_voice_id;</code></pre>
+
+                <h3>Implement Proper Status Polling</h3>
+                <p>Video generation is asynchronous and can take 5-15 minutes:</p>
+
+                <pre><code class="language-typescript">async function waitForVideo(videoId: string): Promise<string> {
+  const maxAttempts = 60;
+  const pollInterval = 10000; // 10 seconds
+
+  for (let i = 0; i < maxAttempts; i++) {
+    const response = await fetch(
+      `https://api.heygen.com/v1/video_status.get?video_id=${videoId}`,
+      { headers: { "X-Api-Key": process.env.HEYGEN_API_KEY! } }
+    );
+
+    const { data } = await response.json();
+
+    if (data.status === "completed") {
+      return data.video_url;
+    } else if (data.status === "failed") {
+      throw new Error(data.error || "Video generation failed");
+    }
+
+    await new Promise(r => setTimeout(r, pollInterval));
+  }
+
+  throw new Error("Video generation timed out");
+}</code></pre>
+
+                <h3>Add Natural Pauses to Scripts</h3>
+                <p>Use SSML-style break tags for more natural speech:</p>
+
+                <pre><code class="language-typescript">const script = `
+Welcome to our demo. &lt;break time="1s"/&gt;
+Today I'll show you three key features. &lt;break time="0.5s"/&gt;
+First, let's look at the dashboard.
+`;</code></pre>
+
+                <h2>Common Pitfalls Avoided</h2>
+
+                <p>The skill helps you avoid these common HeyGen integration mistakes:</p>
+
+                <ul>
+                    <li>Mismatching avatar and voice genders</li>
+                    <li>Not polling for video completion (expecting synchronous generation)</li>
+                    <li>Hardcoding API keys instead of using environment variables</li>
+                    <li>Not handling rate limits with exponential backoff</li>
+                    <li>Using the wrong endpoint for transparent background videos</li>
+                    <li>Setting insufficient timeouts for video generation</li>
+                </ul>
+
+                <h2>Skill Structure</h2>
+
+                <p>The skill is organized into logical categories with 18+ rule files:</p>
+
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #00ff41;">
+                            <th style="text-align: left; padding: 0.5rem; color: #00ff41;">Category</th>
+                            <th style="text-align: left; padding: 0.5rem; color: #00ff41;">Rules</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 0.5rem; color: #b0b0b0;">Foundation</td>
+                            <td style="padding: 0.5rem; color: #808080;">authentication, quota, video-status, assets</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 0.5rem; color: #b0b0b0;">Core Video</td>
+                            <td style="padding: 0.5rem; color: #808080;">avatars, voices, scripts, video-generation, video-agent, dimensions</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 0.5rem; color: #b0b0b0;">Customization</td>
+                            <td style="padding: 0.5rem; color: #808080;">backgrounds, text-overlays, captions</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 0.5rem; color: #b0b0b0;">Advanced</td>
+                            <td style="padding: 0.5rem; color: #808080;">templates, video-translation, streaming-avatars, photo-avatars, webhooks, remotion-integration</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Official Documentation</h2>
+                <p>For more information about skills in Claude Code, see the <a href="https://code.claude.com/docs/en/skills?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">official skills documentation</a>.</p>
+
+                <p>For HeyGen API documentation, visit <a href="https://docs.heygen.com" target="_blank">docs.heygen.com</a>.</p>
+
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
+                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 900+ Claude Code Components</h3>
+                    <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
+                        Discover more Skills, Agents, Hooks, MCPs, Commands, Settings and Templates to supercharge your Claude Code workflow
+                    </p>
+                    <a href="https://aitmpl.com" style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
+                        Browse All Components at aitmpl.com
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.30.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mermaid for diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#7c3aed',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#a855f7',
+                lineColor: '#00ff41',
+                secondaryColor: '#1a1a1a',
+                tertiaryColor: '#2d2d2d',
+                background: '#1a1a1a',
+                mainBkg: '#1a1a1a',
+                secondBkg: '#2d2d2d',
+                labelBackground: '#1a1a1a',
+                labelTextColor: '#fff',
+                nodeBorder: '#a855f7',
+                clusterBkg: '#2d2d2d',
+                clusterBorder: '#a855f7',
+                edgeLabelBackground: '#1a1a1a',
+                fontFamily: '"Courier New", monospace'
+            }
+        });
+    </script>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        // Check content patterns
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('npx ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('interface ') || content.includes(': string') || content.includes(': number')) {
+            return 'typescript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "> ", "claude-code> "
+                line = line.replace(/^[\$>]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                // Remove output/result comments (lines starting with # )
+                if (line.trim().startsWith('# ') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Explore components banner hover effect
+document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip banner and other divs
+                if (element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

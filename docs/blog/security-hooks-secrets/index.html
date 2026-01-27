@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block API Keys & Secrets from Your Commits with Claude Code Hooks</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Learn how to set up a PreToolUse hook in Claude Code that automatically detects and blocks commits containing API keys, passwords, and secrets.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/security-hooks-secrets/">
+    <meta property="og:title" content="Block API Keys & Secrets from Your Commits with Claude Code Hooks">
+    <meta property="og:description" content="Learn how to set up a PreToolUse hook in Claude Code that automatically detects and blocks commits containing API keys, passwords, and secrets.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/security-hooks-secrets-cover.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Security">
+    <meta property="article:tag" content="Security">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="Git">
+    <meta property="article:tag" content="Secrets">
+    <meta property="article:tag" content="Claude Code">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/security-hooks-secrets/">
+    <meta name="twitter:title" content="Block API Keys & Secrets from Your Commits with Claude Code Hooks">
+    <meta name="twitter:description" content="Learn how to set up a PreToolUse hook in Claude Code that automatically detects and blocks commits containing API keys, passwords, and secrets.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/security-hooks-secrets-cover.svg">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code Hooks, Secret Detection, API Key Protection, Git Security, PreToolUse Hook, Claude Code Security, Credential Leak Prevention, Secrets Scanner, Claude Code Templates, DevSecOps">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/security-hooks-secrets/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Block API Keys & Secrets from Your Commits with Claude Code Hooks",
+        "description": "Learn how to set up a PreToolUse hook in Claude Code that automatically detects and blocks commits containing API keys, passwords, and secrets.",
+        "image": "https://aitmpl.com/blog/assets/security-hooks-secrets-cover.svg",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/security-hooks-secrets/"
+        },
+        "keywords": "Claude Code Hooks, Secret Detection, API Key Protection, Git Security, PreToolUse Hook, Security",
+        "wordCount": "1200",
+        "articleSection": "Claude Code Hooks",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Secret Detection"
+            },
+            {
+                "@type": "Thing",
+                "name": "Git Security"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Block API Keys & Secrets from Your Commits with Claude Code Hooks</h1>
+                <p class="article-subtitle">Prevent accidental credential leaks with a PreToolUse hook that scans your code for sensitive data before every commit.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">4 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Security</span>
+                        <span class="tag">Hooks</span>
+                        <span class="tag">Git</span>
+                        <span class="tag">Secrets</span>
+                        <span class="tag">Claude Code</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/security-hooks-secrets-cover.svg" alt="Block API Keys & Secrets from Your Commits with Claude Code Hooks" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>Installation</h2>
+
+                <p>Install the Secret Scanner Hook using the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --hook security/secret-scanner</code></pre>
+
+                <p>This command automatically installs the hook in your project's <code>.claude/settings.json</code> and creates the detection script at <code>.claude/hooks/secret-scanner.py</code>.</p>
+
+                <div class="info-box">
+                    <strong>Want to understand how it works?</strong> Keep reading to learn what this hook does under the hood and why it's essential for your workflow.
+                </div>
+
+                <h2>The Problem: Accidental Secret Exposure</h2>
+
+                <p>We've all been there. You're working fast, testing something locally, and suddenly you realize you've committed an API key, password, or secret token to your repository. By the time you notice, it might already be in your git history or worse—pushed to a public repo.</p>
+
+                <p>Claude Code hooks provide a deterministic way to catch these mistakes <strong>before</strong> they happen. Unlike relying on CLAUDE.md suggestions (which Claude might overlook), hooks execute as code every single time.</p>
+
+                <h2>How Claude Code Hooks Work</h2>
+
+                <p>Claude Code provides several hook events that run at different points in the workflow:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hook Event</th>
+                            <th>When It Runs</th>
+                            <th>Can Block?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PreToolUse</strong></td>
+                            <td>Before tool execution</td>
+                            <td>Yes (exit code 2)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PostToolUse</strong></td>
+                            <td>After tool completion</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stop</strong></td>
+                            <td>When Claude finishes responding</td>
+                            <td>Yes (can force continuation)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>For secrets detection, we use <code>PreToolUse</code> with a matcher for <code>Edit|Write</code> operations. When exit code 2 is returned, the operation is blocked and Claude receives feedback about what to fix.</p>
+
+                <h2>The Secrets Detection Hook</h2>
+
+                <p>Here's the complete hook configuration that detects and blocks commits containing potential secrets:</p>
+
+                <h3>1. Add the Hook Configuration</h3>
+
+                <p>Add this to your <code>.claude/settings.json</code> file:</p>
+
+                <pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/detect-secrets.sh"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+                <h3>2. Create the Detection Script</h3>
+
+                <p>Create the file <code>.claude/hooks/detect-secrets.sh</code>:</p>
+
+                <pre><code class="language-bash">#!/bin/bash
+set -euo pipefail
+
+# Read hook input from stdin
+HOOK_INPUT=$(cat)
+
+# Extract file path and new content from the hook payload
+FILE=$(echo "$HOOK_INPUT" | jq -r '.tool_input.file_path // empty')
+NEW_CONTENT=$(echo "$HOOK_INPUT" | jq -r '.tool_input.new_string // .tool_input.content // empty')
+
+# Skip if no content to check
+if [ -z "$NEW_CONTENT" ]; then
+  exit 0
+fi
+
+# Define patterns for common secrets
+SECRET_PATTERNS=(
+  # API Keys (generic)
+  'api[_-]?key["\s:=]+["\x27]?[a-zA-Z0-9_-]{20,}["\x27]?'
+  # AWS Keys
+  'AKIA[0-9A-Z]{16}'
+  'aws[_-]?secret[_-]?access[_-]?key'
+  # GitHub Tokens
+  'ghp_[a-zA-Z0-9]{36}'
+  'github[_-]?token'
+  # Stripe Keys
+  'sk_live_[a-zA-Z0-9]{24,}'
+  'sk_test_[a-zA-Z0-9]{24,}'
+  # Generic secrets
+  'password["\s:=]+["\x27][^\s"'\'']{8,}["\x27]'
+  'secret["\s:=]+["\x27][^\s"'\'']{8,}["\x27]'
+  'token["\s:=]+["\x27][a-zA-Z0-9_-]{20,}["\x27]'
+  'private[_-]?key'
+  'client[_-]?secret'
+  # Database connection strings
+  'mongodb(\+srv)?://[^\s]+'
+  'postgres(ql)?://[^\s]+'
+  'mysql://[^\s]+'
+  'redis://[^\s]+'
+)
+
+# Check for each pattern
+for pattern in "${SECRET_PATTERNS[@]}"; do
+  if echo "$NEW_CONTENT" | grep -iE "$pattern" &amp;&gt;/dev/null; then
+    echo "BLOCKED: Potential secret detected in $FILE" &gt;&amp;2
+    echo "" &gt;&amp;2
+    echo "Pattern matched: $pattern" &gt;&amp;2
+    echo "" &gt;&amp;2
+    echo "Please use environment variables instead:" &gt;&amp;2
+    echo "  1. Store the secret in .env (add .env to .gitignore)" &gt;&amp;2
+    echo "  2. Reference it via process.env.YOUR_SECRET" &gt;&amp;2
+    echo "" &gt;&amp;2
+    exit 2
+  fi
+done
+
+exit 0</code></pre>
+
+                <h3>3. Make the Script Executable</h3>
+
+                <pre><code class="language-bash">chmod +x .claude/hooks/detect-secrets.sh</code></pre>
+
+                <h2>Project Structure</h2>
+
+                <p>After setup, your project should have this structure:</p>
+
+                <pre><code class="language-text">your-project/
+├── .claude/
+│   ├── hooks/
+│   │   └── detect-secrets.sh
+│   └── settings.json
+├── .gitignore
+└── src/</code></pre>
+
+                <h2>What Gets Detected</h2>
+
+                <p>The hook scans for common patterns including:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Example Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AWS Access Keys</td>
+                            <td><code>AKIA...</code> (20 chars)</td>
+                        </tr>
+                        <tr>
+                            <td>GitHub Tokens</td>
+                            <td><code>ghp_...</code> (40 chars)</td>
+                        </tr>
+                        <tr>
+                            <td>Stripe Keys</td>
+                            <td><code>sk_live_...</code>, <code>sk_test_...</code></td>
+                        </tr>
+                        <tr>
+                            <td>Generic API Keys</td>
+                            <td><code>api_key = "..."</code></td>
+                        </tr>
+                        <tr>
+                            <td>Passwords</td>
+                            <td><code>password: "..."</code></td>
+                        </tr>
+                        <tr>
+                            <td>Database URLs</td>
+                            <td><code>mongodb://...</code>, <code>postgres://...</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>How It Works in Practice</h2>
+
+                <p>When you ask Claude Code to edit a file that would contain a secret:</p>
+
+                <div class="warning-box">
+                    <strong>BLOCKED:</strong> Potential secret detected in src/config.js<br><br>
+                    Pattern matched: api[_-]?key["\s:=]+...<br><br>
+                    Please use environment variables instead:<br>
+                    1. Store the secret in .env (add .env to .gitignore)<br>
+                    2. Reference it via process.env.YOUR_SECRET
+                </div>
+
+                <p>Claude receives this feedback and automatically adjusts its approach, typically suggesting environment variables instead.</p>
+
+                <h2>Advanced: Adding More Patterns</h2>
+
+                <p>You can extend the <code>SECRET_PATTERNS</code> array to catch company-specific patterns:</p>
+
+                <pre><code class="language-bash"># Add your company's internal patterns
+SECRET_PATTERNS+=(
+  'MYCOMPANY_[A-Z0-9]{32}'
+  'internal[_-]?api[_-]?key'
+  'prod[_-]?secret'
+)</code></pre>
+
+                <h2>Difference: CLAUDE.md vs Hooks</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Approach</th>
+                            <th>Reliability</th>
+                            <th>When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CLAUDE.md</td>
+                            <td>Suggestions (may be ignored)</td>
+                            <td>Coding style, preferences</td>
+                        </tr>
+                        <tr>
+                            <td>Hooks</td>
+                            <td>Enforcement (always runs)</td>
+                            <td>Security, compliance, automation</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <strong>Rule of thumb:</strong> If it's critical and must never be violated, use a hook. If it's a preference or guideline, put it in CLAUDE.md.
+                </div>
+
+                <h2>Conclusion</h2>
+
+                <p>With this hook in place, you've added a deterministic security layer to your Claude Code workflow. Every file edit and write operation gets scanned for secrets before it can be committed.</p>
+
+                <p>This is just one example of what PreToolUse hooks can do. You can apply the same pattern for:</p>
+
+                <ul>
+                    <li>Blocking edits to production files</li>
+                    <li>Enforcing code formatting</li>
+                    <li>Preventing commits with TODO comments</li>
+                    <li>Validating file naming conventions</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>Remember:</strong> CLAUDE.md rules are suggestions. Hooks are enforcement. For security, always use hooks.
+                </div>
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                let textToCopy = code.textContent;
+
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        return text
+            .split('\n')
+            .map(line => {
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '')
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                if (element.classList.contains('newsletter-cta') ||
+                    element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>
