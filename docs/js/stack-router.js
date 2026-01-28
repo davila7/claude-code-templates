@@ -323,8 +323,8 @@ class StackRouter {
         }
         
         // Update Twitter tags
-        const twitterTitle = document.querySelector('meta[property="twitter:title"]');
-        const twitterDescription = document.querySelector('meta[property="twitter:description"]');
+        const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+        const twitterDescription = document.querySelector('meta[name="twitter:description"]');
         
         if (twitterTitle) {
             twitterTitle.content = `${stackInfo.name} Development Stack - Claude Code Templates`;
