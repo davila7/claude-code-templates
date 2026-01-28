@@ -1,0 +1,125 @@
+{
+  "mcpServers": {
+    "google-analytics": {
+      "description": "Google Analytics 4 (GA4) MCP integration for tracking website traffic, user behavior, conversions, and referral sources. Essential for GEO to identify traffic from AI platforms like ChatGPT, Perplexity, and Claude citations.",
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-google-analytics"],
+      "env": {
+        "GA4_PROPERTY_ID": "${GA4_PROPERTY_ID}",
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
+      },
+      "tools": [
+        {
+          "name": "get_realtime_report",
+          "description": "Get real-time active users, page views, and events"
+        },
+        {
+          "name": "get_traffic_report",
+          "description": "Get traffic data by source, medium, campaign for date range"
+        },
+        {
+          "name": "get_page_report",
+          "description": "Get page views, engagement time, and metrics by page path"
+        },
+        {
+          "name": "get_user_report",
+          "description": "Get user metrics including new vs returning, demographics, devices"
+        },
+        {
+          "name": "get_conversion_report",
+          "description": "Get conversion events and goal completions"
+        },
+        {
+          "name": "get_referral_report",
+          "description": "Get traffic from referral sources with full referrer URLs"
+        },
+        {
+          "name": "get_search_report",
+          "description": "Get internal site search data if enabled"
+        },
+        {
+          "name": "get_events_report",
+          "description": "Get custom event data by event name and parameters"
+        },
+        {
+          "name": "get_audience_report",
+          "description": "Get audience segment data and overlap"
+        },
+        {
+          "name": "run_custom_query",
+          "description": "Run custom GA4 Data API query with dimensions and metrics"
+        }
+      ],
+      "setup": {
+        "steps": [
+          "1. Go to Google Cloud Console (console.cloud.google.com)",
+          "2. Enable 'Google Analytics Data API'",
+          "3. Create OAuth 2.0 credentials (same as Search Console if already done)",
+          "4. Get your GA4 Property ID from Admin > Property Settings",
+          "5. Set GA4_PROPERTY_ID environment variable (format: properties/123456789)"
+        ],
+        "oauth_flow": "npx @anthropic/mcp-google-analytics --setup",
+        "docs": "https://developers.google.com/analytics/devguides/reporting/data/v1"
+      },
+      "usage_examples": [
+        {
+          "description": "Check AI platform referrals",
+          "prompt": "Show me traffic coming from chat.openai.com, perplexity.ai, and claude.ai in the last 30 days"
+        },
+        {
+          "description": "Compare traffic sources",
+          "prompt": "Compare organic search traffic vs AI referral traffic for the last month"
+        },
+        {
+          "description": "Track landing page performance",
+          "prompt": "Which pages get the most traffic from AI referrals? Show engagement metrics"
+        },
+        {
+          "description": "Monitor conversion from AI traffic",
+          "prompt": "What's the conversion rate for visitors coming from AI platforms vs organic search?"
+        },
+        {
+          "description": "Real-time AI traffic check",
+          "prompt": "Are there any active users right now coming from AI platforms?"
+        }
+      ],
+      "geo_features": {
+        "description": "Track and measure GEO effectiveness through analytics",
+        "ai_traffic_tracking": {
+          "description": "Create segments to track AI-referred traffic",
+          "referrers": [
+            "chat.openai.com",
+            "chatgpt.com",
+            "perplexity.ai",
+            "claude.ai",
+            "gemini.google.com",
+            "bard.google.com",
+            "copilot.microsoft.com",
+            "bing.com/chat"
+          ]
+        },
+        "custom_dimensions": {
+          "description": "Suggested custom dimensions for GEO tracking",
+          "dimensions": [
+            "ai_source (chatgpt, perplexity, claude, gemini)",
+            "citation_type (direct_link, brand_mention)",
+            "content_type (article, tool, documentation)"
+          ]
+        },
+        "events_to_track": [
+          "ai_referral_landing",
+          "ai_traffic_conversion",
+          "ai_traffic_engagement",
+          "ai_bounce"
+        ]
+      },
+      "utm_parameters": {
+        "description": "Recommended UTM parameters for AI citation tracking",
+        "format": "?utm_source=ai&utm_medium=citation&utm_campaign={platform}",
+        "note": "Add to URLs shared in AI-readable content for attribution"
+      }
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "mcpServers": {
+    "bing-webmaster": {
+      "description": "Bing Webmaster Tools MCP integration with IndexNow support. Critical for GEO (Generative Engine Optimization) as Bing data feeds ChatGPT, Perplexity, and other LLMs. IndexNow enables instant indexing in minutes instead of days.",
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-bing-webmaster"],
+      "env": {
+        "BING_API_KEY": "${BING_API_KEY}",
+        "INDEXNOW_KEY": "${INDEXNOW_KEY}",
+        "SITE_URL": "${SITE_URL}"
+      },
+      "tools": [
+        {
+          "name": "submit_url_indexnow",
+          "description": "Submit URL(s) to IndexNow for instant indexing on Bing. Bing shares data with ChatGPT and other LLMs."
+        },
+        {
+          "name": "submit_url_batch",
+          "description": "Submit up to 10,000 URLs to IndexNow in a single request"
+        },
+        {
+          "name": "get_url_submission_quota",
+          "description": "Check daily URL submission quota and usage"
+        },
+        {
+          "name": "get_crawl_stats",
+          "description": "Get crawl statistics including Bing crawler activity"
+        },
+        {
+          "name": "get_index_status",
+          "description": "Check if specific URLs are indexed in Bing"
+        },
+        {
+          "name": "submit_sitemap",
+          "description": "Submit sitemap URL to Bing"
+        },
+        {
+          "name": "get_sitemap_status",
+          "description": "Check status of submitted sitemaps"
+        },
+        {
+          "name": "get_keyword_data",
+          "description": "Get search keyword data for your site on Bing"
+        },
+        {
+          "name": "get_page_traffic",
+          "description": "Get traffic data by page from Bing search"
+        },
+        {
+          "name": "get_backlinks",
+          "description": "Get backlinks data from Bing"
+        },
+        {
+          "name": "get_crawl_errors",
+          "description": "Get list of crawl errors and issues"
+        },
+        {
+          "name": "block_url",
+          "description": "Request Bing to remove a URL from search results"
+        }
+      ],
+      "setup": {
+        "steps": [
+          "1. Go to Bing Webmaster Tools (bing.com/webmasters)",
+          "2. Add and verify your site",
+          "3. Go to Settings > API Access to get API key",
+          "4. For IndexNow: Generate a key at indexnow.org or use your own",
+          "5. Create key file at yourdomain.com/{key}.txt containing just the key",
+          "6. Set environment variables: BING_API_KEY, INDEXNOW_KEY, SITE_URL"
+        ],
+        "indexnow_setup": {
+          "key_generation": "Use any unique string (UUID recommended)",
+          "key_file_location": "https://yourdomain.com/{key}.txt",
+          "key_file_content": "Just the key string, nothing else",
+          "alternative": "Or use keyLocation parameter in API calls"
+        },
+        "docs": "https://www.bing.com/webmasters/help/webmasters-guidelines-30fba23a"
+      },
+      "usage_examples": [
+        {
+          "description": "Submit new page for instant indexing",
+          "prompt": "Submit https://example.com/new-article to IndexNow for immediate indexing"
+        },
+        {
+          "description": "Batch submit multiple URLs",
+          "prompt": "Submit all URLs from my sitemap that were updated today to IndexNow"
+        },
+        {
+          "description": "Check indexing status",
+          "prompt": "Is https://example.com/important-page indexed in Bing?"
+        },
+        {
+          "description": "Monitor crawl activity",
+          "prompt": "Show me Bing crawl stats for the last 7 days"
+        },
+        {
+          "description": "Check quota usage",
+          "prompt": "How many URLs can I still submit to IndexNow today?"
+        }
+      ],
+      "indexnow_details": {
+        "description": "IndexNow is critical for GEO because Bing data feeds LLMs",
+        "why_important": [
+          "Bing indexes content in minutes vs Google's days/weeks",
+          "ChatGPT uses Bing for web browsing feature",
+          "Perplexity and other AI search tools pull from Bing index",
+          "Faster indexing = faster appearance in AI responses"
+        ],
+        "supported_engines": [
+          "Bing",
+          "Yandex",
+          "Seznam",
+          "Naver"
+        ],
+        "api_endpoints": [
+          "https://api.indexnow.org/indexnow",
+          "https://www.bing.com/indexnow",
+          "https://yandex.com/indexnow"
+        ],
+        "limits": {
+          "urls_per_request": 10000,
+          "daily_quota": "Based on site size",
+          "rate_limit": "Reasonable use policy"
+        }
+      },
+      "automation": {
+        "description": "Automate IndexNow submissions",
+        "on_publish": {
+          "description": "Submit URLs when new content is published",
+          "trigger": "post_publish_hook",
+          "example": "python scripts/submit_indexnow.py --sitemap-diff"
+        },
+        "on_update": {
+          "description": "Submit URLs when content is updated",
+          "trigger": "content_update_hook",
+          "example": "python scripts/submit_indexnow.py https://example.com/updated-page"
+        },
+        "scheduled": {
+          "description": "Daily submission of changed URLs",
+          "cron": "0 0 * * * python scripts/submit_indexnow.py --changed-since yesterday"
+        }
+      },
+      "geo_strategy": {
+        "description": "IndexNow strategy for maximum GEO impact",
+        "priority_pages": [
+          "Homepage and main category pages",
+          "New blog posts and articles",
+          "Updated product/service pages",
+          "FAQ and documentation pages",
+          "Pages with fresh data or statistics"
+        ],
+        "timing": {
+          "new_content": "Submit immediately on publish",
+          "updates": "Submit within 1 hour of significant changes",
+          "batch": "Daily for minor changes"
+        },
+        "monitoring": {
+          "verify": "Check Bing index status 1-2 hours after submission",
+          "track": "Monitor crawl stats for increased activity",
+          "measure": "Track AI citations 24-48 hours after indexing"
+        }
+      }
+    }
+  }
+}

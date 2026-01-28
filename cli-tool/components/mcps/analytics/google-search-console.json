@@ -1,0 +1,98 @@
+{
+  "mcpServers": {
+    "google-search-console": {
+      "description": "Google Search Console MCP integration for monitoring search performance, indexing status, Core Web Vitals, and AI crawler activity. Essential for GEO (Generative Engine Optimization) to track GPTBot, PerplexityBot, and other AI crawlers accessing your site.",
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-google-search-console"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
+      },
+      "tools": [
+        {
+          "name": "get_search_analytics",
+          "description": "Get search performance data including clicks, impressions, CTR, and position for queries and pages"
+        },
+        {
+          "name": "get_index_status",
+          "description": "Check indexing status of URLs - indexed, crawled, excluded, and errors"
+        },
+        {
+          "name": "submit_url_for_indexing",
+          "description": "Request Google to crawl and index a specific URL"
+        },
+        {
+          "name": "get_crawl_stats",
+          "description": "Get crawl statistics including requests per day, download size, and response times"
+        },
+        {
+          "name": "get_core_web_vitals",
+          "description": "Get Core Web Vitals report (LCP, FID, CLS) for mobile and desktop"
+        },
+        {
+          "name": "get_sitemaps",
+          "description": "List submitted sitemaps and their status"
+        },
+        {
+          "name": "submit_sitemap",
+          "description": "Submit a new sitemap URL for processing"
+        },
+        {
+          "name": "get_mobile_usability",
+          "description": "Get mobile usability issues and affected pages"
+        },
+        {
+          "name": "get_rich_results",
+          "description": "Check rich results status for structured data (FAQ, HowTo, etc.)"
+        },
+        {
+          "name": "get_security_issues",
+          "description": "Check for security issues like malware or hacked content"
+        }
+      ],
+      "setup": {
+        "steps": [
+          "1. Go to Google Cloud Console (console.cloud.google.com)",
+          "2. Create a new project or select existing one",
+          "3. Enable 'Search Console API' in APIs & Services",
+          "4. Create OAuth 2.0 credentials (Desktop app type)",
+          "5. Download credentials and extract client_id and client_secret",
+          "6. Run oauth flow to get refresh_token",
+          "7. Set environment variables: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN"
+        ],
+        "oauth_flow": "npx @anthropic/mcp-google-search-console --setup",
+        "docs": "https://developers.google.com/webmaster-tools/v1/how-tos/authorizing"
+      },
+      "usage_examples": [
+        {
+          "description": "Get top queries for last 7 days",
+          "prompt": "Show me the top 10 search queries for my site in the last 7 days with clicks and impressions"
+        },
+        {
+          "description": "Check indexing issues",
+          "prompt": "What URLs on my site have indexing issues? Show me excluded and error pages"
+        },
+        {
+          "description": "Monitor AI crawler activity",
+          "prompt": "Check crawl stats and look for any unusual patterns that might indicate AI crawlers"
+        },
+        {
+          "description": "Core Web Vitals audit",
+          "prompt": "What are my Core Web Vitals scores? Which pages need improvement?"
+        },
+        {
+          "description": "Submit new content for indexing",
+          "prompt": "Submit https://example.com/new-article for indexing"
+        }
+      ],
+      "geo_features": {
+        "description": "Features specifically useful for Generative Engine Optimization",
+        "crawl_monitoring": "Track crawl frequency changes after implementing llms.txt",
+        "indexing_speed": "Monitor how quickly new content gets indexed after IndexNow submission",
+        "query_analysis": "Identify question-based queries that LLMs might use for training",
+        "rich_results": "Ensure FAQ and HowTo schema are being recognized for AI extraction"
+      }
+    }
+  }
+}

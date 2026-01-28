@@ -1,5 +1,10 @@
+# ===== Claude Code Templates - AI & Search Crawler Configuration =====
+# https://aitmpl.com - The largest collection of Claude Code components
+
+# Default rules for all crawlers
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
 # Filter pages - high priority for crawling
 Allow: /agents
@@ -8,21 +13,124 @@ Allow: /settings
 Allow: /hooks
 Allow: /mcps
 Allow: /templates
+Allow: /skills
 
-# Blog content
+# Blog content - high value for citations
 Allow: /blog/
 
-# Component pages
+# Component pages - individual component details
 Allow: /component/
 
 # Important pages
 Allow: /trending.html
+Allow: /llms.txt
 
 # Disallow temporary or admin files
 Disallow: /node_modules/
 Disallow: /.git/
 Disallow: /.vercel/
 Disallow: /dev-server.js
+Disallow: /api/
 
-# Sitemap location
+# ===== AI CRAWLER SPECIFIC RULES =====
+
+# OpenAI GPTBot (ChatGPT, GPT-4)
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /blog/
+Allow: /component/
+Crawl-delay: 2
+
+# ChatGPT User Agent (browsing mode)
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 2
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /blog/
+Crawl-delay: 1
+
+# Anthropic Claude
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 1
+
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 1
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 1
+
+# Google AI (Gemini, Bard)
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 2
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 2
+
+User-agent: meta-externalagent
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 2
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 2
+
+# Apple Intelligence (Applebot-Extended)
+User-agent: Applebot-Extended
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 2
+
+# Common Crawl (feeds many AI models)
+User-agent: CCBot
+Allow: /
+Allow: /llms.txt
+Crawl-delay: 3
+
+# ===== SEARCH ENGINE CRAWLERS =====
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bing (important for IndexNow)
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Yandex
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# ===== SITEMAP & LLMS.TXT =====
+Sitemap: https://aitmpl.com/sitemap.xml
 Sitemap: https://davila7.github.io/claude-code-templates/sitemap.xml
+
+# LLMs.txt for AI crawler navigation
+# https://aitmpl.com/llms.txt
