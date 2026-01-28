@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code PRs - Claude Code Templates</title>
+    <meta name="description" content="Track all Pull Requests created by Claude Code in the claude-code-templates repository.">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aitmpl.com/claude-prs/">
+    <meta property="og:title" content="Claude Code PRs - Claude Code Templates">
+    <meta property="og:description" content="Track all Pull Requests created by Claude Code in the claude-code-templates repository.">
+    <meta property="og:image" content="https://aitmpl.com/images/social-preview.png">
+    <meta property="og:site_name" content="Claude Code Templates">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Claude Code PRs - Claude Code Templates">
+    <meta name="twitter:description" content="Track all Pull Requests created by Claude Code in the claude-code-templates repository.">
+    <meta name="twitter:image" content="https://aitmpl.com/images/social-preview.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .dashboard-page {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--text-accent);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-accent);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Chart section */
+        .chart-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Table section */
+        .table-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .table-count {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .pr-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pr-table thead th {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .pr-table tbody tr {
+            border-bottom: 1px solid var(--border-secondary);
+            transition: background 0.15s ease;
+        }
+
+        .pr-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .pr-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .pr-number {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .pr-title-link {
+            color: var(--text-info);
+            text-decoration: none;
+        }
+
+        .pr-title-link:hover {
+            text-decoration: underline;
+        }
+
+        .pr-state {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .pr-state.merged {
+            background: rgba(163, 113, 247, 0.15);
+            color: #a371f7;
+        }
+
+        .pr-state.open {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .pr-state.closed {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .pr-date {
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .pr-branch {
+            color: var(--text-secondary);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.75rem;
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-primary);
+            border-top-color: var(--text-accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-error);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-title {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pr-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .chart-container {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-page">
+        <div class="container">
+            <a href="../" class="back-link">&larr; Back to Templates</a>
+
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Claude Code PRs</h1>
+                <p class="dashboard-subtitle">Pull Requests created by Claude Code in davila7/claude-code-templates</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-prs">-</div>
+                    <div class="stat-label">Total PRs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="merged-prs">-</div>
+                    <div class="stat-label">Merged</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="open-prs">-</div>
+                    <div class="stat-label">Open</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="closed-prs">-</div>
+                    <div class="stat-label">Closed</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-section">
+                <div class="chart-title">PRs per Week</div>
+                <div class="chart-container">
+                    <canvas id="prs-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-section">
+                <div class="table-header">
+                    <span class="table-title">All Claude Code PRs</span>
+                    <span class="table-count" id="table-count"></span>
+                </div>
+                <div id="table-body">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div>Loading PR data...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getPRState(pr) {
+            if (pr.merged) return 'merged';
+            if (pr.state === 'open') return 'open';
+            return 'closed';
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function updateStats(prs) {
+            const merged = prs.filter(pr => pr.merged).length;
+            const open = prs.filter(pr => pr.state === 'open' && !pr.merged).length;
+            const closed = prs.filter(pr => pr.state === 'closed' && !pr.merged).length;
+
+            document.getElementById('total-prs').textContent = prs.length;
+            document.getElementById('merged-prs').textContent = merged;
+            document.getElementById('open-prs').textContent = open;
+            document.getElementById('closed-prs').textContent = closed;
+        }
+
+        function renderChart(prs) {
+            const weekMap = {};
+            prs.forEach(pr => {
+                const d = new Date(pr.created_at);
+                const start = new Date(d);
+                start.setDate(d.getDate() - d.getDay());
+                const key = start.toISOString().slice(0, 10);
+                if (!weekMap[key]) weekMap[key] = { merged: 0, open: 0, closed: 0 };
+                weekMap[key][getPRState(pr)]++;
+            });
+
+            const sortedWeeks = Object.keys(weekMap).sort();
+            const labels = sortedWeeks.map(w => {
+                const d = new Date(w);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            });
+
+            const ctx = document.getElementById('prs-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Merged',
+                            data: sortedWeeks.map(w => weekMap[w].merged),
+                            backgroundColor: 'rgba(163, 113, 247, 0.7)',
+                            borderColor: '#a371f7',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Open',
+                            data: sortedWeeks.map(w => weekMap[w].open),
+                            backgroundColor: 'rgba(63, 185, 80, 0.7)',
+                            borderColor: '#3fb950',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Closed',
+                            data: sortedWeeks.map(w => weekMap[w].closed),
+                            backgroundColor: 'rgba(248, 81, 73, 0.7)',
+                            borderColor: '#f85149',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#7d8590', font: { family: "'Monaco', 'Menlo', monospace" } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: { color: '#7d8590', font: { size: 11 } },
+                            grid: { color: 'rgba(48, 54, 61, 0.5)' }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: { color: '#7d8590', stepSize: 1 },
+                            grid: { color: 'rgba(48, 54, 61, 0.5)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable(prs) {
+            document.getElementById('table-count').textContent = `${prs.length} PRs`;
+
+            const table = document.createElement('table');
+            table.className = 'pr-table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>State</th>
+                        <th>Branch</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${prs.map(pr => {
+                        const state = getPRState(pr);
+                        return `<tr>
+                            <td class="pr-number">#${pr.number}</td>
+                            <td><a href="${pr.url}" target="_blank" rel="noopener" class="pr-title-link">${escapeHtml(pr.title)}</a></td>
+                            <td><span class="pr-state ${state}">${state}</span></td>
+                            <td><span class="pr-branch">${escapeHtml(pr.branch)}</span></td>
+                            <td class="pr-date">${formatDate(pr.created_at)}</td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            `;
+
+            const container = document.getElementById('table-body');
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(msg) {
+            document.getElementById('table-body').innerHTML = `<div class="error-msg">${msg}</div>`;
+        }
+
+        function showLastUpdated(generatedAt) {
+            const d = new Date(generatedAt);
+            const formatted = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const sub = document.querySelector('.dashboard-subtitle');
+            sub.innerHTML += `<br><small style="color:var(--text-tertiary)">Last updated: ${formatted}</small>`;
+        }
+
+        async function init() {
+            try {
+                const res = await fetch('data.json');
+                if (!res.ok) throw new Error(`Failed to load data.json (${res.status})`);
+                const data = await res.json();
+                const prs = data.prs || [];
+
+                if (prs.length === 0) {
+                    showError('No Claude Code PRs found yet. Run scripts/generate_claude_prs.py to generate data.');
+                    updateStats([]);
+                    return;
+                }
+
+                showLastUpdated(data.generated_at);
+                updateStats(prs);
+                renderChart(prs);
+                renderTable(prs);
+            } catch (err) {
+                console.error(err);
+                showError(`Failed to load PR data: ${err.message}. Run "python scripts/generate_claude_prs.py" to generate the data file.`);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
