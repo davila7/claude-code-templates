@@ -15,9 +15,10 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-def fetch_with_retry(url, headers, max_retries=3, timeout=30):
+def fetch_with_retry(url, headers, max_retries=5, timeout=60):
     """
     Fetch data from API with retry logic and exponential backoff.
+    Handles 500, 503, timeouts, and connection errors with aggressive retries.
 
     Args:
         url: The URL to fetch
@@ -28,6 +29,8 @@ def fetch_with_retry(url, headers, max_retries=3, timeout=30):
     Returns:
         Response object or None if all retries failed
     """
+    retryable_statuses = {500, 502, 503, 504}
+
     for attempt in range(max_retries):
         try:
             response = requests.get(url, headers=headers, timeout=timeout)
@@ -36,29 +39,39 @@ def fetch_with_retry(url, headers, max_retries=3, timeout=30):
             if response.status_code in [200, 206]:
                 return response
 
-            # For timeout errors (500), retry with exponential backoff
-            if response.status_code == 500 and '57014' in response.text:
+            # Retry on server errors with exponential backoff
+            if response.status_code in retryable_statuses:
                 if attempt < max_retries - 1:
-                    wait_time = (2 ** attempt) * 2  # 2s, 4s, 8s
-                    print(f"⏳ Database timeout on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
+                    wait_time = (2 ** attempt) * 3  # 3s, 6s, 12s, 24s
+                    print(f"⏳ Server error {response.status_code} on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
                     time.sleep(wait_time)
                     continue
                 else:
-                    print(f"⚠️  Database timeout after {max_retries} attempts. Continuing with data fetched so far...")
+                    print(f"⚠️  Server error {response.status_code} after {max_retries} attempts")
                     return None
 
-            # For other errors, return immediately
-            print(f"⚠️  API returned status {response.status_code}: {response.text[:100]}")
+            # For non-retryable errors, return immediately
+            print(f"⚠️  API returned status {response.status_code}: {response.text[:200]}")
             return None
 
         except requests.exceptions.Timeout:
             if attempt < max_retries - 1:
-                wait_time = (2 ** attempt) * 2
+                wait_time = (2 ** attempt) * 3
                 print(f"⏳ Request timeout on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
                 time.sleep(wait_time)
                 continue
             else:
                 print(f"❌ Request timed out after {max_retries} attempts")
+                return None
+
+        except requests.exceptions.ConnectionError:
+            if attempt < max_retries - 1:
+                wait_time = (2 ** attempt) * 3
+                print(f"⏳ Connection error on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+            else:
+                print(f"❌ Connection failed after {max_retries} attempts")
                 return None
 
         except requests.exceptions.RequestException as e:
@@ -100,49 +113,52 @@ def main():
         
         print(f"📊 Total records in database: {total_count}")
         
-        # Fetch all data using cursor-based pagination (much faster for large datasets)
+        # Fetch ALL data using cursor-based pagination
         all_downloads = []
         page_size = 1000
-        last_id = 0  # Start from ID 0
+        last_id = 0
         page_num = 0
+        consecutive_errors = 0
+        max_consecutive_errors = 3
 
-        print("📊 Using cursor-based pagination for optimal performance...")
+        print("📊 Using cursor-based pagination to fetch all records...")
 
         while True:
             page_num += 1
 
-            # Use cursor-based pagination with ID field (much more efficient than offset)
-            # Order by id ascending and filter id greater than last_id
             api_url = f"{supabase_url}/rest/v1/component_downloads?id=gt.{last_id}&order=id.asc&limit={page_size}"
 
-            # No need for Range header with cursor-based pagination
-            response = fetch_with_retry(api_url, headers, max_retries=3, timeout=30)
+            response = fetch_with_retry(api_url, headers, max_retries=5, timeout=60)
 
-            # If fetch failed after retries, break and use what we have
             if response is None:
-                print(f"⚠️  Stopping pagination at {len(all_downloads):,} records due to errors")
-                break
+                consecutive_errors += 1
+                if consecutive_errors >= max_consecutive_errors:
+                    print(f"⚠️  {max_consecutive_errors} consecutive failures. Stopping at {len(all_downloads):,} records.")
+                    break
+                # Skip ahead by estimating next ID range to recover from persistent errors
+                last_id += page_size
+                print(f"⚠️  Skipping ahead to id > {last_id} (attempt {consecutive_errors}/{max_consecutive_errors})")
+                time.sleep(5)
+                continue
 
             page_data = response.json()
             if not page_data:
-                print("✅ Reached end of data - no more records to fetch")
+                print(f"✅ Reached end of data at page {page_num}")
                 break
 
+            consecutive_errors = 0  # Reset on success
             all_downloads.extend(page_data)
-
-            # Update cursor to the last ID in this batch
             last_id = page_data[-1]['id']
 
             # Progress indicator every 50 pages
             if page_num % 50 == 0:
-                print(f"📄 Fetched page {page_num}: {len(page_data)} records (Total: {len(all_downloads):,}, Last ID: {last_id})")
+                pct = (len(all_downloads) / total_count * 100) if total_count > 0 else 0
+                print(f"📄 Page {page_num}: {len(all_downloads):,}/{total_count:,} records ({pct:.1f}%)")
 
-            # Check if we got less than page_size, meaning we're done
             if len(page_data) < page_size:
                 print(f"✅ Fetched final page {page_num} with {len(page_data)} records")
                 break
 
-            # Safety break to prevent infinite loops
             if len(all_downloads) >= 1000000:
                 print(f"⚠️  Reached safety limit of 1,000,000 records")
                 break
