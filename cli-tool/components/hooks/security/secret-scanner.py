@@ -293,11 +293,60 @@ def print_findings(findings):
     print('', file=sys.stderr)
 
 def main():
+    # Read hook input from stdin (Claude Code passes JSON via stdin)
+    try:
+        input_data = json.load(sys.stdin)
+    except (json.JSONDecodeError, ValueError):
+        # If no valid JSON on stdin, allow the action
+        sys.exit(0)
+
+    # Only act on git commit commands
+    tool_input = input_data.get('tool_input', {})
+    command = tool_input.get('command', '')
+    if not re.search(r'git\s+commit', command):
+        sys.exit(0)
+
     # Get staged files
     staged_files = get_staged_files()
 
+    # PreToolUse runs before the command, so files may not be staged yet.
+    # Handle two cases:
+    # 1. git commit -a/-am: scans tracked modified files (what -a would stage)
+    # 2. git add ... && git commit: scans files from the git add part
     if not staged_files:
-        # No staged files, nothing to scan
+        # Check if commit uses -a flag (auto-stage tracked modified files)
+        commit_match = re.search(r'git\s+commit\s+(.+)', command)
+        if commit_match and re.search(r'-\w*a', commit_match.group(1)):
+            result = subprocess.run(
+                ['git', 'diff', '--name-only'],
+                capture_output=True, text=True
+            )
+            for f in result.stdout.strip().split('\n'):
+                if f.strip() and os.path.isfile(f.strip()):
+                    staged_files.append(f.strip())
+
+        # Check for chained git add ... && git commit
+        for part in re.split(r'&&|;', command):
+            part = part.strip()
+            add_match = re.match(r'git\s+add\s+(.+)', part)
+            if add_match:
+                args = add_match.group(1).strip()
+                if args in ('.', '-A', '--all'):
+                    result = subprocess.run(
+                        ['git', 'status', '--porcelain'],
+                        capture_output=True, text=True
+                    )
+                    for line in result.stdout.strip().split('\n'):
+                        if line and len(line) > 3:
+                            f = line[3:].strip()
+                            if os.path.isfile(f):
+                                staged_files.append(f)
+                else:
+                    for token in args.split():
+                        if not token.startswith('-') and os.path.isfile(token):
+                            staged_files.append(token)
+
+    if not staged_files:
         sys.exit(0)
 
     # Scan all staged files
