@@ -16,23 +16,78 @@ SECRET_PATTERNS = [
     (r'AKIA[0-9A-Z]{16}', 'AWS Access Key ID', 'high'),
     (r'(?i)aws[_\-\s]*secret[_\-\s]*access[_\-\s]*key[\'"\s]*[=:][\'"\s]*[A-Za-z0-9/+=]{40}', 'AWS Secret Access Key', 'high'),
 
+    # Anthropic (Claude) API Keys
+    (r'sk-ant-api\d{2}-[A-Za-z0-9\-_]{20,}', 'Anthropic API Key', 'high'),
+
     # OpenAI API Keys
     (r'sk-[a-zA-Z0-9]{48,}', 'OpenAI API Key', 'high'),
     (r'sk-proj-[a-zA-Z0-9\-_]{32,}', 'OpenAI Project API Key', 'high'),
+
+    # Google API Keys & Service Accounts
+    (r'AIza[0-9A-Za-z\-_]{35}', 'Google API Key', 'high'),
+    (r'ya29\.[0-9A-Za-z\-_]+', 'Google OAuth Access Token', 'high'),
 
     # Stripe API Keys
     (r'sk_live_[0-9a-zA-Z]{24,}', 'Stripe Live Secret Key', 'critical'),
     (r'sk_test_[0-9a-zA-Z]{24,}', 'Stripe Test Secret Key', 'medium'),
     (r'rk_live_[0-9a-zA-Z]{24,}', 'Stripe Live Restricted Key', 'high'),
-
-    # Google API Keys
-    (r'AIza[0-9A-Za-z\-_]{35}', 'Google API Key', 'high'),
+    (r'pk_live_[0-9a-zA-Z]{24,}', 'Stripe Live Publishable Key', 'medium'),
 
     # GitHub Tokens
     (r'ghp_[0-9a-zA-Z]{36}', 'GitHub Personal Access Token', 'high'),
     (r'gho_[0-9a-zA-Z]{36}', 'GitHub OAuth Token', 'high'),
     (r'ghs_[0-9a-zA-Z]{36}', 'GitHub App Secret', 'high'),
     (r'ghr_[0-9a-zA-Z]{36}', 'GitHub Refresh Token', 'high'),
+    (r'github_pat_[0-9a-zA-Z_]{22,}', 'GitHub Fine-Grained PAT', 'high'),
+
+    # GitLab Tokens
+    (r'glpat-[0-9a-zA-Z\-_]{20,}', 'GitLab Personal Access Token', 'high'),
+
+    # Vercel Tokens
+    (r'vercel_[0-9a-zA-Z_\-]{24,}', 'Vercel Token', 'high'),
+
+    # Supabase Keys
+    (r'sbp_[0-9a-f]{40}', 'Supabase Service Key', 'high'),
+    (r'sb_publishable_[A-Za-z0-9\-_]{20,}', 'Supabase Publishable Key', 'medium'),
+    (r'sb_secret_[A-Za-z0-9\-_]{20,}', 'Supabase Secret Key', 'high'),
+
+    # Hugging Face Tokens
+    (r'hf_[a-zA-Z0-9]{34,}', 'Hugging Face Token', 'high'),
+
+    # Replicate API Tokens
+    (r'r8_[a-zA-Z0-9]{38,}', 'Replicate API Token', 'high'),
+
+    # Groq API Keys
+    (r'gsk_[a-zA-Z0-9]{48,}', 'Groq API Key', 'high'),
+
+    # Databricks Personal Access Tokens
+    (r'dapi[0-9a-f]{32}', 'Databricks Access Token', 'high'),
+
+    # Azure Keys
+    (r'(?i)azure[_\-\s]*(?:key|secret|token)[\'"\s]*[=:][\'"\s]*[A-Za-z0-9+/=]{32,}', 'Azure Key', 'high'),
+
+    # Cloudflare API Tokens
+    (r'(?:cf|cloudflare)[_\-]?[A-Za-z0-9_\-]{37,}', 'Cloudflare API Token', 'medium'),
+
+    # DigitalOcean Tokens
+    (r'dop_v1_[0-9a-f]{64}', 'DigitalOcean Personal Access Token', 'high'),
+    (r'doo_v1_[0-9a-f]{64}', 'DigitalOcean OAuth Token', 'high'),
+
+    # Linear API Keys
+    (r'lin_api_[a-zA-Z0-9]{40,}', 'Linear API Key', 'high'),
+
+    # Notion API Keys
+    (r'ntn_[0-9a-zA-Z]{40,}', 'Notion Integration Token', 'high'),
+    (r'secret_[0-9a-zA-Z]{43}', 'Notion API Key (legacy)', 'high'),
+
+    # Figma Access Tokens
+    (r'figd_[0-9a-zA-Z\-_]{40,}', 'Figma Access Token', 'high'),
+
+    # npm Tokens
+    (r'npm_[0-9a-zA-Z]{36,}', 'npm Access Token', 'high'),
+
+    # PyPI API Tokens
+    (r'pypi-[A-Za-z0-9\-_]{16,}', 'PyPI API Token', 'high'),
 
     # Generic API Keys
     (r'(?i)(api[_\-\s]*key|apikey)[\'"\s]*[=:][\'"\s]*[\'"][0-9a-zA-Z\-_]{20,}[\'"]', 'Generic API Key', 'medium'),

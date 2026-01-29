@@ -2,6 +2,7 @@ import { verifyKey, InteractionType, InteractionResponseType } from 'discord-int
 import axios from 'axios';
 
 const componentTypes = {
+  skills: { icon: '🎨', color: 0x9B59B6 },
   agents: { icon: '🤖', color: 0xFF6B6B },
   commands: { icon: '⚡', color: 0x4ECDC4 },
   mcps: { icon: '🔌', color: 0x95E1D3 },

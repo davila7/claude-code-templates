@@ -8,6 +8,8 @@
 # Claude Code local settings (may contain API keys)
 .claude/settings.local.json
 .claude/hooks/
+.claude/commands/opsx/
+.claude/skills/
 
 # Database related files
 *.db
@@ -61,3 +63,6 @@ test-cloudflare/
 
 # Local analysis (not for git)
 analysis/
+
+# OpenSpec (local workflow artifacts)
+openspec/
