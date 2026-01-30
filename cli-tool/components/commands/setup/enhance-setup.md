@@ -223,8 +223,8 @@ done
 ```bash
 echo ""
 echo "=== Plugins ==="
-enabled=$(grep -cE '"[^"]+@[^"]+": true' ~/.claude/settings.json 2>/dev/null || echo 0)
-disabled=$(grep -cE '"[^"]+@[^"]+": false' ~/.claude/settings.json 2>/dev/null || echo 0)
+enabled=$(grep -cE '"[^"]+@[^"]+": true' ~/.claude/settings.json 2>/dev/null) || enabled=0
+disabled=$(grep -cE '"[^"]+@[^"]+": false' ~/.claude/settings.json 2>/dev/null) || disabled=0
 echo "Enabled: $enabled | Disabled: $disabled"
 
 echo ""
@@ -250,7 +250,7 @@ done
 echo ""
 echo "=== MCP Configuration ==="
 if [ -f ~/.mcp.json ]; then
-  count=$(grep -cE '^\s*"[^"]+":' ~/.mcp.json 2>/dev/null || echo 0)
+  count=$(grep -cE '^\s*"[^"]+":' ~/.mcp.json 2>/dev/null) || count=0
   echo "Global servers: $count"
 else
   echo "No global ~/.mcp.json"
