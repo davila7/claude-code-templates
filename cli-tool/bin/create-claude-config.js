@@ -3,7 +3,7 @@
 const { program } = require('commander');
 const chalk = require('chalk');
 const boxen = require('boxen');
-const { createClaudeConfig } = require('../src/index');
+const { createClaudeConfig, installFromManifest } = require('../src/index');
 
 const pkg = require('../package.json');
 
@@ -41,6 +41,10 @@ function showBanner() {
   );
 }
 
+function collect(value, previous) {
+  return previous.concat([value]);
+}
+
 program
   .name('create-claude-config')
   .description('Setup Claude Code configurations and create global AI agents powered by Claude Code SDK')
@@ -64,12 +68,12 @@ program
   .option('--tunnel', 'enable Cloudflare Tunnel for remote access (use with --analytics or --chats)')
   .option('--verbose', 'enable verbose logging for debugging and development')
   .option('--health-check, --health, --check, --verify', 'run comprehensive health check to verify Claude Code setup')
-  .option('--agent <agent>', 'install specific agent component (supports comma-separated values)')
-  .option('--command <command>', 'install specific command component (supports comma-separated values)')
-  .option('--mcp <mcp>', 'install specific MCP component (supports comma-separated values)')
-  .option('--setting <setting>', 'install specific setting component (supports comma-separated values)')
-  .option('--hook <hook>', 'install specific hook component (supports comma-separated values)')
-  .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
+  .option('--agent <agent>', 'install specific agent component (supports comma-separated and repeated flags)', collect, [])
+  .option('--command <command>', 'install specific command component (supports comma-separated and repeated flags)', collect, [])
+  .option('--mcp <mcp>', 'install specific MCP component (supports comma-separated and repeated flags)', collect, [])
+  .option('--setting <setting>', 'install specific setting component (supports comma-separated and repeated flags)', collect, [])
+  .option('--hook <hook>', 'install specific hook component (supports comma-separated and repeated flags)', collect, [])
+  .option('--skill <skill>', 'install specific skill component (supports comma-separated and repeated flags)', collect, [])
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation or in sandbox')
   .option('--create-agent <agent>', 'create a global agent accessible from anywhere (e.g., customer-support)')
@@ -93,6 +97,23 @@ program
       }
       
       await createClaudeConfig(options);
+    } catch (error) {
+      console.error(chalk.red('Error:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('install')
+  .description('Install components from aitmpl.json or aitmpl.yaml manifest file')
+  .option('-d, --directory <directory>', 'target directory (default: current directory)')
+  .option('-y, --yes', 'skip prompts and use defaults')
+  .option('--dry-run', 'show what would be installed without actually installing')
+  .option('--verbose', 'enable verbose logging')
+  .action(async (options) => {
+    try {
+      showBanner();
+      await installFromManifest(options);
     } catch (error) {
       console.error(chalk.red('Error:'), error.message);
       process.exit(1);

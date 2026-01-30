@@ -173,7 +173,7 @@ async function createClaudeConfig(options = {}) {
   }
   
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill) {
+  if ((options.agent && options.agent.length) || (options.command && options.command.length) || (options.mcp && options.mcp.length) || (options.setting && options.setting.length) || (options.hook && options.hook.length) || (options.skill && options.skill.length)) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -1667,32 +1667,32 @@ async function installMultipleComponents(options, targetDir) {
     };
     
     // Parse comma-separated values for each component type
-    if (options.agent) {
+    if (options.agent && options.agent.length > 0) {
       const agentsInput = Array.isArray(options.agent) ? options.agent.join(',') : options.agent;
       components.agents = agentsInput.split(',').map(a => a.trim()).filter(a => a);
     }
-    
-    if (options.command) {
+
+    if (options.command && options.command.length > 0) {
       const commandsInput = Array.isArray(options.command) ? options.command.join(',') : options.command;
       components.commands = commandsInput.split(',').map(c => c.trim()).filter(c => c);
     }
-    
-    if (options.mcp) {
+
+    if (options.mcp && options.mcp.length > 0) {
       const mcpsInput = Array.isArray(options.mcp) ? options.mcp.join(',') : options.mcp;
       components.mcps = mcpsInput.split(',').map(m => m.trim()).filter(m => m);
     }
-    
-    if (options.setting) {
+
+    if (options.setting && options.setting.length > 0) {
       const settingsInput = Array.isArray(options.setting) ? options.setting.join(',') : options.setting;
       components.settings = settingsInput.split(',').map(s => s.trim()).filter(s => s);
     }
-    
-    if (options.hook) {
+
+    if (options.hook && options.hook.length > 0) {
       const hooksInput = Array.isArray(options.hook) ? options.hook.join(',') : options.hook;
       components.hooks = hooksInput.split(',').map(h => h.trim()).filter(h => h);
     }
 
-    if (options.skill) {
+    if (options.skill && options.skill.length > 0) {
       const skillsInput = Array.isArray(options.skill) ? options.skill.join(',') : options.skill;
       components.skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
     }
@@ -3420,4 +3420,54 @@ async function executeE2BSandbox(options, targetDir) {
   }
 }
 
-module.exports = { createClaudeConfig, showMainMenu };
+/**
+ * Install components from an aitmpl.json or aitmpl.yaml manifest file.
+ * Looks for the manifest in the target directory, parses it, and delegates
+ * to installMultipleComponents.
+ * @param {object} options - CLI options (directory, yes, dryRun, verbose)
+ */
+async function installFromManifest(options) {
+  const yaml = require('js-yaml');
+  const targetDir = options.directory || process.cwd();
+
+  // Look for manifest file: JSON first, then YAML
+  const jsonPath = path.join(targetDir, 'aitmpl.json');
+  const yamlPath = path.join(targetDir, 'aitmpl.yaml');
+
+  let manifest = null;
+  let manifestFile = null;
+
+  if (await fs.pathExists(jsonPath)) {
+    manifestFile = 'aitmpl.json';
+    manifest = await fs.readJson(jsonPath);
+  } else if (await fs.pathExists(yamlPath)) {
+    manifestFile = 'aitmpl.yaml';
+    const content = await fs.readFile(yamlPath, 'utf8');
+    manifest = yaml.load(content);
+  }
+
+  if (!manifest) {
+    console.log(chalk.yellow('No aitmpl.json or aitmpl.yaml found in this directory.'));
+    console.log(chalk.blue('Browse and select components at ') + chalk.underline('https://aitmpl.com'));
+    return;
+  }
+
+  console.log(chalk.green(`Found ${manifestFile} manifest file`));
+
+  // Map manifest keys (plural) to the option keys (singular) that installMultipleComponents expects
+  const mappedOptions = {
+    agent: manifest.agents || [],
+    command: manifest.commands || [],
+    mcp: manifest.mcps || [],
+    setting: manifest.settings || [],
+    hook: manifest.hooks || [],
+    skill: manifest.skills || [],
+    yes: options.yes || false,
+    dryRun: options.dryRun || false,
+    verbose: options.verbose || false,
+  };
+
+  await installMultipleComponents(mappedOptions, targetDir);
+}
+
+module.exports = { createClaudeConfig, showMainMenu, installFromManifest };
