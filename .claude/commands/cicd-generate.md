@@ -109,6 +109,8 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         if: matrix.node-version == '20'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   security:
     runs-on: ubuntu-latest
@@ -232,6 +234,8 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         if: matrix.python-version == '3.11'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 ```
 
 ### Docker Build Pipeline
