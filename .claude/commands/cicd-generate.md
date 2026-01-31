@@ -120,7 +120,7 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Run Snyk scan
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@0.4.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
