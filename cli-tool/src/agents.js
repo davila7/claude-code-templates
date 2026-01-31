@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
+const { installAgents: installAgentsImpl, getInstalledAgents } = require('./agents/AgentInstaller');
 
 const TEMPLATES_DIR = path.join(__dirname, '..', 'templates');
 
@@ -135,71 +136,7 @@ function getAgentsForLanguageAndFramework(language, framework) {
  * @returns {Promise<boolean>} Success status
  */
 async function installAgents(selectedAgents, projectPath = process.cwd()) {
-  try {
-    const claudeDir = path.join(projectPath, '.claude');
-    const agentsDir = path.join(claudeDir, 'agents');
-    
-    // Create .claude/agents directory if it doesn't exist
-    await fs.ensureDir(agentsDir);
-    
-    let installedCount = 0;
-    const allAgents = getAvailableAgents();
-    
-    for (const agentName of selectedAgents) {
-      // Find the agent by name in the available agents
-      const agent = allAgents.find(a => a.name === agentName);
-      
-      if (agent && agent.filePath) {
-        const targetFile = path.join(agentsDir, `${agentName}.md`);
-        
-        if (await fs.pathExists(agent.filePath)) {
-          await fs.copy(agent.filePath, targetFile);
-          installedCount++;
-          console.log(chalk.green(`✓ Installed agent: ${agentName} (${agent.language}/${agent.framework})`));
-        } else {
-          console.log(chalk.yellow(`⚠️  Agent source file not found: ${agent.filePath}`));
-        }
-      } else {
-        console.log(chalk.yellow(`⚠️  Agent not found: ${agentName}`));
-      }
-    }
-    
-    if (installedCount > 0) {
-      console.log(chalk.green(`\n🎉 Successfully installed ${installedCount} agent(s) to .claude/agents/`));
-      console.log(chalk.blue('   You can now use these agents in your Claude Code conversations!'));
-      return true;
-    } else {
-      console.log(chalk.yellow('⚠️  No agents were installed'));
-      return false;
-    }
-    
-  } catch (error) {
-    console.error(chalk.red('❌ Failed to install agents:'), error.message);
-    return false;
-  }
-}
-
-/**
- * Check if project already has agents installed
- * @param {string} projectPath - Project directory path
- * @returns {Promise<Array>} Array of installed agent names
- */
-async function getInstalledAgents(projectPath = process.cwd()) {
-  try {
-    const agentsDir = path.join(projectPath, '.claude', 'agents');
-    
-    if (!(await fs.pathExists(agentsDir))) {
-      return [];
-    }
-    
-    const agentFiles = await fs.readdir(agentsDir);
-    return agentFiles
-      .filter(file => file.endsWith('.md'))
-      .map(file => path.basename(file, '.md'));
-      
-  } catch (error) {
-    return [];
-  }
+  return installAgentsImpl(selectedAgents, projectPath, getAvailableAgents);
 }
 
 /**
