@@ -19,6 +19,7 @@ const { runPluginDashboard } = require('./plugin-dashboard');
 const { runSkillDashboard } = require('./skill-dashboard');
 const { trackingService } = require('./tracking-service');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
+const { fetchFromGitHub } = require('./network');
 const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 
@@ -517,7 +518,7 @@ async function installIndividualAgent(agentName, targetDir, options) {
     
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
     
-    const response = await fetch(githubUrl);
+    const response = await fetchFromGitHub(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Agent "${agentName}" not found`));
@@ -582,7 +583,7 @@ async function installIndividualCommand(commandName, targetDir, options) {
     
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
     
-    const response = await fetch(githubUrl);
+    const response = await fetchFromGitHub(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Command "${commandName}" not found`));
@@ -648,7 +649,7 @@ async function installIndividualMCP(mcpName, targetDir, options) {
     
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
     
-    const response = await fetch(githubUrl);
+    const response = await fetchFromGitHub(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ MCP "${mcpName}" not found`));
@@ -734,7 +735,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
     
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
     
-    const response = await fetch(githubUrl);
+    const response = await fetchFromGitHub(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Setting "${settingName}" not found`));
@@ -761,7 +762,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
       
       try {
         console.log(chalk.gray(`📥 Downloading Python script: ${pythonFileName}...`));
-        const pythonResponse = await fetch(pythonUrl);
+        const pythonResponse = await fetchFromGitHub(pythonUrl);
         if (pythonResponse.ok) {
           const pythonContent = await pythonResponse.text();
           additionalFiles['.claude/scripts/' + pythonFileName] = {
@@ -1067,7 +1068,7 @@ async function installIndividualHook(hookName, targetDir, options) {
     
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
     
-    const response = await fetch(githubUrl);
+    const response = await fetchFromGitHub(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Hook "${hookName}" not found`));
@@ -1092,7 +1093,7 @@ async function installIndividualHook(hookName, targetDir, options) {
 
     try {
       console.log(chalk.gray(`📥 Checking for additional Python script...`));
-      const pythonResponse = await fetch(pythonUrl);
+      const pythonResponse = await fetchFromGitHub(pythonUrl);
       if (pythonResponse.ok) {
         const pythonContent = await pythonResponse.text();
         additionalFiles[`.claude/hooks/${hookBaseName}.py`] = {
@@ -1110,7 +1111,7 @@ async function installIndividualHook(hookName, targetDir, options) {
 
     try {
       console.log(chalk.gray(`📥 Checking for additional bash script...`));
-      const bashResponse = await fetch(bashUrl);
+      const bashResponse = await fetchFromGitHub(bashUrl);
       if (bashResponse.ok) {
         const bashContent = await bashResponse.text();
         additionalFiles[`.claude/hooks/${hookBaseName}.sh`] = {
@@ -1432,7 +1433,7 @@ async function getAvailableAgentsFromGitHub() {
     // Fallback to aitmpl.com API if local file not found
     try {
       // Try aitmpl.com API first
-      const apiResponse = await fetch('https://aitmpl.com/api/agents.json');
+      const apiResponse = await fetchFromGitHub('https://aitmpl.com/api/agents.json');
       if (apiResponse.ok) {
         const apiData = await apiResponse.json();
         
@@ -1447,7 +1448,7 @@ async function getAvailableAgentsFromGitHub() {
     
     // If aitmpl.com API fails, try GitHub API as secondary fallback
     console.log(chalk.yellow('⚠️  Falling back to GitHub API...'));
-    const response = await fetch('https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents');
+    const response = await fetchFromGitHub('https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents');
     if (!response.ok) {
       // Check for rate limit error
       if (response.status === 403) {
@@ -1491,7 +1492,7 @@ async function getAvailableAgentsFromGitHub() {
       } else if (item.type === 'dir') {
         // Category directory, fetch its contents
         try {
-          const categoryResponse = await fetch(`https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents/${item.name}`);
+          const categoryResponse = await fetchFromGitHub(`https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/agents/${item.name}`);
           if (categoryResponse.ok) {
             const categoryContents = await categoryResponse.json();
             for (const categoryItem of categoryContents) {
@@ -1543,10 +1544,9 @@ async function installIndividualSkill(skillName, targetDir, options) {
     // Recursive function to download all files and directories
     async function downloadDirectory(apiUrl, relativePath = '') {
       try {
-        const response = await fetch(apiUrl, {
+        const response = await fetchFromGitHub(apiUrl, {
           headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'claude-code-templates'
+            'Accept': 'application/vnd.github.v3+json'
           }
         });
 
@@ -1568,7 +1568,7 @@ async function installIndividualSkill(skillName, targetDir, options) {
           if (item.type === 'file') {
             // Download file
             try {
-              const fileResponse = await fetch(item.download_url);
+              const fileResponse = await fetchFromGitHub(item.download_url);
               if (fileResponse.ok) {
                 const fileContent = await fileResponse.text();
                 const isExecutable = item.name.endsWith('.py') || item.name.endsWith('.sh');
@@ -3192,7 +3192,7 @@ async function executeE2BSandbox(options, targetDir) {
         const baseUrl = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/sandbox/e2b';
         
         // Download launcher script
-        const launcherResponse = await fetch(`${baseUrl}/e2b-launcher.py`);
+        const launcherResponse = await fetchFromGitHub(`${baseUrl}/e2b-launcher.py`);
         if (!launcherResponse.ok) {
           throw new Error(`Failed to download e2b-launcher.py: ${launcherResponse.status} ${launcherResponse.statusText}`);
         }
@@ -3200,7 +3200,7 @@ async function executeE2BSandbox(options, targetDir) {
         await fs.writeFile(path.join(sandboxDir, 'e2b-launcher.py'), launcherContent, { mode: 0o755 });
         
         // Download requirements.txt
-        const requirementsResponse = await fetch(`${baseUrl}/requirements.txt`);
+        const requirementsResponse = await fetchFromGitHub(`${baseUrl}/requirements.txt`);
         if (!requirementsResponse.ok) {
           throw new Error(`Failed to download requirements.txt: ${requirementsResponse.status} ${requirementsResponse.statusText}`);
         }
@@ -3208,7 +3208,7 @@ async function executeE2BSandbox(options, targetDir) {
         await fs.writeFile(path.join(sandboxDir, 'requirements.txt'), requirementsContent);
         
         // Download .env.example
-        const envExampleResponse = await fetch(`${baseUrl}/.env.example`);
+        const envExampleResponse = await fetchFromGitHub(`${baseUrl}/.env.example`);
         if (!envExampleResponse.ok) {
           throw new Error(`Failed to download .env.example: ${envExampleResponse.status} ${envExampleResponse.statusText}`);
         }

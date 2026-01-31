@@ -3,6 +3,7 @@ const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { getHooksForLanguage, filterHooksBySelection, getMCPsForLanguage, filterMCPsBySelection } = require('./hook-scanner');
+const { fetchFromGitHub } = require('./network');
 
 // GitHub configuration for downloading templates
 const GITHUB_CONFIG = {
@@ -27,7 +28,7 @@ async function downloadFileFromGitHub(filePath, retryCount = 0) {
   const githubUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${GITHUB_CONFIG.templatesPath}/${filePath}`;
   
   try {
-    const response = await fetch(githubUrl);
+    const response = await fetchFromGitHub(githubUrl);
     
     // Handle rate limiting for raw.githubusercontent.com (though less common)
     if (response.status === 403 && retryCount < maxRetries) {
@@ -81,7 +82,7 @@ async function downloadDirectoryFromGitHub(dirPath, retryCount = 0) {
   const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.templatesPath}/${dirPath}?ref=${GITHUB_CONFIG.branch}`;
   
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetchFromGitHub(apiUrl);
     
     // Handle rate limiting with more sophisticated detection
     if (response.status === 403) {
