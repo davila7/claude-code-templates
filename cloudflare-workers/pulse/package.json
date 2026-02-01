@@ -1,0 +1,35 @@
+{
+  "name": "pulse-weekly-report",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker — Weekly KPI report sent via Telegram",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "test": "wrangler dev --test-scheduled",
+    "secret:telegram-bot": "wrangler secret put TELEGRAM_BOT_TOKEN",
+    "secret:telegram-chat": "wrangler secret put TELEGRAM_CHAT_ID",
+    "secret:github": "wrangler secret put GITHUB_TOKEN",
+    "secret:supabase-url": "wrangler secret put SUPABASE_URL",
+    "secret:supabase-key": "wrangler secret put SUPABASE_SERVICE_ROLE_KEY",
+    "secret:discord-bot": "wrangler secret put DISCORD_BOT_TOKEN",
+    "secret:discord-guild": "wrangler secret put DISCORD_GUILD_ID",
+    "secret:vercel-token": "wrangler secret put VERCEL_TOKEN",
+    "secret:vercel-project": "wrangler secret put VERCEL_PROJECT_ID",
+    "secret:trigger": "wrangler secret put TRIGGER_SECRET"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "telegram",
+    "kpi",
+    "analytics",
+    "weekly-report"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.91.0"
+  }
+}

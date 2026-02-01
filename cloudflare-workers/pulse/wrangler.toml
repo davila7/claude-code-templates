@@ -1,0 +1,27 @@
+# Cloudflare Worker Configuration
+# Pulse — Weekly KPI Report
+
+name = "pulse-weekly-report"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# Cron Trigger - Every Sunday at 14:00 UTC (11:00 AM Chile)
+[triggers]
+crons = ["0 14 * * SUN"]
+
+# Secrets (set via: wrangler secret put <KEY>)
+# Required:
+# - TELEGRAM_BOT_TOKEN: Telegram bot token (same as docs-monitor)
+# - TELEGRAM_CHAT_ID: Telegram chat ID (same as docs-monitor)
+# - GITHUB_TOKEN: GitHub PAT (public_repo scope)
+# - SUPABASE_URL: Supabase project URL
+# - SUPABASE_SERVICE_ROLE_KEY: Supabase service role key
+# - DISCORD_BOT_TOKEN: Discord bot token
+# - DISCORD_GUILD_ID: Discord server ID
+# - VERCEL_TOKEN: Vercel personal access token
+# - VERCEL_PROJECT_ID: Vercel project ID
+# - TRIGGER_SECRET: Secret for manual /trigger endpoint
+#
+# Optional (add later):
+# - GA_PROPERTY_ID: GA4 property ID
+# - GA_SERVICE_ACCOUNT_JSON: Base64-encoded service account JSON
