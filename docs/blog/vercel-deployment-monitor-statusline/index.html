@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Vercel Deployments in Real-Time with Claude Code Statuslines</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Add a real-time Vercel deployment monitor to your Claude Code terminal. See build status, time since last deploy, and click directly to your deployment URL.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/vercel-deployment-monitor-statusline/">
+    <meta property="og:title" content="Monitor Vercel Deployments in Real-Time with Claude Code Statuslines">
+    <meta property="og:description" content="Add a real-time Vercel deployment monitor to your Claude Code terminal. See build status, time since last deploy, and click directly to your deployment URL.">
+    <meta property="og:image" content="https://www.aitmpl.com/blog/assets/vercel-deployment-monitor-statusline-cover.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Monitoring">
+    <meta property="article:tag" content="Vercel">
+    <meta property="article:tag" content="Statusline">
+    <meta property="article:tag" content="Deployment">
+    <meta property="article:tag" content="Monitoring">
+    <meta property="article:tag" content="DevOps">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/vercel-deployment-monitor-statusline/">
+    <meta name="twitter:title" content="Monitor Vercel Deployments in Real-Time with Claude Code Statuslines">
+    <meta name="twitter:description" content="Add a real-time Vercel deployment monitor to your Claude Code terminal. See build status, time since last deploy, and click directly to your deployment URL.">
+    <meta name="twitter:image" content="https://www.aitmpl.com/blog/assets/vercel-deployment-monitor-statusline-cover.svg">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Vercel Deployment Monitor, Claude Code Statusline, Vercel Status, Deployment Monitoring, Claude Code Settings, DevOps, Vercel API, Real-Time Status, Claude Code Templates">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/vercel-deployment-monitor-statusline/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Monitor Vercel Deployments in Real-Time with Claude Code Statuslines",
+        "description": "Add a real-time Vercel deployment monitor to your Claude Code terminal. See build status, time since last deploy, and click directly to your deployment URL.",
+        "image": "https://www.aitmpl.com/blog/assets/vercel-deployment-monitor-statusline-cover.svg",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/vercel-deployment-monitor-statusline/"
+        },
+        "keywords": "Vercel, Statusline, Deployment, Monitoring, DevOps, Claude Code",
+        "articleSection": "Monitoring"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Monitor Vercel Deployments in Real-Time with Claude Code Statuslines</h1>
+                <p class="article-subtitle">See build status, deploy timing, and clickable deployment links directly in your Claude Code terminal.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">5 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Vercel</span>
+                        <span class="tag">Statusline</span>
+                        <span class="tag">Deployment</span>
+                        <span class="tag">Monitoring</span>
+                        <span class="tag">DevOps</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/vercel-deployment-monitor-statusline-cover.svg" alt="Monitor Vercel Deployments in Real-Time with Claude Code Statuslines" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>Installation</h2>
+
+                <p>Install the Vercel Deployment Monitor statusline using the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --setting statusline/vercel-deployment-monitor</code></pre>
+
+                <p>This command automatically installs the statusline configuration in your project's <code>.claude/settings.json</code>. You will need to set two environment variables before it starts working.</p>
+
+                <div class="info-box">
+                    <strong>Want to understand how it works?</strong> Keep reading to learn what this statusline does under the hood and why it's essential for your workflow.
+                </div>
+
+                <h2>The Problem: Blind Deployments</h2>
+
+                <p>If you deploy to Vercel, you know the routine: push code, switch to your browser, open the Vercel dashboard, wait for the build to finish, and then check if it succeeded. This context-switching breaks your flow every single time.</p>
+
+                <p>Worse, if you are working in Claude Code and asking it to make changes to a production project, you have no visibility into whether your last deployment succeeded or failed without leaving the terminal. You might be building on top of broken code without realizing it.</p>
+
+                <p>The Vercel Deployment Monitor statusline solves this by bringing real-time deployment status directly into your Claude Code terminal. No tab switching. No dashboard refreshing. Just a persistent status indicator that updates automatically.</p>
+
+                <h2>What You Get</h2>
+
+                <p>Once installed, a status bar appears at the bottom of your Claude Code session showing four pieces of information:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Example</th>
+                            <th>What It Shows</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Platform indicator</td>
+                            <td><code>&#9650; Vercel</code></td>
+                            <td>Confirms the Vercel integration is active</td>
+                        </tr>
+                        <tr>
+                            <td>Build status</td>
+                            <td><code>READY</code> / <code>BUILDING</code> / <code>ERROR</code></td>
+                            <td>Current state of the latest deployment</td>
+                        </tr>
+                        <tr>
+                            <td>Time elapsed</td>
+                            <td><code>12m ago</code></td>
+                            <td>Minutes since the last deployment was created</td>
+                        </tr>
+                        <tr>
+                            <td>Deploy link</td>
+                            <td><code>Deploy</code> (clickable)</td>
+                            <td>OSC 8 hyperlink you can Cmd+click to open</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>The status icons change based on deployment state:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Icon</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>READY</td>
+                            <td>checkmark</td>
+                            <td>Deployment is live and serving traffic</td>
+                        </tr>
+                        <tr>
+                            <td>BUILDING</td>
+                            <td>spinner</td>
+                            <td>Build is in progress</td>
+                        </tr>
+                        <tr>
+                            <td>QUEUED</td>
+                            <td>hourglass</td>
+                            <td>Deployment is waiting to start</td>
+                        </tr>
+                        <tr>
+                            <td>ERROR</td>
+                            <td>cross</td>
+                            <td>Build failed, needs attention</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Prerequisites</h2>
+
+                <p>Before the statusline can query Vercel, you need two pieces of information:</p>
+
+                <h3>1. Vercel API Token</h3>
+
+                <p>Generate a token at <a href="https://vercel.com/account/tokens" target="_blank">vercel.com/account/tokens</a>. Create a token with read-only scope for maximum security.</p>
+
+                <pre><code class="language-bash">export VERCEL_TOKEN=your_token_here</code></pre>
+
+                <h3>2. Vercel Project ID</h3>
+
+                <p>Find your project ID in the Vercel dashboard under Project Settings &gt; General. It is the alphanumeric string shown under "Project ID".</p>
+
+                <pre><code class="language-bash">export VERCEL_PROJECT_ID=your_project_id_here</code></pre>
+
+                <div class="warning-box">
+                    <strong>Security note:</strong> Never hardcode these values in your settings file. The statusline command reads them from environment variables at runtime. Add the exports to your <code>~/.bashrc</code>, <code>~/.zshrc</code>, or a <code>.env</code> file loaded by your shell.
+                </div>
+
+                <h2>How It Works</h2>
+
+                <p>The statusline is a <code>command</code>-type statusline that runs a bash one-liner. Here is the logic broken down step by step:</p>
+
+                <pre><code class="language-bash"># 1. Read workspace context from stdin
+input=$(cat)
+DIR=$(echo "$input" | jq -r ".workspace.current_dir")
+
+# 2. Query the Vercel API for the latest deployment
+DEPLOY_DATA=$(curl -s \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
+  "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&amp;limit=1")
+
+# 3. Extract deployment state, URL, and creation time
+STATE=$(echo "$DEPLOY_DATA" | jq -r ".deployments[0].state // empty")
+FULL_URL=$(echo "$DEPLOY_DATA" | jq -r ".deployments[0].url // empty")
+CREATED=$(echo "$DEPLOY_DATA" | jq -r ".deployments[0].created // empty")
+
+# 4. Calculate time since deployment
+AGO=$(( ($(date +%s) - $CREATED/1000) / 60 ))
+TIME_AGO="${AGO}m ago"
+
+# 5. Map state to status icon
+case "$STATE" in
+  READY)    STATUS_ICON="checkmark" ;;
+  BUILDING) STATUS_ICON="spinner"   ;;
+  QUEUED)   STATUS_ICON="hourglass" ;;
+  ERROR)    STATUS_ICON="cross"     ;;
+esac
+
+# 6. Output with OSC 8 clickable hyperlink
+echo "Vercel | $STATUS_ICON $STATE | $TIME_AGO | Deploy"</code></pre>
+
+                <p>The key feature is the <strong>OSC 8 hyperlink</strong> in the output. This is a terminal escape sequence that makes the "Deploy" text clickable in supported terminals (iTerm2, Hyper, Windows Terminal, and most modern terminal emulators). Cmd+click (or Ctrl+click) opens the deployment URL directly in your browser.</p>
+
+                <h2>The Full Configuration</h2>
+
+                <p>Here is the complete <code>.claude/settings.json</code> configuration that gets installed:</p>
+
+                <pre><code class="language-json">{
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); DEPLOY_DATA=$(curl -s -H \"Authorization: Bearer $VERCEL_TOKEN\" \"https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&amp;limit=1\" 2>/dev/null); if [ -n \"$DEPLOY_DATA\" ] &amp;&amp; [ \"$DEPLOY_DATA\" != \"null\" ]; then STATE=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0].state // empty\"); FULL_URL=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0].url // empty\"); CREATED=$(echo \"$DEPLOY_DATA\" | jq -r \".deployments[0].created // empty\"); if [ -n \"$CREATED\" ] &amp;&amp; [ \"$CREATED\" != \"null\" ]; then AGO=$(( ($(date +%s) - $CREATED/1000) / 60 )); TIME_AGO=\"${AGO}m ago\"; else TIME_AGO=\"unknown\"; fi; case \"$STATE\" in READY) STATUS_ICON=\"check\";; BUILDING) STATUS_ICON=\"spinner\";; QUEUED) STATUS_ICON=\"hourglass\";; ERROR) STATUS_ICON=\"cross\";; *) STATUS_ICON=\"unknown\";; esac; else STATE=\"unavailable\"; FULL_URL=\"\"; TIME_AGO=\"unknown\"; STATUS_ICON=\"unknown\"; fi; echo \"Vercel | $STATUS_ICON $STATE | $TIME_AGO | Deploy\"'"
+  }
+}</code></pre>
+
+                <div class="info-box">
+                    <strong>Tip:</strong> The statusline refreshes each time Claude Code updates the status bar. This means you get near-real-time updates without any manual polling.
+                </div>
+
+                <h2>Dependencies</h2>
+
+                <p>The statusline relies on two command-line tools that are standard on most development machines:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Purpose</th>
+                            <th>Install</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>curl</code></td>
+                            <td>Makes HTTP requests to the Vercel API</td>
+                            <td>Pre-installed on macOS and most Linux distributions</td>
+                        </tr>
+                        <tr>
+                            <td><code>jq</code></td>
+                            <td>Parses JSON responses from the API</td>
+                            <td><code>brew install jq</code> or <code>apt install jq</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Troubleshooting</h2>
+
+                <p>If the statusline shows "unavailable", check these common issues:</p>
+
+                <h3>Environment variables not set</h3>
+
+                <pre><code class="language-bash"># Verify your variables are exported
+echo $VERCEL_TOKEN
+echo $VERCEL_PROJECT_ID</code></pre>
+
+                <p>Both should print non-empty values. If they are blank, add the exports to your shell profile and restart your terminal.</p>
+
+                <h3>Invalid token or project ID</h3>
+
+                <pre><code class="language-bash"># Test the API directly
+curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+  "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&amp;limit=1" | jq .</code></pre>
+
+                <p>You should see a JSON response with a <code>deployments</code> array. If you get an error, verify the token has not expired and the project ID is correct.</p>
+
+                <h3>jq not installed</h3>
+
+                <pre><code class="language-bash"># macOS
+brew install jq
+
+# Ubuntu/Debian
+sudo apt install jq
+
+# Verify installation
+jq --version</code></pre>
+
+                <h2>Combining with Other Statuslines</h2>
+
+                <p>Claude Code supports multiple statuslines. You can combine the Vercel monitor with other statuslines like Git branch indicators, test runners, or system monitors. Each statusline component adds its output to the status bar, giving you a comprehensive dashboard at a glance.</p>
+
+                <p>Browse the full collection of statuslines in the <a href="../../index.html">component catalog</a> to find others that complement your workflow.</p>
+
+                <h2>Conclusion</h2>
+
+                <p>The Vercel Deployment Monitor statusline eliminates the need to context-switch between your terminal and browser when deploying. With a single install command and two environment variables, you get persistent visibility into your deployment pipeline directly inside Claude Code.</p>
+
+                <p>The clickable deploy link is particularly useful: when a build finishes, you can Cmd+click to open the live deployment URL instantly. No more hunting through browser tabs or bookmarks to find your Vercel dashboard.</p>
+
+                <div class="success-box">
+                    <strong>Key takeaway:</strong> Statuslines turn Claude Code into a deployment-aware development environment. Install this one for Vercel, and check out the full statusline collection for GitHub, Docker, and more.
+                </div>
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                let textToCopy = code.textContent;
+
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        return text
+            .split('\n')
+            .map(line => {
+                line = line.replace(/^[\$\u276F]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                if (line.trim().startsWith('# checkmark') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '')
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                if (element.classList.contains('newsletter-cta') ||
+                    element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

@@ -265,14 +265,27 @@
       "difficulty": "intermediate",
       "featured": true,
       "order": 19
+    },
+    {
+      "id": "vercel-deployment-monitor-statusline",
+      "title": "Monitor Vercel Deployments in Real-Time with Claude Code Statuslines",
+      "description": "Add a real-time Vercel deployment monitor to your Claude Code terminal. See build status, time since last deploy, and click directly to your deployment URL.",
+      "url": "vercel-deployment-monitor-statusline/",
+      "image": "assets/vercel-deployment-monitor-statusline-cover.svg",
+      "category": "Monitoring",
+      "readTime": "5 min read",
+      "tags": ["Vercel", "Statusline", "Deployment", "Monitoring", "DevOps"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 20
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-01-27",
-    "totalArticles": 20,
+    "lastUpdated": "2026-02-01",
+    "totalArticles": 21,
     "difficultyLevels": {
       "basic": 8,
-      "intermediate": 6,
+      "intermediate": 7,
       "advanced": 5
     }
   }
