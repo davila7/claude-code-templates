@@ -1,16 +1,18 @@
 /**
  * Cloudflare Worker: Pulse — Weekly KPI Report
  *
- * Collects metrics from GitHub, Discord, Supabase, Vercel, and Google Analytics,
+ * Collects metrics from GitHub, Discord, Supabase, npm, Vercel, and Google Analytics,
  * then sends a consolidated report via Telegram every Sunday at 14:00 UTC.
  *
  * All source collectors are in this single file (no npm dependencies).
  */
 
 const REPO = 'davila7/claude-code-templates';
+const NPM_PACKAGE = 'claude-code-templates';
 const GITHUB_API = 'https://api.github.com';
 const DISCORD_API = 'https://discord.com/api/v10';
 const VERCEL_API = 'https://api.vercel.com';
+const NPM_API = 'https://api.npmjs.org';
 const GA4_API = 'https://analyticsdata.googleapis.com/v1beta';
 const TELEGRAM_API = 'https://api.telegram.org';
 const MAX_MESSAGE_LENGTH = 4096;
@@ -46,7 +48,7 @@ export default {
         status: 'running',
         worker: 'pulse-weekly-report',
         schedule: 'Sundays 14:00 UTC',
-        sources: ['github', 'discord', 'downloads', 'vercel', 'analytics']
+        sources: ['github', 'discord', 'downloads', 'npm', 'vercel', 'analytics']
       });
     }
 
@@ -69,6 +71,7 @@ async function runReport(env, opts = {}) {
       github: collectGitHub,
       discord: collectDiscord,
       downloads: collectDownloads,
+      npm: collectNpm,
       vercel: collectVercel,
       analytics: collectAnalytics
     };
@@ -78,13 +81,14 @@ async function runReport(env, opts = {}) {
     }
     results[onlySource] = await collector(env);
   } else {
-    const [github, discord, downloads, vercel] = await Promise.all([
+    const [github, discord, downloads, npm, vercel] = await Promise.all([
       collectGitHub(env),
       collectDiscord(env),
       collectDownloads(env),
+      collectNpm(env),
       collectVercel(env)
     ]);
-    results = { github, discord, downloads, vercel };
+    results = { github, discord, downloads, npm, vercel };
   }
 
   const reportText = formatReport(results);
@@ -411,6 +415,64 @@ async function collectVercel(env) {
   }
 }
 
+// ─── Source: npm Downloads ───────────────────────────────────────────────────
+
+async function collectNpm(env) {
+  try {
+    const headers = { 'User-Agent': 'Pulse-Weekly-Report/1.0' };
+
+    // Weekly downloads (last 7 days)
+    const weekData = await fetchJSON(
+      `${NPM_API}/downloads/point/last-week/${NPM_PACKAGE}`,
+      { headers }
+    );
+
+    // Monthly downloads (last 30 days) for context
+    const monthData = await fetchJSON(
+      `${NPM_API}/downloads/point/last-month/${NPM_PACKAGE}`,
+      { headers }
+    );
+
+    // Daily breakdown for the last week (to show trend)
+    const end = new Date();
+    const start = weekAgo();
+    const startStr = start.toISOString().split('T')[0];
+    const endStr = end.toISOString().split('T')[0];
+    const rangeData = await fetchJSON(
+      `${NPM_API}/downloads/range/${startStr}:${endStr}/${NPM_PACKAGE}`,
+      { headers }
+    );
+
+    // Find peak day
+    let peakDay = null;
+    let peakDownloads = 0;
+    if (rangeData.downloads) {
+      for (const day of rangeData.downloads) {
+        if (day.downloads > peakDownloads) {
+          peakDownloads = day.downloads;
+          peakDay = day.day;
+        }
+      }
+    }
+
+    // Calculate daily average
+    const dailyAvg = weekData.downloads > 0
+      ? Math.round(weekData.downloads / 7)
+      : 0;
+
+    return {
+      weeklyDownloads: weekData.downloads || 0,
+      monthlyDownloads: monthData.downloads || 0,
+      dailyAvg,
+      peakDay,
+      peakDownloads
+    };
+  } catch (error) {
+    console.error('npm source error:', error.message);
+    return { error: error.message };
+  }
+}
+
 // ─── Source: Google Analytics (GA4) ──────────────────────────────────────────
 
 async function collectAnalytics(env) {
@@ -563,6 +625,27 @@ function formatReport(results) {
     }
     // fix last item to └
     if (lines.length > 1) {
+      lines[lines.length - 1] = lines[lines.length - 1].replace('├', '└');
+    }
+    sections.push(lines.join('\n'));
+  }
+
+  // npm
+  if (results.npm?.error) {
+    sections.push(`NPM (npmjs.com)\n└ ⚠️ Unavailable: ${results.npm.error}`);
+  } else if (results.npm) {
+    const n = results.npm;
+    const lines = [
+      `NPM (npmjs.com)`,
+      `├ Weekly: ${fmt(n.weeklyDownloads)}`,
+      `├ Monthly: ${fmt(n.monthlyDownloads)}`,
+      `├ Daily avg: ${fmt(n.dailyAvg)}`
+    ];
+    if (n.peakDay) {
+      const peakDate = new Date(n.peakDay);
+      const dayName = peakDate.toLocaleDateString('en-US', { weekday: 'short' });
+      lines.push(`└ Peak: ${dayName} (${fmt(n.peakDownloads)})`);
+    } else {
       lines[lines.length - 1] = lines[lines.length - 1].replace('├', '└');
     }
     sections.push(lines.join('\n'));
