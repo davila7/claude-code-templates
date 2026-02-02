@@ -278,13 +278,26 @@
       "difficulty": "intermediate",
       "featured": true,
       "order": 20
+    },
+    {
+      "id": "hackathon-ai-strategist-agent",
+      "title": "Win Your Next Hackathon with the AI Strategist Agent for Claude Code",
+      "description": "Install the Hackathon AI Strategist agent for Claude Code to get expert ideation, judging-criteria evaluation, pitch coaching, and time management for your next hackathon.",
+      "url": "hackathon-ai-strategist-agent/",
+      "image": "assets/hackathon-ai-strategist-agent-cover.svg",
+      "category": "Agents",
+      "readTime": "5 min read",
+      "tags": ["Hackathon", "AI Strategy", "Agents", "Ideation", "Competition", "Claude Code"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 21
     }
   ],
   "metadata": {
     "lastUpdated": "2026-02-01",
-    "totalArticles": 21,
+    "totalArticles": 22,
     "difficultyLevels": {
-      "basic": 8,
+      "basic": 9,
       "intermediate": 7,
       "advanced": 5
     }
