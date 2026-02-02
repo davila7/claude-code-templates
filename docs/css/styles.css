@@ -968,7 +968,7 @@ body {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-primary);
     color: var(--text-secondary);
-    padding: 2rem 0 3rem 0;
+    padding: 2.5rem 0 3rem 0;
     margin-top: 2rem;
 }
 
@@ -980,23 +980,13 @@ body {
     gap: 2rem;
 }
 
-.footer-left {
+.footer-brand {
     flex: 1;
     min-width: 300px;
 }
 
-.footer-right {
-    flex: 1;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    margin-right: 4rem; /* Space to avoid cart button overlap */
-}
-
 .footer-ascii {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .footer-ascii-art {
@@ -1018,20 +1008,32 @@ body {
 
 .footer-copyright {
     color: var(--text-secondary);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     margin: 0;
 }
 
-.footer-links {
+.footer-columns {
     display: flex;
-    gap: 1.5rem;
-    justify-content: center;
+    gap: 3rem;
+    margin-right: 4rem;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.footer-column-title {
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.25rem 0;
 }
 
 .footer-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.875rem;
@@ -1040,10 +1042,6 @@ body {
 
 .footer-link:hover {
     color: var(--text-primary);
-}
-
-.footer-link svg {
-    flex-shrink: 0;
 }
 
 /* Loading and error states */
@@ -1223,17 +1221,22 @@ body {
         text-align: center;
         gap: 1.5rem;
     }
-    
-    .footer-left {
+
+    .footer-brand {
         min-width: unset;
         text-align: center;
     }
-    
-    .footer-right {
-        text-align: center;
-        align-items: center;
+
+    .footer-columns {
+        justify-content: center;
+        margin-right: 0;
+        gap: 2rem;
     }
-    
+
+    .footer-column {
+        text-align: left;
+    }
+
     .footer-ascii-art {
         font-size: 6px;
     }
