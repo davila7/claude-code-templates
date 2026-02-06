@@ -120,6 +120,16 @@ View marketplaces, installed plugins, and manage permissions from a unified inte
 npx claude-code-templates@latest --plugins
 ```
 
+### 🔧 Custom Repository
+
+Use a custom GitHub repository for private components or testing contributions:
+
+```bash
+CCT_REPO_OWNER=myorg CCT_REPO_NAME=my-templates npx claude-code-templates@latest --agent my-agent
+```
+
+Available: `CCT_REPO_OWNER`, `CCT_REPO_NAME`, `CCT_REPO_BRANCH`, `CCT_COMPONENTS_PATH`
+
 ## 📖 Documentation
 
 **[📚 docs.aitmpl.com](https://docs.aitmpl.com/)** - Complete guides, examples, and API reference for all components and tools.
