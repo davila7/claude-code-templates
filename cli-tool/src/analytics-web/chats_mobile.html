@@ -140,20 +140,20 @@
             box-shadow: 0 1px 2px rgba(255, 107, 53, 0.2);
         }
 
-        .back-btn {
-            background: rgba(255, 107, 53, 0.15) !important;
-            border: 1px solid rgba(255, 107, 53, 0.3) !important;
-            color: var(--terminal-orange) !important;
-            font-size: 1.2rem !important;
-            font-weight: 700 !important;
-            padding: 8px 12px !important;
-            min-width: 40px !important;
-            text-align: center !important;
+        .header-btn.back-btn {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: var(--terminal-orange);
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            min-width: 40px;
+            text-align: center;
         }
 
-        .back-btn:hover {
-            background: rgba(255, 107, 53, 0.2) !important;
-            border-color: rgba(255, 107, 53, 0.4) !important;
+        .header-btn.back-btn:hover {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.4);
         }
 
         /* Search bar */
@@ -1725,10 +1725,26 @@
             margin-bottom: 16px;
         }
 
-        /* Responsive adjustments */
+        /* Desktop: side-by-side layout */
         @media (min-width: 769px) {
-            .chat-app {
-                /* On larger screens, show side-by-side if needed */
+            .chat-sidebar {
+                width: 360px;
+                min-width: 360px;
+                border-right: 1px solid var(--border-primary);
+            }
+
+            .chat-view {
+                position: relative;
+                left: 0;
+                flex: 1;
+            }
+
+            .chat-view .chat-view-back {
+                display: none;
+            }
+
+            .conversation-item.active {
+                background: var(--bg-tertiary);
             }
         }
         /* Modal styles */
@@ -1860,6 +1876,161 @@
             border-color: var(--border-secondary);
             color: var(--text-primary);
         }
+
+        /* Analytics modal */
+        .analytics-modal {
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .analytics-body {
+            padding: 20px;
+        }
+
+        .analytics-loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .analytics-loading p {
+            color: var(--text-secondary);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-stat {
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid;
+        }
+
+        .analytics-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .analytics-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .analytics-stat.purple  { background: rgba(139, 92, 246, 0.1); border-color: #8b5cf6; }
+        .analytics-stat.purple .analytics-stat-value  { color: #8b5cf6; }
+        .analytics-stat.blue    { background: rgba(59, 130, 246, 0.1);  border-color: #3b82f6; }
+        .analytics-stat.blue .analytics-stat-value    { color: #3b82f6; }
+        .analytics-stat.green   { background: rgba(16, 185, 129, 0.1);  border-color: #10b981; }
+        .analytics-stat.green .analytics-stat-value   { color: #10b981; }
+        .analytics-stat.orange  { background: rgba(234, 88, 12, 0.1);   border-color: #ea580c; }
+        .analytics-stat.orange .analytics-stat-value  { color: #ea580c; }
+        .analytics-stat.amber   { background: rgba(251, 146, 60, 0.1);  border-color: #fb923c; }
+        .analytics-stat.amber .analytics-stat-value   { color: #fb923c; }
+        .analytics-stat.violet  { background: rgba(168, 85, 247, 0.1);  border-color: #a855f7; }
+        .analytics-stat.violet .analytics-stat-value  { color: #a855f7; }
+
+        .analytics-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .analytics-section-title {
+            margin: 0 0 12px 0;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .analytics-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .analytics-detail-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .analytics-detail-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .analytics-detail-value-sm {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .analytics-detail-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .analytics-cost-divider {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .analytics-cost-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .analytics-cost-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .analytics-progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .analytics-wait-bar {
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            transition: width 0.3s ease;
+        }
+
+        .analytics-user-bar {
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+
+        .analytics-models-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .analytics-tools-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .analytics-model-mono {
+            font-family: monospace;
+        }
+
+        .color-blue    { color: #3b82f6; }
+        .color-purple  { color: #8b5cf6; }
+        .color-orange  { color: #fb923c; }
+        .color-green   { color: #10b981; }
 
     </style>
 </head>
@@ -2215,161 +2386,149 @@
 
     <!-- Analytics Modal -->
     <div class="modal-overlay" id="analyticsModal">
-        <div class="modal" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal analytics-modal">
             <div class="modal-header">
                 <h3 class="modal-title">Session Analytics (Beta)</h3>
             </div>
-            <div style="padding: 20px;">
+            <div class="analytics-body">
                 <!-- Loading State -->
-                <div id="analyticsLoading" style="text-align: center; padding: 40px;">
-                    <p style="color: var(--text-secondary);">Loading analytics data...</p>
+                <div id="analyticsLoading" class="analytics-loading">
+                    <p>Loading analytics data...</p>
                 </div>
 
                 <!-- Analytics Content (hidden initially) -->
                 <div id="analyticsContent" style="display: none;">
                     <!-- Overview Stats - 3 columns -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
-                        <div style="background: rgba(139, 92, 246, 0.1); border-radius: 8px; padding: 12px; border-left: 3px solid #8b5cf6;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Total Messages</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #8b5cf6;" id="analyticsMessageCount">-</div>
+                    <div class="analytics-grid">
+                        <div class="analytics-stat purple">
+                            <div class="analytics-stat-label">Total Messages</div>
+                            <div class="analytics-stat-value" id="analyticsMessageCount">-</div>
                         </div>
-                        <div style="background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 12px; border-left: 3px solid #3b82f6;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Total Tokens</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #3b82f6;" id="analyticsTotalTokens">-</div>
+                        <div class="analytics-stat blue">
+                            <div class="analytics-stat-label">Total Tokens</div>
+                            <div class="analytics-stat-value" id="analyticsTotalTokens">-</div>
                         </div>
-                        <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 12px; border-left: 3px solid #10b981;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Tool Calls</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #10b981;" id="analyticsToolCalls">-</div>
+                        <div class="analytics-stat green">
+                            <div class="analytics-stat-label">Tool Calls</div>
+                            <div class="analytics-stat-value" id="analyticsToolCalls">-</div>
                         </div>
-                        <div style="background: rgba(234, 88, 12, 0.1); border-radius: 8px; padding: 12px; border-left: 3px solid #ea580c;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Tools Used</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #ea580c;" id="analyticsUniqueTools">-</div>
+                        <div class="analytics-stat orange">
+                            <div class="analytics-stat-label">Tools Used</div>
+                            <div class="analytics-stat-value" id="analyticsUniqueTools">-</div>
                         </div>
-                        <div style="background: rgba(251, 146, 60, 0.1); border-radius: 8px; padding: 12px; border-left: 3px solid #fb923c;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Models Used</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #fb923c;" id="analyticsUniqueModels">-</div>
+                        <div class="analytics-stat amber">
+                            <div class="analytics-stat-label">Models Used</div>
+                            <div class="analytics-stat-value" id="analyticsUniqueModels">-</div>
                         </div>
-                        <div style="background: rgba(168, 85, 247, 0.1); border-radius: 8px; padding: 12px; border-left: 3px solid #a855f7;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Cache Efficiency</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #a855f7;" id="analyticsCacheEfficiency">-</div>
+                        <div class="analytics-stat violet">
+                            <div class="analytics-stat-label">Cache Efficiency</div>
+                            <div class="analytics-stat-value" id="analyticsCacheEfficiency">-</div>
                         </div>
                     </div>
 
                     <!-- Token Usage Breakdown -->
-                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 14px;">
-                            Token Usage Breakdown
-                        </h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="analytics-section">
+                        <h4 class="analytics-section-title">Token Usage Breakdown</h4>
+                        <div class="analytics-two-col">
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Input Tokens</div>
-                                <div style="font-size: 18px; font-weight: 600; color: #3b82f6;" id="analyticsInputTokens">-</div>
+                                <div class="analytics-detail-label">Input Tokens</div>
+                                <div class="analytics-detail-value color-blue" id="analyticsInputTokens">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Output Tokens</div>
-                                <div style="font-size: 18px; font-weight: 600; color: #8b5cf6;" id="analyticsOutputTokens">-</div>
+                                <div class="analytics-detail-label">Output Tokens</div>
+                                <div class="analytics-detail-value color-purple" id="analyticsOutputTokens">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Cache Creation</div>
-                                <div style="font-size: 18px; font-weight: 600; color: #fb923c;" id="analyticsCacheCreation">-</div>
+                                <div class="analytics-detail-label">Cache Creation</div>
+                                <div class="analytics-detail-value color-orange" id="analyticsCacheCreation">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Cache Reads</div>
-                                <div style="font-size: 18px; font-weight: 600; color: #10b981;" id="analyticsCacheReads">-</div>
+                                <div class="analytics-detail-label">Cache Reads</div>
+                                <div class="analytics-detail-value color-green" id="analyticsCacheReads">-</div>
                             </div>
                         </div>
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Cost Estimate (USD)</div>
-                            <div style="font-size: 16px; font-weight: 600; color: #10b981;" id="analyticsCostEstimate">$0.00</div>
+                        <div class="analytics-cost-divider">
+                            <div class="analytics-cost-label">Cost Estimate (USD)</div>
+                            <div class="analytics-cost-value" id="analyticsCostEstimate">$0.00</div>
                         </div>
                     </div>
 
                     <!-- Session Timeline -->
-                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 14px;">
-                            Session Timeline
-                        </h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="analytics-section">
+                        <h4 class="analytics-section-title">Session Timeline</h4>
+                        <div class="analytics-two-col">
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Started</div>
-                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);" id="analyticsStartTime">-</div>
+                                <div class="analytics-detail-label">Started</div>
+                                <div class="analytics-detail-value-sm" id="analyticsStartTime">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Last Activity</div>
-                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);" id="analyticsLastActivity">-</div>
+                                <div class="analytics-detail-label">Last Activity</div>
+                                <div class="analytics-detail-value-sm" id="analyticsLastActivity">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Duration</div>
-                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);" id="analyticsDuration">-</div>
+                                <div class="analytics-detail-label">Duration</div>
+                                <div class="analytics-detail-value-sm" id="analyticsDuration">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Status</div>
-                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);" id="analyticsStatus">-</div>
+                                <div class="analytics-detail-label">Status</div>
+                                <div class="analytics-detail-value-sm" id="analyticsStatus">-</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Time Breakdown -->
-                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 14px;">
-                            Time Breakdown
-                        </h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="analytics-section">
+                        <h4 class="analytics-section-title">Time Breakdown</h4>
+                        <div class="analytics-two-col" style="margin-bottom: 12px;">
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Claude Executing</div>
-                                <div style="font-size: 18px; font-weight: 600; color: #3b82f6;" id="analyticsWaitTime">-</div>
-                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" id="analyticsWaitPercent">-</div>
+                                <div class="analytics-detail-label">Claude Executing</div>
+                                <div class="analytics-detail-value color-blue" id="analyticsWaitTime">-</div>
+                                <div class="analytics-detail-sub" id="analyticsWaitPercent">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">User Conversing</div>
-                                <div style="font-size: 18px; font-weight: 600; color: #10b981;" id="analyticsUserTime">-</div>
-                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" id="analyticsUserPercent">-</div>
+                                <div class="analytics-detail-label">User Conversing</div>
+                                <div class="analytics-detail-value color-green" id="analyticsUserTime">-</div>
+                                <div class="analytics-detail-sub" id="analyticsUserPercent">-</div>
                             </div>
                         </div>
-                        <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; display: flex;">
-                            <div id="analyticsWaitBar" style="background: linear-gradient(90deg, #3b82f6, #2563eb); transition: width 0.3s ease;"></div>
-                            <div id="analyticsUserBar" style="background: linear-gradient(90deg, #10b981, #059669); transition: width 0.3s ease;"></div>
+                        <div class="analytics-progress-bar">
+                            <div id="analyticsWaitBar" class="analytics-wait-bar"></div>
+                            <div id="analyticsUserBar" class="analytics-user-bar"></div>
                         </div>
                     </div>
 
                     <!-- Model Information -->
-                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 14px;">
-                            Model Information
-                        </h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="analytics-section">
+                        <h4 class="analytics-section-title">Model Information</h4>
+                        <div class="analytics-two-col">
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Primary Model</div>
-                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); font-family: monospace;" id="analyticsPrimaryModel">-</div>
+                                <div class="analytics-detail-label">Primary Model</div>
+                                <div class="analytics-detail-value-sm analytics-model-mono" id="analyticsPrimaryModel">-</div>
                             </div>
                             <div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Service Tier</div>
-                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);" id="analyticsServiceTier">-</div>
+                                <div class="analytics-detail-label">Service Tier</div>
+                                <div class="analytics-detail-value-sm" id="analyticsServiceTier">-</div>
                             </div>
                         </div>
                         <div id="analyticsAllModels" style="display: none; margin-top: 12px;">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">All Models Used</div>
-                            <div id="analyticsModelsList" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <div class="analytics-detail-label" style="margin-bottom: 6px;">All Models Used</div>
+                            <div id="analyticsModelsList" class="analytics-models-list">
                                 <!-- Models will be populated here -->
                             </div>
                         </div>
                     </div>
 
                     <!-- Tool Usage -->
-                    <div style="background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 14px;">
-                            Tool Usage
-                        </h4>
-                        <div id="analyticsToolsList" style="max-height: 200px; overflow-y: auto;">
+                    <div class="analytics-section">
+                        <h4 class="analytics-section-title">Tool Usage</h4>
+                        <div id="analyticsToolsList" class="analytics-tools-list">
                             <!-- Tool usage will be populated here -->
                         </div>
                     </div>
 
                     <!-- Components Used -->
-                    <div id="analyticsComponentsSection" style="background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; margin-bottom: 16px; display: none;">
-                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 14px;">
-                            Components Used
-                        </h4>
+                    <div id="analyticsComponentsSection" class="analytics-section" style="display: none;">
+                        <h4 class="analytics-section-title">Components Used</h4>
                         <div id="analyticsComponentsContent">
                             <!-- Components will be populated here -->
                         </div>
@@ -2389,6 +2548,12 @@
     <script src="services/StateService.js"></script>
 
     <script>
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
         class ChatsMobileApp {
             constructor() {
                 this.conversations = [];
@@ -2622,7 +2787,7 @@
                         <div class="no-conversations">
                             <div class="no-conversations-icon">⚠️</div>
                             <h3>Error loading conversations</h3>
-                            <p>${error.message}</p>
+                            <p>${escapeHtml(error.message)}</p>
                             <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: var(--text-accent); color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
                         </div>
                     `;
@@ -2949,7 +3114,7 @@
                             <div class="error-loading-messages">
                                 <div class="error-icon">⚠️</div>
                                 <h4>Error loading messages</h4>
-                                <p>${error.message}</p>
+                                <p>${escapeHtml(error.message)}</p>
                                 <button class="retry-messages">Retry</button>
                             </div>
                         `;
@@ -3619,7 +3784,7 @@
                         <div class="no-conversations">
                             <div class="no-conversations-icon">⚠️</div>
                             <h3>Search Error</h3>
-                            <p>${error.message}</p>
+                            <p>${escapeHtml(error.message)}</p>
                             <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: var(--text-accent); color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
                         </div>
                     `;
@@ -4999,7 +5164,7 @@
             } catch (error) {
                 console.error('❌ Failed to fetch analytics:', error);
                 document.getElementById('analyticsLoading').innerHTML =
-                    `<p style="color: #ef4444;">Failed to load analytics: ${error.message}</p>`;
+                    `<p style="color: #ef4444;">Failed to load analytics: ${escapeHtml(error.message)}</p>`;
             }
         }
 
