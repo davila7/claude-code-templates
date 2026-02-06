@@ -181,11 +181,12 @@ describe('API Endpoints - Critical Tests', () => {
         '/api/track-download-supabase',
         '/api/track-command-usage',
         '/api/discord/interactions',
-        '/api/claude-code-check'
+        '/api/claude-code-check',
+        '/api/search?q=test'
       ];
 
       for (const endpoint of endpoints) {
-        const method = endpoint.includes('track-') || endpoint.includes('discord')
+        const method = (endpoint.includes('track-') || endpoint.includes('discord'))
           ? 'post'
           : 'get';
 
@@ -388,6 +389,147 @@ describe('API Endpoints - Functional Tests', () => {
     }, TIMEOUT);
 
   });
+
+});
+
+describe('🔍 Component Search API', () => {
+
+  test('GET /api/search should return results for valid query', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=frontend`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveProperty('query', 'frontend');
+    expect(response.data).toHaveProperty('total');
+    expect(response.data).toHaveProperty('results');
+    expect(Array.isArray(response.data.results)).toBe(true);
+    expect(response.data.results.length).toBeGreaterThan(0);
+
+    // Verify result structure
+    const first = response.data.results[0];
+    expect(first).toHaveProperty('name');
+    expect(first).toHaveProperty('type');
+    expect(first).toHaveProperty('description');
+    expect(first).toHaveProperty('install_cmd');
+    expect(first).toHaveProperty('score');
+  }, TIMEOUT);
+
+  test('GET /api/search should filter by type', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=frontend&type=agents`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.type).toBe('agents');
+    // All results should be agents
+    for (const result of response.data.results) {
+      expect(result.type).toBe('agent');
+    }
+  }, TIMEOUT);
+
+  test('GET /api/search should respect limit parameter', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=test&limit=3`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.results.length).toBeLessThanOrEqual(3);
+  }, TIMEOUT);
+
+  test('GET /api/search should require query parameter', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.data).toHaveProperty('error');
+  }, TIMEOUT);
+
+  test('GET /api/search should reject invalid type', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=test&type=invalid`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.data).toHaveProperty('valid_types');
+  }, TIMEOUT);
+
+  test('GET /api/search should reject query that is too long', async () => {
+    const longQuery = 'a'.repeat(250);
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=${longQuery}`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(400);
+  }, TIMEOUT);
+
+  test('POST /api/search should return 405', async () => {
+    const response = await axios.post(
+      `${BASE_URL}/api/search`,
+      { q: 'test' },
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(405);
+  }, TIMEOUT);
+
+  test('GET /api/search should return empty results for nonsense query', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=xyzzy999zzz`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data.total).toBe(0);
+    expect(response.data.results).toEqual([]);
+  }, TIMEOUT);
+
+  test('GET /api/search results should be sorted by score descending', async () => {
+    const response = await axios.get(
+      `${BASE_URL}/api/search?q=security`,
+      {
+        timeout: TIMEOUT,
+        validateStatus: () => true
+      }
+    );
+
+    expect(response.status).toBe(200);
+    const scores = response.data.results.map(r => r.score);
+    for (let i = 1; i < scores.length; i++) {
+      expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+    }
+  }, TIMEOUT);
 
 });
 
