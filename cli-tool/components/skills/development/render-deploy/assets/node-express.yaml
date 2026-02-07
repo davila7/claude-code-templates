@@ -1,0 +1,25 @@
+# Node.js Express API
+# Basic web service with Express.js framework
+
+services:
+  - type: web
+    name: express-api
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT is automatically provided by Render (default: 10000)
+      # Only uncomment if you need to override:
+      # - key: PORT
+      #   value: 10000
+      - key: LOG_LEVEL
+        value: info
+      - key: API_KEY
+        sync: false  # User provides in Dashboard

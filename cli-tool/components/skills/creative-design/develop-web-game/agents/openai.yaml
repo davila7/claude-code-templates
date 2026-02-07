@@ -1,0 +1,6 @@
+interface:
+  display_name: "Develop Web Game"
+  short_description: "Web game dev + Playwright test loop"
+  icon_small: "./assets/game-small.svg"
+  icon_large: "./assets/game.png"
+  default_prompt: "Build and iterate a playable web game in this workspace, validating changes with a Playwright loop."

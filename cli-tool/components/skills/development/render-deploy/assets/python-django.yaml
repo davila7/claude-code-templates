@@ -1,0 +1,89 @@
+# Django Application with Worker and Databases
+# Full Django stack with Celery worker, PostgreSQL, and Redis
+
+services:
+  # Django web service
+  - type: web
+    name: django-web
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2
+    healthCheckPath: /health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.5
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DJANGO_SECRET_KEY
+        sync: false  # User provides in Dashboard
+      - key: DJANGO_ALLOWED_HOSTS
+        value: django-web.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromDatabase:
+          name: redis
+          property: connectionString
+
+  # Celery worker for background tasks
+  - type: worker
+    name: celery-worker
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A config.celery_app worker --loglevel=info --concurrency=2
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DJANGO_SECRET_KEY
+        sync: false  # Same as web service
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromDatabase:
+          name: redis
+          property: connectionString
+
+  # Celery beat for periodic tasks (optional)
+  - type: worker
+    name: celery-beat
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A config.celery_app beat --loglevel=info
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: REDIS_URL
+        fromDatabase:
+          name: redis
+          property: connectionString
+
+databases:
+  # PostgreSQL database
+  - name: postgres
+    databaseName: django_production
+    user: django_user
+    plan: free
+    postgresMajorVersion: "15"
+    ipAllowList: []  # Internal access only
+
+  # Redis for Celery and caching
+  - name: redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []  # Internal access only

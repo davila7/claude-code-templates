@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Threat Model"
+  short_description: "Repo-grounded threat modeling and abuse-path analysis"
+  default_prompt: "Create a repository-grounded threat model for this codebase with prioritized abuse paths and mitigations."

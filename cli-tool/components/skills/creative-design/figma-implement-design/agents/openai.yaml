@@ -1,0 +1,14 @@
+interface:
+  display_name: "Figma Implement Design"
+  short_description: "Turn Figma designs into production-ready code"
+  icon_small: "./assets/figma-small.svg"
+  icon_large: "./assets/figma.png"
+  default_prompt: "Implement this Figma design in this codebase, matching layout, states, and responsive behavior."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "figma"
+      description: "Figma MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.figma.com/mcp"
