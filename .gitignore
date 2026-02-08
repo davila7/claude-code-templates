@@ -6,7 +6,7 @@
 .env*.local
 
 # Claude Code local settings (may contain API keys)
-.claude/settings.local.json
+**/settings.local.json
 .claude/hooks/
 .claude/commands/opsx/
 .claude/skills/
