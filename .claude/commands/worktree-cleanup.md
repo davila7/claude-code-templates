@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git:*), Bash(rm:*), Bash(ls:*), Bash(pwd:*)
+allowed-tools: Bash(git:*), Bash(rm:*), Bash(ls:*), Bash(pwd:*), Bash(grep:*)
 argument-hint: --all | --branch wt/name | --dry-run
 description: Clean up merged worktrees and their branches
 ---
