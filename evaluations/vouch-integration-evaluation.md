@@ -31,18 +31,24 @@ No Nushell dependency is needed at the project level -- the GitHub Actions handl
 
 | File | Purpose |
 |------|---------|
-| `.github/VOUCHED.td` | Trust list with project owner (davila7) as initial vouched user |
-| `.github/workflows/vouch-check-pr.yml` | Auto-checks PR authors on open/reopen; closes PRs from unvouched/denounced users |
+| `.github/VOUCHED.td` | Trust list (blocklist mode: only denounced users are blocked) |
+| `.github/workflows/vouch-check-pr.yml` | Auto-checks PR authors on open/reopen; closes PRs from denounced users only (`require-vouch: false`) |
 | `.github/workflows/vouch-manage-by-issue.yml` | Lets collaborators vouch/denounce/unvouch via issue comments |
 | `.github/workflows/vouch-manage-by-discussion.yml` | Same as above but via GitHub Discussions |
 
+### Mode: Permissive (Blocklist)
+
+The integration uses `require-vouch: false`, which means **everyone can open PRs** except explicitly denounced users. This is the most permissive mode -- vouch acts as a blocklist rather than an allowlist.
+
+To switch to strict mode (only vouched users can contribute), set `require-vouch: true` in `vouch-check-pr.yml`.
+
 ### How It Works
 
-1. **PR opens** -> `vouch-check-pr` checks if the author is in `VOUCHED.td`
+1. **PR opens** -> `vouch-check-pr` checks if the author is denounced in `VOUCHED.td`
    - Bots and collaborators with write access are auto-allowed
-   - Vouched users pass
-   - Unvouched/denounced users get their PR auto-closed with a message
-   - `/recheck` comment re-triggers the check (useful after vouching someone)
+   - Denounced users get their PR auto-closed with a message
+   - Everyone else passes through (permissive mode)
+   - `/recheck` comment re-triggers the check
 
 2. **Collaborator comments `vouch` on an issue** -> `vouch-manage-by-issue` adds the issue author to `VOUCHED.td`
    - `vouch @user` vouches a specific user

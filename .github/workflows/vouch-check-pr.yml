@@ -22,6 +22,7 @@ jobs:
       - uses: mitchellh/vouch/action/check-pr@main
         with:
           pr-number: ${{ github.event.pull_request.number || github.event.issue.number }}
+          require-vouch: false
           auto-close: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
