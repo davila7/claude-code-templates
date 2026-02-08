@@ -9,6 +9,7 @@
 **/settings.local.json
 .claude/hooks/*
 !.claude/hooks/telegram-pr-webhook.py
+!.claude/hooks/telegram-push-notify.py
 .claude/commands/opsx/
 .claude/skills/
 
