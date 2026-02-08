@@ -1,0 +1,35 @@
+# Next.js Application with PostgreSQL
+# Full-stack Next.js app with database
+
+services:
+  - type: web
+    name: nextjs-app
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres
+          property: connectionString
+      - key: NEXTAUTH_URL
+        value: https://nextjs-app.onrender.com
+      - key: NEXTAUTH_SECRET
+        sync: false  # User provides in Dashboard
+      - key: JWT_SECRET
+        generateValue: true
+
+databases:
+  - name: postgres
+    databaseName: nextjs_production
+    user: nextjs_user
+    plan: free
+    postgresMajorVersion: "15"
+    ipAllowList: []  # Internal access only

@@ -1,0 +1,35 @@
+# Go API Service
+# High-performance Go web service with PostgreSQL
+
+services:
+  - type: web
+    name: go-api
+    runtime: go
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: go build -o bin/app -ldflags="-s -w" .
+    startCommand: ./bin/app
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false  # User provides in Dashboard
+      - key: API_KEY
+        sync: false  # User provides in Dashboard
+
+databases:
+  - name: postgres
+    databaseName: go_api_production
+    user: go_api_user
+    plan: free
+    postgresMajorVersion: "15"
+    ipAllowList: []  # Internal access only

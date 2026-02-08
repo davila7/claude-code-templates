@@ -1,0 +1,54 @@
+# Static Site (React/Vue/Gatsby)
+# SPA with client-side routing
+
+services:
+  - type: web
+    name: react-app
+    runtime: static
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./build  # Change to ./dist for Vue/Vite, ./public for Gatsby
+
+    # SPA routing - rewrite all routes to index.html
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    # Cache control headers
+    headers:
+      # Cache static assets aggressively
+      - path: /static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
+      # Cache other assets for 1 hour
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=3600
+
+      # Don't cache index.html
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+
+      # Security headers
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+
+    # Environment variables for build (if needed)
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://api.example.com
+      # Add other REACT_APP_ or VITE_ variables here

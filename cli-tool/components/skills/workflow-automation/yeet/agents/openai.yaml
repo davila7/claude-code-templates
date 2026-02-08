@@ -1,0 +1,6 @@
+interface:
+  display_name: "Yeet"
+  short_description: "Stage, commit, and open PR"
+  icon_small: "./assets/yeet-small.svg"
+  icon_large: "./assets/yeet.png"
+  default_prompt: "Prepare this branch for review: stage intended changes, write a focused commit, and open a PR."
