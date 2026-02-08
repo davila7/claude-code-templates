@@ -16,42 +16,55 @@ Key features:
 - CLI for local management (add, check, denounce, remove)
 - Used in production by [Ghostty](https://github.com/ghostty-org/ghostty)
 
-## Compatibility Assessment
+## Decision: Adopt the System (Not Migrate Code)
 
-### Blockers for Direct Migration
+The vouch CLI is written in Nushell and is not suitable for migration as a Claude Code Templates component. However, the **system itself** is designed to be adopted by any project through:
 
-| Issue | Severity | Details |
-|-------|----------|---------|
-| **Nushell dependency** | Critical | The entire CLI and library is written in Nushell (`.nu` files). Claude Code Templates components use Bash, Python, or Node.js. Nushell is not standard in most dev environments. |
-| **Not a Claude Code tool** | High | Vouch is a standalone project governance system, not designed to enhance Claude Code workflows. |
-| **GitHub Actions focus** | High | Primary integration is through GitHub Actions composite actions, which operate at CI/CD level, not developer CLI level. |
-| **Custom file format** | Medium | `.td` (Trustdown) format requires Nushell's `from td`/`to td` commands for structured parsing. |
+1. A `VOUCHED.td` file in the repository
+2. GitHub Actions that reference `mitchellh/vouch/action/*@main`
 
-### What Could Be Adapted
+No Nushell dependency is needed at the project level -- the GitHub Actions handle everything.
 
-Despite the direct migration being impractical, we could create **inspired components** that help Claude Code users work with vouch-enabled repositories:
+## Integration Applied
 
-| Component Type | Idea | Feasibility |
-|----------------|------|-------------|
-| **Agent** | Vouch-aware code reviewer that reads `VOUCHED.td` and understands the trust model | High |
-| **Command** | `/vouch-check <username>` using `gh` CLI and simple file parsing | High |
-| **Hook** | Pre-tool hook that warns when working on PRs from unvouched contributors | Medium |
-| **Setting** | Configuration for vouch-enabled repos (env vars, permissions) | Medium |
+### Files Created
 
-## Verdict
+| File | Purpose |
+|------|---------|
+| `.github/VOUCHED.td` | Trust list with project owner (davila7) as initial vouched user |
+| `.github/workflows/vouch-check-pr.yml` | Auto-checks PR authors on open/reopen; closes PRs from unvouched/denounced users |
+| `.github/workflows/vouch-manage-by-issue.yml` | Lets collaborators vouch/denounce/unvouch via issue comments |
+| `.github/workflows/vouch-manage-by-discussion.yml` | Same as above but via GitHub Discussions |
 
-**Not recommended for direct migration.** The vouch project is well-designed but fundamentally incompatible with Claude Code Templates for these reasons:
+### How It Works
 
-1. **Runtime mismatch** - Nushell vs Bash/Python/Node.js ecosystem
-2. **Wrong integration layer** - GitHub Actions (CI/CD) vs Claude Code (developer CLI)
-3. **Self-contained system** - Vouch works independently; wrapping it adds complexity without clear value over using the GitHub Actions directly
+1. **PR opens** -> `vouch-check-pr` checks if the author is in `VOUCHED.td`
+   - Bots and collaborators with write access are auto-allowed
+   - Vouched users pass
+   - Unvouched/denounced users get their PR auto-closed with a message
+   - `/recheck` comment re-triggers the check (useful after vouching someone)
 
-### Alternative Recommendation
+2. **Collaborator comments `vouch` on an issue** -> `vouch-manage-by-issue` adds the issue author to `VOUCHED.td`
+   - `vouch @user` vouches a specific user
+   - `vouch @user reason` vouches with a reason
+   - `denounce @user` blocks a user
+   - `unvouch @user` removes a user
 
-If the goal is to bring trust management awareness to Claude Code, we could create **new, original components** inspired by vouch's concepts:
+3. **Same via Discussions** -> `vouch-manage-by-discussion` handles discussion comments
 
-1. A **command** (`/vouch-check`) that parses `VOUCHED.td` using bash/grep (the format is simple enough: one username per line, `-` prefix for denounced)
-2. An **agent** that understands the vouch model and helps maintainers manage their trust lists
-3. A **hook** that reads `VOUCHED.td` before PR operations and adds context about contributor trust status
+### Managing the Trust List
 
-These would be original Claude Code Templates components that understand the vouch ecosystem, rather than a port of the Nushell tooling.
+**Vouch a new contributor:**
+Comment `vouch` on any issue authored by that person, or `vouch @username` on any issue.
+
+**Denounce a bad actor:**
+Comment `denounce @username AI slop contributor` on any issue.
+
+**Remove someone:**
+Comment `unvouch @username` on any issue.
+
+All changes are auto-committed by the GitHub Actions bot.
+
+### Future: Web of Trust
+
+Vouch supports importing trust lists from other projects. If other projects in the ecosystem adopt vouch, we can share vouch/denounce lists so trusted contributors in one project are automatically trusted in related ones.
