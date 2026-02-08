@@ -7,8 +7,6 @@ class ComponentPageManager {
     }
 
     async init() {
-        console.log('Initializing Component Page Manager...');
-        
         // Initialize data loader
         this.dataLoader = window.dataLoader || new DataLoader();
         
@@ -27,14 +25,12 @@ class ComponentPageManager {
         if (pathParts.length >= 3 && pathParts[0] === 'component') {
             componentType = decodeURIComponent(pathParts[1]);
             componentName = decodeURIComponent(pathParts[2]);
-            console.log('SEO URL Parameters:', { componentType, componentName });
         } else {
             // Fallback to query parameters
             const urlParams = new URLSearchParams(window.location.search);
             componentType = urlParams.get('type');
             componentName = urlParams.get('name');
             componentPath = urlParams.get('path');
-            console.log('Query Parameters:', { componentType, componentName, componentPath });
         }
 
         if (!componentType || (!componentName && !componentPath)) {
@@ -97,8 +93,6 @@ class ComponentPageManager {
             this.showError('No component data available');
             return;
         }
-
-        console.log('Rendering component:', this.component);
 
         // Hide loading state
         document.getElementById('loadingState').style.display = 'none';
@@ -372,12 +366,6 @@ class ComponentPageManager {
     async renderMetadataSection() {
         const metadataSection = document.getElementById('metadataSection');
 
-        console.log('=== Metadata Section Debug ===');
-        console.log('Component type:', this.component.type);
-        console.log('Component name:', this.component.name);
-        console.log('Component author:', this.component.author);
-        console.log('Component repo:', this.component.repo);
-
         // Check if component has metadata fields directly from frontmatter
         const hasDirectAuthor = this.component.author && this.component.author.trim() !== '';
         const hasDirectRepo = this.component.repo && this.component.repo.trim() !== '';
@@ -390,16 +378,13 @@ class ComponentPageManager {
         if (this.component.type === 'agent') {
             try {
                 const marketplace = await this.loadComponentsMarketplace();
-                console.log('Components marketplace loaded:', marketplace);
 
                 if (marketplace && marketplace.agents) {
                     const componentName = this.component.name.replace('.md', '');
-                    console.log('Looking for component:', componentName);
 
                     agentMetadata = marketplace.agents.find(
                         agent => agent.name === componentName
                     );
-                    console.log('Found agent metadata:', agentMetadata);
                 }
             } catch (error) {
                 console.error('Error loading marketplace metadata:', error);
@@ -410,7 +395,6 @@ class ComponentPageManager {
         const hasMetadata = hasDirectAuthor || hasDirectRepo || hasDirectVersion || hasDirectLicense || hasDirectKeywords || agentMetadata;
 
         if (!hasMetadata) {
-            console.log('No metadata available, hiding metadata section');
             if (metadataSection) metadataSection.style.display = 'none';
             return;
         }
@@ -507,7 +491,6 @@ class ComponentPageManager {
 
             if (componentsData && componentsData.componentsMarketplace) {
                 this.componentsMarketplace = componentsData.componentsMarketplace;
-                console.log('Loaded components marketplace:', this.componentsMarketplace);
                 return this.componentsMarketplace;
             }
 
@@ -515,7 +498,6 @@ class ComponentPageManager {
             const marketplaceResponse = await fetch('https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/.claude-plugin/marketplace.json');
             if (marketplaceResponse.ok) {
                 this.componentsMarketplace = await marketplaceResponse.json();
-                console.log('Loaded components marketplace from GitHub:', this.componentsMarketplace);
                 return this.componentsMarketplace;
             }
 
@@ -832,19 +814,9 @@ class ComponentPageManager {
             addToCartBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (this.component) {
-                    // Debug logging for production
-                    console.log('=== Add to Cart Debug ===');
-                    console.log('Component object:', this.component);
-                    console.log('Component type:', this.component.type);
-                    console.log('Component name:', this.component.name);
-                    console.log('Component path:', this.component.path);
-                    
-                    // Check if cartManager exists
                     if (typeof addToCart === 'function') {
                         // Convert component type to plural format
                         const componentType = this.getComponentTypePlural();
-                        
-                        console.log('Plural type for cart:', componentType);
                         
                         if (!componentType) {
                             console.error('Failed to get component type plural');
@@ -861,7 +833,6 @@ class ComponentPageManager {
                                 path: this.component.path,
                                 category: this.component.category
                             };
-                            console.log('Sending to cart:', componentItem, componentType);
                             addToCart(componentItem, componentType);
                         } else {
                             console.error('Missing component name or path:', this.component);
@@ -869,8 +840,6 @@ class ComponentPageManager {
                         }
                     } else {
                         console.error('Cart functionality not available');
-                        console.log('typeof addToCart:', typeof addToCart);
-                        console.log('window.addToCart:', window.addToCart);
                         // Fallback: show a message or redirect to main page
                         alert('Cart functionality not available. Please return to the main page to add components to your stack.');
                     }

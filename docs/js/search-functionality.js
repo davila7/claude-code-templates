@@ -134,7 +134,6 @@ async function loadComponentsForSearch() {
     try {
         // Check if dataLoader is available and use it
         if (window.dataLoader) {
-            console.log('Using DataLoader for search components...');
             const data = await window.dataLoader.loadAllComponents();
             
             if (data) {
@@ -165,13 +164,11 @@ async function loadComponentsForSearch() {
                     }
                 }
                 
-                console.log('Search data loaded successfully via DataLoader:', Object.keys(allComponents));
                 return;
             }
         }
         
         // Fallback: direct fetch if DataLoader not available
-        console.log('DataLoader not available, using direct fetch...');
         const response = await fetch('components.json');
         if (response.ok) {
             const data = await response.json();
@@ -203,7 +200,6 @@ async function loadComponentsForSearch() {
                 }
             }
             
-            console.log('Search data loaded successfully via direct fetch:', Object.keys(allComponents));
         } else {
             console.error('Failed to load components.json');
         }
@@ -658,8 +654,7 @@ function showAllComponents() {
  */
 function initializeFilterFromURL() {
     const urlFilter = getFilterFromURL();
-    console.log('Initializing filter from URL:', urlFilter);
-    
+
     if (urlFilter && typeof setUnifiedFilter === 'function') {
         setUnifiedFilter(urlFilter);
     }
@@ -671,8 +666,6 @@ function initializeFilterFromURL() {
 function initializeSearchFromURL() {
     const urlQuery = getSearchQueryFromURL();
     if (urlQuery) {
-        console.log('Initializing search from URL:', urlQuery);
-        
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.value = urlQuery;
@@ -695,10 +688,8 @@ function initializeSearchFromURL() {
             
             const trySearch = () => {
                 attempts++;
-                console.log(`Attempt ${attempts} to perform search. Components loaded:`, Object.keys(allComponents).length > 0);
-                
+
                 if (Object.keys(allComponents).length > 0) {
-                    console.log('Components ready, performing search...');
                     performSearch(urlQuery);
                 } else if (attempts < maxAttempts) {
                     // If components not loaded, wait and try again

@@ -140,7 +140,6 @@ class CartManager {
         });
         
         if (cleaned) {
-            console.log('Cleaned corrupted cart data');
             this.saveCartToStorage();
         }
     }

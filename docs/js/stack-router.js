@@ -68,8 +68,6 @@ class StackRouter {
 
     // Load company-specific stack page
     async loadCompanyStack(companySlug) {
-        console.log('Loading company stack:', companySlug);
-        
         const companyInfo = this.getCompanyInfo(companySlug);
         if (!companyInfo) {
             console.error('Company not found:', companySlug);
@@ -96,8 +94,6 @@ class StackRouter {
 
     // Load technology-specific stack page
     async loadTechnologyStack(techSlug) {
-        console.log('Loading technology stack:', techSlug);
-        
         const techInfo = this.getTechnologyInfo(techSlug);
         if (!techInfo) {
             console.error('Technology not found:', techSlug);
@@ -388,8 +384,6 @@ class StackRouter {
 
     // Load all companies page
     async loadAllCompaniesPage() {
-        console.log('Loading all companies page');
-        
         this.currentRoute = { type: 'companies', slug: 'all' };
         
         // Wait for data to be loaded
