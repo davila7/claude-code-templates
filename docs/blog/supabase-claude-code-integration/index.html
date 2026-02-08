@@ -202,7 +202,7 @@
         </header>
 
         <article class="article-body">
-            <img src="https://aitmpl.com/blog/assets/supabase-claude-code-templates-cover.png" alt="Supabase and Claude Code Integration" class="article-cover" loading="lazy">
+            <img src="../assets/supabase-claude-code-templates-cover.png" alt="Supabase and Claude Code Integration" class="article-cover" loading="lazy">
             
             <div class="article-content-full">
                 <h2>Claude Code stack for Supabase</h2>
@@ -328,6 +328,10 @@
                 <h2>Installation Options</h2>
                 <p>There are multiple ways to install the Supabase stack for Claude Code. Choose the approach that best fits your workflow:</p>
 
+                <div class="info-box">
+                    <strong>Want to understand how it works?</strong> Keep reading to learn about each component and how they work together in your Supabase development workflow.
+                </div>
+
                 <h3>Install Individual Components</h3>
                 <pre><code class="language-bash">
 # Install specific agent
@@ -403,34 +407,15 @@ npx claude-code-templates@latest \
                 
                 <p>That's it! Claude Code will automatically detect all components and you can start using them immediately.</p>
 
-                <!-- Newsletter CTA - End -->
-                <div class="newsletter-cta end-newsletter">
-                    <div class="newsletter-cta-content">
-                        <h3>Want More?</h3>
-                        <p>Subscribe to receive new Claude Code articles, components and integration tutorials.</p>
-                        
-                        <div id="end-newsletter-success" class="newsletter-message success-message" style="display: none;">
-                            ✓ Subscribed successfully
-                        </div>
-                        
-                        <div id="end-newsletter-error" class="newsletter-message error-message" style="display: none;">
-                            ✗ Error. Try again.
-                        </div>
-                        
-                        <form id="end-newsletter-form" method="POST" action="https://817715f5.sibforms.com/serve/MUIFAAfji55QSo2kjmh_3Y4i1XrFpOiTqwu6ZKbWQtps1SHh-4OOCCzhwRCvknpSybxI0_-V0KWocb0_b12iXBT-OahbBE4YiCQc9nVU0mD2R18vQfpP9wN11ZW8XqgTo5I9EGLrt-qdfR_1rxbmJX4uiWGXbJSYYrTVno0hUd0Pp42BOLsWJ3hssO3NMq2fdWhVZa9OIIWW3L85" data-type="subscription" class="newsletter-form" target="end_hidden_iframe">
-                            <div class="input-group">
-                                <input type="email" name="EMAIL" placeholder="your@email.com" required class="newsletter-input">
-                                <button type="submit" class="newsletter-submit">
-                                    <span class="submit-text">→</span>
-                                </button>
-                            </div>
-                            <input type="text" name="email_address_check" value="" style="display: none;">
-                            <input type="hidden" name="locale" value="en">
-                        </form>
-                        <iframe name="end_hidden_iframe" style="display: none;"></iframe>
-                    </div>
+                <div class="success-box">
+                    <strong>Key takeaway:</strong> With agents, commands, and MCP working together, Claude Code becomes a full-featured Supabase development environment.
                 </div>
 
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
             </div>
 
             <div class="article-nav">
@@ -460,7 +445,7 @@ npx claude-code-templates@latest \
                 </div>
                 
                 <div class="footer-right">
-                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
                     <div class="footer-links">
                         <a href="../../trending.html" class="footer-link">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -784,7 +769,8 @@ class MarkdownCopier {
                     return this.processCodeBlock(element.querySelector('pre'));
                 }
                 // Skip newsletter CTAs and other divs
-                if (element.classList.contains('newsletter-cta')) {
+                if (element.classList.contains('newsletter-cta') ||
+                    element.classList.contains('explore-components-banner')) {
                     return '';
                 }
                 return element.textContent || '';

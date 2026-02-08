@@ -36,13 +36,13 @@
     <meta property="og:image" content="https://aitmpl.com/blog/assets/skills-creator-cover.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:article:published_time" content="2025-01-15T10:00:00Z">
-    <meta property="og:article:author" content="Claude Code Templates">
-    <meta property="og:article:section" content="Skills">
-    <meta property="og:article:tag" content="Claude Code">
-    <meta property="og:article:tag" content="Skills">
-    <meta property="og:article:tag" content="Workflows">
-    <meta property="og:article:tag" content="Automation">
+    <meta property="article:published_time" content="2025-01-15T10:00:00Z">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Skills">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="Skills">
+    <meta property="article:tag" content="Workflows">
+    <meta property="article:tag" content="Automation">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -66,14 +66,14 @@
 
     <!-- Hotjar Tracking Code for https://aitmpl.com -->
     <script>
-        (function (h, o, t, j, a, r) {
-            h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
-            h._hjSettings = { hjid: 6519181, hjsv: 6 };
-            a = o.getElementsByTagName('head')[0];
-            r = o.createElement('script'); r.async = 1;
-            r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
             a.appendChild(r);
-        })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
 
     <!-- Structured Data -->
@@ -307,19 +307,14 @@ claude
                         href="https://code.claude.com/docs/en/skills?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog"
                         target="_blank">official documentation</a>.</p>
 
-                <!-- Explore Components Banner -->
-                <div class="explore-components-banner"
-                    style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
-                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 800+
-                        Claude Code Components</h3>
-                    <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
-                        Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your
-                        Claude Code workflow
-                    </p>
-                    <a href="../../index.html"
-                        style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
-                        Browse All Components →
-                    </a>
+                <div class="success-box">
+                    <strong>Key takeaway:</strong> Skills give Claude Code domain expertise without wasting context tokens. Install them once, and Claude automatically uses them when relevant.
+                </div>
+
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
                 </div>
 
             </div>
@@ -351,7 +346,7 @@ claude
                 </div>
 
                 <div class="footer-right">
-                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
                     <div class="footer-links">
                         <a href="../../trending.html" class="footer-link">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -656,8 +651,8 @@ claude
                         if (element.classList.contains('code-block')) {
                             return this.processCodeBlock(element.querySelector('pre'));
                         }
-                        // Skip newsletter CTAs and other divs
-                        if (element.classList.contains('newsletter-cta')) {
+                        if (element.classList.contains('newsletter-cta') ||
+                            element.classList.contains('explore-components-banner')) {
                             return '';
                         }
                         return element.textContent || '';

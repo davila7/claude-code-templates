@@ -213,7 +213,7 @@ graph TD
     H -->|Yes| I[Download Video URL]
     H -->|No| G
 
-    style B fill:#7c3aed,stroke:#fff,color:#fff
+    style B fill:#F97316,stroke:#fff,color:#000
     style I fill:#00ff41,stroke:#fff,color:#000
                     </pre>
                 </div>
@@ -430,29 +430,29 @@ First, let's look at the dashboard.
 
                 <p>The skill is organized into logical categories with 18+ rule files:</p>
 
-                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <table class="components-table">
                     <thead>
-                        <tr style="border-bottom: 2px solid #00ff41;">
-                            <th style="text-align: left; padding: 0.5rem; color: #00ff41;">Category</th>
-                            <th style="text-align: left; padding: 0.5rem; color: #00ff41;">Rules</th>
+                        <tr>
+                            <th>Category</th>
+                            <th>Rules</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="border-bottom: 1px solid #333;">
-                            <td style="padding: 0.5rem; color: #b0b0b0;">Foundation</td>
-                            <td style="padding: 0.5rem; color: #808080;">authentication, quota, video-status, assets</td>
+                        <tr>
+                            <td><strong>Foundation</strong></td>
+                            <td>authentication, quota, video-status, assets</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #333;">
-                            <td style="padding: 0.5rem; color: #b0b0b0;">Core Video</td>
-                            <td style="padding: 0.5rem; color: #808080;">avatars, voices, scripts, video-generation, video-agent, dimensions</td>
+                        <tr>
+                            <td><strong>Core Video</strong></td>
+                            <td>avatars, voices, scripts, video-generation, video-agent, dimensions</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #333;">
-                            <td style="padding: 0.5rem; color: #b0b0b0;">Customization</td>
-                            <td style="padding: 0.5rem; color: #808080;">backgrounds, text-overlays, captions</td>
+                        <tr>
+                            <td><strong>Customization</strong></td>
+                            <td>backgrounds, text-overlays, captions</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #333;">
-                            <td style="padding: 0.5rem; color: #b0b0b0;">Advanced</td>
-                            <td style="padding: 0.5rem; color: #808080;">templates, video-translation, streaming-avatars, photo-avatars, webhooks, remotion-integration</td>
+                        <tr>
+                            <td><strong>Advanced</strong></td>
+                            <td>templates, video-translation, streaming-avatars, photo-avatars, webhooks, remotion-integration</td>
                         </tr>
                     </tbody>
                 </table>
@@ -463,14 +463,10 @@ First, let's look at the dashboard.
                 <p>For HeyGen API documentation, visit <a href="https://docs.heygen.com" target="_blank">docs.heygen.com</a>.</p>
 
                 <!-- Explore Components Banner -->
-                <div class="explore-components-banner" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #00ff41; border-radius: 8px; padding: 2rem; margin-top: 2rem; text-align: center;">
-                    <h3 style="color: #00ff41; margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem;">Explore 900+ Claude Code Components</h3>
-                    <p style="color: #b0b0b0; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6;">
-                        Discover more Skills, Agents, Hooks, MCPs, Commands, Settings and Templates to supercharge your Claude Code workflow
-                    </p>
-                    <a href="https://aitmpl.com" style="display: inline-block; padding: 0.875rem 2rem; background: #00ff41; color: #000; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 1rem; transition: all 0.2s;">
-                        Browse All Components at aitmpl.com
-                    </a>
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
                 </div>
 
             </div>
@@ -502,7 +498,7 @@ First, let's look at the dashboard.
                 </div>
 
                 <div class="footer-right">
-                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
                     <div class="footer-links">
                         <a href="../../trending.html" class="footer-link">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -535,22 +531,12 @@ First, let's look at the dashboard.
             startOnLoad: true,
             theme: 'dark',
             themeVariables: {
-                primaryColor: '#7c3aed',
+                primaryColor: '#F97316',
                 primaryTextColor: '#fff',
-                primaryBorderColor: '#a855f7',
+                primaryBorderColor: '#F97316',
                 lineColor: '#00ff41',
                 secondaryColor: '#1a1a1a',
-                tertiaryColor: '#2d2d2d',
-                background: '#1a1a1a',
-                mainBkg: '#1a1a1a',
-                secondBkg: '#2d2d2d',
-                labelBackground: '#1a1a1a',
-                labelTextColor: '#fff',
-                nodeBorder: '#a855f7',
-                clusterBkg: '#2d2d2d',
-                clusterBorder: '#a855f7',
-                edgeLabelBackground: '#1a1a1a',
-                fontFamily: '"Courier New", monospace'
+                tertiaryColor: '#2d2d2d'
             }
         });
     </script>
@@ -623,14 +609,11 @@ class CodeCopy {
         // Check content patterns
         const content = codeElement.textContent;
 
-        if (content.includes('npm ') || content.includes('$ ') || content.includes('npx ')) {
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
             return 'bash';
         }
         if (content.includes('import ') && content.includes('from ')) {
             return 'javascript';
-        }
-        if (content.includes('interface ') || content.includes(': string') || content.includes(': number')) {
-            return 'typescript';
         }
         if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
             return 'sql';
@@ -701,11 +684,11 @@ class CodeCopy {
         return text
             .split('\n')
             .map(line => {
-                // Remove prompts like "$ ", "> ", "claude-code> "
-                line = line.replace(/^[\$>]\s*/, '').replace(/^claude-code>\s*/, '');
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
 
-                // Remove output/result comments (lines starting with # )
-                if (line.trim().startsWith('# ') ||
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') ||
                     line.trim().startsWith('# Start using') ||
                     line.trim().startsWith('# Your .claude') ||
                     line.trim().startsWith('# This will') ||
@@ -832,8 +815,8 @@ class MarkdownCopier {
                 if (element.classList.contains('code-block')) {
                     return this.processCodeBlock(element.querySelector('pre'));
                 }
-                // Skip banner and other divs
-                if (element.classList.contains('explore-components-banner')) {
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
                     return '';
                 }
                 return element.textContent || '';
@@ -851,6 +834,33 @@ class MarkdownCopier {
         return Array.from(items)
             .map(item => `${marker} ${item.textContent}`)
             .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
     }
 
     processCodeBlock(preElement) {
