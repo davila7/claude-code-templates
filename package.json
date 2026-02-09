@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.28.14",
+  "version": "1.28.15",
   "description": "Component templates and tracking system for Claude Code",
   "main": "cli-tool/src/index.js",
   "bin": {
@@ -30,6 +30,7 @@
     "inquirer": "^8.2.6",
     "open": "^8.4.2",
     "ora": "^5.4.1",
+    "qrcode": "^1.5.4",
     "uuid": "^11.1.0",
     "ws": "^8.18.3"
   },
