@@ -24,28 +24,6 @@
 
 ---
 
-<div align="center">
-  <h3>🤝 Partnership</h3>
-  <p>
-    <strong>This project is sponsored by <a href="https://z.ai" target="_blank">Z.AI</a></strong><br/>
-    Supporting Claude Code Templates with the <strong>GLM CODING PLAN</strong>
-  </p>
-  <p>
-    <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=readme&utm_campaign=partnership" target="_blank">
-      <img src="https://img.shields.io/badge/Get%2010%25%20OFF-GLM%20Coding%20Plan-2563eb?style=for-the-badge" alt="GLM Coding Plan" />
-    </a>
-  </p>
-  <p>
-    <em>Top-tier coding performance powered by GLM-4.6 • Starting at $3/month</em><br/>
-    <em>Seamlessly integrates with Claude Code, Cursor, Cline & 10+ AI coding tools</em>
-  </p>
-  <p>
-    <code>npx claude-code-templates@latest --setting partnerships/glm-coding-plan --yes</code>
-  </p>
-</div>
-
----
-
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
 
 **Ready-to-use configurations for Anthropic's Claude Code.** A comprehensive collection of AI agents, custom commands, settings, hooks, external integrations (MCPs), and project templates to enhance your development workflow.
