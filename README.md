@@ -55,12 +55,12 @@ npx claude-code-templates@latest --mcp database/postgresql-integration --yes
 
 | Component | Description | Examples |
 |-----------|-------------|----------|
+| **🎨 Skills** | Reusable capabilities with progressive disclosure | PDF processing, Excel automation, custom workflows |
 | **🤖 Agents** | AI specialists for specific domains | Security auditor, React performance optimizer, database architect |
 | **⚡ Commands** | Custom slash commands | `/generate-tests`, `/optimize-bundle`, `/check-security` |
 | **🔌 MCPs** | External service integrations | GitHub, PostgreSQL, Stripe, AWS, OpenAI |
 | **⚙️ Settings** | Claude Code configurations | Timeouts, memory settings, output styles |
 | **🪝 Hooks** | Automation triggers | Pre-commit validation, post-completion actions |
-| **🎨 Skills** | Reusable capabilities with progressive disclosure | PDF processing, Excel automation, custom workflows |
 
 ## 🛠️ Additional Tools
 
@@ -97,6 +97,54 @@ View marketplaces, installed plugins, and manage permissions from a unified inte
 ```bash
 npx claude-code-templates@latest --plugins
 ```
+
+### 👥 Teams Dashboard
+Visualize Claude Code Teams work sessions with a flow diagram showing communication between lead agents and teammates.
+
+```bash
+npx claude-code-templates@latest --teams
+```
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  Claude Code Teams                   │
+│               Session Flow Diagram                   │
+└─────────────────────────────────────────────────────┘
+
+        ┌──────────────────────┐
+        │     Agent Lead       │
+        │  (Orchestrator)      │
+        └──────────┬───────────┘
+                   │
+          ┌────────┴────────┐
+          │  Task Planning  │
+          │  & Delegation   │
+          └────────┬────────┘
+                   │
+     ┌─────────────┼─────────────┐
+     │             │             │
+     ▼             ▼             ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│Teammate │ │Teammate │ │Teammate │
+│   #1    │ │   #2    │ │   #3    │
+│(Worker) │ │(Worker) │ │(Worker) │
+└────┬────┘ └────┬────┘ └────┬────┘
+     │             │             │
+     └─────────────┼─────────────┘
+                   │
+          ┌────────┴────────┐
+          │   Results &     │
+          │   Sync Back     │
+          └────────┬────────┘
+                   │
+                   ▼
+        ┌──────────────────────┐
+        │     Agent Lead       │
+        │  (Review & Merge)    │
+        └──────────────────────┘
+```
+
+The dashboard scans your local `.claude/projects/` directory for team sessions with subagents, displaying real-time session status, message flow between agents, and task delegation patterns in a web interface.
 
 ## 📖 Documentation
 
