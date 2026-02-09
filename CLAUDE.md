@@ -148,15 +148,32 @@ python scripts/generate_components_json.py
 # 2. Run tests
 npm test
 
-# 3. Bump version
-npm version patch  # 1.20.2 -> 1.20.3
+# 3. Check current npm version and align local version
+npm view claude-code-templates version  # check latest on registry
+# Edit package.json version to be one patch above the registry version
 
-# 4. Publish
+# 4. Commit version bump and push
+git add package.json && git commit -m "chore: Bump version to X.Y.Z"
+git push origin main
+
+# 5. Publish to npm (requires granular access token with "Bypass 2FA" enabled)
+npm config set //registry.npmjs.org/:_authToken=YOUR_GRANULAR_TOKEN
 npm publish
+npm config delete //registry.npmjs.org/:_authToken  # always clean up after
 
-# 5. Deploy website
+# 6. Tag the release
+git tag vX.Y.Z && git push origin vX.Y.Z
+
+# 7. Deploy website
 vercel --prod
 ```
+
+**npm Publishing Notes:**
+- Classic npm tokens were revoked Dec 2025. Use **granular access tokens** from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens)
+- The token must have **Read and Write** permissions for `claude-code-templates` and **"Bypass 2FA"** enabled
+- Always remove the token from npm config after publishing (`npm config delete`)
+- The local `package.json` version may drift from npm if published from CI — always check `npm view claude-code-templates version` first
+- Never hardcode or commit tokens
 
 ## API Architecture
 
