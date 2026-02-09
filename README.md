@@ -2,7 +2,6 @@
 [![npm downloads](https://img.shields.io/npm/dt/claude-code-templates.svg)](https://www.npmjs.com/package/claude-code-templates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Sponsored by Z.AI](https://img.shields.io/badge/Sponsored%20by-Z.AI-2563eb?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMiAyMkgyMkwxMiAyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+)](https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme)
 [![Neon Open Source Program](https://img.shields.io/badge/Neon-Open%20Source%20Program-00E599?style=flat)](https://get.neon.com/4eCjZDz)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/daniavila)
 [![GitHub stars](https://img.shields.io/github/stars/davila7/claude-code-templates.svg?style=social&label=Star)](https://github.com/davila7/claude-code-templates)
@@ -21,28 +20,6 @@
   <img alt="Neon Open Source Program" src="https://img.shields.io/badge/Neon-Open%20Source%20Program-00E599?style=for-the-badge" />
   </a>
 </p>
-
----
-
-<div align="center">
-  <h3>🤝 Partnership</h3>
-  <p>
-    <strong>This project is sponsored by <a href="https://z.ai" target="_blank">Z.AI</a></strong><br/>
-    Supporting Claude Code Templates with the <strong>GLM CODING PLAN</strong>
-  </p>
-  <p>
-    <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=readme&utm_campaign=partnership" target="_blank">
-      <img src="https://img.shields.io/badge/Get%2010%25%20OFF-GLM%20Coding%20Plan-2563eb?style=for-the-badge" alt="GLM Coding Plan" />
-    </a>
-  </p>
-  <p>
-    <em>Top-tier coding performance powered by GLM-4.6 • Starting at $3/month</em><br/>
-    <em>Seamlessly integrates with Claude Code, Cursor, Cline & 10+ AI coding tools</em>
-  </p>
-  <p>
-    <code>npx claude-code-templates@latest --setting partnerships/glm-coding-plan --yes</code>
-  </p>
-</div>
 
 ---
 
