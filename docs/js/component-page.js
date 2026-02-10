@@ -121,8 +121,17 @@ class ComponentPageManager {
         // Render GitHub link
         this.renderGitHubLink();
 
+        // Populate sidebar quick install
+        this.renderSidebarQuickInstall();
+
         // Update page metadata
         this.updatePageMetadata();
+
+        // Load Giscus comments
+        this.loadGiscusComments();
+
+        // Activate tab from URL hash
+        this.activateTabFromHash();
     }
 
 
@@ -779,6 +788,67 @@ class ComponentPageManager {
         }
     }
 
+    loadGiscusComments() {
+        const container = document.getElementById('giscusContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        script.setAttribute('data-repo', 'davila7/claude-code-templates');
+        script.setAttribute('data-repo-id', 'R_kgDOPGh7XA');
+        script.setAttribute('data-category', 'Comments');
+        script.setAttribute('data-category-id', 'DIC_kwDOPGh7XM4C2H0y');
+        script.setAttribute('data-mapping', 'pathname');
+        script.setAttribute('data-strict', '0');
+        script.setAttribute('data-reactions-enabled', '0');
+        script.setAttribute('data-emit-metadata', '0');
+        script.setAttribute('data-input-position', 'bottom');
+        script.setAttribute('data-theme', 'dark');
+        script.setAttribute('data-lang', 'en');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.async = true;
+
+        container.appendChild(script);
+    }
+
+    renderSidebarQuickInstall() {
+        const commandEl = document.getElementById('quickInstallCommand');
+        if (commandEl) {
+            const componentPath = this.getCleanPath();
+            commandEl.textContent = `npx claude-code-templates@latest --${this.component.type}=${componentPath} --yes`;
+        }
+
+        // Populate sidebar GitHub link
+        const sidebarLink = document.getElementById('githubLinkSidebar');
+        if (sidebarLink) {
+            sidebarLink.href = this.generateGitHubURL();
+        }
+    }
+
+    activateTabFromHash() {
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+            this.switchTab(hash);
+        }
+    }
+
+    switchTab(tabName) {
+        const validTabs = ['overview', 'code', 'installation'];
+        if (!validTabs.includes(tabName)) return;
+
+        // Update buttons
+        document.querySelectorAll('.component-tabs .tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+
+        // Update panes
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.toggle('active', pane.id === `tab-${tabName}`);
+        });
+    }
+
     renderGitHubLink() {
         const githubUrl = this.generateGitHubURL();
         const githubLinkElement = document.getElementById('githubLink');
@@ -803,6 +873,20 @@ class ComponentPageManager {
 
 
     setupEventListeners() {
+        // Tab switching
+        document.querySelectorAll('.component-tabs .tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                this.switchTab(tab);
+                history.replaceState(null, '', `#${tab}`);
+            });
+        });
+
+        // Handle hash changes
+        window.addEventListener('hashchange', () => {
+            this.activateTabFromHash();
+        });
+
         // Handle browser back/forward buttons
         window.addEventListener('popstate', () => {
             this.loadComponentFromURL();

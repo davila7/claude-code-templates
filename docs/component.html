@@ -203,45 +203,130 @@
                     </button>
                 </div>
 
-                <!-- Component Description -->
-                <section class="content-section">
-                    <h2>Overview</h2>
-                    <div class="component-description-content">
-                        <p id="componentDescription">Component description will be loaded here.</p>
-                    </div>
-                </section>
+                <!-- Tab Navigation (GitHub PR style) -->
+                <div class="component-tabs" id="componentTabs">
+                    <button class="tab-btn active" data-tab="overview">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        Overview
+                    </button>
+                    <button class="tab-btn" data-tab="code">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6Z"/>
+                        </svg>
+                        Code
+                    </button>
+                </div>
 
-                <!-- Metadata Section -->
-                <section class="content-section metadata-section" id="metadataSection" style="display: none;">
-                    <h2>📋 Metadata</h2>
-                    <div class="metadata-grid">
-                        <div class="metadata-item">
-                            <span class="metadata-label">Version</span>
-                            <span class="metadata-value" id="metadataVersion">--</span>
-                        </div>
-                        <div class="metadata-item">
-                            <span class="metadata-label">Author</span>
-                            <span class="metadata-value" id="metadataAuthor">--</span>
-                        </div>
-                        <div class="metadata-item">
-                            <span class="metadata-label">License</span>
-                            <span class="metadata-value" id="metadataLicense">--</span>
-                        </div>
-                        <div class="metadata-item">
-                            <span class="metadata-label">Repository</span>
-                            <a class="metadata-link" id="metadataRepository" href="#" target="_blank" style="display: none;">View Repository</a>
-                            <span class="metadata-value" id="metadataRepositoryNone" style="display: none;">--</span>
-                        </div>
-                        <div class="metadata-item metadata-item-full">
-                            <span class="metadata-label">Keywords</span>
-                            <div class="metadata-keywords" id="metadataKeywords">
-                                <!-- Keywords will be loaded here -->
+                <!-- Tab Content -->
+                <div class="tab-content-wrapper">
+
+                    <!-- ===== OVERVIEW TAB (default - like PR Conversation) ===== -->
+                    <div class="tab-pane active" id="tab-overview">
+                        <div class="tab-content-grid">
+                            <!-- Main Content (left) -->
+                            <div class="tab-main">
+                                <!-- Description -->
+                                <section class="content-section">
+                                    <h2>Overview</h2>
+                                    <div class="component-description-content">
+                                        <p id="componentDescription">Component description will be loaded here.</p>
+                                    </div>
+                                </section>
+
+                                <!-- Quality Validation Section -->
+                                <section class="content-section validation-section" id="validationSection" style="display: none;">
+                                    <h2>Quality Validation</h2>
+                                    <div class="validation-compact-content">
+                                        <div class="validation-summary">
+                                            <div class="validation-score-display">
+                                                <div class="score-circle" id="scoreCircle">
+                                                    <span id="scoreValue">--</span>
+                                                </div>
+                                                <div class="score-info">
+                                                    <span class="score-label">Quality Score</span>
+                                                    <span class="score-status" id="scoreStatus">Validated</span>
+                                                </div>
+                                            </div>
+                                            <div class="validation-stats-inline">
+                                                <div class="stat-inline">
+                                                    <span class="stat-icon">&#10060;</span>
+                                                    <span class="stat-label">Errors:</span>
+                                                    <span class="stat-number" id="inlineErrors">0</span>
+                                                </div>
+                                                <div class="stat-inline">
+                                                    <span class="stat-icon">&#9888;&#65039;</span>
+                                                    <span class="stat-label">Warnings:</span>
+                                                    <span class="stat-number" id="inlineWarnings">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="validation-checks" id="validationChecks"></div>
+                                    </div>
+                                </section>
+
+                                <!-- Comments Section (Giscus - GitHub Discussions) -->
+                                <section class="content-section comments-section" id="commentsSection">
+                                    <h2>Comments</h2>
+                                    <p class="comments-description">Sign in with GitHub to leave a comment. Discussions are stored in the project's <a href="https://github.com/davila7/claude-code-templates/discussions" target="_blank">GitHub Discussions</a>.</p>
+                                    <div id="giscusContainer"></div>
+                                </section>
                             </div>
+
+                            <!-- Sidebar (right - like PR sidebar) -->
+                            <aside class="tab-sidebar">
+                                <!-- Quick Install -->
+                                <div class="sidebar-card">
+                                    <h3 class="sidebar-card-title">Quick Install</h3>
+                                    <div class="quick-install-block">
+                                        <code id="quickInstallCommand">npx claude-code-templates@latest --agent=example --yes</code>
+                                        <button class="quick-copy-btn" onclick="copyToClipboard(document.getElementById('quickInstallCommand').textContent)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                            </svg>
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Metadata -->
+                                <div class="sidebar-card" id="metadataSection" style="display: none;">
+                                    <h3 class="sidebar-card-title">Metadata</h3>
+                                    <div class="sidebar-metadata-list">
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Version</span>
+                                            <span class="sidebar-meta-value" id="metadataVersion">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Author</span>
+                                            <span class="sidebar-meta-value" id="metadataAuthor">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">License</span>
+                                            <span class="sidebar-meta-value" id="metadataLicense">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Repository</span>
+                                            <a class="metadata-link" id="metadataRepository" href="#" target="_blank" style="display: none;">View</a>
+                                            <span class="sidebar-meta-value" id="metadataRepositoryNone" style="display: none;">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-keywords-row">
+                                            <span class="sidebar-meta-label">Keywords</span>
+                                            <div class="metadata-keywords" id="metadataKeywords"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </aside>
                         </div>
                     </div>
-                </section>
 
-                <!-- Installation Section -->
+                    <!-- ===== CODE TAB (like PR Files Changed) ===== -->
+                    <div class="tab-pane" id="tab-code">
+
+                    <!-- ===== INSTALLATION TAB ===== -->
+                    <div class="tab-pane" id="tab-installation">
                 <section class="content-section" id="installationSection">
                     <h2>Installation</h2>
 
@@ -557,42 +642,10 @@
                         </div>
                     </div>
                 </section>
+                    </div><!-- end tab-installation -->
 
-                <!-- Quality Validation Section - Compact -->
-                <section class="content-section validation-section" id="validationSection" style="display: none;">
-                    <h2>✓ Quality Validation</h2>
-                    <div class="validation-compact-content">
-                        <div class="validation-summary">
-                            <div class="validation-score-display">
-                                <div class="score-circle" id="scoreCircle">
-                                    <span id="scoreValue">--</span>
-                                </div>
-                                <div class="score-info">
-                                    <span class="score-label">Quality Score</span>
-                                    <span class="score-status" id="scoreStatus">Validated</span>
-                                </div>
-                            </div>
-                            <div class="validation-stats-inline">
-                                <div class="stat-inline">
-                                    <span class="stat-icon">❌</span>
-                                    <span class="stat-label">Errors:</span>
-                                    <span class="stat-number" id="inlineErrors">0</span>
-                                </div>
-                                <div class="stat-inline">
-                                    <span class="stat-icon">⚠️</span>
-                                    <span class="stat-label">Warnings:</span>
-                                    <span class="stat-number" id="inlineWarnings">0</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="validation-checks" id="validationChecks">
-                            <!-- Validation checks with tooltips will be loaded here -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Component Code Section -->
+                    <!-- ===== CODE TAB (like PR Files Changed) ===== -->
+                    <div class="tab-pane" id="tab-code">
                 <section class="component-code-section">
                     <h2>Component Code</h2>
                     <div class="code-editor">
@@ -615,6 +668,9 @@
                         </div>
                     </div>
                 </section>
+                    </div><!-- end tab-code -->
+
+                </div><!-- end tab-content-wrapper -->
 
             </div>
         </div>
