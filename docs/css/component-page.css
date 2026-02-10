@@ -554,7 +554,10 @@
     flex-direction: column;
     gap: 1rem;
     position: sticky;
-    top: 60px;
+    top: 180px;
+    align-self: start;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
 }
 
 .sidebar-card {
