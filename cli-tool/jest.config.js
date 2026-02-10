@@ -20,6 +20,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/analytics/**/*.js',
     'src/analytics-web/**/*.js',
+    'src/network.js',
     '!src/analytics.log',
     '!src/analytics-web/index.html*',
     '!**/node_modules/**',
