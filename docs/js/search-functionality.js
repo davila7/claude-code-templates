@@ -318,10 +318,17 @@ function performSearch(query) {
     
     // Sort by match score (highest first)
     results.sort((a, b) => b.matchScore - a.matchScore);
-    
+
     searchResults = results;
     updateSearchResults(results, categoryMatches);
     displaySearchResults(results);
+
+    // Track search event
+    window.eventTracker?.track('search', {
+        query: query,
+        results_count: results.length,
+        categories_matched: Array.from(categoryMatches)
+    });
 }
 
 /**

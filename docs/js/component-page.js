@@ -132,6 +132,13 @@ class ComponentPageManager {
 
         // Activate tab from URL hash
         this.activateTabFromHash();
+
+        // Track component view
+        window.eventTracker?.track('component_view', {
+            component_type: this.component.type,
+            component_name: this.component.name,
+            category: this.component.category || null
+        });
     }
 
 
@@ -873,6 +880,18 @@ class ComponentPageManager {
 
 
     setupEventListeners() {
+        // Track copy command clicks on installation buttons
+        document.addEventListener('click', (e) => {
+            const copyBtn = e.target.closest('.copy-btn, .quick-copy-btn');
+            if (copyBtn && this.component) {
+                window.eventTracker?.track('copy_command', {
+                    component_type: this.component.type,
+                    component_name: this.component.name,
+                    source: 'detail_page'
+                });
+            }
+        });
+
         // Tab switching
         document.querySelectorAll('.component-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {

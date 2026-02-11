@@ -192,8 +192,8 @@ The `/api` directory contains Vercel Serverless Functions:
 
 **`/api/claude-code-check`**
 - Monitors Claude Code releases
-- Vercel Cron: every 4 hours
-- Database: Neon (claude_code_versions table)
+- Vercel Cron: every 30 minutes
+- Database: Neon (claude_code_versions, claude_code_changes, discord_notifications_log, monitoring_metadata tables)
 
 ### Deployment Workflow
 

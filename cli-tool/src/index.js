@@ -512,7 +512,8 @@ async function createClaudeConfig(options = {}) {
 // Individual component installation functions
 async function installIndividualAgent(agentName, targetDir, options) {
   console.log(chalk.blue(`🤖 Installing agent: ${agentName}`));
-  
+  const startTime = Date.now();
+
   try {
     // Support both category/agent-name and direct agent-name formats
     let githubUrl;
@@ -523,25 +524,26 @@ async function installIndividualAgent(agentName, targetDir, options) {
       // Direct agent format: api-security-audit
       githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/agents/${agentName}.md`;
     }
-    
+
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
-    
+
     const response = await fetch(githubUrl);
     if (!response.ok) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Agent "${agentName}" not found`));
+        trackingService.trackInstallationOutcome('agent', agentName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
         await showAvailableAgents();
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const agentContent = await response.text();
-    
+
     // Create .claude/agents directory if it doesn't exist
     const agentsDir = path.join(targetDir, '.claude', 'agents');
     await fs.ensureDir(agentsDir);
-    
+
     // Write the agent file - always to flat .claude/agents directory
     let fileName;
     if (agentName.includes('/')) {
@@ -550,34 +552,37 @@ async function installIndividualAgent(agentName, targetDir, options) {
     } else {
       fileName = agentName;
     }
-    
+
     const targetFile = path.join(agentsDir, `${fileName}.md`);
     await fs.writeFile(targetFile, agentContent, 'utf8');
-    
+
     if (!options.silent) {
       console.log(chalk.green(`✅ Agent "${agentName}" installed successfully!`));
       console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, targetFile)}`));
       console.log(chalk.cyan(`📦 Downloaded from: ${githubUrl}`));
     }
-    
+
     // Track successful agent installation
     trackingService.trackDownload('agent', agentName, {
       installation_type: 'individual_component',
       target_directory: path.relative(process.cwd(), targetDir),
       source: 'github_main'
     });
-    
+    trackingService.trackInstallationOutcome('agent', agentName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
     return true;
-    
+
   } catch (error) {
     console.log(chalk.red(`❌ Error installing agent: ${error.message}`));
+    trackingService.trackInstallationOutcome('agent', agentName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return false;
   }
 }
 
 async function installIndividualCommand(commandName, targetDir, options) {
   console.log(chalk.blue(`⚡ Installing command: ${commandName}`));
-  
+  const startTime = Date.now();
+
   try {
     // Support both category/command-name and direct command-name formats
     let githubUrl;
@@ -596,6 +601,7 @@ async function installIndividualCommand(commandName, targetDir, options) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Command "${commandName}" not found`));
         console.log(chalk.yellow('Available commands: check-file, generate-tests'));
+        trackingService.trackInstallationOutcome('command', commandName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -632,18 +638,21 @@ async function installIndividualCommand(commandName, targetDir, options) {
       target_directory: path.relative(process.cwd(), targetDir),
       source: 'github_main'
     });
-    
+    trackingService.trackInstallationOutcome('command', commandName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
     return true;
-    
+
   } catch (error) {
     console.log(chalk.red(`❌ Error installing command: ${error.message}`));
+    trackingService.trackInstallationOutcome('command', commandName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return false;
   }
 }
 
 async function installIndividualMCP(mcpName, targetDir, options) {
   console.log(chalk.blue(`🔌 Installing MCP: ${mcpName}`));
-  
+  const startTime = Date.now();
+
   try {
     // Support both category/mcp-name and direct mcp-name formats
     let githubUrl;
@@ -662,6 +671,7 @@ async function installIndividualMCP(mcpName, targetDir, options) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ MCP "${mcpName}" not found`));
         console.log(chalk.yellow('Available MCPs: web-fetch, filesystem-access, github-integration, memory-integration, mysql-integration, postgresql-integration, deepgraph-react, deepgraph-nextjs, deepgraph-typescript, deepgraph-vue'));
+        trackingService.trackInstallationOutcome('mcp', mcpName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -718,18 +728,21 @@ async function installIndividualMCP(mcpName, targetDir, options) {
       servers_count: Object.keys(mergedConfig.mcpServers || {}).length,
       source: 'github_main'
     });
-    
+    trackingService.trackInstallationOutcome('mcp', mcpName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
     return true;
-    
+
   } catch (error) {
     console.log(chalk.red(`❌ Error installing MCP: ${error.message}`));
+    trackingService.trackInstallationOutcome('mcp', mcpName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return false;
   }
 }
 
 async function installIndividualSetting(settingName, targetDir, options) {
   console.log(chalk.blue(`⚙️ Installing setting: ${settingName}`));
-  
+  const startTime = Date.now();
+
   try {
     // Support both category/setting-name and direct setting-name formats
     let githubUrl;
@@ -749,6 +762,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
         console.log(chalk.red(`❌ Setting "${settingName}" not found`));
         console.log(chalk.yellow('Available settings: enable-telemetry, disable-telemetry, allow-npm-commands, deny-sensitive-files, use-sonnet, use-haiku, retention-7-days, retention-90-days'));
         console.log(chalk.yellow('Available statuslines: statusline/context-monitor'));
+        trackingService.trackInstallationOutcome('setting', settingName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1052,17 +1066,20 @@ async function installIndividualSetting(settingName, targetDir, options) {
       }
     }
     
+    trackingService.trackInstallationOutcome('setting', settingName, successfulInstallations > 0 ? 'success' : 'failure', { durationMs: Date.now() - startTime, batchId: options.batchId });
     return successfulInstallations;
-    
+
   } catch (error) {
     console.log(chalk.red(`❌ Error installing setting: ${error.message}`));
+    trackingService.trackInstallationOutcome('setting', settingName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return 0;
   }
 }
 
 async function installIndividualHook(hookName, targetDir, options) {
   console.log(chalk.blue(`🪝 Installing hook: ${hookName}`));
-  
+  const startTime = Date.now();
+
   try {
     // Support both category/hook-name and direct hook-name formats
     let githubUrl;
@@ -1081,6 +1098,7 @@ async function installIndividualHook(hookName, targetDir, options) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Hook "${hookName}" not found`));
         console.log(chalk.yellow('Available hooks: notify-before-bash, format-python-files, format-javascript-files, git-add-changes, backup-before-edit, run-tests-after-changes'));
+        trackingService.trackInstallationOutcome('hook', hookName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1369,10 +1387,12 @@ async function installIndividualHook(hookName, targetDir, options) {
       }
     }
     
+    trackingService.trackInstallationOutcome('hook', hookName, successfulInstallations > 0 ? 'success' : 'failure', { durationMs: Date.now() - startTime, batchId: options.batchId });
     return successfulInstallations;
-    
+
   } catch (error) {
     console.log(chalk.red(`❌ Error installing hook: ${error.message}`));
+    trackingService.trackInstallationOutcome('hook', hookName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return 0;
   }
 }
@@ -1536,6 +1556,7 @@ async function getAvailableAgentsFromGitHub() {
 
 async function installIndividualSkill(skillName, targetDir, options) {
   console.log(chalk.blue(`💡 Installing skill: ${skillName}`));
+  const startTime = Date.now();
 
   try {
     // Skills can be in format: "skill-name" or "category/skill-name"
@@ -1616,6 +1637,7 @@ async function installIndividualSkill(skillName, targetDir, options) {
     const skillMdPath = `.claude/skills/${skillBaseName}/SKILL.md`;
     if (!downloadedFiles[skillMdPath]) {
       console.log(chalk.red(`❌ SKILL.md not found in skill directory`));
+      trackingService.trackInstallationOutcome('skill', skillName, 'failure', { errorType: 'validation_error', errorMessage: 'SKILL.md not found', durationMs: Date.now() - startTime, batchId: options.batchId });
       return false;
     }
 
@@ -1650,11 +1672,13 @@ async function installIndividualSkill(skillName, targetDir, options) {
       source: 'github_main',
       total_files: Object.keys(downloadedFiles).length
     });
+    trackingService.trackInstallationOutcome('skill', skillName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
 
     return true;
 
   } catch (error) {
     console.log(chalk.red(`❌ Error installing skill: ${error.message}`));
+    trackingService.trackInstallationOutcome('skill', skillName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return false;
   }
 }
@@ -1664,7 +1688,8 @@ async function installIndividualSkill(skillName, targetDir, options) {
  */
 async function installMultipleComponents(options, targetDir) {
   console.log(chalk.blue('🔧 Installing multiple components...'));
-  
+  const batchId = Math.random().toString(36).substring(2, 15);
+
   try {
     const components = {
       agents: [],
@@ -1769,31 +1794,32 @@ async function installMultipleComponents(options, targetDir) {
     // Install agents
     for (const agent of components.agents) {
       console.log(chalk.gray(`   Installing agent: ${agent}`));
-      const agentSuccess = await installIndividualAgent(agent, targetDir, { ...options, silent: true });
+      const agentSuccess = await installIndividualAgent(agent, targetDir, { ...options, silent: true, batchId });
       if (agentSuccess) successfullyInstalled++;
     }
-    
+
     // Install commands
     for (const command of components.commands) {
       console.log(chalk.gray(`   Installing command: ${command}`));
-      const commandSuccess = await installIndividualCommand(command, targetDir, { ...options, silent: true });
+      const commandSuccess = await installIndividualCommand(command, targetDir, { ...options, silent: true, batchId });
       if (commandSuccess) successfullyInstalled++;
     }
-    
+
     // Install MCPs
     for (const mcp of components.mcps) {
       console.log(chalk.gray(`   Installing MCP: ${mcp}`));
-      const mcpSuccess = await installIndividualMCP(mcp, targetDir, { ...options, silent: true });
+      const mcpSuccess = await installIndividualMCP(mcp, targetDir, { ...options, silent: true, batchId });
       if (mcpSuccess) successfullyInstalled++;
     }
-    
+
     // Install settings (using shared installation locations)
     for (const setting of components.settings) {
       console.log(chalk.gray(`   Installing setting: ${setting}`));
-      const settingSuccess = await installIndividualSetting(setting, targetDir, { 
-        ...options, 
-        silent: true, 
-        sharedInstallLocations: sharedInstallLocations 
+      const settingSuccess = await installIndividualSetting(setting, targetDir, {
+        ...options,
+        silent: true,
+        sharedInstallLocations: sharedInstallLocations,
+        batchId
       });
       if (settingSuccess > 0) successfullyInstalled++;
     }
@@ -1804,7 +1830,8 @@ async function installMultipleComponents(options, targetDir) {
       const hookSuccess = await installIndividualHook(hook, targetDir, {
         ...options,
         silent: true,
-        sharedInstallLocations: sharedInstallLocations
+        sharedInstallLocations: sharedInstallLocations,
+        batchId
       });
       if (hookSuccess > 0) successfullyInstalled++;
     }
@@ -1812,7 +1839,7 @@ async function installMultipleComponents(options, targetDir) {
     // Install skills
     for (const skill of components.skills) {
       console.log(chalk.gray(`   Installing skill: ${skill}`));
-      const skillSuccess = await installIndividualSkill(skill, targetDir, { ...options, silent: true });
+      const skillSuccess = await installIndividualSkill(skill, targetDir, { ...options, silent: true, batchId });
       if (skillSuccess) successfullyInstalled++;
     }
 

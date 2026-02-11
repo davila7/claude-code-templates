@@ -67,6 +67,14 @@ class CartManager {
         this.updateCartUI();
         this.updateFloatingButton();
         this.showNotification(`${item.name} added to stack!`, 'success');
+
+        // Track cart add event
+        window.eventTracker?.track('cart_add', {
+            component_type: type,
+            component_name: item.name,
+            cart_size: this.getTotalItems()
+        });
+
         return true;
     }
 
@@ -78,11 +86,19 @@ class CartManager {
             return;
         }
         
+        const removedItem = this.cart[type].find(item => item.path === itemPath);
         this.cart[type] = this.cart[type].filter(item => item.path !== itemPath);
         this.saveCartToStorage();
         this.updateCartUI();
         this.updateFloatingButton();
         this.showNotification('Item removed from stack', 'info');
+
+        // Track cart remove event
+        window.eventTracker?.track('cart_remove', {
+            component_type: type,
+            component_name: removedItem?.name || itemPath,
+            cart_size: this.getTotalItems()
+        });
     }
 
     // Clear entire cart
@@ -581,6 +597,12 @@ function clearCart() {
 function copyCartCommand() {
     const command = document.getElementById('generatedCommand').textContent;
     copyToClipboard(command, 'Command copied to clipboard!');
+
+    // Track cart checkout (copy command)
+    const cart = cartManager.cart;
+    const types = Object.keys(cart).filter(k => cart[k].length > 0);
+    const items = types.reduce((sum, k) => sum + cart[k].length, 0);
+    window.eventTracker?.track('cart_checkout', { items, types });
 }
 
 function downloadStack() {
