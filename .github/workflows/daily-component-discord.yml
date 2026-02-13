@@ -19,24 +19,9 @@ jobs:
 
       - name: Pick random component and send to Discord
         run: |
-          # Pick a random component from the catalog
-          COMPONENT=$(jq -r '
-            # Collect all components from every type into a single array
-            [
-              (.agents // [] | .[]),
-              (.commands // [] | .[]),
-              (.mcps // [] | .[]),
-              (.settings // [] | .[]),
-              (.hooks // [] | .[])
-            ]
-            # Pick one at random
-            | .[env.RANDOM_INDEX | tonumber]
-          ' docs/components.json <<< "$(
-            TOTAL=$(jq '[(.agents // []), (.commands // []), (.mcps // []), (.settings // []), (.hooks // [])] | map(length) | add' docs/components.json)
-            echo "$TOTAL"
-          )")
+          set -euo pipefail
 
-          # Actually, let's do this more cleanly
+          # Count total components and pick a random index
           TOTAL=$(jq '[(.agents // []), (.commands // []), (.mcps // []), (.settings // []), (.hooks // [])] | map(length) | add' docs/components.json)
           RANDOM_INDEX=$(( RANDOM % TOTAL ))
 
@@ -57,86 +42,64 @@ jobs:
           CATEGORY=$(echo "$COMPONENT_JSON" | jq -r '.category')
           DOWNLOADS=$(echo "$COMPONENT_JSON" | jq -r '.downloads // 0')
           PATH_VALUE=$(echo "$COMPONENT_JSON" | jq -r '.path')
-
-          # Get description (truncate to 300 chars for Discord)
           DESCRIPTION=$(echo "$COMPONENT_JSON" | jq -r '.description // "No description available"' | head -c 300)
-          DESC_LENGTH=$(echo "$COMPONENT_JSON" | jq -r '.description // ""' | wc -c | tr -d ' ')
-          if [ "$DESC_LENGTH" -gt 300 ]; then
-            DESCRIPTION="${DESCRIPTION}..."
-          fi
 
           # Emoji and color based on type
           case "$TYPE" in
-            agent)   EMOJI="🤖"; COLOR=5793266  ;; # Blue
-            command) EMOJI="⚡"; COLOR=16750848 ;; # Orange
-            mcp)     EMOJI="🔌"; COLOR=10181046 ;; # Purple
-            setting) EMOJI="⚙️"; COLOR=3066993  ;; # Green
-            hook)    EMOJI="🪝"; COLOR=15277667 ;; # Red
-            *)       EMOJI="📦"; COLOR=9807270  ;; # Gray
+            agent)   EMOJI="🤖"; COLOR=5793266  ;;
+            command) EMOJI="⚡"; COLOR=16750848 ;;
+            mcp)     EMOJI="🔌"; COLOR=10181046 ;;
+            setting) EMOJI="⚙️"; COLOR=3066993  ;;
+            hook)    EMOJI="🪝"; COLOR=15277667 ;;
+            *)       EMOJI="📦"; COLOR=9807270  ;;
           esac
 
-          # Build install command
+          # Build derived values
+          TYPE_CAPITALIZED="$(echo "$TYPE" | sed 's/^./\U&/')"
           INSTALL_CMD="npx claude-code-templates@latest --${TYPE} ${CATEGORY}/${NAME}"
-
-          # Build website URL
           WEBSITE_URL="https://aitmpl.com/component.html?type=${TYPE}&name=${NAME}&path=${PATH_VALUE}"
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-          # Escape strings for JSON
-          DESCRIPTION_ESCAPED=$(printf '%s' "$DESCRIPTION" | jq -Rs .)
-          NAME_ESCAPED=$(printf '%s' "$NAME" | jq -Rs .)
-
-          # Build Discord webhook payload
-          PAYLOAD=$(cat <<EOF
-          {
-            "username": "Claude Code Templates",
-            "avatar_url": "https://aitmpl.com/img/logo.png",
-            "content": "**${EMOJI} Component of the Day** — Check out today's pick!",
-            "embeds": [
-              {
-                "title": "${EMOJI} ${NAME}",
-                "description": ${DESCRIPTION_ESCAPED},
-                "url": "${WEBSITE_URL}",
-                "color": ${COLOR},
-                "fields": [
-                  {
-                    "name": "📂 Type",
-                    "value": "${TYPE^}",
-                    "inline": true
+          # Build payload with jq for proper JSON escaping
+          PAYLOAD=$(jq -n \
+            --arg emoji "$EMOJI" \
+            --arg name "$NAME" \
+            --arg desc "$DESCRIPTION" \
+            --arg url "$WEBSITE_URL" \
+            --argjson color "$COLOR" \
+            --arg type_cap "$TYPE_CAPITALIZED" \
+            --arg category "$CATEGORY" \
+            --arg downloads "$DOWNLOADS" \
+            --arg install "$INSTALL_CMD" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "Claude Code Templates",
+              avatar_url: "https://aitmpl.com/img/logo.png",
+              content: ("**" + $emoji + " Component of the Day** — Check out today'\''s pick!"),
+              embeds: [
+                {
+                  title: ($emoji + " " + $name),
+                  description: $desc,
+                  url: $url,
+                  color: $color,
+                  fields: [
+                    { name: "📂 Type", value: $type_cap, inline: true },
+                    { name: "🏷️ Category", value: $category, inline: true },
+                    { name: "📊 Downloads", value: $downloads, inline: true },
+                    { name: "📥 Install", value: ("```bash\n" + $install + "\n```"), inline: false },
+                    { name: "🔗 View on Website", value: ("[Open in aitmpl.com](" + $url + ")"), inline: false }
+                  ],
+                  footer: {
+                    text: "Daily Component Pick • aitmpl.com",
+                    icon_url: "https://aitmpl.com/img/logo.png"
                   },
-                  {
-                    "name": "🏷️ Category",
-                    "value": "${CATEGORY}",
-                    "inline": true
-                  },
-                  {
-                    "name": "📊 Downloads",
-                    "value": "${DOWNLOADS}",
-                    "inline": true
-                  },
-                  {
-                    "name": "📥 Install",
-                    "value": "\`\`\`bash\n${INSTALL_CMD}\n\`\`\`",
-                    "inline": false
-                  },
-                  {
-                    "name": "🔗 View on Website",
-                    "value": "[Open in aitmpl.com](${WEBSITE_URL})",
-                    "inline": false
-                  }
-                ],
-                "footer": {
-                  "text": "Daily Component Pick • aitmpl.com",
-                  "icon_url": "https://aitmpl.com/img/logo.png"
-                },
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }
-            ]
-          }
-          EOF
-          )
+                  timestamp: $timestamp
+                }
+              ]
+            }')
 
           # Send to Discord
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
             "$DISCORD_WEBHOOK_URL")
@@ -148,6 +111,7 @@ jobs:
             echo "URL: ${WEBSITE_URL}"
           else
             echo "❌ Failed to send Discord notification (HTTP ${HTTP_STATUS})"
+            cat response.txt
             exit 1
           fi
         env:
