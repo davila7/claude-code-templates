@@ -5,6 +5,13 @@
 .env.development
 .env*.local
 
+# Claude Code local settings (may contain API keys)
+**/settings.local.json
+.claude/hooks/*
+!.claude/hooks/telegram-pr-webhook.py
+.claude/commands/opsx/
+.claude/skills/
+
 # Database related files
 *.db
 *.sqlite
@@ -34,6 +41,7 @@ coverage
 # Sandbox output directories
 sandbox-*/
 cloudflare-*/
+!cloudflare-workers/
 
 # Test directories (local only)
 test-agent-sdk/
@@ -54,3 +62,9 @@ test-cloudflare/
 
 # Deployment
 .vercel
+
+# Local analysis (not for git)
+analysis/
+
+# OpenSpec (local workflow artifacts)
+openspec/

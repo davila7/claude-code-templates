@@ -420,7 +420,12 @@ def generate_components_json():
                                     with open(skill_file_path, 'r', encoding='utf-8') as f:
                                         content = f.read()
 
-                                    # Extract description from frontmatter if available
+                                    # Extract metadata from frontmatter if available
+                                    author = ''
+                                    repo = ''
+                                    version = ''
+                                    license_field = ''
+                                    keywords = []
                                     if content.startswith('---'):
                                         frontmatter_end = content.find('---', 3)
                                         if frontmatter_end != -1:
@@ -428,7 +433,20 @@ def generate_components_json():
                                             for line in frontmatter.split('\n'):
                                                 if line.startswith('description:'):
                                                     description = line.split('description:', 1)[1].strip()
-                                                    break
+                                                elif line.startswith('author:'):
+                                                    author = line.split('author:', 1)[1].strip()
+                                                elif line.startswith('repo:'):
+                                                    repo = line.split('repo:', 1)[1].strip()
+                                                elif line.startswith('version:'):
+                                                    version = line.split('version:', 1)[1].strip()
+                                                elif line.startswith('license:'):
+                                                    license_field = line.split('license:', 1)[1].strip()
+                                                elif line.startswith('tags:'):
+                                                    tags_str = line.split('tags:', 1)[1].strip()
+                                                    # Parse tags array [tag1, tag2, tag3]
+                                                    if tags_str.startswith('[') and tags_str.endswith(']'):
+                                                        tags_str = tags_str[1:-1]
+                                                        keywords = [tag.strip() for tag in tags_str.split(',')]
 
                                 except Exception as e:
                                     print(f"Warning: Could not read file {skill_file_path}: {e}")
@@ -456,6 +474,11 @@ def generate_components_json():
                                     'type': 'skill',
                                     'content': content,
                                     'description': description,
+                                    'author': author,
+                                    'repo': repo,
+                                    'version': version,
+                                    'license': license_field,
+                                    'keywords': keywords,
                                     'downloads': downloads,
                                     'security': security
                                 }
@@ -475,16 +498,21 @@ def generate_components_json():
                         # Read file content
                         content = ''
                         description = ''
+                        author = ''
+                        repo = ''
+                        version = ''
+                        license_field = ''
+                        keywords = []
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
-                                
-                            # Extract description field from JSON files
+
+                            # Extract description, author and repo from JSON files
                             if file_name.endswith('.json'):
                                 try:
                                     import json
                                     json_data = json.loads(content)
-                                    
+
                                     if component_type == 'mcps':
                                         # Extract description from the first mcpServer entry
                                         if 'mcpServers' in json_data:
@@ -493,13 +521,47 @@ def generate_components_json():
                                                     description = server_config['description']
                                                     break  # Use the first description found
                                     elif component_type in ['settings', 'hooks']:
-                                        # Extract description from settings/hooks JSON files
+                                        # Extract metadata from settings/hooks JSON files
                                         if 'description' in json_data:
                                             description = json_data['description']
-                                            
+                                        if 'author' in json_data:
+                                            author = json_data['author']
+                                        if 'repo' in json_data:
+                                            repo = json_data['repo']
+                                        if 'version' in json_data:
+                                            version = json_data['version']
+                                        if 'license' in json_data:
+                                            license_field = json_data['license']
+                                        if 'keywords' in json_data and isinstance(json_data['keywords'], list):
+                                            keywords = json_data['keywords']
+
                                 except json.JSONDecodeError:
                                     print(f"Warning: Invalid JSON in {file_path}")
-                                    
+
+                            # Extract metadata from markdown frontmatter
+                            elif file_name.endswith('.md'):
+                                if content.startswith('---'):
+                                    frontmatter_end = content.find('---', 3)
+                                    if frontmatter_end != -1:
+                                        frontmatter = content[3:frontmatter_end]
+                                        for line in frontmatter.split('\n'):
+                                            if line.startswith('description:'):
+                                                description = line.split('description:', 1)[1].strip()
+                                            elif line.startswith('author:'):
+                                                author = line.split('author:', 1)[1].strip()
+                                            elif line.startswith('repo:'):
+                                                repo = line.split('repo:', 1)[1].strip()
+                                            elif line.startswith('version:'):
+                                                version = line.split('version:', 1)[1].strip()
+                                            elif line.startswith('license:'):
+                                                license_field = line.split('license:', 1)[1].strip()
+                                            elif line.startswith('tags:'):
+                                                tags_str = line.split('tags:', 1)[1].strip()
+                                                # Parse tags array [tag1, tag2, tag3]
+                                                if tags_str.startswith('[') and tags_str.endswith(']'):
+                                                    tags_str = tags_str[1:-1]
+                                                    keywords = [tag.strip() for tag in tags_str.split(',')]
+
                         except Exception as e:
                             print(f"Warning: Could not read file {file_path}: {e}")
 
@@ -526,6 +588,11 @@ def generate_components_json():
                             'type': component_type[:-1],  # singular form
                             'content': content,  # Add file content
                             'description': description,  # Add description for MCPs
+                            'author': author,  # Add author field
+                            'repo': repo,  # Add repository field
+                            'version': version,  # Add version field
+                            'license': license_field,  # Add license field
+                            'keywords': keywords,  # Add keywords field
                             'downloads': downloads,  # Add download count
                             'security': security  # Add security metadata
                         }

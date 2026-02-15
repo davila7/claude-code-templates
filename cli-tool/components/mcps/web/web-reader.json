@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "web-reader": {
+      "description": "Web Reader MCP Server - Z.AI implementation based on the Model Context Protocol (MCP). Provides Claude Code, Cline, and other MCP-compatible clients with powerful web content extraction capabilities, including full-page content retrieval and structured data extraction.",
+      "type": "http",
+      "url": "https://api.z.ai/api/mcp/web_reader/mcp",
+      "headers": {
+        "Authorization": "Bearer your_api_key"
+      }
+    }
+  }
+}

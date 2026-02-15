@@ -7,8 +7,6 @@ class ComponentPageManager {
     }
 
     async init() {
-        console.log('Initializing Component Page Manager...');
-        
         // Initialize data loader
         this.dataLoader = window.dataLoader || new DataLoader();
         
@@ -27,14 +25,12 @@ class ComponentPageManager {
         if (pathParts.length >= 3 && pathParts[0] === 'component') {
             componentType = decodeURIComponent(pathParts[1]);
             componentName = decodeURIComponent(pathParts[2]);
-            console.log('SEO URL Parameters:', { componentType, componentName });
         } else {
             // Fallback to query parameters
             const urlParams = new URLSearchParams(window.location.search);
             componentType = urlParams.get('type');
             componentName = urlParams.get('name');
             componentPath = urlParams.get('path');
-            console.log('Query Parameters:', { componentType, componentName, componentPath });
         }
 
         if (!componentType || (!componentName && !componentPath)) {
@@ -98,8 +94,6 @@ class ComponentPageManager {
             return;
         }
 
-        console.log('Rendering component:', this.component);
-
         // Hide loading state
         document.getElementById('loadingState').style.display = 'none';
 
@@ -127,8 +121,24 @@ class ComponentPageManager {
         // Render GitHub link
         this.renderGitHubLink();
 
+        // Populate sidebar quick install
+        this.renderSidebarQuickInstall();
+
         // Update page metadata
         this.updatePageMetadata();
+
+        // Load Giscus comments
+        this.loadGiscusComments();
+
+        // Activate tab from URL hash
+        this.activateTabFromHash();
+
+        // Track component view
+        window.eventTracker?.track('component_view', {
+            component_type: this.component.type,
+            component_name: this.component.name,
+            category: this.component.category || null
+        });
     }
 
 
@@ -372,104 +382,116 @@ class ComponentPageManager {
     async renderMetadataSection() {
         const metadataSection = document.getElementById('metadataSection');
 
-        console.log('=== Metadata Section Debug ===');
-        console.log('Component type:', this.component.type);
-        console.log('Component name:', this.component.name);
+        // Check if component has metadata fields directly from frontmatter
+        const hasDirectAuthor = this.component.author && this.component.author.trim() !== '';
+        const hasDirectRepo = this.component.repo && this.component.repo.trim() !== '';
+        const hasDirectVersion = this.component.version && this.component.version.trim() !== '';
+        const hasDirectLicense = this.component.license && this.component.license.trim() !== '';
+        const hasDirectKeywords = this.component.keywords && this.component.keywords.length > 0;
 
-        // Only show metadata for agents (since marketplace.json only contains agent metadata)
-        if (this.component.type !== 'agent') {
-            console.log('Not an agent, hiding metadata section');
+        // For agents, try to load marketplace data
+        let agentMetadata = null;
+        if (this.component.type === 'agent') {
+            try {
+                const marketplace = await this.loadComponentsMarketplace();
+
+                if (marketplace && marketplace.agents) {
+                    const componentName = this.component.name.replace('.md', '');
+
+                    agentMetadata = marketplace.agents.find(
+                        agent => agent.name === componentName
+                    );
+                }
+            } catch (error) {
+                console.error('Error loading marketplace metadata:', error);
+            }
+        }
+
+        // Show metadata section if we have any metadata
+        const hasMetadata = hasDirectAuthor || hasDirectRepo || hasDirectVersion || hasDirectLicense || hasDirectKeywords || agentMetadata;
+
+        if (!hasMetadata) {
             if (metadataSection) metadataSection.style.display = 'none';
             return;
         }
 
-        try {
-            // Load components marketplace (Claude Code standard)
-            const marketplace = await this.loadComponentsMarketplace();
-            console.log('Components marketplace loaded:', marketplace);
+        // Show metadata section
+        if (metadataSection) metadataSection.style.display = 'block';
 
-            if (!marketplace || !marketplace.agents) {
-                console.log('No components marketplace or agents found');
-                if (metadataSection) metadataSection.style.display = 'none';
-                return;
-            }
+        // Populate version - prioritize direct version field, then marketplace
+        const versionElement = document.getElementById('metadataVersion');
+        if (versionElement) {
+            const version = this.component.version || agentMetadata?.version || '--';
+            versionElement.textContent = version;
+        }
 
-            // Find the component in marketplace
-            const componentName = this.component.name.replace('.md', '');
-            console.log('Looking for component:', componentName);
-            console.log('Available agents:', marketplace.agents.map(a => a.name));
-
-            const agentMetadata = marketplace.agents.find(
-                agent => agent.name === componentName
-            );
-
-            console.log('Found agent metadata:', agentMetadata);
-
-            if (!agentMetadata) {
-                console.log('No metadata found for component:', componentName);
-                if (metadataSection) metadataSection.style.display = 'none';
-                return;
-            }
-
-            // Show metadata section
-            if (metadataSection) metadataSection.style.display = 'block';
-
-            // Populate version
-            const versionElement = document.getElementById('metadataVersion');
-            if (versionElement) {
-                versionElement.textContent = agentMetadata.version || '--';
-            }
-
-            // Populate author
-            const authorElement = document.getElementById('metadataAuthor');
-            if (authorElement) {
+        // Populate author - prioritize direct author field, then marketplace
+        const authorElement = document.getElementById('metadataAuthor');
+        if (authorElement) {
+            if (hasDirectAuthor) {
+                authorElement.textContent = this.component.author;
+            } else if (agentMetadata) {
                 const authorName = agentMetadata.author?.name || agentMetadata.author || '--';
                 authorElement.textContent = authorName;
-            }
-
-            // Populate license
-            const licenseElement = document.getElementById('metadataLicense');
-            if (licenseElement) {
-                licenseElement.textContent = agentMetadata.license || '--';
-            }
-
-            // Populate repository
-            const repositoryLink = document.getElementById('metadataRepository');
-            const repositoryNone = document.getElementById('metadataRepositoryNone');
-            if (agentMetadata.repository) {
-                if (repositoryLink) {
-                    repositoryLink.href = agentMetadata.repository;
-                    repositoryLink.style.display = 'inline-flex';
-                }
-                if (repositoryNone) {
-                    repositoryNone.style.display = 'none';
-                }
             } else {
-                if (repositoryLink) {
-                    repositoryLink.style.display = 'none';
-                }
-                if (repositoryNone) {
-                    repositoryNone.style.display = 'inline';
-                }
+                authorElement.textContent = '--';
             }
+        }
 
-            // Populate keywords
-            const keywordsContainer = document.getElementById('metadataKeywords');
-            if (keywordsContainer && agentMetadata.keywords && agentMetadata.keywords.length > 0) {
+        // Populate license - prioritize direct license field, then marketplace
+        const licenseElement = document.getElementById('metadataLicense');
+        if (licenseElement) {
+            const license = this.component.license || agentMetadata?.license || '--';
+            licenseElement.textContent = license;
+        }
+
+        // Populate repository - prioritize direct repo field, then marketplace
+        const repositoryLink = document.getElementById('metadataRepository');
+        const repositoryNone = document.getElementById('metadataRepositoryNone');
+
+        let repositoryUrl = null;
+
+        // Priority 1: Direct repo field
+        if (hasDirectRepo) {
+            repositoryUrl = this.component.repo;
+        }
+        // Priority 2: Marketplace repository
+        else if (agentMetadata?.repository) {
+            repositoryUrl = agentMetadata.repository;
+        }
+
+        if (repositoryUrl) {
+            if (repositoryLink) {
+                repositoryLink.href = repositoryUrl;
+                repositoryLink.style.display = 'inline-flex';
+            }
+            if (repositoryNone) {
+                repositoryNone.style.display = 'none';
+            }
+        } else {
+            if (repositoryLink) {
+                repositoryLink.style.display = 'none';
+            }
+            if (repositoryNone) {
+                repositoryNone.style.display = 'inline';
+            }
+        }
+
+        // Populate keywords - prioritize direct keywords field, then marketplace
+        const keywordsContainer = document.getElementById('metadataKeywords');
+        if (keywordsContainer) {
+            const keywords = this.component.keywords || agentMetadata?.keywords || [];
+            if (keywords && keywords.length > 0) {
                 keywordsContainer.innerHTML = '';
-                agentMetadata.keywords.forEach(keyword => {
+                keywords.forEach(keyword => {
                     const keywordChip = document.createElement('span');
                     keywordChip.className = 'metadata-keyword';
                     keywordChip.textContent = keyword;
                     keywordsContainer.appendChild(keywordChip);
                 });
-            } else if (keywordsContainer) {
+            } else {
                 keywordsContainer.innerHTML = '<span class="metadata-value">--</span>';
             }
-
-        } catch (error) {
-            console.error('Error loading marketplace metadata:', error);
-            if (metadataSection) metadataSection.style.display = 'none';
         }
     }
 
@@ -485,7 +507,6 @@ class ComponentPageManager {
 
             if (componentsData && componentsData.componentsMarketplace) {
                 this.componentsMarketplace = componentsData.componentsMarketplace;
-                console.log('Loaded components marketplace:', this.componentsMarketplace);
                 return this.componentsMarketplace;
             }
 
@@ -493,7 +514,6 @@ class ComponentPageManager {
             const marketplaceResponse = await fetch('https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/.claude-plugin/marketplace.json');
             if (marketplaceResponse.ok) {
                 this.componentsMarketplace = await marketplaceResponse.json();
-                console.log('Loaded components marketplace from GitHub:', this.componentsMarketplace);
                 return this.componentsMarketplace;
             }
 
@@ -775,6 +795,67 @@ class ComponentPageManager {
         }
     }
 
+    loadGiscusComments() {
+        const container = document.getElementById('giscusContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        script.setAttribute('data-repo', 'davila7/claude-code-templates');
+        script.setAttribute('data-repo-id', 'R_kgDOPGh7XA');
+        script.setAttribute('data-category', 'Comments');
+        script.setAttribute('data-category-id', 'DIC_kwDOPGh7XM4C2H0y');
+        script.setAttribute('data-mapping', 'pathname');
+        script.setAttribute('data-strict', '0');
+        script.setAttribute('data-reactions-enabled', '0');
+        script.setAttribute('data-emit-metadata', '0');
+        script.setAttribute('data-input-position', 'bottom');
+        script.setAttribute('data-theme', 'dark');
+        script.setAttribute('data-lang', 'en');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.async = true;
+
+        container.appendChild(script);
+    }
+
+    renderSidebarQuickInstall() {
+        const commandEl = document.getElementById('quickInstallCommand');
+        if (commandEl) {
+            const componentPath = this.getCleanPath();
+            commandEl.textContent = `npx claude-code-templates@latest --${this.component.type}=${componentPath} --yes`;
+        }
+
+        // Populate sidebar GitHub link
+        const sidebarLink = document.getElementById('githubLinkSidebar');
+        if (sidebarLink) {
+            sidebarLink.href = this.generateGitHubURL();
+        }
+    }
+
+    activateTabFromHash() {
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+            this.switchTab(hash);
+        }
+    }
+
+    switchTab(tabName) {
+        const validTabs = ['overview', 'code', 'installation'];
+        if (!validTabs.includes(tabName)) return;
+
+        // Update buttons
+        document.querySelectorAll('.component-tabs .tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+
+        // Update panes
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.toggle('active', pane.id === `tab-${tabName}`);
+        });
+    }
+
     renderGitHubLink() {
         const githubUrl = this.generateGitHubURL();
         const githubLinkElement = document.getElementById('githubLink');
@@ -799,6 +880,32 @@ class ComponentPageManager {
 
 
     setupEventListeners() {
+        // Track copy command clicks on installation buttons
+        document.addEventListener('click', (e) => {
+            const copyBtn = e.target.closest('.copy-btn, .quick-copy-btn');
+            if (copyBtn && this.component) {
+                window.eventTracker?.track('copy_command', {
+                    component_type: this.component.type,
+                    component_name: this.component.name,
+                    source: 'detail_page'
+                });
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.component-tabs .tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                this.switchTab(tab);
+                history.replaceState(null, '', `#${tab}`);
+            });
+        });
+
+        // Handle hash changes
+        window.addEventListener('hashchange', () => {
+            this.activateTabFromHash();
+        });
+
         // Handle browser back/forward buttons
         window.addEventListener('popstate', () => {
             this.loadComponentFromURL();
@@ -810,19 +917,9 @@ class ComponentPageManager {
             addToCartBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (this.component) {
-                    // Debug logging for production
-                    console.log('=== Add to Cart Debug ===');
-                    console.log('Component object:', this.component);
-                    console.log('Component type:', this.component.type);
-                    console.log('Component name:', this.component.name);
-                    console.log('Component path:', this.component.path);
-                    
-                    // Check if cartManager exists
                     if (typeof addToCart === 'function') {
                         // Convert component type to plural format
                         const componentType = this.getComponentTypePlural();
-                        
-                        console.log('Plural type for cart:', componentType);
                         
                         if (!componentType) {
                             console.error('Failed to get component type plural');
@@ -839,7 +936,6 @@ class ComponentPageManager {
                                 path: this.component.path,
                                 category: this.component.category
                             };
-                            console.log('Sending to cart:', componentItem, componentType);
                             addToCart(componentItem, componentType);
                         } else {
                             console.error('Missing component name or path:', this.component);
@@ -847,8 +943,6 @@ class ComponentPageManager {
                         }
                     } else {
                         console.error('Cart functionality not available');
-                        console.log('typeof addToCart:', typeof addToCart);
-                        console.log('window.addToCart:', window.addToCart);
                         // Fallback: show a message or redirect to main page
                         alert('Cart functionality not available. Please return to the main page to add components to your stack.');
                     }

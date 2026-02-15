@@ -24,16 +24,14 @@ const GITHUB_CONFIG = {
 
 // Initialize the workflow builder
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Initializing Workflow Builder...');
     showLoadingSpinner();
-    
+
     try {
         await loadAllComponents();
         initializeDragAndDrop();
         initializeEventListeners();
         initializeModalEventListeners();
         initializeSortableSteps();
-        console.log('Workflow Builder initialized successfully');
     } catch (error) {
         console.error('Error initializing Workflow Builder:', error);
         showError('Failed to load components. Please refresh the page.');
@@ -44,7 +42,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Load all components from GitHub using the Git Trees API
 async function loadAllComponents() {
-    console.log('Loading components from components.json...');
     try {
         const response = await fetch('components.json');
         if (!response.ok) {
@@ -62,8 +59,6 @@ async function loadAllComponents() {
         renderComponentsList('commands', workflowState.components.commands);
         renderComponentsList('mcps', workflowState.components.mcps);
 
-        console.log(`Loaded ${workflowState.components.agents.length} agents, ${workflowState.components.commands.length} commands, ${workflowState.components.mcps.length} MCPs`);
-
     } catch (error) {
         console.error('Error loading components:', error);
         loadComponentsWithFallback();
@@ -71,7 +66,6 @@ async function loadAllComponents() {
 }
 
 async function loadComponentsWithFallback() {
-    console.log("Using fallback data due to API error.");
     const [agents, commands, mcps] = [
         getFallbackComponentData('agents'),
         getFallbackComponentData('commands'),
@@ -111,7 +105,6 @@ function getFallbackComponentData(type) {
     
     const typeKey = type;
     const data = fallbackData[typeKey] || [];
-    console.log(`Loaded ${data.length} fallback ${type} components`);
     return data;
 }
 

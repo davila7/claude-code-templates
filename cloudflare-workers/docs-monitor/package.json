@@ -1,0 +1,29 @@
+{
+  "name": "claude-docs-monitor",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker to monitor Claude Code documentation for changes",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "test": "wrangler dev --test-scheduled",
+    "kv:create": "wrangler kv:namespace create DOCS_MONITOR_KV",
+    "secret:telegram-bot": "wrangler secret put TELEGRAM_BOT_TOKEN",
+    "secret:telegram-chat": "wrangler secret put TELEGRAM_CHAT_ID",
+    "secret:trigger": "wrangler secret put TRIGGER_SECRET"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "monitoring",
+    "telegram",
+    "documentation",
+    "claude-code"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.91.0"
+  }
+}

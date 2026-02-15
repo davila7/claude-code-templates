@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Complete Postgres Template for Claude Code</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+
+    <meta name="description" content="Complete Neon Template for Claude Code: Instant Postgres provisioning + 5 expert agents + MCP + monitoring tools. Production-ready database infrastructure.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/featured/neon-instagres/">
+    <meta property="og:title" content="Neon Complete Postgres Template for Claude Code">
+    <meta property="og:description" content="Production-ready Postgres infrastructure with instant provisioning, expert agents, and MCP integration.">
+    <meta property="og:image" content="https://aitmpl.com/featured/neon-instagres/assets/neon-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Neon Complete Postgres Template for Claude Code">
+    <meta property="og:site_name" content="Claude Code Templates">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/featured/neon-instagres/">
+    <meta name="twitter:title" content="Neon Complete Postgres Template for Claude Code">
+    <meta name="twitter:description" content="Production-ready Postgres infrastructure with instant provisioning and expert agents.">
+    <meta name="twitter:image" content="https://aitmpl.com/featured/neon-instagres/assets/neon-cover.png">
+    <meta name="twitter:image:alt" content="Neon Complete Postgres Template for Claude Code">
+    <meta name="twitter:creator" content="@davila7">
+    <meta name="twitter:site" content="@davila7">
+
+    <meta name="keywords" content="Neon, Claude Code, Postgres, Database, Instagres, Serverless, AI Development, Drizzle ORM, Database Provisioning">
+    <link rel="canonical" href="https://aitmpl.com/featured/neon-instagres/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+███╗   ██╗███████╗ ██████╗ ███╗   ██╗
+████╗  ██║██╔════╝██╔═══██╗████╗  ██║
+██╔██╗ ██║█████╗  ██║   ██║██╔██╗ ██║
+██║╚██╗██║██╔══╝  ██║   ██║██║╚██╗██║
+██║ ╚████║███████╗╚██████╔╝██║ ╚████║
+╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝</pre>
+                    </div>
+                    <div class="terminal-subtitle">
+                        <span class="status-dot"></span>
+                        Complete Postgres Template for <strong>Claude Code</strong>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="https://get.neon.com/4eCjZDz" target="_blank" class="header-btn" style="background: var(--accent-color); color: var(--bg-primary);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,7H13V9H11V7M11,11H13V17H11V11Z"/>
+                        </svg>
+                        Try Neon Free
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <!-- Hero Section -->
+        <section class="blog-article-hero">
+            <div class="container">
+                <div class="article-header">
+                    <div class="article-meta">
+                        <span class="article-category">Featured Partnership</span>
+                    </div>
+                    <h1 class="article-title">Complete Neon Postgres Template for Claude Code</h1>
+                    <p class="article-subtitle">A production-ready database infrastructure template combining instant provisioning, specialized agents, MCP integration, and real-time monitoring.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <article class="blog-article">
+            <div class="container">
+                <div class="article-body">
+                    <div class="article-content-full">
+                        <!-- Brand Logo -->
+                        <div style="text-align: center; margin: 2rem 0;">
+                            <img src="https://neon.tech/brand/neon-logo-dark-color.svg" alt="Neon" style="max-width: 250px; width: 100%; height: auto;">
+                        </div>
+
+                        <!-- Introduction -->
+                        <h2>Overview</h2>
+                        <p>The Neon template provides a complete Postgres infrastructure for Claude Code projects. It combines Neon's Instagres provisioning service with specialized AI agents, MCP integration, and monitoring tools.</p>
+
+                        <p>This template is designed for developers who need production-ready database infrastructure without manual configuration.</p>
+
+                        <!-- Architecture -->
+                        <h2>Template Architecture</h2>
+                        <p>The template consists of 10 components organized into four layers:</p>
+
+                        <h3>1. Provisioning Layer</h3>
+                        <p><strong>neon-instagres Skill</strong> - Auto-activating skill that provisions Postgres databases via the <code>npx get-db</code> CLI. Triggers on keywords like "database", "postgres", or "PostgreSQL".</p>
+
+                        <pre><code>npx get-db --yes --ref 4eCjZDz</code></pre>
+
+                        <p>Creates three environment variables:</p>
+                        <ul>
+                            <li><code>DATABASE_URL</code> - Connection pooler endpoint (recommended for application queries)</li>
+                            <li><code>DATABASE_URL_DIRECT</code> - Direct connection (required for migrations and schema changes)</li>
+                            <li><code>PUBLIC_INSTAGRES_CLAIM_URL</code> - Claim URL with 72-hour validity window</li>
+                        </ul>
+
+                        <p><strong>using-neon Skill</strong> - Comprehensive guides and best practices for working with Neon Serverless Postgres. Covers getting started, local development, connection methods, authentication (<code>@neondatabase/auth</code>), PostgREST-style data API (<code>@neondatabase/neon-js</code>), Neon CLI, and Platform API/SDKs. Includes 28 reference documents.</p>
+
+                        <pre><code>npx claude-code-templates@latest --skill database/using-neon</code></pre>
+
+                        <p>Reference documentation covers:</p>
+                        <ul>
+                            <li><strong>Core Guides</strong> - What is Neon, getting started, features, connection methods, devtools</li>
+                            <li><strong>Database Drivers</strong> - Neon Serverless Driver (<code>@neondatabase/serverless</code>), Drizzle ORM integration</li>
+                            <li><strong>Auth & Data API</strong> - Neon Auth (<code>@neondatabase/auth</code>), Neon JS (<code>@neondatabase/neon-js</code>)</li>
+                            <li><strong>Platform API & CLI</strong> - TypeScript/Python SDKs, REST API, Neon CLI reference</li>
+                        </ul>
+
+                        <h3>2. Agent Layer</h3>
+                        <p>Five specialized agents handle different database operations:</p>
+
+                        <p><strong>neon-database-architect</strong> - Schema design with Drizzle ORM. Handles table relationships, indexes, constraints, and migration generation.</p>
+
+                        <p><strong>neon-auth-specialist</strong> - Authentication integration with Stack Auth. Implements multi-tenancy patterns, row-level security, and session management.</p>
+
+                        <p><strong>neon-migration-specialist</strong> - Production migration strategies including zero-downtime deployments, rollback procedures, and data migration patterns.</p>
+
+                        <p><strong>neon-optimization-analyzer</strong> - Query performance analysis using <code>EXPLAIN ANALYZE</code>, index recommendations, and connection pooling optimization.</p>
+
+                        <p><strong>neon-expert</strong> - General database consulting. Covers branching workflows, compute autoscaling, and Neon-specific features.</p>
+
+                        <h3>3. Integration Layer</h3>
+                        <p><strong>neon MCP</strong> - Model Context Protocol integration providing programmatic access to Neon's management API for project and branch operations.</p>
+
+                        <h3>4. Monitoring Layer</h3>
+                        <p><strong>neon-database-dev</strong> - Development metrics statusline showing active connections, transaction counts, and cache hit rates.</p>
+
+                        <p><strong>neon-database-resources</strong> - Resource monitoring statusline tracking CPU usage, memory consumption, and storage metrics.</p>
+
+                        <!-- Installation -->
+                        <h2>Installation</h2>
+
+                        <h3>Option 1: Skills Only</h3>
+                        <p>Install both Neon skills (provisioning + best practices):</p>
+                        <pre><code>npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon</code></pre>
+
+                        <h3>Option 2: Complete Template</h3>
+                        <p>Install all 10 components:</p>
+                        <pre><code>npx claude-code-templates@latest \
+  --skill database/neon-instagres,database/using-neon \
+  --agent database/neon-expert,database/neon-database-architect,database/neon-auth-specialist,data-ai/neon-migration-specialist,data-ai/neon-optimization-analyzer \
+  --mcp database/neon \
+  --setting statusline/neon-database-dev,statusline/neon-database-resources \
+  --yes</code></pre>
+
+                        <!-- Usage -->
+                        <h2>Usage Patterns</h2>
+
+                        <h3>Basic Database Setup</h3>
+                        <p>The skill auto-activates when you mention database setup:</p>
+                        <blockquote>
+                            <p><strong>User:</strong> "Set up a Postgres database for this project"</p>
+                            <p><strong>Skill:</strong> Provisions database, writes credentials to <code>.env</code></p>
+                        </blockquote>
+
+                        <h3>Schema Design</h3>
+                        <p>Complex schemas trigger delegation to the architect agent:</p>
+                        <blockquote>
+                            <p><strong>User:</strong> "Create a multi-tenant SaaS schema with users, organizations, and subscriptions"</p>
+                            <p><strong>Flow:</strong> Skill provisions → delegates to neon-database-architect → generates Drizzle schema</p>
+                        </blockquote>
+
+                        <h3>Authentication Integration</h3>
+                        <blockquote>
+                            <p><strong>User:</strong> "Add Stack Auth with row-level security"</p>
+                            <p><strong>Flow:</strong> Delegates to neon-auth-specialist → implements RLS policies and auth tables</p>
+                        </blockquote>
+
+                        <h3>Production Migration</h3>
+                        <blockquote>
+                            <p><strong>User:</strong> "Migrate to production with zero downtime"</p>
+                            <p><strong>Flow:</strong> Delegates to neon-migration-specialist → creates migration strategy with rollback plan</p>
+                        </blockquote>
+
+                        <!-- Framework Integration -->
+                        <h2>Framework Integration</h2>
+                        <p>The template integrates with major JavaScript/TypeScript frameworks:</p>
+
+                        <ul>
+                            <li><strong>Next.js</strong> - Writes to <code>.env.local</code>, configures for server components and API routes</li>
+                            <li><strong>Vite</strong> - Creates <code>.env</code> with <code>VITE_</code> prefix for client-side access</li>
+                            <li><strong>Express</strong> - Standard <code>.env</code> configuration with connection pooling setup</li>
+                            <li><strong>SvelteKit</strong> - Writes to <code>.env</code> with <code>$env/static/private</code> patterns</li>
+                            <li><strong>Remix</strong> - Creates <code>.env</code> for server-side loaders and actions</li>
+                        </ul>
+
+                        <p>ORM support includes Drizzle, Prisma, TypeORM, Kysely, and raw SQL via node-postgres.</p>
+
+                        <!-- Technical Details -->
+                        <h2>Technical Implementation</h2>
+
+                        <h3>Database Provisioning</h3>
+                        <p>Neon Instagres creates serverless Postgres instances with the following characteristics:</p>
+                        <ul>
+                            <li>Postgres 16 with standard extensions (pgvector, PostGIS, uuid-ossp, etc.)</li>
+                            <li>Connection pooling via PgBouncer in transaction mode</li>
+                            <li>Autoscaling compute from 0.25 to 8 vCPU based on load</li>
+                            <li>72-hour trial period before requiring account claim</li>
+                        </ul>
+
+                        <h3>Agent Delegation Logic</h3>
+                        <p>The skill uses keyword matching to delegate to appropriate agents:</p>
+                        <ul>
+                            <li><code>schema</code>, <code>table</code>, <code>drizzle</code> → neon-database-architect</li>
+                            <li><code>auth</code>, <code>stack auth</code>, <code>RLS</code> → neon-auth-specialist</li>
+                            <li><code>migrate</code>, <code>migration</code>, <code>production</code> → neon-migration-specialist</li>
+                            <li><code>slow</code>, <code>optimize</code>, <code>performance</code> → neon-optimization-analyzer</li>
+                            <li><code>branch</code>, <code>scale</code> → neon-expert</li>
+                        </ul>
+
+                        <h3>MCP Integration</h3>
+                        <p>The Neon MCP exposes management operations:</p>
+                        <ul>
+                            <li>List and create projects</li>
+                            <li>Manage database branches (create, delete, merge)</li>
+                            <li>Configure compute settings and autoscaling</li>
+                            <li>Query connection strings and endpoints</li>
+                        </ul>
+
+                        <!-- Reference -->
+                        <h2>Additional Resources</h2>
+                        <ul>
+                            <li><a href="https://neon.tech/docs/guides/instagres" target="_blank">Neon Instagres Documentation</a></li>
+                            <li><a href="https://neon.tech/docs/introduction" target="_blank">Neon Platform Overview</a></li>
+                            <li><a href="https://get.neon.com/4eCjZDz" target="_blank">Create Free Neon Account</a></li>
+                        </ul>
+
+                        <!-- Back Link -->
+                        <div class="article-footer">
+                            <a href="../../index.html" class="back-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                                </svg>
+                                Back to Components
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Code Copy Functionality -->
+    <script>
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+        const content = codeElement.textContent;
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('npx ')) return 'bash';
+        if (content.includes('import ') && content.includes('from ')) return 'javascript';
+        if (content.includes('interface ') || content.includes(': string')) return 'typescript';
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) return 'sql';
+        if (content.includes('{') && content.includes('"')) return 'json';
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            try {
+                let textToCopy = code.textContent;
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+                await navigator.clipboard.writeText(textToCopy);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        return text
+            .split('\n')
+            .map(line => line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, ''))
+            .filter(line => line.trim() !== '')
+            .join('\n')
+            .trim();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+    </script>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../blog/index.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Blog
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

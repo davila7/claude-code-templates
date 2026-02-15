@@ -1,9 +1,12 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/index.html"
-    },
+      "destination": "/skills",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/agents",
       "destination": "/index.html"

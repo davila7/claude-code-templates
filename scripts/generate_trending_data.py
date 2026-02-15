@@ -7,12 +7,78 @@ Fetches download data from Supabase and generates trending-data.json for the Cla
 import json
 import os
 import requests
+import time
 from datetime import datetime, timedelta, timezone
 from collections import defaultdict, Counter
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+def fetch_with_retry(url, headers, max_retries=5, timeout=60):
+    """
+    Fetch data from API with retry logic and exponential backoff.
+    Handles 500, 503, timeouts, and connection errors with aggressive retries.
+
+    Args:
+        url: The URL to fetch
+        headers: Request headers
+        max_retries: Maximum number of retry attempts
+        timeout: Request timeout in seconds
+
+    Returns:
+        Response object or None if all retries failed
+    """
+    retryable_statuses = {500, 502, 503, 504}
+
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, headers=headers, timeout=timeout)
+
+            # Return successful responses
+            if response.status_code in [200, 206]:
+                return response
+
+            # Retry on server errors with exponential backoff
+            if response.status_code in retryable_statuses:
+                if attempt < max_retries - 1:
+                    wait_time = (2 ** attempt) * 3  # 3s, 6s, 12s, 24s
+                    print(f"⏳ Server error {response.status_code} on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    print(f"⚠️  Server error {response.status_code} after {max_retries} attempts")
+                    return None
+
+            # For non-retryable errors, return immediately
+            print(f"⚠️  API returned status {response.status_code}: {response.text[:200]}")
+            return None
+
+        except requests.exceptions.Timeout:
+            if attempt < max_retries - 1:
+                wait_time = (2 ** attempt) * 3
+                print(f"⏳ Request timeout on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+            else:
+                print(f"❌ Request timed out after {max_retries} attempts")
+                return None
+
+        except requests.exceptions.ConnectionError:
+            if attempt < max_retries - 1:
+                wait_time = (2 ** attempt) * 3
+                print(f"⏳ Connection error on attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+            else:
+                print(f"❌ Connection failed after {max_retries} attempts")
+                return None
+
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Request error: {str(e)}")
+            return None
+
+    return None
 
 def main():
     """Main function to generate trending data"""
@@ -47,42 +113,54 @@ def main():
         
         print(f"📊 Total records in database: {total_count}")
         
-        # Fetch all data using pagination to bypass 1000 record limit
+        # Fetch ALL data using cursor-based pagination
         all_downloads = []
         page_size = 1000
-        offset = 0
-        
+        last_id = 0
+        page_num = 0
+        consecutive_errors = 0
+        max_consecutive_errors = 3
+
+        print("📊 Using cursor-based pagination to fetch all records...")
+
         while True:
-            # Add Range header to get specific page
-            paginated_headers = {
-                **headers,
-                'Range': f'{offset}-{offset + page_size - 1}'
-            }
-            
-            # Order by created_at descending to get most recent records first
-            api_url = f"{supabase_url}/rest/v1/component_downloads?order=created_at.desc"
-            response = requests.get(api_url, headers=paginated_headers)
-            
-            if response.status_code != 200 and response.status_code != 206:
-                print(f"❌ API Error: {response.status_code} - {response.text}")
-                break
-            
+            page_num += 1
+
+            api_url = f"{supabase_url}/rest/v1/component_downloads?id=gt.{last_id}&order=id.asc&limit={page_size}"
+
+            response = fetch_with_retry(api_url, headers, max_retries=5, timeout=60)
+
+            if response is None:
+                consecutive_errors += 1
+                if consecutive_errors >= max_consecutive_errors:
+                    print(f"⚠️  {max_consecutive_errors} consecutive failures. Stopping at {len(all_downloads):,} records.")
+                    break
+                # Skip ahead by estimating next ID range to recover from persistent errors
+                last_id += page_size
+                print(f"⚠️  Skipping ahead to id > {last_id} (attempt {consecutive_errors}/{max_consecutive_errors})")
+                time.sleep(5)
+                continue
+
             page_data = response.json()
             if not page_data:
+                print(f"✅ Reached end of data at page {page_num}")
                 break
-                
+
+            consecutive_errors = 0  # Reset on success
             all_downloads.extend(page_data)
-            print(f"📄 Fetched page {offset//page_size + 1}: {len(page_data)} records (Total: {len(all_downloads)})")
-            
-            # Check if we got less than page_size, meaning we're done
+            last_id = page_data[-1]['id']
+
+            # Progress indicator every 50 pages
+            if page_num % 50 == 0:
+                pct = (len(all_downloads) / total_count * 100) if total_count > 0 else 0
+                print(f"📄 Page {page_num}: {len(all_downloads):,}/{total_count:,} records ({pct:.1f}%)")
+
             if len(page_data) < page_size:
+                print(f"✅ Fetched final page {page_num} with {len(page_data)} records")
                 break
-                
-            offset += page_size
-            
-            # Safety break to prevent infinite loops - get all data for accurate totals
-            if len(all_downloads) >= 1000000:  # Increased to get all historical data
-                print("⚠️  Reached safety limit of 1,000,000 records")
+
+            if len(all_downloads) >= 1000000:
+                print(f"⚠️  Reached safety limit of 1,000,000 records")
                 break
         
         if not all_downloads:
@@ -90,7 +168,8 @@ def main():
             print("📝 Generating fallback trending data...")
             trending_data = generate_fallback_trending_data()
         else:
-            print(f"✅ Successfully fetched {len(all_downloads)} total records")
+            print(f"\n✅ Successfully fetched {len(all_downloads):,} total records from Supabase")
+            print(f"📊 Processing download data to generate trending statistics...")
             # Process the real data
             trending_data = process_downloads_data(all_downloads)
         
@@ -118,6 +197,13 @@ def main():
 
 def process_downloads_data(downloads):
     """Process raw download data and generate trending structure"""
+
+    # Components to exclude from trending (test/internal components)
+    EXCLUDED_COMPONENTS = {
+        'test-command', 'test-agent', 'test-setting', 'test-hook',
+        'test-mcp', 'test-skill', 'test-template', 'test-from-production',
+        'test-component', 'test', 'demo-component', 'example-component'
+    }
 
     # Calculate date ranges with timezone awareness
     now = datetime.now(timezone.utc)
@@ -166,7 +252,7 @@ def process_downloads_data(downloads):
         elif '+' not in timestamp_str and '-' not in timestamp_str[-6:]:
             # No timezone info, assume UTC
             timestamp_str = timestamp_str + '+00:00'
-            
+
         try:
             download_time = datetime.fromisoformat(timestamp_str)
             # Convert to UTC if not already
@@ -175,7 +261,7 @@ def process_downloads_data(downloads):
         except:
             # Fallback to current time if parsing fails
             download_time = datetime.now(timezone.utc)
-        
+
         # Create key that matches generate_components_json.py structure
         # The key should match format: component_type/category/name
         category = download.get('category', 'general')
@@ -188,6 +274,10 @@ def process_downloads_data(downloads):
             actual_name = component_name.split('/')[-1]
         else:
             actual_name = component_name
+
+        # Skip test/internal components
+        if actual_name.lower() in EXCLUDED_COMPONENTS:
+            continue
 
         component_key = f"{component_type}-{actual_name}"
         stats = component_stats[component_key]

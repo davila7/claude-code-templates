@@ -1,0 +1,34 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import MyComponentsView from '../components/MyComponentsView.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+
+export const prerender = false;
+---
+
+<DashboardLayout title="My Components - Claude Code Templates">
+  <div class="h-full">
+    <MyComponentsView client:load />
+  </div>
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
+
+<!-- Mount sidebar React islands -->
+<script>
+  import { createElement } from 'react';
+  import { createRoot } from 'react-dom/client';
+  import AuthButton from '../components/AuthButton.tsx';
+  import MyComponentsSidebarItem from '../components/MyComponentsSidebarItem.tsx';
+
+  const authContainer = document.getElementById('auth-button-container');
+  if (authContainer) {
+    createRoot(authContainer).render(createElement(AuthButton));
+  }
+
+  const myCompContainer = document.getElementById('my-components-nav');
+  if (myCompContainer) {
+    createRoot(myCompContainer).render(createElement(MyComponentsSidebarItem, { isActive: true }));
+  }
+</script>

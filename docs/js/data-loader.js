@@ -21,8 +21,6 @@ class DataLoader {
     // Load all components at once (simplified approach)
     async loadAllComponents() {
         try {
-            console.log('DataLoader: Loading components from:', this.getDataPath('components.json'));
-            
             this.loadingStates.components = true;
             this.showLoadingState('components', true);
             
@@ -357,7 +355,6 @@ class DataLoader {
     // Load more components (no longer needed but kept for compatibility)
     async loadMoreComponents(page) {
         // All components are now loaded at once, so this method returns null
-        console.log('loadMoreComponents called but not needed - all data loaded initially');
         return null;
     }
     

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClaudeKit: AI Agents & Skills for Claude Code</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+
+    <meta name="description" content="ClaudeKit is the fastest path from idea to production. AI agents & skills that research, plan, code, test, and document so you can ship features in hours instead of weeks.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/featured/claudekit/">
+    <meta property="og:title" content="ClaudeKit: AI Agents & Skills for Claude Code">
+    <meta property="og:description" content="The fastest path from idea to production. AI agents & skills built on Claude Code that research, plan, code, test, and document so you can ship features in hours.">
+    <meta property="og:image" content="https://docs.claudekit.cc/logo-horizontal.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/featured/claudekit/">
+    <meta name="twitter:title" content="ClaudeKit: AI Agents & Skills for Claude Code">
+    <meta name="twitter:description" content="The fastest path from idea to production. AI agents & skills built on Claude Code that research, plan, code, test, and document.">
+    <meta name="twitter:image" content="https://docs.claudekit.cc/logo-horizontal.png">
+
+    <meta name="keywords" content="ClaudeKit, Claude Code, AI Agents, AI Skills, Software Development, Claude Code Workflow, AI Engineering, Marketing Automation, Code Review, Automated Testing">
+    <link rel="canonical" href="https://aitmpl.com/featured/claudekit/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+ ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗██╗  ██╗██╗████████╗
+██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝██║ ██╔╝██║╚══██╔══╝
+██║     ██║     ███████║██║   ██║██║  ██║█████╗  █████╔╝ ██║   ██║
+██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝  ██╔═██╗ ██║   ██║
+╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗██║  ██╗██║   ██║
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝</pre>
+                    </div>
+                    <div class="terminal-subtitle">
+                        <span class="status-dot"></span>
+                        AI Agents & Skills for <strong>Claude Code</strong>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="https://claudekit.cc" target="_blank" class="header-btn" style="background: var(--accent-color); color: var(--bg-primary);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5,3C3.89,3 3,3.89 3,5V19C3,20.11 3.89,21 5,21H19C20.11,21 21,20.11 21,19V5C21,3.89 20.11,3 19,3H5M5,5H19V19H5V5M7,7V9H17V7H7M7,11V13H17V11H7M7,15V17H14V15H7Z"/>
+                        </svg>
+                        Get ClaudeKit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <!-- Hero Section -->
+        <section class="blog-article-hero">
+            <div class="container">
+                <div class="article-header">
+                    <div class="article-meta">
+                        <span class="article-category">Featured Tool</span>
+                        <span class="meta-separator">&bull;</span>
+                        <span class="article-date">January 2026</span>
+                    </div>
+                    <h1 class="article-title">ClaudeKit: The Fastest Path From Idea to Production</h1>
+                    <p class="article-subtitle">Battle-tested AI agents & skills that research, plan, code, test, and document so you can ship features in hours instead of weeks</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <article class="blog-article">
+            <div class="container">
+                <div class="article-content">
+
+                    <!-- Brand Logo -->
+                    <div class="article-brand-logo">
+                        <img src="https://docs.claudekit.cc/logo-horizontal.png" alt="ClaudeKit Logo" style="max-width: 400px; width: 100%; height: auto; margin: 2rem auto; display: block;">
+                    </div>
+
+                    <!-- Introduction -->
+                    <section class="content-section">
+                        <h2>What Is ClaudeKit</h2>
+                        <p>ClaudeKit is a production-ready Claude Code setup with subagents, commands, hooks, and skills that have been battle-tested and used in real products. Built by someone who has been using Claude Code for 7+ months and documented everything publicly.</p>
+                        <p><strong>4,000+ happy users across 109 countries trust ClaudeKit to power their development workflow.</strong></p>
+                        <p>Beyond engineering, ClaudeKit also covers go-to-market with marketing automation to help you distribute your products to the world.</p>
+                    </section>
+
+                    <!-- Installation -->
+                    <section class="content-section">
+                        <h2>Quick Installation</h2>
+                        <p>After purchasing, your GitHub username is granted access to the repos automatically. Install with these commands:</p>
+                        <div class="code-block">
+                            <pre><code># Login with your GitHub account
+gh auth login
+
+# Install ClaudeKit CLI
+npm i -g claudekit-cli
+
+# Install CK Engineer in your project
+ck init
+
+# Or install globally for every project
+ck init -g</code></pre>
+                        </div>
+                    </section>
+
+                    <!-- The Workflow -->
+                    <section class="content-section">
+                        <h2>The Battle-Tested Workflow</h2>
+                        <p>ClaudeKit users rely on this proven workflow to ship features with confidence:</p>
+
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">1</div>
+                                <div class="feature-content">
+                                    <h3>/docs:init</h3>
+                                    <p>Scans and analyzes your codebase, then generates specs: codebase structure, system architecture, code standards, product overview, and design guidelines.</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">2</div>
+                                <div class="feature-content">
+                                    <h3>/brainstorm</h3>
+                                    <p>Describe what you want to build. AI asks questions to fulfill requirements, challenges you with unresolved issues, and produces a report with requirement specs.</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">3</div>
+                                <div class="feature-content">
+                                    <h3>/plan</h3>
+                                    <p>Researches approaches, spawns researcher agents in parallel, and creates a comprehensive implementation plan with separate phases and validation.</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">4</div>
+                                <div class="feature-content">
+                                    <h3>/clear</h3>
+                                    <p>Fresh context window before implementation to ensure best code quality output and agents stick with the plan.</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">5</div>
+                                <div class="feature-content">
+                                    <h3>/code:auto</h3>
+                                    <p>Reads the plan, implements phase by phase using progressive disclosure. Write code, write tests, run tests, code review (quality & security), verification, iterate until finished, then update specs & roadmap.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="info-note">This workflow is packed with 18+ years of professional development experience: Spec-driven Development, Test-driven Development, and the YAGNI - KISS - DRY principles.</p>
+                    </section>
+
+                    <!-- CK Engineer -->
+                    <section class="content-section">
+                        <h2>ClaudeKit Engineer</h2>
+                        <p>A complete engineering toolkit built on Claude Code:</p>
+
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">&#9881;</div>
+                                <div class="feature-content">
+                                    <h3>Feature Development</h3>
+                                    <p><code>/cook</code> - Standalone implementation with internal planning and development workflows</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">&#128269;</div>
+                                <div class="feature-content">
+                                    <h3>Multi-Agent Code Review</h3>
+                                    <p><code>/code:review</code> and <code>/codebase:review</code> - Specialized agents for security, performance, and standards enforcement</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">&#9989;</div>
+                                <div class="feature-content">
+                                    <h3>Automated Testing</h3>
+                                    <p><code>/test</code> - Generates comprehensive test suites including E2E, integration, and unit tests</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">&#128027;</div>
+                                <div class="feature-content">
+                                    <h3>Bug Diagnosis</h3>
+                                    <p><code>/debug</code> - Analyzes logs, CI/CD failures, and provides root cause analysis</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">&#128196;</div>
+                                <div class="feature-content">
+                                    <h3>Documentation Sync</h3>
+                                    <p><code>/docs</code> - Maintains synchronized technical docs: PRD, codebase summary, code standards, system architecture</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon">&#128200;</div>
+                                <div class="feature-content">
+                                    <h3>Project Tracking</h3>
+                                    <p><code>/watzup</code> - Project health metrics and milestone tracking</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- CK Marketing -->
+                    <section class="content-section">
+                        <h2>ClaudeKit Marketing</h2>
+                        <p>Go beyond code. ClaudeKit Marketing handles the go-to-market side of your products:</p>
+
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <h3>Content Strategy</h3>
+                                    <p><code>/plan "Q1 content strategy"</code> - Campaign planning with TOFU/MOFU/BOFU funnel stages</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <h3>Copywriting</h3>
+                                    <p><code>/content/good</code> and <code>/content/cro</code> - Landing pages and conversion-optimized copy</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <h3>SEO Optimization</h3>
+                                    <p><code>/seo:audit</code> and <code>/seo:keywords</code> - Keyword research and competitor analysis</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <h3>Campaign & Email</h3>
+                                    <p><code>/campaign:email</code> - Email sequences, seasonal promotions, and drip campaigns via SendGrid and Resend MCPs</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <h3>Analytics</h3>
+                                    <p>GA4 + Google Ads MCPs for data-driven campaign optimization</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- CTA Section -->
+                    <section class="content-section cta-section">
+                        <h2>Get ClaudeKit</h2>
+                        <p>Join 4,000+ users shipping faster with ClaudeKit. Available as Engineer, Marketing, or both in a discounted bundle.</p>
+                        <div class="cta-button-wrapper">
+                            <a href="https://claudekit.cc" target="_blank" class="cta-button">
+                                Visit claudekit.cc
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Back to Home -->
+                    <div class="article-footer">
+                        <a href="../../index.html" class="back-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                            </svg>
+                            Back to Components
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2025 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../blog/index.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Blog
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* Featured page specific styles */
+        .code-block {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-color);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .feature-content h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .feature-content p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .feature-content code {
+            background: var(--bg-secondary);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+        }
+
+        .info-note {
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-color);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 3rem 0;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin: 3rem 0;
+        }
+
+        .cta-button-wrapper {
+            margin-top: 2rem;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--accent-color);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+
+        .article-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .feature-item {
+                flex-direction: column;
+            }
+
+            .feature-icon {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</body>
+</html>

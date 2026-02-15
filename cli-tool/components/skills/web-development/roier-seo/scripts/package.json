@@ -1,0 +1,16 @@
+{
+  "name": "roier-seo-scripts",
+  "version": "1.0.0",
+  "description": "Roier SEO Skill - Lighthouse audit scripts",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "audit": "node audit.js"
+  },
+  "dependencies": {
+    "lighthouse": "^12.0.0",
+    "chrome-launcher": "^1.1.0"
+  }
+}

@@ -1,0 +1,239 @@
+---
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import SearchModal from '../../../components/SearchModal.tsx';
+import CartSidebar from '../../../components/CartSidebar.tsx';
+import AuthButton from '../../../components/AuthButton.tsx';
+import { TYPE_CONFIG } from '../../../lib/icons';
+import { fetchComponents, getInstallCommand } from '../../../lib/data';
+import type { Component } from '../../../lib/types';
+
+export const prerender = false;
+
+const { type, slug } = Astro.params;
+
+let component: Component | null = null;
+let error: string | null = null;
+
+try {
+  const data = await fetchComponents();
+  const typeKey = (type?.endsWith('s') ? type : (type + 's')) as keyof typeof data;
+  const items = data[typeKey] as Component[] | undefined;
+
+  if (items) {
+    component = items.find((c) => {
+      const cleanPath = c.path?.replace(/\.(md|json)$/, '') ?? '';
+      return cleanPath === slug || c.name === slug;
+    }) ?? null;
+  }
+} catch (e: any) {
+  error = e.message;
+}
+
+function formatName(name: string): string {
+  if (!name) return '';
+  return name.replace(/\.(md|json)$/, '').replace(/[-_]/g, ' ')
+    .split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+const title = component ? formatName(component.name) : 'Component Not Found';
+const typePlural = type?.endsWith('s') ? type : (type + 's');
+const config = TYPE_CONFIG[typePlural ?? 'agents'];
+const installCmd = component ? getInstallCommand(component) : '';
+---
+
+<DashboardLayout title={`${title} - Claude Code Templates`}>
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    {/* Back nav */}
+    <a
+      href={`/${typePlural}`}
+      class="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors mb-6"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to {config?.label ?? 'Components'}
+    </a>
+
+    {error && (
+      <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+        <p class="text-sm text-red-400">{error}</p>
+      </div>
+    )}
+
+    {!component && !error && (
+      <div class="text-center py-16">
+        <p class="text-lg text-text-secondary">Component not found</p>
+        <a href={`/${typePlural}`} class="mt-4 inline-block text-sm text-primary-400 hover:underline">
+          Browse {config?.label}
+        </a>
+      </div>
+    )}
+
+    {component && (
+      <article>
+        {/* Header */}
+        <div class="flex items-start gap-4 mb-6">
+          <div
+            class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+            style={`background-color: ${config?.color ?? '#5e6ad2'}20`}
+          >
+            {config?.icon ?? '📦'}
+          </div>
+          <div class="flex-1 min-w-0">
+            <h1 class="text-xl font-bold text-text-primary">{title}</h1>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-secondary">
+                {config?.label}
+              </span>
+              {component.category && (
+                <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-tertiary">
+                  {component.category}
+                </span>
+              )}
+              {(component.downloads ?? 0) > 0 && (
+                <span class="text-xs text-text-tertiary">
+                  {component.downloads?.toLocaleString()} downloads
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Install command */}
+        <div class="bg-surface-2 border border-border rounded-lg p-4 mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-text-secondary">Install</span>
+            <button
+              id="copyBtn"
+              class="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+              data-cmd={installCmd}
+            >
+              Copy
+            </button>
+          </div>
+          <code class="text-sm text-accent-400 font-mono break-all">{installCmd}</code>
+        </div>
+
+        {/* Content */}
+        <div class="prose prose-invert prose-sm max-w-none">
+          <div
+            class="bg-surface-2 border border-border rounded-lg p-6 text-sm text-text-primary leading-relaxed whitespace-pre-wrap font-mono"
+          >
+            {component.content || 'No content available'}
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div class="mt-6 flex items-center gap-3">
+          <button
+            id="addToStackBtn"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg text-sm font-medium transition-colors"
+            data-name={component.name}
+            data-path={component.path}
+            data-type={component.type}
+            data-category={component.category ?? ''}
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add to Stack
+          </button>
+          <div
+            id="save-to-collection-container"
+            data-component-type={component.type}
+            data-component-path={component.path}
+            data-component-name={component.name}
+            data-component-category={component.category ?? ''}
+          ></div>
+        </div>
+      </article>
+    )}
+  </div>
+
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
+
+<script>
+  import { createElement } from 'react';
+  import { createRoot } from 'react-dom/client';
+  import AuthButton from '../../../components/AuthButton.tsx';
+  import MyComponentsSidebarItem from '../../../components/MyComponentsSidebarItem.tsx';
+  import SaveToCollectionButton from '../../../components/SaveToCollectionButton.tsx';
+
+  // Mount auth button
+  const container = document.getElementById('auth-button-container');
+  if (container) {
+    createRoot(container).render(createElement(AuthButton));
+  }
+
+  // Mount my-components nav
+  const myCompContainer = document.getElementById('my-components-nav');
+  if (myCompContainer) {
+    createRoot(myCompContainer).render(createElement(MyComponentsSidebarItem));
+  }
+
+  // Mount save-to-collection button
+  const saveContainer = document.getElementById('save-to-collection-container');
+  if (saveContainer) {
+    const { componentType, componentPath, componentName, componentCategory } = saveContainer.dataset;
+    createRoot(saveContainer).render(
+      createElement(SaveToCollectionButton, {
+        componentType: componentType ?? '',
+        componentPath: componentPath ?? '',
+        componentName: componentName ?? '',
+        componentCategory: componentCategory ?? '',
+      })
+    );
+  }
+
+  // Copy button
+  document.getElementById('copyBtn')?.addEventListener('click', (e) => {
+    const cmd = (e.currentTarget as HTMLElement).dataset.cmd;
+    if (cmd) {
+      navigator.clipboard.writeText(cmd);
+      (e.currentTarget as HTMLElement).textContent = 'Copied!';
+      setTimeout(() => {
+        (e.currentTarget as HTMLElement).textContent = 'Copy';
+      }, 2000);
+    }
+  });
+
+  // Add to stack button
+  document.getElementById('addToStackBtn')?.addEventListener('click', (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const { name, path, type: componentType, category } = btn.dataset;
+    if (!name || !path || !componentType) return;
+
+    const typePlural = componentType.endsWith('s') ? componentType : componentType + 's';
+    const typeIcons: Record<string, string> = {
+      agents: '🤖', commands: '⚡', settings: '⚙️', hooks: '🪝', mcps: '🔌', skills: '🎨',
+    };
+
+    try {
+      const saved = localStorage.getItem('claudeCodeCart');
+      const cart = saved ? JSON.parse(saved) : {};
+      if (!cart[typePlural]) cart[typePlural] = [];
+
+      const exists = cart[typePlural].some((i: any) => i.path === path);
+      if (exists) {
+        btn.textContent = 'Already in Stack';
+        setTimeout(() => { btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg> Add to Stack'; }, 2000);
+        return;
+      }
+
+      cart[typePlural].push({
+        name, path, category: category ?? '',
+        description: '', icon: typeIcons[typePlural] ?? '📦',
+      });
+
+      localStorage.setItem('claudeCodeCart', JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: cart }));
+
+      btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg> Added!';
+      setTimeout(() => {
+        btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg> Add to Stack';
+      }, 2000);
+    } catch {}
+  });
+</script>

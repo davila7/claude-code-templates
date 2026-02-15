@@ -1,0 +1,9 @@
+{
+  "description": "Configure LangSmith tracing environment variables for Claude Code observability. Sends conversation traces to LangSmith for monitoring and analysis. Requires: LangSmith account and API key from https://smith.langchain.com/settings/apikeys. After installation, replace YOUR_API_KEY_HERE with your actual API key (starts with lsv2_pt_). Set TRACE_TO_LANGSMITH to false to disable tracing.",
+  "env": {
+    "TRACE_TO_LANGSMITH": "true",
+    "CC_LANGSMITH_API_KEY": "YOUR_API_KEY_HERE",
+    "CC_LANGSMITH_PROJECT": "claude-code-project",
+    "CC_LANGSMITH_DEBUG": "false"
+  }
+}

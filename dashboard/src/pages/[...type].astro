@@ -1,0 +1,52 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import FeaturedSection from '../components/FeaturedSection.astro';
+import ComponentGrid from '../components/ComponentGrid.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+import AuthButton from '../components/AuthButton.tsx';
+import { VALID_TYPES } from '../lib/icons';
+
+export const prerender = true;
+
+const { type } = Astro.params;
+const activeType = type && VALID_TYPES.includes(type) ? type : 'skills';
+
+export function getStaticPaths() {
+  return [
+    { params: { type: 'skills' } },
+    { params: { type: 'agents' } },
+    { params: { type: 'commands' } },
+    { params: { type: 'settings' } },
+    { params: { type: 'hooks' } },
+    { params: { type: 'mcps' } },
+  ];
+}
+---
+
+<DashboardLayout title={`${activeType.charAt(0).toUpperCase() + activeType.slice(1)} - Claude Code Templates`}>
+  <TopBar />
+  <FeaturedSection />
+  <ComponentGrid client:load initialType={activeType} />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
+
+<!-- Mount sidebar React islands -->
+<script>
+  import { createElement } from 'react';
+  import { createRoot } from 'react-dom/client';
+  import AuthButton from '../components/AuthButton.tsx';
+  import MyComponentsSidebarItem from '../components/MyComponentsSidebarItem.tsx';
+
+  const authContainer = document.getElementById('auth-button-container');
+  if (authContainer) {
+    createRoot(authContainer).render(createElement(AuthButton));
+  }
+
+  const myCompContainer = document.getElementById('my-components-nav');
+  if (myCompContainer) {
+    createRoot(myCompContainer).render(createElement(MyComponentsSidebarItem));
+  }
+</script>

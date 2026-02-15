@@ -32,7 +32,7 @@
     <!-- Open Graph -->
     <meta property="og:title" content="Component - Claude Code Templates" id="og-title">
     <meta property="og:description" content="Explore Claude Code templates, agents, commands, and automation tools for enhanced development workflows." id="og-description">
-    <meta property="og:image" content="https://aitmpl.com/og-image.png">
+    <meta property="og:image" content="https://aitmpl.com/images/social-preview.png">
     <meta property="og:url" content="" id="og-url">
     <meta property="og:type" content="website">
     
@@ -40,7 +40,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Component - Claude Code Templates" id="twitter-title">
     <meta name="twitter:description" content="Explore Claude Code templates, agents, commands, and automation tools for enhanced development workflows." id="twitter-description">
-    <meta name="twitter:image" content="https://aitmpl.com/og-image.png">
+    <meta name="twitter:image" content="https://aitmpl.com/images/social-preview.png">
     <meta name="twitter:url" content="" id="twitter-url">
     
     <!-- Favicon -->
@@ -83,6 +83,26 @@
                         Ready-to-use configurations for your <strong>Claude Code</strong> projects
                     </div>
                 </div>
+                <div class="header-actions">
+                    <a href="/index.html" class="header-btn anthropic-btn" title="Learn about Anthropic's Claude Code">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="/blog/index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -91,20 +111,12 @@
         <!-- Back Navigation -->
         <div class="back-navigation">
             <div class="container">
-                <div class="back-nav-content">
-                    <a href="/index.html" class="back-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
-                        </svg>
-                        Back to Components
-                    </a>
-                    <button id="component-sign-in-btn" class="header-btn header-btn-primary" data-clerk-signed-out>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
-                        </svg>
-                        Sign In
-                    </button>
-                </div>
+                <a href="/index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                    Back to Components
+                </a>
             </div>
         </div>
 
@@ -191,45 +203,130 @@
                     </button>
                 </div>
 
-                <!-- Component Description -->
-                <section class="content-section">
-                    <h2>Overview</h2>
-                    <div class="component-description-content">
-                        <p id="componentDescription">Component description will be loaded here.</p>
-                    </div>
-                </section>
+                <!-- Tab Navigation (GitHub PR style) -->
+                <div class="component-tabs" id="componentTabs">
+                    <button class="tab-btn active" data-tab="overview">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        Overview
+                    </button>
+                    <button class="tab-btn" data-tab="code">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6Z"/>
+                        </svg>
+                        Code
+                    </button>
+                </div>
 
-                <!-- Metadata Section -->
-                <section class="content-section metadata-section" id="metadataSection" style="display: none;">
-                    <h2>📋 Metadata</h2>
-                    <div class="metadata-grid">
-                        <div class="metadata-item">
-                            <span class="metadata-label">Version</span>
-                            <span class="metadata-value" id="metadataVersion">--</span>
-                        </div>
-                        <div class="metadata-item">
-                            <span class="metadata-label">Author</span>
-                            <span class="metadata-value" id="metadataAuthor">--</span>
-                        </div>
-                        <div class="metadata-item">
-                            <span class="metadata-label">License</span>
-                            <span class="metadata-value" id="metadataLicense">--</span>
-                        </div>
-                        <div class="metadata-item">
-                            <span class="metadata-label">Repository</span>
-                            <a class="metadata-link" id="metadataRepository" href="#" target="_blank" style="display: none;">View Repository</a>
-                            <span class="metadata-value" id="metadataRepositoryNone" style="display: none;">--</span>
-                        </div>
-                        <div class="metadata-item metadata-item-full">
-                            <span class="metadata-label">Keywords</span>
-                            <div class="metadata-keywords" id="metadataKeywords">
-                                <!-- Keywords will be loaded here -->
+                <!-- Tab Content -->
+                <div class="tab-content-wrapper">
+
+                    <!-- ===== OVERVIEW TAB (default - like PR Conversation) ===== -->
+                    <div class="tab-pane active" id="tab-overview">
+                        <div class="tab-content-grid">
+                            <!-- Main Content (left) -->
+                            <div class="tab-main">
+                                <!-- Description -->
+                                <section class="content-section">
+                                    <h2>Overview</h2>
+                                    <div class="component-description-content">
+                                        <p id="componentDescription">Component description will be loaded here.</p>
+                                    </div>
+                                </section>
+
+                                <!-- Quality Validation Section -->
+                                <section class="content-section validation-section" id="validationSection" style="display: none;">
+                                    <h2>Quality Validation</h2>
+                                    <div class="validation-compact-content">
+                                        <div class="validation-summary">
+                                            <div class="validation-score-display">
+                                                <div class="score-circle" id="scoreCircle">
+                                                    <span id="scoreValue">--</span>
+                                                </div>
+                                                <div class="score-info">
+                                                    <span class="score-label">Quality Score</span>
+                                                    <span class="score-status" id="scoreStatus">Validated</span>
+                                                </div>
+                                            </div>
+                                            <div class="validation-stats-inline">
+                                                <div class="stat-inline">
+                                                    <span class="stat-icon">&#10060;</span>
+                                                    <span class="stat-label">Errors:</span>
+                                                    <span class="stat-number" id="inlineErrors">0</span>
+                                                </div>
+                                                <div class="stat-inline">
+                                                    <span class="stat-icon">&#9888;&#65039;</span>
+                                                    <span class="stat-label">Warnings:</span>
+                                                    <span class="stat-number" id="inlineWarnings">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="validation-checks" id="validationChecks"></div>
+                                    </div>
+                                </section>
+
+                                <!-- Comments Section (Giscus - GitHub Discussions) -->
+                                <section class="content-section comments-section" id="commentsSection">
+                                    <h2>Comments</h2>
+                                    <p class="comments-description">Sign in with GitHub to leave a comment. Discussions are stored in the project's <a href="https://github.com/davila7/claude-code-templates/discussions" target="_blank">GitHub Discussions</a>.</p>
+                                    <div id="giscusContainer"></div>
+                                </section>
                             </div>
+
+                            <!-- Sidebar (right - like PR sidebar) -->
+                            <aside class="tab-sidebar">
+                                <!-- Quick Install -->
+                                <div class="sidebar-card">
+                                    <h3 class="sidebar-card-title">Quick Install</h3>
+                                    <div class="quick-install-block">
+                                        <code id="quickInstallCommand">npx claude-code-templates@latest --agent=example --yes</code>
+                                        <button class="quick-copy-btn" onclick="copyToClipboard(document.getElementById('quickInstallCommand').textContent)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                            </svg>
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Metadata -->
+                                <div class="sidebar-card" id="metadataSection" style="display: none;">
+                                    <h3 class="sidebar-card-title">Metadata</h3>
+                                    <div class="sidebar-metadata-list">
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Version</span>
+                                            <span class="sidebar-meta-value" id="metadataVersion">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Author</span>
+                                            <span class="sidebar-meta-value" id="metadataAuthor">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">License</span>
+                                            <span class="sidebar-meta-value" id="metadataLicense">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Repository</span>
+                                            <a class="metadata-link" id="metadataRepository" href="#" target="_blank" style="display: none;">View</a>
+                                            <span class="sidebar-meta-value" id="metadataRepositoryNone" style="display: none;">--</span>
+                                        </div>
+                                        <div class="sidebar-meta-keywords-row">
+                                            <span class="sidebar-meta-label">Keywords</span>
+                                            <div class="metadata-keywords" id="metadataKeywords"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </aside>
                         </div>
                     </div>
-                </section>
 
-                <!-- Installation Section -->
+                    <!-- ===== CODE TAB (like PR Files Changed) ===== -->
+                    <div class="tab-pane" id="tab-code">
+
+                    <!-- ===== INSTALLATION TAB ===== -->
+                    <div class="tab-pane" id="tab-installation">
                 <section class="content-section" id="installationSection">
                     <h2>Installation</h2>
 
@@ -545,42 +642,10 @@
                         </div>
                     </div>
                 </section>
+                    </div><!-- end tab-installation -->
 
-                <!-- Quality Validation Section - Compact -->
-                <section class="content-section validation-section" id="validationSection" style="display: none;">
-                    <h2>✓ Quality Validation</h2>
-                    <div class="validation-compact-content">
-                        <div class="validation-summary">
-                            <div class="validation-score-display">
-                                <div class="score-circle" id="scoreCircle">
-                                    <span id="scoreValue">--</span>
-                                </div>
-                                <div class="score-info">
-                                    <span class="score-label">Quality Score</span>
-                                    <span class="score-status" id="scoreStatus">Validated</span>
-                                </div>
-                            </div>
-                            <div class="validation-stats-inline">
-                                <div class="stat-inline">
-                                    <span class="stat-icon">❌</span>
-                                    <span class="stat-label">Errors:</span>
-                                    <span class="stat-number" id="inlineErrors">0</span>
-                                </div>
-                                <div class="stat-inline">
-                                    <span class="stat-icon">⚠️</span>
-                                    <span class="stat-label">Warnings:</span>
-                                    <span class="stat-number" id="inlineWarnings">0</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="validation-checks" id="validationChecks">
-                            <!-- Validation checks with tooltips will be loaded here -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Component Code Section -->
+                    <!-- ===== CODE TAB (like PR Files Changed) ===== -->
+                    <div class="tab-pane" id="tab-code">
                 <section class="component-code-section">
                     <h2>Component Code</h2>
                     <div class="code-editor">
@@ -603,6 +668,9 @@
                         </div>
                     </div>
                 </section>
+                    </div><!-- end tab-code -->
+
+                </div><!-- end tab-content-wrapper -->
 
             </div>
         </div>
@@ -643,12 +711,6 @@
                                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                             </svg>
                             GitHub
-                        </a>
-                        <a href="#" id="component-footer-sign-in-link" class="footer-link footer-link-highlight" data-clerk-signed-out>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                            </svg>
-                            Sign In
                         </a>
                     </div>
                 </div>
@@ -815,6 +877,7 @@
     <!-- Scripts -->
     <script src="/js/data-loader.js"></script>
     <script src="/js/cart-manager.js"></script>
+    <script src="/js/event-tracker.js"></script>
     <script src="/js/component-page.js"></script>
     <script src="/js/utils.js"></script>
     
@@ -901,44 +964,6 @@
                 window.componentPageManager = new ComponentPageManager();
             }
         });
-    </script>
-
-    <!-- Clerk Authentication -->
-    <script type="module">
-        import { initializeClerk, openSignIn } from './js/clerk-auth.js';
-
-        // Initialize Clerk when DOM is ready
-        async function setupClerk() {
-            try {
-                await initializeClerk();
-                console.log('Clerk initialized successfully on component page');
-
-                // Setup Sign In button click handler
-                const signInBtn = document.getElementById('component-sign-in-btn');
-                if (signInBtn) {
-                    signInBtn.addEventListener('click', () => {
-                        openSignIn();
-                    });
-                }
-
-                // Setup footer Sign In link click handler
-                const footerSignInLink = document.getElementById('component-footer-sign-in-link');
-                if (footerSignInLink) {
-                    footerSignInLink.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        openSignIn();
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to initialize Clerk:', error);
-            }
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupClerk);
-        } else {
-            setupClerk();
-        }
     </script>
 </body>
 </html>

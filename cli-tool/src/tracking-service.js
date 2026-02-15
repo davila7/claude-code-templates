@@ -286,6 +286,82 @@ class TrackingService {
             }
         }
     }
+    /**
+     * Track installation outcome (success/failure with timing)
+     * @param {string} componentType - agent, command, mcp, setting, hook, skill, template
+     * @param {string} componentName - Name of the component
+     * @param {string} outcome - success, failure, or partial
+     * @param {object} metadata - { errorType, errorMessage, durationMs, batchId }
+     */
+    async trackInstallationOutcome(componentType, componentName, outcome, metadata = {}) {
+        if (!this.trackingEnabled) {
+            return;
+        }
+
+        try {
+            const payload = {
+                componentType,
+                componentName,
+                outcome,
+                errorType: metadata.errorType || null,
+                errorMessage: metadata.errorMessage || null,
+                durationMs: metadata.durationMs || null,
+                cliVersion: this.getCliVersion(),
+                nodeVersion: process.version,
+                platform: process.platform,
+                arch: process.arch,
+                batchId: metadata.batchId || null
+            };
+
+            this.sendInstallationOutcome(payload)
+                .catch(error => {
+                    if (process.env.CCT_DEBUG === 'true') {
+                        console.debug('📊 Installation outcome tracking info (non-critical):', error.message);
+                    }
+                });
+
+        } catch (error) {
+            if (process.env.CCT_DEBUG === 'true') {
+                console.debug('📊 Installation outcome tracking error (non-critical):', error.message);
+            }
+        }
+    }
+
+    /**
+     * Send installation outcome to Neon Database
+     */
+    async sendInstallationOutcome(payload) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+        try {
+            const response = await fetch('https://www.aitmpl.com/api/track-installation-outcome', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Agent': `claude-code-templates/${payload.cliVersion}`
+                },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (process.env.CCT_DEBUG === 'true') {
+                if (response.ok) {
+                    console.debug('📊 Installation outcome tracked successfully');
+                } else {
+                    console.debug(`📊 Installation outcome tracking failed with status: ${response.status}`);
+                }
+            }
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (process.env.CCT_DEBUG === 'true') {
+                console.debug('📊 Installation outcome tracking failed (non-critical):', error.message);
+            }
+        }
+    }
 }
 
 // Export singleton instance

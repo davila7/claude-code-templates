@@ -14,7 +14,8 @@
     "@supabase/supabase-js": "^2.45.0",
     "@neondatabase/serverless": "^0.10.1",
     "axios": "^1.6.2",
-    "discord-interactions": "^3.4.0"
+    "discord-interactions": "^3.4.0",
+    "@clerk/backend": "^1.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

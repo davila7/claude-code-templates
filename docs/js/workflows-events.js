@@ -25,7 +25,6 @@ class WorkflowManager {
             this.setupEventListeners();
             this.initializeDragAndDrop();
             this.renderComponentsList();
-            console.log('Workflow Builder initialized successfully');
         } catch (error) {
             console.error('Error initializing Workflow Builder:', error);
             this.showError('Failed to load components. Please refresh the page.');

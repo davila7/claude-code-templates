@@ -134,7 +134,6 @@ async function loadComponentsForSearch() {
     try {
         // Check if dataLoader is available and use it
         if (window.dataLoader) {
-            console.log('Using DataLoader for search components...');
             const data = await window.dataLoader.loadAllComponents();
             
             if (data) {
@@ -155,7 +154,7 @@ async function loadComponentsForSearch() {
                                 component.description,
                                 component.category,
                                 ...(component.tags || []),
-                                component.keywords || '',
+                                ...(Array.isArray(component.keywords) ? component.keywords : [component.keywords || '']),
                                 component.path || ''
                             ].filter(Boolean).join(' ').toLowerCase(),
                             
@@ -165,13 +164,11 @@ async function loadComponentsForSearch() {
                     }
                 }
                 
-                console.log('Search data loaded successfully via DataLoader:', Object.keys(allComponents));
                 return;
             }
         }
         
         // Fallback: direct fetch if DataLoader not available
-        console.log('DataLoader not available, using direct fetch...');
         const response = await fetch('components.json');
         if (response.ok) {
             const data = await response.json();
@@ -193,7 +190,7 @@ async function loadComponentsForSearch() {
                             component.description,
                             component.category,
                             ...(component.tags || []),
-                            component.keywords || '',
+                            ...(Array.isArray(component.keywords) ? component.keywords : [component.keywords || '']),
                             component.path || ''
                         ].filter(Boolean).join(' ').toLowerCase(),
                         
@@ -203,7 +200,6 @@ async function loadComponentsForSearch() {
                 }
             }
             
-            console.log('Search data loaded successfully via direct fetch:', Object.keys(allComponents));
         } else {
             console.error('Failed to load components.json');
         }
@@ -269,12 +265,12 @@ function getFilterFromURL() {
         return firstSegment;
     }
 
-    // If no valid filter found and we're on root, default to agents
+    // If no valid filter found and we're on root, default to skills
     if (path === '/' || path === '') {
-        return 'agents';
+        return 'skills';
     }
 
-    return 'agents'; // Default fallback
+    return 'skills'; // Default fallback
 }
 
 /**
@@ -322,10 +318,17 @@ function performSearch(query) {
     
     // Sort by match score (highest first)
     results.sort((a, b) => b.matchScore - a.matchScore);
-    
+
     searchResults = results;
     updateSearchResults(results, categoryMatches);
     displaySearchResults(results);
+
+    // Track search event
+    window.eventTracker?.track('search', {
+        query: query,
+        results_count: results.length,
+        categories_matched: Array.from(categoryMatches)
+    });
 }
 
 /**
@@ -363,7 +366,10 @@ function calculateMatchScore(component, query, category) {
     
     // Keywords match (for settings/hooks)
     if (component.keywords) {
-        const keywordMatch = component.keywords.toLowerCase().includes(query);
+        const keywords = Array.isArray(component.keywords)
+            ? component.keywords.join(' ').toLowerCase()
+            : String(component.keywords).toLowerCase();
+        const keywordMatch = keywords.includes(query);
         if (keywordMatch) {
             score += 25;
         }
@@ -391,7 +397,12 @@ function getMatchType(component, query, category) {
     if (name.includes(query)) return 'name';
     if (description.includes(query)) return 'description';
     if (component.tags && component.tags.some(tag => tag.toLowerCase().includes(query))) return 'tag';
-    if (component.keywords && component.keywords.toLowerCase().includes(query)) return 'keyword';
+    if (component.keywords) {
+        const keywords = Array.isArray(component.keywords)
+            ? component.keywords.join(' ').toLowerCase()
+            : String(component.keywords).toLowerCase();
+        if (keywords.includes(query)) return 'keyword';
+    }
     if (component.path && component.path.toLowerCase().includes(query)) return 'path';
     
     return 'other';
@@ -650,8 +661,7 @@ function showAllComponents() {
  */
 function initializeFilterFromURL() {
     const urlFilter = getFilterFromURL();
-    console.log('Initializing filter from URL:', urlFilter);
-    
+
     if (urlFilter && typeof setUnifiedFilter === 'function') {
         setUnifiedFilter(urlFilter);
     }
@@ -663,8 +673,6 @@ function initializeFilterFromURL() {
 function initializeSearchFromURL() {
     const urlQuery = getSearchQueryFromURL();
     if (urlQuery) {
-        console.log('Initializing search from URL:', urlQuery);
-        
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.value = urlQuery;
@@ -687,10 +695,8 @@ function initializeSearchFromURL() {
             
             const trySearch = () => {
                 attempts++;
-                console.log(`Attempt ${attempts} to perform search. Components loaded:`, Object.keys(allComponents).length > 0);
-                
+
                 if (Object.keys(allComponents).length > 0) {
-                    console.log('Components ready, performing search...');
                     performSearch(urlQuery);
                 } else if (attempts < maxAttempts) {
                     // If components not loaded, wait and try again
