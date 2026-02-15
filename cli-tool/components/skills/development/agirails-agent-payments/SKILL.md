@@ -143,6 +143,13 @@ for questions the user hasn't addressed.
 - Hint: One service name per answer. If the user needs multiple, repeat this question.
 - Example: `code-review`
 
+**Question 11 — Provider Address** *(only if intent = pay or both)*
+> Do you know the provider's Ethereum address? (or leave blank for discovery)
+- Type: text (optional)
+- Validation: must start with `0x` and be 42 characters, or empty
+- Default: empty (omit `provider` field — uses local ServiceDirectory or Job Board when available)
+- Hint: If you already know who you want to pay, enter their `0x...` address. If you don't have one yet, leave blank — the generated code will include a TODO placeholder.
+
 ### Step 3: Confirm
 
 After all questions, show a summary and wait for explicit "yes":
@@ -155,6 +162,7 @@ Intent: {{intent}}
 {{#if price}}Base price: ${{price}}{{/if}}
 {{#if payment_mode}}Payment mode: {{payment_mode}}{{/if}}
 {{#if budget}}Default budget: ${{budget}}{{/if}}
+{{#if provider_address}}Provider: {{provider_address}}{{/if}}
 Ready to proceed? (yes/no)
 ```
 
@@ -266,7 +274,8 @@ import { request } from '@agirails/sdk';
 
 async function main() {
   const { result, transaction } = await request('{{services_needed}}', {
-    provider: '0xProviderAddress',
+    {{#if provider_address}}provider: '{{provider_address}}',{{/if}}
+    {{#unless provider_address}}// provider: '0x...',  // TODO: Set the provider's address (required for cross-process requests){{/unless}}
     input: { /* your data here */ },
     budget: {{budget}},
     network: '{{network}}',
