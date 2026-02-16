@@ -336,7 +336,7 @@ jobs:
 
           TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-          # Build payload
+          # Build payload (thread_name required for forum channels)
           PAYLOAD=$(jq -n \
             --arg emoji "$EMOJI" \
             --arg title "$TITLE" \
@@ -348,6 +348,7 @@ jobs:
             '{
               username: "Claude Code Templates",
               avatar_url: "https://aitmpl.com/img/logo.png",
+              thread_name: ($emoji + " " + $title),
               content: ($emoji + " **Community Help** — Learn something new today!"),
               embeds: [
                 {
