@@ -144,6 +144,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **📚 Documentation**: [docs.aitmpl.com](https://docs.aitmpl.com)
 - **💬 Community**: [GitHub Discussions](https://github.com/davila7/claude-code-templates/discussions)
 - **🐛 Issues**: [GitHub Issues](https://github.com/davila7/claude-code-templates/issues)
+- **📤 Session Sharing**: [Claudebin](https://claudebin.com) ([GitHub](https://github.com/wunderlabs-dev/claudebin.com/)) - A minimalistic tool for publishing and sharing Claude coding sessions
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/davila7/claude-code-templates.svg?variant=adaptive)](https://starchart.cc/davila7/claude-code-templates)
