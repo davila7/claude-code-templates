@@ -1,0 +1,128 @@
+name: Daily Blog Share
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # 15:00 UTC (12:00 PM Chile) - 1 hour after component pick
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  share-blog:
+    name: Share Random Blog Article on Discord
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick random blog article and send to Discord
+        run: |
+          set -euo pipefail
+
+          # Count total articles and pick a random index
+          TOTAL=$(jq '.articles | length' docs/blog/blog-articles.json)
+          RANDOM_INDEX=$(( RANDOM % TOTAL ))
+
+          # Extract the random article
+          ARTICLE_JSON=$(jq --argjson idx "$RANDOM_INDEX" '.articles[$idx]' docs/blog/blog-articles.json)
+
+          # Parse fields
+          TITLE=$(echo "$ARTICLE_JSON" | jq -r '.title')
+          DESCRIPTION=$(echo "$ARTICLE_JSON" | jq -r '.description // "No description available"' | head -c 400)
+          URL_RAW=$(echo "$ARTICLE_JSON" | jq -r '.url')
+          IMAGE=$(echo "$ARTICLE_JSON" | jq -r '.image // empty')
+          CATEGORY=$(echo "$ARTICLE_JSON" | jq -r '.category // "General"')
+          READ_TIME=$(echo "$ARTICLE_JSON" | jq -r '.readTime // "5 min read"')
+          DIFFICULTY=$(echo "$ARTICLE_JSON" | jq -r '.difficulty // "basic"')
+          TAGS=$(echo "$ARTICLE_JSON" | jq -r '[.tags[]? // empty] | join(", ")')
+
+          # Build full URL
+          if echo "$URL_RAW" | grep -q "^http"; then
+            ARTICLE_URL="$URL_RAW"
+          else
+            ARTICLE_URL="https://aitmpl.com/blog/${URL_RAW}"
+          fi
+
+          # Build full image URL
+          if [ -n "$IMAGE" ]; then
+            if echo "$IMAGE" | grep -q "^http"; then
+              IMAGE_URL="$IMAGE"
+            else
+              IMAGE_URL="https://aitmpl.com/blog/${IMAGE}"
+            fi
+          else
+            IMAGE_URL="https://aitmpl.com/img/logo.png"
+          fi
+
+          # Emoji and color based on difficulty
+          case "$DIFFICULTY" in
+            basic)        DIFF_EMOJI="🟢"; COLOR=3066993  ;;
+            intermediate) DIFF_EMOJI="🟡"; COLOR=16750848 ;;
+            advanced)     DIFF_EMOJI="🔴"; COLOR=15158332 ;;
+            *)            DIFF_EMOJI="📖"; COLOR=5793266  ;;
+          esac
+
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Build payload with jq
+          PAYLOAD=$(jq -n \
+            --arg title "$TITLE" \
+            --arg desc "$DESCRIPTION" \
+            --arg url "$ARTICLE_URL" \
+            --arg image "$IMAGE_URL" \
+            --argjson color "$COLOR" \
+            --arg category "$CATEGORY" \
+            --arg read_time "$READ_TIME" \
+            --arg diff_emoji "$DIFF_EMOJI" \
+            --arg difficulty "$DIFFICULTY" \
+            --arg tags "$TAGS" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "Claude Code Templates",
+              avatar_url: "https://aitmpl.com/img/logo.png",
+              content: "**📝 Blog of the Day** — Expand your Claude Code knowledge!",
+              embeds: [
+                {
+                  title: ("📝 " + $title),
+                  description: $desc,
+                  url: $url,
+                  color: $color,
+                  thumbnail: {
+                    url: $image
+                  },
+                  fields: [
+                    { name: "📂 Category", value: $category, inline: true },
+                    { name: "⏱️ Read Time", value: $read_time, inline: true },
+                    { name: ($diff_emoji + " Difficulty"), value: ($difficulty | ascii_upcase[:1] + $difficulty[1:]), inline: true },
+                    { name: "🏷️ Tags", value: $tags, inline: false },
+                    { name: "🔗 Read Article", value: ("[Read on aitmpl.com](" + $url + ")"), inline: false }
+                  ],
+                  footer: {
+                    text: "Daily Blog Pick • aitmpl.com/blog",
+                    icon_url: "https://aitmpl.com/img/logo.png"
+                  },
+                  timestamp: $timestamp
+                }
+              ]
+            }')
+
+          # Send to Discord
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK_URL")
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ Discord blog notification sent successfully!"
+            echo "Article: ${TITLE}"
+            echo "Category: ${CATEGORY}"
+            echo "URL: ${ARTICLE_URL}"
+          else
+            echo "❌ Failed to send Discord notification (HTTP ${HTTP_STATUS})"
+            cat response.txt
+            exit 1
+          fi
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_BLOG }}

@@ -1,0 +1,373 @@
+name: Daily General Engagement
+
+on:
+  schedule:
+    - cron: '0 16 * * *' # 16:00 UTC (13:00 PM Chile) - 2 hours after component pick
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  engage-community:
+    name: Post Daily Engagement Question on Discord
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick random question and send to Discord
+        run: |
+          set -euo pipefail
+
+          # Large pool of engagement questions organized by category
+          QUESTIONS=$(cat <<'QUESTIONS_EOF'
+          [
+            {
+              "emoji": "👋",
+              "question": "Welcome to everyone who joined recently! What project are you currently working on with Claude Code?",
+              "category": "welcome"
+            },
+            {
+              "emoji": "🤖",
+              "question": "Are you using SubAgents in your workflow? Which specialized agents have been the most useful for you?",
+              "category": "subagents"
+            },
+            {
+              "emoji": "⚡",
+              "question": "What's the most creative slash command you've set up in Claude Code? Share your `/command` ideas!",
+              "category": "commands"
+            },
+            {
+              "emoji": "🪝",
+              "question": "Hooks can automate so much! Are you using any PreToolUse or PostToolUse hooks? What do they do?",
+              "category": "hooks"
+            },
+            {
+              "emoji": "⚙️",
+              "question": "What's your Claude Code settings setup? Do you use read-only mode, custom permissions, or statuslines?",
+              "category": "settings"
+            },
+            {
+              "emoji": "🔌",
+              "question": "Which MCP servers have you connected to Claude Code? (GitHub, Supabase, Context7, Playwright...)",
+              "category": "mcps"
+            },
+            {
+              "emoji": "🎯",
+              "question": "What's your #1 productivity tip when using Claude Code? Drop it below!",
+              "category": "tips"
+            },
+            {
+              "emoji": "📚",
+              "question": "Are you using Skills in Claude Code? Which ones have leveled up your workflow the most?",
+              "category": "skills"
+            },
+            {
+              "emoji": "🏗️",
+              "question": "What type of project are you building with Claude Code? (Web app, CLI tool, API, mobile, game...)",
+              "category": "projects"
+            },
+            {
+              "emoji": "💡",
+              "question": "What feature do you wish Claude Code had that doesn't exist yet?",
+              "category": "wishlist"
+            },
+            {
+              "emoji": "🔧",
+              "question": "Do you use Claude Code for debugging? What's the trickiest bug it helped you solve?",
+              "category": "debugging"
+            },
+            {
+              "emoji": "📂",
+              "question": "How do you structure your CLAUDE.md file? Do you include project context, coding standards, or custom rules?",
+              "category": "setup"
+            },
+            {
+              "emoji": "🚀",
+              "question": "What was your 'aha moment' with Claude Code? When did it click for you?",
+              "category": "experience"
+            },
+            {
+              "emoji": "🧪",
+              "question": "Do you use Claude Code for writing tests? Unit tests, integration tests, E2E? What's your approach?",
+              "category": "testing"
+            },
+            {
+              "emoji": "🔄",
+              "question": "How do you handle code reviews with Claude Code? Do you use a code-reviewer agent or custom commands?",
+              "category": "review"
+            },
+            {
+              "emoji": "🌐",
+              "question": "What's your tech stack? Let's see what the community is building with! (React, Python, Rust, Go...)",
+              "category": "techstack"
+            },
+            {
+              "emoji": "📊",
+              "question": "Do you use Claude Code's multi-agent architecture with the Task tool? How do you organize your subagents?",
+              "category": "subagents"
+            },
+            {
+              "emoji": "🛡️",
+              "question": "Security first! Are you using any security hooks or secret scanners in your Claude Code setup?",
+              "category": "security"
+            },
+            {
+              "emoji": "📝",
+              "question": "Do you use Claude Code for documentation? What's your approach: inline comments, README files, or full docs sites?",
+              "category": "docs"
+            },
+            {
+              "emoji": "🎨",
+              "question": "Frontend devs: are you using Claude Code for UI/UX work? How does it handle CSS, components, and responsive design?",
+              "category": "frontend"
+            },
+            {
+              "emoji": "🗄️",
+              "question": "What database tools do you use with Claude Code? (Supabase MCP, Neon, SQLite, Prisma...)",
+              "category": "database"
+            },
+            {
+              "emoji": "⏱️",
+              "question": "How much time has Claude Code saved you this week? What task would have taken you the longest manually?",
+              "category": "productivity"
+            },
+            {
+              "emoji": "🔮",
+              "question": "What's the most complex thing you've built entirely with Claude Code assistance?",
+              "category": "showcase"
+            },
+            {
+              "emoji": "🤝",
+              "question": "Do you use Claude Code in a team? How do you share agents, commands, and settings across your team?",
+              "category": "team"
+            },
+            {
+              "emoji": "📦",
+              "question": "How many components from Claude Code Templates have you installed? Which category do you use the most?",
+              "category": "templates"
+            },
+            {
+              "emoji": "🐛",
+              "question": "What's the funniest or most unexpected thing Claude Code has done in your project?",
+              "category": "fun"
+            },
+            {
+              "emoji": "🏠",
+              "question": "New here? Introduce yourself! What's your background and what brought you to Claude Code?",
+              "category": "welcome"
+            },
+            {
+              "emoji": "💻",
+              "question": "What's your development environment? (VS Code, Terminal, Neovim, JetBrains...) How does Claude Code fit in?",
+              "category": "setup"
+            },
+            {
+              "emoji": "🔗",
+              "question": "Are you using Claude Code with CI/CD pipelines? How have you integrated it into your deployment workflow?",
+              "category": "devops"
+            },
+            {
+              "emoji": "📱",
+              "question": "Mobile developers: are you using Claude Code for React Native, Flutter, or native iOS/Android development?",
+              "category": "mobile"
+            },
+            {
+              "emoji": "🧠",
+              "question": "What prompting techniques work best for you in Claude Code? Long detailed prompts vs short and iterative?",
+              "category": "tips"
+            },
+            {
+              "emoji": "🎓",
+              "question": "Are you learning a new language or framework with Claude Code? Which one and how is it going?",
+              "category": "learning"
+            },
+            {
+              "emoji": "🔥",
+              "question": "What component from Claude Code Templates should everyone install? Share your must-have recommendation!",
+              "category": "templates"
+            },
+            {
+              "emoji": "⚡",
+              "question": "Quick poll: do you prefer using Claude Code in the terminal or through an IDE extension? Why?",
+              "category": "setup"
+            },
+            {
+              "emoji": "🌍",
+              "question": "Where are you coding from today? Let's see how global our community is!",
+              "category": "welcome"
+            },
+            {
+              "emoji": "🛠️",
+              "question": "What's in your Claude Code toolbox? Share your top 3 installed components!",
+              "category": "templates"
+            },
+            {
+              "emoji": "📈",
+              "question": "How has Claude Code changed your development workflow compared to 6 months ago?",
+              "category": "experience"
+            },
+            {
+              "emoji": "🎯",
+              "question": "Do you use Claude Code's /init command to set up new projects? What's your project initialization workflow?",
+              "category": "commands"
+            },
+            {
+              "emoji": "🧩",
+              "question": "What API integrations have you built with Claude Code? REST, GraphQL, WebSockets?",
+              "category": "projects"
+            },
+            {
+              "emoji": "🔒",
+              "question": "How do you handle secrets and API keys in your Claude Code projects? .env files, environment variables, vaults?",
+              "category": "security"
+            },
+            {
+              "emoji": "🎉",
+              "question": "Share a win! What did Claude Code help you accomplish this week that you're proud of?",
+              "category": "showcase"
+            },
+            {
+              "emoji": "📖",
+              "question": "Have you read any of our blog articles? Which one was the most helpful for your workflow?",
+              "category": "blog"
+            },
+            {
+              "emoji": "🤔",
+              "question": "What's the biggest challenge you face when using Claude Code? Maybe someone here has a solution!",
+              "category": "help"
+            },
+            {
+              "emoji": "🚀",
+              "question": "Are you using Claude Code's worktree support for parallel development? How do you manage multiple tasks?",
+              "category": "advanced"
+            },
+            {
+              "emoji": "🔄",
+              "question": "Do you use git hooks with Claude Code? Auto-formatting, linting, commit message validation?",
+              "category": "hooks"
+            },
+            {
+              "emoji": "💬",
+              "question": "What's one thing you learned about Claude Code this week that surprised you?",
+              "category": "learning"
+            },
+            {
+              "emoji": "🏆",
+              "question": "If you could teach one Claude Code trick to a beginner, what would it be?",
+              "category": "tips"
+            },
+            {
+              "emoji": "🎨",
+              "question": "Do you customize your Claude Code statusline? What information do you display?",
+              "category": "settings"
+            },
+            {
+              "emoji": "🧪",
+              "question": "Have you tried creating your own custom agents? What specialized task does your agent handle?",
+              "category": "subagents"
+            },
+            {
+              "emoji": "📋",
+              "question": "How do you manage large refactoring tasks with Claude Code? TodoWrite, plan mode, or something else?",
+              "category": "advanced"
+            },
+            {
+              "emoji": "🌟",
+              "question": "Rate your Claude Code experience from 1-10. What would make it a 10 for you?",
+              "category": "feedback"
+            }
+          ]
+          QUESTIONS_EOF
+          )
+
+          # Pick a random question
+          TOTAL=$(echo "$QUESTIONS" | jq 'length')
+          RANDOM_INDEX=$(( RANDOM % TOTAL ))
+          SELECTED=$(echo "$QUESTIONS" | jq --argjson idx "$RANDOM_INDEX" '.[$idx]')
+
+          EMOJI=$(echo "$SELECTED" | jq -r '.emoji')
+          QUESTION=$(echo "$SELECTED" | jq -r '.question')
+          CATEGORY=$(echo "$SELECTED" | jq -r '.category')
+
+          # Color based on category
+          case "$CATEGORY" in
+            welcome)    COLOR=3066993  ;;  # green
+            subagents)  COLOR=5793266  ;;  # blue
+            commands)   COLOR=16750848 ;;  # orange
+            hooks)      COLOR=15277667 ;;  # pink
+            settings)   COLOR=10181046 ;;  # purple
+            mcps)       COLOR=1752220  ;;  # teal
+            skills)     COLOR=15844367 ;;  # gold
+            tips)       COLOR=3447003  ;;  # dark blue
+            projects)   COLOR=2067276  ;;  # dark green
+            wishlist)   COLOR=9807270  ;;  # gray
+            debugging)  COLOR=15158332 ;;  # red
+            setup)      COLOR=2123412  ;;  # dark teal
+            experience) COLOR=7419530  ;;  # dark purple
+            testing)    COLOR=11342935 ;;  # dark gold
+            review)     COLOR=2899536  ;;  # green
+            techstack)  COLOR=3426654  ;;  # blue-green
+            security)   COLOR=15158332 ;;  # red
+            docs)       COLOR=5763719  ;;  # indigo
+            frontend)   COLOR=15277667 ;;  # pink
+            database)   COLOR=2067276  ;;  # dark green
+            productivity) COLOR=16750848;; # orange
+            showcase)   COLOR=15844367 ;;  # gold
+            team)       COLOR=3447003  ;;  # dark blue
+            templates)  COLOR=5793266  ;;  # blue
+            fun)        COLOR=15844367 ;;  # gold
+            devops)     COLOR=10181046 ;;  # purple
+            mobile)     COLOR=1752220  ;;  # teal
+            learning)   COLOR=3066993  ;;  # green
+            blog)       COLOR=5763719  ;;  # indigo
+            help)       COLOR=15158332 ;;  # red
+            advanced)   COLOR=7419530  ;;  # dark purple
+            feedback)   COLOR=16750848 ;;  # orange
+            *)          COLOR=5793266  ;;  # default blue
+          esac
+
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Build payload
+          PAYLOAD=$(jq -n \
+            --arg emoji "$EMOJI" \
+            --arg question "$QUESTION" \
+            --argjson color "$COLOR" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "Claude Code Templates",
+              avatar_url: "https://aitmpl.com/img/logo.png",
+              content: ($emoji + " **Daily Discussion** " + $emoji),
+              embeds: [
+                {
+                  description: ("### " + $question + "\n\n*Share your experience with the community! Every answer helps someone learn something new.*"),
+                  color: $color,
+                  footer: {
+                    text: "Daily Discussion • Claude Code Community",
+                    icon_url: "https://aitmpl.com/img/logo.png"
+                  },
+                  timestamp: $timestamp
+                }
+              ]
+            }')
+
+          # Send to Discord
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK_URL")
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ Discord general engagement sent successfully!"
+            echo "Question: ${EMOJI} ${QUESTION}"
+            echo "Category: ${CATEGORY}"
+          else
+            echo "❌ Failed to send Discord notification (HTTP ${HTTP_STATUS})"
+            cat response.txt
+            exit 1
+          fi
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_GENERAL }}

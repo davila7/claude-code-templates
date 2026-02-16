@@ -1,0 +1,388 @@
+name: Daily Community Help
+
+on:
+  schedule:
+    - cron: '0 17 * * *' # 17:00 UTC (14:00 PM Chile) - 3 hours after component pick
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  community-help:
+    name: Post Daily Help Question on Discord
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick random help question and send to Discord
+        run: |
+          set -euo pipefail
+
+          # Large pool of help/tutorial questions about Claude Code and Claude Code Templates
+          QUESTIONS=$(cat <<'QUESTIONS_EOF'
+          [
+            {
+              "emoji": "🤖",
+              "title": "How to Install Your First Agent",
+              "question": "Did you know you can install specialized AI agents with a single command?\n\n```bash\nnpx claude-code-templates@latest --agent frontend-developer\n```\n\nAgents are saved to `.claude/agents/` and give Claude deep expertise in specific areas. Try `--agent code-reviewer` for automated code reviews!",
+              "difficulty": "basic",
+              "topic": "agents"
+            },
+            {
+              "emoji": "⚡",
+              "title": "Creating Custom Slash Commands",
+              "question": "Slash commands let you create reusable workflows! Install one:\n\n```bash\nnpx claude-code-templates@latest --command setup-testing\n```\n\nOr create your own: add a `.md` file to `.claude/commands/` and use it with `/your-command` in Claude Code.",
+              "difficulty": "basic",
+              "topic": "commands"
+            },
+            {
+              "emoji": "🔌",
+              "title": "Connecting MCP Servers",
+              "question": "MCP (Model Context Protocol) servers give Claude Code access to external services. Install one:\n\n```bash\nnpx claude-code-templates@latest --mcp context7\n```\n\nPopular MCPs: `context7` (live docs), `github` (repo management), `supabase` (database). What MCPs are you using?",
+              "difficulty": "basic",
+              "topic": "mcps"
+            },
+            {
+              "emoji": "🪝",
+              "title": "Automating with Hooks",
+              "question": "Hooks run shell commands automatically when Claude Code performs actions. Example: get notified when a task completes!\n\n```bash\nnpx claude-code-templates@latest --hook automation/simple-notifications\n```\n\nHook types: `PreToolUse`, `PostToolUse`, `Notification`. What would you automate?",
+              "difficulty": "intermediate",
+              "topic": "hooks"
+            },
+            {
+              "emoji": "⚙️",
+              "title": "Customizing Claude Code Settings",
+              "question": "Settings let you configure Claude Code's behavior. Try read-only mode for safe exploration:\n\n```bash\nnpx claude-code-templates@latest --setting read-only-mode\n```\n\nSettings are stored in `.claude/settings.json`. You can also configure allowed/denied tools and custom permissions.",
+              "difficulty": "basic",
+              "topic": "settings"
+            },
+            {
+              "emoji": "📚",
+              "title": "Using Skills for Complex Workflows",
+              "question": "Skills are advanced components that provide multi-step workflows with progressive context loading.\n\n```bash\nnpx claude-code-templates@latest --skill react-best-practices\n```\n\nSkills are invoked with `/skill-name` and expand into detailed instructions. Great for consistent coding standards!",
+              "difficulty": "intermediate",
+              "topic": "skills"
+            },
+            {
+              "emoji": "📂",
+              "title": "Setting Up Your CLAUDE.md",
+              "question": "The `CLAUDE.md` file is your project's instruction manual for Claude Code. Place it in your project root with:\n\n- Project architecture overview\n- Build/test commands\n- Coding standards\n- Important file locations\n\nClaude reads it automatically on every session. Have you set yours up?",
+              "difficulty": "basic",
+              "topic": "setup"
+            },
+            {
+              "emoji": "🔧",
+              "title": "Batch Installing Components",
+              "question": "You can install multiple components at once! Combine any types in a single command:\n\n```bash\nnpx claude-code-templates@latest \\\n  --agent security-auditor \\\n  --command security-audit \\\n  --hook security/secret-scanner\n```\n\nPerfect for setting up a complete workflow in seconds!",
+              "difficulty": "basic",
+              "topic": "installation"
+            },
+            {
+              "emoji": "🧪",
+              "title": "Test-Driven Development with Claude Code",
+              "question": "Claude Code excels at TDD! Try this workflow:\n\n1. Write test specs first\n2. Ask Claude to implement the code to pass tests\n3. Use `/test` command to run and verify\n\n```bash\nnpx claude-code-templates@latest --command setup-testing\n```\n\nWhat testing frameworks do you use with Claude Code?",
+              "difficulty": "intermediate",
+              "topic": "testing"
+            },
+            {
+              "emoji": "🛡️",
+              "title": "Secret Scanner Hook",
+              "question": "Prevent accidentally committing API keys and secrets!\n\n```bash\nnpx claude-code-templates@latest --hook security/secret-scanner\n```\n\nThis hook runs before every commit and blocks files containing patterns like API keys, tokens, and passwords. Essential for any project!",
+              "difficulty": "intermediate",
+              "topic": "security"
+            },
+            {
+              "emoji": "📊",
+              "title": "Using the Task Tool with SubAgents",
+              "question": "Claude Code's Task tool launches specialized subagents for complex work:\n\n- `Explore` agent: Fast codebase exploration\n- `Plan` agent: Architecture planning\n- Custom agents: Your installed agents\n\nSubAgents run autonomously and report back. Great for parallel investigation of large codebases!",
+              "difficulty": "advanced",
+              "topic": "subagents"
+            },
+            {
+              "emoji": "🔄",
+              "title": "Git Workflow with Claude Code",
+              "question": "Claude Code handles git operations natively! It can:\n\n- Stage, commit, and push changes\n- Create branches and PRs with `gh`\n- Write meaningful commit messages\n- Handle merge conflicts\n\nTip: Ask Claude to 'create a PR' and it will handle the entire flow!",
+              "difficulty": "basic",
+              "topic": "git"
+            },
+            {
+              "emoji": "🌐",
+              "title": "Interactive Component Browser",
+              "question": "Not sure what to install? Browse all 1000+ components at:\n\n**https://aitmpl.com**\n\nOr use interactive mode in the CLI:\n\n```bash\nnpx claude-code-templates@latest\n```\n\nThis launches an interactive menu where you can search and browse components by type!",
+              "difficulty": "basic",
+              "topic": "discovery"
+            },
+            {
+              "emoji": "🏗️",
+              "title": "Project Templates",
+              "question": "Templates provide complete project configurations with multiple components pre-configured:\n\n```bash\nnpx claude-code-templates@latest --template fullstack-starter\n```\n\nA template can include agents, commands, hooks, settings, and skills — everything for a specific workflow!",
+              "difficulty": "intermediate",
+              "topic": "templates"
+            },
+            {
+              "emoji": "📝",
+              "title": "Writing Custom Agents",
+              "question": "Create your own specialized agent! Add a `.md` file to `.claude/agents/`:\n\n```markdown\n# My Custom Agent\n\nYou are an expert in [domain].\n\n## Capabilities\n- Specific task 1\n- Specific task 2\n\n## Rules\n- Always do X\n- Never do Y\n```\n\nThen invoke it with Claude Code's agent system. What agent would you create?",
+              "difficulty": "intermediate",
+              "topic": "agents"
+            },
+            {
+              "emoji": "🔍",
+              "title": "Efficient Codebase Exploration",
+              "question": "Claude Code has powerful search tools:\n\n- **Glob**: Find files by pattern (`**/*.tsx`)\n- **Grep**: Search content with regex\n- **Read**: View file contents\n- **Task/Explore**: Autonomous codebase exploration\n\nTip: Ask 'explain the architecture of this project' and Claude will explore systematically!",
+              "difficulty": "basic",
+              "topic": "exploration"
+            },
+            {
+              "emoji": "🎯",
+              "title": "Using Plan Mode",
+              "question": "For complex tasks, use Plan Mode! Claude Code will:\n\n1. Explore the codebase thoroughly\n2. Identify all files that need changes\n3. Design an implementation approach\n4. Present the plan for your approval\n5. Execute only after you confirm\n\nGreat for large refactors or new features with architectural decisions!",
+              "difficulty": "advanced",
+              "topic": "workflow"
+            },
+            {
+              "emoji": "📈",
+              "title": "Statuslines for Real-Time Info",
+              "question": "Statuslines display live info in your Claude Code terminal!\n\n```bash\nnpx claude-code-templates@latest --setting statusline/vercel-monitor\n```\n\nAvailable statuslines show: git status, deployment status, test results, and more. Some even run Python scripts for live data!",
+              "difficulty": "intermediate",
+              "topic": "settings"
+            },
+            {
+              "emoji": "🔒",
+              "title": "Permission Management",
+              "question": "Control what Claude Code can do with permissions in `.claude/settings.json`:\n\n```json\n{\n  \"permissions\": {\n    \"allow\": [\"Read\", \"Glob\", \"Grep\"],\n    \"deny\": [\"Bash(rm *)\", \"Write(.env)\"]\n  }\n}\n```\n\nUse `--setting read-only-mode` for safe exploration. How do you configure permissions?",
+              "difficulty": "intermediate",
+              "topic": "security"
+            },
+            {
+              "emoji": "🚀",
+              "title": "Deploying with Claude Code",
+              "question": "Claude Code can manage your deployments! Common patterns:\n\n- `vercel --prod` for Vercel\n- `gh workflow run` for GitHub Actions\n- `docker build && docker push` for containers\n\nTip: Create a `/deploy` slash command that runs your full deployment pipeline!",
+              "difficulty": "advanced",
+              "topic": "devops"
+            },
+            {
+              "emoji": "💡",
+              "title": "TodoWrite for Task Tracking",
+              "question": "Claude Code has a built-in task tracker! When working on complex features, it uses `TodoWrite` to:\n\n- Break tasks into steps\n- Track progress in real-time\n- Show you what's done and what's pending\n\nTip: Ask Claude to 'plan this out' and it will create a structured todo list before coding!",
+              "difficulty": "basic",
+              "topic": "workflow"
+            },
+            {
+              "emoji": "🧩",
+              "title": "Multi-File Editing",
+              "question": "Claude Code can edit multiple files in parallel! It uses:\n\n- **Edit**: Precise string replacements\n- **Write**: Create new files\n- **MultiEdit**: Multiple changes in one file\n\nTip: Describe the change you want across your project and Claude will identify and update all relevant files!",
+              "difficulty": "intermediate",
+              "topic": "editing"
+            },
+            {
+              "emoji": "🌟",
+              "title": "WebFetch for Live Data",
+              "question": "Claude Code can fetch and analyze web content!\n\n- Fetch API docs for reference\n- Check live endpoints\n- Read GitHub issues and PRs\n- Analyze error pages\n\nCombined with MCP servers, this makes Claude Code a powerful integration tool!",
+              "difficulty": "intermediate",
+              "topic": "tools"
+            },
+            {
+              "emoji": "🎨",
+              "title": "Frontend Development Workflow",
+              "question": "Best agents for frontend work:\n\n```bash\nnpx claude-code-templates@latest \\\n  --agent frontend-developer \\\n  --agent accessibility-expert \\\n  --skill react-best-practices\n```\n\nThis combo gives Claude expertise in React/Vue/Next.js, accessibility standards, and performance optimization!",
+              "difficulty": "intermediate",
+              "topic": "agents"
+            },
+            {
+              "emoji": "🗄️",
+              "title": "Database Development Setup",
+              "question": "Set up Claude Code for database work:\n\n```bash\nnpx claude-code-templates@latest \\\n  --mcp supabase \\\n  --agent database-architect\n```\n\nThe Supabase MCP gives direct database access, and the architect agent helps design schemas, write migrations, and optimize queries!",
+              "difficulty": "intermediate",
+              "topic": "database"
+            },
+            {
+              "emoji": "📦",
+              "title": "Exploring Components by Category",
+              "question": "Components are organized by category:\n\n**Agents**: `development-team/`, `devops/`, `security/`, `data/`\n**Commands**: `git/`, `testing/`, `documentation/`\n**Hooks**: `automation/`, `security/`, `git/`\n**MCPs**: `ai/`, `cloud/`, `database/`, `dev-tools/`\n\nBrowse all at https://aitmpl.com or use the interactive CLI!",
+              "difficulty": "basic",
+              "topic": "discovery"
+            },
+            {
+              "emoji": "🔮",
+              "title": "Advanced: Worktree Development",
+              "question": "Use git worktrees for parallel development! Claude Code supports:\n\n- Creating worktrees for different tasks\n- Switching between worktrees\n- Parallel development on multiple features\n\nTip: Use `/worktree-init task1 | task2 | task3` to set up multiple parallel workspaces!",
+              "difficulty": "advanced",
+              "topic": "advanced"
+            },
+            {
+              "emoji": "⚡",
+              "title": "Speed Up Your Workflow",
+              "question": "Pro tips for faster Claude Code sessions:\n\n1. Use a detailed `CLAUDE.md` (less back-and-forth)\n2. Install relevant agents for your stack\n3. Use slash commands for repetitive tasks\n4. Enable hooks for automation\n5. Use `Shift+Tab` for auto-accept mode\n\nWhat's your speed optimization?",
+              "difficulty": "intermediate",
+              "topic": "tips"
+            },
+            {
+              "emoji": "🐍",
+              "title": "Python Development Setup",
+              "question": "Set up Claude Code for Python projects:\n\n```bash\nnpx claude-code-templates@latest \\\n  --agent python-expert \\\n  --command setup-testing \\\n  --hook automation/simple-notifications\n```\n\nAdd your Python-specific commands, virtual env paths, and test runners to `CLAUDE.md`!",
+              "difficulty": "basic",
+              "topic": "setup"
+            },
+            {
+              "emoji": "🦀",
+              "title": "Rust Development Setup",
+              "question": "Claude Code works great with Rust! Install the Rust-specific components:\n\n```bash\nnpx claude-code-templates@latest --agent rust-expert\n```\n\nTip: Add your `cargo` commands and project structure to `CLAUDE.md` for better context!",
+              "difficulty": "intermediate",
+              "topic": "setup"
+            },
+            {
+              "emoji": "🤝",
+              "title": "Contributing Components",
+              "question": "Want to contribute your own components to Claude Code Templates?\n\n1. Fork the repo: `github.com/danilovilhena/claude-code-templates`\n2. Add your component to `cli-tool/components/{type}/{category}/`\n3. Follow the naming conventions (kebab-case)\n4. Submit a PR!\n\nThe community grows with your contributions!",
+              "difficulty": "advanced",
+              "topic": "contributing"
+            },
+            {
+              "emoji": "📋",
+              "title": "Notification Hooks",
+              "question": "Never miss when Claude finishes a long task!\n\n```bash\nnpx claude-code-templates@latest --hook automation/simple-notifications\n```\n\nThis sends desktop notifications when operations complete. Works on macOS (osascript) and Linux (notify-send). What notifications would be most useful?",
+              "difficulty": "basic",
+              "topic": "hooks"
+            },
+            {
+              "emoji": "🔄",
+              "title": "Keeping Components Updated",
+              "question": "Components improve over time! To get the latest version:\n\n```bash\nnpx claude-code-templates@latest --agent frontend-developer\n```\n\nUsing `@latest` always fetches the newest CLI version. Re-installing a component overwrites it with the latest version!",
+              "difficulty": "basic",
+              "topic": "installation"
+            },
+            {
+              "emoji": "🧠",
+              "title": "Context Management Tips",
+              "question": "Keep Claude Code effective in long sessions:\n\n- Start with clear goals in your first message\n- Use `/clear` to reset context when switching tasks\n- Keep `CLAUDE.md` focused and up-to-date\n- Use subagents for isolated subtasks\n- Break large tasks into smaller ones\n\nHow do you manage context in long sessions?",
+              "difficulty": "advanced",
+              "topic": "tips"
+            },
+            {
+              "emoji": "📊",
+              "title": "Code Review Workflow",
+              "question": "Set up automated code reviews:\n\n```bash\nnpx claude-code-templates@latest \\\n  --agent code-reviewer \\\n  --command review-pr\n```\n\nThen use `/review-pr 123` to review any PR! The code-reviewer agent checks for bugs, security issues, performance, and best practices.",
+              "difficulty": "intermediate",
+              "topic": "review"
+            },
+            {
+              "emoji": "🎓",
+              "title": "Learning Resources",
+              "question": "Best resources for mastering Claude Code:\n\n- **Blog**: https://aitmpl.com/blog — Tutorials and guides\n- **Docs**: https://docs.anthropic.com/en/docs/claude-code\n- **Components**: https://aitmpl.com — Browse all 1000+ components\n- **Discord**: You're here! Ask questions anytime\n\nWhat topic would you like a tutorial on?",
+              "difficulty": "basic",
+              "topic": "learning"
+            },
+            {
+              "emoji": "🔥",
+              "title": "Hot Component Combos",
+              "question": "Popular component combinations:\n\n**Full-Stack Dev:**\n```bash\n--agent frontend-developer --agent api-developer --mcp supabase\n```\n\n**Security Setup:**\n```bash\n--agent security-auditor --hook security/secret-scanner --setting read-only-mode\n```\n\nWhat's your go-to combo?",
+              "difficulty": "intermediate",
+              "topic": "templates"
+            },
+            {
+              "emoji": "💻",
+              "title": "Running Background Tasks",
+              "question": "Claude Code can run long-running processes in the background!\n\nUse `run_in_background: true` for:\n- Dev servers (`npm run dev`)\n- Watch mode (`npm run test:watch`)\n- Build processes\n\nThen use `BashOutput` to check results later. Great for not blocking your workflow!",
+              "difficulty": "advanced",
+              "topic": "tools"
+            },
+            {
+              "emoji": "🌍",
+              "title": "WebSearch for Current Info",
+              "question": "Claude Code can search the web for up-to-date information!\n\nUseful for:\n- Latest library versions and docs\n- Current best practices\n- Debugging error messages\n- Finding recent solutions\n\nCombined with WebFetch, Claude can read and analyze any public webpage!",
+              "difficulty": "basic",
+              "topic": "tools"
+            },
+            {
+              "emoji": "🏠",
+              "title": "Project vs User Settings",
+              "question": "Claude Code has two settings scopes:\n\n**Project** (`.claude/settings.json`):\n- Shared with team via git\n- Project-specific rules\n\n**User** (`~/.claude/settings.json`):\n- Personal preferences\n- Global across all projects\n\nTip: Put team standards in project settings and personal preferences in user settings!",
+              "difficulty": "intermediate",
+              "topic": "settings"
+            },
+            {
+              "emoji": "🔧",
+              "title": "Debugging with Claude Code",
+              "question": "Effective debugging workflow:\n\n1. Describe the bug or paste the error\n2. Claude explores the codebase for context\n3. Identifies root cause\n4. Proposes and implements the fix\n5. Runs tests to verify\n\nTip: Include error messages and reproduction steps for fastest results!",
+              "difficulty": "basic",
+              "topic": "debugging"
+            }
+          ]
+          QUESTIONS_EOF
+          )
+
+          # Pick a random question
+          TOTAL=$(echo "$QUESTIONS" | jq 'length')
+          RANDOM_INDEX=$(( RANDOM % TOTAL ))
+          SELECTED=$(echo "$QUESTIONS" | jq --argjson idx "$RANDOM_INDEX" '.[$idx]')
+
+          EMOJI=$(echo "$SELECTED" | jq -r '.emoji')
+          TITLE=$(echo "$SELECTED" | jq -r '.title')
+          QUESTION=$(echo "$SELECTED" | jq -r '.question')
+          DIFFICULTY=$(echo "$SELECTED" | jq -r '.difficulty')
+          TOPIC=$(echo "$SELECTED" | jq -r '.topic')
+
+          # Color and badge based on difficulty
+          case "$DIFFICULTY" in
+            basic)        DIFF_BADGE="🟢 Beginner"; COLOR=3066993  ;;
+            intermediate) DIFF_BADGE="🟡 Intermediate"; COLOR=16750848 ;;
+            advanced)     DIFF_BADGE="🔴 Advanced"; COLOR=15158332 ;;
+            *)            DIFF_BADGE="📖 General"; COLOR=5793266  ;;
+          esac
+
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Build payload
+          PAYLOAD=$(jq -n \
+            --arg emoji "$EMOJI" \
+            --arg title "$TITLE" \
+            --arg question "$QUESTION" \
+            --argjson color "$COLOR" \
+            --arg diff_badge "$DIFF_BADGE" \
+            --arg topic "$TOPIC" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "Claude Code Templates",
+              avatar_url: "https://aitmpl.com/img/logo.png",
+              content: ($emoji + " **Community Help** — Learn something new today!"),
+              embeds: [
+                {
+                  title: ($emoji + " " + $title),
+                  description: ($question + "\n\n---\n*Have questions? Ask below! The community is here to help.*"),
+                  color: $color,
+                  fields: [
+                    { name: "📊 Difficulty", value: $diff_badge, inline: true },
+                    { name: "🏷️ Topic", value: ($topic | ascii_upcase[:1] + $topic[1:]), inline: true },
+                    { name: "🔗 Browse Components", value: "[aitmpl.com](https://aitmpl.com)", inline: true }
+                  ],
+                  footer: {
+                    text: "Daily Help • Claude Code Community",
+                    icon_url: "https://aitmpl.com/img/logo.png"
+                  },
+                  timestamp: $timestamp
+                }
+              ]
+            }')
+
+          # Send to Discord
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK_URL")
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ Discord community help sent successfully!"
+            echo "Title: ${EMOJI} ${TITLE}"
+            echo "Difficulty: ${DIFFICULTY}"
+            echo "Topic: ${TOPIC}"
+          else
+            echo "❌ Failed to send Discord notification (HTTP ${HTTP_STATUS})"
+            cat response.txt
+            exit 1
+          fi
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_COMMUNITY_HELP }}
