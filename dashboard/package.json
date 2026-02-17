@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "prebuild": "node -e \"const fs=require('fs'),p='public/components.json',t='public/trending-data.json';if(!fs.existsSync(p))fs.writeFileSync(p,'{\"agents\":[],\"commands\":[],\"settings\":[],\"hooks\":[],\"mcps\":[],\"templates\":[],\"skills\":[]}');if(!fs.existsSync(t))fs.writeFileSync(t,'[]');\"",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
