@@ -1,17 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
+import { neon } from '@neondatabase/serverless';
 import { verifyAuth, setCorsHeaders } from '../_lib/auth.js';
 
-function getSupabaseClient() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase configuration');
+function getSql() {
+  if (!process.env.NEON_DATABASE_URL) {
+    throw new Error('Missing NEON_DATABASE_URL');
   }
-  return createClient(supabaseUrl, supabaseServiceKey);
+  return neon(process.env.NEON_DATABASE_URL);
 }
 
 export default async function handler(req, res) {
-  setCorsHeaders(res);
+  setCorsHeaders(res, req);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).json({ ok: true });
@@ -27,17 +25,15 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Collection ID is required' });
   }
 
-  const supabase = getSupabaseClient();
+  const sql = getSql();
 
   // Verify ownership
-  const { data: collection, error: fetchError } = await supabase
-    .from('user_collections')
-    .select('id')
-    .eq('id', id)
-    .eq('clerk_user_id', auth.userId)
-    .single();
+  const [collection] = await sql`
+    SELECT id FROM user_collections
+    WHERE id = ${id} AND clerk_user_id = ${auth.userId}
+  `;
 
-  if (fetchError || !collection) {
+  if (!collection) {
     return res.status(404).json({ error: 'Collection not found' });
   }
 
@@ -54,23 +50,18 @@ export default async function handler(req, res) {
     }
 
     try {
-      const { data: updated, error } = await supabase
-        .from('user_collections')
-        .update({ name: name.trim(), updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .eq('clerk_user_id', auth.userId)
-        .select()
-        .single();
-
-      if (error) {
-        if (error.code === '23505') {
-          return res.status(409).json({ error: 'A collection with this name already exists' });
-        }
-        throw error;
-      }
+      const [updated] = await sql`
+        UPDATE user_collections
+        SET name = ${name.trim()}, updated_at = now()
+        WHERE id = ${id} AND clerk_user_id = ${auth.userId}
+        RETURNING *
+      `;
 
       return res.status(200).json({ collection: updated });
     } catch (err) {
+      if (err.code === '23505') {
+        return res.status(409).json({ error: 'A collection with this name already exists' });
+      }
       console.error('Rename collection error:', err);
       return res.status(500).json({ error: 'Failed to rename collection' });
     }
@@ -79,13 +70,10 @@ export default async function handler(req, res) {
   // DELETE - Delete collection (cascade deletes items)
   if (req.method === 'DELETE') {
     try {
-      const { error } = await supabase
-        .from('user_collections')
-        .delete()
-        .eq('id', id)
-        .eq('clerk_user_id', auth.userId);
-
-      if (error) throw error;
+      await sql`
+        DELETE FROM user_collections
+        WHERE id = ${id} AND clerk_user_id = ${auth.userId}
+      `;
 
       return res.status(200).json({ success: true });
     } catch (err) {

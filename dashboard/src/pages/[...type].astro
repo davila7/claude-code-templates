@@ -5,7 +5,6 @@ import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
-import AuthButton from '../components/AuthButton.tsx';
 import { VALID_TYPES } from '../lib/icons';
 
 export const prerender = true;
@@ -32,21 +31,3 @@ export function getStaticPaths() {
   <SearchModal client:idle />
   <CartSidebar client:idle />
 </DashboardLayout>
-
-<!-- Mount sidebar React islands -->
-<script>
-  import { createElement } from 'react';
-  import { createRoot } from 'react-dom/client';
-  import AuthButton from '../components/AuthButton.tsx';
-  import MyComponentsSidebarItem from '../components/MyComponentsSidebarItem.tsx';
-
-  const authContainer = document.getElementById('auth-button-container');
-  if (authContainer) {
-    createRoot(authContainer).render(createElement(AuthButton));
-  }
-
-  const myCompContainer = document.getElementById('my-components-nav');
-  if (myCompContainer) {
-    createRoot(myCompContainer).render(createElement(MyComponentsSidebarItem));
-  }
-</script>

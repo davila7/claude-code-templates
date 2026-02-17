@@ -1,17 +1,4 @@
-import { createClerkClient } from '@clerk/backend';
-
-let clerkClient;
-
-function getClerkClient() {
-  if (!clerkClient) {
-    const secretKey = process.env.CLERK_SECRET_KEY;
-    if (!secretKey) {
-      throw new Error('Missing CLERK_SECRET_KEY');
-    }
-    clerkClient = createClerkClient({ secretKey });
-  }
-  return clerkClient;
-}
+import { verifyToken as clerkVerifyToken } from '@clerk/backend';
 
 /**
  * Verify Clerk JWT from Authorization header.
@@ -26,8 +13,11 @@ export async function verifyAuth(req) {
   const token = authHeader.replace('Bearer ', '');
 
   try {
-    const clerk = getClerkClient();
-    const { sub: userId } = await clerk.verifyToken(token);
+    const secretKey = process.env.CLERK_SECRET_KEY;
+    if (!secretKey) {
+      return { authenticated: false, error: 'Missing CLERK_SECRET_KEY' };
+    }
+    const { sub: userId } = await clerkVerifyToken(token, { secretKey });
     if (!userId) {
       return { authenticated: false, error: 'Invalid token' };
     }
@@ -38,11 +28,20 @@ export async function verifyAuth(req) {
   }
 }
 
+const ALLOWED_ORIGINS = [
+  'https://app.aitmpl.com',
+  'https://aitmpl.com',
+  'https://www.aitmpl.com',
+];
+
 /**
  * Set standard CORS headers on response.
  */
-export function setCorsHeaders(res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+export function setCorsHeaders(res, req) {
+  const origin = req?.headers?.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }

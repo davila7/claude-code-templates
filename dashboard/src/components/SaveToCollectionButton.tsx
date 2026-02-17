@@ -1,8 +1,35 @@
 import { useState, useEffect, useRef } from 'react';
-import { SignInButton, useAuth } from '@clerk/clerk-react';
-import ClerkProviderWrapper from '../lib/clerk-provider';
 import { collectionsApi } from '../lib/collections-api';
 import type { Collection } from '../lib/types';
+
+// Hook that reads auth state from Clerk's global instance (window.Clerk)
+// Works without needing a ClerkProvider in the same React tree
+function useGlobalAuth() {
+  const [state, setState] = useState({ isSignedIn: false, isLoaded: false });
+
+  useEffect(() => {
+    function check() {
+      const clerk = (window as any).Clerk;
+      if (clerk?.loaded) {
+        setState({ isSignedIn: !!clerk.user, isLoaded: true });
+      }
+    }
+    check();
+    // Re-check periodically until Clerk loads
+    const interval = setInterval(check, 500);
+    // Also listen for clerk state changes
+    const handleChange = () => check();
+    window.addEventListener('clerk:session', handleChange);
+    return () => { clearInterval(interval); window.removeEventListener('clerk:session', handleChange); };
+  }, []);
+
+  const getToken = async () => {
+    const clerk = (window as any).Clerk;
+    return clerk?.session?.getToken() ?? null;
+  };
+
+  return { ...state, getToken };
+}
 
 interface Props {
   componentType: string;
@@ -12,7 +39,7 @@ interface Props {
 }
 
 function SaveButton({ componentType, componentPath, componentName, componentCategory }: Props) {
-  const { isSignedIn, isLoaded, getToken } = useAuth();
+  const { isSignedIn, isLoaded, getToken } = useGlobalAuth();
   const [open, setOpen] = useState(false);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(false);
@@ -145,20 +172,18 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
 
   const isSaved = savedIn.size > 0;
 
-  // Not signed in - show Clerk modal
+  // Not signed in - open Clerk modal via global instance
   if (!isSignedIn) {
     return (
-      <SignInButton mode="modal">
-        <button
-          onClick={(e) => e.stopPropagation()}
-          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[--color-text-tertiary] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
-          title="Save to collection"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-          </svg>
-        </button>
-      </SignInButton>
+      <button
+        onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }}
+        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[--color-text-tertiary] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
+        title="Sign in to save"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+      </button>
     );
   }
 
@@ -250,9 +275,5 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
 }
 
 export default function SaveToCollectionButton(props: Props) {
-  return (
-    <ClerkProviderWrapper>
-      <SaveButton {...props} />
-    </ClerkProviderWrapper>
-  );
+  return <SaveButton {...props} />;
 }

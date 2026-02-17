@@ -1,8 +1,27 @@
-import { SignInButton, useAuth } from '@clerk/clerk-react';
-import ClerkProviderWrapper from '../lib/clerk-provider';
+import { useState, useEffect } from 'react';
 
-function NavContent({ isActive }: { isActive: boolean }) {
-  const { isSignedIn, isLoaded } = useAuth();
+function useGlobalAuth() {
+  const [state, setState] = useState({ isSignedIn: false, isLoaded: false });
+
+  useEffect(() => {
+    function check() {
+      const clerk = (window as any).Clerk;
+      if (clerk?.loaded) {
+        setState({ isSignedIn: !!clerk.user, isLoaded: true });
+      }
+    }
+    check();
+    const interval = setInterval(check, 500);
+    const handleChange = () => check();
+    window.addEventListener('clerk:session', handleChange);
+    return () => { clearInterval(interval); window.removeEventListener('clerk:session', handleChange); };
+  }, []);
+
+  return state;
+}
+
+export function NavContent({ isActive }: { isActive: boolean }) {
+  const { isSignedIn, isLoaded } = useGlobalAuth();
 
   if (!isLoaded) {
     return (
@@ -38,21 +57,18 @@ function NavContent({ isActive }: { isActive: boolean }) {
   }
 
   return (
-    <SignInButton mode="modal">
-      <button className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors group w-full text-left">
-        <span className="text-[--color-text-tertiary] group-hover:text-[--color-text-secondary]">
-          {icon}
-        </span>
-        <span className="truncate">My Components</span>
-      </button>
-    </SignInButton>
+    <button
+      onClick={() => (window as any).Clerk?.openSignIn?.()}
+      className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors group w-full text-left"
+    >
+      <span className="text-[--color-text-tertiary] group-hover:text-[--color-text-secondary]">
+        {icon}
+      </span>
+      <span className="truncate">My Components</span>
+    </button>
   );
 }
 
 export default function MyComponentsSidebarItem({ isActive = false }: { isActive?: boolean }) {
-  return (
-    <ClerkProviderWrapper>
-      <NavContent isActive={isActive} />
-    </ClerkProviderWrapper>
-  );
+  return <NavContent isActive={isActive} />;
 }

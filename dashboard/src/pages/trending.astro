@@ -1,16 +1,15 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
-import MyComponentsView from '../components/MyComponentsView.tsx';
+import TopBar from '../components/TopBar.astro';
+import TrendingView from '../components/TrendingView.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
-
-export const prerender = false;
+export const prerender = true;
 ---
 
-<DashboardLayout title="My Components - Claude Code Templates">
-  <div class="h-full">
-    <MyComponentsView client:load />
-  </div>
+<DashboardLayout title="Trending - Claude Code Templates">
+  <TopBar />
+  <TrendingView client:load />
   <SearchModal client:idle />
   <CartSidebar client:idle />
 </DashboardLayout>

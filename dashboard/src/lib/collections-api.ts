@@ -1,8 +1,6 @@
 import type { Collection, CollectionItem } from './types';
 
-const API_BASE = import.meta.env.DEV
-  ? 'http://localhost:3000'
-  : 'https://aitmpl.com';
+const API_BASE = '';
 
 async function apiFetch<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {

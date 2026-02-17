@@ -46,6 +46,13 @@ export default function ComponentGrid({ initialType }: Props) {
   const [page, setPage] = useState(1);
   const [cart, setCart] = useState<CartState>({});
 
+  // Sync activeType when initialType changes (e.g. sidebar navigation)
+  useEffect(() => {
+    setActiveType(initialType);
+    setCategory('all');
+    setPage(1);
+  }, [initialType]);
+
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
@@ -73,19 +80,6 @@ export default function ComponentGrid({ initialType }: Props) {
     } catch {}
   }, []);
 
-  useEffect(() => {
-    const newPath = `/${activeType}`;
-    if (window.location.pathname !== newPath) window.history.pushState({}, '', newPath);
-  }, [activeType]);
-
-  useEffect(() => {
-    function handlePop() {
-      const path = window.location.pathname.replace(/^\//, '') || 'skills';
-      if (TYPE_CONFIG[path]) { setActiveType(path); setCategory('all'); setPage(1); }
-    }
-    window.addEventListener('popstate', handlePop);
-    return () => window.removeEventListener('popstate', handlePop);
-  }, []);
 
   const typeComponents = useMemo(() => {
     if (!data) return [];
@@ -124,6 +118,13 @@ export default function ComponentGrid({ initialType }: Props) {
     for (const type of Object.keys(TYPE_CONFIG)) result[type] = ((data as any)[type] as Component[])?.length ?? 0;
     return result;
   }, [data]);
+
+  // Emit counts to sidebar
+  useEffect(() => {
+    if (Object.keys(counts).length > 0) {
+      window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
+    }
+  }, [counts]);
 
   const isInCart = useCallback(
     (path: string, type: string) => {
@@ -175,76 +176,36 @@ export default function ComponentGrid({ initialType }: Props) {
 
   return (
     <div>
-      {/* Type tabs - Vercel style underline tabs */}
-      <nav className="flex items-center gap-0 px-6 border-b border-[--color-border] overflow-x-auto">
-        {Object.entries(TYPE_CONFIG).map(([type, config]) => {
-          const isActive = type === activeType;
-          return (
-            <button
-              key={type}
-              onClick={() => { setActiveType(type); setCategory('all'); }}
-              className={`relative flex items-center gap-2 px-3 py-2.5 text-[13px] whitespace-nowrap transition-colors ${
-                isActive ? 'text-[--color-text-primary]' : 'text-[--color-text-tertiary] hover:text-[--color-text-secondary]'
-              }`}
-            >
-              <TypeIcon type={type} size={14} className="[&>svg]:w-3.5 [&>svg]:h-3.5" />
-              <span>{config.label}</span>
-              {(counts[type] ?? 0) > 0 && (
-                <span className={`text-[11px] tabular-nums ${isActive ? 'text-[--color-text-secondary]' : 'text-[--color-text-tertiary]'}`}>
-                  {counts[type]}
-                </span>
-              )}
-              {isActive && (
-                <span className="absolute bottom-0 left-3 right-3 h-px bg-[--color-text-primary]" />
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
       {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-3 px-6 py-3">
-        {/* Category chips */}
-        <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0">
-          <button
-            onClick={() => setCategory('all')}
-            className={`px-2.5 py-1 rounded-full text-[12px] whitespace-nowrap transition-colors ${
-              category === 'all'
-                ? 'text-white bg-white/10'
-                : 'text-[--color-text-tertiary] hover:text-[--color-text-secondary] hover:bg-white/[0.04]'
-            }`}
-          >
-            All
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-              className={`px-2.5 py-1 rounded-full text-[12px] whitespace-nowrap transition-colors ${
-                category === cat
-                  ? 'text-white bg-white/10'
-                  : 'text-[--color-text-tertiary] hover:text-[--color-text-secondary] hover:bg-white/[0.04]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+      <div className="flex items-center gap-2 px-6 py-3">
+        {/* Search */}
+        <div className="relative">
+          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#666]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-44 bg-white/[0.04] border-none rounded-lg text-[12px] text-[#ededed] placeholder:text-[#666] pl-8 pr-3 py-1.5 outline-none focus:bg-white/[0.08] focus:ring-1 focus:ring-white/10 transition-all"
+          />
         </div>
 
-        {/* Sort + Search */}
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[--color-text-tertiary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-44 bg-white/[0.04] border-none rounded-lg text-[12px] text-[--color-text-primary] placeholder:text-[--color-text-tertiary] pl-8 pr-3 py-1.5 outline-none focus:bg-white/[0.08] focus:ring-1 focus:ring-white/10 transition-all"
-            />
-          </div>
+        {/* Category select */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="bg-white/[0.04] border-none rounded-lg text-[12px] text-[#a1a1a1] px-2.5 py-1.5 outline-none focus:bg-white/[0.08] cursor-pointer"
+        >
+          <option value="all">All categories</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        {/* Sort */}
+        <div className="flex items-center gap-2 ml-auto">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'downloads' | 'name')}
@@ -301,8 +262,8 @@ export default function ComponentGrid({ initialType }: Props) {
                     </span>
                   )}
                   {(component.downloads ?? 0) > 0 && (
-                    <span className="text-[10px] text-[--color-text-tertiary] flex items-center gap-1">
-                      <svg className="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
                       {component.downloads?.toLocaleString()}

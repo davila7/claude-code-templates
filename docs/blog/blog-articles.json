@@ -291,13 +291,26 @@
       "difficulty": "basic",
       "featured": true,
       "order": 21
+    },
+    {
+      "id": "ghostty-sand-keybindings",
+      "title": "My Ghostty Setup for Claude Code with SAND Keybindings",
+      "description": "How I configured Ghostty for Claude Code development and learned panel management with a simple mnemonic: SAND (Split, Across, Navigate, Destroy).",
+      "url": "ghostty-sand-keybindings/",
+      "image": "assets/ghostty-sand-keybindings-cover.svg",
+      "category": "Customization",
+      "readTime": "6 min read",
+      "tags": ["Ghostty", "Keybindings", "Terminal", "Workflow", "Claude Code"],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 22
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-02-01",
-    "totalArticles": 22,
+    "lastUpdated": "2026-02-14",
+    "totalArticles": 23,
     "difficultyLevels": {
-      "basic": 9,
+      "basic": 10,
       "intermediate": 7,
       "advanced": 5
     }

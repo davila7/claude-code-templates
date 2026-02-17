@@ -1,0 +1,61 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import ClerkIsland from '../components/ClerkIsland.tsx';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Claude Code Templates' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-surface-0 text-text-primary antialiased">
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="hidden md:flex w-[220px] flex-col border-r border-border bg-surface-0 fixed inset-y-0 left-0 z-40"
+      >
+        <Sidebar />
+      </aside>
+
+      <!-- Mobile sidebar overlay -->
+      <div
+        id="sidebarOverlay"
+        class="fixed inset-0 bg-black/60 z-30 hidden md:hidden backdrop-blur-sm"
+        onclick="document.getElementById('sidebar')?.classList.add('hidden');document.getElementById('sidebarOverlay')?.classList.add('hidden')"
+      ></div>
+
+      <!-- Main content -->
+      <main class="flex-1 md:ml-[220px] overflow-y-auto bg-surface-0">
+        <slot />
+      </main>
+    </div>
+
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar?.classList.toggle('hidden');
+        sidebar?.classList.toggle('flex');
+        overlay?.classList.toggle('hidden');
+      }
+      (window as any).toggleSidebar = toggleSidebar;
+    </script>
+
+    <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
+    <ClerkIsland client:load />
+  </body>
+</html>

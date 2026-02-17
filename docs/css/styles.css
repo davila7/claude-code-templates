@@ -1950,7 +1950,7 @@ body {
     font-family: inherit;
     outline: none;
     placeholder-color: var(--text-secondary);
-    caret-color: transparent; /* Hide default caret */
+    caret-color: var(--text-accent);
 }
 
 /* Terminal cursor wrapper */
@@ -1958,32 +1958,9 @@ body {
     position: relative;
 }
 
-/* Terminal-style block cursor */
+/* Terminal cursor hidden - using native caret instead */
 .terminal-cursor {
-    position: absolute;
-    width: 10px;
-    height: 20px;
-    background: var(--text-accent);
-    top: 50%;
-    transform: translateY(-50%);
-    animation: terminal-cursor-blink 1s infinite;
-    pointer-events: none;
-    z-index: 10;
     display: none;
-}
-
-.terminal-search-input:focus + .terminal-cursor,
-.terminal-search-wrapper:focus-within .terminal-cursor {
-    display: block;
-}
-
-@keyframes terminal-cursor-blink {
-    0%, 50% { 
-        opacity: 1;
-    }
-    51%, 100% { 
-        opacity: 0;
-    }
 }
 
 .terminal-search-input::placeholder {
