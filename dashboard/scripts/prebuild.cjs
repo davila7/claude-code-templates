@@ -1,8 +1,24 @@
 const fs = require('fs');
 const path = require('path');
 
-const publicDir = path.join(__dirname, '..', 'public');
-fs.mkdirSync(publicDir, { recursive: true });
+const publicDir = path.join(process.cwd(), 'public');
+console.log('cwd:', process.cwd());
+console.log('publicDir:', publicDir);
+console.log('publicDir exists before mkdir:', fs.existsSync(publicDir));
+
+try {
+  fs.mkdirSync(publicDir, { recursive: true });
+  console.log('publicDir exists after mkdir:', fs.existsSync(publicDir));
+} catch (e) {
+  console.error('mkdirSync failed:', e.message);
+}
+
+// List what's in cwd
+try {
+  console.log('cwd contents:', fs.readdirSync(process.cwd()));
+} catch (e) {
+  console.error('readdir cwd failed:', e.message);
+}
 
 const componentsFile = path.join(publicDir, 'components.json');
 if (!fs.existsSync(componentsFile)) {
