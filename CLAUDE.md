@@ -344,16 +344,73 @@ This automatically:
 - Log errors with context
 - Implement fallback mechanisms
 
-## Testing
+## CLI Tool Clean Code Standards
+
+**Applies to all code in `cli-tool/src/`. Reference `network.js` and `utils.js` for good patterns.**
+
+### Rules
+
+| Rule | Requirement |
+|------|-------------|
+| Single responsibility | One function = one task. If you need "and" to describe it, split it. |
+| Function length | Max 40 lines. Extract helpers. |
+| Early returns | Fail fast with guard clauses. Max 2 levels nesting. |
+| Magic values | Extract to `UPPER_SNAKE_CASE` constants |
+| DRY | Extract repeated patterns into shared functions |
+| Error messages | Include: context, cause, actionable fix |
+| Async | Use `Promise.all()` for independent operations |
+
+### Anti-Patterns to Fix
+
+| Bad | Good |
+|-----|------|
+| `catch (e) { }` | Log or re-throw with context |
+| `options = options || {}` | Default params: `fn(options = {})` |
+| Deep nesting (3+ levels) | Guard clauses: `if (!x) return;` |
+| Functions > 50 lines | Compose from smaller functions |
+| Hardcoded paths | `path.join()` + constants |
+
+### Pre-Commit Checklist
+
+```bash
+npm test                              # Tests pass
+node cli-tool/src/index.js --help    # CLI works
+```
+
+- No hardcoded secrets
+- No functions > 50 lines  
+- New code has tests
+
+## Testing Requirements
+
+**Every new/modified function in `cli-tool/src/` MUST have tests.**
 
 ```bash
 npm test                 # Run all tests
-npm run test:watch      # Watch mode
-npm run test:coverage   # Coverage report
-cd api && npm test      # Test API endpoints
+npm run test:coverage   # Check coverage (target: 70%+)
+cd api && npm test      # API endpoints
 ```
 
-Aim for 70%+ test coverage. Test critical paths and error handling.
+### Test Location & Naming
+
+- `src/foo.js` → `tests/unit/foo.test.js`
+- Test name: `it('should [behavior] when [condition]', ...)`
+
+### What to Test
+
+| Must Test | Can Skip |
+|-----------|----------|
+| Public functions (happy + error paths) | Private helpers |
+| Network: success, timeout, SSL, DNS errors | Console output formatting |
+| File ops: exists, missing, permission denied | Library wrappers |
+| Each catch block | |
+
+### Reference Existing Tests
+
+See `cli-tool/tests/unit/network.test.js` for patterns:
+- Jest mocking (fs-extra, fetch, chalk)
+- AAA structure (Arrange/Act/Assert)
+- Error case testing
 
 ## Common Issues
 
