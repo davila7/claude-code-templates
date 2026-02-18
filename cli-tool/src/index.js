@@ -5,7 +5,7 @@ const path = require('path');
 const ora = require('ora');
 const { detectProject } = require('./utils');
 const { getTemplateConfig, TEMPLATES_CONFIG } = require('./templates');
-const { createPrompts, interactivePrompts } = require('./prompts');
+const { interactivePrompts } = require('./prompts');
 const { copyTemplateFiles, runPostInstallationValidation } = require('./file-operations');
 const { getHooksForLanguage, getMCPsForLanguage } = require('./hook-scanner');
 const { installAgents } = require('./agents');
@@ -1395,33 +1395,6 @@ async function installIndividualHook(hookName, targetDir, options) {
     trackingService.trackInstallationOutcome('hook', hookName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return 0;
   }
-}
-
-// Helper functions to extract language/framework from agent content
-function extractLanguageFromAgent(content, agentName) {
-  // Try to determine language from agent content or filename
-  if (agentName.includes('react') || content.includes('React')) return 'javascript-typescript';
-  if (agentName.includes('django') || content.includes('Django')) return 'python';
-  if (agentName.includes('fastapi') || content.includes('FastAPI')) return 'python';
-  if (agentName.includes('flask') || content.includes('Flask')) return 'python';
-  if (agentName.includes('rails') || content.includes('Rails')) return 'ruby';
-  if (agentName.includes('api-security') || content.includes('API security')) return 'javascript-typescript';
-  if (agentName.includes('database') || content.includes('database')) return 'javascript-typescript';
-  
-  // Default to javascript-typescript for general agents
-  return 'javascript-typescript';
-}
-
-function extractFrameworkFromAgent(content, agentName) {
-  // Try to determine framework from agent content or filename
-  if (agentName.includes('react') || content.includes('React')) return 'react';
-  if (agentName.includes('django') || content.includes('Django')) return 'django';
-  if (agentName.includes('fastapi') || content.includes('FastAPI')) return 'fastapi';
-  if (agentName.includes('flask') || content.includes('Flask')) return 'flask';
-  if (agentName.includes('rails') || content.includes('Rails')) return 'rails';
-  
-  // For general agents, return none to install the base template
-  return 'none';
 }
 
 /**
