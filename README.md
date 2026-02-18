@@ -50,9 +50,6 @@ npx claude-code-templates@latest --setting performance/mcp-timeouts --yes
 npx claude-code-templates@latest --hook git/pre-commit-validation --yes
 npx claude-code-templates@latest --mcp database/postgresql-integration --yes
 ```
-
-## What You Get
-
 | Component | Description | Examples |
 |-----------|-------------|----------|
 | **🤖 Agents** | AI specialists for specific domains | Security auditor, React performance optimizer, database architect |
