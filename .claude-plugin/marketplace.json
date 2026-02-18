@@ -99,8 +99,8 @@
         "./cli-tool/components/commands/testing/test-quality-analyzer.md"
       ],
       "agents": [
-        "./cli-tool/components/agents/development-tools/qa-automation-engineer.md",
-        "./cli-tool/components/agents/development-tools/test-engineer.md"
+        "./cli-tool/components/agents/development-tools/test-engineer.md",
+        "./cli-tool/components/agents/performance-testing/test-automator.md"
       ],
       "mcpServers": [
         "./cli-tool/components/mcps/browser_automation/playwright-mcp.json"
@@ -117,9 +117,9 @@
       "strict": false,
       "commands": [
         "./cli-tool/components/commands/security/security-audit.md",
-        "./cli-tool/components/commands/security/vulnerability-scan.md",
         "./cli-tool/components/commands/security/dependency-audit.md",
-        "./cli-tool/components/commands/security/code-security-review.md"
+        "./cli-tool/components/commands/security/penetration-test.md",
+        "./cli-tool/components/commands/security/security-hardening.md"
       ],
       "agents": [
         "./cli-tool/components/agents/security/security-auditor.md",
@@ -156,21 +156,20 @@
       "keywords": ["devops", "cicd", "infrastructure", "deployment", "automation"],
       "strict": false,
       "commands": [
-        "./cli-tool/components/commands/deployment/setup-ci-cd-pipeline.md",
-        "./cli-tool/components/commands/deployment/docker-compose-setup.md",
-        "./cli-tool/components/commands/deployment/kubernetes-deploy.md",
-        "./cli-tool/components/commands/deployment/monitoring-setup.md",
-        "./cli-tool/components/commands/deployment/backup-strategy.md"
+        "./cli-tool/components/commands/deployment/ci-setup.md",
+        "./cli-tool/components/commands/deployment/containerize-application.md",
+        "./cli-tool/components/commands/deployment/setup-kubernetes-deployment.md",
+        "./cli-tool/components/commands/deployment/deployment-monitoring.md",
+        "./cli-tool/components/commands/deployment/rollback-deploy.md"
       ],
       "agents": [
-        "./cli-tool/components/agents/devops-infrastructure/devops-engineer.md",
+        "./cli-tool/components/agents/devops-infrastructure/devops-expert.md",
         "./cli-tool/components/agents/devops-infrastructure/cloud-architect.md",
-        "./cli-tool/components/agents/devops-infrastructure/kubernetes-specialist.md",
-        "./cli-tool/components/agents/devops-infrastructure/infrastructure-engineer.md"
+        "./cli-tool/components/agents/devops-infrastructure/terraform-specialist.md",
+        "./cli-tool/components/agents/devops-infrastructure/deployment-engineer.md"
       ],
       "mcpServers": [
-        "./cli-tool/components/mcps/devtools/github-integration.json",
-        "./cli-tool/components/mcps/devtools/docker-mcp.json"
+        "./cli-tool/components/mcps/integration/github-integration.json"
       ]
     },
     {
@@ -183,19 +182,19 @@
       "keywords": ["documentation", "api-docs", "technical-writing", "markdown"],
       "strict": false,
       "commands": [
-        "./cli-tool/components/commands/documentation/generate-api-docs.md",
+        "./cli-tool/components/commands/documentation/generate-api-documentation.md",
         "./cli-tool/components/commands/documentation/update-docs.md",
-        "./cli-tool/components/commands/documentation/create-user-guide.md",
-        "./cli-tool/components/commands/documentation/setup-docusaurus.md",
-        "./cli-tool/components/commands/documentation/generate-changelog.md"
+        "./cli-tool/components/commands/documentation/create-onboarding-guide.md",
+        "./cli-tool/components/commands/documentation/create-architecture-documentation.md",
+        "./cli-tool/components/commands/documentation/migration-guide.md"
       ],
       "agents": [
         "./cli-tool/components/agents/documentation/technical-writer.md",
-        "./cli-tool/components/agents/documentation/api-documentation-specialist.md",
+        "./cli-tool/components/agents/documentation/api-documenter.md",
         "./cli-tool/components/agents/documentation/docusaurus-expert.md"
       ],
       "mcpServers": [
-        "./cli-tool/components/mcps/filesystem/filesystem.json"
+        "./cli-tool/components/mcps/filesystem/filesystem-access.json"
       ]
     },
     {
@@ -208,12 +207,12 @@
       "keywords": ["performance", "optimization", "profiling", "speed", "bundle"],
       "strict": false,
       "commands": [
-        "./cli-tool/components/commands/performance/optimize-bundle.md",
+        "./cli-tool/components/commands/performance/optimize-bundle-size.md",
         "./cli-tool/components/commands/performance/performance-audit.md",
-        "./cli-tool/components/commands/performance/add-caching.md",
-        "./cli-tool/components/commands/performance/optimize-images.md",
-        "./cli-tool/components/commands/performance/reduce-bundle-size.md",
-        "./cli-tool/components/commands/performance/add-lazy-loading.md"
+        "./cli-tool/components/commands/performance/implement-caching-strategy.md",
+        "./cli-tool/components/commands/performance/optimize-api-performance.md",
+        "./cli-tool/components/commands/performance/optimize-database-performance.md",
+        "./cli-tool/components/commands/performance/add-performance-monitoring.md"
       ],
       "agents": [
         "./cli-tool/components/agents/performance-testing/performance-engineer.md",
@@ -230,21 +229,19 @@
       "keywords": ["project-management", "agile", "scrum", "planning", "collaboration"],
       "strict": false,
       "commands": [
-        "./cli-tool/components/commands/project-management/sprint-planning.md",
-        "./cli-tool/components/commands/project-management/create-roadmap.md",
-        "./cli-tool/components/commands/project-management/task-breakdown.md",
-        "./cli-tool/components/commands/project-management/estimate-project.md",
-        "./cli-tool/components/commands/project-management/standup-generator.md",
-        "./cli-tool/components/commands/project-management/retrospective-facilitator.md"
+        "./cli-tool/components/commands/project-management/create-feature.md",
+        "./cli-tool/components/commands/project-management/github-issues.md",
+        "./cli-tool/components/commands/project-management/init-project.md",
+        "./cli-tool/components/commands/project-management/milestone-tracker.md",
+        "./cli-tool/components/commands/project-management/project-health-check.md",
+        "./cli-tool/components/commands/project-management/project-timeline-simulator.md"
       ],
       "agents": [
         "./cli-tool/components/agents/business-marketing/product-strategist.md",
-        "./cli-tool/components/agents/business-marketing/business-analyst.md",
-        "./cli-tool/components/agents/development-team/tech-lead.md"
+        "./cli-tool/components/agents/business-marketing/business-analyst.md"
       ],
       "mcpServers": [
-        "./cli-tool/components/mcps/productivity/notion-integration.json",
-        "./cli-tool/components/mcps/productivity/linear-integration.json"
+        "./cli-tool/components/mcps/productivity/notion.json"
       ]
     }
   ]
