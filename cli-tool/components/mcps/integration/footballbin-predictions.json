@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "footballbin-predictions": {
+      "description": "AI-powered football match predictions for Premier League and Champions League. Returns half-time scores, full-time scores, next goal scorer, corner counts, and key player analysis. Public endpoint, no API key required.",
+      "url": "https://ru7m5svay1.execute-api.eu-central-1.amazonaws.com/prod/mcp"
+    }
+  }
+}
