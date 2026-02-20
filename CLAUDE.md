@@ -175,6 +175,35 @@ vercel --prod
 - The local `package.json` version may drift from npm if published from CI — always check `npm view claude-code-templates version` first
 - Never hardcode or commit tokens
 
+## Database Policy
+
+**Neon is the primary database for all new features.** Use `@neondatabase/serverless` with tagged template literals:
+
+```javascript
+import { neon } from '@neondatabase/serverless';
+const sql = neon(process.env.NEON_DATABASE_URL);
+const [row] = await sql`SELECT * FROM table WHERE id = ${id}`;
+```
+
+**Supabase is legacy** — it still holds `component_downloads` (download tracking) and its data stays as-is, but no new tables or features should be added to Supabase.
+
+### Neon Tables
+
+| Table | Purpose |
+|---|---|
+| `claude_code_versions` | Claude Code release monitor |
+| `claude_code_changes` | Parsed changelog entries |
+| `discord_notifications_log` | Discord notification history |
+| `monitoring_metadata` | Cron job metadata |
+| `user_collections` | User component collections (Clerk auth) |
+| `collection_items` | Components saved to collections |
+
+### Supabase Tables (legacy, read-only going forward)
+
+| Table | Purpose |
+|---|---|
+| `component_downloads` | Download tracking analytics |
+
 ## API Architecture
 
 ### Critical Endpoints
@@ -184,7 +213,12 @@ The `/api` directory contains Vercel Serverless Functions:
 **`/api/track-download-supabase`** (CRITICAL)
 - Tracks component downloads for analytics
 - Used by CLI on every installation
-- Database: Supabase (component_downloads table)
+- Database: Supabase (component_downloads table) — legacy, kept as-is
+
+**`/api/collections/*`**
+- User collections CRUD (list, create, rename, delete, add/remove/move items)
+- Auth: Clerk JWT verification
+- Database: Neon (user_collections, collection_items tables)
 
 **`/api/discord/interactions`**
 - Discord bot slash commands

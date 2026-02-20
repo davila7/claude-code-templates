@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #eef0fb;
+  --color-primary-100: #d4d7f2;
+  --color-primary-200: #a9b0e5;
+  --color-primary-300: #7e88d8;
+  --color-primary-400: #5e6ad2;
+  --color-primary-500: #5e6ad2;
+  --color-primary-600: #4b55a8;
+  --color-primary-700: #38407e;
+  --color-primary-800: #262b54;
+  --color-primary-900: #13152a;
+
+  --color-accent-50: #fdf2ee;
+  --color-accent-100: #f9dcd2;
+  --color-accent-200: #f0b5a0;
+  --color-accent-300: #e38d6e;
+  --color-accent-400: #d57455;
+  --color-accent-500: #d57455;
+  --color-accent-600: #b35c3e;
+  --color-accent-700: #8c472f;
+  --color-accent-800: #663320;
+  --color-accent-900: #3f1f13;
+
+  --color-surface-0: #000000;
+  --color-surface-1: #0a0a0a;
+  --color-surface-2: #111111;
+  --color-surface-3: #1a1a1a;
+  --color-surface-4: #252525;
+
+  --color-border: #1f1f1f;
+  --color-border-hover: #333333;
+
+  --color-text-primary: #ededed;
+  --color-text-secondary: #a1a1a1;
+  --color-text-tertiary: #666666;
+
+  --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+html {
+  background-color: var(--color-surface-0);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+body {
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar - Vercel thin style */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Selection */
+::selection {
+  background: rgba(94, 106, 210, 0.3);
+}
+
+/* Vercel-style focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Subtle transition for all interactive elements */
+a, button {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}

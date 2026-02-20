@@ -1,0 +1,30 @@
+---
+import type { FeaturedItem } from '../lib/types';
+
+interface Props {
+  item: FeaturedItem;
+}
+
+const { item } = Astro.props;
+---
+
+<a
+  href={item.url}
+  class="group flex items-center gap-3 p-3 bg-surface-1 border border-border rounded-lg hover:border-border-hover transition-all"
+>
+  <div class="w-10 h-10 rounded-lg bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 p-1.5">
+    <img src={item.logo} alt={item.name} class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" />
+  </div>
+  <div class="min-w-0 flex-1">
+    <div class="flex items-center gap-2">
+      <span class="text-[13px] font-medium text-text-primary">{item.name}</span>
+      <span class="text-[10px] px-1.5 py-0.5 rounded border border-border text-text-tertiary">
+        {item.tag}
+      </span>
+    </div>
+    <p class="text-[12px] text-text-tertiary mt-0.5">{item.description}</p>
+  </div>
+  <svg class="w-3.5 h-3.5 text-text-tertiary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
+</a>

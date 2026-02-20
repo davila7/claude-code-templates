@@ -60,6 +60,13 @@ test-cloudflare/
 *.swp
 *.swo
 
+# Astro build cache
+dashboard/.astro/
+
+# Dashboard dev data (fetched at runtime in production)
+dashboard/public/components.json
+dashboard/public/trending-data.json
+
 # Deployment
 .vercel
 
