@@ -15,11 +15,13 @@ Two Vercel projects deploy from the same repo:
 | `aitmpl` | `www.aitmpl.com` | `/` (repo root) | Static site + API endpoints |
 | `aitmpl-dashboard` | `app.aitmpl.com` | `dashboard/` | Astro SSR dashboard |
 
-### Project IDs (from .vercel/project.json files)
+### Environment Variables
 
-- **Site**: `prj_ZGc6LE2OuRSOHMW6JmFMbQGAL0Ok`
-- **Dashboard**: `prj_2JukYUxVtEfvZWXojMUfRX9eGDEH`
-- **Org**: `team_Fit4cCT6phNeyeqs82jaOUGC`
+All Vercel IDs are stored in `.env` (never hardcoded):
+
+- `VERCEL_ORG_ID` — Vercel org/team ID
+- `VERCEL_SITE_PROJECT_ID` — Project ID for www.aitmpl.com
+- `VERCEL_DASHBOARD_PROJECT_ID` — Project ID for app.aitmpl.com
 
 ## Deploy Targets
 
@@ -80,25 +82,29 @@ cd api && npm test
 
 ## Deploy Execution
 
+Use the deploy script which reads IDs from `.env`:
+
 ### Deploy www.aitmpl.com
 
 ```bash
-VERCEL_ORG_ID="team_Fit4cCT6phNeyeqs82jaOUGC" \
-VERCEL_PROJECT_ID="prj_ZGc6LE2OuRSOHMW6JmFMbQGAL0Ok" \
-npx vercel --prod --yes
+./scripts/deploy.sh site
 ```
 
 ### Deploy app.aitmpl.com
 
 ```bash
-VERCEL_ORG_ID="team_Fit4cCT6phNeyeqs82jaOUGC" \
-VERCEL_PROJECT_ID="prj_2JukYUxVtEfvZWXojMUfRX9eGDEH" \
-npx vercel --prod --yes
+./scripts/deploy.sh dashboard
+```
+
+### Deploy both
+
+```bash
+./scripts/deploy.sh all
 ```
 
 ### Parallel deploys
 
-When deploying both, run them in parallel (background tasks) to save time. Wait for both to complete before reporting.
+When deploying both, you can also run them in parallel (background tasks) to save time. Wait for both to complete before reporting.
 
 ## Post-Deploy Verification
 
@@ -134,11 +140,12 @@ Error: [error message from Vercel]
 - **Auth failure**: Tell user to run `npx vercel login`
 - **Build failure on dashboard**: Check if Node version is pinned to 22 in Vercel project settings. Node 24 has known issues with `fs.writeFileSync`
 - **CORS issues after deploy**: Verify `vercel.json` has CORS headers for `/components.json` and `/trending-data.json`
-- **Wrong project deployed**: Double-check the `VERCEL_PROJECT_ID` env var matches the target
+- **Missing env vars**: Check `.env` has `VERCEL_ORG_ID`, `VERCEL_SITE_PROJECT_ID`, `VERCEL_DASHBOARD_PROJECT_ID`
 
 ## Important Rules
 
 - NEVER deploy without running the pre-deploy checklist
+- NEVER hardcode project IDs, org IDs, or tokens — always read from `.env`
 - NEVER use `--force` flags unless the user explicitly asks
 - ALWAYS report the final URLs so the user can verify
 - If API tests fail, do NOT proceed with deploy — report and stop
