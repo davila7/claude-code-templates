@@ -31,7 +31,7 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
 
 export const NAV_LINKS = {
   github: 'https://github.com/davila7/claude-code-templates',
-  docs: 'https://www.cubic.dev/wikis/davila7/claude-code-templates?page=introduction',
+  docs: 'https://docs.aitmpl.com/',
   blog: 'https://aitmpl.com/blog/',
   trending: 'https://aitmpl.com/trending.html',
 };
