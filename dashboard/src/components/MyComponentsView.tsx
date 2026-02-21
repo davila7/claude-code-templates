@@ -50,6 +50,26 @@ function pluralType(type: string): string {
   return type.endsWith('s') ? type : type + 's';
 }
 
+// Type order for grouping
+const TYPE_ORDER = ['skills', 'agents', 'commands', 'settings', 'hooks', 'mcps'] as const;
+
+function groupByType(items: CollectionItem[]): { type: string; label: string; color: string; items: CollectionItem[] }[] {
+  const map: Record<string, CollectionItem[]> = {};
+  for (const item of items) {
+    const t = pluralType(item.component_type);
+    if (!map[t]) map[t] = [];
+    map[t].push(item);
+  }
+  return TYPE_ORDER
+    .filter((t) => map[t]?.length)
+    .map((t) => ({
+      type: t,
+      label: TYPE_CONFIG[t]?.label ?? t,
+      color: TYPE_CONFIG[t]?.color ?? '#888',
+      items: map[t],
+    }));
+}
+
 function generateCommand(items: CollectionItem[]): string {
   const grouped: Record<string, string[]> = {};
   for (const item of items) {
@@ -354,37 +374,43 @@ export default function MyComponentsView() {
                   />
                 )}
 
-                {/* Expanded tree items */}
+                {/* Expanded tree items — grouped by type */}
                 {isExpanded && items.length > 0 && (
                   <div className="ml-3 pl-3 border-l border-[--color-border] mt-0.5 mb-1 space-y-px">
-                    {items.map((item) => {
-                      const type = pluralType(item.component_type);
-                      const config = TYPE_CONFIG[type];
-                      return (
-                        <div
-                          key={item.id}
-                          className="group/item flex items-center gap-2 px-2 py-[5px] rounded-md text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors"
-                        >
-                          <TypeIcon type={type} size={14} className="w-3.5 h-3.5 shrink-0 [&>svg]:w-3.5 [&>svg]:h-3.5" />
-                          <a
-                            href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
-                            className="truncate flex-1 hover:underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {formatName(item.component_name)}
-                          </a>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleRemoveItem(item, col.id); }}
-                            className="p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/item:opacity-100 shrink-0"
-                            title="Remove"
-                          >
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
+                    {groupByType(items).map((group) => (
+                      <div key={group.type}>
+                        {/* Type group header */}
+                        <div className="flex items-center gap-1.5 px-2 py-[5px] text-[11px] font-medium" style={{ color: group.color }}>
+                          <TypeIcon type={group.type} size={12} className="w-3 h-3 shrink-0 [&>svg]:w-3 [&>svg]:h-3" />
+                          <span>{group.label}</span>
+                          <span className="text-[10px] opacity-60">({group.items.length})</span>
                         </div>
-                      );
-                    })}
+                        {/* Items in this type */}
+                        {group.items.map((item) => (
+                          <div
+                            key={item.id}
+                            className="group/item flex items-center gap-2 pl-5 pr-2 py-[5px] rounded-md text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors"
+                          >
+                            <a
+                              href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
+                              className="truncate flex-1 hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {formatName(item.component_name)}
+                            </a>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleRemoveItem(item, col.id); }}
+                              className="p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/item:opacity-100 shrink-0"
+                              title="Remove"
+                            >
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -455,57 +481,70 @@ export default function MyComponentsView() {
               </code>
             </div>
 
-            {/* Flat component list */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              {selectedItems.map((item) => {
-                const type = pluralType(item.component_type);
-                const config = TYPE_CONFIG[type];
-                return (
-                  <div
-                    key={item.id}
-                    className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[#111111] border border-[#1a1a1a] hover:border-[#2a2a2a] hover:bg-[#151515] transition-all duration-200"
-                  >
+            {/* Component list grouped by type */}
+            <div className="space-y-6">
+              {groupByType(selectedItems).map((group) => (
+                <div key={group.type}>
+                  {/* Section header */}
+                  <div className="flex items-center gap-2 mb-3">
                     <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: config ? `${config.color}12` : '#ffffff08', color: config?.color ?? '#888' }}
+                      className="w-5 h-5 rounded flex items-center justify-center"
+                      style={{ backgroundColor: `${group.color}18`, color: group.color }}
                     >
-                      <TypeIcon type={type} />
+                      <TypeIcon type={group.type} size={14} />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <a
-                        href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
-                        className="text-[13px] font-medium text-[--color-text-primary] hover:text-white transition-colors line-clamp-1"
-                      >
-                        {formatName(item.component_name)}
-                      </a>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        {config && (
-                          <span
-                            className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                            style={{ backgroundColor: `${config.color}15`, color: config.color }}
-                          >
-                            {config.label}
-                          </span>
-                        )}
-                        {item.component_category && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[--color-text-tertiary]">
-                            {item.component_category}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveItem(item, selectedCollection!.id)}
-                      className="p-1.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
-                      title="Remove"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                    <h4 className="text-[13px] font-semibold" style={{ color: group.color }}>
+                      {group.label}
+                    </h4>
+                    <span className="text-[11px] text-[--color-text-tertiary]">
+                      ({group.items.length})
+                    </span>
                   </div>
-                );
-              })}
+                  {/* Cards grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                    {group.items.map((item) => {
+                      const config = TYPE_CONFIG[group.type];
+                      return (
+                        <div
+                          key={item.id}
+                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[#111111] border border-[#1a1a1a] hover:border-[#2a2a2a] hover:bg-[#151515] transition-all duration-200"
+                        >
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: config ? `${config.color}12` : '#ffffff08', color: config?.color ?? '#888' }}
+                          >
+                            <TypeIcon type={group.type} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <a
+                              href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
+                              className="text-[13px] font-medium text-[--color-text-primary] hover:text-white transition-colors line-clamp-1"
+                            >
+                              {formatName(item.component_name)}
+                            </a>
+                            {item.component_category && (
+                              <div className="flex items-center gap-1.5 mt-1">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[--color-text-tertiary]">
+                                  {item.component_category}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => handleRemoveItem(item, selectedCollection!.id)}
+                            className="p-1.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
+                            title="Remove"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
