@@ -1,8 +1,7 @@
 import type { FeaturedItem } from './types';
 
 export const COMPONENTS_JSON_URL =
-  import.meta.env.PUBLIC_COMPONENTS_JSON_URL ??
-  (import.meta.env.DEV ? '/components.json' : 'https://www.aitmpl.com/components.json');
+  import.meta.env.PUBLIC_COMPONENTS_JSON_URL ?? 'https://www.aitmpl.com/components.json';
 
 export const ITEMS_PER_PAGE = 24;
 
