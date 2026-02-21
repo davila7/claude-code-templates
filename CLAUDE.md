@@ -294,6 +294,79 @@ GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 
 **Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report.
 
+## Dashboard (app.aitmpl.com)
+
+Astro + React + Tailwind dashboard deployed at `https://app.aitmpl.com`. Clerk auth for user collections. Source lives in `dashboard/`.
+
+### Architecture
+
+- **Framework**: Astro 5 with React islands, Tailwind v4, `output: 'server'`
+- **Auth**: Clerk (`window.Clerk` global, no ClerkProvider per island)
+- **Data**: Fetches from `https://www.aitmpl.com/components.json` at runtime (NOT bundled)
+- **API proxy**: `dashboard/src/pages/api/[...path].ts` proxies to `localhost:3000` in dev, `https://www.aitmpl.com` in prod
+
+### Vercel Project Setup
+
+Two separate Vercel projects deploy from the same repo:
+
+| Project | Domain | Root Directory |
+|---------|--------|----------------|
+| `aitmpl` | `www.aitmpl.com` | `/` (root) |
+| `aitmpl-dashboard` | `app.aitmpl.com` | `dashboard` |
+
+Each directory has its own `.vercel/project.json` with the correct project ID. Do NOT mix them up.
+
+### Deployment
+
+Use the deploy scripts to avoid targeting the wrong project:
+
+```bash
+npm run deploy:site        # Deploy www.aitmpl.com (main site + API)
+npm run deploy:dashboard   # Deploy app.aitmpl.com (Astro dashboard)
+npm run deploy:all         # Deploy both
+```
+
+**CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
+- Changes in `docs/`, `api/`, or `vercel.json` trigger site deploy
+- Changes in `dashboard/` trigger dashboard deploy
+
+**Required GitHub Secrets** (Settings > Secrets > Actions):
+- `VERCEL_TOKEN` — Vercel personal access token
+- `VERCEL_ORG_ID` — Vercel org/team ID
+- `VERCEL_SITE_PROJECT_ID` — Project ID for www.aitmpl.com
+- `VERCEL_DASHBOARD_PROJECT_ID` — Project ID for app.aitmpl.com
+
+### Dashboard Environment Variables (Vercel)
+
+```bash
+PUBLIC_CLERK_PUBLISHABLE_KEY=xxx           # Clerk public key
+CLERK_SECRET_KEY=xxx                        # Clerk secret key
+PUBLIC_COMPONENTS_JSON_URL=https://www.aitmpl.com/components.json  # MUST use www
+```
+
+### Known Issues & Solutions
+
+**Node v24 breaks `fs.writeFileSync` on Vercel**
+- Node v24 has a bug with `writeFileSync` in Vercel's build environment
+- Solution: Dashboard project is pinned to Node 22.x (set via Vercel API/dashboard)
+
+**CORS: Always use `www.aitmpl.com` for cross-origin fetches**
+- `aitmpl.com` (bare domain) 307-redirects to `www.aitmpl.com`
+- The redirect response has NO CORS headers, which blocks browser fetches from `app.aitmpl.com`
+- `www.aitmpl.com` serves the actual response WITH `Access-Control-Allow-Origin: *`
+- The `PUBLIC_COMPONENTS_JSON_URL` env var MUST point to `https://www.aitmpl.com/...` (not `https://aitmpl.com/...`)
+- CORS headers are configured in the root `vercel.json` under `headers`
+
+### Local Development
+
+```bash
+cd dashboard
+npm install
+npx astro dev --port 4321   # Dashboard at http://localhost:4321
+# In another terminal, for API proxy:
+node api/dev-server.js       # API at http://localhost:3000
+```
+
 ## Website Architecture (docs/)
 
 Static website at https://aitmpl.com for browsing components.

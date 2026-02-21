@@ -13,6 +13,9 @@
     "start": "vercel dev",
     "test": "echo 'No tests specified'",
     "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'",
+    "deploy:site": "./scripts/deploy.sh site",
+    "deploy:dashboard": "./scripts/deploy.sh dashboard",
+    "deploy:all": "./scripts/deploy.sh all",
     "discord:register": "node api/discord/register-commands.cjs"
   },
   "dependencies": {
