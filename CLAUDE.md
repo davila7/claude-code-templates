@@ -318,7 +318,7 @@ Each directory has its own `.vercel/project.json` with the correct project ID. D
 
 ### Deployment
 
-Use the deploy scripts to avoid targeting the wrong project:
+**ALWAYS use the deployer agent (`.claude/agents/deployer.md`) for all deployments.** It runs pre-deploy checks (auth, git status, API tests) and handles the full pipeline safely. Never deploy manually.
 
 ```bash
 npm run deploy:site        # Deploy www.aitmpl.com (main site + API)
