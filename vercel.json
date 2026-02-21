@@ -1,6 +1,22 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "docs",
+  "headers": [
+    {
+      "source": "/components.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+      ]
+    },
+    {
+      "source": "/trending-data.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+      ]
+    }
+  ],
   "crons": [
     {
       "path": "/api/claude-code-check",
