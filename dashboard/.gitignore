@@ -2,10 +2,6 @@
 .astro/
 dist/
 
-# Generated data (recreated by prebuild)
-public/components.json
-public/trending-data.json
-
 # Vercel
 .vercel
 
