@@ -55,7 +55,7 @@ export default function TrendingView() {
   const [period, setPeriod] = useState<'downloadsWeek' | 'downloadsMonth' | 'downloadsTotal'>('downloadsWeek');
 
   useEffect(() => {
-    fetch('/trending-data.json')
+    fetch('https://www.aitmpl.com/trending-data.json')
       .then((r) => r.json())
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
