@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { Component, ComponentsData, ComponentType } from '../lib/types';
-import { TYPE_CONFIG, ICONS } from '../lib/icons';
+import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE, COMPONENTS_JSON_URL } from '../lib/constants';
 import SaveToCollectionButton from './SaveToCollectionButton';
 
@@ -26,14 +26,7 @@ function formatName(name: string): string {
     .join(' ');
 }
 
-// Inline SVG icon component
-function TypeIcon({ type, size = 16, className = '' }: { type: string; size?: number; className?: string }) {
-  const svg = ICONS[type];
-  if (!svg) return null;
-  // Replace width/height in the SVG string
-  const sized = svg.replace(/width="\d+"/, `width="${size}"`).replace(/height="\d+"/, `height="${size}"`);
-  return <span className={className} dangerouslySetInnerHTML={{ __html: sized }} />;
-}
+import TypeIcon from './TypeIcon';
 
 export default function ComponentGrid({ initialType }: Props) {
   const [data, setData] = useState<ComponentsData | null>(null);

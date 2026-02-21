@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Component, ComponentsData } from '../lib/types';
-import { TYPE_CONFIG, ICONS } from '../lib/icons';
+import { TYPE_CONFIG } from '../lib/icons';
+import TypeIcon from './TypeIcon';
 import { COMPONENTS_JSON_URL } from '../lib/constants';
 
 function cleanPath(path: string): string {
@@ -174,7 +175,7 @@ export default function SearchModal() {
                     : 'hover:bg-[--color-surface-2]'
                 }`}
               >
-                <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4 text-[--color-text-tertiary]" dangerouslySetInnerHTML={{ __html: ICONS[typePlural] ?? '' }} />
+                <TypeIcon type={typePlural} size={16} className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4 text-[--color-text-tertiary]" />
                 <div className="min-w-0 flex-1">
                   <span className="text-sm text-[--color-text-primary]">{formatName(component.name)}</span>
                   <span className="text-xs text-[--color-text-tertiary] ml-2">{config?.label ?? component.type}</span>

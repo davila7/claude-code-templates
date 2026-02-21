@@ -604,8 +604,8 @@ class IndexPageManager {
                         <div class="framework-logo" style="color: #a855f7">
                             <span class="component-icon">🧩</span>
                         </div>
-                        <h3 class="template-title">${this.formatComponentName(plugin.name)}</h3>
-                        <p class="template-description">${plugin.description}</p>
+                        <h3 class="template-title">${escapeHTML(this.formatComponentName(plugin.name))}</h3>
+                        <p class="template-description">${escapeHTML(plugin.description)}</p>
                         <div class="plugin-stats">
                             ${plugin.commands > 0 ? `<span class="plugin-stat"><span class="stat-icon">⚡</span>${plugin.commands}</span>` : ''}
                             ${plugin.agents > 0 ? `<span class="plugin-stat"><span class="stat-icon">🤖</span>${plugin.agents}</span>` : ''}
@@ -729,7 +729,7 @@ class IndexPageManager {
         
         // Create category label (use "General" if no category)
         const categoryName = component.category || 'general';
-        const categoryLabel = `<div class="category-label">${this.formatComponentName(categoryName)}</div>`;
+        const categoryLabel = `<div class="category-label">${escapeHTML(this.formatComponentName(categoryName))}</div>`;
         
         // Create download badge if downloads data exists
         const downloadBadge = component.downloads && component.downloads > 0 ?
@@ -753,17 +753,17 @@ class IndexPageManager {
                             <span class="component-icon">${config.icon}</span>
                             ${validationBadge}
                         </div>
-                        <h3 class="template-title">${this.formatComponentName(component.name)}</h3>
-                        ${component.type === 'mcp' ? 
-                            `<p class="template-description">${this.truncateDescription(component.description || 'MCP integration for enhanced development workflow', 80)}</p>` : 
-                            `<p class="template-description">${this.getComponentDescription(component)}</p>`
+                        <h3 class="template-title">${escapeHTML(this.formatComponentName(component.name))}</h3>
+                        ${component.type === 'mcp' ?
+                            `<p class="template-description">${escapeHTML(this.truncateDescription(component.description || 'MCP integration for enhanced development workflow', 80))}</p>` :
+                            `<p class="template-description">${escapeHTML(this.getComponentDescription(component))}</p>`
                         }
                     </div>
                     <div class="card-back">
                         <div class="command-display">
                             <h3>Installation Command</h3>
                             <div class="command-code-container">
-                                <div class="command-code">${installCommand}</div>
+                                <div class="command-code">${escapeHTML(installCommand)}</div>
                                 <button class="copy-overlay-btn" onclick="copyToClipboard('${escapedCommand}'); event.stopPropagation();" title="Copy command">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
@@ -1062,13 +1062,13 @@ class IndexPageManager {
                     <div class="framework-logo">
                         <i class="${icon} colored"></i>
                     </div>
-                    <h3 class="template-title">${displayName}</h3>
-                    <p class="template-description">${template.description}</p>
+                    <h3 class="template-title">${escapeHTML(displayName)}</h3>
+                    <p class="template-description">${escapeHTML(template.description)}</p>
                 </div>
                 <div class="card-back">
                     <div class="command-display">
                         <h3>Installation Command</h3>
-                        <div class="command-code">${template.installCommand}</div>
+                        <div class="command-code">${escapeHTML(template.installCommand)}</div>
                         <div class="action-buttons">
                             <button class="view-files-btn" onclick="showTemplateDetails('${template.id}', '${template.name}', '${template.subtype}')">
                                 📁 View Files
@@ -1103,8 +1103,8 @@ class IndexPageManager {
                     <div class="framework-logo">
                         <i class="${frameworkData.icon} colored"></i>
                     </div>
-                    <h3 class="template-title">${displayName}</h3>
-                    <p class="template-description">${(languageData.description || '').substring(0, 120)}${(languageData.description || '').length > 120 ? '...' : ''}</p>
+                    <h3 class="template-title">${escapeHTML(displayName)}</h3>
+                    <p class="template-description">${escapeHTML((languageData.description || '').substring(0, 120))}${(languageData.description || '').length > 120 ? '...' : ''}</p>
                 </div>
                 <div class="card-back">
                     <div class="command-display">
@@ -1386,11 +1386,12 @@ function showCategoryFilters(componentType) {
     
     if (categories.length > 0) {
         categoryChips.innerHTML = categories.map((category, index) => {
-            const displayName = formatCategoryName(category);
+            const displayName = escapeHTML(formatCategoryName(category));
+            const safeCategory = escapeHTML(category.toLowerCase());
             // Only the first item (All) should be active by default
             const isActive = index === 0 ? 'active' : '';
             return `
-                <button class="filter-chip ${isActive}" data-category="${category.toLowerCase()}" onclick="setCategoryFilter('${category.toLowerCase()}')">
+                <button class="filter-chip ${isActive}" data-category="${safeCategory}" onclick="setCategoryFilter('${safeCategory}')">
                     ${displayName}
                 </button>
             `;

@@ -1,5 +1,19 @@
 // Shared Utility Functions
 
+/**
+ * Escape HTML special characters to prevent XSS when injecting into innerHTML.
+ * Use this for any user-controlled or external data before inserting into HTML.
+ */
+function escapeHTML(str) {
+    if (typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function copyToClipboard(text, message = 'Command copied to clipboard!') {
     navigator.clipboard.writeText(text).then(() => {
         showNotification(message, 'success');

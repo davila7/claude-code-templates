@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { collectionsApi } from '../lib/collections-api';
-import { TYPE_CONFIG, ICONS } from '../lib/icons';
+import { TYPE_CONFIG } from '../lib/icons';
+import TypeIcon from './TypeIcon';
 import type { Collection, CollectionItem } from '../lib/types';
 
 // ── Auth hook ────────────────────────────────────────────────────────────
@@ -364,11 +365,7 @@ export default function MyComponentsView() {
                           key={item.id}
                           className="group/item flex items-center gap-2 px-2 py-[5px] rounded-md text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors"
                         >
-                          <span
-                            className="w-3.5 h-3.5 shrink-0 [&>svg]:w-3.5 [&>svg]:h-3.5"
-                            style={{ color: config?.color ?? '#888' }}
-                            dangerouslySetInnerHTML={{ __html: ICONS[type] ?? '' }}
-                          />
+                          <TypeIcon type={type} size={14} className="w-3.5 h-3.5 shrink-0 [&>svg]:w-3.5 [&>svg]:h-3.5" />
                           <a
                             href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
                             className="truncate flex-1 hover:underline"
@@ -471,8 +468,9 @@ export default function MyComponentsView() {
                     <div
                       className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                       style={{ backgroundColor: config ? `${config.color}12` : '#ffffff08', color: config?.color ?? '#888' }}
-                      dangerouslySetInnerHTML={{ __html: ICONS[type] ?? '' }}
-                    />
+                    >
+                      <TypeIcon type={type} />
+                    </div>
                     <div className="min-w-0 flex-1">
                       <a
                         href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}

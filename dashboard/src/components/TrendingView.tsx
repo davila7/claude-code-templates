@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { TYPE_CONFIG, ICONS } from '../lib/icons';
+import { TYPE_CONFIG } from '../lib/icons';
 
 interface TrendingItem {
   id: string;
@@ -35,12 +35,7 @@ interface TrendingData {
   trending: Record<string, TrendingItem[]>;
 }
 
-function TypeIcon({ type, size = 16, className = '' }: { type: string; size?: number; className?: string }) {
-  const svg = ICONS[type];
-  if (!svg) return null;
-  const sized = svg.replace(/width="\d+"/, `width="${size}"`).replace(/height="\d+"/, `height="${size}"`);
-  return <span className={className} dangerouslySetInnerHTML={{ __html: sized }} />;
-}
+import TypeIcon from './TypeIcon';
 
 function formatName(name: string): string {
   return name.replace(/[-_]/g, ' ').split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');

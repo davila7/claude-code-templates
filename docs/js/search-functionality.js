@@ -438,13 +438,15 @@ function updateSearchResults(results, categoryMatches = new Set()) {
             skills: '🎨'
         };
         
-        const tags = Array.from(categoryMatches).map(category => {
+        filterTags.innerHTML = '';
+        Array.from(categoryMatches).forEach(category => {
             const icon = categoryIcons[category] || '';
             const name = category.charAt(0).toUpperCase() + category.slice(1);
-            return `<span class="search-category-tag">${icon} ${name}</span>`;
-        }).join('');
-        
-        filterTags.innerHTML = tags;
+            const span = document.createElement('span');
+            span.className = 'search-category-tag';
+            span.textContent = `${icon} ${name}`;
+            filterTags.appendChild(span);
+        });
     } else {
         filterTags.innerHTML = '';
     }
@@ -568,17 +570,17 @@ function generateComponentCard(component, category) {
     const escapedCommand = installCommand.replace(/'/g, "\\'");
     
     // Create category label (use "General" if no category)
-    const categoryName = component.category || 'general';
+    const categoryName = escapeHTML(component.category || 'general');
     const categoryLabel = `<div class="category-label">${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</div>`;
-    
+
     // Format component name
-    const formattedName = (component.name || '').split(/[-_]/).map(word => 
+    const formattedName = escapeHTML((component.name || '').split(/[-_]/).map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
-    
+    ).join(' '));
+
     // Get description
     const description = component.description || 'Component for enhanced development workflow';
-    const truncatedDescription = description.length > 80 ? description.substring(0, 80) + '...' : description;
+    const truncatedDescription = escapeHTML(description.length > 80 ? description.substring(0, 80) + '...' : description);
     
     return `
         <div class="template-card" data-type="${component.type}">
@@ -595,7 +597,7 @@ function generateComponentCard(component, category) {
                     <div class="command-display">
                         <h3>Installation Command</h3>
                         <div class="command-code-container">
-                            <div class="command-code">${installCommand}</div>
+                            <div class="command-code">${escapeHTML(installCommand)}</div>
                             <button class="copy-overlay-btn" onclick="copyToClipboard('${escapedCommand}'); event.stopPropagation();" title="Copy command">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
