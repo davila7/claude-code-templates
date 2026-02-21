@@ -25,9 +25,9 @@ vercel --prod                  # Deploy to production
 
 ## Security Guidelines
 
-### ⛔ CRITICAL: NEVER Hardcode Secrets
+### ⛔ CRITICAL: NEVER Hardcode Secrets or IDs
 
-**NEVER write API keys, tokens, or passwords in code.**
+**NEVER write API keys, tokens, passwords, project IDs, org IDs, or any identifier in code.** This includes Vercel project/org IDs, Supabase URLs, Discord IDs, database connection strings, and any other infrastructure identifier. ALL must go in `.env`.
 
 ```javascript
 // ❌ WRONG
