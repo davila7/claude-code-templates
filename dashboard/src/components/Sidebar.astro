@@ -1,0 +1,163 @@
+---
+import NavItem from './NavItem.astro';
+import { NAV_LINKS } from '../lib/constants';
+import { TYPE_CONFIG, ICONS } from '../lib/icons';
+import AuthButton from './AuthButton';
+import MyComponentsSidebarItem from './MyComponentsSidebarItem';
+
+const currentPath = Astro.url.pathname;
+
+function isActive(path: string): boolean {
+  if (path === '/') return currentPath === '/';
+  return currentPath.startsWith(path);
+}
+---
+
+<div class="flex flex-col h-full">
+  <!-- Logo -->
+  <div class="px-4 py-4">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/logo.png" alt="AI Templates" class="w-6 h-6 shrink-0" />
+      <span class="text-[13px] font-semibold text-text-primary tracking-tight">AI Templates</span>
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
+    <!-- Workplace section -->
+    <div class="px-2 py-2">
+      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Workplace</span>
+    </div>
+
+    <!-- My Components (React island) -->
+    <MyComponentsSidebarItem client:load isActive={isActive('/my-components')} />
+
+    <!-- Divider -->
+    <div class="my-3 mx-2 border-t border-border"></div>
+
+    <!-- Browse section -->
+    <div class="px-2 py-2">
+      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Browse</span>
+    </div>
+
+    {Object.entries(TYPE_CONFIG).map(([type, config]) => (
+      <a
+        href={`/${type}`}
+        data-nav-type={type}
+        class:list={[
+          'sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group',
+          isActive(`/${type}`)
+            ? 'bg-surface-3 text-text-primary font-medium'
+            : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
+        ]}
+      >
+        <span
+          class:list={[
+            'sidebar-nav-icon w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4',
+            isActive(`/${type}`) ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
+          ]}
+          set:html={ICONS[type]}
+        />
+        <span class="truncate">{config.label}</span>
+        <span class="sidebar-nav-count ml-auto text-[11px] tabular-nums text-text-tertiary" data-count-type={type}></span>
+      </a>
+    ))}
+
+    <!-- Divider -->
+    <div class="my-3 mx-2 border-t border-border"></div>
+
+    <!-- Resources -->
+    <div class="px-2 py-2">
+      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Resources</span>
+    </div>
+
+    <a href="/trending"
+      class:list={[
+        'flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group',
+        isActive('/trending')
+          ? 'bg-surface-3 text-text-primary font-medium'
+          : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
+      ]}>
+      <svg class:list={[
+        'w-4 h-4 shrink-0',
+        isActive('/trending') ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
+      ]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
+      <span>Trending</span>
+    </a>
+
+    <a href={NAV_LINKS.blog} target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
+      <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5a2.5 2.5 0 010-5H20" />
+      </svg>
+      <span>Blog</span>
+      <svg class="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+    </a>
+
+    <a href={NAV_LINKS.docs} target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
+      <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
+      </svg>
+      <span>Docs</span>
+      <svg class="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+    </a>
+
+    <a href={NAV_LINKS.github} target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
+      <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+      </svg>
+      <span>GitHub</span>
+      <svg class="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+    </a>
+  </nav>
+
+  <!-- Bottom -->
+  <div class="px-2 py-3 border-t border-border">
+    <AuthButton client:load />
+  </div>
+</div>
+
+<script>
+  function updateSidebarActive() {
+    const path = window.location.pathname.replace(/^\//, '').split('/')[0] || 'skills';
+    document.querySelectorAll('.sidebar-nav-link').forEach((link) => {
+      const type = (link as HTMLElement).dataset.navType;
+      const icon = link.querySelector('.sidebar-nav-icon');
+      if (type === path) {
+        link.classList.remove('text-text-secondary', 'hover:text-text-primary', 'hover:bg-surface-2');
+        link.classList.add('bg-surface-3', 'text-text-primary', 'font-medium');
+        icon?.classList.remove('text-text-tertiary', 'group-hover:text-text-secondary');
+        icon?.classList.add('text-text-primary');
+      } else {
+        link.classList.remove('bg-surface-3', 'text-text-primary', 'font-medium');
+        link.classList.add('text-text-secondary', 'hover:text-text-primary', 'hover:bg-surface-2');
+        icon?.classList.remove('text-text-primary');
+        icon?.classList.add('text-text-tertiary', 'group-hover:text-text-secondary');
+      }
+    });
+  }
+
+  // Patch pushState to emit events for sidebar sync
+  const origPushState = history.pushState.bind(history);
+  history.pushState = function(...args: Parameters<typeof origPushState>) {
+    origPushState(...args);
+    updateSidebarActive();
+  };
+
+  window.addEventListener('popstate', updateSidebarActive);
+
+  // Listen for component counts from React grid
+  window.addEventListener('component-counts', ((e: CustomEvent) => {
+    const counts = e.detail as Record<string, number>;
+    document.querySelectorAll('.sidebar-nav-count').forEach((el) => {
+      const type = (el as HTMLElement).dataset.countType;
+      if (type && counts[type]) {
+        el.textContent = String(counts[type]);
+      }
+    });
+  }) as EventListener);
+</script>

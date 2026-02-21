@@ -1,0 +1,44 @@
+---
+import { TYPE_CONFIG } from '../lib/icons';
+
+interface Props {
+  activeType: string;
+  counts?: Record<string, number>;
+}
+
+const { activeType, counts = {} } = Astro.props;
+---
+
+<nav class="flex items-center gap-1 px-6 py-2 border-b border-border overflow-x-auto">
+  {Object.entries(TYPE_CONFIG).map(([type, config]) => {
+    const isActive = type === activeType;
+    const count = counts[type] ?? 0;
+    return (
+      <a
+        href={`/${type}`}
+        class:list={[
+          'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm whitespace-nowrap transition-colors',
+          isActive
+            ? 'bg-primary-500/15 text-primary-400 font-medium'
+            : 'text-text-secondary hover:text-text-primary hover:bg-surface-3',
+        ]}
+        data-astro-prefetch
+      >
+        <span>{config.icon}</span>
+        <span>{config.label}</span>
+        {count > 0 && (
+          <span
+            class:list={[
+              'text-xs px-1.5 py-0.5 rounded-full',
+              isActive
+                ? 'bg-primary-500/20 text-primary-400'
+                : 'bg-surface-3 text-text-tertiary',
+            ]}
+          >
+            {count}
+          </span>
+        )}
+      </a>
+    );
+  })}
+</nav>

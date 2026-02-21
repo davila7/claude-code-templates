@@ -1,0 +1,15 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import TrendingView from '../components/TrendingView.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+export const prerender = true;
+---
+
+<DashboardLayout title="Trending - Claude Code Templates">
+  <TopBar />
+  <TrendingView client:load />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
