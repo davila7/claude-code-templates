@@ -3,11 +3,16 @@ set -euo pipefail
 
 # Security Manifest:
 #   Environment variables: none
-#   External endpoints: https://ru7m5svay1.execute-api.eu-central-1.amazonaws.com/prod/mcp
+#   External endpoint host: ru7m5svay1.execute-api.eu-central-1.amazonaws.com
+#   External endpoint path: /prod/mcp
 #   Local files accessed: none
 #   Data sent: league name, matchweek number, team name filters (no PII)
+#   Software installation: none
 
-MCP_ENDPOINT="https://ru7m5svay1.execute-api.eu-central-1.amazonaws.com/prod/mcp"
+MCP_HOST="ru7m5svay1.execute-api.eu-central-1.amazonaws.com"
+MCP_PATH="/prod/mcp"
+MCP_SCHEME="https"
+MCP_ENDPOINT="${MCP_SCHEME}://${MCP_HOST}${MCP_PATH}"
 
 usage() {
     cat <<'EOF'
@@ -35,9 +40,20 @@ EOF
 # Call the MCP endpoint with a JSON-RPC payload
 mcp_call() {
     local payload="$1"
-    curl -s -X POST "$MCP_ENDPOINT" \
+    curl --fail --show-error --silent --max-time 20 -X POST "$MCP_ENDPOINT" \
         -H "Content-Type: application/json" \
         -d "$payload"
+}
+
+# Restrict values to expected characters to avoid malformed JSON arguments.
+validate_slug() {
+    local value="$1"
+    [[ "$value" =~ ^[a-zA-Z0-9_-]+$ ]]
+}
+
+validate_team() {
+    local value="$1"
+    [[ "$value" =~ ^[a-zA-Z0-9._-]+$ ]]
 }
 
 # List available tools
@@ -67,6 +83,10 @@ cmd_predictions() {
     fi
 
     league="$1"
+    if ! validate_slug "$league"; then
+        echo "Error: invalid league value '$league'" >&2
+        exit 1
+    fi
     shift
 
     # Check if next arg is a matchweek number
@@ -81,11 +101,19 @@ cmd_predictions() {
             --home)
                 shift
                 home_team="${1:-}"
+                if [[ -z "$home_team" ]] || ! validate_team "$home_team"; then
+                    echo "Error: invalid --home team value" >&2
+                    exit 1
+                fi
                 shift
                 ;;
             --away)
                 shift
                 away_team="${1:-}"
+                if [[ -z "$away_team" ]] || ! validate_team "$away_team"; then
+                    echo "Error: invalid --away team value" >&2
+                    exit 1
+                fi
                 shift
                 ;;
             *)
@@ -135,9 +163,7 @@ cmd_predictions() {
                 (.predictions[] | "  \(.type): \(.value)"),
                 (.key_players[] | "  Key: \(.player_name) - \(.reason)"),
                 ""
-            ),
-            "Download FootballBin: \(.ios_link)",
-            "Android: \(.android_link)"
+            )
         '
     else
         echo "$response"

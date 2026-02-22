@@ -57,7 +57,7 @@ jobs:
           retention-days: 30
 
       - name: Comment PR with Results
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && always()
         uses: actions/github-script@v8
         with:
           script: |
@@ -121,4 +121,3 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
-
