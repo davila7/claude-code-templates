@@ -1,7 +1,6 @@
 ---
 name: footballbin-predictions
 description: Get AI-powered match predictions for Premier League and Champions League including scores, next goal, and corners.
-homepage: https://apps.apple.com/app/footballbin/id6757111871
 metadata: {"clawdbot":{"emoji":"⚽","requires":{"bins":["curl","jq"]},"files":["scripts/*"]}}
 ---
 
@@ -9,30 +8,30 @@ metadata: {"clawdbot":{"emoji":"⚽","requires":{"bins":["curl","jq"]},"files":[
 
 Get AI-powered predictions for Premier League and Champions League matches via the FootballBin MCP API.
 
-## Quick Start
+## Usage
 
 Run `scripts/footballbin.sh` with the following commands:
 
 ### Get current matchweek predictions
-```bash
+```
 scripts/footballbin.sh predictions premier_league
 scripts/footballbin.sh predictions champions_league
 ```
 
 ### Get specific matchweek
-```bash
+```
 scripts/footballbin.sh predictions premier_league 27
 ```
 
 ### Filter by team
-```bash
+```
 scripts/footballbin.sh predictions premier_league --home arsenal
 scripts/footballbin.sh predictions premier_league --away liverpool
 scripts/footballbin.sh predictions premier_league --home chelsea --away wolves
 ```
 
 ### List available tools
-```bash
+```
 scripts/footballbin.sh tools
 ```
 
@@ -58,18 +57,20 @@ Each match prediction includes:
 
 ## External Endpoints
 
-| URL | Data Sent | Purpose |
-|-----|-----------|---------|
-| `https://ru7m5svay1.execute-api.eu-central-1.amazonaws.com/prod/mcp` | League, matchweek, team filters | Fetch match predictions |
+- Host: `ru7m5svay1.execute-api.eu-central-1.amazonaws.com`
+- Path: `/prod/mcp`
+- Method: `POST` (JSON-RPC)
+- Data sent: league, optional matchweek, optional team filters
 
 ## Security & Privacy
 
+- This skill does not install software.
+- This skill does not execute downloaded scripts.
 - No API key required (public endpoint, rate-limited)
 - No user data collected or stored
 - Read-only: only fetches prediction data
 - No secrets or environment variables needed
 
 ## Links
-
-- iOS App: https://apps.apple.com/app/footballbin/id6757111871
-- Android App: https://play.google.com/store/apps/details?id=com.achan.footballbinandroid
+iOS App: https://apps.apple.com/app/footballbin/id6757111871
+Android App: https://play.google.com/store/apps/details?id=com.achan.footballbinandroid
