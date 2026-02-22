@@ -1,24 +1,39 @@
 import type { Collection, CollectionItem } from './types';
 
 const API_BASE = '';
+const MAX_RETRIES = 2;
 
 async function apiFetch<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    },
-  });
+  let lastError: Error | null = null;
+  const attempts = options.method && options.method !== 'GET' ? 1 : MAX_RETRIES + 1;
 
-  const data = await res.json();
+  for (let i = 0; i < attempts; i++) {
+    try {
+      if (i > 0) await new Promise((r) => setTimeout(r, 500 * i));
 
-  if (!res.ok) {
-    throw new Error(data.error ?? `Request failed (${res.status})`);
+      const res = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          ...options.headers,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error ?? `Request failed (${res.status})`);
+      }
+
+      return data;
+    } catch (err) {
+      lastError = err as Error;
+      if (i < attempts - 1) continue;
+    }
   }
 
-  return data;
+  throw lastError;
 }
 
 export const collectionsApi = {

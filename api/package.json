@@ -13,6 +13,7 @@
     "@vercel/postgres": "^0.10.0",
     "@supabase/supabase-js": "^2.45.0",
     "@neondatabase/serverless": "^0.10.1",
+    "@clerk/backend": "^1.0.0",
     "axios": "^1.6.2",
     "discord-interactions": "^3.4.0"
   },
