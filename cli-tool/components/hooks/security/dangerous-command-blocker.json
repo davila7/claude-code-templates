@@ -3,7 +3,7 @@
   "supportingFiles": [
     {
       "source": "dangerous-command-blocker.py",
-      "destination": ".claude/scripts/dangerous-command-blocker.py",
+      "destination": ".claude/hooks/dangerous-command-blocker.py",
       "executable": true
     }
   ],
@@ -14,7 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/dangerous-command-blocker.py 2>&1"
+            "command": "python3 .claude/hooks/dangerous-command-blocker.py"
           }
         ]
       }
