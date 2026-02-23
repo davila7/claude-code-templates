@@ -24,6 +24,8 @@
 
 ---
 
+> **🧪 NEW: Dashboard Beta** — Try our new dashboard at **[app.aitmpl.com](https://app.aitmpl.com)** to manage your collections, track installations, and explore components with a modern UI. Currently in beta — feedback welcome!
+
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
 
 **Ready-to-use configurations for Anthropic's Claude Code.** A comprehensive collection of AI agents, custom commands, settings, hooks, external integrations (MCPs), and project templates to enhance your development workflow.
