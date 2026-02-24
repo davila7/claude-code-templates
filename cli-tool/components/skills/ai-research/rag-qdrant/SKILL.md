@@ -86,14 +86,14 @@ client.upsert(
 )
 
 # Search with filtering
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=[0.15, 0.25, ...],
+    query=[0.15, 0.25, ...],
     query_filter={
         "must": [{"key": "category", "match": {"value": "tech"}}]
     },
     limit=10
-)
+).points
 
 for point in results:
     print(f"ID: {point.id}, Score: {point.score}, Payload: {point.payload}")
@@ -166,13 +166,13 @@ print(f"Points: {info.points_count}, Vectors: {info.vectors_count}")
 
 ```python
 # Simple nearest neighbor search
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=[0.1, 0.2, ...],
+    query=[0.1, 0.2, ...],
     limit=10,
     with_payload=True,
     with_vectors=False  # Don't return vectors (faster)
-)
+).points
 ```
 
 ### Filtered search
@@ -181,9 +181,9 @@ results = client.search(
 from qdrant_client.models import Filter, FieldCondition, MatchValue, Range
 
 # Complex filtering
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query_embedding,
+    query=query_embedding,
     query_filter=Filter(
         must=[
             FieldCondition(key="category", match=MatchValue(value="tech")),
@@ -194,12 +194,12 @@ results = client.search(
         ]
     ),
     limit=10
-)
+).points
 
 # Shorthand filter syntax
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query_embedding,
+    query=query_embedding,
     query_filter={
         "must": [
             {"key": "category", "match": {"value": "tech"}},
@@ -207,21 +207,21 @@ results = client.search(
         ]
     },
     limit=10
-)
+).points
 ```
 
 ### Batch search
 
 ```python
-from qdrant_client.models import SearchRequest
+from qdrant_client.models import QueryRequest
 
 # Multiple queries in one request
-results = client.search_batch(
+results = client.query_batch_points(
     collection_name="documents",
     requests=[
-        SearchRequest(vector=[0.1, ...], limit=5),
-        SearchRequest(vector=[0.2, ...], limit=5, filter={"must": [...]}),
-        SearchRequest(vector=[0.3, ...], limit=10)
+        QueryRequest(query=[0.1, ...], limit=5),
+        QueryRequest(query=[0.2, ...], limit=5, filter={"must": [...]}),
+        QueryRequest(query=[0.3, ...], limit=10)
     ]
 )
 ```
@@ -264,11 +264,11 @@ client.upsert(collection_name="knowledge_base", points=points)
 # RAG retrieval
 def retrieve(query: str, top_k: int = 5) -> list[dict]:
     query_vector = encoder.encode(query).tolist()
-    results = client.search(
+    results = client.query_points(
         collection_name="knowledge_base",
-        query_vector=query_vector,
+        query=query_vector,
         limit=top_k
-    )
+    ).points
     return [{"text": r.payload["text"], "score": r.score} for r in results]
 
 # Use in RAG pipeline
@@ -279,11 +279,16 @@ prompt = f"Context: {context}\n\nQuestion: What is Python?"
 ### With LangChain
 
 ```python
-from langchain_community.vectorstores import Qdrant
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_qdrant import QdrantVectorStore from langchain_community.embeddings import FastEmbedEmbeddings
 
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-vectorstore = Qdrant.from_documents(documents, embeddings, url="http://localhost:6333", collection_name="docs")
+embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+vectorstore = QdrantVectorStore(
+    client = client,
+    collection_name = collection_name,
+    embedding = embeddings
+)
+# to add document: 
+# vectorstore.add_documents(documents=chunks)
 retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 ```
 
@@ -304,14 +309,20 @@ query_engine = index.as_query_engine()
 ### Named vectors (different embedding models)
 
 ```python
-from qdrant_client.models import VectorParams, Distance
+from qdrant_client import QdrantClient, models
 
 # Collection with multiple vector types
 client.create_collection(
-    collection_name="hybrid_search",
-    vectors_config={
-        "dense": VectorParams(size=384, distance=Distance.COSINE),
-        "sparse": VectorParams(size=30000, distance=Distance.DOT)
+    collection_name = "hybrid_search",
+    vectors_config = {
+        "dense": models.VectorParams(size = 384,
+                                     distance = models.Distance.COSINE
+                                     )},
+    sparse_vectors_config={
+        "sparse": models.SparseVectorParams(
+            index = models.SparseIndexParams(on_disk=False),
+            modifier = models.Modifier.IDF,
+        )
     }
 )
 
@@ -331,11 +342,12 @@ client.upsert(
 )
 
 # Search specific vector
-results = client.search(
+results = client.query_points(
     collection_name="hybrid_search",
-    query_vector=("dense", query_dense),  # Specify which vector
+    query=query_dense,
+    using="dense",  # Specify which vector to use
     limit=10
-)
+).points
 ```
 
 ### Sparse vectors (BM25, SPLADE)
@@ -376,12 +388,12 @@ client.create_collection(
 )
 
 # Search with rescoring
-results = client.search(
+results = client.query_points(
     collection_name="quantized",
-    query_vector=query,
+    query=query,
     search_params={"quantization": {"rescore": True}},  # Rescore top results
     limit=10
-)
+).points
 ```
 
 ## Payload indexing
