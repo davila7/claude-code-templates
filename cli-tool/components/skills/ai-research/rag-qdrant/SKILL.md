@@ -279,7 +279,8 @@ prompt = f"Context: {context}\n\nQuestion: What is Python?"
 ### With LangChain
 
 ```python
-from langchain_qdrant import QdrantVectorStore from langchain_community.embeddings import FastEmbedEmbeddings
+from langchain_qdrant import QdrantVectorStore
+from langchain_community.embeddings import FastEmbedEmbeddings
 
 embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 vectorstore = QdrantVectorStore(
