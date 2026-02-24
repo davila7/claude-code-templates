@@ -33,9 +33,15 @@ Based on the user's request, determine what to deploy:
 
 If ambiguous, deploy both.
 
+## Skipping Pre-Verified Steps
+
+When the caller's prompt states that certain checks were already completed (e.g., "API tests already passed", "git is clean and pushed", "catalog already regenerated"), **trust those assertions and skip the corresponding steps**. Mark skipped steps with `⏭️ Pre-verified` in your output instead of re-running them.
+
+Steps 1-4 below are instant (~1s each) and always deployment-critical — always run them. Step 5 (API tests) takes longer and is the primary candidate for skipping when pre-verified.
+
 ## Pre-Deploy Checklist
 
-Run ALL of these checks before deploying. If any critical check fails, STOP and report the issue.
+Run these checks before deploying. If any critical check fails, STOP and report the issue.
 
 ### 1. Verify Vercel authentication
 
