@@ -42,9 +42,13 @@
                 // In a real scenario, this would write to the server filesystem
                 console.log(`Would save ${category}.json with ${processedComponents.length} components`);
                 
-                // For browser simulation, store in localStorage
+                // Try to cache in localStorage (may fail if quota exceeded)
                 if (typeof localStorage !== 'undefined') {
-                    localStorage.setItem(`searchData_${category}`, JSON.stringify(processedComponents));
+                    try {
+                        localStorage.setItem(`searchData_${category}`, JSON.stringify(processedComponents));
+                    } catch (e) {
+                        // Quota exceeded — in-memory cache is sufficient
+                    }
                 }
                 
                 // Also store in a global variable for immediate use

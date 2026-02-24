@@ -715,9 +715,9 @@
     <script src="js/generate-search-data.js"></script>
     <script src="js/search-functionality.js"></script>
     <script src="js/event-tracker.js"></script>
-    <script type="module">
-        import { injectSpeedInsights } from 'https://unpkg.com/@vercel/speed-insights@1/dist/index.js';
-        injectSpeedInsights();
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
