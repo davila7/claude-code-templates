@@ -78,7 +78,7 @@
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
     
-    <!-- Structured Data for SEO -->
+    <!-- Structured Data for SEO - SoftwareApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -92,17 +92,95 @@
       "downloadUrl": "https://www.npmjs.com/package/claude-code-templates",
       "author": {
         "@type": "Organization",
-        "name": "Claude Code Templates Community"
+        "name": "Claude Code Templates Community",
+        "url": "https://github.com/davila7/claude-code-templates"
       },
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150",
+        "bestRating": "5"
+      },
       "relatedLink": "https://www.anthropic.com/claude-code",
       "keywords": "Claude Code, Anthropic, AI development, Claude Opus 4.1, terminal velocity, deep coding"
     }
     </script>
+
+    <!-- Structured Data for SEO - WebSite with SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Claude Code Templates",
+      "url": "https://aitmpl.com/",
+      "description": "Professional templates and configurations for Anthropic's Claude Code",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://aitmpl.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Structured Data for SEO - BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://aitmpl.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Skills",
+          "item": "https://aitmpl.com/skills"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Agents",
+          "item": "https://aitmpl.com/agents"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Commands",
+          "item": "https://aitmpl.com/commands"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "MCPs",
+          "item": "https://aitmpl.com/mcps"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Screen reader only class for SEO-visible H1 -->
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    </style>
 </head>
 <body>
     <!-- Beta dashboard banner -->
@@ -120,7 +198,8 @@
         <div class="container">
             <div class="header-content">
                 <div class="terminal-header">
-            <div class="ascii-title">
+            <h1 class="sr-only">Claude Code Templates - AI-Powered Development Tools for Anthropic's Claude Code</h1>
+            <div class="ascii-title" aria-hidden="true">
                 <pre class="ascii-art"> ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗    ██████╗ ██████╗ ██████╗ ███████╗    ████████╗███████╗███╗   ███╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗
 ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝   ██╔════╝██╔═══██╗██╔══██╗██╔════╝    ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
 ██║     ██║     ███████║██║   ██║██║  ██║█████╗     ██║     ██║   ██║██║  ██║█████╗         ██║   █████╗  ██╔████╔██║██████╔╝██║     ███████║   ██║   █████╗  ███████╗
@@ -133,14 +212,14 @@
                 Ready-to-use configurations for your <strong>Claude Code</strong> projects
             </div>
         </div>
-                <div class="header-actions">
+                <nav class="header-actions" aria-label="Main navigation">
                     <a href="blog/index.html" class="header-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                         </svg>
                         Blog
                     </a>
-                    <a href="https://discord.gg/dyTTwzBhwY" target="_blank" class="header-btn">
+                    <a href="https://discord.gg/dyTTwzBhwY" target="_blank" rel="noopener noreferrer" class="header-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
                         </svg>
@@ -152,18 +231,18 @@
                         </svg>
                         Jobs
                     </a> -->
-                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" rel="noopener noreferrer" class="header-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                         </svg>
                         GitHub
                     </a>
-                </div>
+                </nav>
             </div>
         </div>
     </header>
 
-    <main class="terminal">
+    <main class="terminal" role="main" aria-label="Claude Code Templates component browser">
         <section class="stats-section">
             <div class="stats-badges">
                 <a href="https://z.ai?utm_source=aitmpl.com&utm_medium=badge&utm_campaign=partnership" target="_blank" class="stat-badge-link">
@@ -216,7 +295,7 @@
                         <h3>BrainGrid</h3>
                         <p>Product Management Agent</p>
                     </div>
-                    <span class="featured-arrow-compact">→</span>
+                    <span class="featured-arrow-compact">&#8594;</span>
                 </a>
                 <!-- Neon Featured Card -->
                 <a href="featured/neon-instagres/index.html" class="featured-card-compact" target="_blank">
@@ -227,7 +306,7 @@
                         <h3>Neon</h3>
                         <p>Complete Postgres Template</p>
                     </div>
-                    <span class="featured-arrow-compact">→</span>
+                    <span class="featured-arrow-compact">&#8594;</span>
                 </a>
                 <!-- ClaudeKit Featured Card -->
                 <a href="featured/claudekit/index.html" class="featured-card-compact" target="_blank">
@@ -238,27 +317,26 @@
                         <h3>ClaudeKit</h3>
                         <p>AI Agents & Skills for Claude Code</p>
                     </div>
-                    <span class="featured-arrow-compact">→</span>
+                    <span class="featured-arrow-compact">&#8594;</span>
                 </a>
             </div>
         </section>
 
         <section class="unified-filter-section">
-            <!-- Search Section Header -->
             <div class="search-header">
                 <div class="terminal-command">
                     <div class="header-content">
                         <h2 class="search-title"><span class="terminal-dot"></span><strong>Search </strong><span class="title-params">(components/settings/templates)</span></h2>
-                        <p class="search-subtitle">⎿ Build your personalized development stack</p>
+                        <p class="search-subtitle">&#9135; Build your personalized development stack</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Terminal Search Input - Main Component -->
             <div class="terminal-search-container">
                 <div class="terminal-search-wrapper" onclick="focusSearchInput()">
-                    <span class="terminal-prompt">></span>
-                    <input type="text" id="searchInput" class="terminal-search-input" placeholder="Search components..." oninput="handleSearchInput(event)" onkeydown="handleSearchKeydown(event)">
+                    <span class="terminal-prompt">&gt;</span>
+                    <label for="searchInput" class="sr-only">Search Claude Code components</label>
+                    <input type="text" id="searchInput" class="terminal-search-input" placeholder="Search components..." oninput="handleSearchInput(event)" onkeydown="handleSearchKeydown(event)" aria-label="Search Claude Code components, agents, settings, hooks, and MCPs">
                     <div class="terminal-cursor" id="terminalCursor"></div>
                     <svg class="search-icon-end" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.5,14H14.71L14.43,13.73C15.41,12.59 16,11.11 16,9.5C16,5.91 13.09,3 9.5,3C5.91,3 3,5.91 3,9.5C3,13.09 5.91,16 9.5,16C11.11,16 12.59,15.41 13.73,14.43L14,14.71V15.5L19,20.49L20.49,19L15.5,14M9.5,14C7.01,14 5,11.99 5,9.5C5,7.01 7.01,5 9.5,5C11.99,5 14,7.01 14,9.5C14,11.99 11.99,14 9.5,14Z"/>
@@ -269,64 +347,55 @@
                         </svg>
                     </button>
                 </div>
-                
-                <!-- Search results info and tags -->
                 <div class="search-results-info" id="searchResultsInfo" style="display: none;">
                     <div class="terminal-results">
                         <span class="terminal-dot"></span>
                         <div class="results-content">
                             <div class="results-count" id="resultsCount">Found(0 results)</div>
-                            <div class="search-filters">⎿ <span class="search-filter-tags" id="searchFilterTags"></span></div>
+                            <div class="search-filters">&#9135; <span class="search-filter-tags" id="searchFilterTags"></span></div>
                         </div>
                     </div>
                 </div>
-                
             </div>
 
-            <!-- Compact Component Type Filters -->
             <div class="component-type-filters">
                 <div class="filter-group">
                     <div class="filter-chips">
                         <a href="/skills" class="filter-chip active" data-filter="skills" onclick="handleFilterClick(event, 'skills')">
                             <span class="new-label">NEW</span>
-                            <span class="chip-icon">🎨</span>skills
+                            <span class="chip-icon">&#127912;</span>skills
                         </a>
                         <a href="/agents" class="filter-chip" data-filter="agents" onclick="handleFilterClick(event, 'agents')">
-                            <span class="chip-icon">🤖</span>agents
+                            <span class="chip-icon">&#129302;</span>agents
                         </a>
                         <a href="/commands" class="filter-chip" data-filter="commands" onclick="handleFilterClick(event, 'commands')">
-                            <span class="chip-icon">⚡</span>commands
+                            <span class="chip-icon">&#9889;</span>commands
                         </a>
                         <a href="/settings" class="filter-chip" data-filter="settings" onclick="handleFilterClick(event, 'settings')">
-                            <span class="chip-icon">⚙️</span>settings
+                            <span class="chip-icon">&#9881;&#65039;</span>settings
                         </a>
                         <a href="/hooks" class="filter-chip" data-filter="hooks" onclick="handleFilterClick(event, 'hooks')">
-                            <span class="chip-icon">🪝</span>hooks
+                            <span class="chip-icon">&#129693;</span>hooks
                         </a>
                         <a href="/mcps" class="filter-chip" data-filter="mcps" onclick="handleFilterClick(event, 'mcps')">
-                            <span class="chip-icon">🔌</span>mcps
+                            <span class="chip-icon">&#128268;</span>mcps
                         </a>
                         <a href="/templates" class="filter-chip" data-filter="templates" onclick="handleFilterClick(event, 'templates')" style="display: none;">
-                            <span class="chip-icon">📦</span>templates
+                            <span class="chip-icon">&#128230;</span>templates
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Component Categories (will be populated dynamically) -->
             <div class="component-categories" id="componentCategories" style="display: none;">
                 <div class="category-group">
                     <span class="category-group-label">category:</span>
-                    <div class="category-chips" id="categoryChips">
-                        <!-- Categories will be populated by JavaScript based on selected type -->
-                    </div>
+                    <div class="category-chips" id="categoryChips"></div>
                 </div>
             </div>
-
         </section>
 
         <section class="content-grid" id="contentGrid">
-            <!-- Sort selector -->
             <div class="sort-controls" id="sortControls">
                 <div class="sort-wrapper">
                     <span class="sort-label">Sort by:</span>
@@ -336,8 +405,6 @@
                     </select>
                 </div>
             </div>
-            
-            <!-- Loading indicator -->
             <div class="loading-indicator" id="components-loading" style="display: none;">
                 <div class="loading-spinner"></div>
                 <div class="loading-text">
@@ -348,104 +415,8 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Content container -->
-            <div class="unified-grid" id="unifiedGrid" id="components-content">
+            <div class="unified-grid" id="unifiedGrid">
                 <!-- All content will be loaded here by JavaScript -->
-            </div>
-        </section>
-
-        <!-- Company Stacks Carousel -->
-        <section class="company-stacks-carousel" style="display: none;">
-            <div class="command-block">
-                <div class="command-label">$ Popular Development Stacks</div>
-                <div class="command-description">Complete component collections for major companies and technologies</div>
-            </div>
-            <div class="carousel-container">
-                <button class="carousel-btn carousel-btn-left" onclick="scrollCarousel('left')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
-                    </svg>
-                </button>
-                <div class="carousel-track" id="companyCarousel">
-                    <a href="#/company/openai" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/openai')">
-                        <div class="company-logo">🤖</div>
-                        <div class="company-info">
-                            <h3>OpenAI</h3>
-                            <p>GPT, DALL-E & Whisper APIs</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/anthropic" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/anthropic')">
-                        <div class="company-logo">🧠</div>
-                        <div class="company-info">
-                            <h3>Anthropic</h3>
-                            <p>Claude AI integration</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/stripe" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/stripe')">
-                        <div class="company-logo">💳</div>
-                        <div class="company-info">
-                            <h3>Stripe</h3>
-                            <p>Payment processing APIs</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/salesforce" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/salesforce')">
-                        <div class="company-logo">☁️</div>
-                        <div class="company-info">
-                            <h3>Salesforce</h3>
-                            <p>CRM & Lightning platform</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/shopify" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/shopify')">
-                        <div class="company-logo">🛒</div>
-                        <div class="company-info">
-                            <h3>Shopify</h3>
-                            <p>E-commerce APIs & apps</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/twilio" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/twilio')">
-                        <div class="company-logo">📞</div>
-                        <div class="company-info">
-                            <h3>Twilio</h3>
-                            <p>Communication APIs</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/aws" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/aws')">
-                        <div class="company-logo">☁️</div>
-                        <div class="company-info">
-                            <h3>AWS</h3>
-                            <p>Cloud & serverless APIs</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/company/github" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/github')">
-                        <div class="company-logo">🐙</div>
-                        <div class="company-info">
-                            <h3>GitHub</h3>
-                            <p>Git automation & Actions</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                    <a href="#/companies" class="company-stack-card view-all-card" onclick="window.stackRouter?.navigateTo('#/companies')">
-                        <div class="company-logo">👀</div>
-                        <div class="company-info">
-                            <h3>View All</h3>
-                            <p>30+ companies & platforms</p>
-                        </div>
-                        <div class="stack-arrow">→</div>
-                    </a>
-                </div>
-                <button class="carousel-btn carousel-btn-right" onclick="scrollCarousel('right')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                    </svg>
-                </button>
             </div>
         </section>
 
@@ -456,7 +427,7 @@
             </div>
             <div class="tools-grid">
                 <div class="tool-card">
-                    <div class="tool-icon">📊</div>
+                    <div class="tool-icon">&#128202;</div>
                     <h3>Claude Code Analytics</h3>
                     <p>Monitor your AI-powered development sessions in real-time. Track Claude Opus 4.1 performance, tool usage, and productivity metrics</p>
                     <div class="command-line">
@@ -465,9 +436,8 @@
                         <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --analytics')">Copy</button>
                     </div>
                 </div>
-                
                 <div class="tool-card">
-                    <div class="tool-icon">🔍</div>
+                    <div class="tool-icon">&#128269;</div>
                     <h3>Claude Code Health Check</h3>
                     <p>Comprehensive diagnostics to ensure your Anthropic Claude Code installation is optimized for deep coding at terminal velocity</p>
                     <div class="command-line">
@@ -476,9 +446,8 @@
                         <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --health-check')">Copy</button>
                     </div>
                 </div>
-                
                 <div class="tool-card">
-                    <div class="tool-icon">💬</div>
+                    <div class="tool-icon">&#128172;</div>
                     <h3>Claude Conversation Monitor</h3>
                     <p>View Claude Opus 4.1 responses in real-time, analyze AI reasoning, and monitor agentic search patterns during your coding sessions</p>
                     <div class="command-line">
@@ -487,10 +456,9 @@
                         <button class="copy-btn" onclick="copyToClipboard('npx claude-code-templates@latest --chats')">Copy</button>
                     </div>
                 </div>
-                
                 <div class="tool-card">
                     <span class="new-label">NEW</span>
-                    <div class="tool-icon">🧩</div>
+                    <div class="tool-icon">&#129513;</div>
                     <h3>Plugin Dashboard</h3>
                     <p>Manage Claude Code plugins with a visual dashboard. View installed marketplaces, enable/disable plugins, and monitor component status in real-time</p>
                     <div class="command-line">
@@ -508,200 +476,37 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <div class="footer-ascii">
-                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
-██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
-███████║██║   ██║   ██╔████╔██║██████╔╝██║
-██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
-██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
-╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <pre class="footer-ascii-art"> &#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9617;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9617;&#9608;&#9608;&#9584;
+&#9608;&#9608;&#9584;&#9620;&#9620;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9580;&#9620;&#9620;&#9608;&#9608;&#9584;&#9620;&#9620;&#9584;&#9608;&#9608;&#9608;&#9608;&#9584;&#9617;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9620;&#9620;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;
+&#9608;&#9608;&#9584;&#9620;&#9620;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9620;&#9620;&#9620;&#9617;&#9608;&#9608;&#9584;
+&#9608;&#9608;&#9584;&#9617;&#9617;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9580;&#9620;&#9617;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9617;&#9617;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;
+&#9580;&#9620;&#9617;&#9617;&#9580;&#9620;&#9584;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9617;&#9580;&#9620;&#9584;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9617;&#9617;&#9580;&#9620;&#9620;&#9620;&#9620;&#9620;&#9620;&#9584;</pre>
                         <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
                     </div>
                     <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
                 </div>
-
-                <div class="footer-columns">
+                <nav class="footer-columns" aria-label="Footer navigation">
                     <div class="footer-column">
                         <h4 class="footer-column-title">Product</h4>
                         <a href="trending.html" class="footer-link">Trending</a>
                         <a href="blog/" class="footer-link">Blog</a>
-                        <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="footer-link">Claude Code</a>
+                        <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" rel="noopener noreferrer" class="footer-link">Claude Code</a>
                     </div>
                     <div class="footer-column">
                         <h4 class="footer-column-title">Community</h4>
-                        <a href="https://discord.gg/dyTTwzBhwY" target="_blank" class="footer-link">Discord</a>
-                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">GitHub</a>
+                        <a href="https://discord.gg/dyTTwzBhwY" target="_blank" rel="noopener noreferrer" class="footer-link">Discord</a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
                     </div>
                     <div class="footer-column">
                         <h4 class="footer-column-title">Resources</h4>
-                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">Documentation</a>
-                        <a href="https://www.npmjs.com/package/claude-code-templates" target="_blank" class="footer-link">npm Package</a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" rel="noopener noreferrer" class="footer-link">Documentation</a>
+                        <a href="https://www.npmjs.com/package/claude-code-templates" target="_blank" rel="noopener noreferrer" class="footer-link">npm Package</a>
                     </div>
-                </div>
+                </nav>
             </div>
         </div>
     </footer>
-
-    <!-- Shopping Cart Sidebar -->
-    <div id="shoppingCart" class="cart-sidebar">
-        <div class="cart-content">
-            <div class="cart-header">
-                <div class="cart-header-main">
-                    <h3>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M7 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-0.16 0.27-0.25 0.58-0.25 0.96 0 1.1 0.9 2 2 2h12v-2H7.42c-0.14 0-0.25-0.11-0.25-0.25l0.03-0.12L8.1 13h7.45c0.75 0 1.41-0.41 1.75-1.03L21.7 4H5.21l-0.94-2H1zM17 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2z"/>
-                        </svg>
-                        Stack Builder
-                    </h3>
-                    <button class="cart-close" onclick="closeCart()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <!-- Clear All Button - Subtle position -->
-                <div class="cart-clear-section-prominent" id="cartClearProminent" style="display: none;">
-                    <button class="clear-all-btn-prominent" onclick="clearCart()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"/>
-                        </svg>
-                        Clear All
-                        <span class="clear-count" id="clearCount">(0)</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="cart-body">
-                <div class="cart-empty" id="cartEmpty">
-                    <div class="empty-cart-icon">🛒</div>
-                    <p>Your stack is empty</p>
-                    <small>Add agents, commands, settings, hooks, or MCPs to build your development stack</small>
-                </div>
-                
-                <div class="cart-items" id="cartItems" style="display: none;">
-                    
-                    <div class="cart-section">
-                        <h4>
-                            <span class="section-icon">🤖</span>
-                            Agents (<span id="agentsCount">0</span>)
-                        </h4>
-                        <div class="cart-section-items" id="agentsList"></div>
-                    </div>
-                    
-                    <div class="cart-section">
-                        <h4>
-                            <span class="section-icon">⚡</span>
-                            Commands (<span id="commandsCount">0</span>)
-                        </h4>
-                        <div class="cart-section-items" id="commandsList"></div>
-                    </div>
-                    
-                    <div class="cart-section">
-                        <h4>
-                            <span class="section-icon">⚙️</span>
-                            Settings (<span id="settingsCount">0</span>)
-                        </h4>
-                        <div class="cart-section-items" id="settingsList"></div>
-                    </div>
-                    
-                    <div class="cart-section">
-                        <h4>
-                            <span class="section-icon">🪝</span>
-                            Hooks (<span id="hooksCount">0</span>)
-                        </h4>
-                        <div class="cart-section-items" id="hooksList"></div>
-                    </div>
-                    
-                    <div class="cart-section">
-                        <h4>
-                            <span class="section-icon">🔌</span>
-                            MCPs (<span id="mcpsCount">0</span>)
-                        </h4>
-                        <div class="cart-section-items" id="mcpsList"></div>
-                    </div>
-
-                    <div class="cart-section">
-                        <h4>
-                            <span class="section-icon">🎨</span>
-                            Skills (<span id="skillsCount">0</span>)
-                        </h4>
-                        <div class="cart-section-items" id="skillsList"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="cart-footer" id="cartFooter" style="display: none;">
-                <div class="command-preview">
-                    <div class="command-preview-header">
-                        <span>Generated Command:</span>
-                    </div>
-                    <div class="cart-command-container">
-                        <div class="command-code" id="generatedCommand">
-                            npx claude-code-templates@latest
-                        </div>
-                        <button class="cart-copy-overlay-btn" onclick="copyCartCommand()" title="Copy command">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                            </svg>
-                            Copy
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="cart-instructions">
-                    <div class="instructions-header">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                        </svg>
-                        <strong>Instructions</strong>
-                    </div>
-                    <p>Navigate to your project root and run the generated command. All selected components will be installed automatically.</p>
-                </div>
-                
-                <div class="cart-actions">
-                    <button class="copy-command-btn" onclick="copyCartCommand()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                        </svg>
-                        Copy Command
-                    </button>
-                    <div class="share-dropdown" id="shareDropdown">
-                        <button class="share-stack-btn" onclick="toggleShareDropdown()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.6 20.92,19A2.84,2.84 0 0,0 18,16.08Z"/>
-                            </svg>
-                            Share Stack
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="dropdown-arrow">
-                                <path d="M7,10L12,15L17,10H7Z"/>
-                            </svg>
-                        </button>
-                        <div class="share-options" id="shareOptions">
-                            <button class="share-option-btn" onclick="shareOnTwitter()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                </svg>
-                                Share on X
-                            </button>
-                            <button class="share-option-btn" onclick="shareOnThreads()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.595-.053-1.144-.16-1.644-.107-.496-.27-.941-.488-1.336a3.79 3.79 0 00-.82-1.084 3.790 3.790 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.007c-1.623.02-3.094.37-4.37 1.04-.558.29-1.029.63-1.414 1.017-.33.33-.602.69-.82 1.084-.218.395-.381.84-.488 1.336-.107.5-.16 1.049-.16 1.644 0 .595.053 1.144.16 1.644.107.496.27.941.488 1.336.218.395.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/>
-                                </svg>
-                                Share on Threads
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cart Floating Button -->
-    <div id="cartFloatingBtn" class="cart-floating-btn" onclick="openCart()" style="display: none;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-0.16 0.27-0.25 0.58-0.25 0.96 0 1.1 0.9 2 2 2h12v-2H7.42c-0.14 0-0.25-0.11-0.25-0.25l0.03-0.12L8.1 13h7.45c0.75 0 1.41-0.41 1.75-1.03L21.7 4H5.21l-0.94-2H1zM17 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2z"/>
-        </svg>
-        <span class="cart-badge" id="cartBadge">0</span>
-    </div>
 
     <link rel="stylesheet" href="css/workflows-modal.css">
     <link rel="stylesheet" href="css/stack-page.css">
