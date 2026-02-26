@@ -198,6 +198,8 @@ class AgentAnalyzer {
           const subMessages = await this.parseJsonlFile(path.join(subagentDir, subFile));
           if (!subMessages) continue;
           for (const msg of subMessages) {
+            // Apply same dateRange filter as main conversation messages
+            if (dateRange && !this.isWithinDateRange(msg.timestamp, dateRange)) continue;
             const content = msg.message ? msg.message.content : msg.content;
             const role = msg.message ? msg.message.role : msg.role;
             if (role === 'assistant' && content && Array.isArray(content)) {
