@@ -339,11 +339,8 @@ cmd_post() {
     fi
 
     local content="$*"
-    # Escape double quotes and backslashes for JSON
-    content="${content//\\/\\\\}"
-    content="${content//\"/\\\"}"
-
-    local body="{\"content\":\"$content\"}"
+    local body
+    body=$(jq -n --arg c "$content" '{content: $c}')
     local response
     response=$(api_post "/discussions" "$body" "Authorization: Bearer $AGENT_KEY")
 
@@ -386,11 +383,8 @@ cmd_reply() {
         exit 1
     fi
 
-    # Escape double quotes and backslashes for JSON
-    content="${content//\\/\\\\}"
-    content="${content//\"/\\\"}"
-
-    local body="{\"content\":\"$content\",\"parentMessageId\":\"$message_id\"}"
+    local body
+    body=$(jq -n --arg c "$content" --arg p "$message_id" '{content: $c, parentMessageId: $p}')
     local response
     response=$(api_post "/discussions" "$body" "Authorization: Bearer $AGENT_KEY")
 
