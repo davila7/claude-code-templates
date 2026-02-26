@@ -264,12 +264,49 @@ class AgentAnalyzer {
     const totalInvocations = agents.reduce((sum, agent) => sum + agent.totalInvocations, 0);
     const totalConversations = agents.reduce((sum, agent) => sum + agent.uniqueConversations, 0);
 
+    // Adoption Rate: % of agent types used more than once
+    const adoptionRate = (agents.filter(a => a.totalInvocations > 1).length / agents.length * 100).toFixed(1);
+
+    // Workflow Completion: % of agent types reused across multiple conversations
+    const multiConversationAgents = agents.filter(a => a.uniqueConversations > 1).length;
+    const workflowCompletion = (multiConversationAgents / agents.length * 100).toFixed(1);
+
+    // Time Efficiency: usage consistency across the active date range
+    const allDailyUsage = {};
+    agents.forEach(agent => {
+      Object.keys(agent.dailyUsage).forEach(date => {
+        allDailyUsage[date] = (allDailyUsage[date] || 0) + agent.dailyUsage[date];
+      });
+    });
+    const activeDays = Object.keys(allDailyUsage).length;
+    const dates = Object.keys(allDailyUsage).sort();
+    let timeEfficiency = '0.0';
+    if (dates.length > 1) {
+      const firstDay = new Date(dates[0]);
+      const lastDay = new Date(dates[dates.length - 1]);
+      const totalSpanDays = Math.max(1, Math.ceil((lastDay - firstDay) / (1000 * 60 * 60 * 24)) + 1);
+      timeEfficiency = Math.min(100, (activeDays / totalSpanDays * 100)).toFixed(1);
+    } else if (dates.length === 1) {
+      timeEfficiency = (100).toFixed(1);
+    }
+
+    // Success Rate: % of invocations from agents reused across multiple conversations
+    const repeatAgentInvocations = agents
+      .filter(a => a.uniqueConversations > 1)
+      .reduce((sum, a) => sum + a.totalInvocations, 0);
+    const successRate = totalInvocations > 0
+      ? (repeatAgentInvocations / totalInvocations * 100).toFixed(1)
+      : '0';
+
     return {
       averageInvocationsPerAgent: (totalInvocations / agents.length).toFixed(1),
       averageConversationsPerAgent: (totalConversations / agents.length).toFixed(1),
       mostUsedAgent: agents[0],
       agentDiversity: agents.length,
-      adoptionRate: (agents.filter(a => a.totalInvocations > 1).length / agents.length * 100).toFixed(1)
+      adoptionRate,
+      workflowCompletion,
+      timeEfficiency,
+      successRate
     };
   }
 
