@@ -100,12 +100,6 @@
         "price": "0",
         "priceCurrency": "USD"
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "150",
-        "bestRating": "5"
-      },
       "relatedLink": "https://www.anthropic.com/claude-code",
       "keywords": "Claude Code, Anthropic, AI development, Claude Opus 4.1, terminal velocity, deep coding"
     }
@@ -121,49 +115,9 @@
       "description": "Professional templates and configurations for Anthropic's Claude Code",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://aitmpl.com/?q={search_term_string}",
+        "target": "https://aitmpl.com/?search={search_term_string}",
         "query-input": "required name=search_term_string"
       }
-    }
-    </script>
-
-    <!-- Structured Data for SEO - BreadcrumbList -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://aitmpl.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Skills",
-          "item": "https://aitmpl.com/skills"
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": "Agents",
-          "item": "https://aitmpl.com/agents"
-        },
-        {
-          "@type": "ListItem",
-          "position": 4,
-          "name": "Commands",
-          "item": "https://aitmpl.com/commands"
-        },
-        {
-          "@type": "ListItem",
-          "position": 5,
-          "name": "MCPs",
-          "item": "https://aitmpl.com/mcps"
-        }
-      ]
     }
     </script>
 
@@ -420,6 +374,100 @@
             </div>
         </section>
 
+        <!-- Company Stacks Carousel -->
+        <section class="company-stacks-carousel" style="display: none;">
+            <div class="command-block">
+                <div class="command-label">$ Popular Development Stacks</div>
+                <div class="command-description">Complete component collections for major companies and technologies</div>
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-btn carousel-btn-left" onclick="scrollCarousel('left')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
+                    </svg>
+                </button>
+                <div class="carousel-track" id="companyCarousel">
+                    <a href="#/company/openai" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/openai')">
+                        <div class="company-logo">🤖</div>
+                        <div class="company-info">
+                            <h3>OpenAI</h3>
+                            <p>GPT, DALL-E & Whisper APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/anthropic" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/anthropic')">
+                        <div class="company-logo">🧠</div>
+                        <div class="company-info">
+                            <h3>Anthropic</h3>
+                            <p>Claude AI integration</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/stripe" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/stripe')">
+                        <div class="company-logo">💳</div>
+                        <div class="company-info">
+                            <h3>Stripe</h3>
+                            <p>Payment processing APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/salesforce" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/salesforce')">
+                        <div class="company-logo">☁️</div>
+                        <div class="company-info">
+                            <h3>Salesforce</h3>
+                            <p>CRM & Lightning platform</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/shopify" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/shopify')">
+                        <div class="company-logo">🛒</div>
+                        <div class="company-info">
+                            <h3>Shopify</h3>
+                            <p>E-commerce APIs & apps</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/twilio" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/twilio')">
+                        <div class="company-logo">📞</div>
+                        <div class="company-info">
+                            <h3>Twilio</h3>
+                            <p>Communication APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/aws" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/aws')">
+                        <div class="company-logo">☁️</div>
+                        <div class="company-info">
+                            <h3>AWS</h3>
+                            <p>Cloud & serverless APIs</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/company/github" class="company-stack-card" onclick="window.stackRouter?.navigateTo('#/company/github')">
+                        <div class="company-logo">🐙</div>
+                        <div class="company-info">
+                            <h3>GitHub</h3>
+                            <p>Git automation & Actions</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                    <a href="#/companies" class="company-stack-card view-all-card" onclick="window.stackRouter?.navigateTo('#/companies')">
+                        <div class="company-logo">👀</div>
+                        <div class="company-info">
+                            <h3>View All</h3>
+                            <p>30+ companies & platforms</p>
+                        </div>
+                        <div class="stack-arrow">→</div>
+                    </a>
+                </div>
+                <button class="carousel-btn carousel-btn-right" onclick="scrollCarousel('right')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
         <section class="additional-tools">
             <div class="command-block">
                 <div class="command-label">$ Additional Tools</div>
@@ -476,12 +524,12 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <div class="footer-ascii">
-                        <pre class="footer-ascii-art"> &#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9617;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9617;&#9608;&#9608;&#9584;
-&#9608;&#9608;&#9584;&#9620;&#9620;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9580;&#9620;&#9620;&#9608;&#9608;&#9584;&#9620;&#9620;&#9584;&#9608;&#9608;&#9608;&#9608;&#9584;&#9617;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9620;&#9620;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;
-&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;
-&#9608;&#9608;&#9584;&#9620;&#9620;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;&#9580;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9620;&#9620;&#9620;&#9617;&#9608;&#9608;&#9584;
-&#9608;&#9608;&#9584;&#9617;&#9617;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9608;&#9608;&#9584;&#9617;&#9580;&#9620;&#9617;&#9608;&#9608;&#9584;&#9608;&#9608;&#9584;&#9617;&#9617;&#9617;&#9617;&#9617;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9584;
-&#9580;&#9620;&#9617;&#9617;&#9580;&#9620;&#9584;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9617;&#9580;&#9620;&#9584;&#9580;&#9620;&#9584;&#9617;&#9617;&#9617;&#9617;&#9617;&#9580;&#9620;&#9620;&#9620;&#9620;&#9620;&#9620;&#9584;</pre>
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
                         <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
                     </div>
                     <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
@@ -507,6 +555,168 @@
             </div>
         </div>
     </footer>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="shoppingCart" class="cart-sidebar">
+        <div class="cart-content">
+            <div class="cart-header">
+                <div class="cart-header-main">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-0.16 0.27-0.25 0.58-0.25 0.96 0 1.1 0.9 2 2 2h12v-2H7.42c-0.14 0-0.25-0.11-0.25-0.25l0.03-0.12L8.1 13h7.45c0.75 0 1.41-0.41 1.75-1.03L21.7 4H5.21l-0.94-2H1zM17 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2z"/>
+                        </svg>
+                        Stack Builder
+                    </h3>
+                    <button class="cart-close" onclick="closeCart()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Clear All Button - Subtle position -->
+                <div class="cart-clear-section-prominent" id="cartClearProminent" style="display: none;">
+                    <button class="clear-all-btn-prominent" onclick="clearCart()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"/>
+                        </svg>
+                        Clear All
+                        <span class="clear-count" id="clearCount">(0)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="cart-body">
+                <div class="cart-empty" id="cartEmpty">
+                    <div class="empty-cart-icon">🛒</div>
+                    <p>Your stack is empty</p>
+                    <small>Add agents, commands, settings, hooks, or MCPs to build your development stack</small>
+                </div>
+
+                <div class="cart-items" id="cartItems" style="display: none;">
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🤖</span>
+                            Agents (<span id="agentsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="agentsList"></div>
+                    </div>
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">⚡</span>
+                            Commands (<span id="commandsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="commandsList"></div>
+                    </div>
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">⚙️</span>
+                            Settings (<span id="settingsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="settingsList"></div>
+                    </div>
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🪝</span>
+                            Hooks (<span id="hooksCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="hooksList"></div>
+                    </div>
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🔌</span>
+                            MCPs (<span id="mcpsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="mcpsList"></div>
+                    </div>
+
+                    <div class="cart-section">
+                        <h4>
+                            <span class="section-icon">🎨</span>
+                            Skills (<span id="skillsCount">0</span>)
+                        </h4>
+                        <div class="cart-section-items" id="skillsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="command-preview">
+                    <div class="command-preview-header">
+                        <span>Generated Command:</span>
+                    </div>
+                    <div class="cart-command-container">
+                        <div class="command-code" id="generatedCommand">
+                            npx claude-code-templates@latest
+                        </div>
+                        <button class="cart-copy-overlay-btn" onclick="copyCartCommand()" title="Copy command">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cart-instructions">
+                    <div class="instructions-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                        </svg>
+                        <strong>Instructions</strong>
+                    </div>
+                    <p>Navigate to your project root and run the generated command. All selected components will be installed automatically.</p>
+                </div>
+
+                <div class="cart-actions">
+                    <button class="copy-command-btn" onclick="copyCartCommand()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
+                        Copy Command
+                    </button>
+                    <div class="share-dropdown" id="shareDropdown">
+                        <button class="share-stack-btn" onclick="toggleShareDropdown()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.6 20.92,19A2.84,2.84 0 0,0 18,16.08Z"/>
+                            </svg>
+                            Share Stack
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="dropdown-arrow">
+                                <path d="M7,10L12,15L17,10H7Z"/>
+                            </svg>
+                        </button>
+                        <div class="share-options" id="shareOptions">
+                            <button class="share-option-btn" onclick="shareOnTwitter()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                                Share on X
+                            </button>
+                            <button class="share-option-btn" onclick="shareOnThreads()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.595-.053-1.144-.16-1.644-.107-.496-.27-.941-.488-1.336a3.79 3.79 0 00-.82-1.084 3.790 3.790 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.007c-1.623.02-3.094.37-4.37 1.04-.558.29-1.029.63-1.414 1.017-.33.33-.602.69-.82 1.084-.218.395-.381.84-.488 1.336-.107.5-.16 1.049-.16 1.644 0 .595.053 1.144.16 1.644.107.496.27.941.488 1.336.218.395.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/>
+                                </svg>
+                                Share on Threads
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Floating Button -->
+    <div id="cartFloatingBtn" class="cart-floating-btn" onclick="openCart()" style="display: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-0.16 0.27-0.25 0.58-0.25 0.96 0 1.1 0.9 2 2 2h12v-2H7.42c-0.14 0-0.25-0.11-0.25-0.25l0.03-0.12L8.1 13h7.45c0.75 0 1.41-0.41 1.75-1.03L21.7 4H5.21l-0.94-2H1zM17 18c-1.1 0-2 0.9-2 2s0.9 2 2 2 2-0.9 2-2-0.9-2-2-2z"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+    </div>
 
     <link rel="stylesheet" href="css/workflows-modal.css">
     <link rel="stylesheet" href="css/stack-page.css">
