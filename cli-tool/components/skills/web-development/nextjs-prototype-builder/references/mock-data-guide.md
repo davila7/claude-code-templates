@@ -72,7 +72,7 @@ export type WorkflowStage = {
 ```ts
 export const items: Item[] = [
   { id: 'ITM-2026-0001', name: 'Project Alpha', status: 'completed', priority: 'high', assigned: 'Sarah Chen', value: 12500000, created: '15 Jan 2026' },
-  { id: 'ITM-2026-0002', name: 'Initiative Beta', status: 'active', priority: 'medium', assigned: 'Sarah Chen', created: '17 Jan 2026' },
+  { id: 'ITM-2026-0002', name: 'Initiative Beta', status: 'active', priority: 'medium', assigned: 'Sarah Chen', value: 8400000, created: '17 Jan 2026' },
   { id: 'ITM-2026-0003', name: 'Task Gamma', status: 'pending', priority: 'high', assigned: 'James Wright', value: 15700000, created: '18 Jan 2026' },
   { id: 'ITM-2026-0004', name: 'Proposal Delta', status: 'active', priority: 'medium', assigned: null, value: 6300000, created: '19 Jan 2026' },
   // ... 4-6 more with similar variety

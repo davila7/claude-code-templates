@@ -179,9 +179,9 @@ export default function GuidedTour({
   const [rect, setRect] = useState<Rect | null>(null)
 
   const updateRect = useCallback(() => {
-    if (!isOpen || !steps[current]) return
+    if (!isOpen || !steps[current]) { setRect(null); return }
     const r = getRect(steps[current].target)
-    if (r) setRect(r)
+    setRect(r)
   }, [isOpen, current, steps])
 
   useEffect(() => {
