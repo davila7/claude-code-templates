@@ -14,6 +14,10 @@
 #   - lazygit (git TUI)
 #   - yazi (file manager TUI)
 #
+# Installation:
+#   Works with both project-level (<project>/.claude/) and global (~/.claude/)
+#   installation. The JSON config auto-detects the script location.
+#
 # Ghostty keybindings required:
 #   super+d       = new_split:right
 #   super+shift+d = new_split:down
