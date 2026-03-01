@@ -39,12 +39,25 @@ export interface Cart {
   templates: CartItem[];
 }
 
+export interface FeaturedLink {
+  label: string;
+  url: string;
+}
+
 export interface FeaturedItem {
   name: string;
   description: string;
   logo: string;
   url: string;
   tag: string;
+  tagColor: string;
+  category: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  websiteUrl: string;
+  installCommand?: string;
+  metadata: Record<string, string>;
+  links: FeaturedLink[];
 }
 
 export interface CollectionItem {

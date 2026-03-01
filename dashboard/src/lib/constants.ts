@@ -12,6 +12,18 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     logo: 'https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png',
     url: '/featured/braingrid',
     tag: 'Partner',
+    tagColor: '#6366f1',
+    category: 'Product Management',
+    ctaLabel: 'Try BrainGrid Free',
+    ctaUrl: 'https://braingrid.link/hsn8pFE',
+    websiteUrl: 'https://braingrid.ai',
+    metadata: {
+      Integration: 'MCP, CLI',
+    },
+    links: [
+      { label: 'Integration Docs', url: 'https://docs.braingrid.ai/claude-code' },
+      { label: 'braingrid.ai', url: 'https://braingrid.ai' },
+    ],
   },
   {
     name: 'Neon',
@@ -19,6 +31,21 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     logo: 'https://neon.tech/brand/neon-logo-dark-color.svg',
     url: '/featured/neon-instagres',
     tag: 'Database',
+    tagColor: '#059669',
+    category: 'Infrastructure',
+    ctaLabel: 'Try Neon Free',
+    ctaUrl: 'https://get.neon.com/4eCjZDz',
+    websiteUrl: 'https://neon.tech',
+    installCommand: 'npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon --yes',
+    metadata: {
+      Components: '10',
+      Integration: 'MCP, CLI',
+    },
+    links: [
+      { label: 'Instagres Docs', url: 'https://neon.tech/docs/guides/instagres' },
+      { label: 'Platform Overview', url: 'https://neon.tech/docs/introduction' },
+      { label: 'neon.tech', url: 'https://neon.tech' },
+    ],
   },
   {
     name: 'ClaudeKit',
@@ -26,6 +53,19 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     logo: 'https://docs.claudekit.cc/logo-horizontal.png',
     url: '/featured/claudekit',
     tag: 'Toolkit',
+    tagColor: '#d97706',
+    category: 'AI Engineering',
+    ctaLabel: 'Get ClaudeKit',
+    ctaUrl: 'https://claudekit.cc',
+    websiteUrl: 'https://claudekit.cc',
+    metadata: {
+      Users: '4,000+',
+      Countries: '109',
+    },
+    links: [
+      { label: 'Documentation', url: 'https://docs.claudekit.cc' },
+      { label: 'claudekit.cc', url: 'https://claudekit.cc' },
+    ],
   },
 ];
 
