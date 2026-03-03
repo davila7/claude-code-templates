@@ -20,11 +20,14 @@ esac
 # Look for active spec in the project
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 
-# Search for recent specs (last sprint = last 14 days)
-# Use || true to ensure find failures don't cause exit
-RECENT_SPECS=$(find "$PROJECT_DIR" -name "*.spec.md" -mtime -14 2>/dev/null || true)
+# Check for recent specs (last sprint = last 14 days)
+# Only test existence — no need to enumerate all matches (avoids latency in large repos)
+HAS_SPEC=0
+if find "$PROJECT_DIR" -name "*.spec.md" -mtime -14 -type f -print -quit 2>/dev/null | grep -q .; then
+  HAS_SPEC=1
+fi
 
-if [ -z "$RECENT_SPECS" ]; then
+if [ "$HAS_SPEC" -eq 0 ]; then
     echo ""
     echo "Plan Gate: No recent approved spec found (.spec.md modified in last 14 days)."
     echo "   Consider creating a specification before implementing."

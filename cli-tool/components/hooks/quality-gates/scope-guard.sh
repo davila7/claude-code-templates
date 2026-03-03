@@ -25,8 +25,8 @@ SPEC_FILE=$(find "$PROJECT_ROOT" -name "*.spec.md" -mmin -60 -type f -printf '%T
 
 # Fallback for systems without -printf (macOS)
 if [ -z "$SPEC_FILE" ]; then
-  SPEC_FILE=$(find "$PROJECT_ROOT" -name "*.spec.md" -mmin -60 -type f 2>/dev/null \
-    | xargs ls -t 2>/dev/null | head -1)
+  SPEC_FILE=$(find "$PROJECT_ROOT" -name "*.spec.md" -mmin -60 -type f -print0 2>/dev/null \
+    | xargs -0 ls -t 2>/dev/null | head -1)
 fi
 
 # If no active spec, cannot verify scope
