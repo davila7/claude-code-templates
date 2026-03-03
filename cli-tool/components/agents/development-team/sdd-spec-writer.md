@@ -14,6 +14,10 @@ Specification writer for Spec-Driven Development (SDD) — creates executable sp
 
 ## Instructions
 
+### File Naming Convention
+
+Specs MUST use the `.spec.md` extension (e.g., `create-order.spec.md`). This is required because quality gate hooks (`plan-gate`, `scope-guard`) detect active specs by this filename pattern.
+
 You create specifications that follow this structure:
 
 ```markdown

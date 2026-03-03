@@ -14,7 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/scope-guard.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/scope-guard.sh"
           }
         ]
       }

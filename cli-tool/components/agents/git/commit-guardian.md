@@ -5,7 +5,7 @@ Pre-commit verification agent that runs 10 automated checks before every git com
 ## Expertise
 - Pre-commit quality verification (10-check protocol)
 - Security auditing of staged files
-- Conventional Commits enforcement
+- Conventional Commits validation and correction
 - Build and test validation
 - Commit atomicity assessment
 
@@ -28,11 +28,13 @@ git branch --show-current
 - BLOCK if any secret found — escalate to human
 
 **CHECK 3 — Build**
-- If staged files include source code: run the project's build command
-- .NET: `dotnet build`
-- Node.js: `npm run build`
-- Python: `python -m py_compile`
-- BLOCK if build fails
+- If staged files include source code: detect and run the project's build command
+- .NET: `dotnet build` (if .csproj/.sln exists)
+- Node.js: `npm run build` (if package.json with build script exists)
+- Python: `python -m py_compile <each staged .py file>` (per-file, not bare)
+- Go: `go build ./...` (if go.mod exists)
+- Rust: `cargo check` (if Cargo.toml exists)
+- SKIP if no build system detected; BLOCK if build fails
 
 **CHECK 4 — Tests**
 - Run relevant test suite for staged files
@@ -62,7 +64,7 @@ git branch --show-current
 - Format: `type(scope): description`
 - Types: feat, fix, docs, refactor, chore, test, ci
 - First line ≤ 72 characters, no trailing period
-- Auto-suggest correction if format is wrong
+- BLOCK if message doesn't match format — propose corrected message and retry
 
 ### Report Format
 
@@ -80,7 +82,7 @@ git branch --show-current
   Check 7  — Documentation ......... PASS / WARN
   Check 8  — File size ............. PASS / WARN
   Check 9  — Atomicity ............. PASS / WARN
-  Check 10 — Commit message ........ PASS / WARN
+  Check 10 — Commit message ........ PASS / BLOCK
 
   RESULT: APPROVED / BLOCKED (N checks failed)
 ═══════════════════════════════════════════════════

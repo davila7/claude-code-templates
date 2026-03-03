@@ -10,14 +10,15 @@ INPUT=$(cat)
 TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty')
 FILE_PATH=""
 
-# Only applies to Edit and Write tools
-if [ "$TOOL" = "Edit" ]; then
-  FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
-elif [ "$TOOL" = "Write" ]; then
-  FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
-else
-  exit 0
-fi
+# Applies to Edit, MultiEdit and Write tools
+case "$TOOL" in
+  Edit|MultiEdit|Write)
+    FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+    ;;
+  *)
+    exit 0
+    ;;
+esac
 
 [ -z "$FILE_PATH" ] && exit 0
 
@@ -30,11 +31,14 @@ case "$EXT" in
   *) exit 0 ;;
 esac
 
-# Skip files that don't need TDD gate
+# Skip files that don't need TDD gate (precise patterns to avoid false skips)
 BASENAME=$(basename "$FILE_PATH")
 case "$BASENAME" in
-  *Test*|*test*|*Spec*|*spec*|*_test.*|*.test.*|*.spec.*) exit 0 ;;
-  *Migration*|*migration*|*.dto.*|*DTO*|*.config.*|*Config.*) exit 0 ;;
+  # Explicit test file patterns — suffix-based, not substring
+  *Test.${EXT}|*Tests.${EXT}|*_test.${EXT}|test_*.${EXT}) exit 0 ;;
+  *.test.${EXT}|*.spec.${EXT}|*Spec.${EXT}|*Specs.${EXT}) exit 0 ;;
+  # Config, migration, and infrastructure files
+  *Migration*|*migration*|*.dto.*|*DTO*) exit 0 ;;
   *Program.cs|*Startup.cs|*appsettings*|*.csproj|*.sln) exit 0 ;;
   *.d.ts|*.config.ts|*.config.js|tsconfig*|package.json) exit 0 ;;
   Dockerfile|docker-compose*|*.tf|*.tfvars|*.yml|*.yaml) exit 0 ;;
@@ -50,11 +54,14 @@ case "$FILE_PATH" in
   */config/*|*/Config/*|*/scripts/*) exit 0 ;;
 esac
 
-# Search for corresponding test file
+# Search for corresponding test file in the same directory first, then nearby
 NAME_NO_EXT="${BASENAME%.*}"
+FILE_DIR=$(dirname "$FILE_PATH")
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 
-TESTS_FOUND=$(find "$PROJECT_ROOT" -type f \( \
+# Search strategy: first in nearby dirs (same module), then project-wide
+# Use -maxdepth to limit latency on large repos
+TESTS_FOUND=$(find "$FILE_DIR" "$FILE_DIR/../test" "$FILE_DIR/../tests" "$FILE_DIR/../Test" "$FILE_DIR/../Tests" "$FILE_DIR/../__tests__" -maxdepth 2 -type f \( \
   -name "${NAME_NO_EXT}Test.*" -o \
   -name "${NAME_NO_EXT}Tests.*" -o \
   -name "${NAME_NO_EXT}.test.*" -o \
@@ -62,6 +69,18 @@ TESTS_FOUND=$(find "$PROJECT_ROOT" -type f \( \
   -name "${NAME_NO_EXT}_test.*" -o \
   -name "test_${NAME_NO_EXT}.*" \
   \) 2>/dev/null | head -1)
+
+# Fallback: project-wide search with depth limit
+if [ -z "$TESTS_FOUND" ]; then
+  TESTS_FOUND=$(find "$PROJECT_ROOT" -maxdepth 6 -type f \( \
+    -name "${NAME_NO_EXT}Test.*" -o \
+    -name "${NAME_NO_EXT}Tests.*" -o \
+    -name "${NAME_NO_EXT}.test.*" -o \
+    -name "${NAME_NO_EXT}.spec.*" -o \
+    -name "${NAME_NO_EXT}_test.*" -o \
+    -name "test_${NAME_NO_EXT}.*" \
+    \) 2>/dev/null | head -1)
+fi
 
 if [ -z "$TESTS_FOUND" ]; then
   echo "TDD GATE: No tests found for '$BASENAME'. Write tests BEFORE implementing production code. Create: ${NAME_NO_EXT}Test.${EXT} or ${NAME_NO_EXT}.test.${EXT}" >&2

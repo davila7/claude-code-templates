@@ -3,15 +3,14 @@
 # Source: pm-workspace (https://github.com/gonzalezpazmonica/pm-workspace)
 # License: MIT
 #
-# PreToolUse hook (Edit|Write) that warns if source code is being edited
-# without a recent specification file (.spec.md) in the project.
+# PreToolUse hook (Edit|MultiEdit|Write) that warns if source code is being
+# edited without a recent specification file (.spec.md) in the project.
 # Non-blocking: shows warning but allows the edit to proceed.
-
-set -euo pipefail
+# NOTE: No 'set -euo pipefail' — this hook must NEVER block unintentionally.
 
 # Only check source code files
 FILE="${CLAUDE_TOOL_INPUT_FILE:-}"
-[[ -z "$FILE" ]] && exit 0
+[ -z "$FILE" ] && exit 0
 
 case "$FILE" in
     *.cs|*.ts|*.tsx|*.js|*.jsx|*.py|*.go|*.rs|*.php|*.rb|*.java|*.kt|*.swift|*.dart|*.vb|*.cbl) ;;
@@ -22,9 +21,10 @@ esac
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 
 # Search for recent specs (last sprint = last 14 days)
-RECENT_SPECS=$(find "$PROJECT_DIR" -name "*.spec.md" -mtime -14 2>/dev/null | head -5)
+# Use || true to ensure find failures don't cause exit
+RECENT_SPECS=$(find "$PROJECT_DIR" -name "*.spec.md" -mtime -14 2>/dev/null || true)
 
-if [[ -z "$RECENT_SPECS" ]]; then
+if [ -z "$RECENT_SPECS" ]; then
     echo ""
     echo "Plan Gate: No recent approved spec found (.spec.md modified in last 14 days)."
     echo "   Consider creating a specification before implementing."

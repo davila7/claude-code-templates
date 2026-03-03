@@ -14,7 +14,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/plan-gate.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-gate.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-gate.sh"
           }
         ]
       },
@@ -23,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/plan-gate.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-gate.sh"
           }
         ]
       }
