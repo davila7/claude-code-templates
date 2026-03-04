@@ -1,13 +1,7 @@
 ---
 name: agirails-agent-payments
-description: |
-  AI agent payment infrastructure — ACTP escrow, x402 instant payments, USDC settlement on Base L2.
-  Interactive onboarding: asks your preferences, generates customized agent code, verifies setup.
-  Covers provider/requester patterns, adapter routing, 8-state machine, pricing, disputes, and identity.
-  Use when: "agirails", "ACTP", "agent payment", "agent escrow", "AI agent pay", "AI agent earn",
-  "x402", "agent commerce", "USDC agent", "on-chain settlement", "agent-to-agent payment",
-  "provide service", "request service", "escrow USDC", "Base L2 payment",
-  "@agirails/sdk", "actp init", "agent economy", "ERC-8004", "agent identity"
+description: AI agent payment infrastructure — ACTP escrow, x402 instant payments, USDC settlement on Base L2. Interactive onboarding: asks your preferences, generates customized agent code, and verifies setup. Covers provider/requester patterns, adapter routing, 8-state machine, pricing, disputes, and identity.
+license: MIT
 ---
 
 # AGIRAILS — Agent Payment Infrastructure
