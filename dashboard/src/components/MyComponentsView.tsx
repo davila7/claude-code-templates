@@ -381,8 +381,7 @@ function MainContentTree({
   const hasChildren = node.children && node.children.length > 0;
   const connector = depth === 0 ? '' : isLast ? '\u2514\u2500\u2500 ' : '\u251C\u2500\u2500 ';
   const childPrefix = depth === 0 ? '' : prefix + (isLast ? '    ' : '\u2502   ');
-  const isFolder = node.type === 'folder' || (node.type === 'file' && hasChildren && !node.item);
-  const displayName = isFolder ? `${node.name}/` : node.name;
+  const displayName = node.type === 'folder' ? `${node.name}/` : node.name;
 
   return (
     <div>
