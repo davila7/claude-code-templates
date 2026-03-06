@@ -70,6 +70,283 @@ function groupByType(items: CollectionItem[]): { type: string; label: string; co
     }));
 }
 
+// ── Project structure tree ───────────────────────────────────────────────
+// Maps component types to their real installation paths
+interface TreeNode {
+  name: string;
+  type: 'folder' | 'file';
+  color?: string;
+  componentType?: string;
+  item?: CollectionItem;
+  children?: TreeNode[];
+}
+
+function getFileName(item: CollectionItem): string {
+  const t = pluralType(item.component_type);
+  const name = item.component_name?.replace(/\.(md|json)$/, '') ?? '';
+  if (t === 'agents') return `${name}.md`;
+  if (t === 'commands') return `${name}.md`;
+  if (t === 'skills') return name; // skills are folders
+  if (t === 'hooks') return `${name}.json`;
+  if (t === 'settings') return name; // merged into settings.json
+  if (t === 'mcps') return name; // merged into .mcp.json
+  return name;
+}
+
+function buildProjectTree(items: CollectionItem[]): TreeNode {
+  const grouped: Record<string, CollectionItem[]> = {};
+  for (const item of items) {
+    const t = pluralType(item.component_type);
+    if (!grouped[t]) grouped[t] = [];
+    grouped[t].push(item);
+  }
+
+  const claudeChildren: TreeNode[] = [];
+
+  // .claude/agents/
+  if (grouped.agents?.length) {
+    claudeChildren.push({
+      name: 'agents',
+      type: 'folder',
+      color: TYPE_CONFIG.agents?.color,
+      componentType: 'agents',
+      children: grouped.agents.map((item) => ({
+        name: getFileName(item),
+        type: 'file' as const,
+        color: TYPE_CONFIG.agents?.color,
+        componentType: 'agents',
+        item,
+      })),
+    });
+  }
+
+  // .claude/commands/
+  if (grouped.commands?.length) {
+    claudeChildren.push({
+      name: 'commands',
+      type: 'folder',
+      color: TYPE_CONFIG.commands?.color,
+      componentType: 'commands',
+      children: grouped.commands.map((item) => ({
+        name: getFileName(item),
+        type: 'file' as const,
+        color: TYPE_CONFIG.commands?.color,
+        componentType: 'commands',
+        item,
+      })),
+    });
+  }
+
+  // .claude/skills/
+  if (grouped.skills?.length) {
+    claudeChildren.push({
+      name: 'skills',
+      type: 'folder',
+      color: TYPE_CONFIG.skills?.color,
+      componentType: 'skills',
+      children: grouped.skills.map((item) => ({
+        name: getFileName(item),
+        type: 'folder' as const,
+        color: TYPE_CONFIG.skills?.color,
+        componentType: 'skills',
+        item,
+      })),
+    });
+  }
+
+  // .claude/hooks/ (script files)
+  if (grouped.hooks?.length) {
+    claudeChildren.push({
+      name: 'hooks',
+      type: 'folder',
+      color: TYPE_CONFIG.hooks?.color,
+      componentType: 'hooks',
+      children: grouped.hooks.map((item) => ({
+        name: getFileName(item),
+        type: 'file' as const,
+        color: TYPE_CONFIG.hooks?.color,
+        componentType: 'hooks',
+        item,
+      })),
+    });
+  }
+
+  // .claude/settings.json (settings + hooks config)
+  if (grouped.settings?.length) {
+    claudeChildren.push({
+      name: 'settings.json',
+      type: 'file',
+      color: TYPE_CONFIG.settings?.color,
+      componentType: 'settings',
+      children: grouped.settings.map((item) => ({
+        name: formatName(item.component_name),
+        type: 'file' as const,
+        color: TYPE_CONFIG.settings?.color,
+        componentType: 'settings',
+        item,
+      })),
+    });
+  }
+
+  const root: TreeNode = {
+    name: 'project',
+    type: 'folder',
+    children: [
+      {
+        name: '.claude',
+        type: 'folder',
+        children: claudeChildren,
+      },
+    ],
+  };
+
+  // .mcp.json at project root
+  if (grouped.mcps?.length) {
+    root.children!.push({
+      name: '.mcp.json',
+      type: 'file',
+      color: TYPE_CONFIG.mcps?.color,
+      componentType: 'mcps',
+      children: grouped.mcps.map((item) => ({
+        name: formatName(item.component_name),
+        type: 'file' as const,
+        color: TYPE_CONFIG.mcps?.color,
+        componentType: 'mcps',
+        item,
+      })),
+    });
+  }
+
+  return root;
+}
+
+// ── Tree node component ──────────────────────────────────────────────────
+function ProjectTreeNode({
+  node,
+  depth,
+  expandedPaths,
+  togglePath,
+  currentPath,
+  onRemoveItem,
+  collectionId,
+}: {
+  node: TreeNode;
+  depth: number;
+  expandedPaths: Set<string>;
+  togglePath: (path: string) => void;
+  currentPath: string;
+  onRemoveItem: (item: CollectionItem, collectionId: string) => void;
+  collectionId: string;
+}) {
+  const fullPath = currentPath ? `${currentPath}/${node.name}` : node.name;
+  const isExpanded = expandedPaths.has(fullPath);
+  const hasChildren = node.children && node.children.length > 0;
+  const isLeafFile = node.type === 'file' && node.item;
+  const isContainerFile = node.type === 'file' && hasChildren && !node.item;
+  const isClickable = hasChildren || isLeafFile;
+  const pl = depth * 12 + 8;
+
+  // File icon (document)
+  const fileIcon = (
+    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ color: node.color ?? '#666' }}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    </svg>
+  );
+
+  // Folder icon
+  const folderIcon = (color?: string) => (
+    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ color: color ?? '#888' }}>
+      {isExpanded ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 1.85L5 19z" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 17V7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+      )}
+    </svg>
+  );
+
+  if (isLeafFile) {
+    // Leaf file with link to component
+    return (
+      <div
+        className="group/treeitem flex items-center gap-1.5 py-[4px] rounded-md text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors"
+        style={{ paddingLeft: pl }}
+      >
+        {fileIcon}
+        <a
+          href={`/component/${node.item!.component_type}/${cleanPath(node.item!.component_path)}`}
+          className="truncate flex-1 hover:underline"
+          style={{ color: node.color }}
+        >
+          {node.name}
+        </a>
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemoveItem(node.item!, collectionId); }}
+          className="p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeitem:opacity-100 shrink-0 mr-1"
+          title="Remove"
+        >
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div
+        onClick={() => { if (isClickable) togglePath(fullPath); }}
+        role={isClickable ? 'button' : undefined}
+        className={`flex items-center gap-1.5 py-[4px] rounded-md text-[12px] transition-colors ${
+          isClickable ? 'cursor-pointer hover:bg-[--color-surface-2]' : ''
+        } ${node.name === '.claude' ? 'text-[--color-text-primary] font-medium' : 'text-[--color-text-secondary]'}`}
+        style={{ paddingLeft: pl }}
+      >
+        {/* Chevron for expandable nodes */}
+        {hasChildren ? (
+          <svg
+            className={`w-3 h-3 shrink-0 text-[--color-text-tertiary] transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        ) : (
+          <span className="w-3 shrink-0" />
+        )}
+        {/* Icon */}
+        {node.type === 'folder' ? folderIcon(node.color) : isContainerFile ? fileIcon : folderIcon(node.color)}
+        {/* Name */}
+        <span className="truncate" style={{ color: node.name === '.claude' || node.name === 'project' ? undefined : node.color }}>
+          {node.name}{node.type === 'folder' && node.name !== 'project' ? '/' : ''}
+        </span>
+        {/* Count badge for type folders */}
+        {node.componentType && hasChildren && (
+          <span className="text-[10px] text-[--color-text-tertiary] ml-auto mr-1">
+            {node.children!.length}
+          </span>
+        )}
+      </div>
+      {/* Children */}
+      {isExpanded && hasChildren && (
+        <div>
+          {node.children!.map((child, i) => (
+            <ProjectTreeNode
+              key={`${child.name}-${i}`}
+              node={child}
+              depth={depth + 1}
+              expandedPaths={expandedPaths}
+              togglePath={togglePath}
+              currentPath={fullPath}
+              onRemoveItem={onRemoveItem}
+              collectionId={collectionId}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function generateCommand(items: CollectionItem[]): string {
   const grouped: Record<string, string[]> = {};
   for (const item of items) {
@@ -83,6 +360,74 @@ function generateCommand(items: CollectionItem[]): string {
     if (flag) cmd += ` ${flag} ${paths.join(',')}`;
   }
   return cmd;
+}
+
+// ── Main content tree (ASCII-style) ──────────────────────────────────────
+function MainContentTree({
+  node,
+  depth,
+  isLast,
+  prefix,
+  onRemoveItem,
+  collectionId,
+}: {
+  node: TreeNode;
+  depth: number;
+  isLast: boolean;
+  prefix: string;
+  onRemoveItem: (item: CollectionItem, collectionId: string) => void;
+  collectionId: string;
+}) {
+  const hasChildren = node.children && node.children.length > 0;
+  const connector = depth === 0 ? '' : isLast ? '\u2514\u2500\u2500 ' : '\u251C\u2500\u2500 ';
+  const childPrefix = depth === 0 ? '' : prefix + (isLast ? '    ' : '\u2502   ');
+  const isFolder = node.type === 'folder' || (node.type === 'file' && hasChildren && !node.item);
+  const displayName = isFolder ? `${node.name}/` : node.name;
+
+  return (
+    <div>
+      {depth > 0 && (
+        <div className="group/treeline flex items-center whitespace-pre leading-6">
+          <span className="text-[--color-text-tertiary] select-none">{prefix}{connector}</span>
+          {node.item ? (
+            <a
+              href={`/component/${node.item.component_type}/${cleanPath(node.item.component_path)}`}
+              className="hover:underline"
+              style={{ color: node.color ?? '#ccc' }}
+            >
+              {displayName}
+            </a>
+          ) : (
+            <span style={{ color: node.color ?? (node.name === '.claude' ? '#e5e5e5' : '#999') }} className={node.name === '.claude' ? 'font-semibold' : ''}>
+              {displayName}
+            </span>
+          )}
+          {node.item && (
+            <button
+              onClick={() => onRemoveItem(node.item!, collectionId)}
+              className="ml-2 p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeline:opacity-100 shrink-0"
+              title="Remove"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+      {hasChildren && node.children!.map((child, i) => (
+        <MainContentTree
+          key={`${child.name}-${i}`}
+          node={child}
+          depth={depth + 1}
+          isLast={i === node.children!.length - 1}
+          prefix={childPrefix}
+          onRemoveItem={onRemoveItem}
+          collectionId={collectionId}
+        />
+      ))}
+    </div>
+  );
 }
 
 // ── Context menu ─────────────────────────────────────────────────────────
@@ -121,6 +466,7 @@ export default function MyComponentsView() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set(['project', 'project/.claude']));
   const [loading, setLoading] = useState(true);
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
@@ -264,6 +610,15 @@ export default function MyComponentsView() {
     );
   }
 
+  function toggleTreePath(path: string) {
+    setExpandedPaths((prev) => {
+      const next = new Set(prev);
+      if (next.has(path)) next.delete(path);
+      else next.add(path);
+      return next;
+    });
+  }
+
   const selectedCollection = collections.find((c) => c.id === selectedId);
   const selectedItems = selectedCollection?.collection_items ?? [];
 
@@ -374,45 +729,26 @@ export default function MyComponentsView() {
                   />
                 )}
 
-                {/* Expanded tree items — grouped by type */}
-                {isExpanded && items.length > 0 && (
-                  <div className="ml-3 pl-3 border-l border-[--color-border] mt-0.5 mb-1 space-y-px">
-                    {groupByType(items).map((group) => (
-                      <div key={group.type}>
-                        {/* Type group header */}
-                        <div className="flex items-center gap-1.5 px-2 py-[5px] text-[11px] font-medium" style={{ color: group.color }}>
-                          <TypeIcon type={group.type} size={12} className="w-3 h-3 shrink-0 [&>svg]:w-3 [&>svg]:h-3" />
-                          <span>{group.label}</span>
-                          <span className="text-[10px] opacity-60">({group.items.length})</span>
-                        </div>
-                        {/* Items in this type */}
-                        {group.items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="group/item flex items-center gap-2 pl-5 pr-2 py-[5px] rounded-md text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors"
-                          >
-                            <a
-                              href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
-                              className="truncate flex-1 hover:underline"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {formatName(item.component_name)}
-                            </a>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleRemoveItem(item, col.id); }}
-                              className="p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/item:opacity-100 shrink-0"
-                              title="Remove"
-                            >
-                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Expanded tree items — project structure */}
+                {isExpanded && items.length > 0 && (() => {
+                  const tree = buildProjectTree(items);
+                  return (
+                    <div className="ml-1 mt-0.5 mb-1">
+                      {tree.children!.map((child, i) => (
+                        <ProjectTreeNode
+                          key={`${child.name}-${i}`}
+                          node={child}
+                          depth={1}
+                          expandedPaths={expandedPaths}
+                          togglePath={toggleTreePath}
+                          currentPath="project"
+                          onRemoveItem={handleRemoveItem}
+                          collectionId={col.id}
+                        />
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}
@@ -481,7 +817,33 @@ export default function MyComponentsView() {
               </code>
             </div>
 
-            {/* Component list grouped by type */}
+            {/* Project structure view */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-4 h-4 text-[--color-text-tertiary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 17V7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+                </svg>
+                <h4 className="text-[13px] font-medium text-[--color-text-secondary]">Project Structure</h4>
+                <span className="text-[10px] text-[--color-text-tertiary]">How components will be installed</span>
+              </div>
+              <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-4 font-mono text-[12px]">
+                {(() => {
+                  const tree = buildProjectTree(selectedItems);
+                  return (
+                    <MainContentTree
+                      node={tree}
+                      depth={0}
+                      isLast={true}
+                      prefix=""
+                      onRemoveItem={handleRemoveItem}
+                      collectionId={selectedCollection!.id}
+                    />
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Component cards grouped by type */}
             <div className="space-y-6">
               {groupByType(selectedItems).map((group) => (
                 <div key={group.type}>
