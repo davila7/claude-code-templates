@@ -11,10 +11,12 @@ export async function fetchComponents(): Promise<ComponentsData> {
     return cachedData;
   }
 
-  // Resolve relative URLs for server-side fetching
+  // Server-side: resolve relative URLs using deployment URL
   let url = COMPONENTS_JSON_URL;
-  if (url.startsWith('/')) {
-    const base = import.meta.env.SITE ?? `http://localhost:${import.meta.env.PORT ?? 4321}`;
+  if (import.meta.env.SSR && url.startsWith('/')) {
+    const base = import.meta.env.SITE
+      ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
+      ?? `http://localhost:${import.meta.env.PORT ?? 4321}`;
     url = new URL(url, base).href;
   }
 
@@ -22,7 +24,7 @@ export async function fetchComponents(): Promise<ComponentsData> {
   const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const res = await fetch(url, {
+    const res = await fetch(COMPONENTS_JSON_URL, {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
