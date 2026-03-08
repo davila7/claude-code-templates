@@ -1,0 +1,1545 @@
+/* Trending Page Styles - Terminal CLI theme */
+
+/* Use existing terminal theme variables from styles.css */
+
+/* Full viewport height layout */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.terminal {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: none; /* Override styles.css terminal max-width */
+    margin: 0; /* Override styles.css terminal margin */
+    padding: 0; /* Override styles.css terminal padding */
+}
+
+.terminal .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Hero Statistics Section */
+.trending-hero {
+    margin-bottom: 2rem;
+}
+
+/* Growth Analytics Section */
+.growth-analytics-section {
+    margin-bottom: 2rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.analytics-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1.5rem;
+}
+
+.analytics-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.analytics-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.analytics-chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    background: var(--bg-primary);
+    padding: 2rem;
+}
+
+.analytics-chart-container canvas {
+    background: transparent !important;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+}
+
+.hero-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.hero-stat-item:hover {
+    border-color: var(--text-accent);
+    transform: translateY(-2px);
+}
+
+.hero-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.hero-stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero-stat-change {
+    font-size: 0.7rem;
+    color: var(--text-success);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.hero-stat-change.negative {
+    color: var(--text-error);
+}
+
+/* Terminal command header at top */
+.terminal-command-header {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.terminal-command-header .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.search-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.title-params {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: 1.25rem;
+}
+
+.search-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Main Grid Layout */
+.trending-main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+/* Content and sidebar layout */
+@media (min-width: 768px) {
+    .trending-main-grid {
+        grid-template-columns: 1fr 320px;
+        gap: 2rem;
+    }
+
+    .trending-content-area {
+        grid-column: 1;
+    }
+
+    .trending-sidebar {
+        grid-column: 2;
+    }
+}
+
+.trending-content-area {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.trending-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Sidebar on desktop - no sticky, full height */
+@media (min-width: 768px) {
+    .trending-sidebar {
+        align-self: flex-start;
+        height: auto;
+    }
+}
+
+/* Terminal Command Section */
+.terminal-command {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.command-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.prompt {
+    color: var(--text-accent);
+    font-weight: bold;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.command {
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    background: none;
+}
+
+.command-output {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.terminal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-success);
+    display: inline-block;
+    vertical-align: baseline;
+    margin-right: 0.25rem;
+    margin-bottom: 2px;
+}
+
+/* Terminal Controls Section */
+.terminal-controls-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.terminal-filter-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.terminal-prompt {
+    color: var(--text-accent);
+    font-weight: bold;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 1.1rem;
+}
+
+.filter-commands {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.command-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.command-label {
+    color: var(--text-accent);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.command-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.command-option {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.command-option:hover {
+    background: var(--bg-primary);
+    border-color: var(--text-accent);
+    color: var(--text-primary);
+}
+
+.command-option.active {
+    background: var(--text-accent);
+    border-color: var(--text-accent);
+    color: var(--bg-primary);
+}
+
+.terminal-select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+    min-width: 80px;
+}
+
+.terminal-select:focus {
+    outline: none;
+    border-color: var(--text-accent);
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+}
+
+/* Component tabs styling */
+.component-tabs {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 0.25rem;
+}
+
+.component-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.component-tab:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.component-tab.active {
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    font-weight: 500;
+}
+
+/* Trending Items */
+.trending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+    padding: 1.5rem;
+    max-height: calc(100vh - 200px);
+    overflow: hidden;
+}
+
+.trending-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.trending-item:hover {
+    border-color: var(--text-accent);
+    background: var(--bg-secondary);
+}
+
+.trending-rank {
+    flex-shrink: 0;
+    width: 40px;
+}
+
+.rank-number {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-accent);
+}
+
+.trending-content {
+    flex: 1;
+}
+
+.trending-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.trending-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.trending-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--text-accent);
+    flex-shrink: 0;
+}
+
+.trending-name {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.trending-category {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-transform: uppercase;
+    border: 1px solid var(--border-primary);
+}
+
+.trending-type-badge {
+    background: var(--bg-secondary);
+    color: var(--text-accent);
+    border: 1px solid var(--text-accent);
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.install-button {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.install-button:hover {
+    background: var(--text-accent);
+    border-color: var(--text-accent);
+    color: var(--bg-primary);
+}
+
+.install-icon {
+    width: 12px;
+    height: 12px;
+}
+
+.trending-metadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.trending-downloads {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--text-secondary);
+}
+
+.meta-icon {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+@media (max-width: 768px) {
+    .terminal-output-section {
+        min-height: calc(100vh - 280px);
+    }
+    
+    .trending-list {
+        max-height: calc(100vh - 280px);
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .trending-item {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .trending-rank {
+        width: auto;
+    }
+    
+    .trending-metadata {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+/* Terminal Output Section */
+.terminal-output-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 280px);
+}
+
+.terminal-results {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.results-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 0.75rem 1rem;
+}
+
+.terminal-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.results-info {
+    color: var(--text-secondary);
+}
+
+.terminal-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 0;
+    min-height: 600px;
+}
+
+.trending-list {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+/* Terminal Trending Item */
+.trending-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.trending-item:hover {
+    border-color: var(--text-accent);
+    background: rgba(217, 119, 6, 0.05);
+}
+
+.trending-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.trending-item-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.trending-item-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-accent);
+}
+
+.trending-item-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.trending-item-name:hover {
+    color: var(--text-accent);
+    text-decoration: underline;
+}
+
+.trending-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.star-btn {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    transition: all 0.2s ease;
+}
+
+.star-btn:hover {
+    background: var(--text-accent);
+    border-color: var(--text-accent);
+    color: var(--bg-primary);
+}
+
+.trending-item-description {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.trending-item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.trending-item-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--github-text-secondary);
+}
+
+.meta-icon {
+    width: 12px;
+    height: 12px;
+}
+
+.language-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.contributors {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.contributor-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--github-border);
+}
+
+.trending-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.star-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--github-text-secondary);
+}
+
+.trending-growth {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--github-success);
+    font-weight: 500;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.tag {
+    background-color: var(--github-bg-tertiary);
+    border: 1px solid var(--github-border);
+    color: var(--github-text-secondary);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Terminal Sidebar */
+.terminal-sidebar {
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-primary);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.terminal-stats-block, .terminal-categories-block {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.terminal-block-header {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-accent);
+}
+
+.terminal-stats-content {
+    padding: 0.75rem;
+}
+
+.stat-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.stat-line:last-child {
+    margin-bottom: 0;
+}
+
+.stat-key {
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    color: var(--text-success);
+    font-weight: bold;
+}
+
+.terminal-categories-content {
+    padding: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.category-name {
+    color: var(--text-primary);
+}
+
+.category-count {
+    color: var(--text-accent);
+    background: rgba(217, 119, 6, 0.1);
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+}
+
+/* Language Colors */
+.language-dot.javascript { background-color: #f1e05a; }
+.language-dot.typescript { background-color: #3178c6; }
+.language-dot.python { background-color: #3572a5; }
+.language-dot.nodejs { background-color: #68a063; }
+.language-dot.react { background-color: #61dafb; }
+.language-dot.docker { background-color: #384d54; }
+.language-dot.sql { background-color: #e38c00; }
+.language-dot.csharp { background-color: #178600; }
+.language-dot.unity { background-color: #000000; }
+.language-dot.bash { background-color: #89e051; }
+.language-dot.git { background-color: #f14e32; }
+
+/* Footer */
+.footer {
+    background-color: var(--github-bg-secondary);
+    border-top: 1px solid var(--github-border);
+    padding: 32px 0;
+    margin-top: 48px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--github-text-secondary);
+    font-size: 14px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 24px;
+}
+
+.footer-links a {
+    color: var(--github-text-secondary);
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: var(--github-text-primary);
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .trending-main-grid {
+        grid-template-columns: 1fr 280px;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .trending-main-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .trending-sidebar {
+        order: -1;
+        grid-template-columns: 1fr 1fr;
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 1rem;
+    }
+
+    .hero-stat-number {
+        font-size: 1.5rem;
+    }
+
+    /* Growth Analytics tablet styles */
+    .analytics-chart-container {
+        height: 350px;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    .trending-main-grid {
+        gap: 1rem;
+    }
+
+    .trending-sidebar {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+
+    .hero-stat-item {
+        padding: 0.75rem;
+    }
+
+    .hero-stat-number {
+        font-size: 1.25rem;
+    }
+
+    .hero-stat-label {
+        font-size: 0.7rem;
+    }
+
+    /* Growth Analytics responsive styles */
+    .analytics-header {
+        padding: 1rem;
+    }
+
+    .analytics-title {
+        font-size: 1rem;
+    }
+
+    .analytics-subtitle {
+        font-size: 0.75rem;
+    }
+
+    .analytics-chart-container {
+        height: 300px;
+        padding: 1rem;
+    }
+
+    .sidebar-header {
+        padding: 1rem;
+    }
+
+    .sidebar-title {
+        font-size: 0.9rem;
+    }
+
+    .popular-categories {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .popular-item {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .popular-item-name {
+        font-size: 0.75rem;
+    }
+
+    .total-number {
+        font-size: 1rem;
+    }
+
+
+    .terminal-controls-section {
+        padding: 0.75rem;
+    }
+
+    .filter-commands {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .component-tabs {
+        flex-wrap: wrap;
+    }
+
+    .component-tab {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .trending-item {
+        padding: 1rem;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+}
+
+/* Loading States */
+.loading {
+    text-align: center;
+    padding: 48px;
+    color: var(--github-text-secondary);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--github-border);
+    border-top: 3px solid var(--github-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--github-text-secondary);
+}
+
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--github-text-primary);
+    margin-bottom: 8px;
+}
+
+/* Install Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.modal-overlay.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.modal-title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-description {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
+}
+
+.command-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.command-display {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.command-prompt {
+    color: var(--text-accent);
+    font-weight: bold;
+}
+
+.command-text {
+    color: var(--text-primary);
+    flex: 1;
+    word-break: break-all;
+}
+
+.copy-button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+    background: var(--text-accent);
+    border-color: var(--text-accent);
+    color: var(--bg-primary);
+}
+
+.copy-icon {
+    width: 12px;
+    height: 12px;
+}
+
+.copy-feedback {
+    display: none;
+    color: var(--text-accent);
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.copy-feedback.show {
+    display: block;
+}
+
+/* Sidebar Sections */
+.sidebar-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    overflow: visible; /* Changed from hidden to allow content to expand */
+}
+
+.sidebar-header {
+    padding: 1.25rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.sidebar-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.popular-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    min-height: 400px; /* Ensure enough space for all 5 popular items */
+}
+
+.popular-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 0.875rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: auto;
+}
+
+.popular-item:hover {
+    border-color: var(--text-accent);
+    background: rgba(217, 119, 6, 0.05);
+}
+
+.popular-item-header {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.popular-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.popular-item-type {
+    color: var(--text-accent);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    margin-bottom: 0.25rem;
+}
+
+.popular-item-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.popular-total-downloads {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.total-number {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    line-height: 1;
+    margin-bottom: 0.125rem;
+}
+
+.total-label {
+    color: var(--text-secondary);
+    font-size: 0.6rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.popular-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.popular-install-btn {
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.2s ease;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.popular-install-btn:hover {
+    background: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.popular-install-icon {
+    width: 10px;
+    height: 10px;
+}
+
+/* Category rank indicator for popular items */
+.popular-rank {
+    background: linear-gradient(135deg, var(--text-accent), var(--text-primary));
+    color: var(--bg-primary);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .popular-categories {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .popular-categories {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .popular-item {
+        padding: 0.75rem;
+        min-height: 100px;
+    }
+
+    .popular-item-name {
+        font-size: 0.8rem;
+    }
+
+    .total-number {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .popular-categories {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Top Countries Section */
+.top-countries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    min-height: 400px; /* Ensure enough space for all 5 countries */
+}
+
+.country-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 0.875rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.country-item:hover {
+    border-color: var(--text-accent);
+    background: rgba(217, 119, 6, 0.05);
+    transform: translateX(2px);
+}
+
+.country-flag {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.country-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.country-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.country-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.country-downloads {
+    color: var(--text-accent);
+    font-weight: 600;
+}
+
+.country-percentage {
+    color: var(--text-secondary);
+}
+
+.country-bar-container {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-secondary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.country-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--text-accent), var(--text-primary));
+    transition: width 0.6s ease;
+    border-radius: 2px;
+}
+
+/* Responsive adjustments for countries */
+@media (max-width: 768px) {
+    .top-countries-list {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .country-item {
+        padding: 0.75rem;
+    }
+
+    .country-flag {
+        font-size: 1.25rem;
+    }
+
+    .country-name {
+        font-size: 0.75rem;
+    }
+
+    .country-stats {
+        font-size: 0.65rem;
+    }
+}
+

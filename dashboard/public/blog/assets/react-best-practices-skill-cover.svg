@@ -1,0 +1,60 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d2d2d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-gradient)"/>
+
+  <!-- React Logo -->
+  <g transform="translate(150, 180)">
+    <circle cx="100" cy="100" r="25" fill="#61dafb" opacity="0.2"/>
+    <ellipse cx="100" cy="100" rx="80" ry="30" fill="none" stroke="#61dafb" stroke-width="6"/>
+    <ellipse cx="100" cy="100" rx="80" ry="30" fill="none" stroke="#61dafb" stroke-width="6" transform="rotate(60 100 100)"/>
+    <ellipse cx="100" cy="100" rx="80" ry="30" fill="none" stroke="#61dafb" stroke-width="6" transform="rotate(120 100 100)"/>
+    <circle cx="100" cy="100" r="15" fill="#61dafb"/>
+  </g>
+
+  <!-- Performance Icon -->
+  <g transform="translate(900, 180)">
+    <path d="M100,50 L150,100 L100,150 L50,100 Z" fill="none" stroke="#00ff41" stroke-width="6"/>
+    <path d="M70,100 L130,100" stroke="#00ff41" stroke-width="6" stroke-linecap="round"/>
+    <path d="M100,70 L100,130" stroke="#00ff41" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="10" fill="#00ff41"/>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="250" font-family="'Courier New', monospace" font-size="52" font-weight="bold" fill="#00ff41" text-anchor="middle">
+    React Best Practices
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="310" font-family="'Courier New', monospace" font-size="32" fill="#b0b0b0" text-anchor="middle">
+    Performance Optimization Skill
+  </text>
+
+  <!-- Description -->
+  <text x="600" y="380" font-family="'Courier New', monospace" font-size="24" fill="#808080" text-anchor="middle">
+    40+ Rules for React &amp; Next.js Performance
+  </text>
+
+  <!-- Command Line -->
+  <rect x="200" y="430" width="800" height="100" fill="#0a0a0a" stroke="#00ff41" stroke-width="2" rx="8"/>
+  <text x="220" y="470" font-family="'Courier New', monospace" font-size="18" fill="#00ff41">
+    <tspan>$ npx claude-code-templates@latest \</tspan>
+  </text>
+  <text x="240" y="500" font-family="'Courier New', monospace" font-size="18" fill="#b0b0b0">
+    <tspan>  --skill=web-development/react-best-practices --yes</tspan>
+  </text>
+
+  <!-- Terminal cursor -->
+  <rect x="720" y="485" width="12" height="20" fill="#00ff41" opacity="0.8"/>
+
+  <!-- Bottom tag -->
+  <text x="600" y="580" font-family="'Courier New', monospace" font-size="20" fill="#606060" text-anchor="middle">
+    Claude Code Templates • aitmpl.com
+  </text>
+</svg>

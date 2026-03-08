@@ -1,0 +1,648 @@
+/* Plugin Detail Page Styles */
+
+.plugin-detail-page {
+    min-height: calc(100vh - 200px);
+}
+
+/* Back Navigation */
+.back-navigation {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-secondary);
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.back-link:hover {
+    color: var(--text-accent);
+}
+
+.back-link svg {
+    transition: transform 0.2s ease;
+}
+
+.back-link:hover svg {
+    transform: translateX(-4px);
+}
+
+.loading-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-secondary);
+    border-top-color: var(--text-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error-state {
+    color: var(--text-secondary);
+}
+
+.error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.error-state h2 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.back-button {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+/* Plugin Hero Section */
+.plugin-hero {
+    display: flex;
+    gap: 2rem;
+    padding: 3rem 0;
+    border-bottom: 1px solid var(--border-secondary);
+    margin-bottom: 3rem;
+}
+
+.plugin-icon {
+    flex-shrink: 0;
+}
+
+.plugin-icon .component-icon {
+    font-size: 5rem;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border-secondary);
+}
+
+.plugin-header-info {
+    flex: 1;
+}
+
+.plugin-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.plugin-version {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.plugin-author {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.plugin-author::before {
+    content: "👤";
+}
+
+.plugin-hero h1 {
+    font-size: 2.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.plugin-description {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.plugin-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.plugin-hero .keyword-badge {
+    background: var(--bg-tertiary);
+    color: var(--text-accent);
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--border-secondary);
+}
+
+/* Installation Section */
+.installation-section {
+    margin-bottom: 3rem;
+}
+
+.installation-section h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.installation-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.step {
+    display: flex;
+    gap: 1.5rem;
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-secondary);
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.command-box {
+    position: relative;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.command-box code {
+    flex: 1;
+    color: var(--text-accent);
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+.command-box .copy-btn {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.command-box .copy-btn:hover {
+    background: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+/* Components Section */
+.components-section {
+    margin-bottom: 3rem;
+}
+
+.components-section h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.component-category {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.category-icon {
+    font-size: 1.5rem;
+}
+
+.category-header h3 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.component-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.component-item {
+    padding: 0.75rem 1rem;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.2s ease;
+}
+
+.component-item:hover {
+    background: var(--bg-primary);
+}
+
+.component-name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.component-name::before {
+    content: "▸";
+    color: var(--text-accent);
+    font-weight: bold;
+}
+
+.component-install-btn {
+    flex-shrink: 0;
+    padding: 0.4rem 0.75rem;
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.component-install-btn:hover {
+    background: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.component-install-btn svg {
+    flex-shrink: 0;
+}
+
+/* Related Plugins Section */
+.related-section {
+    margin-bottom: 3rem;
+}
+
+.related-section h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.related-plugins {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.related-plugin-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.related-plugin-card:hover {
+    border-color: var(--text-accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.related-plugin-card h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+}
+
+.related-plugin-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.related-plugin-stats {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-secondary);
+}
+
+.related-plugin-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Install Command Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    position: relative;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+    z-index: 1001;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.modal-header h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.modal-command-box {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-command-box code {
+    color: var(--text-accent);
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.95rem;
+    word-break: break-all;
+    line-height: 1.5;
+    display: block;
+}
+
+.modal-copy-btn {
+    padding: 0.75rem 1.25rem;
+    background: var(--text-accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    align-self: flex-end;
+}
+
+.modal-copy-btn:hover {
+    background: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal-copy-btn svg {
+    flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .plugin-hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .plugin-hero h1 {
+        font-size: 2rem;
+    }
+
+    .plugin-meta {
+        justify-content: center;
+    }
+
+    .plugin-keywords {
+        justify-content: center;
+    }
+
+    .components-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .related-plugins {
+        grid-template-columns: 1fr;
+    }
+
+    .step {
+        flex-direction: column;
+    }
+
+    .step-number {
+        align-self: flex-start;
+    }
+
+    .command-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .command-box .copy-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-content {
+        margin: 1rem;
+    }
+
+    .modal-header,
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-copy-btn {
+        width: 100%;
+    }
+}
