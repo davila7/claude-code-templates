@@ -29,7 +29,7 @@
 
 ---
 
-> **🧪 NEW: Dashboard Beta** — Try our new dashboard at **[app.aitmpl.com](https://app.aitmpl.com)** to manage your collections, track installations, and explore components with a modern UI. Currently in beta — feedback welcome!
+> **🧪 NEW: Dashboard** — Explore components, manage collections, and track installations at **[www.aitmpl.com](https://www.aitmpl.com)**. Currently in beta — feedback welcome!
 
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
 
