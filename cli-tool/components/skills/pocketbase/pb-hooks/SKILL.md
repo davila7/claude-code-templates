@@ -127,13 +127,13 @@ onRecordCreateExecute(function(e) {
 }, "posts")  // optional collection filter
 
 // After successful create
-onRecordCreateAfterSuccessExecute(function(e) {
+onRecordAfterCreateSuccess(function(e) {
     // e.record — the created record (has ID now)
     console.log("Created:", e.record.id)
 }, "posts")
 
 // After failed create
-onRecordCreateAfterErrorExecute(function(e) {
+onRecordAfterCreateError(function(e) {
     // e.error — the error
     console.log("Failed:", e.error)
 }, "posts")
@@ -146,6 +146,12 @@ onRecordCreateAfterErrorExecute(function(e) {
 | `onRecordCreateExecute` | `e.record` |
 | `onRecordUpdateExecute` | `e.record` |
 | `onRecordDeleteExecute` | `e.record` |
+| `onRecordAfterCreateSuccess` | `e.record` — after successful create |
+| `onRecordAfterUpdateSuccess` | `e.record` — after successful update |
+| `onRecordAfterDeleteSuccess` | `e.record` — after successful delete |
+| `onRecordAfterCreateError` | `e.record`, `e.error` — after failed create |
+| `onRecordAfterUpdateError` | `e.record`, `e.error` — after failed update |
+| `onRecordAfterDeleteError` | `e.record`, `e.error` — after failed delete |
 | `onRecordValidate` | `e.record` — add custom validation errors |
 | `onRecordEnrich` | `e.record` — modify API response (hide/add fields) |
 | `onRecordsListRequest` | `e.records`, `e.result` — modify list response |
@@ -242,7 +248,7 @@ onRecordValidate(function(e) {
 onRecordEnrich(function(e) {
     // Hide field from non-owners
     if (!e.requestInfo.auth || e.requestInfo.auth.id !== e.record.getString("author")) {
-        e.record.set("private_notes", undefined)
+        e.record.hide("private_notes")
     }
     // Add computed field
     e.record.withCustomData(true)

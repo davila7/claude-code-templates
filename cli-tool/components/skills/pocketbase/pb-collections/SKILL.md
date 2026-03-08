@@ -100,10 +100,10 @@ categories.parent -> categories (maxSelect: 1)
 Enable per-provider in collection settings. Each provider needs client ID + secret. PocketBase handles the full OAuth2 flow.
 
 ### OTP (One-Time Password)
-Enable in auth collection settings. Sends code via email. Configure `OTP.enabled`, `OTP.duration`, `OTP.length`.
+Enable in auth collection settings. Sends code via email. Configure `otp.enabled`, `otp.duration`, `otp.length`.
 
 ### MFA (Multi-Factor Authentication)
-Enable in auth collection settings. Requires a second factor after primary auth. `MFA.enabled`, `MFA.duration`, `MFA.rule` (filter to determine which users need MFA).
+Enable in auth collection settings. Requires a second factor after primary auth. `mfa.enabled`, `mfa.duration`, `mfa.rule` (filter to determine which users need MFA).
 
 ### Password Auth
 Enabled by default. Can customize `minPasswordLength`. Can disable entirely if using only OAuth2/OTP.

@@ -12,7 +12,7 @@ npm install pocketbase
 # or
 yarn add pocketbase
 # or
-<script src="https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.25.0/dist/pocketbase.umd.js"></script>
 ```
 
 ```js

@@ -17,7 +17,7 @@ Each collection has 5 rule types. Each rule is a **filter expression** that must
 | **Update** | `PATCH /api/collections/{name}/records/{id}` | nobody can update | everyone can update |
 | **Delete** | `DELETE /api/collections/{name}/records/{id}` | nobody can delete | everyone can delete |
 
-**Critical**: `null`/locked means NOBODY (not even superusers via the API rule path — superusers bypass rules entirely). Empty string `""` means EVERYONE including guests.
+**Critical**: `null`/locked means only superusers can perform the action (regular users and guests are denied). Empty string `""` means EVERYONE including guests. Superusers always bypass API rules entirely — see below.
 
 ## Superuser Bypass
 

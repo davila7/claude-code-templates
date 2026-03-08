@@ -76,8 +76,8 @@ migrate(
                 "CREATE INDEX idx_posts_status ON posts (status)",
                 "CREATE UNIQUE INDEX idx_posts_title ON posts (title)"
             ],
-            listRule: "",
-            viewRule: "",
+            listRule: "",   // WARNING: "" means public access — use a filter or null to restrict
+            viewRule: "",   // WARNING: "" means public access — use a filter or null to restrict
             createRule: "@request.auth.id != ''",
             updateRule: "author = @request.auth.id",
             deleteRule: "author = @request.auth.id"
@@ -220,8 +220,9 @@ onBootstrap(function(e) {
 migrate(function(app) {
     var superusers = app.findCollectionByNameOrId("_superusers")
     var record = new Record(superusers)
-    record.set("email", "admin@example.com")
-    record.set("password", "securepassword123")
+    // IMPORTANT: use env vars or strong unique credentials — never hardcode in production
+    record.set("email", $os.getenv("PB_ADMIN_EMAIL") || "admin@example.com")
+    record.set("password", $os.getenv("PB_ADMIN_PASSWORD") || "CHANGE-ME-BEFORE-DEPLOY")
     app.save(record)
 })
 ```
@@ -255,4 +256,4 @@ PocketBase tracks applied migrations in the internal `_migrations` table:
 5. **Test migrations**: apply on a copy of production data before deploying
 6. **Use `migrate collections`** periodically to snapshot current state for documentation
 7. **Never edit applied migrations** — create a new migration to fix issues
-8. **Seed data**: use `onBootstrap` hook or a dedicated migration for initial data
+8. **Seed data**: prefer a dedicated migration for one-time initial data; if using `onBootstrap`, make the seed logic idempotent (existence checks/upserts) because bootstrap runs on every app start

@@ -107,6 +107,7 @@ RUN apk add --no-cache \
     ca-certificates
 
 # Download and install PocketBase
+# NOTE: verify the checksum in production — see https://github.com/pocketbase/pocketbase/releases
 ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /pb/ && rm /tmp/pb.zip
 
@@ -175,6 +176,11 @@ server {
     ssl_ciphers HIGH:!aNULL:!MD5;
 
     client_max_body_size 50M;
+
+    # Block public access to the admin dashboard
+    location /_/ {
+        return 403;
+    }
 
     location / {
         proxy_pass http://127.0.0.1:8090;
