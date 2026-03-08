@@ -11,11 +11,11 @@ Each collection has 5 rule types. Each rule is a **filter expression** that must
 
 | Rule | Controls | Locked = | Empty string = |
 |------|----------|----------|----------------|
-| **List** | `GET /api/collections/{name}/records` | nobody can list | everyone can list |
-| **View** | `GET /api/collections/{name}/records/{id}` | nobody can view | everyone can view |
-| **Create** | `POST /api/collections/{name}/records` | nobody can create | everyone can create |
-| **Update** | `PATCH /api/collections/{name}/records/{id}` | nobody can update | everyone can update |
-| **Delete** | `DELETE /api/collections/{name}/records/{id}` | nobody can delete | everyone can delete |
+| **List** | `GET /api/collections/{name}/records` | superusers only | everyone can list |
+| **View** | `GET /api/collections/{name}/records/{id}` | superusers only | everyone can view |
+| **Create** | `POST /api/collections/{name}/records` | superusers only | everyone can create |
+| **Update** | `PATCH /api/collections/{name}/records/{id}` | superusers only | everyone can update |
+| **Delete** | `DELETE /api/collections/{name}/records/{id}` | superusers only | everyone can delete |
 
 **Critical**: `null`/locked means only superusers can perform the action (regular users and guests are denied). Empty string `""` means EVERYONE including guests. Superusers always bypass API rules entirely — see below.
 

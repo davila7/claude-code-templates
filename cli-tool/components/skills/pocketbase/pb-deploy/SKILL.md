@@ -127,7 +127,7 @@ services:
   pocketbase:
     build: .
     ports:
-      - "8090:8090"
+      - "127.0.0.1:8090:8090"  # bind to localhost only — expose via reverse proxy
     volumes:
       - pb_data:/pb/pb_data
       - ./pb_hooks:/pb/pb_hooks

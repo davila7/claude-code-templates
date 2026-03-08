@@ -220,9 +220,14 @@ onBootstrap(function(e) {
 migrate(function(app) {
     var superusers = app.findCollectionByNameOrId("_superusers")
     var record = new Record(superusers)
-    // IMPORTANT: use env vars or strong unique credentials — never hardcode in production
-    record.set("email", $os.getenv("PB_ADMIN_EMAIL") || "admin@example.com")
-    record.set("password", $os.getenv("PB_ADMIN_PASSWORD") || "CHANGE-ME-BEFORE-DEPLOY")
+    // IMPORTANT: always set PB_ADMIN_EMAIL and PB_ADMIN_PASSWORD env vars
+    var email = $os.getenv("PB_ADMIN_EMAIL")
+    var password = $os.getenv("PB_ADMIN_PASSWORD")
+    if (!email || !password) {
+        throw new Error("PB_ADMIN_EMAIL and PB_ADMIN_PASSWORD env vars are required")
+    }
+    record.set("email", email)
+    record.set("password", password)
     app.save(record)
 })
 ```
