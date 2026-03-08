@@ -22,7 +22,7 @@ export async function fetchComponents(): Promise<ComponentsData> {
   const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const res = await fetch(COMPONENTS_JSON_URL, {
+    const res = await fetch(url, {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
