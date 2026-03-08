@@ -2,10 +2,6 @@
 .astro/
 dist/
 
-# Generated data (fetched at runtime from www.aitmpl.com)
-public/components.json
-public/trending-data.json
-
 # Vercel
 .vercel
 
