@@ -179,7 +179,7 @@ vercel --prod
 
 ### Critical Endpoints
 
-The `/api` directory contains Vercel Serverless Functions:
+API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 
 **`/api/track-download-supabase`** (CRITICAL)
 - Tracks component downloads for analytics
@@ -195,39 +195,12 @@ The `/api` directory contains Vercel Serverless Functions:
 - Vercel Cron: every 30 minutes
 - Database: Neon (claude_code_versions, claude_code_changes, discord_notifications_log, monitoring_metadata tables)
 
-### Deployment Workflow
+### Shared API Libraries
 
-**ALWAYS test before deploying:**
-
-```bash
-# 1. Run API tests
-cd api
-npm test
-
-# 2. If tests pass, deploy
-cd ..
-vercel --prod
-
-# 3. Monitor logs
-vercel logs aitmpl.com --follow
-```
-
-### Environment Variables (Vercel)
-
-```bash
-# Supabase
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=xxx
-
-# Neon Database
-NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
-
-# Discord
-DISCORD_APP_ID=xxx
-DISCORD_BOT_TOKEN=xxx
-DISCORD_PUBLIC_KEY=xxx
-DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx
-```
+- `dashboard/src/lib/api/cors.ts` — CORS headers, `corsResponse()`, `jsonResponse()`
+- `dashboard/src/lib/api/neon.ts` — Neon client factory
+- `dashboard/src/lib/api/auth.ts` — Clerk JWT verification
+- `dashboard/src/lib/api/changelog-parser.ts` — Claude Code changelog parser
 
 ### Emergency Rollback
 
@@ -294,54 +267,70 @@ GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 
 **Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report.
 
-## Dashboard (app.aitmpl.com)
+## Dashboard (www.aitmpl.com)
 
-Astro + React + Tailwind dashboard deployed at `https://app.aitmpl.com`. Clerk auth for user collections. Source lives in `dashboard/`.
+Astro + React + Tailwind dashboard serving both `www.aitmpl.com` and `app.aitmpl.com`. Clerk auth for user collections. Source lives in `dashboard/`. All API endpoints are Astro API routes in the same project.
 
 ### Architecture
 
 - **Framework**: Astro 5 with React islands, Tailwind v4, `output: 'server'`
 - **Auth**: Clerk (`window.Clerk` global, no ClerkProvider per island)
-- **Data**: Fetches from `https://www.aitmpl.com/components.json` at runtime (NOT bundled)
-- **API proxy**: `dashboard/src/pages/api/[...path].ts` proxies to `localhost:3000` in dev, `https://www.aitmpl.com` in prod
+- **Data**: `components.json` and `trending-data.json` served from `dashboard/public/` (same-origin)
+- **APIs**: All endpoints in `dashboard/src/pages/api/` (Astro API routes, no separate serverless project)
 
 ### Vercel Project Setup
 
-Two separate Vercel projects deploy from the same repo:
+Single Vercel project serves all domains:
 
-| Project | Domain | Root Directory |
-|---------|--------|----------------|
-| `aitmpl` | `www.aitmpl.com` | `/` (root) |
-| `aitmpl-dashboard` | `app.aitmpl.com` | `dashboard` |
+| Project | Domains | Root Directory |
+|---------|---------|----------------|
+| `aitmpl-dashboard` | `www.aitmpl.com`, `aitmpl.com` (redirect), `app.aitmpl.com` | `dashboard` |
 
-Each directory has its own `.vercel/project.json` with the correct project ID. Do NOT mix them up.
+The legacy root project (`aitmpl`) is archived — only its `.vercel.app` subdomain remains.
 
 ### Deployment
 
 **ALWAYS use the deployer agent (`.claude/agents/deployer.md`) for all deployments.** It runs pre-deploy checks (auth, git status, API tests) and handles the full pipeline safely. Never deploy manually.
 
 ```bash
-npm run deploy:site        # Deploy www.aitmpl.com (main site + API)
-npm run deploy:dashboard   # Deploy app.aitmpl.com (Astro dashboard)
-npm run deploy:all         # Deploy both
+npm run deploy             # Deploy www + app.aitmpl.com
+npm run deploy:dashboard   # Same as above
 ```
 
 **CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
-- Changes in `docs/`, `api/`, or `vercel.json` trigger site deploy
-- Changes in `dashboard/` trigger dashboard deploy
+- Changes in `dashboard/**` trigger deploy
 
 **Required GitHub Secrets** (Settings > Secrets > Actions):
 - `VERCEL_TOKEN` — Vercel personal access token
 - `VERCEL_ORG_ID` — Vercel org/team ID
-- `VERCEL_SITE_PROJECT_ID` — Project ID for www.aitmpl.com
-- `VERCEL_DASHBOARD_PROJECT_ID` — Project ID for app.aitmpl.com
+- `VERCEL_DASHBOARD_PROJECT_ID` — Project ID for aitmpl-dashboard
 
-### Dashboard Environment Variables (Vercel)
+### Environment Variables (Vercel)
 
 ```bash
-PUBLIC_CLERK_PUBLISHABLE_KEY=xxx           # Clerk public key
-CLERK_SECRET_KEY=xxx                        # Clerk secret key
-PUBLIC_COMPONENTS_JSON_URL=https://www.aitmpl.com/components.json  # MUST use www
+# Clerk
+PUBLIC_CLERK_PUBLISHABLE_KEY=xxx
+CLERK_SECRET_KEY=xxx
+
+# Data
+PUBLIC_COMPONENTS_JSON_URL=/components.json
+
+# GitHub OAuth
+PUBLIC_GITHUB_CLIENT_ID=xxx
+GITHUB_CLIENT_SECRET=xxx
+
+# Supabase (download tracking)
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=xxx
+
+# Neon Database
+NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+
+# Discord
+DISCORD_APP_ID=xxx
+DISCORD_BOT_TOKEN=xxx
+DISCORD_PUBLIC_KEY=xxx
+DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx
 ```
 
 ### Known Issues & Solutions
@@ -350,40 +339,36 @@ PUBLIC_COMPONENTS_JSON_URL=https://www.aitmpl.com/components.json  # MUST use ww
 - Node v24 has a bug with `writeFileSync` in Vercel's build environment
 - Solution: Dashboard project is pinned to Node 22.x (set via Vercel API/dashboard)
 
-**CORS: Always use `www.aitmpl.com` for cross-origin fetches**
-- `aitmpl.com` (bare domain) 307-redirects to `www.aitmpl.com`
-- The redirect response has NO CORS headers, which blocks browser fetches from `app.aitmpl.com`
-- `www.aitmpl.com` serves the actual response WITH `Access-Control-Allow-Origin: *`
-- The `PUBLIC_COMPONENTS_JSON_URL` env var MUST point to `https://www.aitmpl.com/...` (not `https://aitmpl.com/...`)
-- CORS headers are configured in the root `vercel.json` under `headers`
+**Vercel CLI ignores local `.vercel/project.json`**
+- The CLI often resolves to the parent directory's project. Use `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` env vars to force the correct project.
 
 ### Local Development
 
 ```bash
 cd dashboard
 npm install
-npx astro dev --port 4321   # Dashboard at http://localhost:4321
-# In another terminal, for API proxy:
-node api/dev-server.js       # API at http://localhost:3000
+npx astro dev --port 4321   # Dashboard + APIs at http://localhost:4321
 ```
 
-## Website Architecture (docs/)
+## Data Files
 
-Static website at https://aitmpl.com for browsing components.
+### Component Catalog
 
-### Key Files
-
-- `docs/components.json` - Component catalog (generated, ~2MB)
-- `docs/index.html` - Main component browser
-- `docs/blog/` - Blog articles
-- `docs/js/` - Vanilla JavaScript (data-loader, search, cart)
+- `docs/components.json` — Generated catalog (source of truth)
+- `dashboard/public/components.json` — Copy served by the dashboard
+- `dashboard/public/trending-data.json` — Trending/download stats
 
 ### Data Flow
 
 1. `scripts/generate_components_json.py` scans `cli-tool/components/`
 2. Generates `docs/components.json` with embedded content
-3. Website loads JSON and renders component cards
-4. Download tracking via `/api/track-download-supabase`
+3. Copy to `dashboard/public/components.json` for the dashboard to serve
+4. Dashboard loads JSON and renders component cards
+5. Download tracking via `/api/track-download-supabase`
+
+### Legacy Static Site (docs/)
+
+The `docs/` directory contains the old static HTML site (no longer deployed to www). Blog articles in `docs/blog/` are still referenced externally.
 
 ### Blog Article Creation
 
@@ -423,7 +408,6 @@ This automatically:
 npm test                 # Run all tests
 npm run test:watch      # Watch mode
 npm run test:coverage   # Coverage report
-cd api && npm test      # Test API endpoints
 ```
 
 Aim for 70%+ test coverage. Test critical paths and error handling.
@@ -431,8 +415,8 @@ Aim for 70%+ test coverage. Test critical paths and error handling.
 ## Common Issues
 
 **API endpoint returns 404 after deploy**
-- Serverless functions must be in `/api/` directory
-- Use format: `/api/function-name.js` or `/api/folder/index.js`
+- API routes must be in `dashboard/src/pages/api/` as Astro API routes
+- Export named HTTP methods: `export const POST: APIRoute`, `export const GET: APIRoute`
 
 **Download tracking not working**
 - Check Vercel logs: `vercel logs aitmpl.com --follow`
@@ -441,8 +425,8 @@ Aim for 70%+ test coverage. Test critical paths and error handling.
 
 **Components not updating on website**
 - Run `python scripts/generate_components_json.py`
-- Clear browser cache
-- Check `docs/components.json` file size
+- Copy `docs/components.json` to `dashboard/public/components.json`
+- Deploy and clear browser cache
 
 ## Important Notes
 

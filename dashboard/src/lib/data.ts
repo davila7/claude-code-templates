@@ -11,13 +11,11 @@ export async function fetchComponents(): Promise<ComponentsData> {
     return cachedData;
   }
 
-  // Server-side: resolve relative URLs using deployment URL
+  // Server-side: resolve relative URLs to absolute (fetch() needs full URL on Node)
   let url = COMPONENTS_JSON_URL;
-  if (import.meta.env.SSR && url.startsWith('/')) {
-    const base = import.meta.env.SITE
-      ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
-      ?? `http://localhost:${import.meta.env.PORT ?? 4321}`;
-    url = new URL(url, base).href;
+  if (typeof window === 'undefined' && url.startsWith('/')) {
+    const base = import.meta.env.SITE || 'https://www.aitmpl.com';
+    url = `${base}${url}`;
   }
 
   const controller = new AbortController();
