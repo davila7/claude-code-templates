@@ -9,6 +9,33 @@ import { VALID_TYPES } from '../lib/icons';
 
 export const prerender = true;
 
+const TYPE_META: Record<string, { title: string; description: string }> = {
+  skills: {
+    title: 'Claude Code Skills: Pre-built Templates & Configurations',
+    description: 'Browse skills for Claude Code. Pre-built templates and configurations to enhance your AI development workflow. Install with a single npx command.'
+  },
+  agents: {
+    title: '600+ AI Agents for Claude Code — Development, Security, DevOps',
+    description: '600+ specialized AI agents for Claude Code. Frontend, backend, security, DevOps, data science, and more. Install with a single npx command.'
+  },
+  commands: {
+    title: '200+ Slash Commands for Claude Code Workflows',
+    description: '200+ custom slash commands for Claude Code. Automate testing, deployment, code review, and more. Install with a single npx command.'
+  },
+  settings: {
+    title: 'Claude Code Settings: 60+ Configuration Templates',
+    description: '60+ configuration templates for Claude Code. Statuslines, permissions, model settings, and more. Install with a single npx command.'
+  },
+  hooks: {
+    title: '39+ Claude Code Hooks: Automation Triggers & Scripts',
+    description: '39+ automation hooks for Claude Code. Git hooks, notification triggers, and custom scripts. Install with a single npx command.'
+  },
+  mcps: {
+    title: '55+ MCP Integrations for Claude Code — External Services',
+    description: '55+ Model Context Protocol integrations for Claude Code. Connect to databases, APIs, and external services. Install with a single npx command.'
+  },
+};
+
 const { type } = Astro.params;
 const activeType = type && VALID_TYPES.includes(type) ? type : 'skills';
 
@@ -24,7 +51,10 @@ export function getStaticPaths() {
 }
 ---
 
-<DashboardLayout title={`${activeType.charAt(0).toUpperCase() + activeType.slice(1)} - Claude Code Templates`}>
+<DashboardLayout
+  title={TYPE_META[activeType]?.title ?? `${activeType.charAt(0).toUpperCase() + activeType.slice(1)} - Claude Code Templates`}
+  description={TYPE_META[activeType]?.description ?? `Browse ${activeType} for Claude Code. Install with a single npx command.`}
+>
   <TopBar />
   <FeaturedSection />
   <ComponentGrid client:load initialType={activeType} />

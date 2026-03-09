@@ -107,7 +107,10 @@ const infoCards = CARD_FIELDS.filter((f) => {
 });
 ---
 
-<DashboardLayout title={`${title} - Claude Code Templates`}>
+<DashboardLayout
+  title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
+  description={frontmatter.description ? `${frontmatter.description.slice(0, 155)}` : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`}
+>
   <div class="max-w-4xl mx-auto px-6 py-8">
     {/* Back nav */}
     <a

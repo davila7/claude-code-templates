@@ -1,0 +1,23 @@
+# robots.txt - Claude Code Templates
+# https://www.aitmpl.com
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /github-callback
+Disallow: /my-components
+
+# AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: CCBot
+Disallow: /
+
+Sitemap: https://www.aitmpl.com/sitemap-index.xml
