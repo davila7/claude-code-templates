@@ -1,7 +1,7 @@
 ---
 description: "Initialize Spec-Driven Development structure in the current project"
 argument-hint: "[optional: project description or principles focus]"
-allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(ls:*), Bash(test:*), Write, Read
+allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(ls:*), Bash(test:*), Bash(touch:*), Write, Read
 ---
 
 # SDD Init

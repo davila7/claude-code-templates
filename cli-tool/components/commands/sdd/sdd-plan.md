@@ -169,7 +169,7 @@ Create `specs/$BRANCH/data-model.md`:
 For web services, CLIs, or libraries — create `specs/$BRANCH/contracts/`:
 
 **REST API** → `contracts/api-spec.md`:
-```markdown
+`````markdown
 # API Contract: [FEATURE NAME]
 
 ## POST /resource
@@ -192,7 +192,7 @@ For web services, CLIs, or libraries — create `specs/$BRANCH/contracts/`:
 ```
 
 **Error responses**: 400 (validation), 401 (auth), 404 (not found), 500 (server error)
-```
+`````
 
 Skip contracts if purely internal feature (build scripts, CLI tools without public API, etc.)
 

@@ -1,7 +1,7 @@
 ---
 description: "Create a feature specification from a natural language description — creates git branch and spec.md"
 argument-hint: "[feature description: what you want to build and why]"
-allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(date:*), Bash(printf:*), Read, Write
+allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(date:*), Bash(printf:*), Bash(ls:*), Bash(grep:*), Bash(sort:*), Bash(tail:*), Bash(echo:*), Read, Write
 ---
 
 # SDD Specify
@@ -24,8 +24,11 @@ Transform the feature description into a structured specification and create the
 **Determine next feature number:**
 ```bash
 # Get highest number from existing spec directories and branches
-HIGHEST_SPEC=$(ls specs/ 2>/dev/null | grep -oE '^[0-9]+' | sort -n | tail -1 || echo "0")
-HIGHEST_BRANCH=$(git branch -a 2>/dev/null | grep -oE '[0-9]{3}-' | grep -oE '[0-9]{3}' | sort -n | tail -1 || echo "0")
+set -o pipefail
+HIGHEST_SPEC=$(ls specs/ 2>/dev/null | grep -oE '^[0-9]+' | sort -n | tail -1) || HIGHEST_SPEC="0"
+HIGHEST_BRANCH=$(git branch -a 2>/dev/null | grep -oE '[0-9]{3}-' | grep -oE '[0-9]{3}' | sort -n | tail -1) || HIGHEST_BRANCH="0"
+HIGHEST_SPEC=${HIGHEST_SPEC:-0}
+HIGHEST_BRANCH=${HIGHEST_BRANCH:-0}
 NEXT=$(($(echo -e "$HIGHEST_SPEC\n$HIGHEST_BRANCH" | sort -n | tail -1) + 1))
 FEATURE_NUM=$(printf "%03d" $NEXT)
 ```

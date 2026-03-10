@@ -60,7 +60,7 @@ Defines non-negotiable principles. Everything else must comply.
 ```
 /sdd-specify Build a user authentication system with email/password and OAuth2 support
 ```
-Creates git branch `NNN-feature-name` and `specs/NNN/spec.md` with user stories, FRs, success criteria.
+Creates git branch `NNN-feature-name` and `specs/NNN-feature-name/spec.md` with user stories, FRs, success criteria.
 **Focus: WHAT and WHY only. No tech stack.**
 
 ### Step 3: Clarify (before planning)
