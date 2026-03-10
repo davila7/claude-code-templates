@@ -85,7 +85,7 @@ Internally construct (do not output):
 ## Specification Analysis Report
 **Feature**: NNN-feature-name
 **Analyzed**: YYYY-MM-DD
-**Artifacts**: spec.md ✅ | plan.md ✅ | tasks.md [✅/—] | constitution.md ✅
+**Artifacts**: spec.md ✅ | plan.md ✅ | tasks.md [✅/—] | CONSTITUTION.md ✅
 
 ### Findings
 
@@ -125,20 +125,20 @@ Based on findings:
 
 **If CRITICAL issues exist:**
 ```
-⛔ CRITICAL issues found — resolve before /sdd.implement
+⛔ CRITICAL issues found — resolve before /sdd-implement
 
 Critical items:
   [C1] [summary] → [action]
 
 Recommended commands:
-  - /sdd.specify to refine [area]
-  - /sdd.plan to adjust [decision]
+  - /sdd-specify to refine [area]
+  - /sdd-plan to adjust [decision]
   - Edit tasks.md manually to add coverage for [requirement]
 ```
 
 **If only MEDIUM/LOW:**
 ```
-✅ No blockers found. You may proceed to /sdd.implement.
+✅ No blockers found. You may proceed to /sdd-implement.
 
 Suggestions (optional improvements):
   [list]
@@ -147,7 +147,7 @@ Suggestions (optional improvements):
 **If zero issues:**
 ```
 ✅ Perfect consistency — all artifacts aligned.
-Proceed with: /sdd.implement
+Proceed with: /sdd-implement
 ```
 
 ### Step 7: Offer Remediation

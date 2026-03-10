@@ -23,7 +23,7 @@ Verify `$BRANCH` matches `NNN-feature-name`. Load from `specs/$BRANCH/`:
 - **Required**: `tasks.md`, `plan.md`
 - **Load if exists**: `data-model.md`, `contracts/`, `research.md`
 
-If `tasks.md` is missing, STOP: "Run `/sdd.tasks` first to generate the task breakdown."
+If `tasks.md` is missing, STOP: "Run `/sdd-tasks` first to generate the task breakdown."
 
 ### Step 2: Pre-Implementation Checks
 

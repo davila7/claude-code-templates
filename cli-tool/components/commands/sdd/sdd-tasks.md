@@ -23,7 +23,7 @@ Verify `$BRANCH` matches `NNN-feature-name`. Load from `specs/$BRANCH/`:
 - **Required**: `plan.md` (tech stack, structure), `spec.md` (user stories + priorities)
 - **Optional**: `data-model.md` (entities), `contracts/` (interfaces), `research.md` (decisions)
 
-If `plan.md` is missing, STOP and instruct user to run `/sdd.plan` first.
+If `plan.md` is missing, STOP and instruct user to run `/sdd-plan` first.
 
 ### Step 2: Extract Key Information
 
@@ -219,6 +219,6 @@ MVP scope: Phase 1 + Phase 2 + Phase 3 (US1 only)
 
 Next steps:
   1. Review tasks.md — adjust file paths to match your project layout
-  2. Run /sdd.analyze to verify cross-artifact consistency
-  3. Run /sdd.implement to start execution
+  2. Run /sdd-analyze to verify cross-artifact consistency
+  3. Run /sdd-implement to start execution
 ```

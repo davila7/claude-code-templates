@@ -14,7 +14,7 @@ Transform the feature description into a structured specification and create the
 
 ### Step 1: Validate Prerequisites
 
-1. Verify `CONSTITUTION.md` exists (run `/sdd.init` first if missing)
+1. Verify `CONSTITUTION.md` exists (run `/sdd-init` first if missing)
 2. Verify working tree is clean: `git status --porcelain`
    - If dirty, warn the user but offer to continue
 3. Ensure `specs/` directory exists
@@ -166,7 +166,7 @@ Update `.claude/sdd-context.md` with the new active feature:
 ```
 - **Branch**: NNN-feature-name
 - **Spec**: specs/NNN-feature-name/spec.md ✅
-- **Plan**: (pending — run /sdd.clarify then /sdd.plan)
+- **Plan**: (pending — run /sdd-clarify then /sdd-plan)
 - **Tasks**: (pending)
 ```
 
@@ -182,8 +182,8 @@ FRs:     [N] functional requirements
 
 Next steps:
   1. Review spec.md and verify it captures your intent
-  2. Run /sdd.clarify to resolve any ambiguities before planning
-  3. Then run /sdd.plan [tech stack] when ready
+  2. Run /sdd-clarify to resolve any ambiguities before planning
+  3. Then run /sdd-plan [tech stack] when ready
 ```
 
 ## Key Rules

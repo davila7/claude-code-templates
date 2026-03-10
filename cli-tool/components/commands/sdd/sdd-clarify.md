@@ -10,7 +10,7 @@ Clarify the current feature specification: $ARGUMENTS
 
 ## Instructions
 
-Identify and resolve the most impactful ambiguities in the spec before creating a technical plan. Run this BEFORE `/sdd.plan` — it significantly reduces rework.
+Identify and resolve the most impactful ambiguities in the spec before creating a technical plan. Run this BEFORE `/sdd-plan` — it significantly reduces rework.
 
 ### Step 1: Detect Active Feature
 
@@ -20,9 +20,9 @@ BRANCH=$(git branch --show-current)
 ```
 
 Verify `$BRANCH` matches pattern `NNN-feature-name` (3 digits + hyphen + name).
-- If not on a feature branch, instruct user to run `/sdd.specify` first.
+- If not on a feature branch, instruct user to run `/sdd-specify` first.
 
-Load `specs/$BRANCH/spec.md`. If missing, instruct user to run `/sdd.specify`.
+Load `specs/$BRANCH/spec.md`. If missing, instruct user to run `/sdd-specify`.
 
 Also load `CONSTITUTION.md` for project constraints.
 
@@ -56,7 +56,7 @@ A question is worth asking only if the answer:
 
 **Do NOT ask about:**
 - Minor style/UX preferences with obvious defaults
-- Technical implementation details (belongs in /sdd.plan)
+- Technical implementation details (belongs in /sdd-plan)
 - Things already clearly answered in spec
 
 ### Step 4: Sequential Questioning (One at a Time)
@@ -147,14 +147,14 @@ Coverage Summary:
 Deferred (low impact or plan-level): [list if any]
 
 ✅ Spec is ready for planning.
-Next: /sdd.plan [your tech stack and architecture choices]
+Next: /sdd-plan [your tech stack and architecture choices]
 ```
 
-If no ambiguities found: "No critical ambiguities detected. Spec is clear — proceed with `/sdd.plan`."
+If no ambiguities found: "No critical ambiguities detected. Spec is clear — proceed with `/sdd-plan`."
 
 ## Rules
 
 - Never modify sections other than those directly answered
 - Never exceed 5 total questions
-- If spec is missing, do not create it — instruct user to run `/sdd.specify`
+- If spec is missing, do not create it — instruct user to run `/sdd-specify`
 - If user skips clarification explicitly, warn about downstream rework risk but proceed

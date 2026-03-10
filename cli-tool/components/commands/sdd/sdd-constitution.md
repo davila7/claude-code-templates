@@ -15,7 +15,7 @@ The constitution defines non-negotiable principles that all specs, plans, and im
 ### Step 1: Load Existing Constitution
 
 Read `CONSTITUTION.md` from the project root.
-- If it doesn't exist: inform the user to run `/sdd.init` first, then offer to create a minimal constitution anyway.
+- If it doesn't exist: inform the user to run `/sdd-init` first, then offer to create a minimal constitution anyway.
 
 ### Step 2: Analyze User Input
 
@@ -52,8 +52,8 @@ Follow this structure:
 
 ## Quality Gates
 
-- **Before /sdd.plan**: [what must be true]
-- **Before /sdd.implement**: [what must be true]
+- **Before /sdd-plan**: [what must be true]
+- **Before /sdd-implement**: [what must be true]
 - **Definition of Done**: [acceptance criteria for all features]
 
 ## Governance
@@ -88,4 +88,4 @@ Report to user:
 - Version change: old → new
 - Principles added/modified/removed
 - Suggested commit message: `docs: update constitution to vX.Y.Z ([summary])`
-- Next step: `/sdd.specify [feature description]` to start a new feature
+- Next step: `/sdd-specify [feature description]` to start a new feature

@@ -1,3 +1,8 @@
+---
+name: sdd
+description: "Spec-Driven Development methodology guide — structured specifications drive AI-assisted implementation"
+---
+
 # Spec-Driven Development (SDD) — Methodology Guide
 
 > **Inspired by**: [GitHub/spec-kit](https://github.com/github/spec-kit) and ThoughtWorks research on SDD
@@ -29,59 +34,59 @@ This is NOT a return to waterfall. It provides **shorter, more effective feedbac
 
 ---
 
-## The 7-Step Workflow
+## The 8-Step Workflow
 
 ```
-/sdd.init (once per project)
+/sdd-init (once per project)
      ↓
-/sdd.constitution (once, update as needed)
+/sdd-constitution (once, update as needed)
      ↓
-/sdd.specify → /sdd.clarify → /sdd.plan → /sdd.analyze → /sdd.tasks → /sdd.implement
+/sdd-specify → /sdd-clarify → /sdd-plan → /sdd-analyze → /sdd-tasks → /sdd-implement
 ```
 
 ### Step 0: Initialize (once per project)
 ```
-/sdd.init
+/sdd-init
 ```
 Creates `specs/` directory, `CONSTITUTION.md`, and `.claude/sdd-context.md`.
 
 ### Step 1: Constitution (once per project)
 ```
-/sdd.constitution TypeScript-first, AWS serverless, TDD mandatory, clean architecture
+/sdd-constitution TypeScript-first, AWS serverless, TDD mandatory, clean architecture
 ```
 Defines non-negotiable principles. Everything else must comply.
 
 ### Step 2: Specify (once per feature)
 ```
-/sdd.specify Build a user authentication system with email/password and OAuth2 support
+/sdd-specify Build a user authentication system with email/password and OAuth2 support
 ```
 Creates git branch `NNN-feature-name` and `specs/NNN/spec.md` with user stories, FRs, success criteria.
 **Focus: WHAT and WHY only. No tech stack.**
 
 ### Step 3: Clarify (before planning)
 ```
-/sdd.clarify
+/sdd-clarify
 ```
 Up to 5 targeted questions that resolve the highest-impact ambiguities. Reduces planning rework significantly.
 Answers are integrated back into spec.md.
 
 ### Step 4: Plan (with tech stack)
 ```
-/sdd.plan TypeScript, NestJS, PostgreSQL, AWS Lambda via CDK
+/sdd-plan TypeScript, NestJS, PostgreSQL, AWS Lambda via CDK
 ```
 Generates `plan.md`, `research.md`, `data-model.md`, `contracts/`.
 **Focus: HOW — tech stack, architecture, file structure, contracts.**
 
 ### Step 5: Analyze (optional but recommended)
 ```
-/sdd.analyze
+/sdd-analyze
 ```
 Read-only cross-artifact check. Finds inconsistencies between spec ↔ plan ↔ tasks.
 CRITICAL issues must be fixed before implementing.
 
 ### Step 6: Tasks
 ```
-/sdd.tasks
+/sdd-tasks
 ```
 Generates `tasks.md` with:
 - Phases: Setup → Foundation → [User Story phases] → Polish
@@ -92,7 +97,7 @@ Generates `tasks.md` with:
 
 ### Step 7: Implement
 ```
-/sdd.implement
+/sdd-implement
 ```
 Executes tasks.md phase by phase. Marks tasks `[x]` as they complete. Stops at checkpoints for validation.
 
@@ -103,15 +108,15 @@ Executes tasks.md phase by phase. Marks tasks `[x]` as they complete. Stops at c
 ```
 specs/
 └── 001-user-auth/
-    ├── spec.md          ← /sdd.specify output
-    ├── plan.md          ← /sdd.plan output
-    ├── research.md      ← /sdd.plan output
-    ├── data-model.md    ← /sdd.plan output
-    ├── tasks.md         ← /sdd.tasks output
+    ├── spec.md          ← /sdd-specify output
+    ├── plan.md          ← /sdd-plan output
+    ├── research.md      ← /sdd-plan output
+    ├── data-model.md    ← /sdd-plan output
+    ├── tasks.md         ← /sdd-tasks output
     └── contracts/
-        └── api-spec.md  ← /sdd.plan output
+        └── api-spec.md  ← /sdd-plan output
 
-CONSTITUTION.md          ← /sdd.constitution output (project root)
+CONSTITUTION.md          ← /sdd-constitution output (project root)
 .claude/sdd-context.md   ← auto-updated context file
 ```
 
@@ -156,8 +161,8 @@ SDD commands complement our existing workflow:
 
 | Existing command | SDD equivalent | Relationship |
 |-----------------|----------------|--------------|
-| `/git-feature` | `/sdd.specify` | sdd.specify creates branch + spec in one step |
-| `/create-prd` | `/sdd.specify` + `/sdd.clarify` | SDD produces richer, more structured output |
+| `/git-feature` | `/sdd-specify` | sdd-specify creates branch + spec in one step |
+| `/create-prd` | `/sdd-specify` + `/sdd-clarify` | SDD produces richer, more structured output |
 | `/new-feature` | Full SDD pipeline | SDD is the structured version of this workflow |
 | CLAUDE.md global | `CONSTITUTION.md` per-project | Constitution is project-specific principles |
 
@@ -183,7 +188,7 @@ Use SDD for any feature that is:
 ## Troubleshooting
 
 **Agent generates code that doesn't match the spec**
-→ Run `/sdd.analyze` — there's likely a spec-plan inconsistency
+→ Run `/sdd-analyze` — there's likely a spec-plan inconsistency
 
 **Spec has too many `[NEEDS CLARIFICATION]`**
 → Max 3 allowed. For the rest, make reasonable defaults and document in Assumptions
@@ -203,17 +208,17 @@ Use SDD for any feature that is:
 
 ```
 # Start a new project
-/sdd.init
-/sdd.constitution [principles]
+/sdd-init
+/sdd-constitution [principles]
 
 # Start a new feature
-/sdd.specify [what you want to build and why]
-/sdd.clarify
-/sdd.plan [tech stack]
-/sdd.analyze
-/sdd.tasks
-/sdd.implement
+/sdd-specify [what you want to build and why]
+/sdd-clarify
+/sdd-plan [tech stack]
+/sdd-analyze
+/sdd-tasks
+/sdd-implement
 
 # Update constitution
-/sdd.constitution [what changed and why]
+/sdd-constitution [what changed and why]
 ```

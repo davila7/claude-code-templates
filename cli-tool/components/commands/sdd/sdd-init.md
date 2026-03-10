@@ -68,8 +68,8 @@ Minimum viable complexity. No over-engineering. YAGNI principles apply.
 
 ## Quality Gates
 
-- **Before /sdd.plan**: spec.md must pass quality checklist (no [NEEDS CLARIFICATION] markers)
-- **Before /sdd.implement**: tasks.md must exist and /sdd.analyze must show no CRITICAL issues
+- **Before /sdd-plan**: spec.md must pass quality checklist (no [NEEDS CLARIFICATION] markers)
+- **Before /sdd-implement**: tasks.md must exist and /sdd-analyze must show no CRITICAL issues
 - **After implementation**: all tasks marked [x], feature works independently
 
 ## Governance
@@ -95,9 +95,9 @@ This project uses Spec-Driven Development. Reference this file for workflow cont
 
 ## Active Feature
 
-> Updated by /sdd.specify and /sdd.plan
+> Updated by /sdd-specify and /sdd-plan
 
-- **Branch**: (none — run /sdd.specify to start a feature)
+- **Branch**: (none — run /sdd-specify to start a feature)
 - **Spec**: (pending)
 - **Plan**: (pending)
 - **Tasks**: (pending)
@@ -106,18 +106,18 @@ This project uses Spec-Driven Development. Reference this file for workflow cont
 
 | Command | When to use |
 |---------|-------------|
-| `/sdd.constitution` | Update project governing principles |
-| `/sdd.specify` | Start a new feature — creates branch + spec.md |
-| `/sdd.clarify` | Resolve spec ambiguities (run before /sdd.plan) |
-| `/sdd.plan` | Generate technical plan from spec |
-| `/sdd.analyze` | Cross-check spec + plan + tasks for consistency |
-| `/sdd.tasks` | Generate dependency-ordered task breakdown |
-| `/sdd.implement` | Execute implementation from tasks.md |
+| `/sdd-constitution` | Update project governing principles |
+| `/sdd-specify` | Start a new feature — creates branch + spec.md |
+| `/sdd-clarify` | Resolve spec ambiguities (run before /sdd-plan) |
+| `/sdd-plan` | Generate technical plan from spec |
+| `/sdd-analyze` | Cross-check spec + plan + tasks for consistency |
+| `/sdd-tasks` | Generate dependency-ordered task breakdown |
+| `/sdd-implement` | Execute implementation from tasks.md |
 
 ## Workflow Sequence
 
 ```
-/sdd.specify → /sdd.clarify → /sdd.plan → /sdd.analyze → /sdd.tasks → /sdd.implement
+/sdd-specify → /sdd-clarify → /sdd-plan → /sdd-analyze → /sdd-tasks → /sdd-implement
 ```
 
 ## Specs Directory
@@ -145,9 +145,9 @@ Created:
 
 Next steps:
   1. Review and customize CONSTITUTION.md with your project's specific principles
-  2. Run /sdd.constitution [principles] to refine the constitution
-  3. Start your first feature with: /sdd.specify [feature description]
+  2. Run /sdd-constitution [principles] to refine the constitution
+  3. Start your first feature with: /sdd-specify [feature description]
 
 SDD Workflow:
-  /sdd.specify → /sdd.clarify → /sdd.plan → /sdd.analyze → /sdd.tasks → /sdd.implement
+  /sdd-specify → /sdd-clarify → /sdd-plan → /sdd-analyze → /sdd-tasks → /sdd-implement
 ```
