@@ -7,13 +7,6 @@ export const ITEMS_PER_PAGE = 24;
 
 export const FEATURED_ITEMS: FeaturedItem[] = [
   {
-    name: 'BrainGrid',
-    description: 'Product Management Agent',
-    logo: 'https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png',
-    url: '/featured/braingrid',
-    tag: 'Partner',
-  },
-  {
     name: 'Neon',
     description: 'Complete Postgres Template',
     logo: 'https://neon.tech/brand/neon-logo-dark-color.svg',
