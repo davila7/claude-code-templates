@@ -7,25 +7,6 @@ export const ITEMS_PER_PAGE = 24;
 
 export const FEATURED_ITEMS: FeaturedItem[] = [
   {
-    name: 'BrainGrid',
-    description: 'Product Management Agent',
-    logo: 'https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png',
-    url: '/featured/braingrid',
-    tag: 'Partner',
-    tagColor: '#6366f1',
-    category: 'Product Management',
-    ctaLabel: 'Try BrainGrid Free',
-    ctaUrl: 'https://braingrid.link/hsn8pFE',
-    websiteUrl: 'https://braingrid.ai',
-    metadata: {
-      Integration: 'MCP, CLI',
-    },
-    links: [
-      { label: 'Integration Docs', url: 'https://docs.braingrid.ai/claude-code' },
-      { label: 'braingrid.ai', url: 'https://braingrid.ai' },
-    ],
-  },
-  {
     name: 'Neon',
     description: 'Complete Postgres Template',
     logo: 'https://neon.tech/brand/neon-logo-dark-color.svg',

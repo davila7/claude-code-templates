@@ -1,6 +1,7 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
+import PartnerBanner from '../components/PartnerBanner.astro';
 import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
@@ -29,6 +30,7 @@ export const prerender = true;
     "license": "https://opensource.org/licenses/MIT"
   })} />
   <TopBar />
+  <PartnerBanner />
   <FeaturedSection />
   <ComponentGrid client:load initialType="skills" />
   <SearchModal client:idle />

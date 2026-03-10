@@ -1,6 +1,7 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
+import PartnerBanner from '../components/PartnerBanner.astro';
 import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
@@ -56,6 +57,7 @@ export function getStaticPaths() {
   description={TYPE_META[activeType]?.description ?? `Browse ${activeType} for Claude Code. Install with a single npx command.`}
 >
   <TopBar />
+  <PartnerBanner />
   <FeaturedSection />
   <ComponentGrid client:load initialType={activeType} />
   <SearchModal client:idle />
