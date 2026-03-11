@@ -22,7 +22,7 @@ Verify `$BRANCH` matches `NNN-feature-name`. Load from `specs/$BRANCH/`:
 
 - **Required**: `spec.md`, `plan.md`
 - **Required if exists**: `tasks.md`, `data-model.md`, `research.md`
-- **Required**: `CONSTITUTION.md`
+- **Required**: `CONSTITUTION.md` — load from **project root** (not from `specs/$BRANCH/`)
 
 If `spec.md` or `plan.md` are missing, abort with instruction to run the missing command first.
 

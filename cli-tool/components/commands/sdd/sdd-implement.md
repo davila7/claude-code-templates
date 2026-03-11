@@ -20,10 +20,12 @@ BRANCH=$(git branch --show-current)
 
 Verify `$BRANCH` matches `NNN-feature-name`. Load from `specs/$BRANCH/`:
 
-- **Required**: `tasks.md`, `plan.md`
+- **Required**: `tasks.md`, `plan.md`, `spec.md`
 - **Load if exists**: `data-model.md`, `contracts/`, `research.md`
+- **Required**: `CONSTITUTION.md` from project root — all implementation must comply
 
 If `tasks.md` is missing, STOP: "Run `/sdd-tasks` first to generate the task breakdown."
+If `spec.md` is missing, STOP: "Run `/sdd-specify` first — spec.md is the source of truth for acceptance criteria."
 
 ### Step 2: Pre-Implementation Checks
 
@@ -145,7 +147,7 @@ Verify your feature works end-to-end:
 
 Next steps:
   1. Test the feature manually against User Story acceptance scenarios
-  2. Commit: git add . && git commit -m "feat(NNN-feature): implement [feature name]"
+  2. Commit: git add [list changed files explicitly] && git commit -m "feat(NNN-feature): implement [feature name]"
   3. Push and open PR: git push -u origin NNN-feature-name
   4. After PR is merged, delete the feature branch
 ```
