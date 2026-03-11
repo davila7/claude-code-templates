@@ -18,6 +18,10 @@ npm publish                    # Publish to npm
 # Component catalog
 python scripts/generate_components_json.py  # Update docs/components.json
 
+# Component validation (pre-commit hook — run once after cloning)
+bash scripts/install-hooks.sh              # Install git pre-commit hook
+python scripts/validate-components.py --all  # Validate all components manually
+
 # API testing
 cd api && npm test             # Test API endpoints before deploy
 vercel --prod                  # Deploy to production
@@ -324,7 +328,7 @@ SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=xxx
 
 # Neon Database
-NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+NEON_DATABASE_URL=your-neon-connection-string
 
 # Discord
 DISCORD_APP_ID=xxx
