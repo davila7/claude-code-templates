@@ -6,7 +6,8 @@ Use this checklist before finalizing generated or refactored templates.
 
 - [ ] Autoescaping policy is explicit for HTML/XML contexts.
 - [ ] `|safe` usage is minimal and justified with trusted source assumptions.
-- [ ] Untrusted template execution uses sandboxed environment.
+- [ ] Untrusted template execution uses sandboxed environment **and** includes resource limits (CPU/memory/time). Consider process isolation or avoiding untrusted template execution entirely. Keep Jinja2 updated to patch known sandbox escapes.
+- [ ] Sandboxed environment uses `ImmutableSandboxedEnvironment` where template should not modify passed data structures.
 - [ ] Context data excludes unnecessary objects and side-effectful methods.
 
 ## 2) Correctness and Data Contracts

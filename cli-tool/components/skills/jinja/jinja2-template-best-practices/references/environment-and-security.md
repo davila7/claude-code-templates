@@ -17,15 +17,15 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 env = Environment(
     loader=FileSystemLoader("templates"),
-    autoescape=select_autoescape(["html", "htm", "xml"]),
+    autoescape=select_autoescape(["html", "htm", "xml", "svg"]),
     undefined=StrictUndefined,
     trim_blocks=True,
     lstrip_blocks=True,
     auto_reload=True,
 )
-```
 
 Why this baseline:
+- `select_autoescape(["html", "htm", "xml", "svg"])` matches templates whose filename ends with one of the listed extensions (e.g., `template.html`, `template.xml`, `template.svg`). Common Jinja conventions like `.j2`, `.jinja`, or `.html.jinja` will **not** be autoescaped unless explicitly added to the list or handled via a custom `autoescape` callable. If your project uses `.j2` or `.jinja` extensions for HTML content, either add them to the extension list or use a custom callable that inspects the full filename. When creating templates from strings (e.g., `env.from_string()`), consider setting `default_for_string=True` in the `select_autoescape()` call to enable escaping for dynamically-created templates.
 - `select_autoescape(...)` sets explicit escaping policy for markup-like outputs.
 - `StrictUndefined` catches missing variables early instead of silently rendering empty output.
 - `trim_blocks` + `lstrip_blocks` reduce accidental whitespace noise.
@@ -47,6 +47,8 @@ Template-level guidance:
 - Do not hide data-contract errors with broad defaulting everywhere.
 
 ## Sandboxing Untrusted Templates
+
+**⚠️ Security Warning**: The official Jinja2 documentation states: *"The sandbox alone is not a solution for perfect security."* The sandbox is an in-process restriction layer and does not protect against DoS attacks, resource exhaustion, or all sandbox escape vectors. Known CVEs include CVE-2024-56326 (fixed in 3.1.5), CVE-2024-56201 (fixed in 3.1.5), and CVE-2025-27516 (fixed in 3.1.6). **Recommendations**: Always keep Jinja2 updated to the latest version, enforce CPU/memory/time limits at the process or container level, and strongly consider process isolation or avoiding untrusted template execution entirely for production use cases.
 
 If template source is user-authored or otherwise untrusted:
 - Use `jinja2.sandbox.SandboxedEnvironment` (or `ImmutableSandboxedEnvironment`).
