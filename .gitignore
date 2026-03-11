@@ -68,3 +68,6 @@ analysis/
 
 # OpenSpec (local workflow artifacts)
 openspec/
+
+# Crawl output (cf-crawl skill)
+.crawl-output/
