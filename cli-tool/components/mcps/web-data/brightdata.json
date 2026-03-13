@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "brightdata": {
+      "description": "Bright Data MCP server providing 60+ tools for web search, scraping, structured data extraction, and browser automation across major platforms",
+      "url": "https://mcp.brightdata.com/mcp?token=YOUR_BRIGHTDATA_API_TOKEN&pro=1"
+    }
+  }
+}
