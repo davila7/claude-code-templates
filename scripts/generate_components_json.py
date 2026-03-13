@@ -466,6 +466,13 @@ def generate_components_json():
                                     'lastValidated': None
                                 })
 
+                                # Collect reference files (all files except SKILL.md)
+                                references = []
+                                for ref_file in scan_directory_recursively(skill_dir_path, skill_dir_path):
+                                    if ref_file != 'SKILL.md':
+                                        references.append(ref_file)
+                                references.sort()
+
                                 # Path includes category for proper organization
                                 component = {
                                     'name': name,  # Just the skill directory name
@@ -480,7 +487,8 @@ def generate_components_json():
                                     'license': license_field,
                                     'keywords': keywords,
                                     'downloads': downloads,
-                                    'security': security
+                                    'security': security,
+                                    'references': references
                                 }
                                 components_data[component_type].append(component)
                                 print(f"  Processed skill: {category}/{name}")

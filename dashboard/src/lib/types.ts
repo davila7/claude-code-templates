@@ -7,6 +7,7 @@ export interface Component {
   description?: string;
   url?: string;
   downloads?: number;
+  references?: string[];
 }
 
 export interface ComponentsData {

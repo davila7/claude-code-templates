@@ -87,29 +87,11 @@ const schemaData = JSON.stringify({
         <Sidebar />
       </aside>
 
-      <!-- Mobile sidebar overlay -->
-      <div
-        id="sidebarOverlay"
-        class="fixed inset-0 bg-black/60 z-30 hidden md:hidden backdrop-blur-sm"
-        onclick="document.getElementById('sidebar')?.classList.add('hidden');document.getElementById('sidebarOverlay')?.classList.add('hidden')"
-      ></div>
-
       <!-- Main content -->
       <main class="flex-1 md:ml-[220px] overflow-y-auto bg-surface-0">
         <slot />
       </main>
     </div>
-
-    <script>
-      function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sidebar?.classList.toggle('hidden');
-        sidebar?.classList.toggle('flex');
-        overlay?.classList.toggle('hidden');
-      }
-      (window as any).toggleSidebar = toggleSidebar;
-    </script>
 
     <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
     <ClerkIsland client:load />

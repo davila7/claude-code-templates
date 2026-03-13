@@ -11,6 +11,22 @@ export async function fetchComponents(): Promise<ComponentsData> {
     return cachedData;
   }
 
+  // In dev server-side, read from local file directly to avoid stale production data
+  if (typeof window === 'undefined' && import.meta.env.DEV) {
+    try {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const filePath = path.resolve('public/components.json');
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const data: ComponentsData = JSON.parse(raw);
+      cachedData = data;
+      cacheTimestamp = now;
+      return data;
+    } catch {
+      // fallback to fetch
+    }
+  }
+
   // Server-side: resolve relative URLs to absolute (fetch() needs full URL on Node)
   let url = COMPONENTS_JSON_URL;
   if (typeof window === 'undefined' && url.startsWith('/')) {
