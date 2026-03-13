@@ -42,6 +42,14 @@ class AgentAnalyzer {
     const agentTimeline = [];
     const agentWorkflows = {};
     let totalAgentInvocations = 0;
+    const conversationsWithAgents = new Set();
+    const pendingTaskIds = new Map();
+    let agentSuccesses = 0;
+    let agentFailures = 0;
+    let executionToolCalls = 0;
+    const EXECUTION_TOOLS = ['Edit', 'Write', 'Bash'];
+    const conversationAgentTypes = new Map();
+    const conversationMsgCounts = new Map();
 
     for (const conversation of conversations) {
       // Parse messages from JSONL file if not already parsed
@@ -62,10 +70,38 @@ class AgentAnalyzer {
         // Handle both direct message structure and nested message structure
         const messageContent = message.message ? message.message.content : message.content;
         const messageRole = message.message ? message.message.role : message.role;
-        
-        if (messageRole === 'assistant' && 
-            messageContent && 
+
+        // Track per-conversation message counts for autonomy metric
+        if (!conversationMsgCounts.has(conversation.id)) {
+          conversationMsgCounts.set(conversation.id, { assistant: 0, user: 0 });
+        }
+        const convCounts = conversationMsgCounts.get(conversation.id);
+        if (messageRole === 'assistant') convCounts.assistant++;
+        if (messageRole === 'user') convCounts.user++;
+
+        // Check for tool_result blocks to track agent success/failure
+        if (messageContent && Array.isArray(messageContent)) {
+          messageContent.forEach(content => {
+            if (content.type === 'tool_result' && pendingTaskIds.has(content.tool_use_id)) {
+              if (content.is_error === true) {
+                agentFailures++;
+              } else {
+                agentSuccesses++;
+              }
+              pendingTaskIds.delete(content.tool_use_id);
+            }
+          });
+        }
+
+        if (messageRole === 'assistant' &&
+            messageContent &&
             Array.isArray(messageContent)) {
+          // Count execution tool calls (Edit, Write, Bash) by orchestrator
+          messageContent.forEach(content => {
+            if (content.type === 'tool_use' && EXECUTION_TOOLS.includes(content.name)) {
+              executionToolCalls++;
+            }
+          });
           
           messageContent.forEach(content => {
             if (content.type === 'tool_use' && 
@@ -76,6 +112,19 @@ class AgentAnalyzer {
               const agentType = content.input.subagent_type;
               const timestamp = new Date(message.timestamp);
               const prompt = content.input.prompt || content.input.description || 'No description';
+
+              // Track tool_use_id for success/failure matching
+              if (content.id) {
+                pendingTaskIds.set(content.id, agentType);
+              }
+
+              conversationsWithAgents.add(conversation.id);
+
+              // Track agent types per conversation for orchestration metric
+              if (!conversationAgentTypes.has(conversation.id)) {
+                conversationAgentTypes.set(conversation.id, new Set());
+              }
+              conversationAgentTypes.get(conversation.id).add(agentType);
               
               // Initialize agent stats
               if (!agentStats[agentType]) {
@@ -136,6 +185,37 @@ class AgentAnalyzer {
       });
     }
 
+    // Count execution tool calls inside subagent JSONL files
+    let delegatedExecutionCalls = 0;
+    for (const conversation of conversations) {
+      if (!conversation.filePath) continue;
+      const convId = path.basename(conversation.filePath, '.jsonl');
+      const subagentDir = path.join(path.dirname(conversation.filePath), convId, 'subagents');
+      try {
+        if (!await fs.pathExists(subagentDir)) continue;
+        const subFiles = (await fs.readdir(subagentDir)).filter(f => f.endsWith('.jsonl'));
+        for (const subFile of subFiles) {
+          const subMessages = await this.parseJsonlFile(path.join(subagentDir, subFile));
+          if (!subMessages) continue;
+          for (const msg of subMessages) {
+            // Apply same dateRange filter as main conversation messages
+            if (dateRange && !this.isWithinDateRange(msg.timestamp, dateRange)) continue;
+            const content = msg.message ? msg.message.content : msg.content;
+            const role = msg.message ? msg.message.role : msg.role;
+            if (role === 'assistant' && content && Array.isArray(content)) {
+              for (const block of content) {
+                if (block.type === 'tool_use' && EXECUTION_TOOLS.includes(block.name)) {
+                  delegatedExecutionCalls++;
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Skip inaccessible subagent directories
+      }
+    }
+
     // Convert Sets to counts and finalize stats
     Object.keys(agentStats).forEach(agentType => {
       const stats = agentStats[agentType];
@@ -158,7 +238,18 @@ class AgentAnalyzer {
       workflowPatterns,
       popularHours: this.calculatePopularHours(agentStats),
       usageByDay: this.calculateDailyUsage(agentStats),
-      efficiency: this.calculateAgentEfficiency(agentStats)
+      efficiency: this.calculateAgentEfficiency(agentStats, {
+        totalConversations: conversations.length,
+        conversationsWithAgents: conversationsWithAgents.size,
+        agentSuccesses,
+        agentFailures,
+        executionToolCalls,
+        delegatedExecutionCalls,
+        totalAgentInvocations,
+        conversationAgentTypes,
+        conversationMsgCounts,
+        conversationsWithAgentsSet: conversationsWithAgents
+      })
     };
   }
 
@@ -257,19 +348,71 @@ class AgentAnalyzer {
    * @param {Object} agentStats - Agent statistics
    * @returns {Object} Efficiency metrics
    */
-  calculateAgentEfficiency(agentStats) {
+  calculateAgentEfficiency(agentStats, context = {}) {
     const agents = Object.values(agentStats);
     if (agents.length === 0) return {};
 
     const totalInvocations = agents.reduce((sum, agent) => sum + agent.totalInvocations, 0);
     const totalConversations = agents.reduce((sum, agent) => sum + agent.uniqueConversations, 0);
 
+    const {
+      agentSuccesses = 0,
+      agentFailures = 0,
+      executionToolCalls = 0,
+      delegatedExecutionCalls = 0,
+      totalAgentInvocations = 0,
+      conversationAgentTypes = new Map(),
+      conversationMsgCounts = new Map(),
+      conversationsWithAgentsSet = new Set()
+    } = context;
+
+    // Delegation Rate: subagent execution calls / (subagent + orchestrator execution calls)
+    // Measures how much execution work (Edit/Write/Bash) is delegated vs done directly
+    const totalExecutionWork = delegatedExecutionCalls + executionToolCalls;
+    const adoptionRate = totalExecutionWork > 0
+      ? (delegatedExecutionCalls / totalExecutionWork * 100).toFixed(1)
+      : '0.0';
+
+    // Success Rate: % of agent invocations that completed without error
+    const totalTracked = agentSuccesses + agentFailures;
+    const successRate = totalTracked > 0
+      ? (agentSuccesses / totalTracked * 100).toFixed(1)
+      : '0.0';
+
+    // Autonomy: assistant message ratio in agent-using conversations
+    // Higher = less human intervention needed
+    let agentConvAssistantMsgs = 0;
+    let agentConvUserMsgs = 0;
+    for (const convId of conversationsWithAgentsSet) {
+      const counts = conversationMsgCounts.get(convId);
+      if (counts) {
+        agentConvAssistantMsgs += counts.assistant;
+        agentConvUserMsgs += counts.user;
+      }
+    }
+    const totalAgentConvMsgs = agentConvAssistantMsgs + agentConvUserMsgs;
+    const timeEfficiency = totalAgentConvMsgs > 0
+      ? (agentConvAssistantMsgs / totalAgentConvMsgs * 100).toFixed(1)
+      : '0.0';
+
+    // Orchestration: % of agent-using conversations with 2+ agent types
+    let multiAgentConvs = 0;
+    for (const [, types] of conversationAgentTypes) {
+      if (types.size >= 2) multiAgentConvs++;
+    }
+    const workflowCompletion = conversationAgentTypes.size > 0
+      ? (multiAgentConvs / conversationAgentTypes.size * 100).toFixed(1)
+      : '0.0';
+
     return {
       averageInvocationsPerAgent: (totalInvocations / agents.length).toFixed(1),
       averageConversationsPerAgent: (totalConversations / agents.length).toFixed(1),
       mostUsedAgent: agents[0],
       agentDiversity: agents.length,
-      adoptionRate: (agents.filter(a => a.totalInvocations > 1).length / agents.length * 100).toFixed(1)
+      adoptionRate,
+      workflowCompletion,
+      timeEfficiency,
+      successRate
     };
   }
 

@@ -1647,7 +1647,7 @@ class DashboardPage {
     const efficiency = agentData.efficiency || {};
 
     const data = {
-      labels: ['Adoption Rate', 'Workflow Completion', 'Time Efficiency', 'Success Rate'],
+      labels: ['Delegation Rate', 'Orchestration', 'Autonomy', 'Success Rate'],
       datasets: [{
         label: 'Efficiency %',
         data: [
