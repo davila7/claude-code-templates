@@ -7,6 +7,31 @@ export const ITEMS_PER_PAGE = 24;
 
 export const FEATURED_ITEMS: FeaturedItem[] = [
   {
+    name: 'Bright Data',
+    description: 'Complete Web Data Template',
+    logo: 'https://avatars.githubusercontent.com/u/213028976?v=4',
+    url: '/featured/brightdata',
+    tag: 'Web Data',
+    tagColor: '#2563eb',
+    category: 'Infrastructure',
+    ctaLabel: 'Try Bright Data Free',
+    ctaUrl: 'https://brightdata.com/cp',
+    websiteUrl: 'https://brightdata.com',
+    installCommand:
+      'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices --mcp web-data/brightdata --yes',
+    metadata: {
+      Components: '7',
+      Tools: '60+',
+      Integration: 'MCP, Skills, CLI',
+    },
+    links: [
+      { label: 'Skills Repository', url: 'https://github.com/brightdata/skills' },
+      { label: 'MCP Server', url: 'https://github.com/brightdata/brightdata-mcp' },
+      { label: 'API Documentation', url: 'https://docs.brightdata.com' },
+      { label: 'brightdata.com', url: 'https://brightdata.com' },
+    ],
+  },
+  {
     name: 'Neon',
     description: 'Complete Postgres Template',
     logo: 'https://neon.tech/brand/neon-logo-dark-color.svg',

@@ -34,7 +34,7 @@ if (!item) {
     <div class="flex items-start gap-5 mb-8 pb-6 border-b border-border relative">
       {/* Logo */}
       <div class="w-16 h-16 rounded-xl bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 p-2">
-        <img src={item.logo} alt={item.name} class="w-full h-full object-contain" />
+        <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-lg" />
       </div>
 
       {/* Title + badges */}
@@ -217,6 +217,93 @@ if (!item) {
               </Fragment>
             )}
 
+            {slug === 'brightdata' && (
+              <Fragment>
+                <h2>Overview</h2>
+                <p>The Bright Data template provides a complete web data infrastructure for Claude Code projects. It combines Bright Data's Web Unlocker, SERP API, Web Scraper API, and Browser API with specialized skills, MCP integration, production best-practices documentation, and 60+ tools for search, scraping, structured extraction, and browser automation.</p>
+
+                <h2>Template Architecture</h2>
+                <p>The template consists of 7 components organized into three layers:</p>
+
+                <h3>1. Skills Layer</h3>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128269;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">search Skill</p><p class="text-text-secondary text-sm mt-0.5">Google search with structured JSON results. Returns titles, links, and descriptions via Web Unlocker API with parsed_light format.</p></div><a href="/component/skill/web-data/search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127760;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">scrape Skill</p><p class="text-text-secondary text-sm mt-0.5">Scrape any webpage as clean markdown. Automatic bot detection bypass, CAPTCHA solving, and JavaScript rendering via Web Unlocker.</p></div><a href="/component/skill/web-data/scrape" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128202;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">data-feeds Skill</p><p class="text-text-secondary text-sm mt-0.5">Extract structured data from 40+ websites. Covers e-commerce, professional networks, social media, and more with automatic polling.</p></div><a href="/component/skill/web-data/data-feeds" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">bright-data-mcp Skill</p><p class="text-text-secondary text-sm mt-0.5">Workflow orchestration guide that teaches Claude how to optimally use Bright Data's MCP server across all 60+ tools.</p></div><a href="/component/skill/web-data/bright-data-mcp" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128218;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">bright-data-best-practices Skill</p><p class="text-text-secondary text-sm mt-0.5">Production-ready API reference covering Web Unlocker, SERP API, Web Scraper API, and Browser API with code examples.</p></div><a href="/component/skill/web-data/bright-data-best-practices" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127912;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">design-mirror Skill</p><p class="text-text-secondary text-sm mt-0.5">Capture visual design from any website and apply it to your codebase. Extracts design tokens, colors, typography, and spacing.</p></div><a href="/component/skill/web-data/design-mirror" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                </div>
+
+                <h3>2. Integration Layer</h3>
+                <p><strong>brightdata MCP</strong> — Model Context Protocol integration providing programmatic access to 60+ tools across three modes:</p>
+                <div class="space-y-2 my-3">
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Rapid Mode (Free)</strong> — <code>search_engine</code>, <code>scrape_as_markdown</code>, <code>search_engine_batch</code>, <code>scrape_batch</code></p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Pro Mode</strong> — Everything in Rapid plus browser automation (13 tools), web data APIs for 40+ platforms, and advanced scraping</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Custom Mode</strong> — Mix and match tool groups (ecommerce, social, business, finance, research, travel, browser, advanced_scraping)</p></div>
+                </div>
+
+                <h3>3. Configuration Layer</h3>
+                <p>Two environment variables configure the template:</p>
+                <ul>
+                  <li><code>BRIGHTDATA_API_KEY</code> — Your Bright Data API key from the dashboard</li>
+                  <li><code>BRIGHTDATA_UNLOCKER_ZONE</code> — Name of your Web Unlocker zone (for search/scrape skills)</li>
+                </ul>
+
+                <h2>Installation</h2>
+                <h3>Option 1: Skills Only</h3>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices</code></div>
+
+                <h3>Option 2: Complete Template (Skills + MCP)</h3>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
+  --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices \
+  --mcp web-data/brightdata \
+  --yes</code></div>
+
+                <h3>Option 3: MCP Only (No Skills)</h3>
+                <p>Add to your Claude Code MCP settings:</p>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">&#123;
+  "mcpServers": &#123;
+    "brightdata": &#123;
+      "url": "https://mcp.brightdata.com/mcp?token=YOUR_TOKEN&amp;pro=1"
+    &#125;
+  &#125;
+&#125;</code></div>
+
+                <h2>Supported Platforms</h2>
+                <h3>E-Commerce</h3>
+                <p>Amazon, Walmart, eBay, Best Buy, Etsy, Home Depot, Zara, Google Shopping — product details, pricing, ratings, and reviews.</p>
+
+                <h3>Professional Networks</h3>
+                <p>LinkedIn (profiles, companies, jobs, posts), Crunchbase, ZoomInfo — company data, funding rounds, and professional profiles.</p>
+
+                <h3>Social Media</h3>
+                <p>Instagram, TikTok, Facebook, X (Twitter), YouTube, Reddit — profiles, posts, reels, engagement metrics, and comments.</p>
+
+                <h3>Other</h3>
+                <p>Google Maps, Yahoo Finance, Zillow, Booking.com, Reuters, GitHub, Apple App Store, Google Play Store.</p>
+
+                <h2>Use Cases</h2>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128200;</span><div><p class="font-medium text-text-primary text-sm">Research &amp; Analysis</p><p class="text-text-secondary text-sm mt-0.5">Search Google for structured results, scrape full articles as markdown, combine multiple sources into comprehensive reports.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127919;</span><div><p class="font-medium text-text-primary text-sm">Competitive Intelligence</p><p class="text-text-secondary text-sm mt-0.5">Extract Amazon product data, LinkedIn company profiles, Crunchbase funding rounds, and social media metrics.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128101;</span><div><p class="font-medium text-text-primary text-sm">Lead Generation</p><p class="text-text-secondary text-sm mt-0.5">Pull LinkedIn person profiles, company data, and ZoomInfo records. Enrich with social media presence.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128241;</span><div><p class="font-medium text-text-primary text-sm">Social Media Monitoring</p><p class="text-text-secondary text-sm mt-0.5">Track profiles, posts, reels, and engagement metrics across Instagram, TikTok, Facebook, YouTube, Reddit, and X.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128722;</span><div><p class="font-medium text-text-primary text-sm">E-Commerce Intelligence</p><p class="text-text-secondary text-sm mt-0.5">Product details, pricing, ratings, and reviews from Amazon, Walmart, eBay, Best Buy, Etsy, and more.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128421;</span><div><p class="font-medium text-text-primary text-sm">Browser Automation</p><p class="text-text-secondary text-sm mt-0.5">Full browser control for JavaScript-heavy sites: navigate, click, type, screenshot, and extract via Scraping Browser tools.</p></div></div>
+                </div>
+
+                <h2>Additional Resources</h2>
+                <ul>
+                  <li><a href="https://brightdata.com/cp" target="_blank">Bright Data Dashboard</a></li>
+                  <li><a href="https://docs.brightdata.com" target="_blank">API Documentation</a></li>
+                  <li><a href="https://github.com/brightdata/brightdata-mcp" target="_blank">MCP Server Repository</a></li>
+                  <li><a href="https://github.com/brightdata/skills" target="_blank">Skills Plugin Repository</a></li>
+                  <li><a href="https://brightdata.com/cp" target="_blank">Create Free Bright Data Account</a></li>
+                </ul>
+              </Fragment>
+            )}
+
             {slug === 'claudekit' && (
               <Fragment>
                 <h2>What Is ClaudeKit</h2>
@@ -273,7 +360,7 @@ ck init -g</code></div>
             <div class="bg-surface-2 border border-border rounded-lg p-4">
               <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">About {item.name}</h3>
               <div class="flex flex-col items-center gap-3 text-center">
-                <img src={item.logo} alt={item.name} class="max-w-[160px] w-full h-auto" />
+                <img src={item.logo} alt={item.name} class="max-w-[160px] w-full h-auto rounded-xl" />
                 <p class="text-sm text-text-secondary leading-relaxed">{item.description} for Claude Code</p>
               </div>
             </div>
