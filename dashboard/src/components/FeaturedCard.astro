@@ -13,7 +13,7 @@ const { item } = Astro.props;
   class="group flex items-center gap-3 p-3 bg-surface-1 border border-border rounded-lg hover:border-border-hover transition-all"
 >
   <div class="w-10 h-10 rounded-lg bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 p-1.5">
-    <img src={item.logo} alt={item.name} class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" />
+    <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-md" loading="lazy" onerror="this.style.display='none'" />
   </div>
   <div class="min-w-0 flex-1">
     <div class="flex items-center gap-2">
