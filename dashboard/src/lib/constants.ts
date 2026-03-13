@@ -15,8 +15,8 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     tagColor: '#2563eb',
     category: 'Infrastructure',
     ctaLabel: 'Try Bright Data Free',
-    ctaUrl: 'https://brightdata.com/cp',
-    websiteUrl: 'https://brightdata.com',
+    ctaUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
+    websiteUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
     installCommand:
       'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices --mcp web-data/brightdata --yes',
     metadata: {
@@ -28,7 +28,7 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
       { label: 'Skills Repository', url: 'https://github.com/brightdata/skills' },
       { label: 'MCP Server', url: 'https://github.com/brightdata/brightdata-mcp' },
       { label: 'API Documentation', url: 'https://docs.brightdata.com' },
-      { label: 'brightdata.com', url: 'https://brightdata.com' },
+      { label: 'brightdata.com', url: 'https://get.brightdata.com/lcqorc6nzp9w' },
     ],
   },
   {
