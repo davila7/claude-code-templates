@@ -1,0 +1,184 @@
+# Kubernetes RBAC Misconfiguration Example
+# For detailed guidance, see: owasp-comprehensive-security-skills.md#section-5-owasp-kubernetes-top-10
+#
+# This YAML demonstrates Kubernetes security misconfigurations:
+# - K02: Overly Permissive RBAC (wildcard permissions)
+# - K01: Insecure Workload Configurations (privileged pods, no resource limits)
+# - K03: Secrets Management Failures (unencrypted secrets)
+
+---
+# VULNERABLE: Service account with wildcard permissions (K02)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: overpower-role
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]  # DANGEROUS: Allows everything!
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: overpower-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: overpower-role
+subjects:
+- kind: ServiceAccount
+  name: app-sa
+  namespace: default
+
+---
+# VULNERABLE: Privileged pod with no resource limits (K01)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privileged-app
+  namespace: default
+spec:
+  serviceAccountName: app-sa
+  containers:
+  - name: app
+    image: myapp:latest  # VULNERABLE: No tag (always pulls latest)
+    securityContext:
+      privileged: true  # DANGEROUS: Full host access!
+      runAsRoot: true   # DANGEROUS: Runs as root
+    # MISSING: No resource limits - can exhaust node resources
+    # MISSING: No readinessProbe/livenessProbe
+    volumeMounts:
+    - name: secret
+      mountPath: /etc/secret
+      readOnly: false   # DANGEROUS: Writable secret mount
+  volumes:
+  - name: secret
+    secret:
+      secretName: app-secret
+
+---
+# VULNERABLE: Secret stored in plaintext YAML (K03)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+stringData:
+  database_password: "MySecurePassword123!"  # DANGEROUS: Plaintext in YAML
+  api_key: "sk-abc123xyz789"
+  # In etcd this is only base64 encoded, not encrypted!
+
+---
+
+# SECURE: Proper RBAC with least-privilege
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: reader-role
+  namespace: default
+rules:
+# SECURE: Specific permissions only
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]  # Explicit verbs
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  resourceNames: ["my-app"]  # Specific resource only
+  verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: reader-binding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: reader-role
+subjects:
+- kind: ServiceAccount
+  name: app-sa
+  namespace: default
+
+---
+# SECURE: Hardened pod configuration (K01)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-app
+  namespace: default
+spec:
+  serviceAccountName: app-sa
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 2000
+  containers:
+  - name: app
+    image: myapp:v1.2.3  # SECURE: Specific version tag
+    imagePullPolicy: IfNotPresent
+    securityContext:
+      privileged: false  # SECURE: No privileged access
+      readOnlyRootFilesystem: true  # SECURE: Immutable root FS
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL  # SECURE: Drop all dangerous capabilities
+        add:
+        - NET_BIND_SERVICE  # Only add what's needed
+    # SECURE: Resource limits enforced
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+    # SECURE: Health checks
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    volumeMounts:
+    - name: secret
+      mountPath: /etc/secret
+      readOnly: true  # SECURE: Read-only
+    - name: tmp
+      mountPath: /tmp
+  volumes:
+  - name: secret
+    secret:
+      secretName: app-secret
+      defaultMode: 0400  # SECURE: Restricted permissions
+  - name: tmp
+    emptyDir: {}
+
+---
+# SECURE: Secret managed external or with encryption
+# In production, use:
+# - Kubernetes Secrets encryption-at-rest in etcd
+# - External secret management (HashiCorp Vault, AWS Secrets Manager)
+# - Do NOT store in YAML files
+# - Do NOT commit secrets to Git
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+data:
+  # Data should be base64 encoded only (not in yaml files!)
+  # Example: echo -n "password" | base64 => cGFzc3dvcmQ=
+  database_password: cGFzc3dvcmQ=
+  # In production: Enable encryption-at-rest in etcd
+  # --encryption-provider-config=/etc/kubernetes/encryption.yaml
