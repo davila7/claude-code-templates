@@ -190,7 +190,7 @@ Use this for deep dives into specific standards or cross-referencing security re
 
 ## 📝 Contributing
 
-Found an issue or have an improvement? Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Found an issue or have an improvement? Contributions welcome. See [CONTRIBUTING.md](../../../CONTRIBUTING.md).
 
 ---
 
