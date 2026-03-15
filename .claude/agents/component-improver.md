@@ -1,7 +1,7 @@
 ---
 name: component-improver
 description: Applies researched improvements to Claude Code components, validates changes with the component-reviewer agent, and creates pull requests. The only agent that modifies files and creates PRs.
-tools: Read, Write, Edit, Bash, Grep, Glob
+tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 model: sonnet
 ---
 
@@ -87,3 +87,4 @@ Return a structured result:
 4. **Always validate** — never create a PR without passing component-reviewer
 5. **One component per PR** — keep changes focused and reviewable
 6. **Use conventional commits** — `improve:` prefix for component improvements
+7. **Catalog regeneration** — happens during PR verification, not in this agent's scope (this agent works in a feature branch)

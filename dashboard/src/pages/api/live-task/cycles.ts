@@ -18,7 +18,8 @@ export const GET: APIRoute = async ({ url }) => {
   try {
     const sql = getNeonClient();
     const status = url.searchParams.get('status');
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '20', 10), 100);
+    const parsedLimit = parseInt(url.searchParams.get('limit') || '20', 10);
+    const limit = Math.min(Number.isNaN(parsedLimit) ? 20 : parsedLimit, 100);
 
     let cycles;
     if (status) {

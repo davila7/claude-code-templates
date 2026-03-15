@@ -18,7 +18,8 @@ export const GET: APIRoute = async ({ url }) => {
   try {
     const sql = getNeonClient();
     const cycleId = url.searchParams.get('cycle_id');
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '200', 10), 500);
+    const parsedLimit = parseInt(url.searchParams.get('limit') || '200', 10);
+    const limit = Math.min(Number.isNaN(parsedLimit) ? 200 : parsedLimit, 500);
 
     if (!cycleId) {
       return new Response(JSON.stringify({ error: 'Missing required parameter: cycle_id' }), {
@@ -27,9 +28,17 @@ export const GET: APIRoute = async ({ url }) => {
       });
     }
 
+    const parsedCycleId = parseInt(cycleId, 10);
+    if (Number.isNaN(parsedCycleId)) {
+      return new Response(JSON.stringify({ error: 'cycle_id must be a valid number' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
     const tools = await sql`
       SELECT * FROM tool_executions
-      WHERE cycle_id = ${parseInt(cycleId, 10)}
+      WHERE cycle_id = ${parsedCycleId}
       ORDER BY created_at ASC
       LIMIT ${limit}
     `;

@@ -33,7 +33,7 @@ export default function ToolTimeline({ tools, cycleStartTime }: Props) {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [tools.length]);
+  }, [tools.length, cycleStartTime]);
 
   if (!cycleStartTime) {
     return (

@@ -1,5 +1,5 @@
 export interface ReviewCycle {
-  id: number;
+  id: string;
   session_id: string;
   component_path: string;
   component_type: string;
@@ -17,8 +17,8 @@ export interface ReviewCycle {
 }
 
 export interface ToolExecution {
-  id: number;
-  cycle_id: number;
+  id: string;
+  cycle_id: string;
   session_id: string;
   tool_name: string;
   tool_args_summary: string | null;
@@ -29,9 +29,9 @@ export interface ToolExecution {
 }
 
 export interface CycleControl {
-  id: number;
+  id: string;
   is_paused: boolean;
   paused_by: string | null;
   reason: string | null;
-  updated_at: string;
+  updated_at?: string;
 }

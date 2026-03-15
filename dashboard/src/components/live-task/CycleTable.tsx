@@ -42,8 +42,8 @@ function shortPath(path: string): string {
 
 interface Props {
   cycles: ReviewCycle[];
-  selectedId: number | null;
-  onSelect: (id: number) => void;
+  selectedId: string | null;
+  onSelect: (id: string) => void;
 }
 
 export default function CycleTable({ cycles, selectedId, onSelect }: Props) {
@@ -131,7 +131,7 @@ export default function CycleTable({ cycles, selectedId, onSelect }: Props) {
                   </span>
                 </td>
                 <td style={{ padding: '10px 12px' }}>
-                  {cycle.pr_url ? (
+                  {cycle.pr_url && cycle.pr_url.startsWith('https://') ? (
                     <a
                       href={cycle.pr_url}
                       target="_blank"

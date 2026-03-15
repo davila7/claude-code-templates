@@ -7,7 +7,7 @@ const POLL_INTERVAL = 5000;
 
 export default function LiveTaskPanel() {
   const [cycles, setCycles] = useState<ReviewCycle[]>([]);
-  const [selectedCycleId, setSelectedCycleId] = useState<number | null>(null);
+  const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
   const [tools, setTools] = useState<ToolExecution[]>([]);
   const [control, setControl] = useState<CycleControl | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ export default function LiveTaskPanel() {
     } catch { /* silent */ }
   }, []);
 
-  const fetchTools = useCallback(async (cycleId: number) => {
+  const fetchTools = useCallback(async (cycleId: string) => {
     try {
       const res = await fetch(`/api/live-task/tools?cycle_id=${cycleId}`);
       const data = await res.json();

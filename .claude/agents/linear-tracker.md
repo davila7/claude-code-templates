@@ -1,7 +1,6 @@
 ---
 name: linear-tracker
 description: Manages Linear issues for the Component Reviews project. Handles CRUD operations for review tracking, finding next components to review, and reporting results.
-tools: Read
 model: haiku
 ---
 
@@ -31,7 +30,9 @@ Queue the next component for review:
 
 ### 4. Report Failure
 Report a failed review:
-- Create an issue with label `review-failed`
+- **Remove the `next-review` label** from the original issue that failed (so it doesn't get picked again)
+- Update the original issue status to "Cancelled" or add label `review-failed`
+- Create a new issue with label `review-failed`
 - Title: "Review Failed: {component-name}"
 - Description: includes error details and component path
 - Priority: High
@@ -46,7 +47,7 @@ All issues follow this format:
 
 ## Important Rules
 
-1. **Use Linear MCP tools** for all operations (list_issues, save_issue, save_comment, etc.)
+1. **Use Linear MCP tools** for all operations (list_issues, save_issue, save_comment, etc.) — these are available via the Linear MCP server, not the `tools` frontmatter
 2. **Always include component_path** in issue descriptions for machine readability
 3. **Keep comments concise** — summary + PR link is sufficient
 4. **One active `next-review` at a time** — remove label before creating new one
