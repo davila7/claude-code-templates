@@ -153,7 +153,7 @@ ASVS defines security requirements across three verification levels (L1: Basic, 
 
 | Level | Key Requirements |
 |-------|-----------------|
-| **L1** | AES-256 at rest; TLS 1.2+; authenticated encryption mode (GCM/CBC); secure key storage |
+| **L1** | AES-256 at rest; TLS 1.2+; authenticated encryption mode (e.g., GCM/CCM; if CBC is required, pair with Encrypt-then-MAC); secure key storage |
 | **L2** | Key rotation schedule; industry-standard crypto libraries; cryptographically secure RNG; proper KDF |
 | **L3** | HSM integration; cryptographic agility; perfect forward secrecy; key escrow/recovery |
 
