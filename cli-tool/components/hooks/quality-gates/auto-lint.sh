@@ -48,13 +48,9 @@ LINT_OUTPUT=$($LINTER "$FILE_PATH" 2>&1)
 LINT_EXIT=$?
 
 if [ $LINT_EXIT -ne 0 ] && [ -n "$LINT_OUTPUT" ]; then
-  jq -n \
-    --arg context "Lint errors in $FILE_PATH:\n$LINT_OUTPUT" \
-    '{
-      decision: "block",
-      reason: $context
-    }'
-  exit 0
+  echo "Lint errors in $FILE_PATH:" >&2
+  echo "$LINT_OUTPUT" >&2
+  exit 2
 fi
 
 exit 0
