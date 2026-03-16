@@ -11,6 +11,10 @@ or `~/.claude/settings.json` for personal settings.
 
 Allow common development tools, protect sensitive files, ask for destructive operations.
 
+> **Note**: `Bash(cat *)` and similar file-reading commands in the allow list can
+> read files that are denied via `Read(...)` rules. If you need strict file access
+> control, also deny the Bash equivalents: `Bash(cat .env*)`, `Bash(cat **/*.pem)`, etc.
+
 ```json
 {
   "permissions": {
@@ -29,7 +33,6 @@ Allow common development tools, protect sensitive files, ask for destructive ope
       "Bash(git branch *)",
       "Bash(git stash *)",
       "Bash(ls *)",
-      "Bash(cat *)",
       "Bash(wc *)",
       "Bash(head *)",
       "Bash(tail *)",
@@ -46,6 +49,10 @@ Allow common development tools, protect sensitive files, ask for destructive ope
       "Bash(chmod 777 *)",
       "Bash(curl * | bash)",
       "Bash(wget * | bash)",
+      "Bash(cat .env*)",
+      "Bash(cat **/secrets/*)",
+      "Bash(cat **/*.pem)",
+      "Bash(cat **/*.key)",
       "Read(.env)",
       "Read(.env.*)",
       "Read(**/secrets/**)",

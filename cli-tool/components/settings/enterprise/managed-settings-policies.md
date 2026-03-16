@@ -58,6 +58,11 @@ These settings are applied automatically to all users in your organization.
 
 ### Restrict network access
 
+> **Note**: In Claude Code permissions, deny rules take priority over allow rules.
+> The specific curl allows below work because they are more specific than the broad
+> deny pattern. However, verify that your version of Claude Code supports this
+> precedence model, as behavior may vary.
+
 ```json
 {
   "permissions": {
@@ -180,6 +185,10 @@ For longer rules, use a managed CLAUDE.md file:
 ## Hook Policies
 
 ### Require audit logging for all users
+
+> **Note**: The log path below requires write access. Ensure the directory exists
+> and the user running Claude Code has write permissions. For non-root users,
+> consider using `~/.claude/audit.jsonl` or a path under `/tmp/` instead.
 
 ```json
 {
