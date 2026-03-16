@@ -741,7 +741,6 @@ def get_file_content(filename, allowed_dir="/app/docs"):
     
     if allowed_path != requested_path and allowed_path not in requested_path.parents:
         raise ValueError("Path traversal attempt")
-        raise ValueError("Path traversal attempt")
     
     if not requested_path.exists():
         raise ValueError("File not found")
