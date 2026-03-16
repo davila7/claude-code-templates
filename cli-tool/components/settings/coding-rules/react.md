@@ -17,9 +17,10 @@ globs: ["**/*.tsx", "**/*.jsx"]
 - Use `React.memo` sparingly and only after profiling.
 
 ## Props and Types
-- Define prop types with a `Props` interface in the same file, above the component.
-- Do not use `React.FC` - annotate props directly: `function MyComponent({ title }: Props)`.
-- Mark props that will not change as `readonly`.
+- In `.tsx` files, define prop types with a `Props` interface in the same file, above the component.
+- In `.tsx` files, do not use `React.FC` - annotate props directly: `function MyComponent({ title }: Props)`.
+- In `.tsx` files, mark props that will not change as `readonly`.
+- In `.jsx` files, use `PropTypes` for runtime prop validation if TypeScript is not available.
 
 ## Accessibility
 - Add `aria-label` or `aria-labelledby` to interactive elements that lack visible text.

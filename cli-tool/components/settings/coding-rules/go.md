@@ -9,7 +9,7 @@ globs: ["**/*.go"]
 - Check errors immediately after every call that returns one. Never defer error checks.
 - Return errors to the caller. Do not `panic` for recoverable errors.
 - Wrap errors with context: `fmt.Errorf("loading config: %w", err)`.
-- Define custom error types using `errors.New` or a struct implementing the `error` interface.
+- Use `errors.New` for sentinel errors (e.g., `var ErrNotFound = errors.New("not found")`). For custom error types with fields, define a struct implementing the `error` interface.
 
 ## Function Signatures
 - Pass `context.Context` as the first parameter in functions that do I/O or may be cancelled.

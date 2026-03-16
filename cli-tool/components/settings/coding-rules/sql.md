@@ -19,7 +19,7 @@ globs: ["**/*.sql", "**/migrations/**"]
 
 ## Migrations
 - Every migration must include both an `up` and a `down` section. Migrations must be reversible.
-- Wrap multi-statement migrations in a transaction so a partial failure does not leave the schema in an inconsistent state.
+- Wrap multi-statement migrations in a transaction where supported. Note: some DDL operations (e.g., `CREATE INDEX CONCURRENTLY` in Postgres, `ALTER TABLE` in MySQL) cannot run inside a transaction and must be handled separately.
 - When adding a column to a large table, add it as `NULL` first. Backfill data in a separate step. Then add the `NOT NULL` constraint.
 - Never drop a column or table in the same migration that removes the application code referencing it. Drop in a follow-up migration after deploying the code change.
 - Never rename a column or table directly in one step on a live database. Add the new name, migrate data, then remove the old name.

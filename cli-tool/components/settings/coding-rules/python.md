@@ -29,7 +29,7 @@ globs: ["**/*.py"]
 - Avoid nested comprehensions deeper than two levels.
 
 ## Logging and Debugging
-- Use the `logging` module. Never use `print` for program output or debugging.
+- Use the `logging` module for diagnostic output. Avoid `print` for debugging. For CLI tools that produce user-facing stdout output, `print` is acceptable.
 - Configure loggers at the module level: `logger = logging.getLogger(__name__)`.
 
 ## Error Handling

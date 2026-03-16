@@ -31,6 +31,6 @@ globs: ["**/*.rb", "**/*.erb"]
 - Keep locale files organized by feature, not by model.
 
 ## Security
-- Never trust user input. Always use parameterized queries (ActiveRecord does this by default).
+- Never trust user input. Always use parameterized queries. ActiveRecord parameterizes standard query methods (e.g., `where(name: val)`), but string interpolation in `where`, `order`, `pluck`, and `find_by_sql` is still vulnerable to SQL injection.
 - Avoid `html_safe` and `raw` in views unless the content is known to be safe.
 - Use `authenticate_user!` (Devise) or equivalent before actions that require authentication.
