@@ -58,10 +58,11 @@ These settings are applied automatically to all users in your organization.
 
 ### Restrict network access
 
-> **Note**: In Claude Code permissions, deny rules take priority over allow rules.
-> The specific curl allows below work because they are more specific than the broad
-> deny pattern. However, verify that your version of Claude Code supports this
-> precedence model, as behavior may vary.
+> **Note**: In Claude Code, deny rules take priority over allow rules. The allow
+> entries below will be overridden by the broader `Bash(curl *)` deny. To make
+> this pattern work, use a PreToolUse hook instead that inspects the curl target
+> and blocks non-approved domains, or remove `Bash(curl *)` from deny and rely
+> on the default permission prompt for unlisted curl commands.
 
 ```json
 {
