@@ -840,7 +840,7 @@ def agent_query(user_input, user_id):
         logger.info(json.dumps({
             'timestamp': datetime.utcnow().isoformat(),
             'user_id': user_id,
-            'input': user_input[:500],  # Truncate to avoid log spam
+            'input_length': len(user_input),  # Avoid logging raw prompt content
             'event': 'agent_query_start'
         }))
         
