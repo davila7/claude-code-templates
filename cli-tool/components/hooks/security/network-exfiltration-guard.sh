@@ -73,13 +73,15 @@ for pattern in "${SENSITIVE_PATTERNS[@]}"; do
 done
 
 # --- Check 2: Block network tools contacting untrusted domains ---
-if echo "$COMMAND" | grep -qE "($NETWORK_TOOLS)"; then
+# Use word-boundary matching to avoid false positives on substrings
+if echo "$COMMAND" | grep -qwE "($NETWORK_TOOLS)"; then
   # Extract URLs (http/https)
   URLS=$(echo "$COMMAND" | grep -oE 'https?://[^ /"]+' | sed 's|https\?://||' | cut -d'/' -f1 | cut -d':' -f1)
   # Extract hostnames after tool name (handles curl, wget, etc.)
   HOSTS=$(echo "$COMMAND" | grep -oE "($NETWORK_TOOLS)[[:space:]]+[^ ]*" | awk '{print $2}' | grep -vE '^-' | sed 's|https\?://||' | cut -d'/' -f1 | cut -d':' -f1)
   # Extract scp/rsync destinations (user@host:path or host:path patterns)
-  SCP_HOSTS=$(echo "$COMMAND" | grep -oE '([a-zA-Z0-9._-]+@)?[a-zA-Z0-9._-]+:' | sed 's/@/\n/' | tail -1 | sed 's/:$//')
+  # Filter out URL schemes (https:, http:) which are not SCP targets
+  SCP_HOSTS=$(echo "$COMMAND" | grep -oE '([a-zA-Z0-9._-]+@)?[a-zA-Z0-9._-]+:[^ ]*' | grep -vE '^https?:' | sed 's|:.*||' | sed 's|.*@||')
   ALL_TARGETS=$(printf '%s\n%s\n%s\n' "$URLS" "$HOSTS" "$SCP_HOSTS" | sort -u | grep -v '^$')
 
   if [ -n "$ALL_TARGETS" ]; then

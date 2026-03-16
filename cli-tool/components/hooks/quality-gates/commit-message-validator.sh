@@ -30,6 +30,10 @@ fi
 if [ -z "$MSG" ]; then
   MSG=$(echo "$COMMAND" | grep -oE -- "-[a-zA-Z]*m[[:space:]]+['\"]([^'\"]*)['\"]" | head -1 | sed "s/^-[a-zA-Z]*m[[:space:]]*//;s/^['\"]//;s/['\"]$//")
 fi
+# Try --message=msg (unquoted)
+if [ -z "$MSG" ]; then
+  MSG=$(echo "$COMMAND" | grep -oE -- '--message=[^[:space:]]+' | head -1 | sed 's/^--message=//')
+fi
 
 if [ -z "$MSG" ]; then
   # Could not extract message (editor mode, heredoc, etc.), allow through

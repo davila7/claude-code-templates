@@ -22,15 +22,23 @@ fi
 PROTECTED_BRANCHES="main|master|develop|staging|production|release"
 
 # --- Force push (--force, -f, +refspec but NOT --force-with-lease) ---
-if echo "$COMMAND" | grep -qE 'git[[:space:]]+push[[:space:]]+.*--force($|[[:space:]])' && \
-   ! echo "$COMMAND" | grep -qE '--force-with-lease'; then
-  echo "BLOCKED: git push --force is not allowed. Use --force-with-lease for safer force pushes." >&2
-  exit 2
-fi
-if echo "$COMMAND" | grep -qE 'git[[:space:]]+push[[:space:]]+-[a-zA-Z]*f' && \
-   ! echo "$COMMAND" | grep -qE '--force-with-lease'; then
-  echo "BLOCKED: git push -f is not allowed. Use --force-with-lease for safer force pushes." >&2
-  exit 2
+if echo "$COMMAND" | grep -qE 'git[[:space:]]+push'; then
+  # Allow --force-with-lease (use -- to prevent pattern from being parsed as option)
+  if ! echo "$COMMAND" | grep -q -- '--force-with-lease'; then
+    if echo "$COMMAND" | grep -qE 'git[[:space:]]+push[[:space:]]+.*--force($|[[:space:]])'; then
+      echo "BLOCKED: git push --force is not allowed. Use --force-with-lease for safer force pushes." >&2
+      exit 2
+    fi
+    if echo "$COMMAND" | grep -qE 'git[[:space:]]+push[[:space:]]+-[a-zA-Z]*f'; then
+      echo "BLOCKED: git push -f is not allowed. Use --force-with-lease for safer force pushes." >&2
+      exit 2
+    fi
+    # Catch +refspec force push syntax (e.g., git push origin +main)
+    if echo "$COMMAND" | grep -qE 'git[[:space:]]+push[[:space:]]+[^[:space:]]+[[:space:]]+\+'; then
+      echo "BLOCKED: git push +refspec (force push) is not allowed. Use --force-with-lease instead." >&2
+      exit 2
+    fi
+  fi
 fi
 
 # --- Delete protected branches ---
@@ -65,8 +73,9 @@ if echo "$COMMAND" | grep -qE 'git[[:space:]]+checkout[[:space:]]+--[[:space:]]+
   exit 2
 fi
 
-# --- Rebase on protected branches ---
-if echo "$COMMAND" | grep -qE "git[[:space:]]+rebase"; then
+# --- Rebase on protected branches (allow --abort/--continue/--skip) ---
+if echo "$COMMAND" | grep -qE "git[[:space:]]+rebase" && \
+   ! echo "$COMMAND" | grep -qE "git[[:space:]]+rebase[[:space:]]+--(abort|continue|skip)"; then
   CURRENT_BRANCH=$(git branch --show-current 2>/dev/null)
   if echo "$CURRENT_BRANCH" | grep -qE "^($PROTECTED_BRANCHES)$"; then
     echo "BLOCKED: Cannot rebase while on protected branch '$CURRENT_BRANCH'. Create a feature branch first." >&2
