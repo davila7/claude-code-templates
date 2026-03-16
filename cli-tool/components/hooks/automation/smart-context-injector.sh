@@ -23,7 +23,7 @@ if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   CHANGED=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
   if [ "$CHANGED" -gt 0 ]; then
     echo "- Uncommitted changes: $CHANGED files"
-    git status --porcelain 2>/dev/null | head -10 | while read -r line; do
+    git status --porcelain 2>/dev/null | head -10 | while IFS= read -r line; do
       echo "  - \`$line\`"
     done
     if [ "$CHANGED" -gt 10 ]; then

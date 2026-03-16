@@ -16,10 +16,23 @@ if ! echo "$COMMAND" | grep -qE '\s-[a-zA-Z]*m\b|\s--message\b'; then
   exit 0
 fi
 
-# Extract the commit message from -m "..." or --message "..."
-MSG=$(echo "$COMMAND" | grep -oE "(-m|--message)\s+['\"]([^'\"]*)['\"]" | head -1 | sed "s/^-m\s\+//;s/^--message\s\+//;s/^['\"]//;s/['\"]$//")
+# Extract the commit message from various syntaxes:
+#   -m "msg", -m 'msg', -am "msg", --message "msg", --message="msg"
+MSG=""
+# Try --message="..." or --message "..."
+if [ -z "$MSG" ]; then
+  MSG=$(echo "$COMMAND" | grep -oE -- "--message=['\"]([^'\"]*)['\"]" | head -1 | sed "s/^--message=//;s/^['\"]//;s/['\"]$//")
+fi
+if [ -z "$MSG" ]; then
+  MSG=$(echo "$COMMAND" | grep -oE -- "--message[[:space:]]+['\"]([^'\"]*)['\"]" | head -1 | sed "s/^--message[[:space:]]*//;s/^['\"]//;s/['\"]$//")
+fi
+# Try -m "..." or -am "..."
+if [ -z "$MSG" ]; then
+  MSG=$(echo "$COMMAND" | grep -oE -- "-[a-zA-Z]*m[[:space:]]+['\"]([^'\"]*)['\"]" | head -1 | sed "s/^-[a-zA-Z]*m[[:space:]]*//;s/^['\"]//;s/['\"]$//")
+fi
 
 if [ -z "$MSG" ]; then
+  # Could not extract message (editor mode, heredoc, etc.), allow through
   exit 0
 fi
 

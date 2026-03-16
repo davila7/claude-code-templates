@@ -17,8 +17,9 @@ if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   exit 0
 fi
 
-# Check for uncommitted changes
-if git diff --quiet && git diff --cached --quiet; then
+# Check for uncommitted changes (including untracked files)
+UNTRACKED=$(git ls-files --others --exclude-standard 2>/dev/null | head -1)
+if git diff --quiet && git diff --cached --quiet && [ -z "$UNTRACKED" ]; then
   exit 0  # Nothing to commit
 fi
 
