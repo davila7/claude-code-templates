@@ -1,0 +1,23 @@
+{
+  "description": "Test runner on stop. Before Claude finishes, runs your project's test suite. If tests fail, Claude is blocked from stopping and receives the failure details so it can fix the issues. Auto-detects project type (Node.js, Python, Rust, Go, Ruby). Includes infinite loop prevention via stop_hook_active check.",
+  "supportingFiles": [
+    {
+      "source": "test-runner-on-stop.sh",
+      "destination": ".claude/hooks/test-runner-on-stop.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/test-runner-on-stop.sh",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}

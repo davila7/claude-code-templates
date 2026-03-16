@@ -1,0 +1,23 @@
+{
+  "description": "Git safety net. Blocks destructive git operations: force push, deleting protected branches (main, master, develop, staging, production, release), reset --hard, clean -fd, checkout -- ., and rewriting published history with rebase/amend on protected branches. Customizable protected branch list.",
+  "supportingFiles": [
+    {
+      "source": "git-safety-net.sh",
+      "destination": ".claude/hooks/git-safety-net.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-safety-net.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

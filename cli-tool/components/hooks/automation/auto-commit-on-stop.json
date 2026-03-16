@@ -1,0 +1,23 @@
+{
+  "description": "Auto-commit on stop. When Claude finishes a task, automatically stages all changes and creates a commit with a Conventional Commits message derived from the session summary. Includes safeguards: checks for stop_hook_active to prevent loops, skips if no changes exist, and never force-pushes.",
+  "supportingFiles": [
+    {
+      "source": "auto-commit-on-stop.sh",
+      "destination": ".claude/hooks/auto-commit-on-stop.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/auto-commit-on-stop.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
