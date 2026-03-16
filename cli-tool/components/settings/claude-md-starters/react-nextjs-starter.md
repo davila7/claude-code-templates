@@ -4,7 +4,7 @@ Copy this into your project root as `CLAUDE.md` and customize the placeholders.
 
 ---
 
-```markdown
+````markdown
 # CLAUDE.md
 
 ## Project Overview
@@ -62,7 +62,7 @@ npx tsc --noEmit
 
 - Use functional components with arrow functions
 - Use TypeScript strict mode, type all props with `interface`
-- Prefer named exports over default exports (except pages)
+- Prefer named exports over default exports (except App Router convention files: page, layout, loading, error, not-found, template)
 - Use `"use client"` directive only when the component needs interactivity
 - Keep Server Components as the default
 - Tailwind classes: use consistent ordering (layout, spacing, sizing, colors, text)
@@ -118,7 +118,7 @@ export function MyComponent({ title, children }: MyComponentProps) {
 ## Conventions
 
 - <Add project-specific conventions here>
-```
+````
 
 ---
 
@@ -128,7 +128,7 @@ export function MyComponent({ title, children }: MyComponentProps) {
 
 Replace framework-specific sections:
 
-```markdown
+````markdown
 - **Framework**: React 19 + Vite
 
 ## Project Structure
@@ -151,13 +151,13 @@ Replace framework-specific sections:
 - Use React Router v7 for client-side routing
 - Route definitions in `src/routes.tsx`
 - Lazy-load page components with `React.lazy()`
-```
+````
 
 ### shadcn/ui
 
 Add this section:
 
-```markdown
+````markdown
 ## UI Components (shadcn/ui)
 
 - Install components with `npx shadcn@latest add <component>`
@@ -165,12 +165,12 @@ Add this section:
 - Use `cn()` helper from `lib/utils` for conditional class merging
 - Follow shadcn patterns for form handling (react-hook-form + zod)
 - Don't modify component internals unless necessary, compose instead
-```
+````
 
 ### Tailwind CSS v3 (instead of v4)
 
-```markdown
+````markdown
 - **Styling**: Tailwind CSS v3
 - Config in `tailwind.config.ts`
 - Use `@apply` sparingly, prefer component extraction
-```
+````

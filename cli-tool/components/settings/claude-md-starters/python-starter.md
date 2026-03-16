@@ -4,7 +4,7 @@ Copy this into your project root as `CLAUDE.md` and customize the placeholders.
 
 ---
 
-```markdown
+````markdown
 # CLAUDE.md
 
 ## Project Overview
@@ -21,7 +21,7 @@ Copy this into your project root as `CLAUDE.md` and customize the placeholders.
 uv sync
 
 # Run the application
-uv run python -m <package_name>
+uv run python -m <package_name>  # requires <package_name>/__main__.py
 
 # Run tests
 uv run pytest
@@ -87,7 +87,7 @@ uv run mypy <package_name>
 
 - <Add project-specific conventions here>
 - <Add naming patterns, API design rules, etc.>
-```
+````
 
 ---
 
@@ -97,7 +97,7 @@ uv run mypy <package_name>
 
 Replace the Quick Commands section:
 
-```markdown
+````markdown
 ## Quick Commands
 
 ```bash
@@ -108,13 +108,13 @@ pytest
 ruff check . && ruff format .
 mypy <package_name>
 ```
-```
+````
 
 ### Poetry
 
 Replace the Quick Commands section:
 
-```markdown
+````markdown
 ## Quick Commands
 
 ```bash
@@ -123,13 +123,13 @@ poetry run pytest
 poetry run ruff check . && poetry run ruff format .
 poetry run mypy <package_name>
 ```
-```
+````
 
 ### Django
 
 Add these sections:
 
-```markdown
+````markdown
 ## Django Commands
 
 ```bash
@@ -147,13 +147,13 @@ uv run python manage.py shell
 - Always create and apply migrations, never modify the database directly
 - Use `django.conf.settings` for configuration, not hardcoded values
 - Templates go in `<app>/templates/<app>/`
-```
+````
 
 ### FastAPI
 
 Add these sections:
 
-```markdown
+````markdown
 ## API Conventions
 
 - Use Pydantic models for request/response schemas in `schemas/`
@@ -161,4 +161,4 @@ Add these sections:
 - Group routes by domain in separate routers under `routers/`
 - Use `HTTPException` with appropriate status codes
 - All endpoints must have docstrings (used for OpenAPI docs)
-```
+````

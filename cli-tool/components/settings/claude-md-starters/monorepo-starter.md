@@ -8,7 +8,7 @@ This template shows how to use CLAUDE.md imports and `.claude/rules/` for path-s
 
 ## Root CLAUDE.md
 
-```markdown
+````markdown
 # CLAUDE.md
 
 ## Project Overview
@@ -82,7 +82,7 @@ pnpm --filter ui build
 ## Conventions
 
 - <Add project-wide conventions here>
-```
+````
 
 ---
 
@@ -92,7 +92,7 @@ Create these files under `.claude/rules/` for workspace-specific instructions.
 
 ### `.claude/rules/frontend.md`
 
-```markdown
+````markdown
 ---
 paths:
   - "apps/web/**"
@@ -108,11 +108,11 @@ paths:
 - Export components from barrel `index.ts` in each directory
 - Test with Vitest + React Testing Library
 - Run `pnpm --filter web test` before committing frontend changes
-```
+````
 
 ### `.claude/rules/backend.md`
 
-```markdown
+````markdown
 ---
 paths:
   - "apps/api/**"
@@ -128,11 +128,11 @@ paths:
 - Database queries in `src/repositories/`
 - Test with Vitest, mock database calls
 - Run `pnpm --filter api test` before committing backend changes
-```
+````
 
 ### `.claude/rules/shared-packages.md`
 
-```markdown
+````markdown
 ---
 paths:
   - "packages/**"
@@ -146,11 +146,11 @@ paths:
 - Version bumps require updating all consuming workspaces
 - Test packages independently: `pnpm --filter <package> test`
 - Changes here affect multiple apps, be cautious
-```
+````
 
 ### `.claude/rules/database.md`
 
-```markdown
+````markdown
 ---
 paths:
   - "apps/api/src/db/**"
@@ -166,7 +166,7 @@ paths:
 - Add indexes for foreign keys and frequently queried columns
 - Use transactions for multi-table operations
 - Test database queries with a test database, not mocks
-```
+````
 
 ---
 
@@ -174,13 +174,13 @@ paths:
 
 Instead of path-specific rules, you can use imports in the root CLAUDE.md:
 
-```markdown
+````markdown
 # CLAUDE.md
 
 See @apps/web/README.md for frontend conventions.
 See @apps/api/README.md for backend conventions.
 See @packages/shared/README.md for shared package rules.
-```
+````
 
 Claude will automatically load the referenced files when relevant.
 

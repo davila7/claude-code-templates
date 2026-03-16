@@ -4,7 +4,7 @@ Copy this into your project root as `CLAUDE.md` and customize the placeholders.
 
 ---
 
-```markdown
+````markdown
 # CLAUDE.md
 
 ## Project Overview
@@ -92,7 +92,7 @@ npx tsc --noEmit
 ## Conventions
 
 - <Add project-specific conventions here>
-```
+````
 
 ---
 
@@ -102,7 +102,7 @@ npx tsc --noEmit
 
 Replace package manager references:
 
-```markdown
+````markdown
 - **Package manager**: pnpm
 
 ```bash
@@ -110,13 +110,13 @@ pnpm install
 pnpm run dev
 pnpm test
 ```
-```
+````
 
 ### Bun
 
 Replace package manager references:
 
-```markdown
+````markdown
 - **Package manager**: Bun
 
 ```bash
@@ -124,13 +124,13 @@ bun install
 bun run dev
 bun test
 ```
-```
+````
 
 ### Express API
 
 Add these sections:
 
-```markdown
+````markdown
 ## API Conventions
 
 - Routes go in `src/routes/` grouped by domain
@@ -139,18 +139,18 @@ Add these sections:
 - Validate request bodies with zod schemas
 - Return consistent JSON: `{ data: T }` on success, `{ error: string }` on failure
 - Use HTTP status codes correctly (201 for creation, 204 for deletion, etc.)
-```
+````
 
 ### CLI Tool
 
 Add these sections:
 
-```markdown
+````markdown
 ## CLI Conventions
 
 - Use `commander` or `yargs` for argument parsing
 - Entry point in `src/cli.ts` with `#!/usr/bin/env node` shebang
 - Subcommands in `src/commands/<name>.ts`
-- Use `process.exit(1)` for errors, `process.exit(0)` for success
+- Use `process.exit(1)` for errors; for success, let the event loop drain naturally (or use `process.exitCode = 0`)
 - Write to stderr for errors/warnings, stdout for output
-```
+````

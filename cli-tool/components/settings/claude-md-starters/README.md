@@ -9,6 +9,7 @@ within the ecosystem.
 Copy the starter for your stack into your project root as `CLAUDE.md`:
 
 ```bash
+# From the claude-code-templates/cli-tool/components/settings/claude-md-starters/ directory:
 cp python-starter.md /path/to/your-project/CLAUDE.md
 ```
 

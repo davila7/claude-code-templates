@@ -4,7 +4,7 @@ Copy this into your project root as `CLAUDE.md` and customize the placeholders.
 
 ---
 
-```markdown
+````markdown
 # CLAUDE.md
 
 ## Project Overview
@@ -115,7 +115,7 @@ bundle exec rubocop -a  # auto-fix
 ## Conventions
 
 - <Add project-specific conventions here>
-```
+````
 
 ---
 
@@ -125,7 +125,7 @@ bundle exec rubocop -a  # auto-fix
 
 Replace the testing section:
 
-```markdown
+````markdown
 ## Quick Commands (Testing)
 
 ```bash
@@ -142,13 +142,13 @@ bundle exec rspec spec/models/user_spec.rb:42  # specific line
 - Use `subject` for the object under test
 - Use `shared_examples` for common behavior
 - Use `have_enqueued_job` matcher for job testing
-```
+````
 
 ### API-only
 
 Add this section:
 
-```markdown
+````markdown
 ## API Conventions
 
 - Use `ActionController::API` base class
@@ -157,4 +157,4 @@ Add this section:
 - Use token authentication (not session)
 - Return consistent JSON: `{ data: T }` or `{ error: string, details: [] }`
 - Use HTTP status codes correctly
-```
+````
