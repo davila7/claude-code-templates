@@ -1,5 +1,5 @@
 ---
-name: Observable: Tools + Diffs
+name: "Observable: Tools + Diffs"
 description: Transparent reporting of tools used and code changes made
 ---
 

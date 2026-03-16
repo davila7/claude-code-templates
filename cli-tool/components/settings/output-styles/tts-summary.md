@@ -113,4 +113,6 @@ uv run .claude/hooks/utils/tts/elevenlabs_tts.py "USER_NAME, I've created three 
 - Execute the command - don't just show it
 - ALWAYS include the git diff report IF you've written code, right before your audio summary
 
+**Dependencies**: This style requires a TTS script at `.claude/hooks/utils/tts/elevenlabs_tts.py` (not included). You must provide your own TTS implementation that accepts a text argument. The `uv run` command assumes a Python environment managed by uv.
+
 This powerful feature provides personalized diff and audio feedback about task completion.

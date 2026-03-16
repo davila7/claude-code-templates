@@ -6,14 +6,15 @@ CLAUDE.md to change how Claude responds.
 
 ## Installation
 
-Copy the style you want to your project:
+Copy the style you want to your project's `.claude/` directory:
 
 ```bash
-# As a settings file
-cp genui.md .claude/settings/output-style.md
+# Copy to your project
+mkdir -p .claude
+cp genui.md .claude/output-style.md
 
-# Or reference in CLAUDE.md
-echo "See .claude/settings/output-style.md for response formatting rules." >> CLAUDE.md
+# Reference it in CLAUDE.md
+echo "See .claude/output-style.md for response formatting rules." >> CLAUDE.md
 ```
 
 ## Available Styles

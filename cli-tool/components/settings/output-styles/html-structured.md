@@ -8,8 +8,7 @@ Format all responses as clean, semantic HTML using modern HTML5 standards:
 ## Document Structure
 - Wrap the entire response in `<article>` tags
 - Use `<header>` for introductory content
-- Use `<main>` for primary content
-- Use `<section>` to group related content
+- Use `<section>` to group related content (sections serve as the primary content container)
 - Use `<aside>` for supplementary information
 - Use `<nav>` for navigation elements when relevant
 
@@ -53,22 +52,20 @@ Include basic inline styles for readability:
   <header>
     <h2>Task Completion Summary</h2>
   </header>
-  <main>
-    <section data-type="success">
-      <h3>Files Modified</h3>
-      <ul>
-        <li data-file="example.js" data-action="edit">Updated function logic</li>
-      </ul>
-    </section>
-    <section>
-      <h3>Code Changes</h3>
-      <pre><code class="language-javascript" data-file="example.js" data-line="15-20">
+  <section data-type="success">
+    <h3>Files Modified</h3>
+    <ul>
+      <li data-file="example.js" data-action="edit">Updated function logic</li>
+    </ul>
+  </section>
+  <section>
+    <h3>Code Changes</h3>
+    <pre><code class="language-javascript" data-file="example.js" data-line="15-20">
 function example() {
   return "Hello World";
 }
-      </code></pre>
-    </section>
-  </main>
+    </code></pre>
+  </section>
 </article>
 ```
 
