@@ -126,7 +126,7 @@ export function MyComponent({ title, children }: MyComponentProps) {
 
 ### Vite + React (no Next.js)
 
-Replace framework-specific sections:
+Replace the Project Overview, Project Structure, and Data Fetching sections. Remove the "use client"/"use server" and Server Components guidance from Code Style:
 
 ````markdown
 - **Framework**: React 19 + Vite

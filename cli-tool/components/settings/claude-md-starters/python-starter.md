@@ -43,6 +43,7 @@ uv run mypy <package_name>
 <project-name>/
 ├── src/<package_name>/    # Main package
 │   ├── __init__.py
+│   ├── __main__.py        # Entry point for python -m
 │   ├── main.py
 │   └── ...
 ├── tests/                 # Test files mirror src/ structure
