@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [file-path] | [component-name]
-description: Generate comprehensive test suite with unit, integration, and edge case coverage
+description: Create a complete, runnable test suite from scratch for a specified file or component — generates test files with unit tests, integration tests, mocks, and test utilities
 ---
 
 # Generate Tests
@@ -10,7 +10,8 @@ Generate comprehensive test suite for: $ARGUMENTS
 
 ## Current Testing Setup
 
-- Test framework: @package.json or @jest.config.js or @vitest.config.js (detect framework)
+- Test framework: !`cat package.json 2>/dev/null | grep -E '"(jest|vitest|mocha|jasmine|tap)"' | head -3 || find . -maxdepth 2 -name "jest.config.*" -o -name "vitest.config.*" -o -name "pytest.ini" -o -name "go.mod" -o -name "Cargo.toml" | head -5 || echo "No framework detected"`
+- Project language: !`[ -f go.mod ] && echo "Go (testing package)" || [ -f Cargo.toml ] && echo "Rust (cargo test)" || [ -f pyproject.toml ] && echo "Python (pytest)" || [ -f requirements.txt ] && echo "Python" || [ -f pom.xml ] && echo "Java (JUnit)" || [ -f build.gradle ] && echo "Java/Kotlin (JUnit)" || echo "JavaScript/TypeScript"`
 - Existing tests: !`find . -name "*.test.*" -o -name "*.spec.*" | head -5`
 - Test coverage: !`npm run test:coverage 2>/dev/null || echo "No coverage script"`
 - Target file: @$ARGUMENTS (if file path provided)
@@ -25,18 +26,6 @@ I'll analyze the target code and create complete test coverage including:
 4. Mock implementations for external dependencies
 5. Test utilities and helpers as needed
 6. Performance and snapshot tests where appropriate
-
-## Process
-
-I'll follow these steps:
-
-1. Analyze the target file/component structure
-2. Identify all testable functions, methods, and behaviors
-3. Examine existing test patterns in the project
-4. Create test files following project naming conventions
-5. Implement comprehensive test cases with proper setup/teardown
-6. Add necessary mocks and test utilities
-7. Verify test coverage and add missing test cases
 
 ## Test Types
 
@@ -54,12 +43,31 @@ I'll follow these steps:
 - Service layer integration
 - End-to-end user workflows
 
+### Contract Tests (when API boundaries exist)
+
+- Consumer-driven contract tests using Pact or schemathesis
+- Provider verification tests for service boundaries
+- OpenAPI schema validation tests
+
+### Accessibility Tests (when UI components detected)
+
+- jest-axe assertions for React/Vue components
+- @axe-core/playwright for E2E accessibility flows
+- WCAG 2.1 AA compliance checks
+
 ### Framework-Specific Tests
 
 - **React**: Component testing with React Testing Library
 - **Vue**: Component testing with Vue Test Utils
 - **Angular**: Component and service testing with TestBed
 - **Node.js**: API endpoint and middleware testing
+
+### Language-Specific Tests
+
+- **Python**: pytest fixtures, parametrize, conftest.py patterns
+- **Go**: Table-driven tests, testify assertions, httptest for handlers
+- **Rust**: #[cfg(test)] modules, proptest for property-based testing
+- **Java**: JUnit 5 parameterized tests, Mockito for mocking
 
 ## Testing Best Practices
 
