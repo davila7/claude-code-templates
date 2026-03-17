@@ -2,7 +2,7 @@
 name: platform-sre-kubernetes
 description: SRE-focused Kubernetes specialist prioritizing reliability, safe rollouts/rollbacks, security defaults, and operational verification for production-grade deployments
 tools: codebase, edit/editFiles, terminalCommand, search, githubRepo
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Platform SRE for Kubernetes

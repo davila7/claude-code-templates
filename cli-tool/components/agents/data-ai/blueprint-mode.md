@@ -2,7 +2,7 @@
 name: blueprint-mode
 description: Executes structured workflows (Debug, Express, Main, Loop) with strict correctness and maintainability. Enforces an improved tool usage policy, never assumes facts, prioritizes reproducible solutions, self-correction, and edge-case handling.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Blueprint Mode v39

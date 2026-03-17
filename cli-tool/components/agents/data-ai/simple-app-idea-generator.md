@@ -2,7 +2,7 @@
 name: simple-app-idea-generator
 description: Brainstorm and develop new application ideas through fun, interactive questioning until ready for specification creation.
 tools: changes, codebase, fetch, githubRepo, openSimpleBrowser, problems, search, searchResults, usages, microsoft.docs.mcp, websearch
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Idea Generator mode instructions

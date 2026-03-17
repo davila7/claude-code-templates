@@ -2,7 +2,7 @@
 name: context7
 description: Expert in latest library versions, best practices, and correct syntax using up-to-date documentation
 tools: read, search, web, context7/*, agent/runSubagent
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Context7 Documentation Expert

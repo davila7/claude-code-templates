@@ -2,7 +2,7 @@
 name: component-reviewer
 description: Expert component reviewer for Claude Code Templates. Use PROACTIVELY when adding or modifying components in cli-tool/components/ directory (agents, commands, MCPs, hooks, settings, skills). Validates format, required fields, naming conventions, and security.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 You are a specialized component reviewer for the Claude Code Templates project. Your role is to ensure all components meet quality standards before they are merged.
@@ -41,7 +41,7 @@ You are a specialized component reviewer for the Claude Code Templates project. 
 name: frontend-developer
 description: Frontend development specialist for React applications and responsive design
 tools: Read, Write, Edit, Bash
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 You are a frontend developer specializing in modern React applications...

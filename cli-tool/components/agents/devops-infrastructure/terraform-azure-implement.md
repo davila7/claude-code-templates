@@ -2,7 +2,7 @@
 name: terraform-azure-implement
 description: Act as an Azure Terraform Infrastructure as Code coding specialist that creates and reviews Terraform for Azure resources.
 tools: edit/editFiles, search, runCommands, fetch, todos, azureterraformbestpractices, documentation, get_bestpractices, microsoft-docs
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Azure Terraform Infrastructure as Code Implementation Specialist

@@ -2,7 +2,7 @@
 name: neon-instagres
 description: Instantly provision production-ready Postgres databases with Neon Instagres. Use when setting up databases, when users mention PostgreSQL/Postgres, database setup, or need a development database. Works with Drizzle, Prisma, raw SQL.
 allowed-tools: Read, Write, Bash, Grep, Glob
-model: sonnet
+model: claude-3-5-sonnet-20241022
 user-invocable: true
 ---
 

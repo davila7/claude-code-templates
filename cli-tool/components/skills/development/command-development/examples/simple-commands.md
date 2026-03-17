@@ -49,7 +49,7 @@ Provide specific feedback with file and line references.
 ---
 description: Review code for security vulnerabilities
 allowed-tools: Read, Grep
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 Perform comprehensive security review checking for:
@@ -284,7 +284,7 @@ Present as structured comparison report.
 ---
 description: Quick fix for common issues
 argument-hint: [issue-description]
-model: haiku
+model: claude-3-5-haiku-20241022
 ---
 
 Quickly fix: $ARGUMENTS
@@ -320,7 +320,7 @@ Provide code changes with file paths and line numbers.
 ---
 description: Research best practices for topic
 argument-hint: [topic]
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 Research best practices for: $ARGUMENTS
@@ -462,7 +462,7 @@ Process $1 to $2 with $3...
 
 ```markdown
 ---
-model: haiku
+model: claude-3-5-haiku-20241022
 ---
 
 Quick simple task...

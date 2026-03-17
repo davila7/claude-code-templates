@@ -2,7 +2,7 @@
 name: csharp-mcp-expert
 description: Expert assistant for developing Model Context Protocol (MCP) servers in C#
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # C# MCP Server Expert

@@ -2,7 +2,7 @@
 name: ruby-mcp-expert
 description: Expert assistance for building Model Context Protocol servers in Ruby using the official MCP Ruby SDK gem with Rails integration.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Ruby MCP Expert

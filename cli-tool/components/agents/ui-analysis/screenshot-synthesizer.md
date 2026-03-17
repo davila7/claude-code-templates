@@ -2,7 +2,7 @@
 name: screenshot-synthesizer
 description: Synthesizes analysis results from multiple agents into a unified feature list and task breakdown
 tools: Read, Write, TodoWrite
-model: sonnet
+model: claude-3-5-sonnet-20241022
 color: blue
 ---
 

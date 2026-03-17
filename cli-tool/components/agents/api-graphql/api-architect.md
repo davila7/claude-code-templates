@@ -2,7 +2,7 @@
 name: api-architect
 description: Your role is that of an API architect. Help mentor the engineer by providing guidance, support, and working code.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # API Architect mode instructions

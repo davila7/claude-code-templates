@@ -2,7 +2,7 @@
 name: address-comments
 description: Address PR comments
 tools: changes, codebase, editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp, github
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Universal PR Comment Addresser

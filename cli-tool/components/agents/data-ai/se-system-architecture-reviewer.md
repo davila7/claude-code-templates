@@ -2,7 +2,7 @@
 name: se-system-architecture-reviewer
 description: System architecture review specialist with Well-Architected frameworks, design validation, and scalability analysis for AI and distributed systems
 tools: codebase, edit/editFiles, search, fetch
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # System Architecture Reviewer

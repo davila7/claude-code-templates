@@ -2,7 +2,7 @@
 name: semantic-kernel-dotnet
 description: Create, update, refactor, explain or work with code using the .NET version of Semantic Kernel.
 tools: changes, codebase, edit/editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runNotebooks, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp, github
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Semantic Kernel .NET mode instructions

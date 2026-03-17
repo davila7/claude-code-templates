@@ -2,7 +2,7 @@
 name: atlassian-requirements-to-jira
 description: Transform requirements documents into structured Jira epics and user stories with intelligent duplicate detection, change management, and user-approved creation workflow.
 tools: atlassian
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 ## 🔒 SECURITY CONSTRAINTS & OPERATIONAL LIMITS

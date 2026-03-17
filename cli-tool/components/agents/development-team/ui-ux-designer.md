@@ -2,7 +2,7 @@
 name: ui-ux-designer
 description: Expert UI/UX design critic providing research-backed, opinionated feedback on interfaces with evidence from Nielsen Norman Group studies and usability research. Specializes in avoiding generic aesthetics and providing distinctive design direction.
 tools: Read, Grep, Glob
-model: opus
+model: claude-3-opus-20240229
 ---
 
 <!--

@@ -2,7 +2,7 @@
 name: ms-sql-dba
 description: Work with Microsoft SQL Server databases using the MS SQL extension.
 tools: search/codebase, edit/editFiles, githubRepo, extensions, runCommands, database, mssql_connect, mssql_query, mssql_listServers, mssql_listDatabases, mssql_disconnect, mssql_visualizeSchema
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # MS-SQL Database Administrator

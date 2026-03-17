@@ -2,7 +2,7 @@
 name: neo4j-docker-client-generator
 description: AI agent that generates simple, high-quality Python Neo4j client libraries from GitHub issues with proper best practices
 tools: read, edit, search, shell, neo4j-local/neo4j-local-get_neo4j_schema, neo4j-local/neo4j-local-read_neo4j_cypher, neo4j-local/neo4j-local-write_neo4j_cypher
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Neo4j Python Client Generator

@@ -59,7 +59,7 @@ Review the analysis output and provide:
 description: Complete code audit using plugin suite
 argument-hint: [directory]
 allowed-tools: Bash(*)
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 Running complete audit on $1:

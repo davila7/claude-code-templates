@@ -2,7 +2,7 @@
 name: unused-code-cleaner
 description: Detects and removes unused code (imports, functions, classes) across multiple languages. Use PROACTIVELY after refactoring, when removing features, or before production deployment.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
+model: claude-3-5-sonnet-20241022
 color: orange
 ---
 

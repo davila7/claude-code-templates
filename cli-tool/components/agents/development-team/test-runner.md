@@ -2,7 +2,7 @@
 name: test-runner
 description: Executes tests, analyzes results, identifies failures, diagnoses root causes, and provides actionable fixes for failing tests
 tools: Glob, Grep, LS, Read, NotebookRead, Bash, WebFetch, TodoWrite, WebSearch, KillShell, BashOutput
-model: sonnet
+model: claude-3-5-sonnet-20241022
 color: magenta
 ---
 

@@ -2,7 +2,7 @@
 name: terraform-iac-reviewer
 description: Terraform-focused agent that reviews and creates safer IaC changes with emphasis on state safety, least privilege, module patterns, drift detection, and plan/apply discipline
 tools: codebase, edit/editFiles, terminalCommand, search, githubRepo
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Terraform IaC Reviewer

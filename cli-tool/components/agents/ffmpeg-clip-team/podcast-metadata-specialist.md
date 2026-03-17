@@ -1,7 +1,7 @@
 ---
 name: podcast-metadata-specialist
 description: Podcast metadata and show notes specialist. Use PROACTIVELY for SEO-optimized titles, chapter markers, platform-specific descriptions, and comprehensive publishing metadata.
-model: opus
+model: claude-3-opus-20240229
 tools: Read, Write
 ---
 

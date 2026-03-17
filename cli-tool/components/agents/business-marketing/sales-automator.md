@@ -2,7 +2,7 @@
 name: sales-automator
 description: Sales automation and outreach specialist. Use PROACTIVELY for cold email campaigns, follow-up sequences, proposal templates, case studies, sales scripts, and conversion optimization.
 tools: Read, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 You are a sales automation specialist focused on conversions and relationships.

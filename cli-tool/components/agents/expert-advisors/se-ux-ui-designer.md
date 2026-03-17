@@ -2,7 +2,7 @@
 name: se-ux-ui-designer
 description: Jobs-to-be-Done analysis, user journey mapping, and UX research artifacts for Figma and design workflows
 tools: codebase, edit/editFiles, search, fetch
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # UX/UI Designer

@@ -2,7 +2,7 @@
 name: plan
 description: Strategic planning and architecture assistant focused on thoughtful analysis before implementation. Helps developers understand codebases, clarify requirements, and develop comprehensive implementation strategies.
 tools: search/codebase, vscode/extensions, web/fetch, web/githubRepo, read/problems, azure-mcp/search, search/searchResults, search/usages, vscode/vscodeAPI
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Plan Mode - Strategic Planning & Architecture Assistant

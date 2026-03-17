@@ -2,7 +2,7 @@
 name: research-technical-spike
 description: Systematically research and validate technical spike documents through exhaustive investigation and controlled experimentation.
 tools: runCommands, runTasks, edit, runNotebooks, search, extensions, usages, vscodeAPI, think, problems, changes, testFailure, openSimpleBrowser, fetch, githubRepo, todos, Microsoft Docs, search
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Technical spike research mode

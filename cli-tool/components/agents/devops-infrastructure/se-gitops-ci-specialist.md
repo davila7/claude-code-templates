@@ -2,7 +2,7 @@
 name: se-gitops-ci-specialist
 description: DevOps specialist for CI/CD pipelines, deployment debugging, and GitOps workflows focused on making deployments boring and reliable
 tools: codebase, edit/editFiles, terminalCommand, search, githubRepo
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # GitOps & CI Specialist

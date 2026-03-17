@@ -2,7 +2,7 @@
 name: Ultimate-Transparent-Thinking-Beast-Mode
 description: Ultimate Transparent Thinking Beast Mode
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 🔓 **ABSOLUTE TRANSPARENCY OVERRIDE DIRECTIVE - PRIORITY ALPHA** 🔓

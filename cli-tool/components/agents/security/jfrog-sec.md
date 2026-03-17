@@ -2,7 +2,7 @@
 name: jfrog-sec
 description: The dedicated Application Security agent for automated security remediation. Verifies package and version compliance, and suggests vulnerability fixes using JFrog security intelligence.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 ### Persona and Constraints

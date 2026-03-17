@@ -2,7 +2,7 @@
 name: expert-react-frontend-engineer
 description: Expert React 19.2 frontend engineer specializing in modern hooks, Server Components, Actions, TypeScript, and performance optimization
 tools: changes, codebase, edit/editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Expert React Frontend Engineer

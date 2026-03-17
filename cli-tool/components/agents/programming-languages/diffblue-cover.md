@@ -2,7 +2,7 @@
 name: diffblue-cover
 description: Expert agent for creating unit tests for java applications using Diffblue Cover.
 tools: DiffblueCover/*
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Java Unit Test Agent

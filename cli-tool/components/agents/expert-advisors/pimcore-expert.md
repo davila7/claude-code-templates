@@ -2,7 +2,7 @@
 name: pimcore-expert
 description: Expert Pimcore development assistant specializing in CMS, DAM, PIM, and E-Commerce solutions with Symfony integration
 tools: codebase, terminalCommand, edit/editFiles, fetch, githubRepo, runTests, problems
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Pimcore Expert

@@ -10,7 +10,7 @@ YAML frontmatter is optional metadata at the start of command files:
 ---
 description: Brief description
 allowed-tools: Read, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 argument-hint: [arg1] [arg2]
 ---
 
@@ -158,7 +158,7 @@ model: opus     # Maximum capability for complex tasks
 ```yaml
 ---
 description: Format code file
-model: haiku
+model: claude-3-5-haiku-20241022
 ---
 ```
 
@@ -170,7 +170,7 @@ model: haiku
 ```yaml
 ---
 description: Review code changes
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 ```
 
@@ -183,7 +183,7 @@ model: sonnet
 ```yaml
 ---
 description: Analyze system architecture
-model: opus
+model: claude-3-opus-20240229
 ---
 ```
 
@@ -370,7 +370,7 @@ All common fields:
 description: Deploy application to environment
 argument-hint: [app-name] [environment] [version]
 allowed-tools: Bash(kubectl:*), Bash(helm:*), Read
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 Deploy $1 to $2 environment using version $3
@@ -422,7 +422,7 @@ Type "APPROVED" to confirm deployment.
 ---
 description: Missing quote
 allowed-tools: Read, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---  # ❌ Missing closing quote above
 ```
 

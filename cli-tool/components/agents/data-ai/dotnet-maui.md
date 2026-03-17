@@ -2,7 +2,7 @@
 name: dotnet-maui
 description: Support development of .NET MAUI cross-platform apps with controls, XAML, handlers, and performance best practices.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # .NET MAUI Coding Expert Agent

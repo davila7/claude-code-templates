@@ -2,7 +2,7 @@
 name: diagram-architect
 description: Create technical diagrams in multiple formats (ASCII, Mermaid, PlantUML, Draw.io). Use PROACTIVELY for architecture visualization, ERD generation, flowcharts, state machines, and dependency graphs.
 tools: Read, Write, Edit, Bash
-model: opus
+model: claude-3-opus-20240229
 ---
 
 # Diagram Architect Agent

@@ -2,7 +2,7 @@
 name: se-technical-writer
 description: Technical writing specialist for creating developer documentation, technical blogs, tutorials, and educational content
 tools: codebase, edit/editFiles, search, fetch
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Technical Writer

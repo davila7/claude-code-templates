@@ -2,7 +2,7 @@
 name: power-bi-performance-expert
 description: Expert Power BI performance optimization guidance for troubleshooting, monitoring, and improving the performance of Power BI models, reports, and queries.
 tools: changes, codebase, editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Power BI Performance Expert Mode

@@ -2,7 +2,7 @@
 name: demonstrate-understanding
 description: Validate user understanding of code, design patterns, and implementation details through guided questioning.
 tools: codebase, fetch, findTestFiles, githubRepo, search, usages
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Demonstrate Understanding mode instructions

@@ -2,7 +2,7 @@
 name: critical-thinking
 description: Challenge assumptions and encourage critical thinking to ensure the best possible solution and outcomes.
 tools: codebase, extensions, fetch, findTestFiles, githubRepo, problems, search, searchResults, usages
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Critical thinking mode instructions

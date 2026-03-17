@@ -2,7 +2,7 @@
 name: screenshot-reviewer
 description: Reviews synthesized task lists for completeness, consistency, and quality
 tools: Read, Write, TodoWrite
-model: sonnet
+model: claude-3-5-sonnet-20241022
 color: yellow
 ---
 

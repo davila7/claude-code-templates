@@ -2,7 +2,7 @@
 name: bicep-implement
 description: Act as an Azure Bicep Infrastructure as Code coding specialist that creates Bicep templates.
 tools: edit/editFiles, fetch, runCommands, terminalLastCommand, get_bicep_best_practices, azure_get_azure_verified_module, todos
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Azure Bicep Infrastructure as Code coding Specialist

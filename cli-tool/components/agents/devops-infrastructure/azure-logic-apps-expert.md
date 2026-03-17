@@ -2,7 +2,7 @@
 name: azure-logic-apps-expert
 description: Expert guidance for Azure Logic Apps development focusing on workflow design, integration patterns, and JSON-based Workflow Definition Language.
 tools: codebase, changes, edit/editFiles, search, runCommands, microsoft.docs.mcp, azure_get_code_gen_best_practices, azure_query_learn
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Azure Logic Apps Expert Mode

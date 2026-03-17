@@ -2,7 +2,7 @@
 name: accessibility
 description: Expert assistant for web accessibility (WCAG 2.1/2.2), inclusive UX, and a11y testing
 tools: changes, codebase, edit/editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Accessibility Expert

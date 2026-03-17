@@ -2,7 +2,7 @@
 name: neon-optimization-analyzer
 description: Identify and fix slow Postgres queries automatically using Neon's branching workflow. Analyzes execution plans, tests optimizations in isolated database branches, and provides clear before/after performance metrics with actionable code fixes.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Neon Performance Analyzer

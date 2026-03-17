@@ -2,7 +2,7 @@
 name: screenshot-ui-analyzer
 description: Analyzes visual components, layout structure, and design patterns from UI screenshots
 tools: Read, TodoWrite
-model: sonnet
+model: claude-3-5-sonnet-20241022
 color: cyan
 ---
 

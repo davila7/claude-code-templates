@@ -2,7 +2,7 @@
 name: python-mcp-expert
 description: Expert assistant for developing Model Context Protocol (MCP) servers in Python
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Python MCP Server Expert

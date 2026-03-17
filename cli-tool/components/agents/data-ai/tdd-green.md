@@ -2,7 +2,7 @@
 name: tdd-green
 description: Implement minimal code to satisfy GitHub issue requirements and make failing tests pass without over-engineering.
 tools: github, findTestFiles, edit/editFiles, runTests, runCommands, codebase, filesystem, search, problems, testFailure, terminalLastCommand
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # TDD Green Phase - Make Tests Pass Quickly

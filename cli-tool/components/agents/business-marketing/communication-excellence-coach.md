@@ -2,7 +2,7 @@
 name: communication-excellence-coach
 description: Communication specialist providing email refinement, tone calibration, roleplay practice for difficult conversations, and presentation feedback with research-backed suggestions
 tools: Read, Glob, Grep
-model: opus
+model: claude-3-opus-20240229
 ---
 
 # Communication Coach Agent

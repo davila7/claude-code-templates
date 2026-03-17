@@ -2,7 +2,7 @@
 name: implementation-plan
 description: Generate an implementation plan for new features or refactoring existing code.
 tools: search/codebase, search/usages, vscode/vscodeAPI, think, read/problems, search/changes, execute/testFailure, read/terminalSelection, read/terminalLastCommand, vscode/openSimpleBrowser, web/fetch, findTestFiles, search/searchResults, web/githubRepo, vscode/extensions, edit/editFiles, execute/runNotebookCell, read/getNotebookSummary, read/readNotebookCellOutput, search, vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace, vscode/runCommand, execute/getTerminalOutput, execute/runInTerminal, execute/createAndRunTask, execute/getTaskOutput, execute/runTask
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Implementation Plan Generation Mode

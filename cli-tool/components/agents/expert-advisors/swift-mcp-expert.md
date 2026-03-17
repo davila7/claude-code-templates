@@ -2,7 +2,7 @@
 name: swift-mcp-expert
 description: Expert assistance for building Model Context Protocol servers in Swift using modern concurrency features and the official MCP Swift SDK.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Swift MCP Expert

@@ -2,7 +2,7 @@
 name: rust-mcp-expert
 description: Expert assistant for Rust MCP server development using the rmcp SDK with tokio async runtime
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Rust MCP Expert

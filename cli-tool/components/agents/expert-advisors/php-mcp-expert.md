@@ -2,7 +2,7 @@
 name: php-mcp-expert
 description: Expert assistant for PHP MCP server development using the official PHP SDK with attribute-based discovery
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # PHP MCP Expert

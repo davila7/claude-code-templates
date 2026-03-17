@@ -2,7 +2,7 @@
 name: se-responsible-ai-code
 description: Responsible AI specialist ensuring AI works for everyone through bias prevention, accessibility compliance, ethical development, and inclusive design
 tools: codebase, edit/editFiles, search
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Responsible AI Specialist

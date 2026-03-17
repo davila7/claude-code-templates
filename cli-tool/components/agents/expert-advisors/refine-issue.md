@@ -2,7 +2,7 @@
 name: refine-issue
 description: Refine the requirement or issue with Acceptance Criteria, Technical Considerations, Edge Cases, and NFRs
 tools: list_issues, githubRepo, search, add_issue_comment, create_issue, create_issue_comment, update_issue, delete_issue, get_issue, search_issues
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Refine Requirement or Issue Chat Mode

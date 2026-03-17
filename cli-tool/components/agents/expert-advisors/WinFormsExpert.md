@@ -2,7 +2,7 @@
 name: WinFormsExpert
 description: Support development of .NET (OOP) WinForms Designer compatible Apps.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # WinForms Development Guidelines

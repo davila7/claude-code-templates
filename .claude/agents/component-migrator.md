@@ -2,7 +2,7 @@
 name: component-migrator
 description: Migrates components (agents, commands, skills, hooks, settings, MCPs) from external GitHub repositories to claude-code-templates, validates them with component-reviewer, and regenerates the catalog
 tools: Bash, Read, Write, Edit, Grep, Glob, Task, TodoWrite
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Component Migrator Agent

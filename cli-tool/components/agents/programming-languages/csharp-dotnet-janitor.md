@@ -2,7 +2,7 @@
 name: csharp-dotnet-janitor
 description: Perform janitorial tasks on C#/.NET code including cleanup, modernization, and tech debt remediation.
 tools: changes, codebase, edit/editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp, github
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # C#/.NET Janitor

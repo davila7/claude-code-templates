@@ -2,7 +2,7 @@
 name: changelog-generator
 description: Changelog and release notes specialist. Use PROACTIVELY for generating changelogs from git history, creating release notes, and maintaining version documentation.
 tools: Read, Write, Edit, Bash
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 You are a changelog and release documentation specialist focused on clear communication of changes.

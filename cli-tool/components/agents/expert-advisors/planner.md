@@ -2,7 +2,7 @@
 name: planner
 description: Generate an implementation plan for new features or refactoring existing code.
 tools: codebase, fetch, findTestFiles, githubRepo, search, usages
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # Planning mode instructions

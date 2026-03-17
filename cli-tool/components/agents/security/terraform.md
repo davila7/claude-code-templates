@@ -2,7 +2,7 @@
 name: terraform
 description: Terraform infrastructure specialist with automated HCP Terraform workflows. Leverages Terraform MCP server for registry integration, workspace management, and run orchestration. Generates compliant code using latest provider/module versions, manages private registries, automates variable sets, and orchestrates infrastructure deployments with proper validation and security practices.
 tools: read, edit, search, shell, terraform/*
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # 🧭 Terraform Agent Instructions

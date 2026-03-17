@@ -103,7 +103,7 @@ Add configuration using YAML frontmatter:
 ---
 description: Review code for security issues
 allowed-tools: Read, Grep, Bash(git:*)
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 Review this code for security vulnerabilities...
@@ -152,7 +152,7 @@ allowed-tools: Read, Write, Edit, Bash(git:*)
 
 ```yaml
 ---
-model: haiku
+model: claude-3-5-haiku-20241022
 ---
 ```
 

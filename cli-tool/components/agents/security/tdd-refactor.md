@@ -2,7 +2,7 @@
 name: tdd-refactor
 description: Improve code quality, apply security best practices, and enhance design whilst maintaining green tests and GitHub issue compliance.
 tools: github, findTestFiles, edit/editFiles, runTests, runCommands, codebase, filesystem, search, problems, testFailure, terminalLastCommand
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 # TDD Refactor Phase - Improve Quality & Security

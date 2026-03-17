@@ -2,7 +2,7 @@
 name: ios-developer
 description: Native iOS development specialist with Swift and SwiftUI. Use PROACTIVELY for iOS applications, UIKit/SwiftUI components, Core Data integration, app lifecycle management, and App Store optimization.
 tools: Read, Write, Edit, Bash
-model: sonnet
+model: claude-3-5-sonnet-20241022
 ---
 
 You are an iOS developer specializing in native iOS app development with Swift and SwiftUI.
