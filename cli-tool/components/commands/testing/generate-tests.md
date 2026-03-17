@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [file-path] | [component-name]
-description: Create a complete, runnable test suite from scratch for a specified file or component — generates test files with unit tests, integration tests, mocks, and test utilities
+description: Generate a complete test file for a specified source file or component. Use when the user explicitly asks to write, create, or generate tests for a specific file.
 ---
 
 # Generate Tests
@@ -10,86 +10,33 @@ Generate comprehensive test suite for: $ARGUMENTS
 
 ## Current Testing Setup
 
-- Test framework: !`cat package.json 2>/dev/null | grep -E '"(jest|vitest|mocha|jasmine|tap)"' | head -3 || find . -maxdepth 2 -name "jest.config.*" -o -name "vitest.config.*" -o -name "pytest.ini" -o -name "go.mod" -o -name "Cargo.toml" | head -5 || echo "No framework detected"`
-- Project language: !`[ -f go.mod ] && echo "Go (testing package)" || [ -f Cargo.toml ] && echo "Rust (cargo test)" || [ -f pyproject.toml ] && echo "Python (pytest)" || [ -f requirements.txt ] && echo "Python" || [ -f pom.xml ] && echo "Java (JUnit)" || [ -f build.gradle ] && echo "Java/Kotlin (JUnit)" || echo "JavaScript/TypeScript"`
+- Test framework: !`cat package.json 2>/dev/null | grep -E '"jest"|"vitest"|"mocha"|"jasmine"' | head -3 || cat jest.config.* vitest.config.* 2>/dev/null | head -5 || echo "Framework not detected"`
 - Existing tests: !`find . -name "*.test.*" -o -name "*.spec.*" | head -5`
 - Test coverage: !`npm run test:coverage 2>/dev/null || echo "No coverage script"`
-- Target file: @$ARGUMENTS (if file path provided)
+- Target: if $ARGUMENTS is a file path, read it with @$ARGUMENTS; if it is a component name, search for it with Grep before writing tests
 
-## Task
+## Test Generation Framework
 
-I'll analyze the target code and create complete test coverage including:
+1. **Analyze** the target file/component structure — identify all exported functions, classes, methods, and their signatures
+2. **Strategy** — examine existing test patterns in the project; choose unit vs integration scope; identify critical paths and error scenarios
+3. **Mock Design** — map all external dependencies (I/O, APIs, timers, dates); create factories for test data; plan cleanup for async operations
+4. **Unit Tests** — write isolated tests per function/method covering happy path, edge cases, and error conditions; follow AAA pattern (Arrange, Act, Assert)
+5. **Integration Tests** — test component interactions, API layers with mocked responses, and end-to-end user workflows where applicable
+6. **Quality Check** — verify naming describes behavior not implementation; confirm 80%+ coverage on critical business logic; ensure test isolation
 
-1. Unit tests for individual functions and methods
-2. Integration tests for component interactions
-3. Edge case and error handling tests
-4. Mock implementations for external dependencies
-5. Test utilities and helpers as needed
-6. Performance and snapshot tests where appropriate
+## Framework-Specific Guidance
 
-## Test Types
+- **React**: Component testing with React Testing Library; test user interactions and rendering
+- **Vue**: Component testing with Vue Test Utils; test props, events, and slots
+- **Angular**: Component and service testing with TestBed; test dependency injection
+- **Node.js**: API endpoint and middleware testing; test request/response cycles
+- **Python**: `pytest` with fixtures, `unittest.mock` for patching, `pytest-cov` for coverage
+- **Go**: Table-driven tests in `_test.go` files, `testify/assert` for assertions, subtests via `t.Run()`
+- **Rust**: `#[cfg(test)]` modules, `#[test]` attributes, `mockall` for mocking
 
-### Unit Tests
+## Best Practices
 
-- Individual function testing with various inputs
-- Component rendering and prop handling
-- State management and lifecycle methods
-- Utility function edge cases and error conditions
-
-### Integration Tests
-
-- Component interaction testing
-- API integration with mocked responses
-- Service layer integration
-- End-to-end user workflows
-
-### Contract Tests (when API boundaries exist)
-
-- Consumer-driven contract tests using Pact or schemathesis
-- Provider verification tests for service boundaries
-- OpenAPI schema validation tests
-
-### Accessibility Tests (when UI components detected)
-
-- jest-axe assertions for React/Vue components
-- @axe-core/playwright for E2E accessibility flows
-- WCAG 2.1 AA compliance checks
-
-### Framework-Specific Tests
-
-- **React**: Component testing with React Testing Library
-- **Vue**: Component testing with Vue Test Utils
-- **Angular**: Component and service testing with TestBed
-- **Node.js**: API endpoint and middleware testing
-
-### Language-Specific Tests
-
-- **Python**: pytest fixtures, parametrize, conftest.py patterns
-- **Go**: Table-driven tests, testify assertions, httptest for handlers
-- **Rust**: #[cfg(test)] modules, proptest for property-based testing
-- **Java**: JUnit 5 parameterized tests, Mockito for mocking
-
-## Testing Best Practices
-
-### Test Structure
-
-- Use descriptive test names that explain the behavior
 - Follow AAA pattern (Arrange, Act, Assert)
-- Group related tests with describe blocks
-- Use proper setup and teardown for test isolation
-
-### Mock Strategy
-
-- Mock external dependencies and API calls
-- Use factories for test data generation
-- Implement proper cleanup for async operations
-- Mock timers and dates for deterministic tests
-
-### Coverage Goals
-
-- Aim for 80%+ code coverage
-- Focus on critical business logic paths
-- Test both happy path and error scenarios
-- Include boundary value testing
-
-I'll adapt to your project's testing framework (Jest, Vitest, Cypress, etc.) and follow established patterns.
+- 80%+ coverage; prioritize critical business logic and error paths
+- Mock external I/O; use factories for test data
+- Naming: describe what the function does, not implementation details
