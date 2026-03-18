@@ -18,9 +18,9 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     ctaUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
     websiteUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
     installCommand:
-      'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices --mcp web-data/brightdata --yes',
+      'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices,development/brightdata-local-search --mcp web-data/brightdata --yes',
     metadata: {
-      Components: '7',
+      Components: '8',
       Tools: '60+',
       Integration: 'MCP, Skills, CLI',
     },

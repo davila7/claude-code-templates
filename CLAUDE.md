@@ -278,6 +278,26 @@ Astro + React + Tailwind dashboard serving both `www.aitmpl.com` and `app.aitmpl
 - **Data**: `components.json` and `trending-data.json` served from `dashboard/public/` (same-origin)
 - **APIs**: All endpoints in `dashboard/src/pages/api/` (Astro API routes, no separate serverless project)
 
+### Featured Pages (`/featured/[slug]`)
+
+Featured partner integrations shown on the dashboard homepage. Two files to edit:
+
+**`dashboard/src/lib/constants.ts`** — `FEATURED_ITEMS` array. Each entry has:
+- `name`, `description`, `logo`, `url` (`/featured/slug`), `tag`, `tagColor`, `category`
+- `ctaLabel`, `ctaUrl`, `websiteUrl`
+- `installCommand` — shown in the sidebar Quick Install box
+- `metadata` — key/value pairs shown in the Details sidebar (e.g. `Components: '8'`)
+- `links` — sidebar links list
+
+**`dashboard/src/pages/featured/[slug].astro`** — Content for each slug rendered via `{slug === 'brightdata' && (...)}` blocks. Each block contains the full HTML content for that partner page.
+
+**When adding a skill to a featured page:**
+1. Add a new card `<div class="flex gap-3 ...">` inside the Skills Layer section of the relevant `{slug === '...'}` block
+2. Update `installCommand` in `constants.ts` to include the new skill
+3. Increment `metadata.Components` count in `constants.ts`
+
+Current featured slugs: `brightdata`, `neon-instagres`, `claudekit`, `braingrid`
+
 ### Vercel Project Setup
 
 Single Vercel project serves all domains:
