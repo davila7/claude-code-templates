@@ -1,0 +1,16 @@
+{
+  "description": "Block the --no-verify flag in git commands to prevent AI agents from bypassing pre-commit hooks, linters, commit-msg checks, and pre-push hooks. Ensures that git quality gates cannot be silently skipped during automated workflows.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx block-no-verify@1.1.2"
+          }
+        ]
+      }
+    ]
+  }
+}
