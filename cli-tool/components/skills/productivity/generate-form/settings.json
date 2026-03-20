@@ -1,0 +1,13 @@
+{
+  "description": "Environment variables required by the generate-form skill to authenticate with pyform.",
+  "env": {
+    "PYFORM_API_KEY": {
+      "description": "Your pyform API Key. Generate it at Settings -> API Keys in your pyform dashboard.",
+      "required": true
+    },
+    "PYFORM_API_URL": {
+      "description": "Base URL of the pyform server. Defaults to https://pyform.app",
+      "required": false
+    }
+  }
+}
