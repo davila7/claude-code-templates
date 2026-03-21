@@ -627,7 +627,7 @@ func (s *Snapshot) VWAPBuy(qty float64) (float64, bool) {
     var filled, cost float64
     for i := 0; i < s.AskDepth; i++ {
         levelQty := float64(s.Asks[i].Quantity) / 1e8
-        levelPrice := float64(s.Asks[i].Price)   // still in 1e8 scale
+        levelPrice := float64(s.Asks[i].Price) / 1e8  // normalize to human-readable
         take := min(qty - filled, levelQty)
         cost += take * levelPrice
         filled += take
@@ -817,9 +817,23 @@ func computeFillPrice(tracked *TrackedOrder) string {
     return (totalQuote / totalBase).Text('f', 8)
 }
 
-func computeTotalFee(tracked *TrackedOrder) string {
-    return sum(trade.Fee for each trade).Text('f', 8)
-    // WARNING: fees may be in different currencies — report per-currency in production
+func computeTotalFee(tracked *TrackedOrder) map[string]string {
+    // Group fees by currency — NEVER sum different currencies together
+    feesByCurrency := map[string]*big.Float{}
+    for _, trade := range tracked.Trades {
+        fee := parseBigFloat(trade.Fee)
+        if fee == nil { continue }
+        currency := trade.FeeCurrency
+        if _, ok := feesByCurrency[currency]; !ok {
+            feesByCurrency[currency] = new(big.Float)
+        }
+        feesByCurrency[currency].Add(feesByCurrency[currency], fee)
+    }
+    result := map[string]string{}
+    for currency, total := range feesByCurrency {
+        result[currency] = total.Text('f', 8)
+    }
+    return result  // e.g. {"USDT": "0.05000000", "BNB": "0.00010000"}
 }
 
 func computePnL(quotedPrice, fillPrice, sellAmount string, sellDecimals uint8) string {
