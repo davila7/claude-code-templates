@@ -56,17 +56,24 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
 
+      - name: Generate claude-jobs.json
+        run: python scripts/generate_claude_jobs.py
+
+      - name: Copy data to dashboard
+        run: |
+          cp docs/claude-jobs.json dashboard/public/claude-jobs.json
+
       - name: Check for changes
         id: check_changes
         run: |
-          git diff --quiet docs/components.json docs/trending-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet docs/components.json docs/trending-data.json docs/claude-jobs.json dashboard/public/claude-jobs.json || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
         if: steps.check_changes.outputs.changed == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add docs/components.json docs/trending-data.json
+          git add docs/components.json docs/trending-data.json docs/claude-jobs.json dashboard/public/claude-jobs.json
           git commit -m "chore: Update components and trending data
 
           🤖 Generated with [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
