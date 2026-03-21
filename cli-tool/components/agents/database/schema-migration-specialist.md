@@ -112,8 +112,10 @@ SELECT COUNT(*) FROM users WHERE subscription_tier IS NULL; -- must be 0
 ### Step 3: Apply NOT NULL constraint (fast, after backfill complete)
 ```sql
 -- Migration: 003_add_subscription_tier_not_null.sql
-ALTER TABLE users ALTER COLUMN subscription_tier SET NOT NULL;
-ALTER TABLE users ALTER COLUMN subscription_tier SET DEFAULT 'free';
+-- DEFAULT and NOT NULL applied atomically — no transient insert-failure window
+ALTER TABLE users
+  ALTER COLUMN subscription_tier SET DEFAULT 'free',
+  ALTER COLUMN subscription_tier SET NOT NULL;
 
 -- Rollback: 003_rollback.sql
 ALTER TABLE users ALTER COLUMN subscription_tier DROP NOT NULL;
@@ -138,7 +140,23 @@ Do not proceed until this version is fully deployed.
 ### Step 3: Backfill old rows
 ```sql
 -- Migration: backfill_email_from_user_email.sql
-UPDATE users SET email = user_email WHERE email IS NULL;
+DO $$
+DECLARE
+  batch_size INT := 1000;
+  rows_updated INT;
+BEGIN
+  LOOP
+    UPDATE users
+    SET email = user_email
+    WHERE id IN (
+      SELECT id FROM users WHERE email IS NULL
+      LIMIT batch_size
+    );
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    EXIT WHEN rows_updated = 0;
+    PERFORM pg_sleep(0.01);
+  END LOOP;
+END $$;
 -- Verify: SELECT COUNT(*) FROM users WHERE email IS NULL; → 0
 ```
 
@@ -271,10 +289,19 @@ def downgrade() -> None:
 # alembic/versions/002_backfill_subscription_tier.py
 def upgrade() -> None:
     connection = op.get_bind()
-    # Batched update using server-side execution
-    connection.execute(sa.text(
-        "UPDATE users SET subscription_tier = 'free' WHERE subscription_tier IS NULL"
-    ))
+    batch_size = 1000
+    while True:
+        result = connection.execute(sa.text(
+            """UPDATE users
+               SET subscription_tier = 'free'
+               WHERE id IN (
+                 SELECT id FROM users
+                 WHERE subscription_tier IS NULL
+                 LIMIT :batch_size
+               )"""
+        ), {"batch_size": batch_size})
+        if result.rowcount == 0:
+            break
 
 def downgrade() -> None:
     pass  # Backfill is not reversible; idempotent re-run is safe
@@ -304,9 +331,14 @@ class Migration(migrations.Migration):
 # migrations/0002_backfill_subscription_tier.py
 def backfill(apps, schema_editor):
     User = apps.get_model('users', 'User')
-    ids = list(User.objects.filter(subscription_tier__isnull=True).values_list('id', flat=True))
-    for i in range(0, len(ids), 1000):
-        User.objects.filter(id__in=ids[i:i+1000]).update(subscription_tier='free')
+    while True:
+        batch_ids = list(
+            User.objects.filter(subscription_tier__isnull=True)
+            .values_list('id', flat=True)[:1000]
+        )
+        if not batch_ids:
+            break
+        User.objects.filter(id__in=batch_ids).update(subscription_tier='free')
 
 class Migration(migrations.Migration):
     dependencies = [('users', '0001_add_subscription_tier_nullable')]
@@ -398,6 +430,8 @@ Add this check to your pull request pipeline to block DANGER-class migrations:
 #!/usr/bin/env bash
 # scripts/check-migrations.sh
 # Fails CI if any migration contains DANGER-class operations without risk acknowledgment
+# Covers SQL migrations (*.sql), TypeScript ORM migrations (*.ts — Drizzle, TypeORM),
+# and Python ORM migrations (*.py — Alembic, Django)
 
 DANGER_PATTERNS=(
   "DROP COLUMN"
@@ -410,7 +444,9 @@ MIGRATION_DIR="${1:-./migrations}"
 FAILED=0
 
 for pattern in "${DANGER_PATTERNS[@]}"; do
-  matches=$(grep -rn --include="*.sql" -i "$pattern" "$MIGRATION_DIR" 2>/dev/null)
+  matches=$(grep -rn \
+    --include="*.sql" --include="*.ts" --include="*.py" \
+    -i "$pattern" "$MIGRATION_DIR" 2>/dev/null)
   if [[ -n "$matches" ]]; then
     while IFS= read -r match; do
       file=$(echo "$match" | cut -d: -f1)
