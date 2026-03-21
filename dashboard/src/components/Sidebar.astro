@@ -88,6 +88,23 @@ function isActive(path: string): boolean {
       <span>Trending</span>
     </a>
 
+    <a href="/jobs"
+      class:list={[
+        'flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group',
+        isActive('/jobs')
+          ? 'bg-surface-3 text-text-primary font-medium'
+          : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
+      ]}>
+      <svg class:list={[
+        'w-4 h-4 shrink-0',
+        isActive('/jobs') ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
+      ]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" /><line x1="12" y1="12" x2="12" y2="12.01" />
+      </svg>
+      <span>Jobs</span>
+      <span class="ml-auto text-[9px] font-semibold uppercase tracking-wider bg-orange-500/15 text-orange-400 px-1.5 py-0.5 rounded">New</span>
+    </a>
+
     <a href={NAV_LINKS.blog} target="_blank" rel="noopener noreferrer"
       class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
       <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
