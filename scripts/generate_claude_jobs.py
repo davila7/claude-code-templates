@@ -48,11 +48,25 @@ def fetch_text(url, timeout=15):
 
 
 def strip_html(html_text):
-    """Remove HTML tags and decode entities."""
+    """Remove HTML tags, decode entities, and fix mojibake."""
     if not html_text:
         return ""
     text = re.sub(r"<[^>]+>", " ", html_text)
     text = unescape(text)
+    # Fix common UTF-8 mojibake (double-decoded characters)
+    mojibake_map = {
+        "\u00e2\u0080\u0099": "\u2019",  # right single quote '
+        "\u00e2\u0080\u009c": "\u201c",  # left double quote "
+        "\u00e2\u0080\u009d": "\u201d",  # right double quote "
+        "\u00e2\u0080\u0094": "\u2014",  # em dash —
+        "\u00e2\u0080\u0093": "\u2013",  # en dash –
+        "\u00e2\u0080\u00a6": "\u2026",  # ellipsis …
+        "\u00c2\u00a0": " ",             # non-breaking space
+    }
+    for bad, good in mojibake_map.items():
+        text = text.replace(bad, good)
+    # Catch remaining mojibake patterns: â€™ â€" â€" etc.
+    text = re.sub(r"\u00e2\u0080.", lambda m: "'", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
@@ -98,13 +112,27 @@ def extract_salary(text):
         r"\$[\d,]+[kK]\s*[-\u2013]\s*\$?[\d,]+[kK]",     # $120k-$150k, $120k-150k
         r"\$[\d,]+[kK](?:\+|\s*\/\s*(?:yr|year))?",       # $150k+, $150k/yr
         r"\$[\d,]{3,}\s*[-\u2013]\s*\$?[\d,]{3,}",        # $120,000-$150,000
+        r"\$[\d,]+[kK]?\s*\/\s*(?:yr|year)",               # $120,000/yr
         r"[\d,]+[kK]\s*[-\u2013]\s*[\d,]+[kK]",           # 120k-150k
         r"\u20ac[\d,]+[kK]?\s*[-\u2013]\s*\u20ac?[\d,]+[kK]?",  # EUR
     ]
     for pat in patterns:
         m = re.search(pat, cleaned)
         if m:
-            return m.group(0)
+            val = m.group(0)
+            # Validate: must represent a realistic salary
+            nums = re.findall(r"[\d,]+", val)
+            has_k = "k" in val.lower()
+            if nums:
+                first_num = int(nums[0].replace(",", ""))
+                # With 'k' suffix: must be >= 30 (i.e. $30k+)
+                if has_k and first_num < 30:
+                    continue
+                # Without 'k': must be >= 30,000 (raw dollar amounts)
+                # Values like $100-140 or $150-300 are ambiguous/truncated
+                if not has_k and first_num < 1000:
+                    continue
+            return val
     return ""
 
 
