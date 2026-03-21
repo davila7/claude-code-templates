@@ -1,7 +1,8 @@
 {
-  "lastUpdated": "2026-03-21T18:55:41.290542+00:00",
-  "totalJobs": 35,
+  "lastUpdated": "2026-03-21T19:13:37.593052+00:00",
+  "totalJobs": 42,
   "sources": [
+    "Anthropic",
     "HackerNews",
     "RemoteOK",
     "WeWorkRemotely"
@@ -49,6 +50,26 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5153586008",
+      "company": "Anthropic",
+      "position": "Communications Lead, Claude Code",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is looking for a Communications Lead to own comms for Claude Code. You'll sit on the Product Communications team, working day-to-day with the Claude Code product team, developer relations, and marketing. The media landscape for developer tools doesn't look like it did five years ago. We...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153586008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153586008",
+      "postedAt": "2026-03-19T12:09:53-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "hn-47360403",
       "company": "Breezy",
       "position": "Product Engineer",
@@ -92,6 +113,27 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5146363008",
+      "company": "Anthropic",
+      "position": "Engineering Manager, Product Monetization (Billing Platform)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic exists to ensure the world safely navigates the transition through transformative AI. That work is funded by commercial revenue — and that revenue runs through Billing Platform. The Product Monetization team builds the on-rails that let every product team at Anthropic — Claude.ai , the...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146363008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146363008",
+      "postedAt": "2026-03-10T13:12:42-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "hn-47277766",
       "company": "Collective Intelligence Project",
       "position": "Lead Product Engineer",
@@ -113,6 +155,26 @@
         "Cursor"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5141849008",
+      "company": "Anthropic",
+      "position": "Incentive Compensation System Engineer",
+      "location": "Ontario, CAN (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "As an Incentive Compensation Systems Engineer, you will lead the technical implementation, configuration, and optimization of our incentive compensation management (ICM) platform. You will work closely with Revenue Operations, Data Engineering, Finance, Accounting, and HR to translate incentive...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5141849008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5141849008",
+      "postedAt": "2026-03-05T11:17:52-05:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-47241620",
@@ -312,6 +374,27 @@
         "Claude Code"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5125387008",
+      "company": "Anthropic",
+      "position": "Analytics Data Engineering Manager, Product",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "As an Analytics Data Engineering Manager focused on Product, you will build and lead the analytics engineering team responsible for creating the data foundations that enable data-driven decision making across Anthropic’s Product organization. You will oversee the development of scalable data...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
+      "postedAt": "2026-02-19T19:49:54-05:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-46966099",
@@ -621,6 +704,46 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5097348008",
+      "company": "Anthropic",
+      "position": "Certification Content & Systems Architect",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is seeking a Certification Content and Systems Architect to design and build the educational content and assessment components that power Anthropic's credentialing efforts. You'll own the substance of what certifications teach and measure: curriculum architecture, assessment design,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5097348008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5097348008",
+      "postedAt": "2026-01-27T15:23:13-05:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5064817008",
+      "company": "Anthropic",
+      "position": "Head of Solutions Architects, Applied AI (Korea)",
+      "location": "Seoul, South Korea",
+      "remote": false,
+      "salary": "",
+      "description": "As the founding leader of Applied AI Solutions Architecture in Korea, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across Korean enterprises and digital-first organizations. You'll leverage your technical...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5064817008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5064817008",
+      "postedAt": "2026-01-23T07:43:37-05:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "hn-46636557",
       "company": "Rising Team",
       "position": "Senior Software Engineer",
@@ -732,6 +855,26 @@
         "Claude Code"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5042002008",
+      "company": "Anthropic",
+      "position": "Incentive Compensation System Engineer",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As an Incentive Compensation Systems Engineer, you will lead the technical implementation, configuration, and optimization of our incentive compensation management (ICM) platform. You will work closely with Revenue Operations, Data Engineering, Finance, Accounting, and HR to translate incentive...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5042002008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5042002008",
+      "postedAt": "2025-12-20T00:02:30-05:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     }
   ]
 }

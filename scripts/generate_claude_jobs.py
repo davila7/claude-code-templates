@@ -6,6 +6,7 @@ Sources (all free, no API keys required):
 2. HN Algolia API - Search across multiple months
 3. RemoteOK API - JSON job feed
 4. WeWorkRemotely RSS - Programming jobs feed
+5. Anthropic Careers - Greenhouse API (jobs mentioning Claude Code)
 
 Output: docs/claude-jobs.json
 """
@@ -328,7 +329,7 @@ def extract_tech_tags(text):
 
 def find_latest_hiring_threads():
     """Find the latest 'Who is Hiring' thread IDs via Algolia."""
-    print("[1/4] Finding latest HN 'Who is Hiring' threads...")
+    print("[1/5] Finding latest HN 'Who is Hiring' threads...")
     url = (
         "https://hn.algolia.com/api/v1/search?"
         "query=%22who%20is%20hiring%22&tags=story&hitsPerPage=6"
@@ -400,7 +401,7 @@ def collect_hn_firebase():
 
 def collect_hn_algolia(existing_ids):
     """Search HN Algolia for Claude Code mentions in hiring threads."""
-    print("[2/4] Searching HN Algolia for additional Claude Code mentions...")
+    print("[2/5] Searching HN Algolia for additional Claude Code mentions...")
     jobs = []
 
     search_terms = ["claude code", "claude-code"]
@@ -451,7 +452,7 @@ def collect_hn_algolia(existing_ids):
 
 def collect_remoteok():
     """Collect jobs from RemoteOK API."""
-    print("[3/4] Searching RemoteOK API...")
+    print("[3/5] Searching RemoteOK API...")
     data = fetch_json("https://remoteok.com/api")
     if not data:
         return []
@@ -493,7 +494,7 @@ def collect_remoteok():
 
 def collect_weworkremotely():
     """Collect jobs from WeWorkRemotely RSS feed."""
-    print("[4/4] Searching WeWorkRemotely RSS...")
+    print("[4/5] Searching WeWorkRemotely RSS...")
     xml_text = fetch_text("https://weworkremotely.com/categories/remote-programming-jobs.rss")
     if not xml_text:
         return []
@@ -539,6 +540,146 @@ def collect_weworkremotely():
 
 
 # ---------------------------------------------------------------------------
+# Source 5: Anthropic Careers (Greenhouse API)
+# ---------------------------------------------------------------------------
+
+def collect_anthropic_careers():
+    """Collect jobs from Anthropic's careers page via Greenhouse public API.
+
+    Strategy:
+    1. Fetch all jobs (no content) — lightweight list of ~500+ positions
+    2. Pre-filter by title keywords to find candidates (~50 max)
+    3. Fetch full content for candidates individually
+    4. Final filter for "Claude Code" mentions in description
+    """
+    print("[5/5] Searching Anthropic Careers (Greenhouse API)...")
+    data = fetch_json("https://boards-api.greenhouse.io/v1/boards/anthropic/jobs")
+    if not data or "jobs" not in data:
+        print("  [warn] Could not fetch Anthropic job listings")
+        return []
+
+    all_listings = data["jobs"]
+    print(f"  Total Anthropic listings: {len(all_listings)}")
+
+    # Pre-filter: titles likely to mention Claude Code
+    # Include broad engineering/product titles + anything with "claude" in title
+    title_keywords = [
+        "claude", "engineer", "developer", "architect", "platform",
+        "infrastructure", "product", "design", "research", "ml ",
+        "machine learning", "ai ", "applied", "full stack", "fullstack",
+        "front end", "frontend", "back end", "backend", "devops", "sre",
+        "security", "data", "sdk", "api", "tools", "dx", "evangelist",
+        "communications", "technical", "software",
+    ]
+    candidates = []
+    for job in all_listings:
+        title_lower = (job.get("title") or "").lower()
+        if any(kw in title_lower for kw in title_keywords):
+            candidates.append(job)
+
+    # Cap to avoid excessive requests
+    candidates = candidates[:80]
+    print(f"  Pre-filtered to {len(candidates)} candidate roles, fetching content...")
+
+    jobs = []
+
+    def fetch_job_content(job_meta):
+        """Fetch full job details and check for Claude Code mentions."""
+        job_id = job_meta.get("id")
+        detail = fetch_json(
+            f"https://boards-api.greenhouse.io/v1/boards/anthropic/jobs/{job_id}",
+            timeout=15,
+        )
+        if not detail:
+            return None
+
+        content_html = unescape(detail.get("content", ""))  # Greenhouse double-escapes HTML
+        title = detail.get("title", "")
+        full_text = f"{title} {strip_html(content_html)}"
+
+        # Must specifically mention "Claude Code" (not just "Claude" — all Anthropic jobs mention Claude)
+        claude_code_keywords = [
+            "claude code", "claude-code", "claude coder",
+        ]
+        if not any(kw in full_text.lower() for kw in claude_code_keywords):
+            return None
+
+        # Parse location
+        location_name = ""
+        loc = detail.get("location", {})
+        if isinstance(loc, dict):
+            location_name = loc.get("name", "")
+
+        # Check remote from metadata
+        remote = False
+        for meta in detail.get("metadata", []):
+            if meta.get("name", "").lower() in ("location type", "location_type"):
+                val = (str(meta.get("value", "")) or "").lower()
+                if "remote" in val:
+                    remote = True
+        if not location_name:
+            location_name = "Remote" if remote else "San Francisco, CA"
+        elif remote and "remote" not in location_name.lower():
+            location_name = f"{location_name} (Remote)"
+
+        # Salary from content
+        salary = extract_salary(full_text)
+
+        # Department
+        departments = detail.get("departments", [])
+        dept_names = [d.get("name", "") for d in departments if d.get("name")]
+
+        # Tags
+        tags = extract_tech_tags(full_text)
+        if "Claude Code" not in tags:
+            tags.insert(0, "Claude Code")
+        if "Anthropic" not in tags:
+            tags.append("Anthropic")
+
+        # Description — clean, skip boilerplate "About Anthropic" intro, and truncate
+        clean_desc = strip_html(content_html)
+        # Skip the generic "About Anthropic" intro paragraph — find the role-specific section
+        for marker in ["The role", "The Role", "About the role", "About the Role",
+                        "What you'll do", "What You'll Do", "The position", "The Position",
+                        "We're looking", "We are looking", "This role", "In this role",
+                        "As a ", "As an ", "Join ", "You will ", "You'll "]:
+            idx = clean_desc.find(marker)
+            if idx > 0 and idx < 800:
+                clean_desc = clean_desc[idx:]
+                break
+        # Strip "About the role" prefix itself if present
+        clean_desc = re.sub(r"^About the [Rr]ole:?\s*", "", clean_desc)
+        description = truncate(clean_desc, 300)
+
+        return {
+            "id": f"anth-{job_id}",
+            "company": "Anthropic",
+            "position": title[:120],
+            "location": location_name[:80],
+            "remote": remote or "remote" in location_name.lower(),
+            "salary": salary,
+            "description": description,
+            "applyUrl": detail.get("absolute_url", f"https://www.anthropic.com/careers/jobs"),
+            "source": "Anthropic",
+            "sourceUrl": detail.get("absolute_url", f"https://www.anthropic.com/careers/jobs"),
+            "postedAt": detail.get("first_published", detail.get("updated_at", "")),
+            "tags": tags,
+            "companyIcon": "https://www.anthropic.com/favicon.ico",
+        }
+
+    # Batch fetch with thread pool
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(fetch_job_content, c): c for c in candidates}
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                jobs.append(result)
+
+    print(f"  Found {len(jobs)} Claude Code jobs at Anthropic")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -565,6 +706,10 @@ def generate():
     # 4. WeWorkRemotely
     wwr_jobs = collect_weworkremotely()
     all_jobs.extend(wwr_jobs)
+
+    # 5. Anthropic Careers
+    anth_jobs = collect_anthropic_careers()
+    all_jobs.extend(anth_jobs)
 
     # Deduplicate by ID
     seen = set()

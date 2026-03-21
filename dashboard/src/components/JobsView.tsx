@@ -29,7 +29,30 @@ const SOURCE_COLORS: Record<string, string> = {
   HackerNews: 'bg-orange-500/15 text-orange-400',
   RemoteOK: 'bg-blue-500/15 text-blue-400',
   WeWorkRemotely: 'bg-emerald-500/15 text-emerald-400',
+  Anthropic: 'bg-purple-500/15 text-purple-400',
 };
+
+function useGlobalAuth() {
+  const [state, setState] = useState<{ isSignedIn: boolean; isLoaded: boolean }>({
+    isSignedIn: false, isLoaded: false,
+  });
+
+  useEffect(() => {
+    function check() {
+      const clerk = (window as any).Clerk;
+      if (clerk?.loaded) {
+        setState({ isSignedIn: !!clerk.user, isLoaded: true });
+      }
+    }
+    check();
+    const interval = setInterval(check, 500);
+    const handleChange = () => check();
+    window.addEventListener('clerk:session', handleChange);
+    return () => { clearInterval(interval); window.removeEventListener('clerk:session', handleChange); };
+  }, []);
+
+  return state;
+}
 
 function timeAgo(dateStr: string): string {
   if (!dateStr) return '';
@@ -59,6 +82,7 @@ export default function JobsView() {
   const [locationFilter, setLocationFilter] = useState<LocationFilter>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const { isSignedIn, isLoaded } = useGlobalAuth();
 
   useEffect(() => {
     fetch('/claude-jobs.json')
@@ -82,6 +106,18 @@ export default function JobsView() {
     });
   }, [data, locationFilter, sourceFilter, searchQuery]);
 
+  function handleJobClick(e: React.MouseEvent, job: Job) {
+    if (!isLoaded) {
+      e.preventDefault();
+      return;
+    }
+    if (!isSignedIn) {
+      e.preventDefault();
+      (window as any).Clerk?.openSignIn?.();
+    }
+    // If signed in, let the <a> navigate normally
+  }
+
   if (loading) {
     return (
       <div className="px-6 py-20 flex flex-col items-center gap-3">
@@ -101,6 +137,7 @@ export default function JobsView() {
 
   const remoteCount = data.jobs.filter((j) => j.remote).length;
   const onsiteCount = data.jobs.length - remoteCount;
+  const showAuthGate = isLoaded && !isSignedIn;
 
   return (
     <div>
@@ -115,6 +152,28 @@ export default function JobsView() {
           Updated daily from HackerNews "Who is Hiring", RemoteOK, and more.
         </p>
       </div>
+
+      {/* Auth banner for non-signed-in users */}
+      {showAuthGate && (
+        <div className="mx-6 mt-2 mb-1 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 border border-[#2a2a2a] rounded-lg px-4 py-3 flex items-center gap-3">
+          <svg className="w-5 h-5 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
+          </svg>
+          <div className="flex-1">
+            <p className="text-[13px] text-[#ededed]">
+              <span className="font-medium">Sign in</span>
+              <span className="text-[#999]"> to view job details and apply to positions</span>
+            </p>
+          </div>
+          <button
+            onClick={() => (window as any).Clerk?.openSignIn?.()}
+            className="px-3 py-1.5 bg-white/10 hover:bg-white/15 text-[12px] font-medium text-white rounded-md transition-colors"
+          >
+            Sign In
+          </button>
+        </div>
+      )}
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-6 py-4">
@@ -186,14 +245,15 @@ export default function JobsView() {
       </div>
 
       {/* Job cards */}
-      <div className="px-6 pb-8 space-y-3">
+      <div className="px-6 pb-8 grid grid-cols-1 md:grid-cols-2 gap-3">
         {filteredJobs.map((job) => (
           <a
             key={job.id}
-            href={safeUrl(job.applyUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block bg-[#111] border border-[#1f1f1f] rounded-lg p-4 hover:border-[#333] transition-colors group"
+            href={isSignedIn ? safeUrl(job.applyUrl) : '#'}
+            target={isSignedIn ? '_blank' : undefined}
+            rel={isSignedIn ? 'noopener noreferrer' : undefined}
+            onClick={(e) => handleJobClick(e, job)}
+            className="block bg-[#111] border border-[#1f1f1f] rounded-lg p-4 hover:border-[#333] transition-colors group relative"
           >
             <div className="flex items-start gap-3">
               {/* Company icon */}
@@ -243,13 +303,13 @@ export default function JobsView() {
                 </div>
 
                 {job.description && (
-                  <p className="text-[12px] text-[#555] mt-2 line-clamp-2">{job.description}</p>
+                  <p className="text-[12px] text-[#999] mt-2 line-clamp-2">{job.description}</p>
                 )}
 
                 {job.tags.length > 0 && (
                   <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                     {job.tags.slice(0, 6).map((tag) => (
-                      <span key={tag} className="text-[10px] text-[#555] bg-white/[0.04] px-1.5 py-0.5 rounded">
+                      <span key={tag} className="text-[10px] text-[#aaa] bg-white/[0.07] px-1.5 py-0.5 rounded">
                         {tag}
                       </span>
                     ))}
@@ -257,13 +317,23 @@ export default function JobsView() {
                 )}
               </div>
 
-              {/* Apply arrow */}
-              <svg
-                className="w-4 h-4 text-[#333] group-hover:text-[#666] shrink-0 mt-1 transition-colors"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
+              {/* Right side: apply arrow or lock icon */}
+              {showAuthGate ? (
+                <svg
+                  className="w-4 h-4 text-[#444] shrink-0 mt-1"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4 text-[#333] group-hover:text-[#666] shrink-0 mt-1 transition-colors"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              )}
             </div>
           </a>
         ))}
@@ -273,7 +343,7 @@ export default function JobsView() {
       <div className="px-6 pb-6 text-center">
         <p className="text-[11px] text-[#444]">
           Last updated: {new Date(data.lastUpdated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-          {' | '}Data sourced from HackerNews "Who is Hiring", RemoteOK, and WeWorkRemotely
+          {' | '}Data sourced from HackerNews "Who is Hiring", RemoteOK, WeWorkRemotely, and Anthropic Careers
         </p>
       </div>
     </div>
