@@ -577,8 +577,7 @@ def collect_anthropic_careers():
         if any(kw in title_lower for kw in title_keywords):
             candidates.append(job)
 
-    # Cap to avoid excessive requests
-    candidates = candidates[:80]
+    # No hard cap — title pre-filter already narrows the list sufficiently
     print(f"  Pre-filtered to {len(candidates)} candidate roles, fetching content...")
 
     jobs = []

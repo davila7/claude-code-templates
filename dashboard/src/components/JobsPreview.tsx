@@ -34,7 +34,11 @@ function useGlobalAuth() {
     function check() {
       const clerk = (window as any).Clerk;
       if (clerk?.loaded) {
-        setState({ isSignedIn: !!clerk.user, isLoaded: true });
+        const signedIn = !!clerk.user;
+        setState((prev) => {
+          if (prev.isLoaded && prev.isSignedIn === signedIn) return prev;
+          return { isSignedIn: signedIn, isLoaded: true };
+        });
       }
     }
     check();
