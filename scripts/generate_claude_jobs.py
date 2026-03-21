@@ -84,18 +84,25 @@ def truncate(text, length=200):
 
 
 def extract_salary(text):
-    """Extract salary string from text."""
+    """Extract salary string from text.
+
+    Only matches compensation-like amounts (≥$10k or with k/K suffix).
+    Skips funding/revenue figures like '$37M raised' or '$300M+ revenue'.
+    """
     if not text:
         return ""
+    # First, remove sentences about funding/revenue to avoid false positives
+    cleaned = re.sub(r"\$[\d,.]+\s*[MBmb](?:illion)?[^.]*(?:\.|$)", "", text)
+    cleaned = re.sub(r"(?:raised|revenue|funding|valuation|ARR)[^.]*\$[\d,.]+[^.]*(?:\.|$)", "", cleaned, flags=re.IGNORECASE)
     patterns = [
-        r"\$[\d,]+[kK]?\s*[-\u2013]\s*\$[\d,]+[kK]?",  # $120k-$150k
-        r"\$[\d,]+[kK]?\s*[-\u2013]\s*[\d,]+[kK]?",      # $120k-150k
-        r"\$[\d,]+[kK]?(?:\+|\s*\/\s*(?:yr|year))?",      # $150k+, $150k/yr
+        r"\$[\d,]+[kK]\s*[-\u2013]\s*\$?[\d,]+[kK]",     # $120k-$150k, $120k-150k
+        r"\$[\d,]+[kK](?:\+|\s*\/\s*(?:yr|year))?",       # $150k+, $150k/yr
+        r"\$[\d,]{3,}\s*[-\u2013]\s*\$?[\d,]{3,}",        # $120,000-$150,000
         r"[\d,]+[kK]\s*[-\u2013]\s*[\d,]+[kK]",           # 120k-150k
         r"\u20ac[\d,]+[kK]?\s*[-\u2013]\s*\u20ac?[\d,]+[kK]?",  # EUR
     ]
     for pat in patterns:
-        m = re.search(pat, text)
+        m = re.search(pat, cleaned)
         if m:
             return m.group(0)
     return ""
@@ -169,8 +176,17 @@ def parse_hn_comment(comment_data):
     # Location
     location = ""
     remote = False
+    # Words that indicate a part is a role title, not a location
+    role_words = {"engineer", "developer", "lead", "manager", "architect",
+                  "designer", "scientist", "analyst", "operations", "head",
+                  "director", "founder", "cto", "ceo", "vp ", "senior",
+                  "staff", "principal", "junior", "intern", "product",
+                  "technical", "native"}
     for part in parts[1:]:
         lower = part.lower().strip()
+        # Skip parts that look like role titles
+        if any(w in lower for w in role_words):
+            continue
         if any(w in lower for w in ["remote", "anywhere", "distributed"]):
             remote = True
             if "only" in lower or "(" in lower or len(lower) > 6:
@@ -183,6 +199,12 @@ def parse_hn_comment(comment_data):
                 location = part.strip()
             elif not location and len(part.strip()) < 40:
                 location = part.strip()
+
+    # Also check full text for remote indicators if not found in header
+    if not remote:
+        remote_in_body = any(w in clean.lower() for w in ["remote", "anywhere", "distributed", "work from home"])
+        if remote_in_body:
+            remote = True
 
     if not location:
         location = "Remote" if remote else "On-site"
@@ -467,7 +489,7 @@ def collect_weworkremotely():
             position = company_match.group(2).strip() if company_match else title
 
             jobs.append({
-                "id": f"wwr-{hash(link) & 0xFFFFFF:06x}",
+                "id": f"wwr-{link.rstrip('/').split('/')[-1] if link else 'unknown'}",
                 "company": company[:80],
                 "position": position[:120],
                 "location": "Remote",

@@ -35,8 +35,10 @@ function timeAgo(dateStr: string): string {
   if (!dateStr) return '';
   try {
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
     const now = new Date();
     const days = Math.floor((now.getTime() - date.getTime()) / 86400000);
+    if (days < 0 || isNaN(days)) return '';
     if (days === 0) return 'Today';
     if (days === 1) return '1d ago';
     if (days < 30) return `${days}d ago`;
@@ -45,6 +47,10 @@ function timeAgo(dateStr: string): string {
   } catch {
     return '';
   }
+}
+
+function safeUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : '#';
 }
 
 export default function JobsView() {
@@ -184,7 +190,7 @@ export default function JobsView() {
         {filteredJobs.map((job) => (
           <a
             key={job.id}
-            href={job.applyUrl}
+            href={safeUrl(job.applyUrl)}
             target="_blank"
             rel="noopener noreferrer"
             className="block bg-[#111] border border-[#1f1f1f] rounded-lg p-4 hover:border-[#333] transition-colors group"

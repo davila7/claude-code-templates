@@ -66,7 +66,7 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          git diff --quiet docs/components.json docs/trending-data.json docs/claude-jobs.json || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet docs/components.json docs/trending-data.json docs/claude-jobs.json dashboard/public/claude-jobs.json || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
         if: steps.check_changes.outputs.changed == 'true'
