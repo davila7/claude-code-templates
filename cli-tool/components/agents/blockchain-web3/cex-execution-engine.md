@@ -374,9 +374,9 @@ vwap = total_quote / total_base
 | Gate     | Snap+Incr | `full` field | U, u | book_ticker | ✓ (HMAC512) | ETH_USDT | None |
 | MEXC     | Protobuf | Topic-based | version | bookTicker.pb | ✗ REST only | ETHUSDT | Protobuf |
 | OKX      | Snap+Incr | `action` field | seqId/prevSeqId | bbo-tbt | ✓ (HMAC256) | ETH-USDT | None |
-| Kucoin   | Full depth | First msg | N/A | level1 | ✓ (HMAC256) | ETH-USDT | None |
+| Kucoin   | Full depth | First msg | timestamp | level1 | ✓ (HMAC256) | ETH-USDT | None |
 | HTX      | Snap+Incr | First msg | version | bbo | ✓ (HMAC256) | ethusdt | **GZIP** |
-| Bitmart  | Snap+Incr | `type` field | N/A | ticker | ✗ REST only | ETH_USDT | **GZIP** |
+| Bitmart  | Snap+Incr | `type` field | implicit (order) | ticker | ✗ REST only | ETH_USDT | **GZIP** |
 
 ## Exchange Behavioral Traits
 
