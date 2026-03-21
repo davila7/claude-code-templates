@@ -85,6 +85,10 @@ ALTER TABLE users DROP COLUMN subscription_tier;
 ```sql
 -- Migration: 002_backfill_subscription_tier.sql
 -- Batch size: 1000 rows at a time to avoid lock escalation
+-- The NULL check appears in both the outer WHERE and the subquery.
+-- This double-guard prevents a concurrent application write from being
+-- overwritten: in READ COMMITTED, PostgreSQL re-evaluates the outer WHERE
+-- after waiting on a row lock — so the outer check must be present.
 DO $$
 DECLARE
   batch_size INT := 1000;
@@ -93,7 +97,7 @@ BEGIN
   LOOP
     UPDATE users
     SET subscription_tier = 'free'
-    WHERE subscription_tier IS NULL
+    WHERE subscription_tier IS NULL          -- outer re-check: skip rows written concurrently
     AND id IN (
       SELECT id FROM users
       WHERE subscription_tier IS NULL
@@ -140,6 +144,10 @@ Do not proceed until this version is fully deployed.
 ### Step 3: Backfill old rows
 ```sql
 -- Migration: backfill_email_from_user_email.sql
+-- The NULL check appears in both the outer WHERE and the subquery.
+-- In READ COMMITTED, PostgreSQL re-evaluates the outer WHERE after waiting
+-- on a row lock — without it, a concurrent application write to `email`
+-- would be silently overwritten by the backfill.
 DO $$
 DECLARE
   batch_size INT := 1000;
@@ -148,7 +156,8 @@ BEGIN
   LOOP
     UPDATE users
     SET email = user_email
-    WHERE id IN (
+    WHERE email IS NULL                      -- outer re-check: skip rows written concurrently
+    AND id IN (
       SELECT id FROM users WHERE email IS NULL
       LIMIT batch_size
     );
@@ -227,7 +236,9 @@ async function backfill() {
     })
     if (batch.length === 0) break
     await prisma.user.updateMany({
-      where: { id: { in: batch.map(u => u.id) } },
+      // subscriptionTier: null re-checks the condition at update time,
+      // preventing concurrent application writes from being overwritten
+      where: { id: { in: batch.map(u => u.id) }, subscriptionTier: null },
       data: { subscriptionTier: 'free' },
     })
     cursor = batch[batch.length - 1].id
@@ -292,9 +303,14 @@ def upgrade() -> None:
     batch_size = 1000
     while True:
         result = connection.execute(sa.text(
+            # subscription_tier IS NULL appears in both the outer WHERE and the
+            # subquery. In READ COMMITTED, the database re-evaluates the outer
+            # WHERE after waiting on a row lock — the outer check prevents a
+            # concurrent write from being silently overwritten.
             """UPDATE users
                SET subscription_tier = 'free'
-               WHERE id IN (
+               WHERE subscription_tier IS NULL
+               AND id IN (
                  SELECT id FROM users
                  WHERE subscription_tier IS NULL
                  LIMIT :batch_size
@@ -338,7 +354,11 @@ def backfill(apps, schema_editor):
         )
         if not batch_ids:
             break
-        User.objects.filter(id__in=batch_ids).update(subscription_tier='free')
+        # subscription_tier__isnull=True re-checks the condition at update time,
+        # preventing concurrent application writes from being overwritten
+        User.objects.filter(id__in=batch_ids, subscription_tier__isnull=True).update(
+            subscription_tier='free'
+        )
 
 class Migration(migrations.Migration):
     dependencies = [('users', '0001_add_subscription_tier_nullable')]
@@ -368,12 +388,16 @@ ALTER TABLE users DROP COLUMN subscription_tier;
 COMMIT;
 
 -- 002_up.sql (batched backfill, no transaction wrapper — runs as long-running script)
+-- subscription_tier IS NULL appears in both the outer WHERE and the subquery.
+-- In READ COMMITTED, the database re-evaluates the outer WHERE after a row-lock
+-- wait — the outer check prevents concurrent writes from being overwritten.
 DO $$
 DECLARE batch_size INT := 5000; affected INT;
 BEGIN
   LOOP
     UPDATE users SET subscription_tier = 'free'
-    WHERE id IN (SELECT id FROM users WHERE subscription_tier IS NULL LIMIT batch_size);
+    WHERE subscription_tier IS NULL          -- outer re-check: skip rows written concurrently
+    AND id IN (SELECT id FROM users WHERE subscription_tier IS NULL LIMIT batch_size);
     GET DIAGNOSTICS affected = ROW_COUNT;
     EXIT WHEN affected = 0;
   END LOOP;
