@@ -381,8 +381,12 @@ vwap = total_quote / total_base
 ## Exchange Behavioral Traits
 
 ```
-CheckSequence (gap detection possible):
-  ALL exchanges: Binance, MEXC, Gate, Bybit, OKX, Kucoin, HTX, Bitmart
+CheckSequence (gap detection via contiguous sequence counters):
+  Binance (U/u), MEXC (version), Gate (U/u), Bybit (seq), OKX (seqId/prevSeqId), HTX (version)
+
+CheckSequence NOT applicable (use alternative methods):
+  Kucoin — sends full depth snapshots each time, no incremental diffs, no gap possible
+  Bitmart — uses implicit event ordering, rely on NeedResubscribeDepth for recovery
 
 NeedResubscribeDepth (first WS event = snapshot, resubscribe to reset):
   Gate, Bybit, OKX, HTX, Bitmart
