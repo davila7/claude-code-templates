@@ -404,7 +404,7 @@ HasEventsTimestamp (filter stale trades by timestamp):
 
 1. **Fixed-point arithmetic** — multiply prices by 1e8, store as integers. Never use floating-point for price comparisons.
 2. **Atomic reads** — single writer, lock-free readers via atomic pointer. No mutex on read path.
-3. **Sequence tracking** — always. A drifted orderbook = wrong prices = lost money.
+3. **Sequence tracking** — for exchanges with contiguous sequence counters (Binance, MEXC, Gate, Bybit, OKX, HTX). For Kucoin (full snapshots) and Bitmart (resubscribe-based), use alternative recovery. A drifted orderbook = wrong prices = lost money.
 4. **Exact fill prices** — wait for actual trade events, never estimate from order status.
 5. **Per-currency fees** — never sum BNB fees with USDT fees.
 6. **Amount normalization** — CEX APIs use human-readable ("0.5"), not raw integers ("500000000000000000").
