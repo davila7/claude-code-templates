@@ -293,7 +293,8 @@ Asks: sorted ascending by price → front = best (lowest) ask
 On every incremental event:
 - If `startSequence > lastSeq + 1` → **GAP** — events were lost
 - For exchanges that re-send snapshot on resubscribe (Bybit, Gate, OKX, HTX, Bitmart): cancel WS subscription, reconnect → first message is fresh snapshot
-- For REST-init exchanges (Binance, MEXC, Kucoin): clear store, buffer events, fetch REST snapshot, replay
+- For REST-init exchanges (Binance, MEXC): clear store, buffer events, fetch REST snapshot, replay
+- For full-snapshot exchanges (Kucoin): no gap possible — each message replaces entire book
 - Exponential backoff on repeated failures: 500ms → 1s → 2s → ... → 30s max
 
 ## ApplyTrade (Full Depth)
