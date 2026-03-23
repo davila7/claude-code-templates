@@ -23,21 +23,38 @@
   --color-accent-800: #663320;
   --color-accent-900: #3f1f13;
 
-  --color-surface-0: #000000;
-  --color-surface-1: #0a0a0a;
-  --color-surface-2: #111111;
-  --color-surface-3: #1a1a1a;
-  --color-surface-4: #252525;
+  /* Dark mode colors (default) - Modern dark palette */
+  --color-surface-0: #121212;
+  --color-surface-1: #1e1e1e;
+  --color-surface-2: #2a2a2a;
+  --color-surface-3: #3a3a3a;
+  --color-surface-4: #4a4a4a;
 
-  --color-border: #1f1f1f;
-  --color-border-hover: #333333;
+  --color-border: #2a2a2a;
+  --color-border-hover: #3a3a3a;
 
-  --color-text-primary: #ededed;
-  --color-text-secondary: #a1a1a1;
-  --color-text-tertiary: #666666;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0b0b0;
+  --color-text-tertiary: #707070;
 
   --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Light mode theme overrides */
+html.light {
+  --color-surface-0: #ffffff;
+  --color-surface-1: #fafafa;
+  --color-surface-2: #f5f5f5;
+  --color-surface-3: #eeeeee;
+  --color-surface-4: #e5e5e5;
+
+  --color-border: #e5e5e5;
+  --color-border-hover: #d4d4d4;
+
+  --color-text-primary: #171717;
+  --color-text-secondary: #525252;
+  --color-text-tertiary: #a3a3a3;
 }
 
 html {
@@ -63,12 +80,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--color-border-hover);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--color-text-tertiary);
 }
 
 /* Selection */
@@ -281,4 +298,36 @@ mark.md-search-hl {
   color: var(--color-text-primary);
   border-radius: 2px;
   padding: 0 1px;
+}
+
+/* Toast animation */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Modal slide-up animation */
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-slide-up {
+  animation: modal-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }

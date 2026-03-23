@@ -1,0 +1,308 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+
+const title = 'Community Showcase | Claude Code Templates';
+const description = 'Discover workflows, success stories, and best practices from the community';
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div id="showcase-container">
+    <!-- Header with action -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#1f1f1f]">
+      <div>
+        <h1 class="text-[15px] font-semibold text-[#ededed]">Community Showcase</h1>
+        <p class="text-[12px] text-[#666] mt-0.5">Discover workflows, success stories, and best practices</p>
+      </div>
+      <a
+        href="/showcase/submit"
+        class="flex items-center gap-2 px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Submit Showcase</span>
+      </a>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="flex items-center gap-2 px-6 py-3">
+      <!-- Search -->
+      <div class="relative">
+        <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#666]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search showcases..."
+          class="w-44 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#ededed] placeholder:text-[#666] pl-8 pr-3 py-1.5 outline-none focus:bg-[#111] focus:ring-1 focus:ring-[#2a2a2a] transition-all"
+        />
+      </div>
+
+      <!-- Category filter -->
+      <select
+        id="categoryFilter"
+        class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] px-2.5 py-1.5 outline-none focus:bg-[#111] cursor-pointer"
+      >
+        <option value="">All categories</option>
+        <option value="automation">Automation</option>
+        <option value="testing">Testing</option>
+        <option value="deployment">Deployment</option>
+        <option value="ai-agents">AI Agents</option>
+        <option value="performance">Performance</option>
+        <option value="security">Security</option>
+        <option value="best-practices">Best Practices</option>
+      </select>
+
+      <!-- Type filter -->
+      <select
+        id="typeFilter"
+        class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] px-2.5 py-1.5 outline-none focus:bg-[#111] cursor-pointer"
+      >
+        <option value="">All types</option>
+        <option value="workflow">Workflow</option>
+        <option value="success_story">Success Story</option>
+        <option value="before_after">Before/After</option>
+        <option value="configuration">Configuration</option>
+      </select>
+
+      <!-- Sort -->
+      <div class="flex items-center gap-2 ml-auto">
+        <select
+          id="sortFilter"
+          class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] px-2.5 py-1.5 outline-none focus:bg-[#111] cursor-pointer"
+        >
+          <option value="recent">Most Recent</option>
+          <option value="views">Most Viewed</option>
+          <option value="likes">Most Liked</option>
+          <option value="trending">Trending</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results count -->
+    <div class="px-6 pb-2">
+      <span id="resultsCount" class="text-[11px] text-[#666]">Loading...</span>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="flex items-center justify-center py-12">
+      <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-[#1f1f1f] border-t-[#3b82f6]"></div>
+    </div>
+
+    <!-- Grid -->
+    <div id="showcases" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 px-6 pb-6 hidden">
+      <!-- Showcases will be loaded here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty" class="text-center py-12 hidden">
+      <svg class="mx-auto h-12 w-12 text-[#333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+      <h3 class="mt-2 text-[13px] font-medium text-[#ededed]">No showcases found</h3>
+      <p class="mt-1 text-[12px] text-[#666]">Be the first to share your workflow!</p>
+      <div class="mt-6">
+        <a
+          href="/showcase/submit"
+          class="inline-flex items-center px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all"
+        >
+          Submit Showcase
+        </a>
+      </div>
+    </div>
+
+    <!-- Load More -->
+    <div id="loadMore" class="text-center px-6 pb-6 hidden">
+      <button
+        id="loadMoreBtn"
+        class="w-full px-4 py-2 bg-[#0a0a0a] hover:bg-[#111] border border-[#1f1f1f] rounded-lg text-[13px] font-medium text-[#999] transition-all"
+      >
+        Load More
+      </button>
+    </div>
+  </div>
+</DashboardLayout>
+
+<script>
+  let offset = 0;
+  const limit = 12;
+  let loading = false;
+  let hasMore = true;
+
+  async function loadShowcases(append = false) {
+    if (loading) return;
+    loading = true;
+
+    const loadingEl = document.getElementById('loading');
+    const showcasesEl = document.getElementById('showcases');
+    const emptyEl = document.getElementById('empty');
+    const loadMoreEl = document.getElementById('loadMore');
+
+    if (!append) {
+      loadingEl?.classList.remove('hidden');
+      showcasesEl?.classList.add('hidden');
+    }
+
+    try {
+      const category = (document.getElementById('categoryFilter') as HTMLSelectElement)?.value || '';
+      const sort = (document.getElementById('sortFilter') as HTMLSelectElement)?.value || 'recent';
+
+      const params = new URLSearchParams({
+        limit: limit.toString(),
+        offset: offset.toString(),
+        sort,
+        ...(category && { category }),
+      });
+
+      const response = await fetch(`/api/showcase/list?${params}`);
+      const data = await response.json();
+
+      if (!append) {
+        showcasesEl!.innerHTML = '';
+      }
+
+      if (data.showcases && data.showcases.length > 0) {
+        data.showcases.forEach((showcase: any) => {
+          const card = createShowcaseCard(showcase);
+          showcasesEl?.insertAdjacentHTML('beforeend', card);
+        });
+
+        showcasesEl?.classList.remove('hidden');
+        emptyEl?.classList.add('hidden');
+        
+        // Update results count
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+          resultsCount.textContent = `${data.total} result${data.total !== 1 ? 's' : ''}`;
+        }
+        
+        hasMore = data.hasMore;
+        if (hasMore) {
+          loadMoreEl?.classList.remove('hidden');
+        } else {
+          loadMoreEl?.classList.add('hidden');
+        }
+      } else if (!append) {
+        showcasesEl?.classList.add('hidden');
+        emptyEl?.classList.remove('hidden');
+        loadMoreEl?.classList.add('hidden');
+        
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+          resultsCount.textContent = '0 results';
+        }
+      }
+    } catch (error) {
+      console.error('Error loading showcases:', error);
+    } finally {
+      loading = false;
+      loadingEl?.classList.add('hidden');
+    }
+  }
+
+  function createShowcaseCard(showcase: any): string {
+    const typeIcons: Record<string, string> = {
+      workflow: '⚙️',
+      success_story: '🎯',
+      before_after: '🔄',
+      configuration: '⚡'
+    };
+    
+    const typeIcon = typeIcons[showcase.submissionType] || '📄';
+    
+    return `
+      <div
+        class="group flex items-start gap-3 p-4 rounded-xl bg-[#0a0a0a] border border-[#1f1f1f] hover:border-[#2a2a2a] hover:bg-[#111] transition-all duration-200 cursor-pointer"
+        onclick="window.location.href='/showcase/${showcase.id}'"
+      >
+        <!-- Icon -->
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-[#3b82f6]/10 text-[#3b82f6]">
+          <span class="text-lg">${typeIcon}</span>
+        </div>
+
+        <!-- Info -->
+        <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <span class="text-[13px] font-medium text-[#ededed] group-hover:text-[#fff] transition-colors line-clamp-1">
+              ${showcase.title}
+            </span>
+            ${showcase.isFeatured ? '<span class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full bg-[#3b82f6]/10 text-[#3b82f6]">Featured</span>' : ''}
+          </div>
+          
+          <p class="text-[12px] text-[#666] line-clamp-2 mt-1 leading-relaxed">
+            ${showcase.description}
+          </p>
+          
+          <div class="flex items-center gap-2 mt-2.5">
+            ${showcase.category ? `
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#0a0a0a] text-[#666]">
+                ${showcase.category}
+              </span>
+            ` : ''}
+            ${showcase.viewCount > 0 ? `
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                ${showcase.viewCount}
+              </span>
+            ` : ''}
+            ${showcase.likeCount > 0 ? `
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                ${showcase.likeCount}
+              </span>
+            ` : ''}
+          </div>
+          
+          <div class="flex items-center gap-2 mt-2 text-[10px] text-[#666]">
+            <img src="${showcase.authorAvatar || '/default-avatar.png'}" alt="${showcase.authorName}" class="w-4 h-4 rounded-full" />
+            <span>${showcase.authorName}</span>
+            <span>•</span>
+            <span>${formatTimeAgo(showcase.createdAt)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
+  function formatTimeAgo(date: string): string {
+    const now = new Date().getTime();
+    const then = new Date(date).getTime();
+    const diff = now - then;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    if (days < 30) return `${Math.floor(days / 7)}w ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  }
+
+  // Event listeners
+  document.getElementById('categoryFilter')?.addEventListener('change', () => {
+    offset = 0;
+    loadShowcases(false);
+  });
+
+  document.getElementById('sortFilter')?.addEventListener('change', () => {
+    offset = 0;
+    loadShowcases(false);
+  });
+
+  document.getElementById('loadMoreBtn')?.addEventListener('click', () => {
+    offset += limit;
+    loadShowcases(true);
+  });
+
+  // Initial load
+  loadShowcases();
+</script>

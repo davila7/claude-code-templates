@@ -1,0 +1,16 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import PublicCollectionsView from '../../components/PublicCollectionsView.tsx';
+import SearchModal from '../../components/SearchModal.tsx';
+import CartSidebar from '../../components/CartSidebar.tsx';
+
+export const prerender = false;
+---
+
+<DashboardLayout title="Public Collections - Claude Code Templates">
+  <div class="h-full">
+    <PublicCollectionsView client:load />
+  </div>
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

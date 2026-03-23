@@ -1,0 +1,264 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import TutorialProgress from '../../components/tutorials/TutorialProgress';
+import TutorialStep from '../../components/tutorials/TutorialStep';
+import CodeBlock from '../../components/tutorials/CodeBlock';
+import PromptExample from '../../components/tutorials/PromptExample';
+
+const title = 'Frontend Developer Agent Tutorial | Claude Code Templates';
+const description = 'Learn how to build UI components faster with the Frontend Developer agent';
+
+const component = 'frontend-developer';
+const type = 'agent';
+const difficulty = 'beginner';
+const duration = '5 minutes';
+const tags = ['react', 'ui', 'components', 'tailwind'];
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div class="max-w-4xl mx-auto">
+    {/* Breadcrumb */}
+    <div class="flex items-center gap-2 px-6 py-3 text-[12px] text-[#666]">
+      <a href="/tutorials" class="hover:text-[#999] transition-colors">
+        Tutorials
+      </a>
+      <span>/</span>
+      <span class="text-[#999]">frontend-developer</span>
+    </div>
+
+    {/* Header */}
+    <div class="px-6 py-4 border-b border-[#1f1f1f]">
+      <h1 class="text-[20px] font-semibold text-[#ededed] mb-3">
+        Frontend Developer Agent Tutorial
+      </h1>
+      <p class="text-[13px] text-[#999] mb-3">
+        Learn how to use the Frontend Developer agent to build UI components faster with AI assistance.
+      </p>
+      
+      <div class="flex items-center gap-2 mb-3">
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#3b82f6]/10 text-[#3b82f6]">
+          {type}
+        </span>
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/10 text-emerald-400">
+          {difficulty}
+        </span>
+        <span class="flex items-center gap-1 text-[11px] text-[#666]">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {duration}
+        </span>
+      </div>
+      
+      <div class="flex flex-wrap gap-1.5">
+        {tags.map(tag => (
+          <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#0a0a0a] text-[#666]">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+
+    {/* Progress Tracker */}
+    <TutorialProgress component={component} client:load />
+
+    {/* Content */}
+    <div class="px-6 py-6 space-y-8">
+      {/* Step 1: Installation */}
+      <TutorialStep component={component} number={1} title="Installation" client:load>
+        <p class="text-[13px] text-[#999] leading-relaxed mb-4">
+          First, let's install the Frontend Developer agent. This agent helps you build React components with best practices and modern styling.
+        </p>
+
+        <CodeBlock
+          code="npx claude-code-templates@latest --agent frontend-developer"
+          language="bash"
+          client:load
+        />
+
+        <p class="text-[12px] text-[#666] leading-relaxed mt-3">
+          Once installed, you can use it in Claude Code by typing <code class="px-1.5 py-0.5 bg-[#0a0a0a] rounded text-[#3b82f6]">@frontend-developer</code> in your prompts.
+        </p>
+      </TutorialStep>
+
+      {/* Step 2: Your First Task */}
+      <TutorialStep component={component} number={2} title="Your First Task" client:load>
+        <p class="text-[13px] text-[#999] leading-relaxed mb-4">
+          Let's create a simple button component to get started. This will help you understand how the agent works.
+        </p>
+
+        <PromptExample
+          prompt="@frontend-developer Create a responsive button component with primary and secondary variants"
+          description="This prompt will generate a complete button component with proper styling and variants."
+          result="A complete button component with Tailwind CSS styling, TypeScript types, and accessible markup."
+          client:load
+        />
+
+        <div class="mt-4 p-3 bg-[#3b82f6]/5 border border-[#3b82f6]/20 rounded-lg">
+          <div class="text-[12px] text-[#3b82f6] font-medium mb-2">💡 What you'll get:</div>
+          <ul class="text-[12px] text-[#999] space-y-1 ml-4 list-disc">
+            <li>A complete button component</li>
+            <li>Proper styling with Tailwind CSS</li>
+            <li>Accessible markup (ARIA labels)</li>
+            <li>TypeScript types and interfaces</li>
+          </ul>
+        </div>
+      </TutorialStep>
+
+      {/* Step 3: Common Use Cases */}
+      <TutorialStep component={component} number={3} title="Common Use Cases" client:load>
+        <p class="text-[13px] text-[#999] leading-relaxed mb-4">
+          Here are some common scenarios where the Frontend Developer agent excels:
+        </p>
+
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Building Forms</h3>
+            <PromptExample
+              prompt="@frontend-developer Create a contact form with name, email, and message fields"
+              client:load
+            />
+          </div>
+
+          <div>
+            <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Creating Layouts</h3>
+            <PromptExample
+              prompt="@frontend-developer Create a dashboard layout with sidebar and main content area"
+              client:load
+            />
+          </div>
+
+          <div>
+            <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Styling Components</h3>
+            <PromptExample
+              prompt="@frontend-developer Add dark mode support to my navbar component"
+              client:load
+            />
+          </div>
+        </div>
+      </TutorialStep>
+
+      {/* Step 4: Pro Tips */}
+      <TutorialStep component={component} number={4} title="Pro Tips" client:load>
+        <p class="text-[13px] text-[#999] leading-relaxed mb-4">
+          Take your workflow to the next level with these advanced techniques:
+        </p>
+
+        <div class="space-y-4">
+          <div class="p-4 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">🔗</span>
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Combine with component-reviewer</h3>
+                <CodeBlock
+                  code={`@frontend-developer Create a card component
+@component-reviewer Review the card component for best practices`}
+                  language="text"
+                  client:load
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">🧪</span>
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Use with testing</h3>
+                <CodeBlock
+                  code={`@frontend-developer Create a modal component
+/test Create tests for the modal component`}
+                  language="text"
+                  client:load
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">⚡</span>
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Iterate quickly</h3>
+                <CodeBlock
+                  code="@frontend-developer Make the button larger and add a loading state"
+                  language="text"
+                  client:load
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </TutorialStep>
+
+      {/* Common Pitfalls */}
+      <div class="p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
+        <h3 class="text-[13px] font-semibold text-[#ededed] mb-3 flex items-center gap-2">
+          <span>⚠️</span>
+          Common Pitfalls
+        </h3>
+        <div class="space-y-3 text-[12px]">
+          <div>
+            <div class="flex items-start gap-2">
+              <span class="text-red-400">❌</span>
+              <div>
+                <span class="text-[#999]">Too vague:</span>
+                <code class="ml-1 px-1.5 py-0.5 bg-[#0a0a0a] rounded text-red-400">"Make a component"</code>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-start gap-2">
+              <span class="text-emerald-400">✅</span>
+              <div>
+                <span class="text-[#999]">Specific:</span>
+                <code class="ml-1 px-1.5 py-0.5 bg-[#0a0a0a] rounded text-emerald-400">"Create a responsive navbar with logo, menu items, and mobile hamburger"</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Next Steps */}
+      <div class="p-4 bg-[#3b82f6]/5 border border-[#3b82f6]/20 rounded-lg">
+        <h3 class="text-[13px] font-semibold text-[#ededed] mb-3">🎯 Next Steps</h3>
+        <div class="space-y-2">
+          <a href="/tutorials/component-reviewer" class="block text-[12px] text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+            → Try the component-reviewer tutorial
+          </a>
+          <a href="/tutorials/test-command" class="block text-[12px] text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+            → Learn about testing workflows
+          </a>
+          <a href="/tutorials/component-optimizer" class="block text-[12px] text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+            → Explore advanced patterns
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Navigation */}
+    <div class="flex items-center justify-between px-6 py-4 border-t border-[#1f1f1f]">
+      <a
+        href="/tutorials"
+        class="flex items-center gap-2 px-4 py-2 bg-[#0a0a0a] hover:bg-[#111] border border-[#1f1f1f] rounded-lg text-[13px] font-medium text-[#999] transition-all"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Tutorials
+      </a>
+      <a
+        href="/tutorials/component-reviewer"
+        class="flex items-center gap-2 px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all"
+      >
+        Next Tutorial
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</DashboardLayout>

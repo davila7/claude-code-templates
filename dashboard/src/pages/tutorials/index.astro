@@ -1,0 +1,417 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+
+const title = 'Interactive Tutorials | Claude Code Templates';
+const description = 'Learn how to use components effectively in 5 minutes';
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div id="tutorials-container">
+    {/* Header */}
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#1f1f1f]">
+      <div>
+        <h1 class="text-[15px] font-semibold text-[#ededed]">Interactive Tutorials</h1>
+        <p class="text-[12px] text-[#666] mt-0.5">Learn how to use components effectively in 5 minutes</p>
+      </div>
+      <a
+        href="/tutorials/getting-started"
+        class="flex items-center gap-2 px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span>Quick Start</span>
+      </a>
+    </div>
+
+    {/* Filter Bar */}
+    <div class="flex items-center gap-2 px-6 py-3 border-b border-[#1f1f1f]">
+      {/* Search */}
+      <div class="relative">
+        <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#666]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search tutorials..."
+          class="w-44 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#ededed] placeholder:text-[#666] pl-8 pr-3 py-1.5 outline-none focus:bg-[#111] focus:ring-1 focus:ring-[#2a2a2a] transition-all"
+        />
+      </div>
+
+      {/* Type Filter */}
+      <select
+        id="typeFilter"
+        class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] px-2.5 py-1.5 outline-none focus:bg-[#111] cursor-pointer"
+      >
+        <option value="">All types</option>
+        <option value="agent">Agents</option>
+        <option value="command">Commands</option>
+        <option value="hook">Hooks</option>
+        <option value="mcp">MCPs</option>
+        <option value="skill">Skills</option>
+      </select>
+
+      {/* Difficulty Filter */}
+      <select
+        id="difficultyFilter"
+        class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] px-2.5 py-1.5 outline-none focus:bg-[#111] cursor-pointer"
+      >
+        <option value="">All levels</option>
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+
+      {/* Sort */}
+      <div class="flex items-center gap-2 ml-auto">
+        <select
+          id="sortFilter"
+          class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] px-2.5 py-1.5 outline-none focus:bg-[#111] cursor-pointer"
+        >
+          <option value="popular">Most Popular</option>
+          <option value="recent">Recently Added</option>
+          <option value="duration">Shortest First</option>
+        </select>
+      </div>
+    </div>
+
+    {/* Popular Tutorials */}
+    <section class="px-6 py-4">
+      <h2 class="text-[13px] font-semibold text-[#ededed] mb-3 flex items-center gap-2">
+        <span>🔥</span>
+        Popular Tutorials
+      </h2>
+      <div id="popularGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {/* Will be populated by JavaScript */}
+      </div>
+    </section>
+
+    {/* All Tutorials */}
+    <section class="px-6 py-4">
+      <h2 class="text-[13px] font-semibold text-[#ededed] mb-3">All Tutorials</h2>
+      <div id="tutorialsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {/* Will be populated by JavaScript */}
+      </div>
+    </section>
+
+    {/* Empty State */}
+    <div id="empty" class="text-center py-12 hidden">
+      <svg class="mx-auto h-12 w-12 text-[#333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <h3 class="mt-2 text-[13px] font-medium text-[#ededed]">No tutorials found</h3>
+      <p class="mt-1 text-[12px] text-[#666]">Try adjusting your filters</p>
+    </div>
+
+    {/* Learning Paths */}
+    <section class="px-6 py-4 border-t border-[#1f1f1f]">
+      <h2 class="text-[13px] font-semibold text-[#ededed] mb-3 flex items-center gap-2">
+        <span>📚</span>
+        Learning Paths
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-4">
+          <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">React Development</h3>
+          <p class="text-[12px] text-[#666] mb-3">Master React development with AI agents</p>
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center gap-2 text-[11px] text-[#999]">
+              <span class="w-5 h-5 rounded bg-[#3b82f6]/10 text-[#3b82f6] flex items-center justify-center text-[10px]">1</span>
+              frontend-developer
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-[#999]">
+              <span class="w-5 h-5 rounded bg-[#3b82f6]/10 text-[#3b82f6] flex items-center justify-center text-[10px]">2</span>
+              component-reviewer
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-[#999]">
+              <span class="w-5 h-5 rounded bg-[#3b82f6]/10 text-[#3b82f6] flex items-center justify-center text-[10px]">3</span>
+              component-optimizer
+            </div>
+          </div>
+          <button class="w-full px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all">
+            Start Path →
+          </button>
+        </div>
+
+        <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-4">
+          <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Testing & Quality</h3>
+          <p class="text-[12px] text-[#666] mb-3">Build robust applications with testing workflows</p>
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center gap-2 text-[11px] text-[#999]">
+              <span class="w-5 h-5 rounded bg-[#3b82f6]/10 text-[#3b82f6] flex items-center justify-center text-[10px]">1</span>
+              test (command)
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-[#999]">
+              <span class="w-5 h-5 rounded bg-[#3b82f6]/10 text-[#3b82f6] flex items-center justify-center text-[10px]">2</span>
+              component-tester
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-[#999]">
+              <span class="w-5 h-5 rounded bg-[#3b82f6]/10 text-[#3b82f6] flex items-center justify-center text-[10px]">3</span>
+              security-auditor
+            </div>
+          </div>
+          <button class="w-full px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all">
+            Start Path →
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</DashboardLayout>
+
+<script>
+  import { getCompletionRate } from '../../lib/tutorial-progress';
+  import type { TutorialCardData } from '../../types/tutorial';
+
+  interface TutorialCardDataExtended extends TutorialCardData {
+    installCommand?: string;
+  }
+
+  const tutorials: TutorialCardDataExtended[] = [
+    {
+      component: 'frontend-developer',
+      title: 'Frontend Developer Agent',
+      description: 'Build UI components faster with AI assistance',
+      type: 'agent',
+      difficulty: 'beginner',
+      duration: '5 min',
+      tags: ['react', 'ui', 'components'],
+      popular: true,
+      installCommand: 'npx claude-code-templates@latest --agent frontend-developer'
+    },
+    {
+      component: 'component-reviewer',
+      title: 'Component Reviewer Agent',
+      description: 'Get expert code reviews instantly',
+      type: 'agent',
+      difficulty: 'beginner',
+      duration: '5 min',
+      tags: ['quality', 'review', 'best-practices'],
+      popular: true,
+      installCommand: 'npx claude-code-templates@latest --agent component-reviewer'
+    },
+    {
+      component: 'test-command',
+      title: 'Test Command',
+      description: 'Run tests efficiently with smart test selection',
+      type: 'command',
+      difficulty: 'beginner',
+      duration: '4 min',
+      tags: ['testing', 'quality', 'automation'],
+      popular: true,
+      installCommand: 'npx claude-code-templates@latest --command test'
+    }
+  ];
+
+  function renderTutorialCard(tutorial: TutorialCardDataExtended): string {
+    const typeIcons: Record<string, string> = {
+      agent: '🤖',
+      command: '⚡',
+      hook: '🪝',
+      mcp: '🔌',
+      skill: '🎯'
+    };
+
+    const difficultyColors = {
+      beginner: 'bg-emerald-500/10 text-emerald-400',
+      intermediate: 'bg-yellow-500/10 text-yellow-400',
+      advanced: 'bg-red-500/10 text-red-400'
+    };
+
+    const completionRate = getCompletionRate(tutorial.component);
+
+    return `
+      <div class="group bg-[#0a0a0a] border border-[#1f1f1f] hover:border-[#2a2a2a] hover:bg-[#111] rounded-xl p-4 transition-all duration-200">
+        <a href="/tutorials/${tutorial.component}" class="block">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg bg-[#3b82f6]/10 flex items-center justify-center text-xl shrink-0">
+              ${typeIcons[tutorial.type] || '📄'}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3 class="text-[13px] font-semibold text-[#ededed] group-hover:text-[#fff] transition-colors line-clamp-1">
+                  ${tutorial.title}
+                </h3>
+                ${tutorial.popular ? '<span class="flex-shrink-0 px-2 py-0.5 text-[10px] rounded-full bg-[#3b82f6]/10 text-[#3b82f6]">🔥 Popular</span>' : ''}
+              </div>
+              <p class="text-[12px] text-[#666] line-clamp-2 leading-relaxed">
+                ${tutorial.description}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            ${tutorial.tags.slice(0, 3).map(tag => `
+              <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#0a0a0a] text-[#666]">
+                ${tag}
+              </span>
+            `).join('')}
+            ${tutorial.tags.length > 3 ? `<span class="px-2 py-0.5 text-[10px] text-[#666]">+${tutorial.tags.length - 3}</span>` : ''}
+          </div>
+
+          <div class="flex items-center justify-between gap-3 pt-3 border-t border-[#1f1f1f]">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 text-[10px] rounded-full ${difficultyColors[tutorial.difficulty]}">
+                ${tutorial.difficulty}
+              </span>
+              <span class="flex items-center gap-1 text-[11px] text-[#666]">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                ${tutorial.duration}
+              </span>
+            </div>
+            ${completionRate > 0 ? `
+              <div class="flex items-center gap-1 text-[11px] text-emerald-400">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                ${completionRate}% complete
+              </div>
+            ` : ''}
+          </div>
+        </a>
+        
+        ${tutorial.installCommand ? `
+          <div class="flex items-center gap-2 mt-3 pt-3 border-t border-[#1f1f1f]">
+            <button 
+              onclick="copyToClipboard('${tutorial.installCommand}', this)"
+              class="flex items-center gap-2 px-3 py-2 bg-[#3b82f6] hover:bg-[#2563eb] rounded-lg text-white text-[11px] font-medium transition-colors flex-1"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              <span class="copy-text">Copy Command</span>
+            </button>
+            <button 
+              onclick="copyToClipboard('${tutorial.installCommand}', this)"
+              class="p-2 rounded hover:bg-[#111] text-[#666] hover:text-[#ededed] transition-colors"
+              title="Copy command"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function renderTutorials() {
+    const popularGrid = document.getElementById('popularGrid');
+    const tutorialsGrid = document.getElementById('tutorialsGrid');
+
+    if (popularGrid) {
+      const popular = tutorials.filter(t => t.popular);
+      popularGrid.innerHTML = popular.map(renderTutorialCard).join('');
+    }
+
+    if (tutorialsGrid) {
+      tutorialsGrid.innerHTML = tutorials.map(renderTutorialCard).join('');
+    }
+  }
+
+  // Copy to clipboard function
+  function copyToClipboard(text: string, button: HTMLButtonElement) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Find the text element within the button
+      const textElement = button.querySelector('.copy-text');
+      const originalText = textElement ? textElement.textContent : 'Copy Command';
+      
+      // Update button to show success
+      if (textElement) {
+        textElement.textContent = 'Copied!';
+      }
+      button.classList.add('bg-emerald-500', 'hover:bg-emerald-600');
+      button.classList.remove('bg-[#3b82f6]', 'hover:bg-[#2563eb]');
+      
+      // Reset after 2 seconds
+      setTimeout(() => {
+        if (textElement) {
+          textElement.textContent = originalText;
+        }
+        button.classList.remove('bg-emerald-500', 'hover:bg-emerald-600');
+        button.classList.add('bg-[#3b82f6]', 'hover:bg-[#2563eb]');
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+    });
+  }
+
+  // Make function globally available
+  (window as any).copyToClipboard = copyToClipboard;
+
+  // Filter and search functionality
+  let filteredTutorials = [...tutorials];
+
+  function applyFilters() {
+    const searchInput = (document.getElementById('searchInput') as HTMLInputElement)?.value.toLowerCase() || '';
+    const typeFilter = (document.getElementById('typeFilter') as HTMLSelectElement)?.value || '';
+    const difficultyFilter = (document.getElementById('difficultyFilter') as HTMLSelectElement)?.value || '';
+    const sortFilter = (document.getElementById('sortFilter') as HTMLSelectElement)?.value || 'popular';
+
+    // Apply filters
+    filteredTutorials = tutorials.filter(tutorial => {
+      const matchesSearch = !searchInput || 
+        tutorial.title.toLowerCase().includes(searchInput) ||
+        tutorial.description.toLowerCase().includes(searchInput) ||
+        tutorial.tags.some(tag => tag.toLowerCase().includes(searchInput));
+      
+      const matchesType = !typeFilter || tutorial.type === typeFilter;
+      const matchesDifficulty = !difficultyFilter || tutorial.difficulty === difficultyFilter;
+
+      return matchesSearch && matchesType && matchesDifficulty;
+    });
+
+    // Apply sorting
+    if (sortFilter === 'popular') {
+      filteredTutorials.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+    } else if (sortFilter === 'recent') {
+      // Keep original order (assuming it's already recent first)
+    } else if (sortFilter === 'duration') {
+      filteredTutorials.sort((a, b) => {
+        const aDuration = parseInt(a.duration);
+        const bDuration = parseInt(b.duration);
+        return aDuration - bDuration;
+      });
+    }
+
+    // Update display
+    const popularGrid = document.getElementById('popularGrid');
+    const tutorialsGrid = document.getElementById('tutorialsGrid');
+    const emptyState = document.getElementById('empty');
+
+    if (filteredTutorials.length === 0) {
+      if (popularGrid) popularGrid.innerHTML = '';
+      if (tutorialsGrid) tutorialsGrid.innerHTML = '';
+      if (emptyState) emptyState.classList.remove('hidden');
+    } else {
+      if (emptyState) emptyState.classList.add('hidden');
+      
+      const popular = filteredTutorials.filter(t => t.popular);
+      if (popularGrid) {
+        popularGrid.innerHTML = popular.map(renderTutorialCard).join('');
+      }
+      
+      if (tutorialsGrid) {
+        tutorialsGrid.innerHTML = filteredTutorials.map(renderTutorialCard).join('');
+      }
+    }
+  }
+
+  // Event listeners for filters
+  document.getElementById('searchInput')?.addEventListener('input', applyFilters);
+  document.getElementById('typeFilter')?.addEventListener('change', applyFilters);
+  document.getElementById('difficultyFilter')?.addEventListener('change', applyFilters);
+  document.getElementById('sortFilter')?.addEventListener('change', applyFilters);
+
+  // Initial render
+  renderTutorials();
+
+  // Re-render on storage changes (progress updates)
+  window.addEventListener('storage', renderTutorials);
+</script>

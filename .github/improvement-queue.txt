@@ -1,0 +1,7 @@
+# Component Improvement Queue
+# Add component paths here (one per line) to queue them for automated improvement
+# The workflow will process them in order
+
+claude-code-templates/.claude/agents/frontend-developer.md
+claude-code-templates/.claude/agents/deployer.md
+claude-code-templates/.claude/commands/lint.md

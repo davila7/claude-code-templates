@@ -1,0 +1,15 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import ExploreView from '../components/ExploreView.tsx';
+
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Explore People & Collections - Claude Code Templates"
+  description="Discover amazing collections and creators in the Claude Code Templates community. Find curated agents, commands, and skills from top developers."
+>
+  <TopBar />
+  <ExploreView client:load />
+</DashboardLayout>

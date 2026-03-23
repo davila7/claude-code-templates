@@ -1,0 +1,16 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import GitHubDashboard from '../components/github/GitHubDashboard';
+
+const title = 'GitHub Activity | Claude Code Templates';
+const description = 'Real-time GitHub statistics and community engagement metrics';
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div id="github-container" class="px-6 py-4">
+    <GitHubDashboard client:load />
+  </div>
+</DashboardLayout>

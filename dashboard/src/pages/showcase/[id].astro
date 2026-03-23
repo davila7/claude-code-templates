@@ -1,0 +1,339 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+
+const { id } = Astro.params;
+const title = 'Showcase Detail | Claude Code Templates';
+const description = 'View showcase details';
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div id="showcase-detail-container" class="max-w-5xl mx-auto">
+    <!-- Loading State -->
+    <div id="loading" class="flex items-center justify-center py-20">
+      <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-[#1f1f1f] border-t-[#3b82f6]"></div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="hidden px-6 py-20 text-center">
+      <svg class="mx-auto h-12 w-12 text-[#666]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+      <h3 class="mt-2 text-[13px] font-medium text-[#ededed]">Showcase not found</h3>
+      <p class="mt-1 text-[12px] text-[#666]">This showcase may have been removed or doesn't exist.</p>
+      <div class="mt-6">
+        <a
+          href="/showcase"
+          class="inline-flex items-center px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all"
+        >
+          Back to Showcase
+        </a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="content" class="hidden">
+      <!-- Header -->
+      <div class="px-6 py-6 border-b border-[#1f1f1f]">
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span id="type-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-[#3b82f6]/10 text-[#3b82f6]"></span>
+              <span id="category-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-[#0a0a0a] text-[#666]"></span>
+              <span id="featured-badge" class="hidden text-[10px] px-2 py-0.5 rounded-full bg-[#3b82f6]/10 text-[#3b82f6]">Featured</span>
+            </div>
+            <h1 id="title" class="text-[20px] font-semibold text-[#ededed] mb-2"></h1>
+            <p id="description" class="text-[13px] text-[#999] leading-relaxed"></p>
+          </div>
+          
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            <button
+              id="bookmarkBtn"
+              class="flex items-center gap-1.5 px-3 py-2 bg-[#0a0a0a] hover:bg-[#111] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              <span id="bookmarkCount">0</span>
+            </button>
+            <button
+              id="likeBtn"
+              class="flex items-center gap-1.5 px-3 py-2 bg-[#0a0a0a] hover:bg-[#111] border border-[#1f1f1f] rounded-lg text-[12px] text-[#999] transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span id="likeCount">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Meta -->
+        <div class="flex items-center gap-3 text-[11px] text-[#666]">
+          <div class="flex items-center gap-1.5">
+            <img id="authorAvatar" src="" alt="" class="w-5 h-5 rounded-full" />
+            <span id="authorName"></span>
+          </div>
+          <span>•</span>
+          <span id="createdAt"></span>
+          <span>•</span>
+          <div class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span id="viewCount">0</span>
+            <span>views</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code Before/After -->
+      <div id="codeSection" class="hidden px-6 py-6 border-b border-[#1f1f1f]">
+        <h2 class="text-[14px] font-semibold text-[#ededed] mb-4">Code Comparison</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-[11px] text-[#666] mb-2 font-medium">Before</div>
+            <pre id="codeBefore" class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg p-4 text-[12px] text-[#ededed] overflow-x-auto"></pre>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#666] mb-2 font-medium">After</div>
+            <pre id="codeAfter" class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg p-4 text-[12px] text-[#ededed] overflow-x-auto"></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-6 py-6 border-b border-[#1f1f1f]">
+        <div id="showcaseContent" class="prose prose-invert prose-sm max-w-none"></div>
+      </div>
+
+      <!-- Tags -->
+      <div id="tagsSection" class="hidden px-6 py-4 border-b border-[#1f1f1f]">
+        <div class="flex items-center gap-2 flex-wrap" id="tags"></div>
+      </div>
+
+      <!-- Comments -->
+      <div class="px-6 py-6">
+        <h2 class="text-[14px] font-semibold text-[#ededed] mb-4">
+          Comments <span id="commentCount" class="text-[#666]">(0)</span>
+        </h2>
+        
+        <!-- Comment Form -->
+        <div class="mb-6">
+          <textarea
+            id="commentInput"
+            placeholder="Share your thoughts..."
+            rows="3"
+            class="w-full bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-[12px] text-[#ededed] placeholder:text-[#666] p-3 outline-none focus:bg-[#111] focus:ring-1 focus:ring-[#2a2a2a] transition-all resize-none"
+          ></textarea>
+          <div class="flex justify-end mt-2">
+            <button
+              id="submitCommentBtn"
+              class="px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[12px] font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Post Comment
+            </button>
+          </div>
+        </div>
+
+        <!-- Comments List -->
+        <div id="commentsList" class="space-y-4">
+          <!-- Comments will be loaded here -->
+        </div>
+
+        <!-- Empty Comments -->
+        <div id="emptyComments" class="hidden text-center py-8">
+          <p class="text-[12px] text-[#666]">No comments yet. Be the first to comment!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</DashboardLayout>
+
+<script define:vars={{ showcaseId: id }}>
+  let showcase = null;
+
+  async function loadShowcase() {
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const contentEl = document.getElementById('content');
+
+    try {
+      const response = await fetch(`/api/showcase/${showcaseId}`);
+      
+      if (!response.ok) {
+        throw new Error('Showcase not found');
+      }
+
+      const data = await response.json();
+      showcase = data.showcase || data; // Handle both nested and flat responses
+      
+      // Update UI
+      document.getElementById('title').textContent = showcase.title;
+      document.getElementById('description').textContent = showcase.description;
+      document.getElementById('type-badge').textContent = showcase.submissionType.replace('_', ' ');
+      document.getElementById('category-badge').textContent = showcase.category;
+      
+      if (showcase.isFeatured) {
+        document.getElementById('featured-badge').classList.remove('hidden');
+      }
+      
+      document.getElementById('authorAvatar').src = showcase.authorAvatar || '/default-avatar.png';
+      document.getElementById('authorName').textContent = showcase.authorName;
+      document.getElementById('createdAt').textContent = formatTimeAgo(showcase.createdAt);
+      document.getElementById('viewCount').textContent = showcase.viewCount;
+      document.getElementById('likeCount').textContent = showcase.likeCount;
+      document.getElementById('bookmarkCount').textContent = showcase.bookmarkCount;
+      
+      // Content
+      document.getElementById('showcaseContent').innerHTML = marked.parse(showcase.content || '');
+      
+      // Code comparison
+      if (showcase.codeBefore && showcase.codeAfter) {
+        document.getElementById('codeSection').classList.remove('hidden');
+        document.getElementById('codeBefore').textContent = showcase.codeBefore;
+        document.getElementById('codeAfter').textContent = showcase.codeAfter;
+      }
+      
+      // Tags
+      if (showcase.tags && showcase.tags.length > 0) {
+        document.getElementById('tagsSection').classList.remove('hidden');
+        const tagsEl = document.getElementById('tags');
+        tagsEl.innerHTML = showcase.tags.map(tag => 
+          `<span class="text-[10px] px-2 py-0.5 rounded-full bg-[#0a0a0a] border border-[#1f1f1f] text-[#999]">#${tag}</span>`
+        ).join('');
+      }
+      
+      // Track view
+      fetch(`/api/showcase/${showcaseId}/view`, { method: 'POST' });
+      
+      // Load comments
+      loadComments();
+      
+      loadingEl.classList.add('hidden');
+      contentEl.classList.remove('hidden');
+    } catch (error) {
+      console.error('Error loading showcase:', error);
+      loadingEl.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  async function loadComments() {
+    try {
+      const response = await fetch(`/api/showcase/${showcaseId}`);
+      const data = await response.json();
+      const comments = data.comments || [];
+      
+      const commentsList = document.getElementById('commentsList');
+      const emptyComments = document.getElementById('emptyComments');
+      const commentCount = document.getElementById('commentCount');
+      
+      if (comments.length === 0) {
+        commentsList.classList.add('hidden');
+        emptyComments.classList.remove('hidden');
+        commentCount.textContent = '(0)';
+      } else {
+        commentsList.classList.remove('hidden');
+        emptyComments.classList.add('hidden');
+        commentCount.textContent = `(${comments.length})`;
+        
+        commentsList.innerHTML = comments.map(comment => `
+          <div class="flex gap-3 p-4 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg">
+            <img src="${comment.authorAvatar}" alt="${comment.authorName}" class="w-8 h-8 rounded-full" />
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[12px] font-medium text-[#ededed]">${comment.authorName}</span>
+                <span class="text-[10px] text-[#666]">${formatTimeAgo(comment.createdAt)}</span>
+              </div>
+              <p class="text-[12px] text-[#999] leading-relaxed">${comment.content}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+    } catch (error) {
+      console.error('Error loading comments:', error);
+    }
+  }
+
+  function formatTimeAgo(date) {
+    const now = new Date().getTime();
+    const then = new Date(date).getTime();
+    const diff = now - then;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    if (days < 30) return `${Math.floor(days / 7)}w ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  }
+
+  // Event listeners
+  document.getElementById('likeBtn')?.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`/api/showcase/${showcaseId}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'like' })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('likeCount').textContent = data.count;
+      }
+    } catch (error) {
+      console.error('Error liking showcase:', error);
+    }
+  });
+
+  document.getElementById('bookmarkBtn')?.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`/api/showcase/${showcaseId}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'bookmark' })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('bookmarkCount').textContent = data.count;
+      }
+    } catch (error) {
+      console.error('Error bookmarking showcase:', error);
+    }
+  });
+
+  document.getElementById('submitCommentBtn')?.addEventListener('click', async () => {
+    const input = document.getElementById('commentInput');
+    const content = input.value.trim();
+    
+    if (!content) return;
+    
+    try {
+      const response = await fetch(`/api/showcase/${showcaseId}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      
+      if (response.ok) {
+        input.value = '';
+        loadComments();
+      }
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  });
+
+  // Load showcase on page load
+  loadShowcase();
+</script>
+
+<!-- Include marked.js for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

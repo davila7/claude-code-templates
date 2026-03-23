@@ -1,0 +1,352 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Component Health Dashboard">
+  <div class="component-health-dashboard">
+    <header class="dashboard-header">
+      <h1>Component Health Dashboard</h1>
+      <p>Monitor component quality, performance, and improvement progress</p>
+    </header>
+
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <h3>Total Components</h3>
+        <div class="stat-value" id="total-components">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Average Health Score</h3>
+        <div class="stat-value" id="avg-health-score">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Needs Attention</h3>
+        <div class="stat-value warning" id="needs-attention">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Active Improvements</h3>
+        <div class="stat-value" id="active-improvements">-</div>
+      </div>
+    </div>
+
+    <div class="dashboard-content">
+      <section class="health-scores-section">
+        <h2>Component Health Scores</h2>
+        <div class="filters">
+          <select id="filter-type">
+            <option value="">All Types</option>
+            <option value="agent">Agents</option>
+            <option value="command">Commands</option>
+            <option value="hook">Hooks</option>
+            <option value="mcp">MCPs</option>
+          </select>
+          <select id="filter-attention">
+            <option value="">All Components</option>
+            <option value="true">Needs Attention Only</option>
+          </select>
+        </div>
+        <div id="health-scores-list" class="health-scores-list"></div>
+      </section>
+
+      <section class="improvements-section">
+        <h2>Recent Improvements</h2>
+        <div id="improvements-list" class="improvements-list"></div>
+      </section>
+
+      <section class="analytics-section">
+        <h2>Usage Analytics</h2>
+        <div id="analytics-chart" class="analytics-chart"></div>
+      </section>
+    </div>
+  </div>
+
+  <style>
+    .component-health-dashboard {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .dashboard-header {
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .stat-card h3 {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .stat-value.warning {
+      color: #ef4444;
+    }
+
+    .dashboard-content {
+      display: grid;
+      gap: 2rem;
+    }
+
+    section {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .filters select {
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+    }
+
+    .health-scores-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .health-score-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .health-score-item.needs-attention {
+      border-color: #fbbf24;
+      background: #fffbeb;
+    }
+
+    .health-score-info h3 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .health-score-info p {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .health-score-metrics {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .health-score-badge {
+      font-size: 1.5rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+    }
+
+    .health-score-badge.excellent {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .health-score-badge.good {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .health-score-badge.fair {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .health-score-badge.poor {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .improvements-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .improvement-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    .improvement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .improvement-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .improvement-status.researched {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .improvement-status.in_progress {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .improvement-status.merged {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .improvement-status.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .analytics-chart {
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+    }
+  </style>
+
+  <script>
+    async function loadDashboardData() {
+      try {
+        // Load health scores
+        const healthResponse = await fetch('/api/components/health');
+        const healthData = await healthResponse.json();
+        
+        if (healthData.success) {
+          displayHealthScores(healthData.health_scores);
+          updateStats(healthData.health_scores);
+        }
+
+        // Load improvements
+        const improvementsResponse = await fetch('/api/components/research');
+        const improvementsData = await improvementsResponse.json();
+        
+        if (improvementsData.success) {
+          displayImprovements(improvementsData.improvements);
+        }
+
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      }
+    }
+
+    function updateStats(healthScores: any[]) {
+      const totalEl = document.getElementById('total-components');
+      const avgEl = document.getElementById('avg-health-score');
+      const attentionEl = document.getElementById('needs-attention');
+      
+      if (totalEl) totalEl.textContent = healthScores.length.toString();
+      
+      if (avgEl && healthScores.length > 0) {
+        const avg = healthScores.reduce((sum, s) => sum + s.overall_health_score, 0) / healthScores.length;
+        avgEl.textContent = avg.toFixed(1);
+      }
+      
+      if (attentionEl) {
+        const needsAttention = healthScores.filter(s => s.needs_attention).length;
+        attentionEl.textContent = needsAttention.toString();
+      }
+    }
+
+    function displayHealthScores(scores: any[]) {
+      const container = document.getElementById('health-scores-list');
+      if (!container) return;
+
+      container.innerHTML = scores.map(score => {
+        const scoreClass = 
+          score.overall_health_score >= 8 ? 'excellent' :
+          score.overall_health_score >= 6 ? 'good' :
+          score.overall_health_score >= 4 ? 'fair' : 'poor';
+
+        return `
+          <div class="health-score-item ${score.needs_attention ? 'needs-attention' : ''}">
+            <div class="health-score-info">
+              <h3>${score.component_name}</h3>
+              <p>${score.component_path}</p>
+              ${score.attention_reason ? `<p style="color: #f59e0b; font-weight: 600;">${score.attention_reason}</p>` : ''}
+            </div>
+            <div class="health-score-metrics">
+              <div class="health-score-badge ${scoreClass}">
+                ${score.overall_health_score.toFixed(1)}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function displayImprovements(improvements: any[]) {
+      const container = document.getElementById('improvements-list');
+      if (!container) return;
+
+      const recent = improvements.slice(0, 10);
+      
+      container.innerHTML = recent.map(imp => `
+        <div class="improvement-item">
+          <div class="improvement-header">
+            <h3>${imp.component_name}</h3>
+            <span class="improvement-status ${imp.status}">${imp.status}</span>
+          </div>
+          <p>${imp.component_path}</p>
+          ${imp.pr_url ? `<a href="${imp.pr_url}" target="_blank">View PR</a>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // Load data on page load
+    loadDashboardData();
+
+    // Setup filters
+    document.getElementById('filter-type')?.addEventListener('change', loadDashboardData);
+    document.getElementById('filter-attention')?.addEventListener('change', loadDashboardData);
+  </script>
+</DashboardLayout>
