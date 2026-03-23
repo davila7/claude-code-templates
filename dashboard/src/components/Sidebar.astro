@@ -234,8 +234,9 @@ function isActive(path: string): boolean {
     padding: 0.625rem;
   }
 
-  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-item-wrapper:hover .sidebar-tooltip {
-    opacity: 1;
+  /* Show tooltips on hover in BOTH collapsed and expanded modes */
+  .sidebar-nav-item-wrapper:hover .sidebar-tooltip {
+    opacity: 1 !important;
   }
 
   /* Section collapse animation */
@@ -267,11 +268,7 @@ function isActive(path: string): boolean {
     pointer-events: none;
     z-index: 50;
     border: 1px solid var(--color-border, #333);
-  }
-
-  /* Hover tooltip visibility in expanded mode */
-  .sidebar-container[data-sidebar-state="expanded"] .sidebar-nav-item-wrapper:hover .sidebar-tooltip {
-    opacity: 1;
+    transition: opacity 150ms ease;
   }
 
   /* Better spacing for nav items */
