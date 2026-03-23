@@ -13,124 +13,181 @@ function isActive(path: string): boolean {
 }
 ---
 
-<div class="flex flex-col h-full">
-  <!-- Logo -->
-  <div class="px-4 py-4">
-    <a href="/" class="flex items-center gap-2">
+<div class="sidebar-container flex flex-col h-full" data-sidebar-state="expanded">
+  <!-- Header with Logo and Collapse Toggle -->
+  <div class="sidebar-header flex items-center justify-between px-4 py-4 border-b border-border">
+    <a href="/" class="sidebar-logo flex items-center gap-2 flex-1 min-w-0">
       <img src="/logo.png" alt="AI Templates" class="w-6 h-6 shrink-0" />
-      <span class="text-[13px] font-semibold text-text-primary tracking-tight">AI Templates</span>
-      <span class="text-[9px] font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded">Beta</span>
+      <span class="sidebar-logo-text text-[13px] font-semibold text-text-primary tracking-tight truncate">AI Templates</span>
+      <span class="sidebar-beta-badge text-[9px] font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded whitespace-nowrap">Beta</span>
     </a>
+    <button 
+      class="sidebar-toggle-btn ml-2 p-1.5 rounded-md hover:bg-surface-2 transition-colors flex-shrink-0"
+      aria-label="Toggle sidebar"
+      title="Toggle sidebar"
+    >
+      <svg class="w-4 h-4 text-text-secondary transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
+  <nav class="sidebar-nav flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
     <!-- Workplace section -->
-    <div class="px-2 py-2">
-      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Workplace</span>
+    <div class="sidebar-section" data-section="workplace">
+      <div class="sidebar-section-header flex items-center justify-between px-2 py-2 cursor-pointer hover:bg-surface-2 rounded-md transition-colors group" data-section-toggle="workplace">
+        <span class="sidebar-section-title text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Workplace</span>
+        <svg class="sidebar-section-chevron w-3 h-3 text-text-tertiary transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+      <div class="sidebar-section-content">
+        <!-- My Components (React island) -->
+        <MyComponentsSidebarItem client:load isActive={isActive('/my-components')} />
+      </div>
     </div>
-
-    <!-- My Components (React island) -->
-    <MyComponentsSidebarItem client:load isActive={isActive('/my-components')} />
 
     <!-- Divider -->
     <div class="my-3 mx-2 border-t border-border"></div>
 
     <!-- Browse section -->
-    <div class="px-2 py-2">
-      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Browse</span>
+    <div class="sidebar-section" data-section="browse">
+      <div class="sidebar-section-header flex items-center justify-between px-2 py-2 cursor-pointer hover:bg-surface-2 rounded-md transition-colors group" data-section-toggle="browse">
+        <span class="sidebar-section-title text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Browse</span>
+        <svg class="sidebar-section-chevron w-3 h-3 text-text-tertiary transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+      <div class="sidebar-section-content">
+        {Object.entries(TYPE_CONFIG).map(([type, config]) => (
+          <div class="sidebar-nav-item-wrapper" data-tooltip={config.label}>
+            <a
+              href={`/${type}`}
+              data-nav-type={type}
+              class:list={[
+                'sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group relative',
+                isActive(`/${type}`)
+                  ? 'bg-surface-3 text-text-primary font-medium'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
+              ]}
+            >
+              <span
+                class:list={[
+                  'sidebar-nav-icon w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4',
+                  isActive(`/${type}`) ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
+                ]}
+                set:html={ICONS[type]}
+              />
+              <span class="sidebar-nav-label truncate">{config.label}</span>
+              <span class="sidebar-nav-count ml-auto text-[11px] tabular-nums text-text-tertiary" data-count-type={type}></span>
+            </a>
+            <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-surface-3 text-text-primary text-[12px] rounded whitespace-nowrap pointer-events-none opacity-0 transition-opacity z-50">
+              {config.label}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-
-    {Object.entries(TYPE_CONFIG).map(([type, config]) => (
-      <a
-        href={`/${type}`}
-        data-nav-type={type}
-        class:list={[
-          'sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group',
-          isActive(`/${type}`)
-            ? 'bg-surface-3 text-text-primary font-medium'
-            : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
-        ]}
-      >
-        <span
-          class:list={[
-            'sidebar-nav-icon w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4',
-            isActive(`/${type}`) ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
-          ]}
-          set:html={ICONS[type]}
-        />
-        <span class="truncate">{config.label}</span>
-        <span class="sidebar-nav-count ml-auto text-[11px] tabular-nums text-text-tertiary" data-count-type={type}></span>
-      </a>
-    ))}
 
     <!-- Divider -->
     <div class="my-3 mx-2 border-t border-border"></div>
 
-    <!-- Resources -->
-    <div class="px-2 py-2">
-      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Resources</span>
+    <!-- Resources section -->
+    <div class="sidebar-section" data-section="resources">
+      <div class="sidebar-section-header flex items-center justify-between px-2 py-2 cursor-pointer hover:bg-surface-2 rounded-md transition-colors group" data-section-toggle="resources">
+        <span class="sidebar-section-title text-[11px] font-medium text-text-tertiary uppercase tracking-widest">Resources</span>
+        <svg class="sidebar-section-chevron w-3 h-3 text-text-tertiary transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+      <div class="sidebar-section-content">
+        <div class="sidebar-nav-item-wrapper" data-tooltip="Trending">
+          <a href="/trending"
+            class:list={[
+              'sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group relative',
+              isActive('/trending')
+                ? 'bg-surface-3 text-text-primary font-medium'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
+            ]}>
+            <svg class:list={[
+              'w-4 h-4 shrink-0',
+              isActive('/trending') ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
+            ]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            <span class="sidebar-nav-label">Trending</span>
+          </a>
+          <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-surface-3 text-text-primary text-[12px] rounded whitespace-nowrap pointer-events-none opacity-0 transition-opacity z-50">
+            Trending
+          </div>
+        </div>
+
+        <div class="sidebar-nav-item-wrapper" data-tooltip="Jobs">
+          <a href="/jobs"
+            class:list={[
+              'sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group relative',
+              isActive('/jobs')
+                ? 'bg-surface-3 text-text-primary font-medium'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
+            ]}>
+            <svg class:list={[
+              'w-4 h-4 shrink-0',
+              isActive('/jobs') ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
+            ]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" /><line x1="12" y1="12" x2="12" y2="12.01" />
+            </svg>
+            <span class="sidebar-nav-label">Jobs</span>
+            <span class="sidebar-nav-badge ml-auto text-[9px] font-semibold uppercase tracking-wider bg-orange-500/15 text-orange-400 px-1.5 py-0.5 rounded">New</span>
+          </a>
+          <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-surface-3 text-text-primary text-[12px] rounded whitespace-nowrap pointer-events-none opacity-0 transition-opacity z-50">
+            Jobs
+          </div>
+        </div>
+
+        <div class="sidebar-nav-item-wrapper" data-tooltip="Blog">
+          <a href={NAV_LINKS.blog} target="_blank" rel="noopener noreferrer"
+            class="sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group relative">
+            <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5a2.5 2.5 0 010-5H20" />
+            </svg>
+            <span class="sidebar-nav-label">Blog</span>
+            <svg class="sidebar-nav-external w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          </a>
+          <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-surface-3 text-text-primary text-[12px] rounded whitespace-nowrap pointer-events-none opacity-0 transition-opacity z-50">
+            Blog
+          </div>
+        </div>
+
+        <div class="sidebar-nav-item-wrapper" data-tooltip="Docs">
+          <a href={NAV_LINKS.docs} target="_blank" rel="noopener noreferrer"
+            class="sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group relative">
+            <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span class="sidebar-nav-label">Docs</span>
+            <svg class="sidebar-nav-external w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          </a>
+          <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-surface-3 text-text-primary text-[12px] rounded whitespace-nowrap pointer-events-none opacity-0 transition-opacity z-50">
+            Docs
+          </div>
+        </div>
+
+        <div class="sidebar-nav-item-wrapper" data-tooltip="GitHub">
+          <a href={NAV_LINKS.github} target="_blank" rel="noopener noreferrer"
+            class="sidebar-nav-link flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group relative">
+            <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+            <span class="sidebar-nav-label">GitHub</span>
+            <svg class="sidebar-nav-external w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          </a>
+          <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-surface-3 text-text-primary text-[12px] rounded whitespace-nowrap pointer-events-none opacity-0 transition-opacity z-50">
+            GitHub
+          </div>
+        </div>
+      </div>
     </div>
-
-    <a href="/trending"
-      class:list={[
-        'flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group',
-        isActive('/trending')
-          ? 'bg-surface-3 text-text-primary font-medium'
-          : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
-      ]}>
-      <svg class:list={[
-        'w-4 h-4 shrink-0',
-        isActive('/trending') ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
-      ]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-      <span>Trending</span>
-    </a>
-
-    <a href="/jobs"
-      class:list={[
-        'flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] transition-colors group',
-        isActive('/jobs')
-          ? 'bg-surface-3 text-text-primary font-medium'
-          : 'text-text-secondary hover:text-text-primary hover:bg-surface-2',
-      ]}>
-      <svg class:list={[
-        'w-4 h-4 shrink-0',
-        isActive('/jobs') ? 'text-text-primary' : 'text-text-tertiary group-hover:text-text-secondary',
-      ]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" /><line x1="12" y1="12" x2="12" y2="12.01" />
-      </svg>
-      <span>Jobs</span>
-      <span class="ml-auto text-[9px] font-semibold uppercase tracking-wider bg-orange-500/15 text-orange-400 px-1.5 py-0.5 rounded">New</span>
-    </a>
-
-    <a href={NAV_LINKS.blog} target="_blank" rel="noopener noreferrer"
-      class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
-      <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5a2.5 2.5 0 010-5H20" />
-      </svg>
-      <span>Blog</span>
-      <svg class="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-    </a>
-
-    <a href={NAV_LINKS.docs} target="_blank" rel="noopener noreferrer"
-      class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
-      <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
-      </svg>
-      <span>Docs</span>
-      <svg class="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-    </a>
-
-    <a href={NAV_LINKS.github} target="_blank" rel="noopener noreferrer"
-      class="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors group">
-      <svg class="w-4 h-4 shrink-0 text-text-tertiary group-hover:text-text-secondary" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-      </svg>
-      <span>GitHub</span>
-      <svg class="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-    </a>
   </nav>
 
   <!-- Bottom -->
@@ -139,7 +196,123 @@ function isActive(path: string): boolean {
   </div>
 </div>
 
+<style>
+  :root {
+    --sidebar-width-expanded: 240px;
+    --sidebar-width-collapsed: 64px;
+    --sidebar-transition-duration: 300ms;
+  }
+
+  .sidebar-container {
+    width: var(--sidebar-width-expanded);
+    transition: width var(--sidebar-transition-duration) ease;
+  }
+
+  .sidebar-container[data-sidebar-state="collapsed"] {
+    width: var(--sidebar-width-collapsed);
+  }
+
+  /* Collapsed mode styles */
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-logo-text,
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-beta-badge,
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-section-title,
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-label,
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-count,
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-external,
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-badge {
+    display: none;
+  }
+
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-section-header {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-section-chevron {
+    display: none;
+  }
+
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-link {
+    justify-content: center;
+    padding: 0.375rem;
+  }
+
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-item-wrapper:hover .sidebar-tooltip {
+    opacity: 1;
+  }
+
+  /* Section collapse animation */
+  .sidebar-section-content {
+    max-height: 1000px;
+    overflow: hidden;
+    transition: max-height var(--sidebar-transition-duration) ease;
+  }
+
+  .sidebar-section[data-section-collapsed="true"] .sidebar-section-content {
+    max-height: 0;
+  }
+
+  .sidebar-section[data-section-collapsed="true"] .sidebar-section-chevron {
+    transform: rotate(-90deg);
+  }
+
+  .sidebar-section:not([data-section-collapsed="true"]) .sidebar-section-chevron {
+    transform: rotate(0deg);
+  }
+
+  /* Toggle button rotation */
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-toggle-btn svg {
+    transform: rotate(180deg);
+  }
+</style>
+
 <script>
+  // Initialize sidebar state from localStorage
+  function initSidebar() {
+    const container = document.querySelector('.sidebar-container') as HTMLElement;
+    const savedState = localStorage.getItem('sidebar-state') || 'expanded';
+    container.setAttribute('data-sidebar-state', savedState);
+
+    // Load section states
+    const sections = ['workplace', 'browse', 'resources'];
+    sections.forEach(section => {
+      const sectionEl = document.querySelector(`[data-section="${section}"]`) as HTMLElement;
+      const savedCollapsed = localStorage.getItem(`sidebar-section-${section}`) === 'true';
+      if (savedCollapsed) {
+        sectionEl.setAttribute('data-section-collapsed', 'true');
+      }
+    });
+  }
+
+  // Toggle sidebar collapse
+  function setupSidebarToggle() {
+    const toggleBtn = document.querySelector('.sidebar-toggle-btn') as HTMLButtonElement;
+    const container = document.querySelector('.sidebar-container') as HTMLElement;
+
+    toggleBtn.addEventListener('click', () => {
+      const currentState = container.getAttribute('data-sidebar-state');
+      const newState = currentState === 'expanded' ? 'collapsed' : 'expanded';
+      container.setAttribute('data-sidebar-state', newState);
+      localStorage.setItem('sidebar-state', newState);
+    });
+  }
+
+  // Setup section toggles
+  function setupSectionToggles() {
+    const toggles = document.querySelectorAll('[data-section-toggle]');
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const sectionName = (toggle as HTMLElement).getAttribute('data-section-toggle');
+        const section = document.querySelector(`[data-section="${sectionName}"]`) as HTMLElement;
+        const isCollapsed = section.getAttribute('data-section-collapsed') === 'true';
+        
+        section.setAttribute('data-section-collapsed', isCollapsed ? 'false' : 'true');
+        localStorage.setItem(`sidebar-section-${sectionName}`, isCollapsed ? 'false' : 'true');
+      });
+    });
+  }
+
+  // Update active nav link
   function updateSidebarActive() {
     const path = window.location.pathname.replace(/^\//, '').split('/')[0] || 'skills';
     document.querySelectorAll('.sidebar-nav-link').forEach((link) => {
@@ -159,23 +332,46 @@ function isActive(path: string): boolean {
     });
   }
 
-  // Patch pushState to emit events for sidebar sync
-  const origPushState = history.pushState.bind(history);
-  history.pushState = function(...args: Parameters<typeof origPushState>) {
-    origPushState(...args);
-    updateSidebarActive();
-  };
+  // Listen for component counts
+  function setupComponentCounts() {
+    window.addEventListener('component-counts', ((e: CustomEvent) => {
+      const counts = e.detail as Record<string, number>;
+      document.querySelectorAll('.sidebar-nav-count').forEach((el) => {
+        const type = (el as HTMLElement).dataset.countType;
+        if (type && counts[type]) {
+          el.textContent = String(counts[type]);
+        }
+      });
+    }) as EventListener);
+  }
 
-  window.addEventListener('popstate', updateSidebarActive);
+  // Patch pushState for navigation sync
+  function setupHistoryPatching() {
+    const origPushState = history.pushState.bind(history);
+    history.pushState = function(...args: Parameters<typeof origPushState>) {
+      origPushState(...args);
+      updateSidebarActive();
+    };
 
-  // Listen for component counts from React grid
-  window.addEventListener('component-counts', ((e: CustomEvent) => {
-    const counts = e.detail as Record<string, number>;
-    document.querySelectorAll('.sidebar-nav-count').forEach((el) => {
-      const type = (el as HTMLElement).dataset.countType;
-      if (type && counts[type]) {
-        el.textContent = String(counts[type]);
-      }
+    window.addEventListener('popstate', updateSidebarActive);
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initSidebar();
+      setupSidebarToggle();
+      setupSectionToggles();
+      updateSidebarActive();
+      setupComponentCounts();
+      setupHistoryPatching();
     });
-  }) as EventListener);
+  } else {
+    initSidebar();
+    setupSidebarToggle();
+    setupSectionToggles();
+    updateSidebarActive();
+    setupComponentCounts();
+    setupHistoryPatching();
+  }
 </script>
