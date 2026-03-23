@@ -1,0 +1,18 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import CollectionDetailView from '../../components/CollectionDetailView.tsx';
+import SearchModal from '../../components/SearchModal.tsx';
+import CartSidebar from '../../components/CartSidebar.tsx';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+---
+
+<DashboardLayout title="Collection - Claude Code Templates">
+  <div class="h-full">
+    <CollectionDetailView client:load slug={slug} />
+  </div>
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

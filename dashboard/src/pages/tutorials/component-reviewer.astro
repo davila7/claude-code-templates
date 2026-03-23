@@ -1,0 +1,232 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import TutorialProgress from '../../components/tutorials/TutorialProgress';
+import TutorialStep from '../../components/tutorials/TutorialStep';
+import CodeBlock from '../../components/tutorials/CodeBlock';
+import PromptExample from '../../components/tutorials/PromptExample';
+import Quiz from '../../components/tutorials/Quiz';
+
+const title = 'Component Reviewer Agent Tutorial | Claude Code Templates';
+const description = 'Learn how to get expert code reviews instantly';
+
+const component = 'component-reviewer';
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div class="max-w-4xl mx-auto">
+    {/* Breadcrumb */}
+    <div class="flex items-center gap-2 px-6 py-3 text-[12px] text-[#666]">
+      <a href="/tutorials" class="hover:text-[#999] transition-colors">Tutorials</a>
+      <span>/</span>
+      <span class="text-[#999]">component-reviewer</span>
+    </div>
+
+    {/* Header */}
+    <div class="px-6 py-4 border-b border-[#1f1f1f]">
+      <h1 class="text-[20px] font-semibold text-[#ededed] mb-3">
+        Component Reviewer Agent Tutorial
+      </h1>
+      <p class="text-[13px] text-[#999] mb-3">
+        Learn how to use the Component Reviewer agent to get instant expert code reviews and improve code quality.
+      </p>
+      
+      <div class="flex items-center gap-2 mb-3">
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#3b82f6]/10 text-[#3b82f6]">agent</span>
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/10 text-emerald-400">beginner</span>
+        <span class="flex items-center gap-1 text-[11px] text-[#666]">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          5 minutes
+        </span>
+      </div>
+      
+      <div class="flex flex-wrap gap-1.5">
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#0a0a0a] text-[#666]">quality</span>
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#0a0a0a] text-[#666]">review</span>
+        <span class="px-2 py-0.5 text-[10px] rounded-full bg-[#0a0a0a] text-[#666]">best-practices</span>
+      </div>
+    </div>
+
+    {/* Progress Tracker */}
+    <TutorialProgress component={component} client:load />
+
+    {/* Content */}
+    <div class="px-6 py-6 space-y-8">
+      {/* Step 1 */}
+      <TutorialStep component={component} number={1} title="Installation" client:load>
+        <p class="text-[13px] text-[#999] leading-relaxed mb-4">
+          Install the Component Reviewer agent to get instant code reviews with best practices and improvement suggestions.
+        </p>
+
+        <CodeBlock
+          code="npx claude-code-templates@latest --agent component-reviewer"
+          language="bash"
+          client:load
+        />
+
+        <p class="text-[12px] text-[#666] leading-relaxed mt-3">
+          Use <code class="px-1.5 py-0.5 bg-[#0a0a0a] rounded text-[#3b82f6]">@component-reviewer</code> in your prompts to activate the agent.
+        </p>
+      </TutorialStep>
+
+      {/* Step 2 */}
+      <TutorialStep component={component} number={2} title="Your First Review" client:load>
+        <p class="text-[13px] text-[#999] leading-relaxed mb-4">
+          Let's review a component to see what the agent can find.
+        </p>
+
+        <PromptExample
+          prompt="@component-reviewer Review my Button component for best practices"
+          description="The agent will analyze your component and provide detailed feedback."
+          result="Comprehensive review covering accessibility, performance, TypeScript usage, and React best practices."
+          client:load
+        />
+
+        <div class="mt-4 p-3 bg-[#3b82f6]/5 border border-[#3b82f6]/20 rounded-lg">
+          <div class="text-[12px] text-[#3b82f6] font-medium mb-2">💡 What you'll get:</div>
+          <ul class="text-[12px] text-[#999] space-y-1 ml-4 list-disc">
+            <li>Accessibility improvements</li>
+            <li>Performance optimizations</li>
+            <li>TypeScript best practices</li>
+            <li>React patterns and anti-patterns</li>
+          </ul>
+        </div>
+      </TutorialStep>
+
+      {/* Step 3 */}
+      <TutorialStep component={component} number={3} title="Common Use Cases" client:load>
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Before Committing</h3>
+            <PromptExample
+              prompt="@component-reviewer Review my changes before I commit"
+              client:load
+            />
+          </div>
+
+          <div>
+            <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Security Check</h3>
+            <PromptExample
+              prompt="@component-reviewer Check this form component for security issues"
+              client:load
+            />
+          </div>
+
+          <div>
+            <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Performance Audit</h3>
+            <PromptExample
+              prompt="@component-reviewer Analyze performance of my data table component"
+              client:load
+            />
+          </div>
+        </div>
+      </TutorialStep>
+
+      {/* Step 4 */}
+      <TutorialStep component={component} number={4} title="Pro Tips" client:load>
+        <div class="space-y-4">
+          <div class="p-4 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">🔄</span>
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Iterative Reviews</h3>
+                <CodeBlock
+                  code={`@component-reviewer Review my modal component
+// Make suggested changes
+@component-reviewer Review the updated modal`}
+                  language="text"
+                  client:load
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">🎯</span>
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed] mb-2">Focused Reviews</h3>
+                <CodeBlock
+                  code="@component-reviewer Focus on accessibility in my navbar"
+                  language="text"
+                  client:load
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </TutorialStep>
+
+      {/* Quiz */}
+      <div>
+        <h3 class="text-[15px] font-semibold text-[#ededed] mb-3">Test Your Knowledge</h3>
+        <Quiz
+          questions={[
+            {
+              question: "When should you use the Component Reviewer agent?",
+              options: [
+                "Only after finishing the entire project",
+                "Before committing code changes",
+                "Only when you have bugs",
+                "Never, manual reviews are better"
+              ],
+              correct: 1,
+              explanation: "It's best to review code before committing to catch issues early and maintain code quality throughout development."
+            },
+            {
+              question: "What aspects does the Component Reviewer check?",
+              options: [
+                "Only syntax errors",
+                "Only performance",
+                "Accessibility, performance, best practices, and security",
+                "Only TypeScript types"
+              ],
+              correct: 2,
+              explanation: "The Component Reviewer provides comprehensive analysis covering accessibility, performance, best practices, security, and more."
+            }
+          ]}
+          client:load
+        />
+      </div>
+
+      {/* Next Steps */}
+      <div class="p-4 bg-[#3b82f6]/5 border border-[#3b82f6]/20 rounded-lg">
+        <h3 class="text-[13px] font-semibold text-[#ededed] mb-3">🎯 Next Steps</h3>
+        <div class="space-y-2">
+          <a href="/tutorials/test-command" class="block text-[12px] text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+            → Learn about testing with the test command
+          </a>
+          <a href="/tutorials/component-optimizer" class="block text-[12px] text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+            → Optimize your components
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Navigation */}
+    <div class="flex items-center justify-between px-6 py-4 border-t border-[#1f1f1f]">
+      <a
+        href="/tutorials/frontend-developer"
+        class="flex items-center gap-2 px-4 py-2 bg-[#0a0a0a] hover:bg-[#111] border border-[#1f1f1f] rounded-lg text-[13px] font-medium text-[#999] transition-all"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Previous
+      </a>
+      <a
+        href="/tutorials/test-command"
+        class="flex items-center gap-2 px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-[13px] font-medium transition-all"
+      >
+        Next Tutorial
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</DashboardLayout>

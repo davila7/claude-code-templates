@@ -1,0 +1,250 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+
+const title = 'My Progress | Claude Code Templates';
+const description = 'Track your learning journey and achievements';
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div class="max-w-6xl mx-auto">
+    {/* Header */}
+    <div class="px-6 py-4 border-b border-[#1f1f1f]">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-[15px] font-semibold text-[#ededed]">My Learning Progress</h1>
+          <p class="text-[12px] text-[#666] mt-0.5">Track your tutorials and achievements</p>
+        </div>
+        <button
+          id="clearProgress"
+          class="px-3 py-1.5 bg-[#0a0a0a] hover:bg-[#111] border border-[#1f1f1f] rounded-lg text-[11px] font-medium text-[#999] hover:text-[#ededed] transition-all"
+        >
+          Clear All Progress
+        </button>
+      </div>
+    </div>
+
+    {/* Stats Overview */}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 px-6 py-4">
+      <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[12px] text-[#666]">Completed</span>
+          <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div id="completedCount" class="text-[24px] font-semibold text-[#ededed]">0</div>
+        <div class="text-[11px] text-[#666] mt-1">tutorials finished</div>
+      </div>
+
+      <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[12px] text-[#666]">In Progress</span>
+          <svg class="w-4 h-4 text-[#3b82f6]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div id="inProgressCount" class="text-[24px] font-semibold text-[#ededed]">0</div>
+        <div class="text-[11px] text-[#666] mt-1">tutorials started</div>
+      </div>
+
+      <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[12px] text-[#666]">Time Spent</span>
+          <svg class="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div id="timeSpent" class="text-[24px] font-semibold text-[#ededed]">0</div>
+        <div class="text-[11px] text-[#666] mt-1">minutes learning</div>
+      </div>
+
+      <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[12px] text-[#666]">Achievements</span>
+          <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        </div>
+        <div id="achievementsCount" class="text-[24px] font-semibold text-[#ededed]">0</div>
+        <div class="text-[11px] text-[#666] mt-1">badges earned</div>
+      </div>
+    </div>
+
+    {/* Achievements */}
+    <section class="px-6 py-4 border-t border-[#1f1f1f]">
+      <h2 class="text-[13px] font-semibold text-[#ededed] mb-3 flex items-center gap-2">
+        <span>🏆</span>
+        Achievements
+      </h2>
+      <div id="achievementsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Will be populated by JavaScript */}
+      </div>
+    </section>
+
+    {/* Completed Tutorials */}
+    <section class="px-6 py-4 border-t border-[#1f1f1f]">
+      <h2 class="text-[13px] font-semibold text-[#ededed] mb-3">Completed Tutorials</h2>
+      <div id="completedList" class="space-y-2">
+        {/* Will be populated by JavaScript */}
+      </div>
+      <div id="noCompleted" class="text-center py-8 hidden">
+        <p class="text-[12px] text-[#666]">No completed tutorials yet. Start learning!</p>
+      </div>
+    </section>
+
+    {/* In Progress */}
+    <section class="px-6 py-4 border-t border-[#1f1f1f]">
+      <h2 class="text-[13px] font-semibold text-[#ededed] mb-3">In Progress</h2>
+      <div id="inProgressList" class="space-y-2">
+        {/* Will be populated by JavaScript */}
+      </div>
+      <div id="noInProgress" class="text-center py-8 hidden">
+        <p class="text-[12px] text-[#666]">No tutorials in progress. <a href="/tutorials" class="text-[#3b82f6] hover:text-[#2563eb]">Browse tutorials</a></p>
+      </div>
+    </section>
+  </div>
+</DashboardLayout>
+
+<script>
+  import { getAllProgress, getStats, clearAllProgress } from '../../lib/tutorial-progress';
+
+  const achievements = [
+    { id: 'first-tutorial', name: 'First Steps', icon: '🎓', description: 'Complete your first tutorial', requirement: 1 },
+    { id: 'five-tutorials', name: 'Quick Learner', icon: '⚡', description: 'Complete 5 tutorials', requirement: 5 },
+    { id: 'ten-tutorials', name: 'Dedicated Student', icon: '📚', description: 'Complete 10 tutorials', requirement: 10 },
+    { id: 'all-basics', name: 'Basics Master', icon: '🏆', description: 'Complete all beginner tutorials', requirement: 3 },
+    { id: 'speed-runner', name: 'Speed Runner', icon: '🚀', description: 'Complete a tutorial in under 3 minutes', requirement: 1 },
+    { id: 'night-owl', name: 'Night Owl', icon: '🦉', description: 'Complete a tutorial after midnight', requirement: 1 },
+    { id: 'early-bird', name: 'Early Bird', icon: '🌅', description: 'Complete a tutorial before 6 AM', requirement: 1 },
+    { id: 'weekend-warrior', name: 'Weekend Warrior', icon: '💪', description: 'Complete tutorials on weekend', requirement: 1 }
+  ];
+
+  const tutorialNames: Record<string, string> = {
+    'frontend-developer': 'Frontend Developer Agent',
+    'component-reviewer': 'Component Reviewer Agent',
+    'test-command': 'Test Command'
+  };
+
+  function updateStats() {
+    const stats = getStats();
+    
+    document.getElementById('completedCount')!.textContent = String(stats.completed);
+    document.getElementById('inProgressCount')!.textContent = String(stats.inProgress);
+    document.getElementById('timeSpent')!.textContent = String(stats.totalTimeMinutes);
+    
+    // Calculate achievements
+    const earnedAchievements = achievements.filter(a => {
+      if (a.id === 'first-tutorial') return stats.completed >= 1;
+      if (a.id === 'five-tutorials') return stats.completed >= 5;
+      if (a.id === 'ten-tutorials') return stats.completed >= 10;
+      return false;
+    });
+    
+    document.getElementById('achievementsCount')!.textContent = String(earnedAchievements.length);
+    
+    // Render achievements
+    const achievementsGrid = document.getElementById('achievementsGrid')!;
+    achievementsGrid.innerHTML = achievements.map(achievement => {
+      const earned = earnedAchievements.some(a => a.id === achievement.id);
+      return `
+        <div class="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg p-3 ${earned ? '' : 'opacity-40'}">
+          <div class="text-2xl mb-2">${achievement.icon}</div>
+          <div class="text-[12px] font-medium text-[#ededed] mb-1">${achievement.name}</div>
+          <div class="text-[10px] text-[#666]">${achievement.description}</div>
+          ${earned ? '<div class="mt-2 text-[10px] text-emerald-400">✓ Unlocked</div>' : '<div class="mt-2 text-[10px] text-[#666]">🔒 Locked</div>'}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateLists() {
+    const allProgress = getAllProgress();
+    const completed = allProgress.filter(p => p.completedAt);
+    const inProgress = allProgress.filter(p => !p.completedAt && p.stepsCompleted.length > 0);
+    
+    // Completed list
+    const completedList = document.getElementById('completedList')!;
+    const noCompleted = document.getElementById('noCompleted')!;
+    
+    if (completed.length === 0) {
+      completedList.classList.add('hidden');
+      noCompleted.classList.remove('hidden');
+    } else {
+      completedList.classList.remove('hidden');
+      noCompleted.classList.add('hidden');
+      completedList.innerHTML = completed.map(p => `
+        <a href="/tutorials/${p.component}" class="flex items-center justify-between p-3 bg-[#0a0a0a] border border-[#1f1f1f] hover:border-[#2a2a2a] rounded-lg transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-[13px] font-medium text-[#ededed]">${tutorialNames[p.component] || p.component}</div>
+              <div class="text-[11px] text-[#666]">Completed ${new Date(p.completedAt!).toLocaleDateString()}</div>
+            </div>
+          </div>
+          <div class="text-[11px] text-emerald-400">100%</div>
+        </a>
+      `).join('');
+    }
+    
+    // In progress list
+    const inProgressList = document.getElementById('inProgressList')!;
+    const noInProgress = document.getElementById('noInProgress')!;
+    
+    if (inProgress.length === 0) {
+      inProgressList.classList.add('hidden');
+      noInProgress.classList.remove('hidden');
+    } else {
+      inProgressList.classList.remove('hidden');
+      noInProgress.classList.add('hidden');
+      inProgressList.innerHTML = inProgress.map(p => {
+        const progress = (p.stepsCompleted.length / 4) * 100;
+        return `
+          <a href="/tutorials/${p.component}" class="flex items-center justify-between p-3 bg-[#0a0a0a] border border-[#1f1f1f] hover:border-[#2a2a2a] rounded-lg transition-all">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-8 h-8 rounded-lg bg-[#3b82f6]/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#3b82f6]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="text-[13px] font-medium text-[#ededed]">${tutorialNames[p.component] || p.component}</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="flex-1 h-1 bg-[#1f1f1f] rounded-full overflow-hidden">
+                    <div class="h-full bg-[#3b82f6]" style="width: ${progress}%"></div>
+                  </div>
+                  <span class="text-[11px] text-[#666]">${progress}%</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+  }
+
+  function init() {
+    updateStats();
+    updateLists();
+  }
+
+  // Clear progress button
+  document.getElementById('clearProgress')?.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
+      clearAllProgress();
+      init();
+    }
+  });
+
+  // Initial load
+  init();
+
+  // Listen for storage changes
+  window.addEventListener('storage', init);
+</script>

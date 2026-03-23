@@ -1,0 +1,15 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import PricingPlans from '../components/PricingPlans.tsx';
+
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Pricing - Claude Code Templates"
+  description="Choose the perfect plan for your AI development needs. Free forever plan available with unlimited basic features."
+>
+  <TopBar />
+  <PricingPlans client:load />
+</DashboardLayout>

@@ -1,0 +1,76 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+
+const plan = Astro.url.searchParams.get('plan') || 'Pro';
+const sessionId = Astro.url.searchParams.get('session_id');
+---
+
+<DashboardLayout
+  title="Subscription Successful - Claude Code Templates"
+  description="Your subscription has been activated successfully"
+>
+  <TopBar />
+  <div class="h-full overflow-y-auto bg-surface-0 flex items-center justify-center px-6 py-12">
+    <div class="max-w-2xl w-full bg-surface-1 rounded-xl p-8 border border-emerald-500/30 text-center">
+      <div class="w-16 h-16 bg-emerald-500/20 rounded-full mx-auto mb-6 flex items-center justify-center">
+        <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+
+      <h1 class="text-3xl font-bold text-text-primary mb-2">
+        Welcome to {plan}
+      </h1>
+      
+      <p class="text-sm text-text-secondary mb-8">
+        Your subscription has been activated successfully
+      </p>
+
+      <div class="bg-surface-2 rounded-lg p-6 mb-8 border border-border">
+        <h2 class="text-base font-semibold text-text-primary mb-4">What's Next?</h2>
+        <ul class="space-y-3 text-left">
+          <li class="flex items-start text-[13px]">
+            <svg class="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-text-secondary">Start generating AI-powered components with your increased limits</span>
+          </li>
+          <li class="flex items-start text-[13px]">
+            <svg class="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-text-secondary">Browse 1000+ templates and save to collections</span>
+          </li>
+          <li class="flex items-start text-[13px]">
+            <svg class="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-text-secondary">Get priority support from our team</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a
+          href="/"
+          class="inline-block bg-accent-500 hover:bg-accent-600 text-white px-6 py-2.5 rounded-lg text-[13px] font-medium transition-all"
+        >
+          Start Exploring
+        </a>
+        <a
+          href="/my-components"
+          class="inline-block bg-surface-2 hover:bg-surface-3 text-text-primary px-6 py-2.5 rounded-lg text-[13px] font-medium transition-all border border-border"
+        >
+          My Components
+        </a>
+      </div>
+
+      {sessionId && (
+        <p class="mt-6 text-[11px] text-text-tertiary">
+          Session ID: {sessionId}
+        </p>
+      )}
+    </div>
+  </div>
+</DashboardLayout>

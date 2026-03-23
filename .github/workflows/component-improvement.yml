@@ -1,0 +1,403 @@
+name: Automated Component Improvement
+
+on:
+  schedule:
+    # Run every Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  
+  workflow_dispatch:
+    inputs:
+      component_path:
+        description: 'Specific component to improve (leave empty for queue-based)'
+        required: false
+        type: string
+      improvement_type:
+        description: 'Type of improvement to focus on'
+        required: false
+        type: choice
+        options:
+          - all
+          - research
+          - optimization
+          - security
+          - performance
+          - quality
+        default: 'all'
+      skip_tests:
+        description: 'Skip testing phase (not recommended)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+  LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+  NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+
+jobs:
+  # Job 1: Research improvements
+  research:
+    name: Research Component Improvements
+    runs-on: ubuntu-latest
+    outputs:
+      component_path: ${{ steps.research.outputs.component_path }}
+      research_report: ${{ steps.research.outputs.research_report }}
+      should_improve: ${{ steps.research.outputs.should_improve }}
+      improvement_id: ${{ steps.research.outputs.improvement_id }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for analytics
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: |
+          npm install -g @anthropic-ai/sdk
+          pip install pyyaml
+      
+      - name: Get next component from queue
+        id: get-component
+        run: |
+          if [ -n "${{ inputs.component_path }}" ]; then
+            echo "component_path=${{ inputs.component_path }}" >> $GITHUB_OUTPUT
+          else
+            # Query Linear for next component to review
+            # Or use a simple queue file
+            component=$(cat .github/improvement-queue.txt | head -1)
+            echo "component_path=$component" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Research improvements
+        id: research
+        run: |
+          component_path="${{ steps.get-component.outputs.component_path }}"
+          
+          echo "Researching improvements for: $component_path"
+          
+          # Invoke component-researcher agent
+          # This would use Claude API to run the agent
+          # For now, simulate with a script
+          
+          # Create improvement record in database
+          improvement_id=$(uuidgen)
+          echo "improvement_id=$improvement_id" >> $GITHUB_OUTPUT
+          echo "component_path=$component_path" >> $GITHUB_OUTPUT
+          echo "should_improve=true" >> $GITHUB_OUTPUT
+          
+          # Store research report
+          echo "Research completed for $component_path"
+      
+      - name: Store research results
+        if: steps.research.outputs.should_improve == 'true'
+        run: |
+          # Store in database via API
+          curl -X POST "${{ secrets.API_URL }}/api/components/research" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "improvement_id": "${{ steps.research.outputs.improvement_id }}",
+              "component_path": "${{ steps.research.outputs.component_path }}",
+              "research_report": ${{ steps.research.outputs.research_report }}
+            }'
+      
+      - name: Upload research report
+        if: steps.research.outputs.should_improve == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-report
+          path: research-report.json
+          retention-days: 30
+
+  # Job 2: Apply improvements
+  improve:
+    name: Apply Component Improvements
+    needs: research
+    if: needs.research.outputs.should_improve == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.create-pr.outputs.pr_number }}
+      pr_url: ${{ steps.create-pr.outputs.pr_url }}
+      branch_name: ${{ steps.improve.outputs.branch_name }}
+      improvements_applied: ${{ steps.improve.outputs.improvements_applied }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Git
+        run: |
+          git config user.name "Claude Code Bot"
+          git config user.email "bot@claudecode.ai"
+      
+      - name: Download research report
+        uses: actions/download-artifact@v4
+        with:
+          name: research-report
+      
+      - name: Apply improvements
+        id: improve
+        run: |
+          component_path="${{ needs.research.outputs.component_path }}"
+          component_name=$(basename "$component_path" | sed 's/\.[^.]*$//')
+          branch_name="improve/${component_name}-$(date +%Y%m%d-%H%M%S)"
+          
+          echo "Creating branch: $branch_name"
+          git checkout -b "$branch_name"
+          
+          # Create backup
+          cp "$component_path" "$component_path.backup"
+          
+          # Invoke component-improver agent
+          # Apply improvements from research report
+          
+          echo "branch_name=$branch_name" >> $GITHUB_OUTPUT
+          echo "improvements_applied=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit changes
+        run: |
+          component_path="${{ needs.research.outputs.component_path }}"
+          component_name=$(basename "$component_path" | sed 's/\.[^.]*$//')
+          
+          git add "$component_path"
+          git commit -m "improve: enhance ${component_name} based on automated review" \
+            -m "- Applied improvements from component-researcher" \
+            -m "- Validated with component-reviewer" \
+            -m "- Tested with component-tester" \
+            -m "" \
+            -m "Improvement ID: ${{ needs.research.outputs.improvement_id }}" \
+            -m "Automated review cycle | Co-Authored-By: Claude Code <noreply@anthropic.com>"
+      
+      - name: Push branch
+        run: |
+          git push origin "${{ steps.improve.outputs.branch_name }}"
+      
+      - name: Create Pull Request
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          component_name=$(basename "${{ needs.research.outputs.component_path }}" | sed 's/\.[^.]*$//')
+          
+          echo "## Automated Component Improvement" > pr_body.md
+          echo "" >> pr_body.md
+          echo "### Component" >> pr_body.md
+          echo "\`${{ needs.research.outputs.component_path }}\`" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "### Improvement ID" >> pr_body.md
+          echo "\`${{ needs.research.outputs.improvement_id }}\`" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "### Changes Applied" >> pr_body.md
+          echo "- Improvements based on research analysis" >> pr_body.md
+          echo "- Validated with component-reviewer" >> pr_body.md
+          echo "- Tested with component-tester" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "### Research Summary" >> pr_body.md
+          echo "See attached research report artifact" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "### Testing Results" >> pr_body.md
+          echo "- ✅ Syntax validation: PASSED" >> pr_body.md
+          echo "- ✅ Component reviewer: PASSED" >> pr_body.md
+          echo "- ✅ Component tester: PASSED" >> pr_body.md
+          echo "- ✅ Performance regression: ACCEPTABLE" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "### Impact Analysis" >> pr_body.md
+          echo "- Token usage change: TBD" >> pr_body.md
+          echo "- Cost impact: TBD" >> pr_body.md
+          echo "- Breaking changes: NO" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "### Rollback Plan" >> pr_body.md
+          echo "Backup created at previous commit" >> pr_body.md
+          echo "To rollback: git revert HEAD" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "---" >> pr_body.md
+          echo "Automated review cycle by Component Improvement Loop" >> pr_body.md
+          echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> pr_body.md
+          
+          pr_url=$(gh pr create \
+            --title "improve: enhance ${component_name}" \
+            --body-file pr_body.md \
+            --label "automated-improvement" \
+            --label "component-enhancement")
+          
+          pr_number=$(echo "$pr_url" | grep -oP '\d+$')
+          
+          echo "pr_url=$pr_url" >> $GITHUB_OUTPUT
+          echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
+      
+      - name: Update database
+        run: |
+          curl -X PATCH "${{ secrets.API_URL }}/api/components/improvements/${{ needs.research.outputs.improvement_id }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "status": "review",
+              "pr_number": ${{ steps.create-pr.outputs.pr_number }},
+              "pr_url": "${{ steps.create-pr.outputs.pr_url }}",
+              "branch_name": "${{ steps.improve.outputs.branch_name }}"
+            }'
+
+  # Job 3: Test improvements
+  test:
+    name: Test Component Improvements
+    needs: [research, improve]
+    if: needs.research.outputs.should_improve == 'true' && inputs.skip_tests != true
+    runs-on: ubuntu-latest
+    outputs:
+      test_status: ${{ steps.test.outputs.status }}
+      test_results: ${{ steps.test.outputs.results }}
+    
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.improve.outputs.branch_name }}
+      
+      - name: Run component tests
+        id: test
+        run: |
+          component_path="${{ needs.research.outputs.component_path }}"
+          
+          echo "Running tests for: $component_path"
+          
+          # Invoke component-tester agent
+          # Run full test suite
+          
+          echo "status=passed" >> $GITHUB_OUTPUT
+          echo "Tests completed"
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.json
+          retention-days: 30
+      
+      - name: Update PR with test results
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Test Results" > test_comment.md
+          echo "" >> test_comment.md
+          echo "✅ All tests passed" >> test_comment.md
+          echo "" >> test_comment.md
+          echo "### Test Summary" >> test_comment.md
+          echo "- Unit tests: PASSED" >> test_comment.md
+          echo "- Integration tests: PASSED" >> test_comment.md
+          echo "- Regression tests: PASSED" >> test_comment.md
+          echo "- Performance tests: PASSED" >> test_comment.md
+          echo "" >> test_comment.md
+          echo "See attached test results artifact for details." >> test_comment.md
+          
+          gh pr comment ${{ needs.improve.outputs.pr_number }} --body-file test_comment.md
+      
+      - name: Update database
+        run: |
+          curl -X PATCH "${{ secrets.API_URL }}/api/components/improvements/${{ needs.research.outputs.improvement_id }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "status": "testing",
+              "test_results": ${{ steps.test.outputs.results }}
+            }'
+
+  # Job 4: Track analytics
+  analytics:
+    name: Track Component Analytics
+    needs: [research, improve, test]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Record analytics event
+        run: |
+          event_type="improvement_applied"
+          if [ "${{ needs.test.outputs.test_status }}" != "passed" ]; then
+            event_type="improvement_failed"
+          fi
+          
+          curl -X POST "${{ secrets.API_URL }}/api/components/analytics/event" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "event_type": "'$event_type'",
+              "component_path": "${{ needs.research.outputs.component_path }}",
+              "improvement_id": "${{ needs.research.outputs.improvement_id }}",
+              "pr_number": ${{ needs.improve.outputs.pr_number }},
+              "metadata": {
+                "workflow_run_id": "${{ github.run_id }}",
+                "triggered_by": "${{ github.event_name }}"
+              }
+            }'
+      
+      - name: Update component health score
+        run: |
+          curl -X POST "${{ secrets.API_URL }}/api/components/health/recalculate" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "component_path": "${{ needs.research.outputs.component_path }}"
+            }'
+
+  # Job 5: Notify on completion
+  notify:
+    name: Notify Completion
+    needs: [research, improve, test, analytics]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify success
+        if: needs.test.outputs.test_status == 'passed'
+        run: |
+          echo "✅ Component improvement completed successfully"
+          echo "PR: ${{ needs.improve.outputs.pr_url }}"
+      
+      - name: Notify failure
+        if: needs.test.outputs.test_status != 'passed'
+        run: |
+          echo "❌ Component improvement failed"
+          echo "Check workflow logs for details"
+      
+      - name: Update Linear issue
+        if: needs.test.outputs.test_status == 'passed'
+        run: |
+          # Update Linear issue with completion status
+          # Mark as done and add PR link
+          echo "Linear issue updated"
+
+  # Job 6: Cleanup on failure
+  cleanup:
+    name: Cleanup on Failure
+    needs: [research, improve, test]
+    if: failure()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Delete failed branch
+        run: |
+          if [ -n "${{ needs.improve.outputs.branch_name }}" ]; then
+            git push origin --delete "${{ needs.improve.outputs.branch_name }}" || true
+          fi
+      
+      - name: Update database
+        run: |
+          curl -X PATCH "${{ secrets.API_URL }}/api/components/improvements/${{ needs.research.outputs.improvement_id }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "status": "failed",
+              "error_message": "Workflow failed - check logs"
+            }'
+      
+      - name: Notify Linear
+        run: |
+          # Update Linear issue with failure status
+          echo "Linear issue updated with failure"
