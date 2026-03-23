@@ -197,19 +197,11 @@ function isActive(path: string): boolean {
 </div>
 
 <style>
-  :root {
-    --sidebar-width-expanded: 240px;
-    --sidebar-width-collapsed: 64px;
-    --sidebar-transition-duration: 300ms;
-  }
-
   .sidebar-container {
-    width: var(--sidebar-width-expanded);
-    transition: width var(--sidebar-transition-duration) ease;
-  }
-
-  .sidebar-container[data-sidebar-state="collapsed"] {
-    width: var(--sidebar-width-collapsed);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Collapsed mode styles */
@@ -221,6 +213,11 @@ function isActive(path: string): boolean {
   .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-external,
   .sidebar-container[data-sidebar-state="collapsed"] .sidebar-nav-badge {
     display: none;
+  }
+
+  .sidebar-container[data-sidebar-state="collapsed"] .sidebar-header {
+    justify-content: center;
+    padding: 0.5rem;
   }
 
   .sidebar-container[data-sidebar-state="collapsed"] .sidebar-section-header {
@@ -245,7 +242,7 @@ function isActive(path: string): boolean {
   .sidebar-section-content {
     max-height: 1000px;
     overflow: hidden;
-    transition: max-height var(--sidebar-transition-duration) ease;
+    transition: max-height 300ms ease;
   }
 
   .sidebar-section[data-section-collapsed="true"] .sidebar-section-content {
@@ -263,6 +260,12 @@ function isActive(path: string): boolean {
   /* Toggle button rotation */
   .sidebar-container[data-sidebar-state="collapsed"] .sidebar-toggle-btn svg {
     transform: rotate(180deg);
+  }
+
+  /* Tooltip positioning */
+  .sidebar-tooltip {
+    pointer-events: none;
+    z-index: 50;
   }
 </style>
 
