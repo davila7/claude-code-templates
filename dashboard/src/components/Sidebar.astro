@@ -22,9 +22,9 @@ function isActive(path: string): boolean {
       <span class="sidebar-beta-badge text-[9px] font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded whitespace-nowrap">Beta</span>
     </a>
     <button 
-      class="sidebar-toggle-btn ml-2 p-1.5 rounded-md hover:bg-surface-2 transition-colors flex-shrink-0"
-      aria-label="Toggle sidebar"
-      title="Toggle sidebar"
+      class="sidebar-collapse-btn ml-2 p-1.5 rounded-md hover:bg-surface-2 transition-colors flex-shrink-0"
+      aria-label="Collapse sidebar"
+      title="Collapse sidebar"
     >
       <svg class="w-4 h-4 text-text-secondary transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -289,8 +289,10 @@ function isActive(path: string): boolean {
 
   // Toggle sidebar collapse
   function setupSidebarToggle() {
-    const toggleBtn = document.querySelector('.sidebar-toggle-btn') as HTMLButtonElement;
+    const toggleBtn = document.querySelector('.sidebar-collapse-btn') as HTMLButtonElement;
     const container = document.querySelector('.sidebar-container') as HTMLElement;
+
+    if (!toggleBtn || !container) return;
 
     toggleBtn.addEventListener('click', () => {
       const currentState = container.getAttribute('data-sidebar-state');
@@ -304,11 +306,13 @@ function isActive(path: string): boolean {
   function setupSectionToggles() {
     const toggles = document.querySelectorAll('[data-section-toggle]');
     toggles.forEach(toggle => {
-      toggle.addEventListener('click', () => {
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
         const sectionName = (toggle as HTMLElement).getAttribute('data-section-toggle');
         const section = document.querySelector(`[data-section="${sectionName}"]`) as HTMLElement;
-        const isCollapsed = section.getAttribute('data-section-collapsed') === 'true';
+        if (!section) return;
         
+        const isCollapsed = section.getAttribute('data-section-collapsed') === 'true';
         section.setAttribute('data-section-collapsed', isCollapsed ? 'false' : 'true');
         localStorage.setItem(`sidebar-section-${sectionName}`, isCollapsed ? 'false' : 'true');
       });
