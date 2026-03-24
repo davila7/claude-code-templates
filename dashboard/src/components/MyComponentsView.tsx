@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { collectionsApi } from '../lib/collections-api';
 import { TYPE_CONFIG } from '../lib/icons';
+import { copyToClipboard } from '../lib/clipboard';
 import TypeIcon from './TypeIcon';
 import SendToRepoModal from './SendToRepoModal';
 import type { Collection, CollectionItem } from '../lib/types';
@@ -566,10 +567,12 @@ export default function MyComponentsView() {
     }
   }
 
-  function copyCommand(text: string) {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  async function copyCommand(text: string) {
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }
 
   // ── Not loaded ──

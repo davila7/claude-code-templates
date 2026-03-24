@@ -513,12 +513,30 @@ ck init -g</code></div>
     });
   });
 
-  // Copy install command
-  document.getElementById('copyInstallBtn')?.addEventListener('click', (e) => {
+  // Copy install command with fallback
+  document.getElementById('copyInstallBtn')?.addEventListener('click', async (e) => {
     const cmd = document.getElementById('installCmd')?.textContent ?? '';
-    navigator.clipboard.writeText(cmd);
     const btn = e.currentTarget as HTMLElement;
-    btn.textContent = 'Copied!';
+    
+    try {
+      // Try modern clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(cmd);
+      } else {
+        // Fallback for non-secure contexts
+        const textarea = document.createElement('textarea');
+        textarea.value = cmd;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-999999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      btn.textContent = 'Copied!';
+    } catch (err) {
+      btn.textContent = 'Failed';
+    }
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
   });
 </script>

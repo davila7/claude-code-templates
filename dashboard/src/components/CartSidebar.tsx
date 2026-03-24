@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Cart } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
+import { copyToClipboard } from '../lib/clipboard';
 
 const EMPTY_CART: Cart = {
   agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], templates: [],
@@ -78,10 +79,12 @@ export default function CartSidebar() {
     window.dispatchEvent(new CustomEvent('cart-updated', { detail: empty }));
   }
 
-  function copyCommand() {
-    navigator.clipboard.writeText(generateCommand());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  async function copyCommand() {
+    const success = await copyToClipboard(generateCommand());
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }
 
   function shareTwitter() {

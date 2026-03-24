@@ -286,14 +286,32 @@ const refs: string[] = (component as any)?.references ?? [];
 </DashboardLayout>
 
 <script>
-  // Copy button
-  document.getElementById('copyBtn')?.addEventListener('click', (e) => {
-    const cmd = (e.currentTarget as HTMLElement).dataset.cmd;
+  // Copy button with fallback
+  document.getElementById('copyBtn')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const cmd = btn.dataset.cmd;
     if (cmd) {
-      navigator.clipboard.writeText(cmd);
-      (e.currentTarget as HTMLElement).textContent = 'Copied!';
+      try {
+        // Try modern clipboard API
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(cmd);
+        } else {
+          // Fallback for non-secure contexts
+          const textarea = document.createElement('textarea');
+          textarea.value = cmd;
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-999999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+        btn.textContent = 'Copied!';
+      } catch (err) {
+        btn.textContent = 'Failed';
+      }
       setTimeout(() => {
-        (e.currentTarget as HTMLElement).textContent = 'Copy';
+        btn.textContent = 'Copy';
       }, 2000);
     }
   });

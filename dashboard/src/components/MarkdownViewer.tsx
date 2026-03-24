@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import { copyToClipboard } from '../lib/clipboard';
 
 interface Heading {
   level: number;
@@ -219,8 +220,8 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
   // Reset selection when results change
   useEffect(() => { setSelectedIdx(0); }, [searchResults]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(content);
+  const handleCopy = async () => {
+    await copyToClipboard(content);
   };
 
   const scrollToHeading = useCallback((id: string) => {
