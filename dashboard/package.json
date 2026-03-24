@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "private": true,
+  "description": "AI Template Marketplace Dashboard",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
