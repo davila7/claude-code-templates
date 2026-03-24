@@ -12,6 +12,9 @@
 .claude/commands/opsx/
 .claude/skills/
 
+# Kiro local settings (not pushed to repository)
+.kiro/
+
 # Database related files
 *.db
 *.sqlite
