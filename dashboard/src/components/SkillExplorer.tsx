@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import { copyToClipboard } from '../lib/clipboard';
 
 interface Heading {
   level: number;
@@ -265,7 +266,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
 
   useEffect(() => { setSelectedIdx(0); }, [searchResults]);
 
-  const handleCopy = () => navigator.clipboard.writeText(fileContent);
+  const handleCopy = async () => await copyToClipboard(fileContent);
 
   const scrollToHeading = useCallback((id: string) => {
     if (!expanded) setExpanded(true);

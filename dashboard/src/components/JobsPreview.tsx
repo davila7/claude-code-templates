@@ -93,7 +93,7 @@ export default function JobsPreview() {
         </div>
         <a
           href="/jobs"
-          className="text-[12px] text-[#666] hover:text-[#a1a1a1] transition-colors"
+          className="text-[12px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-colors"
         >
           View all &rarr;
         </a>
@@ -107,10 +107,10 @@ export default function JobsPreview() {
             target={isSignedIn ? '_blank' : undefined}
             rel={isSignedIn ? 'noopener noreferrer' : undefined}
             onClick={showAuthGate ? handleJobClick : undefined}
-            className="bg-[#111] border border-[#1f1f1f] rounded-lg p-3 hover:border-[#333] transition-colors group"
+            className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg p-3 hover:border-[var(--color-border-hover)] transition-colors group"
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded bg-[#1a1a1a] border border-[#222] flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-6 h-6 rounded bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden">
                 {job.companyIcon ? (
                   <img
                     src={job.companyIcon}
@@ -119,21 +119,21 @@ export default function JobsPreview() {
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                   />
                 ) : (
-                  <span className="text-[10px] font-bold text-[#444]">
+                  <span className="text-[10px] font-bold text-[var(--color-text-tertiary)]">
                     {job.company.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-[#a1a1a1] truncate">{job.company}</span>
+              <span className="text-[11px] text-[var(--color-text-secondary)] truncate">{job.company}</span>
               {showAuthGate && (
-                <svg className="w-3 h-3 text-[#444] ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-3 h-3 text-[var(--color-text-tertiary)] ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0110 0v4" />
                 </svg>
               )}
             </div>
 
-            <h3 className="text-[12px] font-medium text-[#ededed] group-hover:text-white transition-colors line-clamp-2 leading-tight mb-2">
+            <h3 className="text-[12px] font-medium text-[var(--color-text-primary)] group-hover:text-[#F3F4F6] transition-colors line-clamp-2 leading-tight mb-2">
               {job.position}
             </h3>
 

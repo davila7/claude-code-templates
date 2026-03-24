@@ -204,7 +204,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-56 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
+        <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--color-surface-2)] border border-[var(--color-border-hover)] rounded-lg shadow-[0_0_30px_rgba(124,92,255,0.3)] z-50 py-1">
           {loading ? (
             <div className="px-3 py-4 text-center">
               <div className="w-4 h-4 border-2 border-[--color-text-tertiary] border-t-transparent rounded-full animate-spin mx-auto" />
@@ -245,7 +245,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                 ))}
               </div>
 
-              <div className="border-t border-[#2a2a2a] mt-1 pt-1 px-2 pb-1">
+              <div className="border-t border-[var(--color-border-hover)] mt-1 pt-1 px-2 pb-1">
                 <div className="flex items-center gap-1">
                   <input
                     type="text"

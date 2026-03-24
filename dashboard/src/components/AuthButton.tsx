@@ -72,7 +72,7 @@ function UserMenu({ user }: { user: ClerkUser }) {
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 mb-1 w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
+        <div className="absolute bottom-full left-0 mb-1 w-full bg-[var(--color-surface-2)] border border-[var(--color-border-hover)] rounded-lg shadow-[0_0_30px_rgba(124,92,255,0.3)] z-50 py-1">
           <button
             onClick={() => {
               (window as any).Clerk?.signOut?.();

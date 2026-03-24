@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { collectionsApi } from '../lib/collections-api';
 import { TYPE_CONFIG } from '../lib/icons';
+import { copyToClipboard } from '../lib/clipboard';
 import TypeIcon from './TypeIcon';
 import SendToRepoModal from './SendToRepoModal';
 import type { Collection, CollectionItem } from '../lib/types';
@@ -448,7 +449,7 @@ function CollectionContextMenu({
   }, [onClose]);
 
   return (
-    <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
+    <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-[var(--color-surface-2)] border border-[var(--color-border-hover)] rounded-lg shadow-[0_0_30px_rgba(124,92,255,0.3)] z-50 py-1">
       <button onClick={onRename} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-white/[0.06]">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
         Rename
@@ -566,8 +567,8 @@ export default function MyComponentsView() {
     }
   }
 
-  function copyCommand(text: string) {
-    navigator.clipboard.writeText(text);
+  async function copyCommand(text: string) {
+    const success = await copyToClipboard(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -798,7 +799,7 @@ export default function MyComponentsView() {
                 {canSendToRepo && (
                   <button
                     onClick={() => setShowSendToRepo(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#2a2a2a] text-white border border-[#333] rounded-lg text-[13px] font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-white border border-[var(--color-border-hover)] rounded-lg text-[13px] font-medium transition-all hover:shadow-[0_0_15px_rgba(124,92,255,0.2)]"
                     title="Create a Pull Request with these components"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -827,7 +828,7 @@ export default function MyComponentsView() {
             </div>
 
             {/* Install command */}
-            <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-3 mb-6">
+            <div className="bg-[var(--color-surface-0)] border border-[var(--color-border)] rounded-lg p-3 mb-6">
               <code className="text-[12px] text-[--color-text-secondary] font-mono break-all leading-relaxed">
                 <span className="text-[--color-text-tertiary] select-none">$ </span>
                 {generateCommand(selectedItems)}
@@ -843,7 +844,7 @@ export default function MyComponentsView() {
                 <h4 className="text-[13px] font-medium text-[--color-text-secondary]">Project Structure</h4>
                 <span className="text-[10px] text-[--color-text-tertiary]">How components will be installed</span>
               </div>
-              <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-4 font-mono text-[12px]">
+              <div className="bg-[var(--color-surface-0)] border border-[var(--color-border)] rounded-lg p-4 font-mono text-[12px]">
                 {(() => {
                   const tree = buildProjectTree(selectedItems);
                   return (
@@ -886,7 +887,7 @@ export default function MyComponentsView() {
                       return (
                         <div
                           key={item.id}
-                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[#111111] border border-[#1a1a1a] hover:border-[#2a2a2a] hover:bg-[#151515] transition-all duration-200"
+                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-surface-2)] transition-all duration-200 hover:shadow-[0_0_20px_rgba(124,92,255,0.15)] hover:-translate-y-0.5"
                         >
                           <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"

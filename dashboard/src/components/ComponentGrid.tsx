@@ -227,7 +227,7 @@ export default function ComponentGrid({ initialType }: Props) {
           return (
             <div
               key={component.path ?? component.name}
-              className="group flex items-start gap-3 p-4 rounded-xl bg-[#111111] border border-[#1a1a1a] hover:border-[#2a2a2a] hover:bg-[#151515] transition-all duration-200 cursor-pointer"
+              className="group flex items-start gap-3 p-4 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-surface-2)] transition-all duration-200 cursor-pointer hover:shadow-[0_0_20px_rgba(124,92,255,0.15)] hover:-translate-y-0.5"
               onClick={() => {
                 window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
               }}
