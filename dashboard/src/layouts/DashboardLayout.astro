@@ -78,79 +78,22 @@ const schemaData = JSON.stringify({
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body class="bg-surface-0 text-text-primary antialiased">
-    <div class="flex h-screen overflow-hidden dashboard-shell">
+    <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
       <aside
         id="sidebar"
-        class="hidden md:flex sidebar-wrapper flex-col border-r border-border bg-surface-0 fixed inset-y-0 left-0 z-40"
+        class="hidden md:flex w-[220px] flex-col border-r border-border bg-surface-0 fixed inset-y-0 left-0 z-40"
       >
         <Sidebar />
       </aside>
 
       <!-- Main content -->
-      <main class="flex-1 main-content overflow-y-auto bg-surface-0">
+      <main class="flex-1 md:ml-[220px] overflow-y-auto bg-surface-0">
         <slot />
       </main>
     </div>
 
     <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
     <ClerkIsland client:load />
-
-    <style>
-      :root {
-        --sidebar-width-expanded: 240px;
-        --sidebar-width-collapsed: 64px;
-        --sidebar-transition-duration: 300ms;
-      }
-
-      .dashboard-shell {
-        --current-sidebar-width: var(--sidebar-width-expanded);
-      }
-
-      .dashboard-shell[data-sidebar-state="collapsed"] {
-        --current-sidebar-width: var(--sidebar-width-collapsed);
-      }
-
-      .sidebar-wrapper {
-        width: var(--current-sidebar-width);
-        transition: width var(--sidebar-transition-duration) ease;
-      }
-
-      .main-content {
-        margin-left: var(--current-sidebar-width);
-        transition: margin-left var(--sidebar-transition-duration) ease;
-      }
-    </style>
-
-    <script>
-      // Sync dashboard shell state with sidebar state
-      function syncDashboardState() {
-        const sidebar = document.querySelector('.sidebar-container') as HTMLElement;
-        const shell = document.querySelector('.dashboard-shell') as HTMLElement;
-        
-        if (sidebar && shell) {
-          const state = sidebar.getAttribute('data-sidebar-state');
-          if (state) {
-            shell.setAttribute('data-sidebar-state', state);
-          }
-        }
-      }
-
-      // Watch for sidebar state changes
-      const observer = new MutationObserver(syncDashboardState);
-      const sidebar = document.querySelector('.sidebar-container');
-      
-      if (sidebar) {
-        observer.observe(sidebar, { attributes: true, attributeFilter: ['data-sidebar-state'] });
-        syncDashboardState();
-      }
-
-      // Sync on page load
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', syncDashboardState);
-      } else {
-        syncDashboardState();
-      }
-    </script>
   </body>
 </html>

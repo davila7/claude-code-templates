@@ -71,7 +71,7 @@ export default function TrendingView() {
     return (
       <div className="px-6 py-20 flex flex-col items-center gap-3">
         <div className="w-5 h-5 border-2 border-[#666] border-t-transparent rounded-full animate-spin" />
-        <span className="text-[13px] text-[var(--color-text-tertiary)]">Loading trending data...</span>
+        <span className="text-[13px] text-[#666]">Loading trending data...</span>
       </div>
     );
   }
@@ -98,9 +98,9 @@ export default function TrendingView() {
           { label: 'Components', value: formatNumber(stats.totalComponents) },
           { label: 'Countries', value: String(stats.totalCountries) },
         ].map((s) => (
-          <div key={s.label} className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg px-4 py-3">
-            <div className="text-[18px] font-semibold text-[var(--color-text-primary)] tabular-nums">{s.value}</div>
-            <div className="text-[11px] text-[var(--color-text-tertiary)] mt-0.5">{s.label}</div>
+          <div key={s.label} className="bg-[#111] border border-[#1f1f1f] rounded-lg px-4 py-3">
+            <div className="text-[18px] font-semibold text-[#ededed] tabular-nums">{s.value}</div>
+            <div className="text-[11px] text-[#666] mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -108,19 +108,19 @@ export default function TrendingView() {
       {/* Top countries */}
       <div className="px-6 pb-4">
         <div className="flex items-center gap-4 overflow-x-auto">
-          <span className="text-[11px] text-[var(--color-text-tertiary)] uppercase tracking-wider shrink-0">Top Countries</span>
+          <span className="text-[11px] text-[#666] uppercase tracking-wider shrink-0">Top Countries</span>
           {data.topCountries.map((c) => (
             <div key={c.code} className="flex items-center gap-1.5 shrink-0">
               <span className="text-sm">{c.flag}</span>
-              <span className="text-[12px] text-[var(--color-text-secondary)]">{c.name}</span>
-              <span className="text-[11px] text-[var(--color-text-tertiary)] tabular-nums">{c.percentage}%</span>
+              <span className="text-[12px] text-[#a1a1a1]">{c.name}</span>
+              <span className="text-[11px] text-[#555] tabular-nums">{c.percentage}%</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[var(--color-border)]" />
+      <div className="border-t border-[#1f1f1f]" />
 
       {/* Filter bar */}
       <div className="flex items-center gap-2 px-6 py-3">
@@ -133,7 +133,7 @@ export default function TrendingView() {
               className={`px-2.5 py-1 rounded-md text-[12px] transition-colors ${
                 activeType === type
                   ? 'bg-white/10 text-white'
-                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-white/[0.04]'
+                  : 'text-[#666] hover:text-[#a1a1a1] hover:bg-white/[0.04]'
               }`}
             >
               {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
@@ -145,7 +145,7 @@ export default function TrendingView() {
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value as any)}
-          className="ml-auto bg-white/[0.04] border-none rounded-lg text-[12px] text-[var(--color-text-secondary)] px-2.5 py-1.5 outline-none cursor-pointer"
+          className="ml-auto bg-white/[0.04] border-none rounded-lg text-[12px] text-[#a1a1a1] px-2.5 py-1.5 outline-none cursor-pointer"
         >
           <option value="downloadsWeek">This Week</option>
           <option value="downloadsMonth">This Month</option>
@@ -155,16 +155,16 @@ export default function TrendingView() {
 
       {/* Results count */}
       <div className="px-6 pb-2">
-        <span className="text-[11px] text-[var(--color-text-tertiary)]">
+        <span className="text-[11px] text-[#666]">
           {items.length} trending component{items.length !== 1 ? 's' : ''}
         </span>
       </div>
 
       {/* Trending list */}
       <div className="px-6 pb-8">
-        <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+        <div className="bg-[#111] border border-[#1f1f1f] rounded-lg overflow-hidden">
           {/* Table header */}
-          <div className="grid grid-cols-[40px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2 border-b border-[var(--color-border)] text-[11px] text-[var(--color-text-tertiary)] uppercase tracking-wider">
+          <div className="grid grid-cols-[40px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2 border-b border-[#1f1f1f] text-[11px] text-[#555] uppercase tracking-wider">
             <span>#</span>
             <span>Component</span>
             <span className="text-right">Today</span>
@@ -182,10 +182,10 @@ export default function TrendingView() {
             return (
               <div
                 key={item.id}
-                className="grid grid-cols-[40px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-surface-2)] transition-colors group"
+                className="grid grid-cols-[40px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 border-b border-[#1a1a1a] last:border-b-0 hover:bg-white/[0.02] transition-colors group"
               >
                 {/* Rank */}
-                <span className="text-[12px] text-[var(--color-text-tertiary)] tabular-nums">{idx + 1}</span>
+                <span className="text-[12px] text-[#555] tabular-nums">{idx + 1}</span>
 
                 {/* Component info */}
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -196,22 +196,22 @@ export default function TrendingView() {
                     <TypeIcon type={typePlural} size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[13px] text-[var(--color-text-primary)] truncate block">{formatName(item.name)}</span>
-                    <span className="text-[10px] text-[var(--color-text-tertiary)]">{item.category}</span>
+                    <span className="text-[13px] text-[#ededed] truncate block">{formatName(item.name)}</span>
+                    <span className="text-[10px] text-[#555]">{item.category}</span>
                   </div>
                 </div>
 
                 {/* Stats */}
-                <span className={`text-[12px] text-right tabular-nums self-center ${item.downloadsToday > 0 ? 'text-emerald-400' : 'text-[var(--color-text-tertiary)]'}`}>
+                <span className={`text-[12px] text-right tabular-nums self-center ${item.downloadsToday > 0 ? 'text-emerald-400' : 'text-[#555]'}`}>
                   {item.downloadsToday > 0 ? `+${item.downloadsToday}` : '0'}
                 </span>
-                <span className="text-[12px] text-right tabular-nums self-center text-[var(--color-text-secondary)]">
+                <span className="text-[12px] text-right tabular-nums self-center text-[#a1a1a1]">
                   {item.downloadsWeek.toLocaleString()}
                 </span>
-                <span className="text-[12px] text-right tabular-nums self-center text-[var(--color-text-secondary)]">
+                <span className="text-[12px] text-right tabular-nums self-center text-[#a1a1a1]">
                   {item.downloadsMonth.toLocaleString()}
                 </span>
-                <span className="text-[12px] text-right tabular-nums self-center text-[var(--color-text-primary)]">
+                <span className="text-[12px] text-right tabular-nums self-center text-[#ededed]">
                   {item.downloadsTotal.toLocaleString()}
                 </span>
               </div>
@@ -222,7 +222,7 @@ export default function TrendingView() {
 
       {/* Last updated */}
       <div className="px-6 pb-6 text-center">
-        <span className="text-[11px] text-[var(--color-text-tertiary)]">
+        <span className="text-[11px] text-[#555]">
           Last updated: {new Date(data.lastUpdated.replace(/\+00:00Z$/, 'Z')).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>

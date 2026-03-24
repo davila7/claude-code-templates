@@ -12,12 +12,6 @@
 .claude/commands/opsx/
 .claude/skills/
 
-# Kiro local settings (not pushed to repository)
-.kiro/
-
-# Personal PR templates and notes (not pushed to repository)
-.me/
-
 # Database related files
 *.db
 *.sqlite

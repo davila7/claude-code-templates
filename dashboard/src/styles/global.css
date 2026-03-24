@@ -1,54 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  /* AI/Modern Primary - Soft Violet */
-  --color-primary-50: #f5f3ff;
-  --color-primary-100: #ede9fe;
-  --color-primary-200: #ddd6fe;
-  --color-primary-300: #c4b5fd;
-  --color-primary-400: #9277ff;
-  --color-primary-500: #7c5cff;
-  --color-primary-600: #6d4fd9;
-  --color-primary-700: #5b3fb3;
-  --color-primary-800: #4a328c;
-  --color-primary-900: #3a2866;
+  --color-primary-50: #eef0fb;
+  --color-primary-100: #d4d7f2;
+  --color-primary-200: #a9b0e5;
+  --color-primary-300: #7e88d8;
+  --color-primary-400: #5e6ad2;
+  --color-primary-500: #5e6ad2;
+  --color-primary-600: #4b55a8;
+  --color-primary-700: #38407e;
+  --color-primary-800: #262b54;
+  --color-primary-900: #13152a;
 
-  /* Secondary Accent - Cyan Highlight */
-  --color-accent-50: #ecfeff;
-  --color-accent-100: #cffafe;
-  --color-accent-200: #a5f3fc;
-  --color-accent-300: #67e8f9;
-  --color-accent-400: #22d3ee;
-  --color-accent-500: #00e5ff;
-  --color-accent-600: #00b8d4;
-  --color-accent-700: #0088a3;
-  --color-accent-800: #006172;
-  --color-accent-900: #003d47;
+  --color-accent-50: #fdf2ee;
+  --color-accent-100: #f9dcd2;
+  --color-accent-200: #f0b5a0;
+  --color-accent-300: #e38d6e;
+  --color-accent-400: #d57455;
+  --color-accent-500: #d57455;
+  --color-accent-600: #b35c3e;
+  --color-accent-700: #8c472f;
+  --color-accent-800: #663320;
+  --color-accent-900: #3f1f13;
 
-  /* Layered Violet-Tinted Backgrounds */
-  --color-surface-0: #0b0b12;
-  --color-surface-1: #11111a;
-  --color-surface-2: #1a1a26;
-  --color-surface-3: #202033;
-  --color-surface-4: #2a2a40;
+  --color-surface-0: #000000;
+  --color-surface-1: #0a0a0a;
+  --color-surface-2: #111111;
+  --color-surface-3: #1a1a1a;
+  --color-surface-4: #252525;
 
-  /* Low-Contrast Borders */
-  --color-border: #1f1f2e;
-  --color-border-hover: #2a2a3d;
+  --color-border: #1f1f1f;
+  --color-border-hover: #333333;
 
-  /* Soft Text Colors (No Pure White) */
-  --color-text-primary: #e5e7eb;
-  --color-text-secondary: #9ca3af;
-  --color-text-tertiary: #6b7280;
-
-  /* Status Colors */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-
-  /* Gradients */
-  --gradient-main: linear-gradient(135deg, #7c5cff, #00e5ff);
-  --gradient-glow: radial-gradient(circle, rgba(124, 92, 255, 0.15), transparent);
+  --color-text-primary: #ededed;
+  --color-text-secondary: #a1a1a1;
+  --color-text-tertiary: #666666;
 
   --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
@@ -66,7 +52,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar - Modern violet tint */
+/* Scrollbar - Vercel thin style */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -77,74 +63,28 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3d;
+  background: #333;
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7c5cff;
+  background: #555;
 }
 
-/* Selection - Violet glow */
+/* Selection */
 ::selection {
-  background: rgba(124, 92, 255, 0.3);
+  background: rgba(94, 106, 210, 0.3);
 }
 
-/* Modern focus ring with violet glow */
+/* Vercel-style focus ring */
 *:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.1);
 }
 
-/* Enhanced transitions with transform */
+/* Subtle transition for all interactive elements */
 a, button {
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
-}
-
-/* Premium Card Styles with Violet Glow */
-.card,
-.theme-card {
-  background: var(--color-surface-1);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  transition: all 200ms ease;
-}
-
-.card:hover,
-.theme-card:hover {
-  background: var(--color-surface-2);
-  border-color: var(--color-border-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(124, 92, 255, 0.25);
-}
-
-/* Active/Selected state with stronger glow */
-.card.active,
-.card[aria-selected="true"],
-.theme-card.active,
-.theme-card[aria-selected="true"] {
-  background: var(--color-surface-2);
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 30px rgba(124, 92, 255, 0.4);
-}
-
-/* Button styles with gradient */
-.btn-primary,
-button[data-variant="primary"] {
-  background: var(--gradient-main);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-primary:hover,
-button[data-variant="primary"]:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 20px rgba(124, 92, 255, 0.5);
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
 }
 
 /* Markdown preview styles */
@@ -185,12 +125,11 @@ button[data-variant="primary"]:hover {
 }
 
 .md-preview a {
-  color: var(--color-primary-500);
+  color: var(--color-accent-400);
   text-decoration: none;
 }
 
 .md-preview a:hover {
-  color: var(--color-primary-400);
   text-decoration: underline;
 }
 
@@ -271,10 +210,10 @@ button[data-variant="primary"]:hover {
 }
 
 .md-preview blockquote {
-  border-left: 3px solid var(--color-primary-500);
+  border-left: 3px solid var(--color-accent-400);
   padding: 0.5em 1em;
   margin: 1em 0;
-  background: rgba(124, 92, 255, 0.08);
+  background: rgba(213, 116, 85, 0.05);
   border-radius: 0 6px 6px 0;
   color: var(--color-text-secondary);
 }
@@ -322,7 +261,7 @@ button[data-variant="primary"]:hover {
 
 .md-preview input[type="checkbox"] {
   margin-right: 0.4em;
-  accent-color: var(--color-primary-500);
+  accent-color: var(--color-accent-400);
 }
 
 .md-preview dl dt {
@@ -336,9 +275,9 @@ button[data-variant="primary"]:hover {
   margin-bottom: 0.4em;
 }
 
-/* Search highlights in markdown preview - Violet glow */
+/* Search highlights in markdown preview */
 mark.md-search-hl {
-  background: rgba(124, 92, 255, 0.3);
+  background: rgba(213, 116, 85, 0.3);
   color: var(--color-text-primary);
   border-radius: 2px;
   padding: 0 1px;

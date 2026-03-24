@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { copyToClipboard } from '../lib/clipboard';
 
 interface JsonViewerProps {
   content: string;
@@ -18,8 +17,8 @@ function parseJson(content: string): JsonValue | null {
 export default function JsonViewer({ content }: JsonViewerProps) {
   const parsed = parseJson(content);
 
-  const handleCopy = async () => {
-    await copyToClipboard(content);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
   };
 
   if (parsed === null) {
@@ -124,8 +123,8 @@ function JsonObject({
   const keys = Object.keys(value);
   const [open, setOpen] = useState(defaultOpen || depth < 2);
 
-  const handleCopySection = useCallback(async () => {
-    await copyToClipboard(JSON.stringify(value, null, 2));
+  const handleCopySection = useCallback(() => {
+    navigator.clipboard.writeText(JSON.stringify(value, null, 2));
   }, [value]);
 
   if (keys.length === 0) {
@@ -197,8 +196,8 @@ function JsonArray({
 }) {
   const [open, setOpen] = useState(defaultOpen || depth < 2);
 
-  const handleCopySection = useCallback(async () => {
-    await copyToClipboard(JSON.stringify(value, null, 2));
+  const handleCopySection = useCallback(() => {
+    navigator.clipboard.writeText(JSON.stringify(value, null, 2));
   }, [value]);
 
   if (value.length === 0) {
