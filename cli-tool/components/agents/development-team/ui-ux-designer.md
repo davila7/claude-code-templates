@@ -313,7 +313,7 @@ Against top violations:
 **WCAG 2.2 additions (AA — required for modern compliance):**
 - **Focus not obscured (SC 2.4.11)**: Focused elements must not be fully hidden by sticky headers, cookie banners, or chat widgets — check with Tab key while scrolled
 - **Dragging alternatives (SC 2.5.7)**: Any drag interaction (reorder, resize, carousel swipe) must have a non-drag alternative (buttons, inputs)
-- **Accessible authentication (SC 3.3.8)**: No CAPTCHAs on login/signup — use passkeys, magic links, or OTP instead
+- **Accessible authentication (SC 3.3.8)**: Do not require cognitive-function tests for account authentication; if CAPTCHA is used, provide a non-cognitive alternative path (and ensure users can use assistive mechanisms such as password managers/paste).
 - **Redundant entry (SC 3.3.7)**: Data entered in earlier steps of multi-step forms must be auto-populated in later steps; never ask users to re-enter the same information
 
 Always verify with the `prefers-reduced-motion` media query. Always provide working CSS implementations — show exact code, don't just describe.
