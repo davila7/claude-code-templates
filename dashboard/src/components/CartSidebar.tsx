@@ -115,7 +115,7 @@ export default function CartSidebar() {
 
       {/* Sidebar panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-[#0a0a0a] border-l border-[#1f1f1f] z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] z-50 transform transition-transform duration-300 ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -165,7 +165,7 @@ export default function CartSidebar() {
                 const config = TYPE_CONFIG[type];
                 const isLast = idx === arr.length - 1;
                 return (
-                  <div key={type} className={!isLast ? 'mb-1 pb-1 border-b border-[#1f1f1f]' : ''}>
+                  <div key={type} className={!isLast ? 'mb-1 pb-1 border-b border-[var(--color-border)]' : ''}>
                     {/* Folder row */}
                     <div className="flex items-center gap-2 py-1.5 px-1">
                       <svg className="w-4 h-4 shrink-0 text-[#666]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -202,7 +202,7 @@ export default function CartSidebar() {
                           {/* Remove */}
                           <button
                             onClick={() => removeItem(item.path, type)}
-                            className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#1a1a1a] text-[#555] hover:text-red-400 transition-all shrink-0"
+                            className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)] hover:text-red-400 transition-all shrink-0"
                           >
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -220,7 +220,7 @@ export default function CartSidebar() {
 
         {/* Footer */}
         {totalItems > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 border-t border-[#1f1f1f] bg-[#0a0a0a] p-3 space-y-2">
+          <div className="absolute bottom-0 left-0 right-0 border-t border-[var(--color-border)] bg-[var(--color-surface-0)] p-3 space-y-2">
             {/* Command */}
             <div className="bg-[--color-surface-0] rounded-lg p-2.5 text-xs font-mono text-[--color-text-secondary] break-all max-h-20 overflow-y-auto">
               {generateCommand()}
