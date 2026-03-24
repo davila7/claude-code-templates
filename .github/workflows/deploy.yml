@@ -1,10 +1,13 @@
 name: Deploy to Vercel
 
+# Disabled in fork - secrets not available
+# Enable in upstream repo with proper Vercel secrets configured
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'dashboard/**'
+  workflow_dispatch:  # Manual trigger only
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - 'dashboard/**'
 
 concurrency:
   group: deploy-${{ github.ref }}
