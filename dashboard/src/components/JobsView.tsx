@@ -235,7 +235,7 @@ export default function JobsView() {
             placeholder="Search jobs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-white/[0.04] border border-[#1f1f1f] rounded-lg text-[12px] text-[var(--color-text-primary)] placeholder-[#555] px-3 py-1.5 w-48 outline-none focus:border-[#333]"
+            className="bg-white/[0.04] border border-[var(--color-border)] rounded-lg text-[12px] text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] px-3 py-1.5 w-48 outline-none focus:border-[var(--color-border-hover)]"
           />
         </div>
       </div>
@@ -279,7 +279,7 @@ export default function JobsView() {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-medium text-[var(--color-text-primary)] group-hover:text-white transition-colors">
+                  <h3 className="text-[14px] font-medium text-[var(--color-text-primary)] group-hover:text-[#F3F4F6] transition-colors">
                     {job.position}
                   </h3>
                   {job.salary && (
@@ -291,7 +291,7 @@ export default function JobsView() {
 
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span className="text-[12px] text-[var(--color-text-secondary)]">{job.company}</span>
-                  <span className="text-[10px] text-[#333]">|</span>
+                  <span className="text-[10px] text-[var(--color-text-tertiary)]">|</span>
                   <span className="text-[12px] text-[var(--color-text-tertiary)]">{job.location}</span>
                   {job.remote && (
                     <span className="text-[10px] font-medium bg-blue-500/15 text-blue-400 px-1.5 py-0.5 rounded">
@@ -332,7 +332,7 @@ export default function JobsView() {
                 </svg>
               ) : (
                 <svg
-                  className="w-4 h-4 text-[#333] group-hover:text-[var(--color-text-tertiary)] shrink-0 mt-1 transition-colors"
+                  className="w-4 h-4 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] shrink-0 mt-1 transition-colors"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

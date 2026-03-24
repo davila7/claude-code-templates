@@ -133,7 +133,7 @@ export default function JobsPreview() {
               )}
             </div>
 
-            <h3 className="text-[12px] font-medium text-[var(--color-text-primary)] group-hover:text-white transition-colors line-clamp-2 leading-tight mb-2">
+            <h3 className="text-[12px] font-medium text-[var(--color-text-primary)] group-hover:text-[#F3F4F6] transition-colors line-clamp-2 leading-tight mb-2">
               {job.position}
             </h3>
 

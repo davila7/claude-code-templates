@@ -569,10 +569,8 @@ export default function MyComponentsView() {
 
   async function copyCommand(text: string) {
     const success = await copyToClipboard(text);
-    if (success) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   // ── Not loaded ──

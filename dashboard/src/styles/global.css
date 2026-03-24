@@ -104,7 +104,7 @@ a, button {
 
 /* Premium Card Styles with Violet Glow */
 .card,
-[class*="card"] {
+.theme-card {
   background: var(--color-surface-1);
   border: 1px solid var(--color-border);
   border-radius: 12px;
@@ -112,7 +112,7 @@ a, button {
 }
 
 .card:hover,
-[class*="card"]:hover {
+.theme-card:hover {
   background: var(--color-surface-2);
   border-color: var(--color-border-hover);
   transform: translateY(-2px);
@@ -122,8 +122,8 @@ a, button {
 /* Active/Selected state with stronger glow */
 .card.active,
 .card[aria-selected="true"],
-[class*="card"].active,
-[class*="card"][aria-selected="true"] {
+.theme-card.active,
+.theme-card[aria-selected="true"] {
   background: var(--color-surface-2);
   border-color: var(--color-primary-500);
   box-shadow: 0 0 30px rgba(124, 92, 255, 0.4);

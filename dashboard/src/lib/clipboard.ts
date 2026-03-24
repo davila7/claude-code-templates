@@ -23,28 +23,26 @@ export async function copyToClipboard(text: string): Promise<boolean> {
  * Works in all contexts including HTTP
  */
 function fallbackCopy(text: string): boolean {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-999999px';
+  textarea.style.top = '-999999px';
+  
   try {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-999999px';
-    textarea.style.top = '-999999px';
     document.body.appendChild(textarea);
-    
     textarea.focus();
     textarea.select();
     
-    try {
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return successful;
-    } catch (err) {
-      document.body.removeChild(textarea);
-      return false;
-    }
+    const successful = document.execCommand('copy');
+    return successful;
   } catch (error) {
     console.error('Fallback copy failed:', error);
     return false;
+  } finally {
+    if (textarea.parentNode) {
+      document.body.removeChild(textarea);
+    }
   }
 }
 

@@ -81,10 +81,8 @@ export default function CartSidebar() {
 
   async function copyCommand() {
     const success = await copyToClipboard(generateCommand());
-    if (success) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   function shareTwitter() {
