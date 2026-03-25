@@ -14,7 +14,12 @@
 
     <!-- Logo -->
     <div class="relative shrink-0 w-8 h-8">
-      <img src="/braingrid-logo.png" alt="BrainGrid" class="w-full h-full object-contain" />
+      <!-- Glowing circle behind logo -->
+      <div 
+        class="absolute inset-0 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300 dark:opacity-40 dark:group-hover:opacity-60"
+        style="background-color: #c5e063;"
+      ></div>
+      <img src="/braingrid-logo.png" alt="BrainGrid" class="relative w-full h-full object-contain z-10" />
     </div>
 
     <!-- Content -->

@@ -72,13 +72,13 @@ function UserMenu({ user }: { user: ClerkUser }) {
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 mb-1 w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
+        <div className="absolute bottom-full left-0 mb-1 w-full bg-surface-2 border border-border rounded-lg shadow-xl z-50 py-1">
           <button
             onClick={() => {
               (window as any).Clerk?.signOut?.();
               setOpen(false);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-white/[0.06] transition-colors"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-glass-hover transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -1,5 +1,61 @@
 @import "tailwindcss";
 
+/*
+ * Semantic theme tokens — default is modern grey dark (zinc-like, not pure black).
+ * Light mode via html[data-theme="light"]. Toggle persists to localStorage (see DashboardLayout).
+ */
+:root {
+  --app-surface-0: #0f0f12;
+  --app-surface-1: #18181b;
+  --app-surface-2: #1f1f23;
+  --app-surface-3: #27272a;
+  --app-surface-4: #3f3f46;
+  --app-border: #2a2a2e;
+  --app-border-hover: #3f3f46;
+  --app-text-primary: #f4f4f5;
+  --app-text-secondary: #a1a1aa;
+  --app-text-tertiary: #71717a;
+  --app-glass: rgba(255, 255, 255, 0.05);
+  --app-glass-hover: rgba(255, 255, 255, 0.09);
+  --app-glass-strong: rgba(255, 255, 255, 0.08);
+  --app-overlay: rgba(0, 0, 0, 0.55);
+  --app-input-bg: rgba(255, 255, 255, 0.06);
+  --app-row-hover: rgba(255, 255, 255, 0.02);
+  --app-code-bg: rgba(255, 255, 255, 0.06);
+  --app-inverse-bg: #fafafa;
+  --app-inverse-text: #18181b;
+  --app-cart-fab-bg: #fafafa;
+  --app-cart-fab-text: #18181b;
+  --app-cart-badge-bg: #18181b;
+  --app-cart-badge-text: #fafafa;
+}
+
+html[data-theme="light"] {
+  --app-surface-0: #fafafa;
+  --app-surface-1: #f4f4f5;
+  --app-surface-2: #e4e4e7;
+  --app-surface-3: #d4d4d8;
+  --app-surface-4: #a1a1aa;
+  --app-border: #e4e4e7;
+  --app-border-hover: #d4d4d8;
+  --app-text-primary: #18181b;
+  --app-text-secondary: #52525b;
+  --app-text-tertiary: #71717a;
+  --app-glass: rgba(0, 0, 0, 0.04);
+  --app-glass-hover: rgba(0, 0, 0, 0.07);
+  --app-glass-strong: rgba(0, 0, 0, 0.06);
+  --app-overlay: rgba(15, 23, 42, 0.45);
+  --app-input-bg: rgba(0, 0, 0, 0.04);
+  --app-row-hover: rgba(0, 0, 0, 0.03);
+  --app-code-bg: rgba(0, 0, 0, 0.06);
+  --app-inverse-bg: #18181b;
+  --app-inverse-text: #fafafa;
+  --app-cart-fab-bg: #5e6ad2;
+  --app-cart-fab-text: #ffffff;
+  --app-cart-badge-bg: #ffffff;
+  --app-cart-badge-text: #5e6ad2;
+}
+
 @theme {
   --color-primary-50: #eef0fb;
   --color-primary-100: #d4d7f2;
@@ -23,18 +79,24 @@
   --color-accent-800: #663320;
   --color-accent-900: #3f1f13;
 
-  --color-surface-0: #000000;
-  --color-surface-1: #0a0a0a;
-  --color-surface-2: #111111;
-  --color-surface-3: #1a1a1a;
-  --color-surface-4: #252525;
-
-  --color-border: #1f1f1f;
-  --color-border-hover: #333333;
-
-  --color-text-primary: #ededed;
-  --color-text-secondary: #a1a1a1;
-  --color-text-tertiary: #666666;
+  --color-surface-0: var(--app-surface-0);
+  --color-surface-1: var(--app-surface-1);
+  --color-surface-2: var(--app-surface-2);
+  --color-surface-3: var(--app-surface-3);
+  --color-surface-4: var(--app-surface-4);
+  --color-border: var(--app-border);
+  --color-border-hover: var(--app-border-hover);
+  --color-text-primary: var(--app-text-primary);
+  --color-text-secondary: var(--app-text-secondary);
+  --color-text-tertiary: var(--app-text-tertiary);
+  --color-glass: var(--app-glass);
+  --color-glass-hover: var(--app-glass-hover);
+  --color-glass-strong: var(--app-glass-strong);
+  --color-overlay: var(--app-overlay);
+  --color-input-bg: var(--app-input-bg);
+  --color-row-hover: var(--app-row-hover);
+  --color-inverse-bg: var(--app-inverse-bg);
+  --color-inverse-text: var(--app-inverse-text);
 
   --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
@@ -44,6 +106,12 @@ html {
   background-color: var(--color-surface-0);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  color-scheme: dark;
+  transition: background-color 0.2s ease, color 0.15s ease;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
 }
 
 body {
@@ -52,7 +120,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar - Vercel thin style */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -63,12 +131,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--app-border-hover);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--app-text-tertiary);
 }
 
 /* Selection */
@@ -76,18 +144,17 @@ body {
   background: rgba(94, 106, 210, 0.3);
 }
 
-/* Vercel-style focus ring */
+/* Focus ring */
 *:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
 
-/* Subtle transition for all interactive elements */
 a, button {
   transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
 }
 
-/* Markdown preview styles */
+/* Markdown preview */
 .md-preview {
   font-family: var(--font-sans);
   line-height: 1.7;
@@ -145,7 +212,7 @@ a, button {
 .md-preview code {
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--app-code-bg);
   padding: 0.15em 0.4em;
   border-radius: 4px;
   color: var(--color-text-primary);
@@ -250,7 +317,7 @@ a, button {
 }
 
 .md-preview tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--app-row-hover);
 }
 
 .md-preview img {
@@ -275,7 +342,6 @@ a, button {
   margin-bottom: 0.4em;
 }
 
-/* Search highlights in markdown preview */
 mark.md-search-hl {
   background: rgba(213, 116, 85, 0.3);
   color: var(--color-text-primary);

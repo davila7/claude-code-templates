@@ -3,6 +3,8 @@ import Sidebar from '../components/Sidebar.astro';
 import ClerkIsland from '../components/ClerkIsland.tsx';
 import '../styles/global.css';
 
+const THEME_STORAGE_KEY = 'aitmpl-theme';
+
 interface Props {
   title?: string;
   description?: string;
@@ -49,6 +51,22 @@ const schemaData = JSON.stringify({
 <!doctype html>
 <html lang="en">
   <head>
+    <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
+      (function () {
+        var t;
+        try {
+          t = localStorage.getItem(THEME_STORAGE_KEY);
+        } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        var r = document.documentElement;
+        r.setAttribute('data-theme', t);
+        r.classList.remove('theme-light', 'theme-dark');
+        r.classList.add(t === 'light' ? 'theme-light' : 'theme-dark');
+        r.classList.toggle('dark', t === 'dark');
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
@@ -95,5 +113,21 @@ const schemaData = JSON.stringify({
 
     <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
     <ClerkIsland client:load />
+
+    <script is:inline>
+      document.body.addEventListener('click', function (e) {
+        var btn = e.target && (e.target).closest && (e.target).closest('.theme-toggle-btn');
+        if (!btn) return;
+        var root = document.documentElement;
+        var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        root.classList.remove('theme-light', 'theme-dark');
+        root.classList.add(next === 'light' ? 'theme-light' : 'theme-dark');
+        root.classList.toggle('dark', next === 'dark');
+        try {
+          localStorage.setItem('aitmpl-theme', next);
+        } catch (err) {}
+      });
+    </script>
   </body>
 </html>

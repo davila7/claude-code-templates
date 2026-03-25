@@ -1,4 +1,5 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="sticky top-0 z-20 bg-surface-0/80 backdrop-blur-md border-b border-border">
@@ -27,8 +28,11 @@
       </kbd>
     </button>
 
-    <!-- Right actions -->
+    <!-- Right actions (theme: mobile only — desktop uses sidebar) -->
     <div class="flex items-center gap-2 ml-4">
+      <div class="md:hidden">
+        <ThemeToggle />
+      </div>
       <a href="https://github.com/davila7/claude-code-templates" target="_blank" rel="noopener noreferrer"
         class="flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
       >

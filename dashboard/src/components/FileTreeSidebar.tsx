@@ -155,7 +155,7 @@ function FolderNode({ node, depth, forceOpen }: { node: TreeNode; depth: number;
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-1 py-[3px] pr-2 hover:bg-white/[0.04] transition-colors group/folder"
+        className="w-full flex items-center gap-1 py-[3px] pr-2 hover:bg-glass transition-colors group/folder"
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
       >
         <svg
@@ -184,7 +184,7 @@ function FileNode({ node, depth }: { node: TreeNode; depth: number }) {
 
   return (
     <div
-      className="flex items-center gap-1.5 py-[3px] pr-2 hover:bg-white/[0.04] cursor-default transition-colors"
+      className="flex items-center gap-1.5 py-[3px] pr-2 hover:bg-glass cursor-default transition-colors"
       style={{ paddingLeft: `${depth * 12 + 20}px` }}
       title={node.path}
     >

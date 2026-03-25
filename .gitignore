@@ -60,6 +60,9 @@ test-cloudflare/
 *.swp
 *.swo
 
+# Local Cursor (do not commit or push)
+.cursor/
+
 # Deployment
 .vercel
 

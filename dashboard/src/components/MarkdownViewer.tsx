@@ -301,7 +301,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors ${
                 searchOpen
                   ? 'bg-accent-500/15 text-accent-400'
-                  : 'text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]'
+                  : 'text-text-tertiary hover:text-text-secondary hover:bg-glass'
               }`}
               title="Search in document (Cmd+F)"
             >
@@ -309,7 +309,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <span className="hidden sm:inline">Search</span>
-              <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-text-tertiary font-mono ml-1">
+              <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-glass-strong text-text-tertiary font-mono ml-1">
                 {navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}F
               </kbd>
             </button>
@@ -317,7 +317,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
 
           <button
             onClick={handleCopy}
-            className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-text-tertiary hover:text-text-primary transition-colors"
+            className="text-[11px] px-2.5 py-1 rounded-md bg-glass-strong hover:bg-glass-hover text-text-tertiary hover:text-text-primary transition-colors"
           >
             Copy
           </button>
@@ -366,7 +366,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                     onClick={() => navigateToResult(result)}
                     onMouseEnter={() => setSelectedIdx(i)}
                     className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors ${
-                      i === selectedIdx ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                      i === selectedIdx ? 'bg-glass-strong' : 'hover:bg-row-hover'
                     }`}
                   >
                     {result.type === 'heading' ? (
@@ -395,7 +395,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                       )}
                     </div>
                     {i === selectedIdx && (
-                      <kbd className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-text-tertiary font-mono self-center shrink-0">
+                      <kbd className="text-[9px] px-1 py-0.5 rounded bg-glass-strong text-text-tertiary font-mono self-center shrink-0">
                         Enter
                       </kbd>
                     )}

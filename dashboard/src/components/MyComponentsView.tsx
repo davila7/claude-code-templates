@@ -283,7 +283,7 @@ function ProjectTreeNode({
         </a>
         <button
           onClick={(e) => { e.stopPropagation(); onRemoveItem(node.item!, collectionId); }}
-          className="p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeitem:opacity-100 shrink-0 mr-1"
+          className="p-0.5 rounded hover:bg-glass-hover text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeitem:opacity-100 shrink-0 mr-1"
           title="Remove"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -406,7 +406,7 @@ function MainContentTree({
           {node.item && (
             <button
               onClick={() => onRemoveItem(node.item!, collectionId)}
-              className="ml-2 p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeline:opacity-100 shrink-0"
+              className="ml-2 p-0.5 rounded hover:bg-glass-hover text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeline:opacity-100 shrink-0"
               title="Remove"
             >
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -448,12 +448,12 @@ function CollectionContextMenu({
   }, [onClose]);
 
   return (
-    <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
-      <button onClick={onRename} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-white/[0.06]">
+    <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-surface-2 border border-border rounded-lg shadow-xl z-50 py-1">
+      <button onClick={onRename} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-glass-hover">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
         Rename
       </button>
-      <button onClick={onDelete} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-red-400 hover:text-red-300 hover:bg-white/[0.06]">
+      <button onClick={onDelete} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-red-400 hover:text-red-300 hover:bg-glass-hover">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
         Delete
       </button>
@@ -596,7 +596,7 @@ export default function MyComponentsView() {
         </p>
         <button
           onClick={() => (window as any).Clerk?.openSignIn?.()}
-          className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+          className="px-5 py-2.5 bg-inverse-bg text-inverse-text rounded-lg text-sm font-medium hover:opacity-90 transition-colors"
         >
           Sign In
         </button>
@@ -715,7 +715,7 @@ export default function MyComponentsView() {
                     </span>
                     <button
                       onClick={(e) => { e.stopPropagation(); setContextMenu(contextMenu === col.id ? null : col.id); }}
-                      className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-white/10 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-glass-hover transition-all"
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01" />
@@ -798,7 +798,7 @@ export default function MyComponentsView() {
                 {canSendToRepo && (
                   <button
                     onClick={() => setShowSendToRepo(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#2a2a2a] text-white border border-[#333] rounded-lg text-[13px] font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-surface-3 hover:bg-surface-4 text-text-primary border border-border rounded-lg text-[13px] font-medium transition-colors"
                     title="Create a Pull Request with these components"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -809,7 +809,7 @@ export default function MyComponentsView() {
                 )}
                 <button
                   onClick={() => copyCommand(generateCommand(selectedItems))}
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg text-[13px] font-medium hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-inverse-bg text-inverse-text rounded-lg text-[13px] font-medium hover:opacity-90 transition-colors"
                 >
                   {copied ? (
                     <>
@@ -827,7 +827,7 @@ export default function MyComponentsView() {
             </div>
 
             {/* Install command */}
-            <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-3 mb-6">
+            <div className="bg-surface-0 border border-border rounded-lg p-3 mb-6">
               <code className="text-[12px] text-[--color-text-secondary] font-mono break-all leading-relaxed">
                 <span className="text-[--color-text-tertiary] select-none">$ </span>
                 {generateCommand(selectedItems)}
@@ -843,7 +843,7 @@ export default function MyComponentsView() {
                 <h4 className="text-[13px] font-medium text-[--color-text-secondary]">Project Structure</h4>
                 <span className="text-[10px] text-[--color-text-tertiary]">How components will be installed</span>
               </div>
-              <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-4 font-mono text-[12px]">
+              <div className="bg-surface-0 border border-border rounded-lg p-4 font-mono text-[12px]">
                 {(() => {
                   const tree = buildProjectTree(selectedItems);
                   return (
@@ -886,7 +886,7 @@ export default function MyComponentsView() {
                       return (
                         <div
                           key={item.id}
-                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[#111111] border border-[#1a1a1a] hover:border-[#2a2a2a] hover:bg-[#151515] transition-all duration-200"
+                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-surface-2 border border-border hover:border-border-hover hover:bg-surface-1 transition-all duration-200"
                         >
                           <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
@@ -897,13 +897,13 @@ export default function MyComponentsView() {
                           <div className="min-w-0 flex-1">
                             <a
                               href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
-                              className="text-[13px] font-medium text-[--color-text-primary] hover:text-white transition-colors line-clamp-1"
+                              className="text-[13px] font-medium text-[--color-text-primary] hover:text-text-primary transition-colors line-clamp-1"
                             >
                               {formatName(item.component_name)}
                             </a>
                             {item.component_category && (
                               <div className="flex items-center gap-1.5 mt-1">
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[--color-text-tertiary]">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-glass-strong text-[--color-text-tertiary]">
                                   {item.component_category}
                                 </span>
                               </div>
@@ -911,7 +911,7 @@ export default function MyComponentsView() {
                           </div>
                           <button
                             onClick={() => handleRemoveItem(item, selectedCollection!.id)}
-                            className="p-1.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
+                            className="p-1.5 rounded hover:bg-glass-hover text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
                             title="Remove"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

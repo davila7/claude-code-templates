@@ -223,7 +223,7 @@ const refs: string[] = (component as any)?.references ?? [];
         )}
 
         {/* Metadata modal */}
-        <div id="metaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div id="metaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-overlay backdrop-blur-sm">
           <div class="bg-surface-2 border border-border rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
             <div class="flex items-center justify-between px-4 py-3 border-b border-border">
               <div class="flex items-center gap-2">
@@ -320,7 +320,7 @@ const refs: string[] = (component as any)?.references ?? [];
           if (item.isChipList) {
             const chips = item.value.replace(/^\[|\]$/g, '').split(/,\s*/).map(s => s.trim()).filter(Boolean);
             metaModalBody.innerHTML = '<div class="flex flex-wrap gap-1.5">' +
-              chips.map(c => `<span class="px-2 py-0.5 rounded-full bg-white/[0.06] text-text-primary font-mono text-[12px]">${c}</span>`).join('') +
+              chips.map(c => `<span class="px-2 py-0.5 rounded-full bg-glass-strong text-text-primary font-mono text-[12px]">${c}</span>`).join('') +
               '</div>';
           } else {
             metaModalBody.textContent = item.value;

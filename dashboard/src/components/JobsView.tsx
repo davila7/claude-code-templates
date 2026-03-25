@@ -125,8 +125,8 @@ export default function JobsView() {
   if (loading) {
     return (
       <div className="px-6 py-20 flex flex-col items-center gap-3">
-        <div className="w-5 h-5 border-2 border-[#666] border-t-transparent rounded-full animate-spin" />
-        <span className="text-[13px] text-[#666]">Loading jobs...</span>
+        <div className="w-5 h-5 border-2 border-text-tertiary border-t-transparent rounded-full animate-spin" />
+        <span className="text-[13px] text-text-tertiary">Loading jobs...</span>
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function JobsView() {
   if (!data || data.jobs.length === 0) {
     return (
       <div className="px-6 py-20 text-center">
-        <p className="text-[13px] text-[#666]">No jobs found yet. Check back soon!</p>
+        <p className="text-[13px] text-text-tertiary">No jobs found yet. Check back soon!</p>
       </div>
     );
   }
@@ -147,11 +147,11 @@ export default function JobsView() {
     <div>
       {/* Header */}
       <div className="px-6 pt-5 pb-2">
-        <h1 className="text-lg font-semibold text-[#ededed] flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-text-primary flex items-center gap-2">
           Jobs Requiring Claude Code
           <img src="/claude-code-logo.png" alt="Claude Code" className="w-6 h-6 inline-block" />
         </h1>
-        <p className="text-[13px] text-[#666] mt-1">
+        <p className="text-[13px] text-text-tertiary mt-1">
           Companies actively hiring developers who use Claude Code in their workflow.
           Updated daily from HackerNews "Who is Hiring", RemoteOK, and more.
         </p>
@@ -159,20 +159,20 @@ export default function JobsView() {
 
       {/* Auth banner for non-signed-in users */}
       {showAuthGate && (
-        <div className="mx-6 mt-2 mb-1 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 border border-[#2a2a2a] rounded-lg px-4 py-3 flex items-center gap-3">
+        <div className="mx-6 mt-2 mb-1 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 border border-border rounded-lg px-4 py-3 flex items-center gap-3">
           <svg className="w-5 h-5 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
             <path d="M7 11V7a5 5 0 0110 0v4" />
           </svg>
           <div className="flex-1">
-            <p className="text-[13px] text-[#ededed]">
+            <p className="text-[13px] text-text-primary">
               <span className="font-medium">Sign in</span>
-              <span className="text-[#999]"> to view job details and apply to positions</span>
+              <span className="text-text-secondary"> to view job details and apply to positions</span>
             </p>
           </div>
           <button
             onClick={() => (window as any).Clerk?.openSignIn?.()}
-            className="px-3 py-1.5 bg-white/10 hover:bg-white/15 text-[12px] font-medium text-white rounded-md transition-colors"
+            className="px-3 py-1.5 bg-glass-strong hover:bg-glass-hover text-[12px] font-medium text-text-primary rounded-md transition-colors"
           >
             Sign In
           </button>
@@ -187,15 +187,15 @@ export default function JobsView() {
           { label: 'On-site', value: String(onsiteCount) },
           { label: 'Sources', value: String(data.sources.length) },
         ].map((s) => (
-          <div key={s.label} className="bg-[#111] border border-[#1f1f1f] rounded-lg px-4 py-3">
-            <div className="text-[18px] font-semibold text-[#ededed] tabular-nums">{s.value}</div>
-            <div className="text-[11px] text-[#666] mt-0.5">{s.label}</div>
+          <div key={s.label} className="bg-surface-2 border border-border rounded-lg px-4 py-3">
+            <div className="text-[18px] font-semibold text-text-primary tabular-nums">{s.value}</div>
+            <div className="text-[11px] text-text-tertiary mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[#1f1f1f]" />
+      <div className="border-t border-border" />
 
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-2 px-6 py-3">
@@ -207,8 +207,8 @@ export default function JobsView() {
               onClick={() => setLocationFilter(loc)}
               className={`px-2.5 py-1 rounded-md text-[12px] transition-colors ${
                 locationFilter === loc
-                  ? 'bg-white/10 text-white'
-                  : 'text-[#666] hover:text-[#a1a1a1] hover:bg-white/[0.04]'
+                  ? 'bg-glass-strong text-text-primary'
+                  : 'text-text-tertiary hover:text-text-secondary hover:bg-glass'
               }`}
             >
               {loc === 'all' ? 'All' : loc === 'remote' ? 'Remote' : 'On-site'}
@@ -220,7 +220,7 @@ export default function JobsView() {
         <select
           value={sourceFilter}
           onChange={(e) => setSourceFilter(e.target.value)}
-          className="bg-white/[0.04] border-none rounded-lg text-[12px] text-[#a1a1a1] px-2.5 py-1.5 outline-none cursor-pointer"
+          className="bg-input-bg border-none rounded-lg text-[12px] text-text-secondary px-2.5 py-1.5 outline-none cursor-pointer"
         >
           <option value="all">All Sources</option>
           {data.sources.map((src) => (
@@ -235,14 +235,14 @@ export default function JobsView() {
             placeholder="Search jobs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-white/[0.04] border border-[#1f1f1f] rounded-lg text-[12px] text-[#ededed] placeholder-[#555] px-3 py-1.5 w-48 outline-none focus:border-[#333]"
+            className="bg-input-bg border border-border rounded-lg text-[12px] text-text-primary placeholder:text-text-tertiary px-3 py-1.5 w-48 outline-none focus:border-border-hover"
           />
         </div>
       </div>
 
       {/* Results count */}
       <div className="px-6 pb-2">
-        <span className="text-[11px] text-[#666]">
+        <span className="text-[11px] text-text-tertiary">
           {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''}
           {locationFilter !== 'all' ? ` (${locationFilter})` : ''}
         </span>
@@ -257,11 +257,11 @@ export default function JobsView() {
             target={isSignedIn ? '_blank' : undefined}
             rel={isSignedIn ? 'noopener noreferrer' : undefined}
             onClick={(e) => handleJobClick(e, job)}
-            className="block bg-[#111] border border-[#1f1f1f] rounded-lg p-4 hover:border-[#333] transition-colors group relative"
+            className="block bg-surface-2 border border-border rounded-lg p-4 hover:border-border-hover transition-colors group relative"
           >
             <div className="flex items-start gap-3">
               {/* Company icon */}
-              <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] border border-[#222] flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-10 h-10 rounded-lg bg-surface-2 border border-border flex items-center justify-center shrink-0 overflow-hidden">
                 {job.companyIcon ? (
                   <img
                     src={job.companyIcon}
@@ -270,7 +270,7 @@ export default function JobsView() {
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                   />
                 ) : (
-                  <span className="text-[14px] font-bold text-[#444]">
+                  <span className="text-[14px] font-bold text-text-tertiary">
                     {job.company.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -279,7 +279,7 @@ export default function JobsView() {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-medium text-[#ededed] group-hover:text-white transition-colors">
+                  <h3 className="text-[14px] font-medium text-text-primary group-hover:text-text-primary transition-colors">
                     {job.position}
                   </h3>
                   {job.salary && (
@@ -290,30 +290,30 @@ export default function JobsView() {
                 </div>
 
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-[12px] text-[#a1a1a1]">{job.company}</span>
-                  <span className="text-[10px] text-[#333]">|</span>
-                  <span className="text-[12px] text-[#666]">{job.location}</span>
+                  <span className="text-[12px] text-text-secondary">{job.company}</span>
+                  <span className="text-[10px] text-text-tertiary">|</span>
+                  <span className="text-[12px] text-text-tertiary">{job.location}</span>
                   {job.remote && (
                     <span className="text-[10px] font-medium bg-blue-500/15 text-blue-400 px-1.5 py-0.5 rounded">
                       Remote
                     </span>
                   )}
-                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${SOURCE_COLORS[job.source] || 'bg-white/10 text-[#888]'}`}>
+                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${SOURCE_COLORS[job.source] || 'bg-glass-strong text-text-secondary'}`}>
                     {job.source}
                   </span>
                   {job.postedAt && (
-                    <span className="text-[11px] text-[#444]">{timeAgo(job.postedAt)}</span>
+                    <span className="text-[11px] text-text-tertiary">{timeAgo(job.postedAt)}</span>
                   )}
                 </div>
 
                 {job.description && (
-                  <p className="text-[12px] text-[#999] mt-2 line-clamp-2">{job.description}</p>
+                  <p className="text-[12px] text-text-secondary mt-2 line-clamp-2">{job.description}</p>
                 )}
 
                 {job.tags.length > 0 && (
                   <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                     {job.tags.slice(0, 6).map((tag) => (
-                      <span key={tag} className="text-[10px] text-[#aaa] bg-white/[0.07] px-1.5 py-0.5 rounded">
+                      <span key={tag} className="text-[10px] text-text-secondary bg-glass-strong px-1.5 py-0.5 rounded">
                         {tag}
                       </span>
                     ))}
@@ -324,7 +324,7 @@ export default function JobsView() {
               {/* Right side: apply arrow or lock icon */}
               {showAuthGate ? (
                 <svg
-                  className="w-4 h-4 text-[#444] shrink-0 mt-1"
+                  className="w-4 h-4 text-text-tertiary shrink-0 mt-1"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
                 >
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -332,7 +332,7 @@ export default function JobsView() {
                 </svg>
               ) : (
                 <svg
-                  className="w-4 h-4 text-[#333] group-hover:text-[#666] shrink-0 mt-1 transition-colors"
+                  className="w-4 h-4 text-text-tertiary group-hover:text-text-secondary shrink-0 mt-1 transition-colors"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -345,7 +345,7 @@ export default function JobsView() {
 
       {/* Footer */}
       <div className="px-6 pb-6 text-center">
-        <p className="text-[11px] text-[#444]">
+        <p className="text-[11px] text-text-tertiary">
           Last updated: {new Date(data.lastUpdated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           {' | '}Data sourced from HackerNews "Who is Hiring", RemoteOK, WeWorkRemotely, and Anthropic Careers
         </p>

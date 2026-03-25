@@ -36,7 +36,7 @@ export default function JsonViewer({ content }: JsonViewerProps) {
         <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">JSON</span>
         <button
           onClick={handleCopy}
-          className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-text-tertiary hover:text-text-primary transition-colors"
+          className="text-[11px] px-2.5 py-1 rounded-md bg-glass-strong hover:bg-glass-hover text-text-tertiary hover:text-text-primary transition-colors"
         >
           Copy
         </button>
@@ -97,7 +97,7 @@ function JsonString({ keyName, depth, value }: { keyName?: string; depth: number
         {isLong && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.1] text-text-tertiary hover:text-text-secondary transition-colors align-middle"
+            className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-glass-strong hover:bg-white/[0.1] text-text-tertiary hover:text-text-secondary transition-colors align-middle"
           >
             {expanded ? 'less' : `+${value.length - 80} chars`}
           </button>
@@ -141,7 +141,7 @@ function JsonObject({
   return (
     <div>
       <div
-        className="flex items-center gap-1 group/obj cursor-pointer hover:bg-white/[0.02] rounded py-0.5 transition-colors"
+        className="flex items-center gap-1 group/obj cursor-pointer hover:bg-row-hover rounded py-0.5 transition-colors"
         style={{ paddingLeft: `${depth * 1.25 + 0.25}rem` }}
         onClick={() => setOpen(!open)}
       >
@@ -163,7 +163,7 @@ function JsonObject({
         {!open && <span className="text-text-tertiary">{'}'}</span>}
         <button
           onClick={(e) => { e.stopPropagation(); handleCopySection(); }}
-          className="ml-auto mr-2 opacity-0 group-hover/obj:opacity-100 text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.1] text-text-tertiary hover:text-text-secondary transition-all"
+          className="ml-auto mr-2 opacity-0 group-hover/obj:opacity-100 text-[10px] px-1.5 py-0.5 rounded bg-glass-strong hover:bg-white/[0.1] text-text-tertiary hover:text-text-secondary transition-all"
           title="Copy this section"
         >
           Copy
@@ -214,7 +214,7 @@ function JsonArray({
   return (
     <div>
       <div
-        className="flex items-center gap-1 group/arr cursor-pointer hover:bg-white/[0.02] rounded py-0.5 transition-colors"
+        className="flex items-center gap-1 group/arr cursor-pointer hover:bg-row-hover rounded py-0.5 transition-colors"
         style={{ paddingLeft: `${depth * 1.25 + 0.25}rem` }}
         onClick={() => setOpen(!open)}
       >
@@ -236,7 +236,7 @@ function JsonArray({
         {!open && <span className="text-text-tertiary">{']'}</span>}
         <button
           onClick={(e) => { e.stopPropagation(); handleCopySection(); }}
-          className="ml-auto mr-2 opacity-0 group-hover/arr:opacity-100 text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.1] text-text-tertiary hover:text-text-secondary transition-all"
+          className="ml-auto mr-2 opacity-0 group-hover/arr:opacity-100 text-[10px] px-1.5 py-0.5 rounded bg-glass-strong hover:bg-white/[0.1] text-text-tertiary hover:text-text-secondary transition-all"
           title="Copy this section"
         >
           Copy

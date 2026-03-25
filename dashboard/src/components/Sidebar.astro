@@ -1,5 +1,6 @@
 ---
 import NavItem from './NavItem.astro';
+import ThemeToggle from './ThemeToggle.astro';
 import { NAV_LINKS } from '../lib/constants';
 import { TYPE_CONFIG, ICONS } from '../lib/icons';
 import AuthButton from './AuthButton';
@@ -134,7 +135,11 @@ function isActive(path: string): boolean {
   </nav>
 
   <!-- Bottom -->
-  <div class="px-2 py-3 border-t border-border">
+  <div class="px-2 py-3 border-t border-border space-y-2">
+    <div class="hidden md:flex items-center justify-between gap-2 px-1">
+      <span class="text-[11px] font-medium text-text-tertiary uppercase tracking-wider">Theme</span>
+      <ThemeToggle />
+    </div>
     <AuthButton client:load />
   </div>
 </div>
