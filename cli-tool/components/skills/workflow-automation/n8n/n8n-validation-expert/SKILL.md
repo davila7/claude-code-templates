@@ -1,6 +1,6 @@
 ---
 name: n8n-validation-expert
-description: Interpret validation errors and guide fixing them. Use when encountering validation errors, validation warnings, false positives, operator structure issues, or need help understanding validation results. Also use when asking about validation profiles, error types, or the validation loop process.
+description: Interpret validation errors and guide fixing them. Use when encountering validation errors, validation warnings, false positives, operator structure issues, debugging workflow errors, or need help understanding validation results. Also use when asking about validation profiles, error types, or the validation loop process.
 ---
 
 # n8n Validation Expert
@@ -19,6 +19,12 @@ Validation is typically iterative:
 - Average: 23s thinking about errors, 58s fixing them
 
 **Key insight**: Validation is an iterative process, not one-shot!
+
+### Validation Chain (Recommended Order)
+
+```
+validate_node_minimal â†’ validate_node_operation (profile: runtime) â†’ validate_workflow â†’ n8n_validate_workflow (post-deploy)
+```
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: n8n-code-python
-description: Write Python code in n8n Code nodes. Use when writing Python in n8n, using _input/_json/_node syntax, working with standard library, or need to understand Python limitations in n8n Code nodes.
+description: Write Python code in n8n Code nodes with proper limitations awareness. Use when writing Python in n8n, using _input/_json/_node syntax, working with standard library, or need to understand Python limitations in n8n Code nodes.
 ---
 
 # Python Code Node (Beta)
@@ -48,10 +48,11 @@ return processed
 
 1. **Consider JavaScript first** - Use Python only when necessary
 2. **Access data**: `_input.all()`, `_input.first()`, or `_input.item`
-3. **CRITICAL**: Must return `[{"json": {...}}]` format
-4. **CRITICAL**: Webhook data is under `_json["body"]` (not `_json` directly)
-5. **CRITICAL LIMITATION**: **No external libraries** (no requests, pandas, numpy)
-6. **Standard library only**: json, datetime, re, base64, hashlib, urllib.parse, math, random, statistics
+3. **Remember the underscore prefix** (`_input`, `_json`, `_node`) in Python Code nodes
+4. **CRITICAL**: Must return `[{"json": {...}}]` format
+5. **CRITICAL**: Webhook data is under `_json["body"]` (not `_json` directly)
+6. **CRITICAL LIMITATION**: **No external libraries** (no requests, pandas, numpy)
+7. **Standard library only**: json, datetime, re, base64, hashlib, urllib.parse, math, random, statistics
 
 ---
 
