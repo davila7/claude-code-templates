@@ -1,0 +1,6 @@
+{
+  "description": "Add custom headers to API requests for specialized authentication or routing requirements. Useful for enterprise deployments with custom authentication systems or API gateways that require additional metadata.",
+  "env": {
+    "ANTHROPIC_CUSTOM_HEADERS": "X-Company-ID: your-company-id\\nX-Environment: production\\nX-API-Version: v1"
+  }
+}

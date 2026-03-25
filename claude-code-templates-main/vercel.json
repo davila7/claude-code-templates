@@ -1,0 +1,72 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "docs",
+  "headers": [
+    {
+      "source": "/components.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+      ]
+    },
+    {
+      "source": "/trending-data.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/claude-code-check",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/health-check",
+      "schedule": "*/15 * * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/agents",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/commands",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/settings",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/hooks",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/mcps",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/templates",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/plugins",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/plugin/:name",
+      "destination": "/plugin.html"
+    },
+    {
+      "source": "/component/:type/:name*",
+      "destination": "/component.html"
+    }
+  ]
+}

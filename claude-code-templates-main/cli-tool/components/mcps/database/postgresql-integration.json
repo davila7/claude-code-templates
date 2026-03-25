@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "postgresql": {
+      "description": "Connect to PostgreSQL databases for advanced data operations, complex queries, and enterprise database management.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://user:password@localhost:5432/dbname"
+      }
+    }
+  }
+}

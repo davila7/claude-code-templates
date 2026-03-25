@@ -1,0 +1,739 @@
+/* Dynamic Component Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.component-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.component-icon {
+    font-size: 24px;
+}
+
+.component-type-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.component-details {
+    padding: 0;
+}
+
+.component-description {
+    padding: 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.installation-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.installation-section h4 {
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.command-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-tertiary);
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.command-line code {
+    flex: 1;
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 14px;
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.copy-btn {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: #d97706;
+}
+
+.component-content {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.component-content h4 {
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.component-preview {
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.component-preview pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.component-preview code {
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    background: none;
+}
+
+.modal-actions {
+    padding: 20px;
+    text-align: center;
+}
+
+.github-folder-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #24292e;
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.github-folder-link:hover {
+    background: #1b1f23;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* YAML Syntax Highlighting */
+.yaml-syntax {
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* YAML Comments */
+.yaml-comment {
+    color: #6a9955;
+    font-style: italic;
+}
+
+/* YAML Keys */
+.yaml-key {
+    color: #4fc1ff;
+    font-weight: 600;
+}
+
+/* YAML String Values */
+.yaml-string {
+    color: #ce9178;
+}
+
+/* YAML Numbers */
+.yaml-number {
+    color: #b5cea8;
+}
+
+/* YAML Booleans */
+.yaml-boolean {
+    color: #569cd6;
+    font-weight: 500;
+}
+
+/* YAML Arrays/Lists */
+.yaml-array {
+    color: #dcdcaa;
+}
+
+/* YAML Special Characters */
+.yaml-punctuation {
+    color: #d4d4d4;
+}
+
+/* YAML Indentation Guide */
+.yaml-indent {
+    color: #404040;
+    opacity: 0.6;
+}
+
+/* YAML Section Headers */
+.yaml-section {
+    color: #c586c0;
+    font-weight: bold;
+}
+
+/* YAML List Items */
+.yaml-list-item {
+    color: #dcdcaa;
+}
+
+/* YAML Path/File References */
+.yaml-path {
+    color: #9cdcfe;
+}
+
+/* Code editor with line numbers */
+.code-editor {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-primary);
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    max-height: 300px;
+}
+
+.code-line-numbers {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 16px 8px;
+    text-align: right;
+    user-select: none;
+    border-right: 1px solid var(--border-primary);
+    min-width: 40px;
+}
+
+.code-line-numbers span {
+    display: block;
+    line-height: 1.5;
+    font-size: 12px;
+}
+
+.code-content {
+    flex: 1;
+    padding: 16px;
+    overflow: auto;
+}
+
+.code-content pre {
+    margin: 0;
+    white-space: pre-wrap;
+    color: var(--text-primary);
+}
+
+.code-content code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* Template files list styling */
+.template-files-list {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.template-file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-secondary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.template-file-item:last-child {
+    border-bottom: none;
+}
+
+.file-icon {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.file-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Template contribution modal styles */
+.template-types {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.template-type-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.template-type-section h3 {
+    color: var(--text-accent);
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
+
+.template-type-section > p {
+    color: var(--text-secondary);
+    margin: 0 0 20px 0;
+    font-size: 0.9rem;
+}
+
+/* Claude files info section */
+.claude-files-info {
+    background: rgba(213, 116, 85, 0.1);
+    border: 1px solid var(--text-accent);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.claude-files-info ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-primary);
+}
+
+.claude-files-info li {
+    margin: 8px 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.claude-files-info code {
+    background: rgba(213, 116, 85, 0.2);
+    color: var(--text-accent);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Minimal Workflow Modal Styles */
+.workflow-modal .modal-content {
+    max-width: 700px;
+    width: 90vw;
+}
+
+/* Method Tabs */
+.method-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    flex: 1;
+    text-align: center;
+}
+
+.tab-link.active {
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.tab-link:hover {
+    color: var(--text-primary);
+}
+
+/* Method Content */
+.method-content {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.method-content.active {
+    display: block;
+}
+
+.step-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+.step-description {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.section-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.section-description {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+/* Method Description */
+.method-description {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.method-description p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Prompt Indicator */
+.prompt-indicator {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.prompt-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.prompt-content {
+    flex: 1;
+}
+
+.prompt-content strong {
+    display: block;
+    color: var(--accent-color);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.prompt-content span {
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+/* Command Containers */
+.command-container {
+    margin-bottom: 12px;
+}
+
+.command-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Manual Steps */
+.manual-step {
+    margin-bottom: 20px;
+}
+
+.manual-step h5 {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+}
+
+.step-description {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.step-description p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.step-description code {
+    background: var(--bg-tertiary);
+    color: var(--accent-color);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.yaml-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.command-scroll {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.workflow-command-text {
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 13px;
+    background: none;
+    border: none;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.btn-copy-primary {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: auto;
+    justify-content: center;
+}
+
+.btn-copy-primary:hover {
+    background: #b45309;
+    transform: translateY(-1px);
+}
+
+/* YAML Section */
+.yaml-section {
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.yaml-accordion-header {
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-secondary);
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.yaml-accordion-header:hover {
+    background: var(--bg-tertiary);
+}
+
+.yaml-accordion-arrow {
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.yaml-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.yaml-accordion-content.open {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.yaml-container {
+    padding: 20px;
+}
+
+.yaml-preview {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    white-space: pre;
+}
+
+.yaml-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+}
+
+.btn-copy-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: auto;
+    justify-content: center;
+}
+
+.btn-copy-secondary:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    transform: translateY(-1px);
+}
+
+/* Button Styles */
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+}
+
+.btn-secondary:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    transform: translateY(-1px);
+}
+
+/* Modal Footer */
+.workflow-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .workflow-modal .modal-content {
+        width: 95vw;
+        margin: 10px;
+    }
+    
+    .method-tabs {
+        flex-direction: row;
+    }
+    
+    .tab-link {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}

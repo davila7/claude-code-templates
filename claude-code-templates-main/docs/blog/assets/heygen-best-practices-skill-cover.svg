@@ -1,0 +1,72 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d2d2d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="heygen-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-gradient)"/>
+
+  <!-- HeyGen Avatar Icon -->
+  <g transform="translate(150, 160)">
+    <!-- Avatar silhouette -->
+    <circle cx="100" cy="70" r="45" fill="url(#heygen-gradient)" opacity="0.3"/>
+    <circle cx="100" cy="70" r="35" fill="url(#heygen-gradient)"/>
+    <!-- Body -->
+    <path d="M50,180 Q50,130 100,120 Q150,130 150,180" fill="url(#heygen-gradient)" opacity="0.8"/>
+    <!-- AI waves -->
+    <path d="M170,60 Q190,80 170,100" fill="none" stroke="#a855f7" stroke-width="4" opacity="0.6"/>
+    <path d="M185,50 Q210,80 185,110" fill="none" stroke="#a855f7" stroke-width="4" opacity="0.4"/>
+    <path d="M200,40 Q230,80 200,120" fill="none" stroke="#a855f7" stroke-width="4" opacity="0.2"/>
+  </g>
+
+  <!-- Video Icon -->
+  <g transform="translate(900, 160)">
+    <!-- Play button circle -->
+    <circle cx="100" cy="100" r="60" fill="none" stroke="#00ff41" stroke-width="6"/>
+    <!-- Play triangle -->
+    <path d="M80,70 L130,100 L80,130 Z" fill="#00ff41"/>
+    <!-- Recording dot -->
+    <circle cx="160" cy="50" r="12" fill="#ef4444">
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="250" font-family="'Courier New', monospace" font-size="52" font-weight="bold" fill="#00ff41" text-anchor="middle">
+    HeyGen Best Practices
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="310" font-family="'Courier New', monospace" font-size="32" fill="#b0b0b0" text-anchor="middle">
+    AI Avatar Video Creation Skill
+  </text>
+
+  <!-- Description -->
+  <text x="600" y="380" font-family="'Courier New', monospace" font-size="24" fill="#808080" text-anchor="middle">
+    18+ Rules for HeyGen API Integration
+  </text>
+
+  <!-- Command Line -->
+  <rect x="200" y="430" width="800" height="100" fill="#0a0a0a" stroke="#00ff41" stroke-width="2" rx="8"/>
+  <text x="220" y="470" font-family="'Courier New', monospace" font-size="18" fill="#00ff41">
+    <tspan>$ npx claude-code-templates@latest \</tspan>
+  </text>
+  <text x="240" y="500" font-family="'Courier New', monospace" font-size="18" fill="#b0b0b0">
+    <tspan>  --skill=development/heygen-best-practices --yes</tspan>
+  </text>
+
+  <!-- Terminal cursor -->
+  <rect x="710" y="485" width="12" height="20" fill="#00ff41" opacity="0.8"/>
+
+  <!-- Bottom tag -->
+  <text x="600" y="580" font-family="'Courier New', monospace" font-size="20" fill="#606060" text-anchor="middle">
+    Claude Code Templates • aitmpl.com
+  </text>
+</svg>

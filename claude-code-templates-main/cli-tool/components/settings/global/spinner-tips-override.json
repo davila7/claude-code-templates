@@ -1,0 +1,9 @@
+{
+  "description": "Customize the spinner tips shown while Claude is thinking. Replace the example tip string in the 'tips' array with your own custom messages. Set 'excludeDefault: true' to show only your custom tips, or 'false' to mix them with the built-in ones.",
+  "spinnerTipsOverride": {
+    "excludeDefault": true,
+    "tips": [
+      "Visit aitmpl.com to browse and install Claude Code components — agents, commands, MCPs, hooks, and more!"
+    ]
+  }
+}

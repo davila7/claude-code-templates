@@ -1,0 +1,43 @@
+# Jekyll configuration for GitHub Pages
+title: Claude Code Templates
+description: Browse and install Claude Code configuration templates for different languages and frameworks
+baseurl: ""
+url: "https://aitmpl.com"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+
+# Include files in processing
+include:
+  - _pages
+
+# GitHub Pages specific settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Repository information
+repository: davila7/claude-code-templates
+
+# Social media and SEO
+twitter:
+  username: 
+  card: summary_large_image
+
+# Google Analytics (optional - can be added later)
+# google_analytics: 
+
+# Additional settings
+timezone: UTC
+encoding: utf-8

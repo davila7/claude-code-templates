@@ -1,0 +1,78 @@
+{
+  "mcpServers": {
+    "go-sdk": {
+      "name": "Go SDK",
+      "description": "Official SDK maintained with Google for Go MCP development",
+      "command": "go-sdk-server",
+      "args": [],
+      "env": {}
+    },
+    "language-server": {
+      "name": "MCP Language Server",
+      "description": "Semantic tools for Go: definitions, references, diagnostics",
+      "command": "mcp-language-server",
+      "args": [],
+      "env": {}
+    },
+    "gin": {
+      "name": "Gin MCP",
+      "description": "Expose Gin APIs automatically as MCP tools",
+      "command": "gin-mcp",
+      "args": [],
+      "env": {}
+    },
+    "mysql": {
+      "name": "Go MySQL MCP",
+      "description": "Easy-to-use MySQL MCP server built in Go",
+      "command": "go-mcp-mysql",
+      "args": [],
+      "env": {
+        "MYSQL_DSN": "user:pass@tcp(host)/db"
+      }
+    },
+    "archer": {
+      "name": "Go Archer",
+      "description": "Visual dependency analysis for Go packages",
+      "command": "go-archer",
+      "args": [],
+      "env": {}
+    },
+    "memory-bank": {
+      "name": "Memory Bank MCP",
+      "description": "Centralized memory system for AI agents",
+      "command": "server-memory",
+      "args": [],
+      "env": {}
+    },
+    "sequential-thinking": {
+      "name": "Sequential Thinking MCP",
+      "description": "Helps LLMs decompose complex tasks into logical steps",
+      "command": "code-reasoning",
+      "args": [],
+      "env": {}
+    },
+    "brave-search": {
+      "name": "Brave Search MCP",
+      "description": "Privacy-focused web search tool",
+      "command": "server-brave-search",
+      "args": [],
+      "env": {}
+    },
+    "google-maps": {
+      "name": "Google Maps MCP",
+      "description": "Integrates Google Maps for geolocation and directions",
+      "command": "server-google-maps",
+      "args": [],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "..."
+      }
+    },
+    "deep-graph": {
+      "name": "Deep Graph MCP (Code Graph)",
+      "description": "Transforms source code into semantic graphs via DeepGraph",
+      "command": "mcp-code-graph",
+      "args": [],
+      "env": {}
+    }
+  }
+}

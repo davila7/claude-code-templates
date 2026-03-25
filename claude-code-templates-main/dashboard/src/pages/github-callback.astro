@@ -1,0 +1,50 @@
+---
+// GitHub OAuth callback page - opened as a popup
+// Exchanges the authorization code for a token and sends it back to the opener
+---
+<html>
+<head><title>Connecting GitHub...</title></head>
+<body style="background:#0a0a0a;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+<div id="status" style="text-align:center">
+  <div style="width:24px;height:24px;border:2px solid #333;border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 12px"></div>
+  <p>Connecting to GitHub...</p>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script>
+(async () => {
+  const status = document.getElementById('status');
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const error = params.get('error');
+
+  if (error || !code) {
+    status.innerHTML = '<p style="color:#f87171">Authorization failed. You can close this window.</p>';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/github/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.access_token) {
+      throw new Error(data.error || 'Token exchange failed');
+    }
+
+    if (window.opener) {
+      window.opener.postMessage({ type: 'github-oauth', token: data.access_token }, window.location.origin);
+      status.innerHTML = '<p style="color:#4ade80">Connected! This window will close.</p>';
+      setTimeout(() => window.close(), 1000);
+    } else {
+      status.innerHTML = '<p style="color:#f87171">Could not communicate with the opener window.</p>';
+    }
+  } catch (err) {
+    status.innerHTML = `<p style="color:#f87171">${err.message}</p>`;
+  }
+})();
+</script>
+</body>
+</html>

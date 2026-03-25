@@ -1,0 +1,7 @@
+{
+  "description": "Configure proxy settings for corporate network environments. Allows Claude Code to work behind corporate firewalls and proxy servers while maintaining security compliance with enterprise network policies.",
+  "env": {
+    "HTTP_PROXY": "http://proxy.company.com:8080",
+    "HTTPS_PROXY": "https://proxy.company.com:8080"
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "name": "claude-code-templates",
+  "owner": {
+    "name": "Daniel Avila",
+    "email": "davila7@users.noreply.github.com",
+    "url": "https://github.com/davila7"
+  },
+  "metadata": {
+    "description": "Ready-to-use Claude Code templates organized by workflow",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "git-workflow",
+      "source": "./",
+      "description": "Git workflow automation: feature, release, and hotfix commands with git specialists",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["git", "workflow", "automation"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/git/feature.md",
+        "./cli-tool/components/commands/git/release.md",
+        "./cli-tool/components/commands/git/hotfix.md",
+        "./cli-tool/components/commands/git/finish.md",
+        "./cli-tool/components/commands/git/flow-status.md"
+      ],
+      "agents": ["./cli-tool/components/agents/git/git-flow-manager.md"]
+    },
+    {
+      "name": "supabase-toolkit",
+      "source": "./",
+      "description": "Complete Supabase workflow with specialized commands, data engineering agents, and MCP integrations",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["supabase", "database", "postgresql", "data"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/database/supabase-backup-manager.md",
+        "./cli-tool/components/commands/database/supabase-data-explorer.md",
+        "./cli-tool/components/commands/database/supabase-migration-assistant.md",
+        "./cli-tool/components/commands/database/supabase-performance-optimizer.md",
+        "./cli-tool/components/commands/database/supabase-schema-sync.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/data-ai/data-engineer.md",
+        "./cli-tool/components/agents/data-ai/data-scientist.md"
+      ],
+      "mcpServers": [
+        "./cli-tool/components/mcps/database/postgresql-integration.json",
+        "./cli-tool/components/mcps/database/mysql-integration.json",
+        "./cli-tool/components/mcps/database/supabase.json"
+      ]
+    },
+    {
+      "name": "nextjs-vercel-pro",
+      "source": "./",
+      "description": "Complete Next.js and Vercel development toolkit with deployment automation and performance optimization",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["nextjs", "vercel", "react", "deployment", "performance"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/nextjs-vercel/nextjs-scaffold.md",
+        "./cli-tool/components/commands/nextjs-vercel/nextjs-component-generator.md",
+        "./cli-tool/components/commands/nextjs-vercel/nextjs-api-tester.md",
+        "./cli-tool/components/commands/nextjs-vercel/nextjs-performance-audit.md",
+        "./cli-tool/components/commands/nextjs-vercel/vercel-deploy-optimize.md",
+        "./cli-tool/components/commands/nextjs-vercel/vercel-edge-function.md",
+        "./cli-tool/components/commands/nextjs-vercel/vercel-env-sync.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/development-team/frontend-developer.md",
+        "./cli-tool/components/agents/development-team/fullstack-developer.md"
+      ],
+      "mcpServers": [
+        "./cli-tool/components/mcps/devtools/vercel-mcp.json"
+      ]
+    },
+    {
+      "name": "testing-suite",
+      "source": "./",
+      "description": "Comprehensive testing toolkit with E2E, unit, integration, and visual testing automation",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["testing", "qa", "e2e", "automation", "quality"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/testing/generate-tests.md",
+        "./cli-tool/components/commands/testing/e2e-setup.md",
+        "./cli-tool/components/commands/testing/test-coverage.md",
+        "./cli-tool/components/commands/testing/setup-visual-testing.md",
+        "./cli-tool/components/commands/testing/setup-load-testing.md",
+        "./cli-tool/components/commands/testing/test-automation-orchestrator.md",
+        "./cli-tool/components/commands/testing/test-quality-analyzer.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/development-tools/qa-automation-engineer.md",
+        "./cli-tool/components/agents/development-tools/test-engineer.md"
+      ],
+      "mcpServers": [
+        "./cli-tool/components/mcps/browser_automation/playwright-mcp.json"
+      ]
+    },
+    {
+      "name": "security-pro",
+      "source": "./",
+      "description": "Enterprise security toolkit with auditing, penetration testing, and compliance automation",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["security", "audit", "compliance", "pentesting", "vulnerability"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/security/security-audit.md",
+        "./cli-tool/components/commands/security/vulnerability-scan.md",
+        "./cli-tool/components/commands/security/dependency-audit.md",
+        "./cli-tool/components/commands/security/code-security-review.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/security/security-auditor.md",
+        "./cli-tool/components/agents/security/penetration-tester.md",
+        "./cli-tool/components/agents/security/compliance-specialist.md",
+        "./cli-tool/components/agents/security/incident-responder.md"
+      ]
+    },
+    {
+      "name": "ai-ml-toolkit",
+      "source": "./",
+      "description": "AI and Machine Learning development suite with data engineering and model deployment tools",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["ai", "ml", "machine-learning", "data-science", "nlp"],
+      "strict": false,
+      "agents": [
+        "./cli-tool/components/agents/data-ai/ai-engineer.md",
+        "./cli-tool/components/agents/data-ai/ml-engineer.md",
+        "./cli-tool/components/agents/data-ai/nlp-engineer.md",
+        "./cli-tool/components/agents/data-ai/computer-vision-engineer.md",
+        "./cli-tool/components/agents/data-ai/mlops-engineer.md"
+      ]
+      
+    },
+    {
+      "name": "devops-automation",
+      "source": "./",
+      "description": "DevOps automation suite with CI/CD, infrastructure management, and deployment orchestration",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["devops", "cicd", "infrastructure", "deployment", "automation"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/deployment/setup-ci-cd-pipeline.md",
+        "./cli-tool/components/commands/deployment/docker-compose-setup.md",
+        "./cli-tool/components/commands/deployment/kubernetes-deploy.md",
+        "./cli-tool/components/commands/deployment/monitoring-setup.md",
+        "./cli-tool/components/commands/deployment/backup-strategy.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/devops-infrastructure/devops-engineer.md",
+        "./cli-tool/components/agents/devops-infrastructure/cloud-architect.md",
+        "./cli-tool/components/agents/devops-infrastructure/kubernetes-specialist.md",
+        "./cli-tool/components/agents/devops-infrastructure/infrastructure-engineer.md"
+      ],
+      "mcpServers": [
+        "./cli-tool/components/mcps/devtools/github-integration.json",
+        "./cli-tool/components/mcps/devtools/docker-mcp.json"
+      ]
+    },
+    {
+      "name": "documentation-generator",
+      "source": "./",
+      "description": "Automated documentation generation with API docs, technical writing, and content management",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["documentation", "api-docs", "technical-writing", "markdown"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/documentation/generate-api-docs.md",
+        "./cli-tool/components/commands/documentation/update-docs.md",
+        "./cli-tool/components/commands/documentation/create-user-guide.md",
+        "./cli-tool/components/commands/documentation/setup-docusaurus.md",
+        "./cli-tool/components/commands/documentation/generate-changelog.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/documentation/technical-writer.md",
+        "./cli-tool/components/agents/documentation/api-documentation-specialist.md",
+        "./cli-tool/components/agents/documentation/docusaurus-expert.md"
+      ],
+      "mcpServers": [
+        "./cli-tool/components/mcps/filesystem/filesystem.json"
+      ]
+    },
+    {
+      "name": "performance-optimizer",
+      "source": "./",
+      "description": "Performance optimization suite with profiling, bundle analysis, and speed improvement tools",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["performance", "optimization", "profiling", "speed", "bundle"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/performance/optimize-bundle.md",
+        "./cli-tool/components/commands/performance/performance-audit.md",
+        "./cli-tool/components/commands/performance/add-caching.md",
+        "./cli-tool/components/commands/performance/optimize-images.md",
+        "./cli-tool/components/commands/performance/reduce-bundle-size.md",
+        "./cli-tool/components/commands/performance/add-lazy-loading.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/performance-testing/performance-engineer.md",
+        "./cli-tool/components/agents/performance-testing/load-testing-specialist.md"
+      ]
+    },
+    {
+      "name": "project-management-suite",
+      "source": "./",
+      "description": "Project management toolkit with sprint planning, task automation, and team collaboration tools",
+      "version": "1.0.0",
+      "author": {"name": "Daniel Avila"},
+      "license": "MIT",
+      "keywords": ["project-management", "agile", "scrum", "planning", "collaboration"],
+      "strict": false,
+      "commands": [
+        "./cli-tool/components/commands/project-management/sprint-planning.md",
+        "./cli-tool/components/commands/project-management/create-roadmap.md",
+        "./cli-tool/components/commands/project-management/task-breakdown.md",
+        "./cli-tool/components/commands/project-management/estimate-project.md",
+        "./cli-tool/components/commands/project-management/standup-generator.md",
+        "./cli-tool/components/commands/project-management/retrospective-facilitator.md"
+      ],
+      "agents": [
+        "./cli-tool/components/agents/business-marketing/product-strategist.md",
+        "./cli-tool/components/agents/business-marketing/business-analyst.md",
+        "./cli-tool/components/agents/development-team/tech-lead.md"
+      ],
+      "mcpServers": [
+        "./cli-tool/components/mcps/productivity/notion-integration.json",
+        "./cli-tool/components/mcps/productivity/linear-integration.json"
+      ]
+    }
+  ]
+}

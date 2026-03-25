@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "description": "Secure filesystem access for Claude Code with configurable directory permissions and file operations.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/allowed/files"
+      ]
+    }
+  }
+}

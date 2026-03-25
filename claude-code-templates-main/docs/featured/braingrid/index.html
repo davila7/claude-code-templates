@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainGrid: Product Management Agent for Claude Code</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+
+    <meta name="description" content="BrainGrid is a Product Management Agent that works alongside Claude Code. Transform messy ideas into clear specifications, end-to-end UX flows, and Claude Code-ready prompts.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/featured/braingrid/">
+    <meta property="og:title" content="BrainGrid: Product Management Agent for Claude Code">
+    <meta property="og:description" content="Transform messy ideas into clear specifications and Claude Code-ready prompts with BrainGrid - the planning layer for your AI-powered development workflow.">
+    <meta property="og:image" content="https://aitmpl.com/featured/braingrid/assets/braingrid-cover.svg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/featured/braingrid/">
+    <meta name="twitter:title" content="BrainGrid: Product Management Agent for Claude Code">
+    <meta name="twitter:description" content="Transform messy ideas into clear specifications and Claude Code-ready prompts with BrainGrid.">
+    <meta name="twitter:image" content="https://aitmpl.com/featured/braingrid/assets/braingrid-cover.svg">
+
+    <meta name="keywords" content="BrainGrid, Claude Code, Product Management Agent, AI Planning, Software Planning, Claude Code Integration, AI Development, Product Strategy">
+    <link rel="canonical" href="https://aitmpl.com/featured/braingrid/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/component-page.css">
+    <link rel="stylesheet" href="../../css/featured-page.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art"> ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗    ██████╗ ██████╗ ██████╗ ███████╗    ████████╗███████╗███╗   ███╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗
+██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝   ██╔════╝██╔═══██╗██╔══██╗██╔════╝    ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
+██║     ██║     ███████║██║   ██║██║  ██║█████╗     ██║     ██║   ██║██║  ██║█████╗         ██║   █████╗  ██╔████╔██║██████╔╝██║     ███████║   ██║   █████╗  ███████╗
+██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝     ██║     ██║   ██║██║  ██║██╔══╝         ██║   ██╔══╝  ██║╚██╔╝██║██╔═══╝ ██║     ██╔══██║   ██║   ██╔══╝  ╚════██║
+╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗   ╚██████╗╚██████╔╝██████╔╝███████╗       ██║   ███████╗██║ ╚═╝ ██║██║     ███████╗██║  ██║   ██║   ███████╗███████║
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝       ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝</pre>
+                    </div>
+                    <div class="terminal-subtitle">
+                        <span class="status-dot"></span>
+                        Ready-to-use configurations for your <strong>Claude Code</strong> projects
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../../blog/index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="component-page">
+        <!-- Back Navigation -->
+        <div class="back-navigation">
+            <div class="container">
+                <a href="../../index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                    Back to Components
+                </a>
+            </div>
+        </div>
+
+        <!-- Component Content -->
+        <div class="component-content">
+            <div class="container">
+                <!-- Component Header -->
+                <div class="component-header">
+                    <div class="header-actions">
+                        <div class="share-dropdown" id="componentShareDropdown">
+                            <button class="share-btn" onclick="toggleShareDropdown()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.6 20.92,19A2.84,2.84 0 0,0 18,16.08Z"/>
+                                </svg>
+                            </button>
+                            <div class="share-options" id="shareOptions">
+                                <button class="share-option-btn" onclick="shareOnTwitter()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                    </svg>
+                                    Share on X
+                                </button>
+                                <button class="share-option-btn" onclick="shareOnThreads()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.6-.053-1.149-.16-1.644a4.158 4.158 0 00-.488-1.336 3.996 3.996 0 00-.82-1.084 4.015 4.015 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.014c-1.623.02-3.094.37-4.37 1.04a4.015 4.015 0 00-1.414 1.017 3.996 3.996 0 00-.82 1.084 4.158 4.158 0 00-.488 1.336c-.107.495-.16 1.044-.16 1.644 0 .6.053 1.149.16 1.644.107.496.27.941.488 1.336.218.394.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/>
+                                    </svg>
+                                    Share on Threads
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="component-title-section">
+                        <div class="featured-logo">
+                            <img src="https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png" alt="BrainGrid Logo">
+                        </div>
+                        <div class="component-title-info">
+                            <h1>BrainGrid</h1>
+                            <div class="component-meta">
+                                <div class="partner-badge partner-badge--partner">PARTNER</div>
+                                <span class="component-category-title">Product Management</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- External CTA Button -->
+                    <a href="https://braingrid.link/hsn8pFE" target="_blank" class="title-section-add-to-cart-btn" style="text-decoration: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                        </svg>
+                        <span>Try BrainGrid</span>
+                    </a>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="component-tabs">
+                    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        Overview
+                    </button>
+                    <button class="tab-btn" data-tab="website" onclick="switchTab('website')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+                        </svg>
+                        Website
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content-wrapper">
+
+                    <!-- Overview Tab -->
+                    <div class="tab-pane active" id="tab-overview">
+                        <div class="tab-content-grid">
+                            <!-- Main Content -->
+                            <div class="tab-main">
+                                <div class="featured-content">
+                                    <h2>The Real Problem With AI Coding Is Not Code Generation</h2>
+                                    <p>AI coding tools like Claude Code are extremely capable. With models like Opus 4.5, they can reason deeply, write high-quality code, and implement complex features.</p>
+                                    <p>The problem shows up when builders try to turn a product idea into working software. As products grow, intent gets blurry, context fragments, and small changes ripple across the system in unexpected ways.</p>
+                                    <p><strong>The limitation is not the model. It is the lack of product-level planning, structure, and strategy before any code is written.</strong></p>
+
+                                    <h2>BrainGrid Is Like Claude Code Plan Mode for Your Entire Product</h2>
+                                    <p>Think of BrainGrid as Claude Code plan mode, but applied to your entire product, not just a single prompt.</p>
+
+                                    <div class="comparison-box">
+                                        <div class="comparison-item">
+                                            <strong>Claude Code</strong> helps you plan a feature.
+                                        </div>
+                                        <div class="comparison-item">
+                                            <strong>BrainGrid</strong> helps you plan the product.
+                                        </div>
+                                    </div>
+
+                                    <p>BrainGrid acts as a Product Management Agent that sits upstream of Claude Code. It turns messy ideas into clear specifications, end-to-end UX flows, task breakdowns, and engineering-grade prompts that Claude Code can execute reliably.</p>
+
+                                    <h2>How BrainGrid Works With Claude Code</h2>
+                                    <p>BrainGrid is not a replacement for Claude Code—it works alongside it. It is a planning and orchestration layer that makes Claude Code more effective.</p>
+
+                                    <div class="feature-list">
+                                        <div class="feature-item">
+                                            <div class="feature-icon">&#128161;</div>
+                                            <div class="feature-content">
+                                                <h3>Clarifying Questions</h3>
+                                                <p>Asks clarifying questions to surface edge cases and hidden complexity</p>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item">
+                                            <div class="feature-icon">&#128506;</div>
+                                            <div class="feature-content">
+                                                <h3>End-to-End UX Flows</h3>
+                                                <p>Maps end-to-end UX flows so features are planned as complete experiences</p>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item">
+                                            <div class="feature-icon">&#128203;</div>
+                                            <div class="feature-content">
+                                                <h3>Task Breakdown</h3>
+                                                <p>Breaks large ideas into small, scoped tasks with goals and acceptance criteria</p>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item">
+                                            <div class="feature-icon">&#9889;</div>
+                                            <div class="feature-content">
+                                                <h3>Claude Code-Ready Prompts</h3>
+                                                <p>Generates Claude Code-ready prompts with the right context attached</p>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item">
+                                            <div class="feature-icon">&#128737;</div>
+                                            <div class="feature-content">
+                                                <h3>Prevent Regressions</h3>
+                                                <p>Helps prevent regressions by ensuring new work fits the existing system</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="info-note">Tasks can be sent to Claude Code via MCP, CLI or copied directly into the Claude Code workflow.</p>
+
+                                    <h2>Claude Code Integration</h2>
+                                    <p>BrainGrid seamlessly integrates with your Claude Code workflow. Once BrainGrid generates your product specifications and task breakdowns, you can:</p>
+                                    <ul>
+                                        <li>Export tasks directly to Claude Code via MCP integration</li>
+                                        <li>Copy generated prompts into your Claude Code sessions</li>
+                                        <li>Use the CLI to sync tasks between BrainGrid and Claude Code</li>
+                                    </ul>
+                                    <div class="cta-box">
+                                        <p><strong>Claude Code integration guide:</strong></p>
+                                        <a href="https://docs.braingrid.ai/claude-code" target="_blank">https://docs.braingrid.ai/claude-code</a>
+                                    </div>
+
+                                    <h2>Built for Production-Ready Apps, Not Just Prototypes</h2>
+                                    <p>BrainGrid is designed for builders creating real AI-native SaaS products with:</p>
+                                    <ul>
+                                        <li>Authentication and multi-tenancy</li>
+                                        <li>Billing and subscriptions</li>
+                                        <li>AI features like chat, agents, and search</li>
+                                        <li>Ongoing feature development and iteration</li>
+                                    </ul>
+                                    <p>It helps builders move beyond fragile demos and ship software that can actually scale.</p>
+
+                                    <h2>Who BrainGrid Is For</h2>
+                                    <p>AI coding tools have created a new kind of builder. Domain experts, creators, and entrepreneurs who have never written code are now building software through natural language.</p>
+                                    <p><strong>BrainGrid is for:</strong></p>
+                                    <ul>
+                                        <li>Non-technical founders building real products, not just prototypes</li>
+                                        <li>Vibe coders hitting complexity walls as their apps grow</li>
+                                        <li>AI builders who need help planning scope, sequencing work, and evolving apps without breaking what already works</li>
+                                    </ul>
+                                </div>
+
+                                <!-- Comments Section -->
+                                <section class="content-section comments-section">
+                                    <h2>Comments</h2>
+                                    <p class="comments-description">Sign in with GitHub to leave a comment. Discussions are stored in the project's <a href="https://github.com/davila7/claude-code-templates/discussions" target="_blank">GitHub Discussions</a>.</p>
+                                    <div id="giscusContainer"></div>
+                                </section>
+                            </div>
+
+                            <!-- Sidebar -->
+                            <aside class="tab-sidebar">
+                                <!-- Partner Info -->
+                                <div class="sidebar-card">
+                                    <h3 class="sidebar-card-title">About BrainGrid</h3>
+                                    <div class="partner-info-card">
+                                        <img src="https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png" alt="BrainGrid">
+                                        <p class="partner-info-description">Product Management Agent for Claude Code. Transform messy ideas into clear specifications and Claude Code-ready prompts.</p>
+                                    </div>
+                                </div>
+
+                                <!-- CTA -->
+                                <div class="sidebar-card">
+                                    <a href="https://braingrid.link/hsn8pFE" target="_blank" class="sidebar-cta-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                        </svg>
+                                        Try BrainGrid Free
+                                    </a>
+                                </div>
+
+                                <!-- Metadata -->
+                                <div class="sidebar-card">
+                                    <h3 class="sidebar-card-title">Details</h3>
+                                    <div class="sidebar-metadata-list">
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Type</span>
+                                            <span class="sidebar-meta-value">Partner</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Category</span>
+                                            <span class="sidebar-meta-value">Planning</span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Website</span>
+                                            <span class="sidebar-meta-value"><a href="https://braingrid.ai" target="_blank" style="color: var(--accent-color); text-decoration: none;">braingrid.ai</a></span>
+                                        </div>
+                                        <div class="sidebar-meta-row">
+                                            <span class="sidebar-meta-label">Integration</span>
+                                            <span class="sidebar-meta-value">MCP, CLI</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Links -->
+                                <div class="sidebar-card">
+                                    <h3 class="sidebar-card-title">Links</h3>
+                                    <div class="sidebar-links">
+                                        <a href="https://docs.braingrid.ai/claude-code" target="_blank" class="sidebar-link-item">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                            </svg>
+                                            Integration Docs
+                                        </a>
+                                        <a href="https://braingrid.ai" target="_blank" class="sidebar-link-item">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96z"/>
+                                            </svg>
+                                            braingrid.ai
+                                        </a>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <!-- Website Tab -->
+                    <div class="tab-pane" id="tab-website">
+                        <div class="website-tab-header">
+                            <span class="website-tab-url">braingrid.ai</span>
+                            <a href="https://braingrid.ai" target="_blank" class="website-tab-open">
+                                Open in new tab
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <iframe src="https://braingrid.ai" class="featured-website-frame" title="BrainGrid Website" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../blog/index.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Blog
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // Share dropdown
+        function toggleShareDropdown() {
+            document.getElementById('componentShareDropdown').classList.toggle('open');
+        }
+
+        function shareOnTwitter() {
+            const text = encodeURIComponent('BrainGrid: Product Management Agent for Claude Code - Transform messy ideas into clear specifications and Claude Code-ready prompts');
+            const url = encodeURIComponent('https://aitmpl.com/featured/braingrid/');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+            document.getElementById('componentShareDropdown').classList.remove('open');
+        }
+
+        function shareOnThreads() {
+            const text = encodeURIComponent('BrainGrid: Product Management Agent for Claude Code\n\nhttps://aitmpl.com/featured/braingrid/');
+            window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank');
+            document.getElementById('componentShareDropdown').classList.remove('open');
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.share-dropdown')) {
+                document.getElementById('componentShareDropdown').classList.remove('open');
+            }
+        });
+
+        // Giscus comments
+        function loadGiscus() {
+            const container = document.getElementById('giscusContainer');
+            if (!container) return;
+            const script = document.createElement('script');
+            script.src = 'https://giscus.app/client.js';
+            script.setAttribute('data-repo', 'davila7/claude-code-templates');
+            script.setAttribute('data-repo-id', 'R_kgDONN2YhQ');
+            script.setAttribute('data-category', 'Component Comments');
+            script.setAttribute('data-category-id', 'DIC_kwDONN2Yhc4CmFij');
+            script.setAttribute('data-mapping', 'specific');
+            script.setAttribute('data-term', 'featured/braingrid');
+            script.setAttribute('data-strict', '0');
+            script.setAttribute('data-reactions-enabled', '1');
+            script.setAttribute('data-emit-metadata', '0');
+            script.setAttribute('data-input-position', 'top');
+            script.setAttribute('data-theme', 'dark_dimmed');
+            script.setAttribute('data-lang', 'en');
+            script.setAttribute('crossorigin', 'anonymous');
+            script.async = true;
+            container.appendChild(script);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadGiscus);
+        } else {
+            loadGiscus();
+        }
+    </script>
+</body>
+</html>

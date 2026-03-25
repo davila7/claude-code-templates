@@ -1,0 +1,7 @@
+{
+  "description": "Track your coding fitness with steps and calories burned through programming. Earn badges and monitor your coding intensity levels. Displays: Activity intensity (🚶 walking 0-29% cycle, 🏃 running 30-69% cycle, 💨 sprinting 70%+ cycle), Steps counter (+1 per interaction), Calories burned (+2 per interaction), Achievement badges (🥉 bronze at 50 steps, 🏆 gold at 100 steps).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); SESSION=$(echo \"$input\" | jq -r \".session_id\" | cut -c1-8); CACHE=\"/tmp/fitness_$SESSION\"; if [ ! -f \"$CACHE\" ]; then echo \"0 0\" > \"$CACHE\"; fi; read STEPS CALORIES < \"$CACHE\"; STEPS=$((STEPS + 1)); CALORIES=$((CALORIES + 2)); echo \"$STEPS $CALORIES\" > \"$CACHE\"; BADGE=\"\"; [ $STEPS -ge 100 ] && BADGE=\"🏆\"; [ $STEPS -ge 50 ] && BADGE=\"🥉\"; INTENSITY=$([ $((STEPS % 10)) -lt 3 ] && echo \"🚶\" || [ $((STEPS % 10)) -lt 7 ] && echo \"🏃\" || echo \"💨\"); echo \"[$MODEL] $INTENSITY Steps: $STEPS | 🔥 ${CALORIES}cal $BADGE | 📁 ${DIR##*/}\"'"
+  }
+}

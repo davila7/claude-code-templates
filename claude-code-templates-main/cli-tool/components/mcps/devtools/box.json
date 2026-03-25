@@ -1,0 +1,14 @@
+{
+    "mcpServers": {
+        "mcp-server-box": {
+            "description":"The Box MCP Server is a Python project that integrates with the Box API to perform various operations such as file search, text extraction, AI-based querying, and data extraction. It leverages the box-sdk-gen library and provides a set of tools to interact with Box files and folders.",
+            "command": "uv",
+            "args": [
+                "--directory",
+                "/path/to/mcp-server-box",
+                "run",
+                "src/mcp_server_box.py"
+            ]
+        }
+    }
+}

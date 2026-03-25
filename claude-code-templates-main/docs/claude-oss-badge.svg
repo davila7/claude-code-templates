@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="48" viewBox="0 0 340 48">
+  <rect width="340" height="48" rx="6" fill="#1a1a1a"/>
+  <rect x="1" y="1" width="338" height="46" rx="5" stroke="#D97757" stroke-width="1.5" fill="none"/>
+  <!-- Claude starburst logo -->
+  <g transform="translate(24, 24)">
+    <!-- 8 lines radiating from center -->
+    <line x1="0" y1="-10" x2="0" y2="10" stroke="#D97757" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-10" y1="0" x2="10" y2="0" stroke="#D97757" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-7.07" y1="-7.07" x2="7.07" y2="7.07" stroke="#D97757" stroke-width="2" stroke-linecap="round"/>
+    <line x1="7.07" y1="-7.07" x2="-7.07" y2="7.07" stroke="#D97757" stroke-width="2" stroke-linecap="round"/>
+    <!-- 8 additional thinner lines for density -->
+    <line x1="0" y1="-8" x2="0" y2="-3" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(22.5)"/>
+    <line x1="0" y1="3" x2="0" y2="8" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(22.5)"/>
+    <line x1="0" y1="-8" x2="0" y2="-3" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(67.5)"/>
+    <line x1="0" y1="3" x2="0" y2="8" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(67.5)"/>
+    <line x1="0" y1="-8" x2="0" y2="-3" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(112.5)"/>
+    <line x1="0" y1="3" x2="0" y2="8" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(112.5)"/>
+    <line x1="0" y1="-8" x2="0" y2="-3" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(157.5)"/>
+    <line x1="0" y1="3" x2="0" y2="8" stroke="#D97757" stroke-width="1.2" stroke-linecap="round" transform="rotate(157.5)"/>
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="2" fill="#D97757"/>
+  </g>
+  <!-- Text -->
+  <text x="46" y="21" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" font-weight="600" letter-spacing="1.5" fill="#D97757">CLAUDE FOR</text>
+  <text x="46" y="37" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="13" font-weight="700" letter-spacing="1" fill="white">OPEN SOURCE PROGRAM</text>
+</svg>

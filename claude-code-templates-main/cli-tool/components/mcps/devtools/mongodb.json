@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "MongoDB": {
+      "description":"A Model Context Protocol server to connect to MongoDB databases and MongoDB Atlas Clusters.",
+      "command": "npx",
+      "args": ["-y", "mongodb-mcp-server@latest", "--readOnly"],
+      "env": {
+        "MDB_MCP_CONNECTION_STRING": "mongodb://localhost:27017/myDatabase"
+      }
+    }
+  }
+}

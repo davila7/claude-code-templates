@@ -1,0 +1,92 @@
+{
+  "agents": [
+    {
+      "name": "frontend-developer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "development",
+      "keywords": ["frontend", "react", "typescript", "ui", "responsive", "accessibility"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "backend-architect",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "development",
+      "keywords": ["backend", "api", "microservices", "database", "architecture", "scalability"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "fullstack-developer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "development",
+      "keywords": ["fullstack", "frontend", "backend", "database", "api", "typescript"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "devops-engineer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "devops",
+      "keywords": ["devops", "ci-cd", "infrastructure", "kubernetes", "docker", "terraform"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "mobile-developer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "mobile",
+      "keywords": ["mobile", "react-native", "flutter", "ios", "android", "cross-platform"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "ios-developer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "mobile",
+      "keywords": ["ios", "swift", "swiftui", "uikit", "core-data", "xcode"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "ui-ux-designer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "design",
+      "keywords": ["ui", "ux", "design", "wireframes", "prototyping", "accessibility"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    },
+    {
+      "name": "cli-ui-designer",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Code Templates Team"
+      },
+      "category": "design",
+      "keywords": ["cli", "terminal", "ui", "command-line", "design", "web"],
+      "license": "MIT",
+      "repository": "https://github.com/davila7/claude-code-templates"
+    }
+  ]
+}

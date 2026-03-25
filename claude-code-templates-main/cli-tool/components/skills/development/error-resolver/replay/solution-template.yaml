@@ -1,0 +1,97 @@
+# Error Solution Template
+# Copy this file and fill in details after resolving an error
+# Save to: .claude/error-solutions/<error-signature>.yaml
+
+# Unique identifier for this solution
+id: ""  # e.g., "nodejs-module-not-found-express"
+
+# Timestamps
+created: ""  # ISO 8601 format: 2024-01-15T10:30:00Z
+updated: ""
+
+# Error Details
+error:
+  # Error classification
+  type: ""  # syntax, type, reference, runtime, network, permission, dependency, config, database, memory
+  category: ""  # Specific error category (e.g., ModuleNotFound, TypeError, ECONNREFUSED)
+  language: ""  # nodejs, python, java, go, rust, etc.
+  framework: ""  # react, express, django, spring, etc. (optional)
+
+  # Error pattern for matching
+  pattern: ""  # Error message pattern, use {placeholder} for variables
+  # Examples:
+  #   "Cannot find module '{module}'"
+  #   "TypeError: Cannot read property '{prop}' of undefined"
+  #   "ECONNREFUSED {host}:{port}"
+
+  # Error code if applicable
+  code: ""  # e.g., ENOENT, E11000, 404
+
+  # Context where error typically occurs
+  context: ""  # Brief description of when this error appears
+
+# Diagnosis
+diagnosis:
+  # Root cause of the error
+  root_cause: ""
+
+  # Contributing factors (list)
+  factors:
+    - ""
+    # - ""
+
+  # How to verify this is the right diagnosis
+  verification_steps:
+    - ""
+    # - ""
+
+# Solution
+solution:
+  # Quick fix to get unblocked
+  immediate:
+    - ""
+    # - ""
+
+  # Proper/permanent fix
+  proper:
+    - ""
+    # - ""
+
+  # Code changes if applicable
+  code_change: |
+    # Optional: paste code snippet here
+
+  # Commands to run
+  commands:
+    - ""
+    # - ""
+
+# How to verify the fix worked
+verification:
+  - ""
+  # - ""
+
+# How to prevent this error in the future
+prevention:
+  - ""
+  # - ""
+
+# Metadata for tracking
+metadata:
+  # How many times this solution has been used
+  occurrences: 1
+
+  # Last time this solution was applied
+  last_resolved: ""
+
+  # Success rate (0.0 to 1.0)
+  success_rate: 1.0
+
+  # Related errors (list of other solution IDs)
+  related: []
+
+  # Tags for searching
+  tags: []
+
+  # Notes or additional context
+  notes: ""

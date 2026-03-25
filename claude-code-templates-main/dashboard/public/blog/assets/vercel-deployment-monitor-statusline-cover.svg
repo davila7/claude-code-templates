@@ -1,0 +1,81 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="termGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d0d1a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="vercelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#cccccc;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#000000"/>
+
+  <!-- Left side: Terminal window -->
+  <g transform="translate(60, 60)">
+    <!-- Terminal chrome -->
+    <rect x="0" y="0" width="520" height="380" rx="12" ry="12" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+    <!-- Title bar -->
+    <rect x="0" y="0" width="520" height="36" rx="12" ry="12" fill="#252540"/>
+    <rect x="0" y="24" width="520" height="12" fill="#252540"/>
+    <!-- Traffic lights -->
+    <circle cx="20" cy="18" r="6" fill="#ff5f56"/>
+    <circle cx="40" cy="18" r="6" fill="#ffbd2e"/>
+    <circle cx="60" cy="18" r="6" fill="#27c93f"/>
+    <!-- Title text -->
+    <text x="260" y="22" font-family="'Courier New', monospace" font-size="12" fill="#888" text-anchor="middle">claude-code</text>
+
+    <!-- Terminal content -->
+    <text x="20" y="70" font-family="'Courier New', monospace" font-size="14" fill="#27c93f">$ claude</text>
+
+    <text x="20" y="100" font-family="'Courier New', monospace" font-size="13" fill="#888">Vercel Deployment Monitor</text>
+
+    <text x="20" y="135" font-family="'Courier New', monospace" font-size="13" fill="#ffffff">statusLine:</text>
+    <text x="20" y="160" font-family="'Courier New', monospace" font-size="13" fill="#cccccc">  type: "command"</text>
+    <text x="20" y="185" font-family="'Courier New', monospace" font-size="13" fill="#cccccc">  command: "bash -c '..."</text>
+
+    <text x="20" y="220" font-family="'Courier New', monospace" font-size="13" fill="#888">--- Status Bar ---</text>
+
+    <!-- Simulated statusline output -->
+    <rect x="20" y="240" width="480" height="36" rx="4" ry="4" fill="#0a0a1a" stroke="#333" stroke-width="1"/>
+    <text x="36" y="264" font-family="'Courier New', monospace" font-size="14" fill="#ffffff">&#9650; Vercel</text>
+    <text x="130" y="264" font-family="'Courier New', monospace" font-size="14" fill="#666">|</text>
+    <text x="145" y="264" font-family="'Courier New', monospace" font-size="14" fill="#27c93f">READY</text>
+    <text x="210" y="264" font-family="'Courier New', monospace" font-size="14" fill="#666">|</text>
+    <text x="225" y="264" font-family="'Courier New', monospace" font-size="14" fill="#ffbd2e">12m ago</text>
+    <text x="325" y="264" font-family="'Courier New', monospace" font-size="14" fill="#666">|</text>
+    <text x="340" y="264" font-family="'Courier New', monospace" font-size="14" fill="#5b9dff">Deploy</text>
+
+    <text x="20" y="320" font-family="'Courier New', monospace" font-size="13" fill="#27c93f">$ export VERCEL_TOKEN=***</text>
+    <text x="20" y="345" font-family="'Courier New', monospace" font-size="13" fill="#27c93f">$ export VERCEL_PROJECT_ID=***</text>
+  </g>
+
+  <!-- Right side: Vercel triangle icon -->
+  <g transform="translate(780, 120)">
+    <!-- Large Vercel triangle -->
+    <polygon points="180,0 360,280 0,280" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.15"/>
+    <polygon points="180,40 320,240 40,240" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.25"/>
+    <polygon points="180,80 280,200 80,200" fill="#ffffff" opacity="0.08"/>
+    <!-- Solid inner triangle -->
+    <polygon points="180,100 260,190 100,190" fill="#ffffff" opacity="0.9"/>
+
+    <!-- Status indicators -->
+    <circle cx="120" cy="260" r="8" fill="#27c93f"/>
+    <text x="138" y="265" font-family="'Courier New', monospace" font-size="14" fill="#27c93f">READY</text>
+
+    <circle cx="240" cy="260" r="8" fill="#ffbd2e"/>
+    <text x="258" y="265" font-family="'Courier New', monospace" font-size="14" fill="#ffbd2e">BUILD</text>
+  </g>
+
+  <!-- Bottom: Title text -->
+  <text x="600" y="530" font-family="'Courier New', monospace" font-size="36" fill="#ffffff" text-anchor="middle" font-weight="bold">Monitor Vercel Deployments</text>
+  <text x="600" y="565" font-family="'Courier New', monospace" font-size="36" fill="#ffffff" text-anchor="middle" font-weight="bold">in Real-Time</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="595" font-family="'Courier New', monospace" font-size="20" fill="#888888" text-anchor="middle">Claude Code Statusline with Clickable Deploy Links</text>
+
+  <!-- Footer -->
+  <text x="600" y="622" font-family="'Courier New', monospace" font-size="14" fill="#444444" text-anchor="middle">Claude Code Templates  |  aitmpl.com</text>
+</svg>

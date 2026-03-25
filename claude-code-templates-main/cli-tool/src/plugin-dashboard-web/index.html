@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Plugin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-icon">🔌</span>
+                    <span class="logo-text">Plugin Manager</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <span class="toggle-icon">☰</span>
+                </button>
+            </div>
+
+            <div class="sidebar-stats">
+                <div class="sidebar-stat">
+                    <span class="stat-number" id="sidebarTotalPlugins">-</span>
+                    <span class="stat-text">Total Plugins</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="stat-number" id="sidebarEnabledPlugins">-</span>
+                    <span class="stat-text">Enabled</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <span class="section-title">Marketplaces</span>
+                    <span class="section-count" id="marketplaceCount">0</span>
+                </div>
+                <div class="marketplace-filters">
+                    <button class="marketplace-filter-btn active" data-filter="all">
+                        All
+                    </button>
+                    <button class="marketplace-filter-btn" data-filter="enabled">
+                        Enabled
+                    </button>
+                    <button class="marketplace-filter-btn" data-filter="disabled">
+                        Disabled
+                    </button>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="marketplaceNav">
+                <div class="sidebar-loading">
+                    <div class="spinner"></div>
+                    <span>Loading...</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="https://aitmpl.com/plugins" target="_blank" class="sidebar-link">
+                    <span class="link-icon">🔍</span>
+                    <span class="link-text">Browse More</span>
+                </a>
+                <a href="https://docs.aitmpl.com" target="_blank" class="sidebar-link">
+                    <span class="link-icon">📚</span>
+                    <span class="link-text">Documentation</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title">
+                        <span class="title-icon" id="currentMarketplaceIcon">🧩</span>
+                        <span id="currentMarketplaceName">All Plugins</span>
+                    </h1>
+                    <div class="breadcrumb" id="breadcrumb"></div>
+                </div>
+                <div class="top-bar-right">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            id="pluginSearch"
+                            placeholder="Search plugins..."
+                            class="search-input"
+                        >
+                    </div>
+                    <div class="view-controls">
+                        <button class="refresh-btn" id="refreshBtn" title="Refresh data">
+                            <span class="refresh-icon">🔄</span>
+                        </button>
+                        <button class="view-btn active" data-view="grid" title="Grid view">
+                            <span class="view-icon">▦</span>
+                        </button>
+                        <button class="view-btn" data-view="list" title="List view">
+                            <span class="view-icon">☰</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Filters Bar -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <button class="filter-chip active" data-filter="all">
+                        All Plugins
+                        <span class="chip-badge" id="countAll">0</span>
+                    </button>
+                    <button class="filter-chip" data-filter="enabled">
+                        <span class="status-dot enabled"></span>
+                        Enabled
+                        <span class="chip-badge" id="countEnabled">0</span>
+                    </button>
+                    <button class="filter-chip" data-filter="disabled">
+                        <span class="status-dot disabled"></span>
+                        Disabled
+                        <span class="chip-badge" id="countDisabled">0</span>
+                    </button>
+                </div>
+                <div class="sort-controls">
+                    <label for="sortSelect" class="sort-label">Sort by:</label>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="name">Name</option>
+                        <option value="components">Components</option>
+                        <option value="status">Status</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Plugins Grid/List -->
+            <div class="plugins-container" id="pluginsContainer">
+                <div class="content-loading">
+                    <div class="spinner-large"></div>
+                    <p class="loading-text">Loading plugins...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state-container" id="emptyState" style="display: none;">
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <h2 class="empty-title">No plugins found</h2>
+                    <p class="empty-description" id="emptyDescription">
+                        Try adjusting your filters or search terms
+                    </p>
+                    <button class="btn-primary" id="clearFiltersBtn" style="display: none;">
+                        Clear Filters
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Plugin Details Modal -->
+    <div class="modal-overlay" id="pluginModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2 class="modal-title" id="modalPluginName"></h2>
+                    <div class="modal-badges">
+                        <span class="modal-badge version-badge" id="modalPluginVersion"></span>
+                        <span class="modal-badge status-badge" id="modalPluginStatus"></span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">
+                    <span class="close-icon">✕</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-section">
+                    <p class="modal-description" id="modalPluginDescription"></p>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">Components</h3>
+                    <div class="modal-components-grid" id="modalComponents"></div>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">Plugin Information</h3>
+                    <div class="modal-details-grid">
+                        <div class="detail-card">
+                            <span class="detail-label">Marketplace</span>
+                            <span class="detail-value" id="modalMarketplace"></span>
+                        </div>
+                        <div class="detail-card" id="modalAuthorCard">
+                            <span class="detail-label">Author</span>
+                            <span class="detail-value" id="modalAuthor"></span>
+                        </div>
+                        <div class="detail-card" id="modalCategoryCard">
+                            <span class="detail-label">Category</span>
+                            <span class="detail-value" id="modalCategory"></span>
+                        </div>
+                        <div class="detail-card" id="modalLicenseCard">
+                            <span class="detail-label">License</span>
+                            <span class="detail-value" id="modalLicense"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-section" id="modalKeywordsSection">
+                    <h3 class="modal-section-title">Keywords</h3>
+                    <div class="keywords-container" id="modalKeywords"></div>
+                </div>
+
+                <div class="modal-section" id="modalHomepageSection">
+                    <a id="modalHomepage" target="_blank" class="btn-secondary btn-block">
+                        <span class="btn-icon">🔗</span>
+                        Visit Homepage
+                    </a>
+                </div>
+
+                <!-- Plugin Actions -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">Plugin Actions</h3>
+                    <div class="plugin-actions-grid" id="modalActions">
+                        <!-- Actions will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- Command Reference -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">Command Reference</h3>
+                    <div class="command-list">
+                        <div class="command-item">
+                            <div class="command-header">
+                                <span class="command-icon">📥</span>
+                                <span class="command-title">Install Plugin</span>
+                            </div>
+                            <div class="command-code" id="installCommand">
+                                /plugin install plugin-name@marketplace-name
+                            </div>
+                            <button class="command-copy-btn" onclick="window.dashboard.copyCommand('install')" title="Copy command">
+                                📋
+                            </button>
+                        </div>
+                        <div class="command-item">
+                            <div class="command-header">
+                                <span class="command-icon">✅</span>
+                                <span class="command-title">Enable Plugin</span>
+                            </div>
+                            <div class="command-code" id="enableCommand">
+                                /plugin enable plugin-name@marketplace-name
+                            </div>
+                            <button class="command-copy-btn" onclick="window.dashboard.copyCommand('enable')" title="Copy command">
+                                📋
+                            </button>
+                        </div>
+                        <div class="command-item">
+                            <div class="command-header">
+                                <span class="command-icon">⏸️</span>
+                                <span class="command-title">Disable Plugin</span>
+                            </div>
+                            <div class="command-code" id="disableCommand">
+                                /plugin disable plugin-name@marketplace-name
+                            </div>
+                            <button class="command-copy-btn" onclick="window.dashboard.copyCommand('disable')" title="Copy command">
+                                📋
+                            </button>
+                        </div>
+                        <div class="command-item">
+                            <div class="command-header">
+                                <span class="command-icon">🗑️</span>
+                                <span class="command-title">Uninstall Plugin</span>
+                            </div>
+                            <div class="command-code" id="uninstallCommand">
+                                /plugin uninstall plugin-name@marketplace-name
+                            </div>
+                            <button class="command-copy-btn" onclick="window.dashboard.copyCommand('uninstall')" title="Copy command">
+                                📋
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Copied Toast -->
+    <div class="toast" id="commandToast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message">Command copied to clipboard!</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

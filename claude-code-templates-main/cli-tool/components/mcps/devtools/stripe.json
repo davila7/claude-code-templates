@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "stripe": {
+      "description": "Let your AI agents interact with the Stripe API by using our MCP server.",
+      "command": "npx",
+      "args": ["-y", "@stripe/mcp", "--tools=all"],
+      "env": {
+        "STRIPE_SECRET_KEY": "your_stripe_secret_key_here"
+      }
+    }
+  }
+}

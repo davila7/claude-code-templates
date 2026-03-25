@@ -1,0 +1,146 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Edit",
+      "MultiEdit",
+      "Write",
+      "Bash(ruby:*)",
+      "Bash(bundle:*)",
+      "Bash(rails:*)",
+      "Bash(rake:*)",
+      "Bash(rspec:*)",
+      "Bash(rubocop:*)",
+      "Bash(brakeman:*)",
+      "Bash(irb:*)",
+      "Bash(pry:*)",
+      "Bash(gem:*)",
+      "Bash(rbenv:*)",
+      "Bash(rvm:*)",
+      "Bash(kamal:*)",
+      "Bash(git:*)"
+    ],
+    "deny": [
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(rm -rf:*)"
+    ],
+    "defaultMode": "allowEdits"
+  },
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "60000",
+    "BASH_MAX_OUTPUT_LENGTH": "20000",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "BUNDLE_PATH": "vendor/bundle",
+    "BUNDLE_JOBS": "4"
+  },
+  "includeCoAuthoredBy": true,
+  "cleanupPeriodDays": 30,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"\\(.tool_input.command) - \\(.tool_input.description // \"No description\")\"' >> ~/.claude/bash-command-log.txt"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"); CONTENT=$(echo $STDIN_JSON | jq -r '.tool_input.content // \"\"); if [[ \"$FILE\" =~ \\.rb$ ]] && echo \"$CONTENT\" | grep -q 'puts\\|p '; then echo 'Warning: puts/p statements should be replaced with proper logging' >&2; exit 2; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" == \"Gemfile\" ]] || [[ \"$FILE\" == \"Gemfile.lock\" ]] || [[ \"$FILE\" =~ gemspec$ ]]; then echo 'Checking for vulnerable gems...'; if command -v bundle >/dev/null 2>&1 && bundle show bundler-audit >/dev/null 2>&1; then bundle audit; elif command -v bundle >/dev/null 2>&1; then echo 'Run: bundle add bundler-audit --group development to enable security audits'; else echo 'Bundler not found for security audit'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.rb$ ]]; then if command -v rubocop >/dev/null 2>&1; then rubocop -A \"$FILE\" 2>/dev/null || echo 'RuboCop auto-correction applied'; elif command -v bundle >/dev/null 2>&1 && bundle show rubocop >/dev/null 2>&1; then bundle exec rubocop -A \"$FILE\" 2>/dev/null || echo 'RuboCop auto-correction applied'; else echo 'RuboCop not available for auto-correction'; fi; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.rb$ ]]; then RESULT=$(if command -v rubocop >/dev/null 2>&1; then rubocop \"$FILE\" 2>&1; elif command -v bundle >/dev/null 2>&1 && bundle show rubocop >/dev/null 2>&1; then bundle exec rubocop \"$FILE\" 2>&1; fi); if [ $? -ne 0 ] && [[ -n \"$RESULT\" ]]; then echo \"RuboCop linting issues found: $RESULT\" >&2; exit 2; fi; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.rb$ && \"$FILE\" != *\"spec/\"* && \"$FILE\" != *\"_spec.rb\" && \"$FILE\" != *\"test/\"* && \"$FILE\" != *\"_test.rb\" ]]; then DIR=$(dirname \"$FILE\"); BASENAME=$(basename \"$FILE\" .rb); for TEST_FILE in \"spec/${BASENAME}_spec.rb\" \"test/${BASENAME}_test.rb\" \"spec/models/${BASENAME}_spec.rb\" \"spec/controllers/${BASENAME}_spec.rb\" \"spec/services/${BASENAME}_spec.rb\"; do if [ -f \"$TEST_FILE\" ]; then echo \"Running tests for $TEST_FILE...\"; if command -v rspec >/dev/null 2>&1; then rspec \"$TEST_FILE\"; elif command -v bundle >/dev/null 2>&1 && bundle show rspec >/dev/null 2>&1; then bundle exec rspec \"$TEST_FILE\"; elif command -v ruby >/dev/null 2>&1; then ruby -Itest \"$TEST_FILE\" 2>/dev/null || echo 'Test runner not available'; fi; break; fi; done; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code notification: $(date)\" >> ~/.claude/notifications.log"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f Gemfile || -f Rakefile ]] && [[ $(git status --porcelain | grep '\\.rb$') ]]; then echo 'Running RuboCop on changed Ruby files...'; if command -v rubocop >/dev/null 2>&1; then rubocop $(git diff --name-only --diff-filter=ACMR | grep '\\.rb$'); elif command -v bundle >/dev/null 2>&1 && bundle show rubocop >/dev/null 2>&1; then bundle exec rubocop $(git diff --name-only --diff-filter=ACMR | grep '\\.rb$'); else echo 'RuboCop not found for linting'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f Gemfile || -f Rakefile ]] && [[ $(git status --porcelain | grep '\\.rb$') ]]; then echo 'Running security scan with Brakeman...'; if command -v brakeman >/dev/null 2>&1; then brakeman --quiet --no-pager || echo 'Brakeman scan completed with findings'; elif command -v bundle >/dev/null 2>&1 && bundle show brakeman >/dev/null 2>&1; then bundle exec brakeman --quiet --no-pager || echo 'Brakeman scan completed with findings'; else echo 'Brakeman not found for security scanning'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f Gemfile ]]; then echo 'Checking for gem vulnerabilities...'; if command -v bundle >/dev/null 2>&1 && bundle show bundler-audit >/dev/null 2>&1; then bundle audit || echo 'Security audit completed with findings'; else echo 'bundler-audit not found. Run: bundle add bundler-audit --group development'; fi; fi",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

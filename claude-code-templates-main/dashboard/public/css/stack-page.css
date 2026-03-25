@@ -1,0 +1,776 @@
+/* Stack Page Styles */
+
+/* Back Button */
+.back-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #00ff88;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    margin-right: 20px;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(-2px);
+}
+
+/* Stack Page Container */
+.stack-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Stack Header */
+.stack-header {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.05));
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stack-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.stack-info {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.stack-logo {
+    font-size: 64px;
+    line-height: 1;
+    min-width: 80px;
+    text-align: center;
+}
+
+.stack-details h1 {
+    font-size: 2.5rem;
+    color: #00ff88;
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.stack-description {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+/* Stack Stats */
+.stack-stats {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 20px;
+}
+
+.stack-stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00ff88;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.stack-website {
+    color: #00ff88;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.stack-website:hover {
+    background: rgba(0, 255, 136, 0.1);
+    transform: translateX(2px);
+}
+
+/* Stack Components */
+.stack-components {
+    margin-bottom: 40px;
+}
+
+.stack-section {
+    margin-bottom: 48px;
+}
+
+.stack-section-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stack-section-header h3 {
+    font-size: 1.8rem;
+    color: #00ff88;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stack-section-header p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-size: 1rem;
+}
+
+.component-count {
+    font-size: 0.875rem;
+    color: rgba(0, 255, 136, 0.8);
+    background: rgba(0, 255, 136, 0.1);
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    font-weight: 500;
+}
+
+/* Stack Grid */
+.stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Component Cards in Stack */
+.stack-component {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.stack-component:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 255, 136, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
+}
+
+.stack-component .component-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.stack-component .component-header h4 {
+    color: #00ff88;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+    flex: 1;
+    margin-right: 12px;
+}
+
+.stack-component .component-content {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.stack-component .component-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.stack-component .component-tag {
+    background: rgba(0, 255, 136, 0.1);
+    color: rgba(0, 255, 136, 0.8);
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    font-weight: 500;
+}
+
+/* Add to Cart Button in Stack */
+.stack-component .add-to-cart-btn {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    color: #00ff88;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.stack-component .add-to-cart-btn:hover {
+    background: rgba(0, 255, 136, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
+}
+
+.stack-component .add-to-cart-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Install All Section */
+.stack-install-all {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.05));
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.stack-install-all::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.stack-install-all h3 {
+    color: #00ff88;
+    font-size: 1.8rem;
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+
+.stack-install-all p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    margin: 0 0 24px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.stack-install-all .command-line {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stack-page {
+        padding: 12px;
+    }
+    
+    .stack-header {
+        padding: 20px;
+    }
+    
+    .stack-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .stack-logo {
+        font-size: 48px;
+    }
+    
+    .stack-details h1 {
+        font-size: 2rem;
+    }
+    
+    .stack-stats {
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .stack-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .stack-section-header h3 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .back-button {
+        font-size: 12px;
+        padding: 6px 12px;
+        margin-right: 10px;
+    }
+}
+
+/* Loading States for Stack Pages */
+.stack-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.stack-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 255, 136, 0.2);
+    border-top: 3px solid #00ff88;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Company Stacks Carousel */
+.company-stacks-carousel {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.carousel-container {
+    position: relative;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.carousel-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    color: #FFA500;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+}
+
+.carousel-btn:hover {
+    background: rgba(255, 165, 0, 0.1);
+    border-color: #FFA500;
+    transform: scale(1.05);
+}
+
+.carousel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 16px;
+    overflow: hidden;
+    scroll-behavior: smooth;
+    flex: 1;
+    padding: 4px;
+    cursor: grab;
+    user-select: none;
+}
+
+.company-stack-card {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid rgba(255, 165, 0, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-width: 260px;
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+}
+
+.company-stack-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.company-stack-card:hover {
+    background: rgba(30, 30, 30, 0.9);
+    border-color: #FFA500;
+    transform: translateY(-2px);
+    box-shadow: 
+        0 4px 20px rgba(255, 165, 0, 0.2),
+        inset 0 1px 0 rgba(255, 165, 0, 0.1);
+}
+
+.company-stack-card:hover::before {
+    opacity: 1;
+}
+
+.company-logo {
+    font-size: 1.8rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 40px;
+    text-align: center;
+    filter: grayscale(0.2);
+}
+
+.company-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.company-info h3 {
+    color: #FFA500;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+}
+
+.company-info p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    margin: 0;
+    line-height: 1.3;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stack-arrow {
+    font-size: 1.2rem;
+    color: rgba(255, 165, 0, 0.6);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+}
+
+.company-stack-card:hover .stack-arrow {
+    color: #FFA500;
+    transform: translateX(4px);
+    text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+}
+
+/* View All Card Special Styling */
+.view-all-card {
+    border: 1px solid rgba(255, 165, 0, 0.4) !important;
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(255, 165, 0, 0.05)) !important;
+}
+
+.view-all-card::before {
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), transparent) !important;
+    opacity: 1 !important;
+}
+
+.view-all-card:hover {
+    border-color: #FFA500 !important;
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 165, 0, 0.1)) !important;
+    box-shadow: 
+        0 4px 20px rgba(255, 165, 0, 0.3),
+        inset 0 1px 0 rgba(255, 165, 0, 0.2) !important;
+}
+
+.view-all-card .company-info h3 {
+    color: #FFA500 !important;
+    text-shadow: 0 0 15px rgba(255, 165, 0, 0.4) !important;
+}
+
+/* Terminal-style scrollbar for carousel */
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-track {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Responsive Design for Company Stacks */
+@media (max-width: 768px) {
+    .company-stacks-carousel {
+        padding: 16px 12px;
+    }
+    
+    .carousel-container {
+        gap: 8px;
+    }
+    
+    .carousel-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .carousel-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .company-stack-card {
+        min-width: 220px;
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .company-logo {
+        font-size: 1.5rem;
+        width: 32px;
+    }
+    
+    .company-info h3 {
+        font-size: 0.9rem;
+    }
+    
+    .company-info p {
+        font-size: 0.7rem;
+    }
+    
+    .stack-arrow {
+        font-size: 1rem;
+    }
+}
+
+/* All Companies Page Styles */
+.all-companies-page .stack-logo {
+    font-size: 4rem;
+}
+
+.all-companies-content {
+    margin-top: 32px;
+}
+
+.companies-category {
+    margin-bottom: 48px;
+}
+
+.category-title {
+    color: #FFA500;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.category-title::before {
+    content: '$';
+    color: rgba(255, 165, 0, 0.6);
+    font-weight: normal;
+}
+
+.companies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.all-company-card {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid rgba(255, 165, 0, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+}
+
+.all-company-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.all-company-card:hover {
+    background: rgba(30, 30, 30, 0.9);
+    border-color: #FFA500;
+    transform: translateY(-2px);
+    box-shadow: 
+        0 4px 20px rgba(255, 165, 0, 0.2),
+        inset 0 1px 0 rgba(255, 165, 0, 0.1);
+}
+
+.all-company-card:hover::before {
+    opacity: 1;
+}
+
+.company-card-logo {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 50px;
+    text-align: center;
+    filter: grayscale(0.1);
+}
+
+.company-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.company-card-info h4 {
+    color: #FFA500;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 8px rgba(255, 165, 0, 0.3);
+}
+
+.company-card-info p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    margin: 0;
+    line-height: 1.4;
+    font-family: 'Courier New', monospace;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.company-card-arrow {
+    font-size: 1.4rem;
+    color: rgba(255, 165, 0, 0.6);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+}
+
+.all-company-card:hover .company-card-arrow {
+    color: #FFA500;
+    transform: translateX(4px);
+    text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+}
+
+/* Responsive Design for All Companies */
+@media (max-width: 768px) {
+    .companies-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .all-company-card {
+        padding: 14px;
+        gap: 12px;
+    }
+    
+    .company-card-logo {
+        font-size: 1.6rem;
+        width: 40px;
+    }
+    
+    .company-card-info h4 {
+        font-size: 1rem;
+    }
+    
+    .company-card-info p {
+        font-size: 0.8rem;
+    }
+    
+    .category-title {
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+    }
+    
+    .companies-category {
+        margin-bottom: 32px;
+    }
+}
+
+/* Terminal loading dots animation */
+@keyframes terminalPulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}

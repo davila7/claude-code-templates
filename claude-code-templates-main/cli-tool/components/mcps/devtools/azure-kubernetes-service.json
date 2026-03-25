@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "aks": {
+      "description":"The AKS-MCP is a Model Context Protocol (MCP) server that enables AI assistants to interact with Azure Kubernetes Service (AKS) clusters. It serves as a bridge between AI tools (like GitHub Copilot, Claude, and other MCP-compatible AI assistants) and AKS, translating natural language requests into AKS operations and returning the results in a format the AI tools can understand.",
+      "command": "<path of binary aks-mcp>",
+      "args": [
+        "--transport", "stdio"
+      ]
+    }
+  }
+}

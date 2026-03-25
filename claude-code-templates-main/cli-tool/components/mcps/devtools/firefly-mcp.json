@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "firefly": {
+      "description": "Connect to Firefly AI services for advanced AI-powered development assistance, code analysis, and intelligent suggestions directly in your Claude Code environment.",
+      "command": "npx",
+      "args": ["-y", "@fireflyai/firefly-mcp"],
+      "env": {
+        "FIREFLY_ACCESS_KEY": "your_access_key",
+        "FIREFLY_SECRET_KEY": "your_secret_key"
+      }
+    }
+  }
+}

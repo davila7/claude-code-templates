@@ -1,0 +1,303 @@
+{
+  "metadata": {
+    "unity-game-developer": {
+      "tags": ["game-development", "unity", "c-sharp", "3d-graphics", "mobile-games", "physics", "optimization", "cross-platform"],
+      "companies": ["unity-technologies", "epic-games", "ubisoft", "valve", "supercell"],
+      "technologies": ["unity", "c-sharp", "blender", "photoshop", "visual-studio"]
+    },
+    "unreal-engine-developer": {
+      "tags": ["game-development", "unreal-engine", "c-plus-plus", "blueprints", "aaa-games", "multiplayer", "rendering"],
+      "companies": ["epic-games", "ubisoft", "valve", "activision", "cd-projekt"],
+      "technologies": ["unreal-engine", "c-plus-plus", "blueprints", "visual-studio", "perforce"]
+    },
+    "c-pro": {
+      "tags": ["c", "systems-programming", "embedded", "performance", "memory-management", "low-level"],
+      "companies": ["valve", "epic-games", "unity-technologies", "nvidia", "intel"],
+      "technologies": ["c", "gcc", "clang", "valgrind", "gdb", "make"]
+    },
+    "cpp-pro": {
+      "tags": ["cpp", "systems-programming", "game-development", "performance", "modern-cpp", "templates"],
+      "companies": ["epic-games", "valve", "unity-technologies", "ubisoft", "blizzard"],
+      "technologies": ["cpp", "visual-studio", "clang", "cmake", "unreal-engine", "qt"]
+    },
+    "javascript-pro": {
+      "tags": ["javascript", "web-development", "frontend", "backend", "nodejs", "react"],
+      "companies": ["meta", "google", "netflix", "airbnb", "spotify"],
+      "technologies": ["javascript", "nodejs", "react", "vue", "webpack", "npm"]
+    },
+    "python-pro": {
+      "tags": ["python", "backend", "data-science", "ai", "machine-learning", "automation"],
+      "companies": ["google", "netflix", "spotify", "uber", "dropbox"],
+      "technologies": ["python", "django", "flask", "tensorflow", "pytorch", "pandas"]
+    },
+    "rust-pro": {
+      "tags": ["rust", "systems-programming", "performance", "memory-safety", "web3", "blockchain"],
+      "companies": ["valve", "meta", "microsoft", "mozilla", "dropbox"],
+      "technologies": ["rust", "cargo", "tokio", "serde", "diesel", "webassembly"]
+    },
+    "mobile-developer": {
+      "tags": ["mobile-development", "react-native", "flutter", "ios", "android", "cross-platform"],
+      "companies": ["meta", "google", "uber", "airbnb", "spotify", "unity-technologies"],
+      "technologies": ["react-native", "flutter", "swift", "kotlin", "xcode", "android-studio"]
+    },
+    "frontend-developer": {
+      "tags": ["frontend", "web-development", "react", "ui-ux", "responsive-design", "performance"],
+      "companies": ["meta", "google", "netflix", "airbnb", "spotify"],
+      "technologies": ["react", "vue", "angular", "webpack", "sass", "typescript"]
+    },
+    "backend-architect": {
+      "tags": ["backend", "architecture", "microservices", "scalability", "databases", "apis"],
+      "companies": ["google", "amazon", "netflix", "uber", "spotify"],
+      "technologies": ["nodejs", "python", "java", "postgresql", "redis", "docker"]
+    }
+  },
+  "companies": {
+    "openai": {
+      "name": "OpenAI",
+      "description": "AI development stack with GPT, DALL-E, and Whisper APIs",
+      "logo": "🤖",
+      "color": "#10a37f",
+      "website": "https://openai.com"
+    },
+    "anthropic": {
+      "name": "Anthropic",
+      "description": "Claude AI integration and constitutional AI development",
+      "logo": "🧠",
+      "color": "#d97706",
+      "website": "https://anthropic.com"
+    },
+    "stripe": {
+      "name": "Stripe",
+      "description": "Complete payment processing and financial infrastructure",
+      "logo": "💳",
+      "color": "#635bff",
+      "website": "https://stripe.com"
+    },
+    "salesforce": {
+      "name": "Salesforce",
+      "description": "CRM development with Apex, Lightning, and Salesforce APIs",
+      "logo": "☁️",
+      "color": "#00a1e0",
+      "website": "https://salesforce.com"
+    },
+    "shopify": {
+      "name": "Shopify",
+      "description": "E-commerce development with Shopify APIs and app ecosystem",
+      "logo": "🛒",
+      "color": "#95bf47",
+      "website": "https://shopify.com"
+    },
+    "twilio": {
+      "name": "Twilio",
+      "description": "Communication APIs for SMS, voice, video, and messaging",
+      "logo": "📞",
+      "color": "#f22f46",
+      "website": "https://twilio.com"
+    },
+    "aws": {
+      "name": "Amazon Web Services",
+      "description": "Cloud infrastructure and serverless development stack",
+      "logo": "☁️",
+      "color": "#ff9900",
+      "website": "https://aws.amazon.com"
+    },
+    "github": {
+      "name": "GitHub",
+      "description": "Git workflow automation, Actions, and GitHub API integration",
+      "logo": "🐙",
+      "color": "#333",
+      "website": "https://github.com"
+    },
+    "slack": {
+      "name": "Slack",
+      "description": "Slack bot development and workplace automation APIs",
+      "logo": "💬",
+      "color": "#4a154b",
+      "website": "https://slack.com"
+    },
+    "discord": {
+      "name": "Discord",
+      "description": "Discord bot development and community management APIs",
+      "logo": "🎮",
+      "color": "#5865f2",
+      "website": "https://discord.com"
+    },
+    "notion": {
+      "name": "Notion",
+      "description": "Notion API integration and workspace automation",
+      "logo": "📝",
+      "color": "#000000",
+      "website": "https://notion.so"
+    },
+    "airtable": {
+      "name": "Airtable",
+      "description": "Database and workflow automation with Airtable APIs",
+      "logo": "📊",
+      "color": "#18bfff",
+      "website": "https://airtable.com"
+    },
+    "sendgrid": {
+      "name": "SendGrid",
+      "description": "Email delivery and marketing automation APIs",
+      "logo": "📧",
+      "color": "#1a82e2",
+      "website": "https://sendgrid.com"
+    },
+    "mongodb": {
+      "name": "MongoDB",
+      "description": "NoSQL database development with MongoDB Atlas APIs",
+      "logo": "🍃",
+      "color": "#47a248",
+      "website": "https://mongodb.com"
+    },
+    "firebase": {
+      "name": "Firebase",
+      "description": "Google's mobile and web development platform",
+      "logo": "🔥",
+      "color": "#ffca28",
+      "website": "https://firebase.google.com"
+    },
+    "supabase": {
+      "name": "Supabase",
+      "description": "Open source Firebase alternative with PostgreSQL",
+      "logo": "⚡",
+      "color": "#3ecf8e",
+      "website": "https://supabase.com"
+    },
+    "vercel": {
+      "name": "Vercel",
+      "description": "Frontend deployment and serverless functions platform",
+      "logo": "🔺",
+      "color": "#000000",
+      "website": "https://vercel.com"
+    },
+    "netlify": {
+      "name": "Netlify",
+      "description": "Web development platform with Git-based workflows",
+      "logo": "🌐",
+      "color": "#00ad9f",
+      "website": "https://netlify.com"
+    },
+    "planetscale": {
+      "name": "PlanetScale",
+      "description": "Serverless MySQL database platform with branching",
+      "logo": "🪐",
+      "color": "#000000",
+      "website": "https://planetscale.com"
+    },
+    "cloudflare": {
+      "name": "Cloudflare",
+      "description": "Edge computing and CDN development platform",
+      "logo": "☁️",
+      "color": "#f38020",
+      "website": "https://cloudflare.com"
+    },
+    "unity-technologies": {
+      "name": "Unity Technologies", 
+      "description": "Game development platform with Unity engine and APIs",
+      "logo": "🎲",
+      "color": "#000000",
+      "website": "https://unity.com"
+    },
+    "epic-games": {
+      "name": "Epic Games",
+      "description": "Unreal Engine development and Epic Games Store APIs",
+      "logo": "🎮",
+      "color": "#313131",
+      "website": "https://epicgames.com"
+    },
+    "linear": {
+      "name": "Linear",
+      "description": "Project management and issue tracking API integration",
+      "logo": "📋",
+      "color": "#5e6ad2",
+      "website": "https://linear.app"
+    },
+    "figma": {
+      "name": "Figma",
+      "description": "Design tool integration and Figma API development",
+      "logo": "🎨",
+      "color": "#f24e1e",
+      "website": "https://figma.com"
+    },
+    "adobe": {
+      "name": "Adobe",
+      "description": "Creative Cloud APIs and Adobe Experience Platform",
+      "logo": "🎭",
+      "color": "#ff0000",
+      "website": "https://adobe.com"
+    },
+    "atlassian": {
+      "name": "Atlassian",
+      "description": "Jira, Confluence, and Bitbucket API development",
+      "logo": "🔷",
+      "color": "#0052cc",
+      "website": "https://atlassian.com"
+    },
+    "hubspot": {
+      "name": "HubSpot",
+      "description": "CRM and marketing automation platform APIs",
+      "logo": "🧲",
+      "color": "#ff7a59",
+      "website": "https://hubspot.com"
+    },
+    "mailchimp": {
+      "name": "Mailchimp",
+      "description": "Email marketing and audience management APIs",
+      "logo": "🐵",
+      "color": "#ffe01b",
+      "website": "https://mailchimp.com"
+    },
+    "spotify": {
+      "name": "Spotify",
+      "description": "Music streaming and playlist management APIs",
+      "logo": "🎵",
+      "color": "#1db954",
+      "website": "https://spotify.com"
+    },
+    "youtube": {
+      "name": "YouTube",
+      "description": "Video platform integration and YouTube Data API",
+      "logo": "📺",
+      "color": "#ff0000",
+      "website": "https://youtube.com"
+    },
+    "twitter": {
+      "name": "Twitter/X",
+      "description": "Social media automation and Twitter API v2",
+      "logo": "🐦",
+      "color": "#1da1f2",
+      "website": "https://twitter.com"
+    }
+  },
+  "technologies": {
+    "unity": {
+      "name": "Unity Engine",
+      "description": "Complete Unity development stack with agents and commands",
+      "logo": "🎲",
+      "color": "#000000",
+      "website": "https://unity.com"
+    },
+    "unreal-engine": {
+      "name": "Unreal Engine", 
+      "description": "Complete Unreal Engine development stack",
+      "logo": "🎮",
+      "color": "#313131",
+      "website": "https://unrealengine.com"
+    },
+    "react": {
+      "name": "React",
+      "description": "Complete React development stack with modern tools",
+      "logo": "⚛️", 
+      "color": "#61dafb",
+      "website": "https://reactjs.org"
+    },
+    "nodejs": {
+      "name": "Node.js",
+      "description": "Complete Node.js backend development stack", 
+      "logo": "💚",
+      "color": "#339933",
+      "website": "https://nodejs.org"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "fetch": {
+      "description": "Web content fetching and data extraction capabilities. Access external APIs, scrape web content, and integrate external data sources.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "description": "Automatically approve and enable all MCP servers defined in project .mcp.json files. This setting bypasses manual approval prompts for project-defined MCP servers, streamlining development workflow in trusted environments.",
+  "enableAllProjectMcpServers": true
+}

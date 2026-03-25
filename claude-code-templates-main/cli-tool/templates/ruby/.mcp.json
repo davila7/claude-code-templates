@@ -1,0 +1,83 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "category": "Development Tools",
+      "description": "GitHub integration for repository management and issue tracking",
+      "complexity": "Medium",
+      "enabled": false,
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "category": "Database",
+      "description": "PostgreSQL database operations and query execution",
+      "complexity": "Medium",
+      "enabled": false,
+      "env": {
+        "POSTGRES_CONNECTION_STRING": ""
+      }
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "category": "Web Search",
+      "description": "Web search capabilities using Brave Search API",
+      "complexity": "Low",
+      "enabled": false,
+      "env": {
+        "BRAVE_API_KEY": ""
+      }
+    },
+    "ruby-docs": {
+      "command": "ruby",
+      "args": [
+        "-e",
+        "require 'json'; require 'net/http'; puts JSON.generate({tools: [{name: 'ruby_docs', description: 'Search Ruby documentation'}]})"
+      ],
+      "category": "Documentation",
+      "description": "Ruby language documentation and API reference",
+      "complexity": "Low",
+      "enabled": true
+    },
+    "rails-docs": {
+      "command": "ruby",
+      "args": [
+        "-e",
+        "require 'json'; require 'net/http'; puts JSON.generate({tools: [{name: 'rails_docs', description: 'Search Rails documentation and guides'}]})"
+      ],
+      "category": "Documentation",
+      "description": "Ruby on Rails framework documentation and guides",
+      "complexity": "Low",
+      "enabled": true
+    },
+    "rubygems": {
+      "command": "ruby",
+      "args": [
+        "-e",
+        "require 'json'; require 'net/http'; puts JSON.generate({tools: [{name: 'gem_search', description: 'Search and explore Ruby gems'}]})"
+      ],
+      "category": "Package Management",
+      "description": "Search and explore Ruby gems from RubyGems.org",
+      "complexity": "Low",
+      "enabled": true
+    },
+    "bundler": {
+      "command": "bundle",
+      "args": [
+        "exec",
+        "ruby",
+        "-e",
+        "require 'json'; puts JSON.generate({tools: [{name: 'bundle_audit', description: 'Security audit for gems'}]})"
+      ],
+      "category": "Security",
+      "description": "Bundler integration for dependency management and security auditing",
+      "complexity": "Medium",
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+# Google Analytics Skill Dependencies
+# Install with: pip install -r requirements.txt
+
+google-analytics-data>=0.17.0
+python-dotenv>=1.0.0
+pandas>=2.0.0

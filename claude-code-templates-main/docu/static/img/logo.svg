@@ -1,0 +1,23 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Terminal background -->
+  <rect x="2" y="4" width="28" height="24" rx="3" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  
+  <!-- Terminal header -->
+  <rect x="2" y="4" width="28" height="6" rx="3" fill="#161b22"/>
+  <rect x="2" y="10" width="28" height="18" fill="#0d1117"/>
+  
+  <!-- Terminal dots -->
+  <circle cx="6" cy="7" r="1.5" fill="#f85149"/>
+  <circle cx="10" cy="7" r="1.5" fill="#f97316"/>
+  <circle cx="14" cy="7" r="1.5" fill="#3fb950"/>
+  
+  <!-- Command prompt -->
+  <text x="5" y="17" font-family="monospace" font-size="8" fill="#3fb950">$</text>
+  
+  <!-- Code bracket -->
+  <path d="M9 14 L11 16 L9 18" stroke="#d57455" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M15 14 L13 16 L15 18" stroke="#d57455" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Cursor -->
+  <rect x="17" y="15" width="1" height="3" fill="#c9d1d9"/>
+</svg>

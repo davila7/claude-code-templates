@@ -1,0 +1,104 @@
+{
+  "name": "claude-code-templates",
+  "version": "1.28.13",
+  "description": "CLI tool to setup Claude Code configurations with framework-specific commands, automation hooks and MCP Servers for your projects",
+  "main": "src/index.js",
+  "bin": {
+    "create-claude-config": "bin/create-claude-config.js",
+    "claude-code-templates": "bin/create-claude-config.js",
+    "claude-code-template": "bin/create-claude-config.js",
+    "claude-init": "bin/create-claude-config.js",
+    "cctemplates": "bin/create-claude-config.js",
+    "cct": "bin/create-claude-config.js",
+    "claude-setup": "bin/create-claude-config.js",
+    "claude-config": "bin/create-claude-config.js"
+  },
+  "scripts": {
+    "start": "node bin/create-claude-config.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:e2e": "jest tests/e2e",
+    "test:analytics": "jest --testPathPattern=analytics",
+    "test:commands": "./test-commands.sh",
+    "test:detailed": "./test-detailed.sh",
+    "test:react": "make test-react",
+    "test:vue": "make test-vue",
+    "test:node": "make test-node",
+    "test:all": "npm run test:coverage && make test",
+    "dev:link": "npm link",
+    "dev:unlink": "npm unlink -g claude-code-templates",
+    "pretest:commands": "npm run dev:link",
+    "analytics:start": "node src/analytics.js",
+    "analytics:test": "npm run test:analytics",
+    "security-audit": "node src/security-audit.js",
+    "security-audit:ci": "node src/security-audit.js --ci",
+    "security-audit:verbose": "node src/security-audit.js --verbose",
+    "security-audit:json": "node src/security-audit.js --json --output=security-report.json"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "configuration",
+    "template",
+    "setup",
+    "cli",
+    "hooks",
+    "automation",
+    "javascript",
+    "typescript",
+    "react",
+    "vue",
+    "angular",
+    "nodejs",
+    "python",
+    "django",
+    "flask",
+    "fastapi",
+    "rust",
+    "go"
+  ],
+  "author": "Claude Code Templates",
+  "license": "MIT",
+  "dependencies": {
+    "boxen": "^5.1.2",
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "commander": "^11.1.0",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^8.2.6",
+    "js-yaml": "^4.1.0",
+    "open": "^8.4.2",
+    "ora": "^5.4.1",
+    "qrcode": "^1.5.3",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davila7/claude-code-templates.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davila7/claude-code-templates/issues"
+  },
+  "homepage": "https://github.com/davila7/claude-code-templates#readme",
+  "files": [
+    "bin/",
+    "src/",
+    "components/sandbox/e2b/",
+    "components/sandbox/cloudflare/",
+    "components/sandbox/docker/",
+    "README.md"
+  ],
+  "devDependencies": {
+    "jest": "^30.0.4",
+    "jest-watch-typeahead": "^3.0.1"
+  }
+}

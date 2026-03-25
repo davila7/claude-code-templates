@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "dynatrace-mcp-server": {
+      "description":"Manage and interact with the Dynatrace Platform for real-time observability and monitoring.",
+      "command": "npx",
+      "args": ["-y", "@dynatrace-oss/dynatrace-mcp-server@latest"],
+      "env": {
+        "DT_PLATFORM_TOKEN": "",
+        "DT_ENVIRONMENT": ""
+      }
+    }
+  }
+}

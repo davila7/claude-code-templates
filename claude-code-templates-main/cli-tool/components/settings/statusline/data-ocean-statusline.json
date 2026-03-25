@@ -1,0 +1,7 @@
+{
+  "description": "Dive deep into an ocean of code. Track depth based on file count, encounter different sea creatures, and occasionally discover treasure while surfing the data waves. Displays: Random wave patterns (🌊 ocean, 🌀 whirlpool, 💧 droplet, ⚡ electric, 🔥 fire), Depth in meters (file count * 10 for .py/.js/.rs files), Sea creatures (🐋 whale >100m, 🐠 fish 50-100m, 🐟 small fish <50m), Rare treasure (💎 diamond 5% chance per interaction).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); WAVES=(\"🌊\" \"🌀\" \"💧\" \"⚡\" \"🔥\"); WAVE=${WAVES[$((RANDOM % 5))]}; DEPTH=$(($(find . -name \"*.py\" -o -name \"*.js\" -o -name \"*.rs\" 2>/dev/null | wc -l) * 10)); CREATURES=$([ $DEPTH -gt 100 ] && echo \"🐋\" || [ $DEPTH -gt 50 ] && echo \"🐠\" || echo \"🐟\"); TREASURE=$([ $((RANDOM % 20)) -eq 0 ] && echo \"💎\" || echo \"\"); echo \"[$MODEL] $WAVE Depth: ${DEPTH}m | $CREATURES $TREASURE | 📁 ${DIR##*/}\"'"
+  }
+}

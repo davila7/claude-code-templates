@@ -1,0 +1,7 @@
+{
+  "description": "Override the default Claude model with a custom or alternative model configuration. Useful for testing new model versions or using organization-specific model deployments.",
+  "model": "claude-3-5-sonnet-20241022",
+  "env": {
+    "ANTHROPIC_SMALL_FAST_MODEL": "claude-3-5-haiku-20241022"
+  }
+}

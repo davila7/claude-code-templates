@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="termGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d0d1a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="trophyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E8A317;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#E8A317;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#000000"/>
+
+  <!-- Subtle glow behind trophy -->
+  <circle cx="920" cy="250" r="200" fill="url(#glowGrad)"/>
+
+  <!-- Terminal Window -->
+  <g transform="translate(60, 60)">
+    <!-- Terminal chrome -->
+    <rect x="0" y="0" width="520" height="380" rx="10" ry="10" fill="url(#termGrad)" stroke="#333" stroke-width="1"/>
+    <!-- Title bar -->
+    <rect x="0" y="0" width="520" height="36" rx="10" ry="10" fill="#1e1e2e"/>
+    <rect x="0" y="20" width="520" height="16" fill="#1e1e2e"/>
+    <!-- Traffic light dots -->
+    <circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+    <circle cx="40" cy="18" r="6" fill="#febc2e"/>
+    <circle cx="60" cy="18" r="6" fill="#28c840"/>
+    <!-- Terminal title -->
+    <text x="260" y="22" font-family="'Courier New', monospace" font-size="12" fill="#666" text-anchor="middle">claude-code</text>
+
+    <!-- Terminal content -->
+    <text x="20" y="70" font-family="'Courier New', monospace" font-size="13" fill="#28c840">$</text>
+    <text x="36" y="70" font-family="'Courier New', monospace" font-size="13" fill="#cccccc"> npx claude-code-templates \</text>
+    <text x="36" y="90" font-family="'Courier New', monospace" font-size="13" fill="#cccccc">  --agent ai-specialists/</text>
+    <text x="36" y="110" font-family="'Courier New', monospace" font-size="13" fill="#FFD700">  hackathon-ai-strategist</text>
+
+    <text x="20" y="145" font-family="'Courier New', monospace" font-size="12" fill="#28c840">// Installed successfully</text>
+
+    <text x="20" y="180" font-family="'Courier New', monospace" font-size="13" fill="#28c840">$</text>
+    <text x="36" y="180" font-family="'Courier New', monospace" font-size="13" fill="#cccccc"> Strategist ready</text>
+
+    <text x="20" y="215" font-family="'Courier New', monospace" font-size="12" fill="#888888">[Judging Criteria]</text>
+    <text x="20" y="237" font-family="'Courier New', monospace" font-size="12" fill="#FFD700">  Innovation ......... 30%</text>
+    <text x="20" y="257" font-family="'Courier New', monospace" font-size="12" fill="#FFD700">  Technical depth .... 25%</text>
+    <text x="20" y="277" font-family="'Courier New', monospace" font-size="12" fill="#FFD700">  Impact &amp; scale ..... 25%</text>
+    <text x="20" y="297" font-family="'Courier New', monospace" font-size="12" fill="#FFD700">  Demo quality ....... 15%</text>
+    <text x="20" y="317" font-family="'Courier New', monospace" font-size="12" fill="#FFD700">  Completeness ....... 5%</text>
+
+    <text x="20" y="355" font-family="'Courier New', monospace" font-size="12" fill="#28c840">  Ready to win.</text>
+  </g>
+
+  <!-- Trophy Icon -->
+  <g transform="translate(920, 170)">
+    <!-- Trophy cup -->
+    <path d="M-60,-80 L60,-80 L50,20 Q0,70 -50,20 Z" fill="url(#trophyGrad)" opacity="0.9"/>
+    <!-- Trophy handles -->
+    <path d="M-60,-60 Q-110,-60 -110,-20 Q-110,20 -60,20" fill="none" stroke="#FFD700" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+    <path d="M60,-60 Q110,-60 110,-20 Q110,20 60,20" fill="none" stroke="#FFD700" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+    <!-- Trophy stem -->
+    <rect x="-12" y="20" width="24" height="40" fill="#E8A317" rx="4"/>
+    <!-- Trophy base -->
+    <rect x="-45" y="60" width="90" height="16" rx="4" fill="#E8A317"/>
+    <!-- Star on trophy -->
+    <polygon points="0,-50 12,-25 40,-25 18,-8 26,18 0,4 -26,18 -18,-8 -40,-25 -12,-25" fill="#000000" opacity="0.2"/>
+    <polygon points="0,-45 10,-24 34,-24 16,-10 22,12 0,0 -22,12 -16,-10 -34,-24 -10,-24" fill="#FFF8DC" opacity="0.6"/>
+  </g>
+
+  <!-- Decorative sparkles around trophy -->
+  <g fill="#FFD700" opacity="0.5">
+    <circle cx="800" cy="140" r="3"/>
+    <circle cx="1050" cy="180" r="2"/>
+    <circle cx="830" cy="340" r="2.5"/>
+    <circle cx="1020" cy="350" r="2"/>
+    <circle cx="780" cy="240" r="2"/>
+    <circle cx="1060" cy="270" r="3"/>
+  </g>
+
+  <!-- Title text -->
+  <text x="600" y="520" font-family="'Courier New', monospace" font-size="34" fill="#ffffff" text-anchor="middle" font-weight="bold">Win Your Next Hackathon with</text>
+  <text x="600" y="558" font-family="'Courier New', monospace" font-size="34" fill="#ffffff" text-anchor="middle" font-weight="bold">the AI Strategist Agent</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="588" font-family="'Courier New', monospace" font-size="18" fill="#888888" text-anchor="middle">Ideation, evaluation &amp; pitch strategy powered by Claude Code</text>
+
+  <!-- Footer -->
+  <text x="600" y="618" font-family="'Courier New', monospace" font-size="13" fill="#444444" text-anchor="middle">Claude Code Templates  |  aitmpl.com</text>
+</svg>

@@ -1,0 +1,153 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Edit",
+      "MultiEdit",
+      "Write",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(pytest:*)",
+      "Bash(black:*)",
+      "Bash(isort:*)",
+      "Bash(flake8:*)",
+      "Bash(mypy:*)",
+      "Bash(django-admin:*)",
+      "Bash(flask:*)",
+      "Bash(uvicorn:*)",
+      "Bash(gunicorn:*)",
+      "Bash(git:*)"
+    ],
+    "deny": [
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(rm -rf:*)"
+    ],
+    "defaultMode": "allowEdits"
+  },
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "60000",
+    "BASH_MAX_OUTPUT_LENGTH": "20000",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "PYTHONPATH": "."
+  },
+  "includeCoAuthoredBy": true,
+  "cleanupPeriodDays": 30,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"\\(.tool_input.command) - \\(.tool_input.description // \"No description\")\"' >> ~/.claude/bash-command-log.txt"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"); CONTENT=$(echo $STDIN_JSON | jq -r '.tool_input.content // \"\"); if [[ \"$FILE\" =~ \\.py$ ]] && echo \"$CONTENT\" | grep -q 'print('; then echo 'Warning: print() statements should be replaced with logging' >&2; exit 2; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" == \"requirements.txt\" ]] || [[ \"$FILE\" == \"pyproject.toml\" ]] || [[ \"$FILE\" == \"setup.py\" ]]; then echo 'Checking for vulnerable dependencies...'; if command -v safety >/dev/null 2>&1; then safety check; elif command -v pip-audit >/dev/null 2>&1; then pip-audit; else echo 'No security audit tool found. Install safety or pip-audit'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.py$ ]]; then black \"$FILE\" 2>/dev/null || echo 'Black formatting skipped (not installed)'; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.py$ ]]; then isort \"$FILE\" 2>/dev/null || echo 'isort skipped (not installed)'; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.py$ ]]; then RESULT=$(flake8 \"$FILE\" 2>&1); if [ $? -ne 0 ] && command -v flake8 >/dev/null 2>&1; then echo \"Flake8 linting issues found: $RESULT\" >&2; exit 2; fi; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.py$ ]]; then RESULT=$(mypy \"$FILE\" 2>&1); if [ $? -ne 0 ] && command -v mypy >/dev/null 2>&1; then echo \"MyPy type checking issues found: $RESULT\" >&2; exit 2; fi; fi",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo $STDIN_JSON | jq -r '.tool_input.file_path // \"\"'); if [[ \"$FILE\" =~ \\.py$ && \"$FILE\" != *\"test_\"* && \"$FILE\" != *\"_test.py\" ]]; then DIR=$(dirname \"$FILE\"); BASENAME=$(basename \"$FILE\" .py); for TEST_FILE in \"$DIR/test_$BASENAME.py\" \"$DIR/${BASENAME}_test.py\" \"tests/test_$BASENAME.py\"; do if [ -f \"$TEST_FILE\" ]; then echo \"Running tests for $TEST_FILE...\"; if command -v pytest >/dev/null 2>&1; then pytest \"$TEST_FILE\" -v; elif python -m pytest \"$TEST_FILE\" 2>/dev/null; then python -m pytest \"$TEST_FILE\" -v; else python -m unittest \"$TEST_FILE\" 2>/dev/null || echo 'No test runner found'; fi; break; fi; done; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code notification: $(date)\" >> ~/.claude/notifications.log"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f requirements.txt || -f pyproject.toml || -f setup.py ]] && [[ $(git status --porcelain | grep '\\.py$') ]]; then echo 'Running linter on changed Python files...'; if command -v flake8 >/dev/null 2>&1; then flake8 $(git diff --name-only --diff-filter=ACMR | grep '\\.py$'); elif command -v pylint >/dev/null 2>&1; then pylint $(git diff --name-only --diff-filter=ACMR | grep '\\.py$'); else echo 'No Python linter found (flake8/pylint)'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ -f requirements.txt || -f pyproject.toml || -f setup.py ]] && [[ $(git status --porcelain | grep '\\.py$') ]]; then echo 'Running type checking on changed files...'; if command -v mypy >/dev/null 2>&1; then mypy $(git diff --name-only --diff-filter=ACMR | grep '\\.py$') || echo 'Type checking completed with issues'; else echo 'MyPy not found for type checking'; fi; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

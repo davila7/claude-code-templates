@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const chalk = require('chalk');
+const boxen = require('boxen');
+const { createClaudeConfig } = require('../src/index');
+
+const pkg = require('../package.json');
+
+const title = 'Claude Code Templates';
+const subtitle = 'Your starting point for Claude Code projects';
+
+const colorGradient = ['#EA580C', '#F97316', '#FB923C', '#FDBA74', '#FED7AA', '#FFEBD6'];
+
+function colorizeTitle(text) {
+  const chars = text.split('');
+  const steps = colorGradient.length;
+  return chars
+    .map((char, i) => {
+      const color = colorGradient[i % steps];
+      return chalk.hex(color)(char);
+    })
+    .join('');
+}
+
+function showBanner() {
+  console.clear();
+  console.log(chalk.hex('#F97316')('════════════════════════════════════════════════════════════════'));
+  console.log('\n');
+  console.log('       🔮 ' + colorizeTitle(title));
+  console.log('\n');
+  console.log('       ' + chalk.hex('#FDBA74')(subtitle));
+  console.log('\n');
+  console.log(chalk.hex('#F97316')('════════════════════════════════════════════════════════════════\n'));
+
+  console.log(
+    chalk.hex('#D97706')('🚀 Setup Claude Code for any project language 🚀') +
+    chalk.gray(`\n                             v${pkg.version}\n\n`) +
+    chalk.blue('🌐 Templates: ') + chalk.underline('https://aitmpl.com') + '\n' +
+    chalk.blue('📖 Documentation: ') + chalk.underline('https://docs.aitmpl.com') + '\n'
+  );
+}
+
+program
+  .name('create-claude-config')
+  .description('Setup Claude Code configurations and create global AI agents powered by Claude Code SDK')
+  .version(require('../package.json').version)
+  .option('-l, --language <language>', 'specify programming language (deprecated, use --template)')
+  .option('-f, --framework <framework>', 'specify framework (deprecated, use --template)')
+  .option('-t, --template <template>', 'specify template (e.g., common, javascript-typescript, python, ruby)')
+  .option('-d, --directory <directory>', 'target directory (default: current directory)')
+  .option('-y, --yes', 'skip prompts and use defaults')
+  .option('--dry-run', 'show what would be copied without actually copying')
+  .option('--command-stats, --commands-stats', 'analyze existing Claude Code commands and offer optimization')
+  .option('--hook-stats, --hooks-stats', 'analyze existing automation hooks and offer optimization')
+  .option('--mcp-stats, --mcps-stats', 'analyze existing MCP server configurations and offer optimization')
+  .option('--analytics', 'launch real-time Claude Code analytics dashboard')
+  .option('--chats', 'launch mobile-first chats interface (AI-optimized for mobile devices)')
+  .option('--agents', 'launch Claude Code agents dashboard (opens directly to conversations)')
+  .option('--chats-mobile', 'launch mobile-first chats interface (AI-optimized for mobile devices)')
+  .option('--plugins', 'launch Plugin Dashboard to view marketplaces, installed plugins, and permissions')
+  .option('--skills-manager', 'launch Skills Dashboard to view and explore installed Claude Code Skills')
+  .option('--teams', 'launch Agent Teams Dashboard to review multi-agent collaboration sessions')
+  .option('--2025', 'launch 2025 Year in Review dashboard (showcase your Claude Code usage statistics)')
+  .option('--tunnel', 'enable Cloudflare Tunnel for remote access (use with --analytics or --chats)')
+  .option('--verbose', 'enable verbose logging for debugging and development')
+  .option('--health-check, --health, --check, --verify', 'run comprehensive health check to verify Claude Code setup')
+  .option('--agent <agent>', 'install specific agent component (supports comma-separated values)')
+  .option('--command <command>', 'install specific command component (supports comma-separated values)')
+  .option('--mcp <mcp>', 'install specific MCP component (supports comma-separated values)')
+  .option('--setting <setting>', 'install specific setting component (supports comma-separated values)')
+  .option('--hook <hook>', 'install specific hook component (supports comma-separated values)')
+  .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
+  .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
+  .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation or in sandbox')
+  .option('--create-agent <agent>', 'create a global agent accessible from anywhere (e.g., customer-support)')
+  .option('--list-agents', 'list all installed global agents')
+  .option('--remove-agent <agent>', 'remove a global agent')
+  .option('--update-agent <agent>', 'update a global agent to the latest version')
+  .option('--studio', 'launch Claude Code Studio interface for local and cloud execution')
+  .option('--sandbox <provider>', 'execute Claude Code in isolated sandbox environment (e.g., e2b)')
+  .option('--e2b-api-key <key>', 'E2B API key for sandbox execution (alternative to environment variable)')
+  .option('--anthropic-api-key <key>', 'Anthropic API key for Claude Code (alternative to environment variable)')
+  .option('--clone-session <url>', 'download and import a shared Claude Code session from URL')
+  .action(async (options) => {
+    try {
+      // Only show banner for non-agent-list commands
+      const isQuietCommand = options.listAgents || 
+                            options.removeAgent || 
+                            options.updateAgent;
+      
+      if (!isQuietCommand) {
+        showBanner();
+      }
+      
+      await createClaudeConfig(options);
+    } catch (error) {
+      console.error(chalk.red('Error:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program.parse(process.argv);

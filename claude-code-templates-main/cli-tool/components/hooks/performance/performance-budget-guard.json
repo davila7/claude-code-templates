@@ -1,0 +1,27 @@
+{
+  "description": "Monitor bundle size and Core Web Vitals metrics during development, blocking deployments that exceed performance budgets with detailed reports. Automatically analyzes Next.js build output, checks bundle sizes against predefined budgets, and provides optimization recommendations. Hook triggers on PostToolUse for build-related operations and file changes that could affect performance.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); COMMAND=$(echo \"$input\" | jq -r \".tool_input.command // empty\"); SUCCESS=$(echo \"$input\" | jq -r \".tool_response.success // false\"); if [ \"$SUCCESS\" = \"true\" ] && [[ \"$COMMAND\" =~ (npm\\ run\\ build|next\\ build|vercel\\ build|yarn\\ build) ]]; then echo \"📊 Performance Budget Guard: Analyzing build output...\"; if [ -d \".next\" ]; then BUNDLE_SIZE=$(find .next/static/chunks -name \"*.js\" -exec stat -f%z {} + 2>/dev/null | awk \"{total += \\$1} END {print total}\"); BUNDLE_SIZE_KB=$((BUNDLE_SIZE / 1024)); BUDGET_LIMIT=350; echo \"📦 Total bundle size: ${BUNDLE_SIZE_KB}KB\"; if [ $BUNDLE_SIZE_KB -gt $BUDGET_LIMIT ]; then echo \"🚨 PERFORMANCE BUDGET EXCEEDED!\"; echo \"Current bundle size: ${BUNDLE_SIZE_KB}KB\"; echo \"Budget limit: ${BUDGET_LIMIT}KB\"; echo \"Overage: $((BUNDLE_SIZE_KB - BUDGET_LIMIT))KB\"; echo \"\" >&2; echo \"⚠️ Performance budget exceeded by $((BUNDLE_SIZE_KB - BUDGET_LIMIT))KB!\" >&2; echo \"\" >&2; echo \"📋 Bundle Analysis:\" >&2; find .next/static/chunks -name \"*.js\" -exec ls -lah {} + 2>/dev/null | sort -k5 -hr | head -5 >&2; echo \"\" >&2; echo \"💡 Optimization recommendations:\" >&2; echo \"• Use dynamic imports for large components\" >&2; echo \"• Implement code splitting with next/dynamic\" >&2; echo \"• Check for duplicate dependencies\" >&2; echo \"• Optimize third-party libraries\" >&2; echo \"• Run: npm run analyze for detailed bundle analysis\" >&2; exit 2; else echo \"✅ Bundle size within budget: ${BUNDLE_SIZE_KB}KB / ${BUDGET_LIMIT}KB\"; REMAINING=$((BUDGET_LIMIT - BUNDLE_SIZE_KB)); echo \"🎯 Remaining budget: ${REMAINING}KB\"; if [ $REMAINING -lt 50 ]; then echo \"⚠️ Warning: Less than 50KB remaining in performance budget\"; fi; fi; else echo \"❌ No .next build directory found. Run build first.\"; fi; else echo \"ℹ️ Performance check skipped (not a build command or failed build)\"; fi'",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); FILE_PATH=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); SUCCESS=$(echo \"$input\" | jq -r \".tool_response.success // false\"); if [ \"$SUCCESS\" = \"true\" ] && [[ \"$FILE_PATH\" =~ \\.(js|jsx|ts|tsx)$ ]] && [[ ! \"$FILE_PATH\" =~ node_modules ]]; then echo \"🔍 Performance Guard: Checking code changes in $FILE_PATH...\"; if [ -f \"$FILE_PATH\" ]; then FILE_SIZE=$(stat -f%z \"$FILE_PATH\" 2>/dev/null || stat -c%s \"$FILE_PATH\" 2>/dev/null); FILE_SIZE_KB=$((FILE_SIZE / 1024)); if [ $FILE_SIZE_KB -gt 100 ]; then echo \"⚠️ Large file detected: ${FILE_SIZE_KB}KB\"; echo \"💡 Consider splitting large components or lazy loading\"; fi; IMPORTS_COUNT=$(grep -c \"^import\" \"$FILE_PATH\" 2>/dev/null || echo \"0\"); if [ $IMPORTS_COUNT -gt 15 ]; then echo \"📦 Many imports detected: $IMPORTS_COUNT imports\"; echo \"💡 Consider consolidating imports or tree-shaking unused code\"; fi; if grep -q \"import.*\\*.*from\" \"$FILE_PATH\" 2>/dev/null; then echo \"🚨 Wildcard import detected in $FILE_PATH\"; echo \"💡 Use specific imports instead of wildcard imports for better tree-shaking\"; fi; if grep -q \"moment\" \"$FILE_PATH\" 2>/dev/null; then echo \"📅 Moment.js usage detected\"; echo \"💡 Consider using date-fns or native Date for smaller bundle size\"; fi; if grep -q \"lodash\" \"$FILE_PATH\" 2>/dev/null && ! grep -q \"lodash/\" \"$FILE_PATH\" 2>/dev/null; then echo \"🔧 Full Lodash import detected\"; echo \"💡 Use specific Lodash functions: import debounce from \\\"lodash/debounce\\\"\"; fi; echo \"✅ Performance check completed for $FILE_PATH\"; else echo \"❌ File $FILE_PATH not found\"; fi; else echo \"ℹ️ Performance check skipped (not a JavaScript/TypeScript file or failed operation)\"; fi'",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

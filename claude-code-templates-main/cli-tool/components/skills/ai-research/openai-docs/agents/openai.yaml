@@ -1,0 +1,14 @@
+interface:
+  display_name: "OpenAI Docs"
+  short_description: "Reference the official OpenAI Developer docs"
+  icon_small: "./assets/openai-small.svg"
+  icon_large: "./assets/openai.png"
+  default_prompt: "Look up official OpenAI docs for this task and answer with concise, cited guidance."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "openaiDeveloperDocs"
+      description: "OpenAI Developer Docs MCP server"
+      transport: "streamable_http"
+      url: "https://developers.openai.com/mcp"

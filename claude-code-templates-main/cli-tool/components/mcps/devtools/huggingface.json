@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "huggingface": {
+        "description":"Access Hugging Face models, datasets, Spaces, papers, collections via MCP.",
+        "url": "https://huggingface.co/mcp",
+        "headers": {
+            "Authorization": "Bearer <YOUR_HF_TOKEN>"
+            }
+        }
+    }
+}

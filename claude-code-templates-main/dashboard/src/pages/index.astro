@@ -1,0 +1,40 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import PartnerBanner from '../components/PartnerBanner.astro';
+import FeaturedSection from '../components/FeaturedSection.astro';
+import JobsPreview from '../components/JobsPreview.tsx';
+import ComponentGrid from '../components/ComponentGrid.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Claude Code Templates: 1000+ Agents, Commands, Skills & MCP Integrations"
+  description="Browse and install 1000+ pre-built components for Claude Code. AI agents, slash commands, MCP integrations, hooks, and settings. Free, open-source CLI tool."
+>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Claude Code Templates",
+    "description": "CLI tool and marketplace for managing Claude Code components. Over 1,000 pre-built agents, commands, skills, settings, hooks, and MCP integrations.",
+    "url": "https://www.aitmpl.com/",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Windows, macOS, Linux",
+    "downloadUrl": "https://www.npmjs.com/package/claude-code-templates",
+    "installUrl": "https://www.npmjs.com/package/claude-code-templates",
+    "author": { "@id": "https://www.aitmpl.com/#organization" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareRequirements": "Node.js 18+, Claude Code CLI",
+    "license": "https://opensource.org/licenses/MIT"
+  })} />
+  <TopBar />
+  <PartnerBanner />
+  <FeaturedSection />
+  <JobsPreview client:idle />
+  <ComponentGrid client:load initialType="skills" />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

@@ -1,0 +1,73 @@
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+.env*.local
+
+# Claude Code local settings (may contain API keys)
+**/settings.local.json
+.claude/hooks/*
+!.claude/hooks/telegram-pr-webhook.py
+.claude/commands/opsx/
+.claude/skills/
+
+# Database related files
+*.db
+*.sqlite
+*.sqlite3
+database.json
+db_backup.*
+supabase_data.*
+trending_cache.*
+analytics_data.*
+update_trending.sh
+
+# Python cache and virtual environments  
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Dependencies
+node_modules
+dist
+coverage
+
+# Sandbox output directories
+sandbox-*/
+cloudflare-*/
+!cloudflare-workers/
+
+# Test directories (local only)
+test-agent-sdk/
+test-cloudflare/
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.DS_Storetemp-gh-pages/
+
+# IDE files
+.vscode
+.vscode/*
+.idea/
+*.swp
+*.swo
+
+# Deployment
+.vercel
+
+# Local analysis (not for git)
+analysis/
+
+# OpenSpec (local workflow artifacts)
+openspec/
+
+# Crawl output (cf-crawl skill)
+.crawl-output/

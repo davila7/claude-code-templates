@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "Railway": {
+      "description": "Railway MCP server provides seamless integration with Railway's deployment platform, enabling Claude to manage projects, deployments, and infrastructure directly from the CLI.",
+      "command": "npx",
+      "args": ["-y", "@railway/mcp-server"]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+---
+import FeaturedCard from './FeaturedCard.astro';
+import { FEATURED_ITEMS } from '../lib/constants';
+---
+
+<section class="px-6 py-4">
+  <div class="flex items-center gap-2 mb-3">
+    <h2 class="text-sm font-semibold text-text-primary">Featured</h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    {FEATURED_ITEMS.map((item) => (
+      <FeaturedCard item={item} />
+    ))}
+  </div>
+</section>

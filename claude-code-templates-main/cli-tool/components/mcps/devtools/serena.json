@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+        "serena": {
+            "description": "Semantic code retrieval & editing tools for coding agents.",
+            "command": "/abs/path/to/uv",
+            "args": ["run", "--directory", "/abs/path/to/serena", "serena", "start-mcp-server"]
+        }
+    }
+}

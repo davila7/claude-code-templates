@@ -1,0 +1,7 @@
+{
+  "description": "A virtual pet that evolves based on your coding activity. Health and happiness change over time, creating an emotional connection with your coding sessions. Displays: Pet emoji (🐱 healthy, 😺 good, 😿 tired, 💀 exhausted), Mood emoji (✨ very happy, 😊 happy, 😐 neutral, 😢 sad), HP (Health Points 0-100, decreases every 20 commits), Joy (Happiness 0-100, increases every 10 commits), Commits counter (tracks session activity).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); SESSION=$(echo \"$input\" | jq -r \".session_id\" | cut -c1-8); CACHE=\"/tmp/tamagochi_$SESSION\"; if [ ! -f \"$CACHE\" ]; then echo \"100 50 0\" > \"$CACHE\"; fi; read HEALTH HAPPINESS COMMITS < \"$CACHE\"; COMMITS=$((COMMITS + 1)); if [ $((COMMITS % 10)) -eq 0 ]; then HAPPINESS=$((HAPPINESS + 5)); fi; if [ $((COMMITS % 20)) -eq 0 ]; then HEALTH=$((HEALTH - 10)); fi; HEALTH=$((HEALTH > 100 ? 100 : HEALTH)); HAPPINESS=$((HAPPINESS > 100 ? 100 : HAPPINESS)); echo \"$HEALTH $HAPPINESS $COMMITS\" > \"$CACHE\"; if [ $HEALTH -gt 80 ]; then PET=\"🐱\"; elif [ $HEALTH -gt 60 ]; then PET=\"😺\"; elif [ $HEALTH -gt 40 ]; then PET=\"😿\"; else PET=\"💀\"; fi; if [ $HAPPINESS -gt 80 ]; then MOOD=\"✨\"; elif [ $HAPPINESS -gt 60 ]; then MOOD=\"😊\"; elif [ $HAPPINESS -gt 40 ]; then MOOD=\"😐\"; else MOOD=\"😢\"; fi; echo \"[$MODEL] $PET$MOOD HP:$HEALTH Joy:$HAPPINESS | 📁 ${DIR##*/} | Commits:$COMMITS\"'"
+  }
+}

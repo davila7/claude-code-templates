@@ -1,0 +1,6 @@
+interface:
+  display_name: "Sora Video Generation Skill"
+  short_description: "Generate and manage Sora videos"
+  icon_small: "./assets/sora-small.svg"
+  icon_large: "./assets/sora.png"
+  default_prompt: "Plan and generate a Sora video for this request, then iterate with concrete prompt edits."

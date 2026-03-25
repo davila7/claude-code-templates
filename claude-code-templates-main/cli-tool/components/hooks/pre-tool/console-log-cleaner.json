@@ -1,0 +1,16 @@
+{
+  "description": "Warns about console.log statements when editing files on production branches (main/master). Helps prevent debug code from reaching production.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if git rev-parse --git-dir >/dev/null 2>&1 && [[ -n \"$CLAUDE_TOOL_FILE_PATH\" ]]; then BRANCH=$(git branch --show-current 2>/dev/null); if [[ \"$BRANCH\" =~ ^(main|master|production|prod)$ ]]; then EXT=\"${CLAUDE_TOOL_FILE_PATH##*.}\"; if [[ \"$EXT\" =~ ^(js|ts|jsx|tsx|mjs|cjs)$ ]]; then LOGS=$(grep -n 'console\\.' \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null); if [[ -n \"$LOGS\" ]]; then echo \"⚠️  WARNING: console statements found on '$BRANCH' branch:\"; echo \"$LOGS\" | head -5; COUNT=$(echo \"$LOGS\" | wc -l); if [[ $COUNT -gt 5 ]]; then echo \"... and $((COUNT-5)) more\"; fi; echo \"Consider removing debug statements before merging.\"; fi; fi; fi; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

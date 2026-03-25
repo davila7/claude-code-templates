@@ -1,0 +1,8 @@
+{
+  "description": "Display custom company announcements in Claude Code. Replace the example messages in the 'companyAnnouncements' array with your own organization's announcements, guidelines, or reminders.",
+  "companyAnnouncements": [
+    "Browse 1000+ components at aitmpl.com — agents, commands, MCPs, hooks, and settings ready to install!",
+    "Install components instantly: npx claude-code-templates@latest --agent <name>",
+    "New components added weekly — check aitmpl.com/blog for the latest updates"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "mcpServers": {
+    "typescript-sdk": {
+      "name": "TypeScript SDK",
+      "description": "Official Anthropic SDK for building MCP servers and clients in JS/TS",
+      "command": "node",
+      "args": ["path/to/ts-sdk-server.js"],
+      "env": {}
+    },
+    "github": {
+      "name": "GitHub MCP",
+      "description": "Integration with GitHub API for managing repos, issues, and PRs",
+      "command": "node",
+      "args": ["path/to/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "..."
+      }
+    },
+    "puppeteer": {
+      "name": "Puppeteer MCP",
+      "description": "Browser automation using Google Puppeteer",
+      "command": "node",
+      "args": ["path/to/server-puppeteer"],
+      "env": {}
+    },
+    "slack": {
+      "name": "Slack MCP",
+      "description": "Access to real-time Slack conversations and workflows",
+      "command": "node",
+      "args": ["path/to/server-slack"],
+      "env": {
+        "SLACK_TOKEN": "..."
+      }
+    },
+    "filesystem": {
+      "name": "File System MCP",
+      "description": "Local file management; compatible with any language",
+      "command": "node",
+      "args": ["path/to/server-filesystem"],
+      "env": {}
+    },
+    "memory-bank": {
+      "name": "Memory Bank MCP",
+      "description": "Centralized memory system for AI agents",
+      "command": "server-memory",
+      "args": [],
+      "env": {}
+    },
+    "sequential-thinking": {
+      "name": "Sequential Thinking MCP",
+      "description": "Helps LLMs decompose complex tasks into logical steps",
+      "command": "code-reasoning",
+      "args": [],
+      "env": {}
+    },
+    "brave-search": {
+      "name": "Brave Search MCP",
+      "description": "Privacy-focused web search tool",
+      "command": "server-brave-search",
+      "args": [],
+      "env": {}
+    },
+    "google-maps": {
+      "name": "Google Maps MCP",
+      "description": "Integrates Google Maps for geolocation and directions",
+      "command": "server-google-maps",
+      "args": [],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "..."
+      }
+    },
+    "deep-graph": {
+      "name": "Deep Graph MCP (Code Graph)",
+      "description": "Transforms source code into semantic graphs via DeepGraph",
+      "command": "mcp-code-graph",
+      "args": [],
+      "env": {}
+    }
+  }
+}

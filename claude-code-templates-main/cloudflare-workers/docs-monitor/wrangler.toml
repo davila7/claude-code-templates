@@ -1,0 +1,40 @@
+# Cloudflare Worker Configuration
+# Claude Code Docs Monitor
+
+name = "claude-docs-monitor"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# Cron Triggers - Check for docs changes every 1 hour
+# Cron syntax: minute hour day month day-of-week
+# "0 * * * *" = Every hour at minute 0 (24 requests/day - 0.024% of free tier)
+# "*/5 * * * *" = Every 5 minutes (288 requests/day - 0.3% of free tier)
+# "0 */6 * * *" = Every 6 hours (4 requests/day)
+[triggers]
+crons = ["0 * * * *"]
+
+# KV Namespace for storing state (hash, timestamps)
+# You need to create this KV namespace in Cloudflare Dashboard first:
+# 1. Go to Workers & Pages > KV
+# 2. Create namespace: "DOCS_MONITOR_KV"
+# 3. Copy the ID and paste it below
+[[kv_namespaces]]
+binding = "DOCS_MONITOR_KV"
+id = "a1cee9792e9c4d3ba3e728b0e07eed06"
+
+# Environment variables (secrets)
+# Set these using: wrangler secret put <KEY>
+# Required secrets:
+# - TELEGRAM_BOT_TOKEN: Your Telegram bot token from @BotFather
+# - TELEGRAM_CHAT_ID: Your Telegram chat ID (can be user ID or group ID)
+# - TRIGGER_SECRET: Secret token for manual trigger endpoint (optional)
+
+# Example of setting secrets:
+# wrangler secret put TELEGRAM_BOT_TOKEN
+# wrangler secret put TELEGRAM_CHAT_ID
+# wrangler secret put TRIGGER_SECRET
+
+# Optional: Route configuration if you want a custom domain
+# [routes]
+# pattern = "docs-monitor.yourdomain.com/*"
+# zone_name = "yourdomain.com"

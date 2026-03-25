@@ -1,0 +1,78 @@
+{
+  "mcpServers": {
+    "python-sdk": {
+      "name": "Python SDK",
+      "description": "Official Python SDK with FastMCP for rapid MCP development",
+      "command": "python",
+      "args": ["-m", "python_sdk.server"],
+      "env": {}
+    },
+    "docker": {
+      "name": "Docker MCP",
+      "description": "Isolated code execution via Docker containers",
+      "command": "python",
+      "args": ["-m", "mcp_server_docker"],
+      "env": {}
+    },
+    "jupyter": {
+      "name": "Jupyter MCP",
+      "description": "MCP integration for interactive Jupyter notebooks",
+      "command": "python",
+      "args": ["-m", "server_jupyter"],
+      "env": {}
+    },
+    "postgresql": {
+      "name": "PostgreSQL MCP",
+      "description": "Natural language queries to PostgreSQL databases",
+      "command": "python",
+      "args": ["-m", "server_postgres"],
+      "env": {
+        "DATABASE_URL": "postgresql://user:pass@host/db"
+      }
+    },
+    "opik": {
+      "name": "Opik MCP",
+      "description": "Observability for LLM apps with tracing and metrics",
+      "command": "python",
+      "args": ["-m", "opik_mcp"],
+      "env": {}
+    },
+    "memory-bank": {
+      "name": "Memory Bank MCP",
+      "description": "Centralized memory system for AI agents",
+      "command": "server-memory",
+      "args": [],
+      "env": {}
+    },
+    "sequential-thinking": {
+      "name": "Sequential Thinking MCP",
+      "description": "Helps LLMs decompose complex tasks into logical steps",
+      "command": "code-reasoning",
+      "args": [],
+      "env": {}
+    },
+    "brave-search": {
+      "name": "Brave Search MCP",
+      "description": "Privacy-focused web search tool",
+      "command": "server-brave-search",
+      "args": [],
+      "env": {}
+    },
+    "google-maps": {
+      "name": "Google Maps MCP",
+      "description": "Integrates Google Maps for geolocation and directions",
+      "command": "server-google-maps",
+      "args": [],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "..."
+      }
+    },
+    "deep-graph": {
+      "name": "Deep Graph MCP (Code Graph)",
+      "description": "Transforms source code into semantic graphs via DeepGraph",
+      "command": "mcp-code-graph",
+      "args": [],
+      "env": {}
+    }
+  }
+}

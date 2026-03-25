@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "Neon": {
+      "description":"MCP server for interacting with Neon Management API and databases",
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.neon.tech/mcp"]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# Filter pages - high priority for crawling
+Allow: /agents
+Allow: /commands
+Allow: /settings
+Allow: /hooks
+Allow: /mcps
+Allow: /templates
+Allow: /skills
+
+# Blog content
+Allow: /blog/
+
+# Component pages
+Allow: /component/
+
+# Important pages
+Allow: /trending.html
+
+# Disallow temporary or admin files
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.vercel/
+Disallow: /dev-server.js
+
+# Sitemap location (fixed: was pointing to GitHub Pages instead of aitmpl.com)
+Sitemap: https://aitmpl.com/sitemap.xml

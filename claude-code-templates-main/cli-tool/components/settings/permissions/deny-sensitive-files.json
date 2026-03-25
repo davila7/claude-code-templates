@@ -1,0 +1,11 @@
+{
+  "description": "Deny access to sensitive files like environment variables and secrets.",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./config/credentials.json)"
+    ]
+  }
+}

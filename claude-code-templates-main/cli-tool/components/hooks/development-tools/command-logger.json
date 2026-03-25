@@ -1,0 +1,16 @@
+{
+  "description": "Log all Claude Code commands to a file for audit and debugging purposes. Simple logging that records tool usage with timestamps.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date)] Tool: $CLAUDE_TOOL_NAME | File: $CLAUDE_TOOL_FILE_PATH\" >> ~/.claude/command-log.txt"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "LaunchDarkly": {
+      "description":"Official LaunchDarkly MCP Server for feature flag management and experimentation. Enables AI agents to interact with LaunchDarkly APIs for managing feature flags, AI configs, targeting rules, and gradual rollouts across multiple environments.",
+      "command": "npx",
+      "args": [
+        "-y", "--package", "@launchdarkly/mcp-server", "--", "mcp", "start",
+        "--api-key", "api-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      ]
+    }
+  }
+}

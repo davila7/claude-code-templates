@@ -1,0 +1,23 @@
+{
+  "description": "Scope guard that detects files modified outside the declared scope of a specification. When a .spec.md file contains a 'Files to Create/Modify' section, this hook compares git-modified files against the declared list. Files outside scope trigger a warning (non-blocking). Automatically excludes test files, config files, infrastructure files, and documentation. Essential for Spec-Driven Development to prevent scope creep during implementation.",
+  "supportingFiles": [
+    {
+      "source": "scope-guard.sh",
+      "destination": ".claude/hooks/scope-guard.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/scope-guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

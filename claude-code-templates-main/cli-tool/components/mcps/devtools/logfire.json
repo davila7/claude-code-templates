@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "logfire": {
+      "description":"Provides access to OpenTelemetry traces and metrics through Logfire.",
+      "command": "uvx",
+      "args": ["logfire-mcp@latest", "--read-token=YOUR-TOKEN"]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+# Docker-based Service
+# Deploy any application using a Dockerfile
+
+services:
+  - type: web
+    name: docker-app
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile  # Path to your Dockerfile
+    dockerContext: .              # Build context directory
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromDatabase:
+          name: redis
+          property: connectionString
+      - key: SECRET_KEY
+        sync: false  # User provides in Dashboard
+
+databases:
+  - name: postgres
+    databaseName: app_production
+    user: app_user
+    plan: free
+    postgresMajorVersion: "15"
+    ipAllowList: []
+
+  - name: redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+# Example multi-stage Dockerfile:
+#
+# # Build stage
+# FROM node:20-alpine AS builder
+# WORKDIR /app
+# COPY package*.json ./
+# RUN npm ci
+# COPY . .
+# RUN npm run build
+#
+# # Production stage
+# FROM node:20-alpine
+# WORKDIR /app
+# COPY --from=builder /app/dist ./dist
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY package*.json ./
+# ENV NODE_ENV=production
+# EXPOSE 10000
+# CMD ["node", "dist/main.js"]

@@ -1,0 +1,79 @@
+{
+  "description": "Complete Git Flow configuration with statusline, permissions, environment variables, and workflow enforcement. Displays real-time Git Flow status, prevents direct pushes to main/develop, allows feature/release/hotfix operations, and configures Git Flow branch naming conventions. Perfect for teams following Git Flow branching strategy.",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'if ! git rev-parse --git-dir >/dev/null 2>&1; then echo \"Not a git repository\"; exit 0; fi; BRANCH=$(git branch --show-current 2>/dev/null); if [ -z \"$BRANCH\" ]; then echo \"Detached HEAD\"; exit 0; fi; ICON=\"📁\"; TARGET=\"\"; if [[ $BRANCH == feature/* ]]; then ICON=\"🌿\"; TARGET=\"→ develop\"; elif [[ $BRANCH == release/* ]]; then ICON=\"🚀\"; TARGET=\"→ main\"; elif [[ $BRANCH == hotfix/* ]]; then ICON=\"🔥\"; TARGET=\"→ main+develop\"; elif [[ $BRANCH == \"develop\" ]]; then ICON=\"🔀\"; elif [[ $BRANCH == \"main\" ]]; then ICON=\"🏠\"; fi; AHEAD=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo \"0\"); BEHIND=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo \"0\"); SYNC=\"\"; if [ \"$AHEAD\" -gt 0 ]; then SYNC=\" ↑$AHEAD\"; fi; if [ \"$BEHIND\" -gt 0 ]; then SYNC=\"$SYNC ↓$BEHIND\"; fi; MODIFIED=$(git status --porcelain 2>/dev/null | grep \"^ M\" | wc -l | tr -d \" \"); ADDED=$(git status --porcelain 2>/dev/null | grep \"^??\" | wc -l | tr -d \" \"); DELETED=$(git status --porcelain 2>/dev/null | grep \"^ D\" | wc -l | tr -d \" \"); CHANGES=\"\"; if [ \"$MODIFIED\" -gt 0 ]; then CHANGES=\" ●$MODIFIED\"; fi; if [ \"$ADDED\" -gt 0 ]; then CHANGES=\"$CHANGES ✚$ADDED\"; fi; if [ \"$DELETED\" -gt 0 ]; then CHANGES=\"$CHANGES ✖$DELETED\"; fi; if [ -n \"$TARGET\" ]; then echo \"$ICON $BRANCH$SYNC$CHANGES | 🎯 $TARGET\"; else echo \"$ICON $BRANCH$SYNC$CHANGES\"; fi'"
+  },
+  "permissions": {
+    "deny": [
+      "Bash(git push origin main:*)",
+      "Bash(git push origin develop:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git rebase -i:*)"
+    ],
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git tag:*)",
+      "Bash(git push origin feature/*:*)",
+      "Bash(git push origin release/*:*)",
+      "Bash(git push origin hotfix/*:*)",
+      "Bash(git push --tags:*)",
+      "Bash(git push -u:*)",
+      "Bash(git flow:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh issue:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run:*)"
+    ]
+  },
+  "env": {
+    "GIT_FLOW_MAIN_BRANCH": "main",
+    "GIT_FLOW_DEVELOP_BRANCH": "develop",
+    "GIT_FLOW_PREFIX_FEATURE": "feature/",
+    "GIT_FLOW_PREFIX_RELEASE": "release/",
+    "GIT_FLOW_PREFIX_HOTFIX": "hotfix/",
+    "GIT_FLOW_VERSION_TAG_PREFIX": "v"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_COMMAND\" | grep -q 'git checkout -b'; then BRANCH_NAME=$(echo \"$CLAUDE_TOOL_COMMAND\" | sed -n 's/.*git checkout -b \\([^ ]*\\).*/\\1/p'); if [[ -n \"$BRANCH_NAME\" ]] && [[ \"$BRANCH_NAME\" != \"main\" ]] && [[ \"$BRANCH_NAME\" != \"develop\" ]]; then if [[ ! \"$BRANCH_NAME\" =~ ^(feature|release|hotfix)/ ]]; then echo \"❌ Invalid Git Flow branch name: $BRANCH_NAME\"; echo \"\"; echo \"Git Flow branches must follow these patterns:\"; echo \"  • feature/<descriptive-name>\"; echo \"  • release/v<MAJOR>.<MINOR>.<PATCH>\"; echo \"  • hotfix/<descriptive-name>\"; echo \"\"; echo \"Examples:\"; echo \"  ✅ feature/user-authentication\"; echo \"  ✅ release/v1.2.0\"; echo \"  ✅ hotfix/critical-security-fix\"; echo \"\"; echo \"Invalid:\"; echo \"  ❌ $BRANCH_NAME (missing Git Flow prefix)\"; echo \"  ❌ feat/something (use 'feature/' not 'feat/')\"; echo \"  ❌ fix/bug (use 'hotfix/' not 'fix/')\"; echo \"\"; echo \"💡 Use Git Flow commands instead:\"; echo \"  /feature <name>  - Create feature branch\"; echo \"  /release <version> - Create release branch\"; echo \"  /hotfix <name>   - Create hotfix branch\"; exit 1; fi; if [[ \"$BRANCH_NAME\" =~ ^release/ ]] && [[ ! \"$BRANCH_NAME\" =~ ^release/v[0-9]+\\.[0-9]+\\.[0-9]+(-.+)?$ ]]; then echo \"❌ Invalid release version: $BRANCH_NAME\"; echo \"\"; echo \"Release branches must follow semantic versioning:\"; echo \"  release/vMAJOR.MINOR.PATCH[-prerelease]\"; echo \"\"; echo \"Valid examples:\"; echo \"  ✅ release/v1.0.0\"; echo \"  ✅ release/v2.1.3\"; echo \"  ✅ release/v1.0.0-beta.1\"; echo \"\"; echo \"Invalid:\"; echo \"  ❌ release/1.0.0 (missing 'v' prefix)\"; echo \"  ❌ release/v1.0 (incomplete version)\"; echo \"  ❌ $BRANCH_NAME\"; echo \"\"; echo \"💡 Use: /release v1.2.0\"; exit 1; fi; fi; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git commit:*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "COMMIT_MSG=$(echo \"$CLAUDE_TOOL_COMMAND\" | grep -oP '(?<=-m \")[^\"]+' | head -1); if [[ -n \"$COMMIT_MSG\" ]] && [[ ! \"$COMMIT_MSG\" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\\(.+\\))?:\\  ]]; then echo \"❌ Invalid commit message format\"; echo \"\"; echo \"Commit messages must follow Conventional Commits:\"; echo \"  type(scope): description\"; echo \"\"; echo \"Types:\"; echo \"  feat:     New feature\"; echo \"  fix:      Bug fix\"; echo \"  docs:     Documentation changes\"; echo \"  style:    Code style changes (formatting)\"; echo \"  refactor: Code refactoring\"; echo \"  perf:     Performance improvements\"; echo \"  test:     Adding or updating tests\"; echo \"  chore:    Maintenance tasks\"; echo \"  ci:       CI/CD changes\"; echo \"  build:    Build system changes\"; echo \"  revert:   Revert previous commit\"; echo \"\"; echo \"Examples:\"; echo \"  ✅ feat: add user authentication\"; echo \"  ✅ feat(auth): implement JWT tokens\"; echo \"  ✅ fix: resolve memory leak in parser\"; echo \"  ✅ fix(api): handle null responses\"; echo \"  ✅ docs: update API documentation\"; echo \"  ❌ Added new feature (no type)\"; echo \"  ❌ feat:add feature (missing space)\"; echo \"  ❌ feature: add login (wrong type)\"; echo \"\"; echo \"Your message: $COMMIT_MSG\"; exit 1; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git push:*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PUSH_CMD=\"$CLAUDE_TOOL_COMMAND\"; CURRENT_BRANCH=$(git branch --show-current 2>/dev/null); if [[ \"$PUSH_CMD\" =~ (origin[[:space:]]+main|origin[[:space:]]+develop|main|develop) ]] || [[ \"$CURRENT_BRANCH\" == \"main\" || \"$CURRENT_BRANCH\" == \"develop\" ]]; then if [[ \"$PUSH_CMD\" != *\"--force\"* ]] && ([[ \"$CURRENT_BRANCH\" == \"main\" ]] || [[ \"$CURRENT_BRANCH\" == \"develop\" ]] || [[ \"$PUSH_CMD\" =~ origin[[:space:]]main ]] || [[ \"$PUSH_CMD\" =~ origin[[:space:]]develop ]]); then echo \"❌ Direct push to main/develop is not allowed!\"; echo \"\"; echo \"Protected branches:\"; echo \"  - main (production)\"; echo \"  - develop (integration)\"; echo \"\"; echo \"Git Flow workflow:\"; echo \"  1. Create a feature branch:\"; echo \"     /feature <name>\"; echo \"\"; echo \"  2. Make your changes and commit\"; echo \"\"; echo \"  3. Push feature branch:\"; echo \"     git push origin feature/<name>\"; echo \"\"; echo \"  4. Create pull request:\"; echo \"     gh pr create\"; echo \"\"; echo \"  5. After approval, merge with:\"; echo \"     /finish\"; echo \"\"; echo \"For releases:\"; echo \"  /release <version> → PR → /finish\"; echo \"\"; echo \"For hotfixes:\"; echo \"  /hotfix <name> → PR → /finish\"; echo \"\"; echo \"Current branch: $CURRENT_BRANCH\"; exit 1; fi; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

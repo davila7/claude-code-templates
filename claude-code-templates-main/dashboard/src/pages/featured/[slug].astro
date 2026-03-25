@@ -1,0 +1,524 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import SearchModal from '../../components/SearchModal.tsx';
+import CartSidebar from '../../components/CartSidebar.tsx';
+import { FEATURED_ITEMS } from '../../lib/constants';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const item = FEATURED_ITEMS.find((f) => f.url === `/featured/${slug}`);
+
+if (!item) {
+  return Astro.redirect('/');
+}
+---
+
+<DashboardLayout
+  title={`${item.name} for Claude Code — Featured Integration | Claude Code Templates`}
+  description={`${item.description} for Claude Code. ${item.category} integration with detailed setup guide and components.`}
+>
+  <div class="max-w-5xl mx-auto px-6 py-8">
+    {/* Back nav */}
+    <a
+      href="/"
+      class="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors mb-6"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Components
+    </a>
+
+    {/* Header */}
+    <div class="flex items-start gap-5 mb-8 pb-6 border-b border-border relative">
+      {/* Logo */}
+      <div class="w-16 h-16 rounded-xl bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 p-2">
+        <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-lg" />
+      </div>
+
+      {/* Title + badges */}
+      <div class="flex-1 min-w-0">
+        <h1 class="text-2xl font-bold text-text-primary">{item.name}</h1>
+        <div class="flex items-center gap-2 mt-2">
+          <span
+            class="text-[11px] px-2.5 py-1 rounded-full font-semibold text-white uppercase tracking-wide"
+            style={`background-color: ${item.tagColor}`}
+          >
+            {item.tag}
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-secondary">
+            {item.category}
+          </span>
+        </div>
+      </div>
+
+      {/* CTA + Share */}
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="relative" id="shareDropdown">
+          <button
+            id="shareBtn"
+            class="w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:border-border-hover bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+          </button>
+          <div id="shareOptions" class="hidden absolute right-0 top-full mt-2 bg-surface-3 border border-border rounded-lg shadow-lg z-50 min-w-[160px] overflow-hidden">
+            <button class="share-opt w-full text-left px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-4 transition-colors flex items-center gap-2" data-platform="x">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Share on X
+            </button>
+            <button class="share-opt w-full text-left px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-4 transition-colors flex items-center gap-2" data-platform="threads">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.6-.053-1.149-.16-1.644a4.158 4.158 0 00-.488-1.336 3.996 3.996 0 00-.82-1.084 4.015 4.015 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.014c-1.623.02-3.094.37-4.37 1.04a4.015 4.015 0 00-1.414 1.017 3.996 3.996 0 00-.82 1.084 4.158 4.158 0 00-.488 1.336c-.107.495-.16 1.044-.16 1.644 0 .6.053 1.149.16 1.644.107.496.27.941.488 1.336.218.394.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/></svg>
+              Share on Threads
+            </button>
+          </div>
+        </div>
+        <a
+          href={item.ctaUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg text-sm font-medium transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          {item.ctaLabel}
+        </a>
+      </div>
+    </div>
+
+    {/* Navigation bar */}
+    <div class="flex border-b border-border mb-0 sticky top-0 bg-surface-0 z-30">
+      <span class="px-4 py-3 text-sm font-medium text-text-primary border-b-2 border-accent-500">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          Overview
+        </span>
+      </span>
+      <a href={item.websiteUrl} target="_blank" rel="noopener noreferrer" class="px-4 py-3 text-sm font-medium text-text-tertiary border-b-2 border-transparent hover:text-text-secondary transition-colors">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          Website
+        </span>
+      </a>
+    </div>
+
+    {/* Content */}
+    <div class="mt-0">
+      <div class="pt-6">
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 items-start">
+          {/* Main content */}
+          <div class="min-w-0 featured-prose">
+            {slug === 'braingrid' && (
+              <Fragment>
+                <h2>The Real Problem With AI Coding Is Not Code Generation</h2>
+                <p>AI coding tools like Claude Code are extremely capable. With models like Opus 4.5, they can reason deeply, write high-quality code, and implement complex features.</p>
+                <p>The problem shows up when builders try to turn a product idea into working software. As products grow, intent gets blurry, context fragments, and small changes ripple across the system in unexpected ways.</p>
+                <p><strong>The limitation is not the model. It is the lack of product-level planning, structure, and strategy before any code is written.</strong></p>
+
+                <h2>BrainGrid Is Like Claude Code Plan Mode for Your Entire Product</h2>
+                <p>Think of BrainGrid as Claude Code plan mode, but applied to your entire product, not just a single prompt.</p>
+                <div class="bg-surface-2 border border-border rounded-lg p-4 my-4 space-y-2">
+                  <p><strong class="text-accent-400">Claude Code</strong> helps you plan a feature.</p>
+                  <p><strong class="text-accent-400">BrainGrid</strong> helps you plan the product.</p>
+                </div>
+                <p>BrainGrid acts as a Product Management Agent that sits upstream of Claude Code. It turns messy ideas into clear specifications, end-to-end UX flows, task breakdowns, and engineering-grade prompts that Claude Code can execute reliably.</p>
+
+                <h2>How BrainGrid Works With Claude Code</h2>
+                <p>BrainGrid is not a replacement for Claude Code—it works alongside it. It is a planning and orchestration layer that makes Claude Code more effective.</p>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128161;</span><div><p class="font-medium text-text-primary text-sm">Clarifying Questions</p><p class="text-text-secondary text-sm mt-0.5">Asks clarifying questions to surface edge cases and hidden complexity</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128506;</span><div><p class="font-medium text-text-primary text-sm">End-to-End UX Flows</p><p class="text-text-secondary text-sm mt-0.5">Maps end-to-end UX flows so features are planned as complete experiences</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128203;</span><div><p class="font-medium text-text-primary text-sm">Task Breakdown</p><p class="text-text-secondary text-sm mt-0.5">Breaks large ideas into small, scoped tasks with goals and acceptance criteria</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div><p class="font-medium text-text-primary text-sm">Claude Code-Ready Prompts</p><p class="text-text-secondary text-sm mt-0.5">Generates Claude Code-ready prompts with the right context attached</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128737;</span><div><p class="font-medium text-text-primary text-sm">Prevent Regressions</p><p class="text-text-secondary text-sm mt-0.5">Helps prevent regressions by ensuring new work fits the existing system</p></div></div>
+                </div>
+                <div class="bg-surface-2 border-l-2 border-accent-500 rounded-r-lg p-3 my-4 text-sm text-text-secondary italic">Tasks can be sent to Claude Code via MCP, CLI or copied directly into the Claude Code workflow.</div>
+
+                <h2>Claude Code Integration</h2>
+                <p>BrainGrid seamlessly integrates with your Claude Code workflow. Once BrainGrid generates your product specifications and task breakdowns, you can:</p>
+                <ul><li>Export tasks directly to Claude Code via MCP integration</li><li>Copy generated prompts into your Claude Code sessions</li><li>Use the CLI to sync tasks between BrainGrid and Claude Code</li></ul>
+
+                <h2>Built for Production-Ready Apps</h2>
+                <p>BrainGrid is designed for builders creating real AI-native SaaS products with:</p>
+                <ul><li>Authentication and multi-tenancy</li><li>Billing and subscriptions</li><li>AI features like chat, agents, and search</li><li>Ongoing feature development and iteration</li></ul>
+
+                <h2>Who BrainGrid Is For</h2>
+                <ul><li>Non-technical founders building real products, not just prototypes</li><li>Vibe coders hitting complexity walls as their apps grow</li><li>AI builders who need help planning scope, sequencing work, and evolving apps without breaking what already works</li></ul>
+              </Fragment>
+            )}
+
+            {slug === 'neon-instagres' && (
+              <Fragment>
+                <h2>Overview</h2>
+                <p>The Neon template provides a complete Postgres infrastructure for Claude Code projects. It combines Neon's Instagres provisioning service with specialized AI agents, MCP integration, and monitoring tools.</p>
+
+                <h2>Template Architecture</h2>
+                <p>The template consists of 10 components organized into four layers:</p>
+
+                <h3>1. Provisioning Layer</h3>
+                <p><strong>neon-instagres Skill</strong> — Auto-activating skill that provisions Postgres databases via <code>npx get-db</code>. Triggers on keywords like "database", "postgres", or "PostgreSQL".</p>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono">npx get-db --yes --ref 4eCjZDz</code></div>
+                <p>Creates three environment variables:</p>
+                <ul>
+                  <li><code>DATABASE_URL</code> — Connection pooler endpoint</li>
+                  <li><code>DATABASE_URL_DIRECT</code> — Direct connection (required for migrations)</li>
+                  <li><code>PUBLIC_INSTAGRES_CLAIM_URL</code> — Claim URL with 72-hour validity</li>
+                </ul>
+
+                <p><strong>using-neon Skill</strong> — Comprehensive guides for working with Neon Serverless Postgres. Includes 28 reference documents covering core guides, database drivers, auth, data API, platform API, and CLI.</p>
+
+                <h3>2. Agent Layer</h3>
+                <p>Five specialized agents handle different database operations:</p>
+                <div class="space-y-2 my-3">
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-database-architect</strong> — Schema design with Drizzle ORM. Handles table relationships, indexes, constraints, and migration generation.</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-auth-specialist</strong> — Authentication integration with Stack Auth. Multi-tenancy, RLS, and session management.</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-migration-specialist</strong> — Zero-downtime deployments, rollback procedures, and data migration patterns.</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-optimization-analyzer</strong> — Query performance analysis with <code>EXPLAIN ANALYZE</code>, index recommendations.</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-expert</strong> — General consulting: branching workflows, compute autoscaling, Neon-specific features.</p></div>
+                </div>
+
+                <h3>3. Integration Layer</h3>
+                <p><strong>neon MCP</strong> — Model Context Protocol integration providing programmatic access to Neon's management API.</p>
+
+                <h3>4. Monitoring Layer</h3>
+                <p><strong>neon-database-dev</strong> — Development metrics statusline. <strong>neon-database-resources</strong> — Resource monitoring statusline.</p>
+
+                <h2>Installation</h2>
+                <h3>Option 1: Skills Only</h3>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon</code></div>
+
+                <h3>Option 2: Complete Template</h3>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
+  --skill database/neon-instagres,database/using-neon \
+  --agent database/neon-expert,database/neon-database-architect,database/neon-auth-specialist,data-ai/neon-migration-specialist,data-ai/neon-optimization-analyzer \
+  --mcp database/neon \
+  --setting statusline/neon-database-dev,statusline/neon-database-resources \
+  --yes</code></div>
+
+                <h2>Framework Integration</h2>
+                <ul>
+                  <li><strong>Next.js</strong> — <code>.env.local</code>, server components and API routes</li>
+                  <li><strong>Vite</strong> — <code>.env</code> with <code>VITE_</code> prefix</li>
+                  <li><strong>Express</strong> — Standard <code>.env</code> with connection pooling</li>
+                  <li><strong>SvelteKit</strong> — <code>$env/static/private</code> patterns</li>
+                  <li><strong>Remix</strong> — <code>.env</code> for server-side loaders</li>
+                </ul>
+                <p>ORM support: Drizzle, Prisma, TypeORM, Kysely, and raw SQL via node-postgres.</p>
+
+                <h2>Additional Resources</h2>
+                <ul>
+                  <li><a href="https://neon.tech/docs/guides/instagres" target="_blank">Neon Instagres Documentation</a></li>
+                  <li><a href="https://neon.tech/docs/introduction" target="_blank">Neon Platform Overview</a></li>
+                  <li><a href="https://get.neon.com/4eCjZDz" target="_blank">Create Free Neon Account</a></li>
+                </ul>
+              </Fragment>
+            )}
+
+            {slug === 'brightdata' && (
+              <Fragment>
+                <h2>Overview</h2>
+                <p>The Bright Data template provides a complete web data infrastructure for Claude Code projects. It combines Bright Data's Web Unlocker, SERP API, Web Scraper API, and Browser API with specialized skills, MCP integration, production best-practices documentation, and 60+ tools for search, scraping, structured extraction, and browser automation.</p>
+
+                <h2>Template Architecture</h2>
+                <p>The template consists of 7 components organized into three layers:</p>
+
+                <h3>1. Skills Layer</h3>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128269;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">search Skill</p><p class="text-text-secondary text-sm mt-0.5">Google search with structured JSON results. Returns titles, links, and descriptions via Web Unlocker API with parsed_light format.</p></div><a href="/component/skill/web-data/search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127760;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">scrape Skill</p><p class="text-text-secondary text-sm mt-0.5">Scrape any webpage as clean markdown. Automatic bot detection bypass, CAPTCHA solving, and JavaScript rendering via Web Unlocker.</p></div><a href="/component/skill/web-data/scrape" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128202;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">data-feeds Skill</p><p class="text-text-secondary text-sm mt-0.5">Extract structured data from 40+ websites. Covers e-commerce, professional networks, social media, and more with automatic polling.</p></div><a href="/component/skill/web-data/data-feeds" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">bright-data-mcp Skill</p><p class="text-text-secondary text-sm mt-0.5">Workflow orchestration guide that teaches Claude how to optimally use Bright Data's MCP server across all 60+ tools.</p></div><a href="/component/skill/web-data/bright-data-mcp" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128218;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">bright-data-best-practices Skill</p><p class="text-text-secondary text-sm mt-0.5">Production-ready API reference covering Web Unlocker, SERP API, Web Scraper API, and Browser API with code examples.</p></div><a href="/component/skill/web-data/bright-data-best-practices" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127912;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">design-mirror Skill</p><p class="text-text-secondary text-sm mt-0.5">Capture visual design from any website and apply it to your codebase. Extracts design tokens, colors, typography, and spacing.</p></div><a href="/component/skill/web-data/design-mirror" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128270;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">brightdata-local-search Skill</p><p class="text-text-secondary text-sm mt-0.5">Run local web searches using Bright Data SERP API with query expansion, multi-engine SERP retrieval, RRF reranking, deduplication, and domain clustering.</p></div><a href="/component/skill/development/brightdata-local-search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                </div>
+
+                <h3>2. Integration Layer</h3>
+                <p><strong>brightdata MCP</strong> — Model Context Protocol integration providing programmatic access to 60+ tools across three modes:</p>
+                <div class="space-y-2 my-3">
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Rapid Mode (Free)</strong> — <code>search_engine</code>, <code>scrape_as_markdown</code>, <code>search_engine_batch</code>, <code>scrape_batch</code></p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Pro Mode</strong> — Everything in Rapid plus browser automation (13 tools), web data APIs for 40+ platforms, and advanced scraping</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Custom Mode</strong> — Mix and match tool groups (ecommerce, social, business, finance, research, travel, browser, advanced_scraping)</p></div>
+                </div>
+
+                <h3>3. Configuration Layer</h3>
+                <p>Two environment variables configure the template:</p>
+                <ul>
+                  <li><code>BRIGHTDATA_API_KEY</code> — Your Bright Data API key from the dashboard</li>
+                  <li><code>BRIGHTDATA_UNLOCKER_ZONE</code> — Name of your Web Unlocker zone (for search/scrape skills)</li>
+                </ul>
+
+                <h2>Installation</h2>
+                <h3>Option 1: Skills Only</h3>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices</code></div>
+
+                <h3>Option 2: Complete Template (Skills + MCP)</h3>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
+  --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices \
+  --mcp web-data/brightdata \
+  --yes</code></div>
+
+                <h3>Option 3: MCP Only (No Skills)</h3>
+                <p>Add to your Claude Code MCP settings:</p>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">&#123;
+  "mcpServers": &#123;
+    "brightdata": &#123;
+      "url": "https://mcp.brightdata.com/mcp?token=YOUR_TOKEN&amp;pro=1"
+    &#125;
+  &#125;
+&#125;</code></div>
+
+                <h2>Supported Platforms</h2>
+                <h3>E-Commerce</h3>
+                <p>Amazon, Walmart, eBay, Best Buy, Etsy, Home Depot, Zara, Google Shopping — product details, pricing, ratings, and reviews.</p>
+
+                <h3>Professional Networks</h3>
+                <p>LinkedIn (profiles, companies, jobs, posts), Crunchbase, ZoomInfo — company data, funding rounds, and professional profiles.</p>
+
+                <h3>Social Media</h3>
+                <p>Instagram, TikTok, Facebook, X (Twitter), YouTube, Reddit — profiles, posts, reels, engagement metrics, and comments.</p>
+
+                <h3>Other</h3>
+                <p>Google Maps, Yahoo Finance, Zillow, Booking.com, Reuters, GitHub, Apple App Store, Google Play Store.</p>
+
+                <h2>Use Cases</h2>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128200;</span><div><p class="font-medium text-text-primary text-sm">Research &amp; Analysis</p><p class="text-text-secondary text-sm mt-0.5">Search Google for structured results, scrape full articles as markdown, combine multiple sources into comprehensive reports.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127919;</span><div><p class="font-medium text-text-primary text-sm">Competitive Intelligence</p><p class="text-text-secondary text-sm mt-0.5">Extract Amazon product data, LinkedIn company profiles, Crunchbase funding rounds, and social media metrics.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128101;</span><div><p class="font-medium text-text-primary text-sm">Lead Generation</p><p class="text-text-secondary text-sm mt-0.5">Pull LinkedIn person profiles, company data, and ZoomInfo records. Enrich with social media presence.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128241;</span><div><p class="font-medium text-text-primary text-sm">Social Media Monitoring</p><p class="text-text-secondary text-sm mt-0.5">Track profiles, posts, reels, and engagement metrics across Instagram, TikTok, Facebook, YouTube, Reddit, and X.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128722;</span><div><p class="font-medium text-text-primary text-sm">E-Commerce Intelligence</p><p class="text-text-secondary text-sm mt-0.5">Product details, pricing, ratings, and reviews from Amazon, Walmart, eBay, Best Buy, Etsy, and more.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128421;</span><div><p class="font-medium text-text-primary text-sm">Browser Automation</p><p class="text-text-secondary text-sm mt-0.5">Full browser control for JavaScript-heavy sites: navigate, click, type, screenshot, and extract via Scraping Browser tools.</p></div></div>
+                </div>
+
+                <h2>Additional Resources</h2>
+                <ul>
+                  <li><a href="https://get.brightdata.com/lcqorc6nzp9w" target="_blank">Bright Data Dashboard</a></li>
+                  <li><a href="https://docs.brightdata.com" target="_blank">API Documentation</a></li>
+                  <li><a href="https://github.com/brightdata/brightdata-mcp" target="_blank">MCP Server Repository</a></li>
+                  <li><a href="https://github.com/brightdata/skills" target="_blank">Skills Plugin Repository</a></li>
+                  <li><a href="https://get.brightdata.com/lcqorc6nzp9w" target="_blank">Create Free Bright Data Account</a></li>
+                </ul>
+              </Fragment>
+            )}
+
+            {slug === 'claudekit' && (
+              <Fragment>
+                <h2>What Is ClaudeKit</h2>
+                <p>ClaudeKit is a production-ready Claude Code setup with subagents, commands, hooks, and skills that have been battle-tested and used in real products. Built by someone who has been using Claude Code for 7+ months and documented everything publicly.</p>
+                <p><strong>4,000+ happy users across 109 countries trust ClaudeKit to power their development workflow.</strong></p>
+
+                <h2>Quick Installation</h2>
+                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono whitespace-pre-wrap"># Login with your GitHub account
+gh auth login
+
+# Install ClaudeKit CLI
+npm i -g claudekit-cli
+
+# Install CK Engineer in your project
+ck init
+
+# Or install globally for every project
+ck init -g</code></div>
+
+                <h2>The Battle-Tested Workflow</h2>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">1</span><div><p class="font-medium text-text-primary text-sm">/docs:init</p><p class="text-text-secondary text-sm mt-0.5">Scans your codebase, generates specs: structure, architecture, code standards, product overview, and design guidelines.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">2</span><div><p class="font-medium text-text-primary text-sm">/brainstorm</p><p class="text-text-secondary text-sm mt-0.5">Describe what you want to build. AI asks questions, challenges you, and produces requirement specs.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">3</span><div><p class="font-medium text-text-primary text-sm">/plan</p><p class="text-text-secondary text-sm mt-0.5">Researches approaches, spawns researcher agents in parallel, creates a comprehensive implementation plan.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">4</span><div><p class="font-medium text-text-primary text-sm">/clear</p><p class="text-text-secondary text-sm mt-0.5">Fresh context window before implementation for best code quality output.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">5</span><div><p class="font-medium text-text-primary text-sm">/code:auto</p><p class="text-text-secondary text-sm mt-0.5">Reads the plan, implements phase by phase. Write code, tests, code review, verification, iterate, then update specs.</p></div></div>
+                </div>
+
+                <h2>ClaudeKit Engineer</h2>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Feature Development — <code>/cook</code></p><p class="text-text-secondary text-sm mt-0.5">Standalone implementation with internal planning and development workflows</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Multi-Agent Code Review — <code>/code:review</code></p><p class="text-text-secondary text-sm mt-0.5">Specialized agents for security, performance, and standards enforcement</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Automated Testing — <code>/test</code></p><p class="text-text-secondary text-sm mt-0.5">Generates comprehensive test suites: E2E, integration, and unit tests</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Bug Diagnosis — <code>/debug</code></p><p class="text-text-secondary text-sm mt-0.5">Analyzes logs, CI/CD failures, root cause analysis</p></div></div>
+                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Documentation Sync — <code>/docs</code></p><p class="text-text-secondary text-sm mt-0.5">Maintains synchronized technical docs: PRD, codebase summary, code standards, architecture</p></div></div>
+                </div>
+
+                <h2>ClaudeKit Marketing</h2>
+                <p>Go beyond code. ClaudeKit Marketing handles the go-to-market side:</p>
+                <div class="space-y-2 my-3">
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Content Strategy</strong> — <code>/plan "Q1 content strategy"</code> with TOFU/MOFU/BOFU funnel stages</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Copywriting</strong> — <code>/content/good</code> and <code>/content/cro</code> for landing pages</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">SEO</strong> — <code>/seo:audit</code> and <code>/seo:keywords</code> for keyword research</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Campaign &amp; Email</strong> — <code>/campaign:email</code> via SendGrid and Resend MCPs</p></div>
+                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Analytics</strong> — GA4 + Google Ads MCPs for data-driven optimization</p></div>
+                </div>
+              </Fragment>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <aside class="space-y-4 lg:sticky lg:top-20 self-start">
+            {/* About card */}
+            <div class="bg-surface-2 border border-border rounded-lg p-4">
+              <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">About {item.name}</h3>
+              <div class="flex flex-col items-center gap-3 text-center">
+                <img src={item.logo} alt={item.name} class="max-w-[160px] w-full h-auto rounded-xl" />
+                <p class="text-sm text-text-secondary leading-relaxed">{item.description} for Claude Code</p>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <a
+              href={item.ctaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-accent-500 hover:bg-accent-600 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              {item.ctaLabel}
+            </a>
+
+            {/* Install command (Neon only) */}
+            {item.installCommand && (
+              <div class="bg-surface-2 border border-border rounded-lg p-4">
+                <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">Quick Install</h3>
+                <div class="bg-surface-1 border border-border rounded-md p-3">
+                  <code id="installCmd" class="text-xs text-accent-400 font-mono break-all leading-relaxed">{item.installCommand}</code>
+                </div>
+                <button id="copyInstallBtn" class="mt-2 w-full text-xs font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-md px-3 py-1.5 transition-colors">Copy</button>
+              </div>
+            )}
+
+            {/* Metadata */}
+            <div class="bg-surface-2 border border-border rounded-lg p-4">
+              <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">Details</h3>
+              <div class="space-y-0">
+                <div class="flex justify-between items-center py-2 border-b border-border">
+                  <span class="text-xs text-text-tertiary">Type</span>
+                  <span class="text-xs text-text-primary font-mono">{item.tag}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-border">
+                  <span class="text-xs text-text-tertiary">Category</span>
+                  <span class="text-xs text-text-primary font-mono">{item.category}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-border">
+                  <span class="text-xs text-text-tertiary">Website</span>
+                  <a href={item.websiteUrl} target="_blank" class="text-xs text-accent-400 hover:underline font-mono">{item.websiteUrl.replace('https://', '')}</a>
+                </div>
+                {Object.entries(item.metadata).map(([label, value]) => (
+                  <div class="flex justify-between items-center py-2 border-b border-border last:border-b-0">
+                    <span class="text-xs text-text-tertiary">{label}</span>
+                    <span class="text-xs text-text-primary font-mono">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Links */}
+            <div class="bg-surface-2 border border-border rounded-lg p-4">
+              <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">Links</h3>
+              <div class="space-y-0">
+                {item.links.map((link) => (
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 py-2 border-b border-border last:border-b-0 text-sm text-text-secondary hover:text-text-primary transition-colors">
+                    <svg class="w-3.5 h-3.5 shrink-0 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
+
+<style>
+  /* Featured prose styles */
+  .featured-prose h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .featured-prose h2:first-child { margin-top: 0; }
+  .featured-prose h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .featured-prose p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  .featured-prose strong { color: var(--color-text-primary); }
+  .featured-prose a { color: var(--color-accent-400); text-decoration: none; }
+  .featured-prose a:hover { text-decoration: underline; }
+  .featured-prose ul { margin: 0.75rem 0; padding-left: 1.25rem; }
+  .featured-prose li {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.4rem;
+    line-height: 1.6;
+  }
+  .featured-prose code {
+    background: var(--color-surface-3);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--color-accent-400);
+    font-family: var(--font-mono);
+  }
+</style>
+
+<script>
+  const shareBtn = document.getElementById('shareBtn');
+  const shareOptions = document.getElementById('shareOptions');
+
+  // Share dropdown
+  shareBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    shareOptions?.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (shareOptions && !shareOptions.classList.contains('hidden') && !(e.target as HTMLElement)?.closest('#shareDropdown')) {
+      shareOptions.classList.add('hidden');
+    }
+  });
+
+  document.querySelectorAll<HTMLElement>('.share-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const platform = btn.dataset.platform;
+      const title = document.title;
+      const url = window.location.href;
+      if (platform === 'x') {
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, '_blank');
+      } else if (platform === 'threads') {
+        window.open(`https://www.threads.net/intent/post?text=${encodeURIComponent(title + '\n\n' + url)}`, '_blank');
+      }
+      shareOptions?.classList.add('hidden');
+    });
+  });
+
+  // Copy install command
+  document.getElementById('copyInstallBtn')?.addEventListener('click', (e) => {
+    const cmd = document.getElementById('installCmd')?.textContent ?? '';
+    navigator.clipboard.writeText(cmd);
+    const btn = e.currentTarget as HTMLElement;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+</script>

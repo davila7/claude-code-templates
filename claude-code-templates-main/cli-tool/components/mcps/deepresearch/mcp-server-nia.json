@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "mcp-server-nia": {
+      "descrption": "Nia is a context-augmentation layer for agents, primarily designed for coding agents.",
+      "command": "pipx",
+      "args": ["run", "--no-cache", "nia-mcp-server"],
+      "env": {
+        "NIA_API_KEY": "YOUR_API_KEY",
+        "NIA_API_URL": "https://apigcp.trynia.ai/"
+      }
+    }
+  }
+}

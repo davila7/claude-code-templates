@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "DevBox": {
+        "description":"This server enables natural language interactions for developer-focused operations like managing Dev Boxes, configurations, and pools.",
+        "command": "npx",
+        "args": ["-y", "@microsoft/devbox-mcp@latest"]
+    }
+  }
+}

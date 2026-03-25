@@ -1,0 +1,52 @@
+{
+  "name": "claude-code-templates",
+  "version": "1.28.16",
+  "description": "Component templates and tracking system for Claude Code",
+  "main": "cli-tool/src/index.js",
+  "bin": {
+    "claude-code-templates": "cli-tool/bin/create-claude-config.js",
+    "cct": "cli-tool/bin/create-claude-config.js"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "start": "vercel dev",
+    "test": "echo 'No tests specified'",
+    "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:dashboard": "./scripts/deploy.sh",
+    "discord:register": "node api/discord/register-commands.cjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "@vercel/postgres": "^0.10.0",
+    "axios": "^1.6.2",
+    "boxen": "^5.1.2",
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "commander": "^11.1.0",
+    "discord-interactions": "^3.4.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^8.2.6",
+    "js-yaml": "^4.1.1",
+    "open": "^8.4.2",
+    "ora": "^5.4.1",
+    "qrcode": "^1.5.4",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0"
+  },
+  "keywords": [
+    "claude-code",
+    "templates",
+    "components",
+    "tracking",
+    "analytics"
+  ],
+  "author": "Claude Code Templates",
+  "license": "MIT"
+}

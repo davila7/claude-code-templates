@@ -1,0 +1,4 @@
+{
+  "description": "Restrict authentication to Anthropic Console accounts only. This ensures all usage is billed through the API billing system and prevents access via Claude.ai accounts, ideal for enterprise environments with centralized billing.",
+  "forceLoginMethod": "console"
+}

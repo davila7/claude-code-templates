@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sentry": {
+      "description":"This service implements the Model Context Protocol (MCP) for interacting with Sentry, focused on human-in-the-loop coding agents and developer workflows rather than general-purpose API access.",
+      "url": "https://mcp.sentry.dev/mcp"
+    }
+  }
+}

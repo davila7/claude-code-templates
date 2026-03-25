@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Jobs - Find Your Next AI-Powered Development Role</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Discover the latest job opportunities requiring Claude Code expertise. Find positions at Anthropic and other companies building the future of AI-powered development.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aitmpl.com/jobs.html">
+    <meta property="og:title" content="Claude Code Jobs - Find Your Next AI-Powered Development Role">
+    <meta property="og:description" content="Discover the latest job opportunities requiring Claude Code expertise. Find positions at Anthropic and other companies building the future of AI-powered development.">
+    <meta property="og:image" content="https://aitmpl.com/images/social-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Claude Code Jobs - Find Your Next AI-Powered Development Role">
+    <meta property="og:site_name" content="Claude Code Templates">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/jobs.html">
+    <meta name="twitter:title" content="Claude Code Jobs - Find Your Next AI-Powered Development Role">
+    <meta name="twitter:description" content="Discover the latest job opportunities requiring Claude Code expertise. Find positions at Anthropic and other companies building the future of AI-powered development.">
+    <meta name="twitter:image" content="https://aitmpl.com/images/social-preview.png">
+    <meta name="twitter:image:alt" content="Claude Code Jobs - Find Your Next AI-Powered Development Role">
+    <meta name="twitter:creator" content="@davila7">
+    <meta name="twitter:site" content="@davila7">
+    
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code jobs, Anthropic careers, AI development jobs, Claude Code careers, AI engineer positions, developer jobs, AI-powered development, Claude Code opportunities">
+    <meta name="author" content="Claude Code Templates Community">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://aitmpl.com/jobs.html">
+    
+    <!-- Claude Code / Anthropic relation -->
+    <meta name="product" content="Claude Code Jobs">
+    <meta name="platform" content="Anthropic Claude Code">
+    <meta name="category" content="AI Development Careers">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.counter.dev/script.js" data-id="1f599060-4af4-4cbc-a809-a158768ab768" data-utcoffset="-4"></script>
+    
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+    
+    <style>
+        /* Terminal Jobs Page Styling */
+        .jobs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .jobs-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-primary);
+            position: relative;
+        }
+        
+        .jobs-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--text-accent), transparent);
+            transform: translateX(-50%);
+            animation: glow-line 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow-line {
+            0%, 100% { opacity: 0.5; width: 100px; }
+            50% { opacity: 1; width: 200px; }
+        }
+        
+        .jobs-title {
+            color: var(--text-accent);
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            letter-spacing: -0.025em;
+        }
+        
+        .jobs-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.6;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .terminal-prompt-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .prompt-symbol {
+            color: var(--text-success);
+            font-weight: bold;
+        }
+        
+        .prompt-text {
+            color: var(--text-primary);
+        }
+        
+        .cursor {
+            width: 8px;
+            height: 16px;
+            background: var(--text-accent);
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .jobs-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--text-accent), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .stat-item:hover::before {
+            left: 100%;
+        }
+        
+        .stat-item:hover {
+            border-color: var(--text-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(217, 119, 6, 0.2);
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-accent);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .back-nav {
+            margin-bottom: 2rem;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-accent);
+            text-decoration: none;
+            padding: 0.75rem 1.25rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: var(--bg-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.1), transparent);
+            transition: left 0.3s ease;
+        }
+        
+        .back-link:hover::before {
+            left: 100%;
+        }
+        
+        .back-link:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--text-accent);
+            transform: translateX(-4px);
+        }
+        
+        /* Search and Filter Section */
+        .controls-section {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .terminal-search-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .terminal-search-wrapper:focus-within {
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+        }
+        
+        .terminal-prompt {
+            color: var(--text-success);
+            font-weight: bold;
+            margin-right: 0.5rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .terminal-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.95rem;
+            outline: none;
+            padding: 0.25rem 0;
+        }
+        
+        .terminal-search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .search-icon {
+            color: var(--text-secondary);
+            margin-left: 0.5rem;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .search-container {
+            width: 100%;
+        }
+        
+        .filter-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .filter-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                var(--text-success), 
+                var(--text-accent), 
+                var(--text-info), 
+                var(--text-success)
+            );
+            background-size: 200% 100%;
+            animation: filter-glow 4s linear infinite;
+        }
+        
+        @keyframes filter-glow {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .filter-title {
+            color: var(--text-accent);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-title::before {
+            content: '>';
+            color: var(--text-success);
+            font-weight: bold;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-secondary);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.1), transparent);
+            transition: left 0.3s ease;
+        }
+        
+        .filter-btn:hover::before {
+            left: 100%;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(217, 119, 6, 0.15);
+            border-color: var(--text-accent);
+            color: var(--text-accent);
+            transform: translateY(-1px);
+        }
+        
+        .filter-btn.active {
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+        }
+        
+        /* Jobs Grid */
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            width: 100%;
+        }
+        
+        .job-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--text-accent), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .job-card:hover::before {
+            left: 100%;
+        }
+        
+        .job-card:hover {
+            border-color: var(--text-accent);
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(217, 119, 6, 0.2),
+                0 0 20px rgba(217, 119, 6, 0.1);
+        }
+        
+        .job-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .company-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-secondary);
+            padding: 8px;
+            flex-shrink: 0;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+        
+        .job-card:hover .company-icon {
+            border-color: var(--text-accent);
+            transform: scale(1.05);
+        }
+        
+        .job-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .job-title {
+            color: var(--text-primary);
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            transition: color 0.3s ease;
+        }
+        
+        .job-card:hover .job-title {
+            color: var(--text-accent);
+        }
+        
+        .company-name {
+            color: var(--text-success);
+            font-weight: 500;
+            font-size: 1rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .company-name::before {
+            content: '@';
+            color: var(--text-accent);
+            font-weight: bold;
+        }
+        
+        .job-location {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .job-location::before {
+            content: '📍';
+            font-size: 0.8rem;
+        }
+        
+        .job-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .job-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-secondary);
+        }
+        
+        .job-source {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .job-source::before {
+            content: 'via ';
+            color: var(--text-accent);
+        }
+        
+        .apply-btn {
+            background: linear-gradient(135deg, var(--text-accent), #e8810b);
+            color: var(--bg-primary);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .apply-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.3s ease;
+        }
+        
+        .apply-btn:hover::before {
+            left: 100%;
+        }
+        
+        .apply-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.4);
+        }
+        
+        /* Loading and Empty States */
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-accent);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .loading::before {
+            content: '> ';
+            color: var(--text-success);
+            font-weight: bold;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--text-accent);
+            margin-left: 4px;
+            animation: blink 1s infinite;
+        }
+        
+        .no-jobs {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .no-jobs h3 {
+            color: var(--text-accent);
+            margin-bottom: 1rem;
+        }
+        
+        .no-jobs h3::before {
+            content: '! ';
+            color: var(--text-warning);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .jobs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 968px) {
+            .controls-section {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .jobs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .jobs-container {
+                max-width: 100%;
+                padding: 1.5rem 1rem;
+            }
+            
+            .jobs-stats {
+                gap: 1rem;
+            }
+            
+            .stat-item {
+                padding: 1rem 1.5rem;
+            }
+            
+            .job-card {
+                padding: 1.5rem;
+            }
+            
+            .filter-options {
+                justify-content: center;
+            }
+            
+            .controls-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .jobs-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .job-card {
+                padding: 1rem;
+            }
+            
+            .job-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            
+            .company-icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art"> ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗     ██████╗ ██████╗ ██████╗ ███████╗         ██╗ ██████╗ ██████╗ ███████╗
+██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██╔════╝         ██║██╔═══██╗██╔══██╗██╔════╝
+██║     ██║     ███████║██║   ██║██║  ██║█████╗      ██║     ██║   ██║██║  ██║█████╗           ██║██║   ██║██████╔╝███████╗
+██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝      ██║     ██║   ██║██║  ██║██╔══╝      ██   ██║██║   ██║██╔══██╗╚════██║
+╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗    ╚██████╗╚██████╔╝██████╔╝███████╗    ╚█████╔╝╚██████╔╝██████╔╝███████║
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝     ╚════╝  ╚═════╝ ╚═════╝ ╚══════╝</pre>
+                    </div>
+                    <div class="terminal-subtitle">
+                        <span class="status-dot"></span>
+                        Career opportunities in <strong>Claude Code</strong> development
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="https://www.anthropic.com/claude-code?ref=aitmpl.com" target="_blank" class="header-btn anthropic-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Claude Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <div class="jobs-container">
+            <div class="back-nav">
+                <a href="index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                    Back to Templates
+                </a>
+            </div>
+
+            <div class="search-header">
+                <div class="terminal-command">
+                    <div class="header-content">
+                        <h2 class="search-title"><span class="terminal-dot"></span><strong>Search </strong><span class="title-params">(fullstack/datascientist/research)</span></h2>
+                        <p class="search-subtitle">⎿ Find your next AI-powered development role</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="search-container">
+                    <div class="terminal-search-wrapper">
+                        <span class="terminal-prompt">$</span>
+                        <input type="text" class="terminal-search-input" id="search-input" placeholder="search jobs by title, company, or keywords...">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <h3 class="filter-title">Filter by Company</h3>
+                    <div class="filter-options" id="company-filters">
+                        <button class="filter-btn active" data-company="all">All Companies</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="jobs-grid" id="jobs-grid">
+                <div class="loading">Loading job opportunities...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allJobs = [];
+        let filteredJobs = [];
+        let currentSearchTerm = '';
+        let currentCompanyFilter = 'all';
+        
+        // Load and display jobs with enhanced animations
+        async function loadJobs() {
+            try {
+                // Add loading animation
+                showLoadingAnimation();
+                
+                const response = await fetch('claude-jobs.json');
+                const data = await response.json();
+                allJobs = data.jobs || [];
+                filteredJobs = [...allJobs];
+                
+                // Animate stats counter
+                updateStats();
+                setupFilters();
+                setupSearch();
+                renderJobs();
+                
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                document.getElementById('jobs-grid').innerHTML = `
+                    <div class="no-jobs">
+                        <h3>Unable to load job listings</h3>
+                        <p>Please try again later or check back soon for new opportunities.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function showLoadingAnimation() {
+            const loadingElement = document.querySelector('.loading');
+            if (loadingElement) {
+                loadingElement.style.animation = 'pulse 1.5s ease-in-out infinite';
+            }
+        }
+        
+        function updateStats() {
+            // Stats removed - no longer needed
+        }
+        
+        
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentSearchTerm = e.target.value.toLowerCase().trim();
+                    applyFilters();
+                }, 300); // Debounce search
+            });
+            
+            // Add search shortcut (Ctrl/Cmd + K)
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+        }
+        
+        function setupFilters() {
+            const companies = [...new Set(allJobs.map(job => job.company))].sort();
+            const filtersContainer = document.getElementById('company-filters');
+            
+            // Clear existing filters except "All Companies"
+            const allButton = filtersContainer.querySelector('[data-company="all"]');
+            filtersContainer.innerHTML = '';
+            filtersContainer.appendChild(allButton);
+            
+            // Add company filters with count
+            companies.forEach(company => {
+                if (company && company !== 'Unknown Company') {
+                    const jobCount = allJobs.filter(job => job.company === company).length;
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.dataset.company = company;
+                    button.innerHTML = `${company} <span style="opacity: 0.7; font-size: 0.8em;">(${jobCount})</span>`;
+                    button.addEventListener('click', () => filterByCompany(company));
+                    filtersContainer.appendChild(button);
+                }
+            });
+            
+            // Add event listener for "All Companies" button
+            allButton.addEventListener('click', () => filterByCompany('all'));
+        }
+        
+        function filterByCompany(company) {
+            currentCompanyFilter = company;
+            
+            // Update active filter button with smooth transition
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-company="${company}"]`).classList.add('active');
+            
+            applyFilters();
+        }
+        
+        function applyFilters() {
+            let jobs = [...allJobs];
+            
+            // Apply company filter
+            if (currentCompanyFilter !== 'all') {
+                jobs = jobs.filter(job => job.company === currentCompanyFilter);
+            }
+            
+            // Apply search filter
+            if (currentSearchTerm) {
+                jobs = jobs.filter(job => 
+                    job.job_title.toLowerCase().includes(currentSearchTerm) ||
+                    job.company.toLowerCase().includes(currentSearchTerm) ||
+                    job.description.toLowerCase().includes(currentSearchTerm) ||
+                    (job.location && job.location.toLowerCase().includes(currentSearchTerm))
+                );
+            }
+            
+            filteredJobs = jobs;
+            updateStats();
+            renderJobs();
+        }
+        
+        function renderJobs() {
+            const container = document.getElementById('jobs-grid');
+            
+            if (filteredJobs.length === 0) {
+                const searchText = currentSearchTerm ? ` for "${currentSearchTerm}"` : '';
+                const companyText = currentCompanyFilter !== 'all' ? ` at ${currentCompanyFilter}` : '';
+                
+                container.innerHTML = `
+                    <div class="no-jobs">
+                        <h3>No jobs found</h3>
+                        <p>No positions found${searchText}${companyText}. Try adjusting your search or filters, or check back later for new opportunities.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Render jobs with staggered animation
+            const jobCards = filteredJobs.map((job, index) => `
+                <div class="job-card" style="animation-delay: ${index * 0.1}s;">
+                    <div class="job-header">
+                        <img src="${job.company_icon}" alt="${job.company}" class="company-icon" 
+                             onerror="this.src='https://www.aitmpl.com/static/img/logo.png'">
+                        <div class="job-info">
+                            <h3 class="job-title">${highlightSearchTerms(truncateText(job.job_title, 60))}</h3>
+                            <div class="company-name">${highlightSearchTerms(job.company)}</div>
+                            <div class="job-location">${job.location || 'Location not specified'}</div>
+                        </div>
+                    </div>
+                    
+                    <p class="job-description">${highlightSearchTerms(job.description)}</p>
+                    
+                    <div class="job-footer">
+                        <a href="${job.job_link}" target="_blank" rel="noopener noreferrer" class="apply-btn" 
+                           onclick="trackJobApplication('${job.company}', '${job.job_title}')">
+                            Apply Now
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = jobCards;
+            
+            // Add fade-in animation
+            const cards = container.querySelectorAll('.job-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+        
+        function highlightSearchTerms(text) {
+            if (!currentSearchTerm || !text) return text;
+            
+            const regex = new RegExp(`(${escapeRegex(currentSearchTerm)})`, 'gi');
+            return text.replace(regex, '<mark style="background: rgba(217, 119, 6, 0.3); color: inherit; padding: 0 2px; border-radius: 2px;">$1</mark>');
+        }
+        
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        function truncateText(text, maxLength) {
+            if (!text || text.length <= maxLength) return text;
+            return text.substring(0, maxLength).trim() + '...';
+        }
+        
+        function trackJobApplication(company, title) {
+            // Analytics tracking for job applications
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'job_application_click', {
+                    'company': company,
+                    'job_title': title,
+                    'source': 'claude_jobs_page'
+                });
+            }
+            
+            console.log(`Job application tracked: ${company} - ${title}`);
+        }
+        
+        // Enhanced keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // ESC to clear search
+            if (e.key === 'Escape') {
+                const searchInput = document.getElementById('search-input');
+                if (searchInput.value) {
+                    searchInput.value = '';
+                    searchInput.dispatchEvent(new Event('input'));
+                }
+            }
+        });
+        
+        // Add CSS animation keyframes dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .job-card {
+                animation: fadeInUp 0.6s ease-out forwards;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadJobs);
+        
+        // Add smooth scrolling to top when filtering
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Performance optimization: Intersection Observer for lazy loading
+        const observerOptions = {
+            root: null,
+            rootMargin: '50px',
+            threshold: 0.1
+        };
+        
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        imageObserver.unobserve(img);
+                    }
+                }
+            });
+        }, observerOptions);
+    </script>
+</body>
+</html>

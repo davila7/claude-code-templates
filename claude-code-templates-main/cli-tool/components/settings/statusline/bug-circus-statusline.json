@@ -1,0 +1,7 @@
+{
+  "description": "Turn debugging into a circus performance! Watch performers juggle bugs while the audience reacts to your coding show with dynamic applause and reactions. Displays: Show number (incremental counter), Rotating performers (🤹 juggler, 🎭 drama, 🎪 circus, 🎨 artist, 🎯 target - cycles every 5 shows), Random audience reactions (👏 applause 30% chance, 😴 sleeping 70% chance for each of 3 audience members).",
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); SESSION=$(echo \"$input\" | jq -r \".session_id\" | cut -c1-8); CACHE=\"/tmp/circus_$SESSION\"; if [ ! -f \"$CACHE\" ]; then echo \"0\" > \"$CACHE\"; fi; SHOWS=$(cat \"$CACHE\"); SHOWS=$((SHOWS + 1)); echo \"$SHOWS\" > \"$CACHE\"; PERFORMERS=(\"🤹\" \"🎭\" \"🎪\" \"🎨\" \"🎯\"); PERFORMER=${PERFORMERS[$((SHOWS % 5))]}; AUDIENCE=$(python3 -c \"import random; print(''.join(['👏' if random.random() > 0.7 else '😴' for _ in range(3)]))\" 2>/dev/null || echo \"👏😴👏\"); echo \"[$MODEL] 🎪 Show #$SHOWS | $PERFORMER | $AUDIENCE | 📁 ${DIR##*/}\"'"
+  }
+}

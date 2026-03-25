@@ -1,0 +1,84 @@
+{
+  "mui": {
+    "type": "domain",
+    "enforcement": "suggest",
+    "priority": "high",
+    "promptTriggers": {
+      "keywords": [
+        "mui",
+        "material-ui",
+        "material ui",
+        "@mui/material",
+        "@mui/icons-material",
+        "@mui/system",
+        "sx prop",
+        "mui theme",
+        "ThemeProvider",
+        "createTheme",
+        "useTheme",
+        "styled",
+        "Box",
+        "Typography",
+        "Button",
+        "TextField",
+        "Card",
+        "Dialog",
+        "Drawer",
+        "AppBar",
+        "Grid",
+        "Stack",
+        "Paper",
+        "Container",
+        "IconButton",
+        "Chip",
+        "Avatar",
+        "Alert",
+        "Snackbar",
+        "Menu",
+        "MenuItem",
+        "Select",
+        "Checkbox",
+        "Radio",
+        "Switch",
+        "Tabs",
+        "Autocomplete"
+      ],
+      "intentPatterns": [
+        "style.*with.*mui",
+        "use.*mui.*component",
+        "create.*mui.*theme",
+        "customize.*mui",
+        "add.*material.*ui.*component",
+        "implement.*mui.*dialog",
+        "create.*mui.*form",
+        "setup.*mui.*theme",
+        "use.*mui.*icon",
+        "add.*mui.*(button|card|dialog|form|menu)"
+      ]
+    },
+    "fileTriggers": {
+      "pathPatterns": [
+        "**/*.styles.ts",
+        "**/*.styles.tsx",
+        "**/components/**/*.tsx",
+        "**/components/**/*.ts",
+        "**/theme.ts",
+        "**/theme.tsx",
+        "**/theme/**/*.ts"
+      ],
+      "contentPatterns": [
+        "import.*@mui/material",
+        "import.*@mui/icons-material",
+        "import.*@mui/system",
+        "from '@mui/material'",
+        "sx=\\{",
+        "<Box",
+        "<Typography",
+        "createTheme\\(",
+        "ThemeProvider",
+        "useTheme\\(\\)",
+        "styled\\("
+      ]
+    }
+  }
+}

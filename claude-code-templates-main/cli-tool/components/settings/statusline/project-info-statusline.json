@@ -1,0 +1,7 @@
+{
+  "description": "Display comprehensive project information including model, directory, Node.js version, and Claude Code version. Perfect for multi-project environments where you need full context about your development setup.",
+  "statusLine": {
+    "type": "command", 
+    "command": "bash -c 'input=$(cat); MODEL=$(echo \"$input\" | jq -r \".model.display_name\"); DIR=$(echo \"$input\" | jq -r \".workspace.current_dir\"); VERSION=$(echo \"$input\" | jq -r \".version\"); NODE_VER=$(node --version 2>/dev/null || echo \"N/A\"); echo \"[$MODEL] 📁 ${DIR##*/} | Node $NODE_VER | Claude $VERSION\"'"
+  }
+}

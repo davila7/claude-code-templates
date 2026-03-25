@@ -1,0 +1,345 @@
+---
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import SearchModal from '../../../components/SearchModal.tsx';
+import CartSidebar from '../../../components/CartSidebar.tsx';
+import SaveToCollectionButton from '../../../components/SaveToCollectionButton.tsx';
+import MarkdownViewer from '../../../components/MarkdownViewer.tsx';
+import JsonViewer from '../../../components/JsonViewer.tsx';
+import SkillExplorer from '../../../components/SkillExplorer.tsx';
+import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
+import { fetchComponents, getInstallCommand } from '../../../lib/data';
+import type { Component } from '../../../lib/types';
+
+export const prerender = false;
+
+const { type, slug } = Astro.params;
+
+let component: Component | null = null;
+let error: string | null = null;
+
+try {
+  const data = await fetchComponents();
+  const typeKey = (type?.endsWith('s') ? type : (type + 's')) as keyof typeof data;
+  const items = data[typeKey] as Component[] | undefined;
+
+  if (items) {
+    component = items.find((c) => {
+      const cleanPath = c.path?.replace(/\.(md|json)$/, '') ?? '';
+      return cleanPath === slug || c.name === slug;
+    }) ?? null;
+  }
+} catch (e: any) {
+  error = e.message;
+}
+
+function formatName(name: string): string {
+  if (!name) return '';
+  return name.replace(/\.(md|json)$/, '').replace(/[-_]/g, ' ')
+    .split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+function parseFrontmatter(content: string, componentType: string): Record<string, string> {
+  if (!content) return {};
+
+  // JSON-based components (MCPs, Settings, Hooks)
+  if (componentType === 'mcps' || componentType === 'settings' || componentType === 'hooks') {
+    try {
+      const json = JSON.parse(content);
+      const fields: Record<string, string> = {};
+
+      // MCP: extract from mcpServers object
+      if (componentType === 'mcps') {
+        const servers = json.mcpServers ?? json;
+        const serverName = Object.keys(servers)[0];
+        if (!serverName) return {};
+        const server = servers[serverName];
+        if (server.description) fields['description'] = server.description;
+        if (server.command) fields['command'] = server.command + (server.args?.length ? ' ' + server.args.join(' ') : '');
+        if (serverName) fields['server-name'] = serverName;
+        return fields;
+      }
+
+      // Settings / Hooks: top-level description
+      if (json.description) fields['description'] = json.description;
+      return fields;
+    } catch { return {}; }
+  }
+
+  // YAML frontmatter for md files
+  const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return {};
+  const fields: Record<string, string> = {};
+  let currentKey = '';
+  let currentValue = '';
+  for (const line of match[1].split('\n')) {
+    const kv = line.match(/^(\S[\w-]*)\s*:\s*(.*)/);
+    if (kv) {
+      if (currentKey) fields[currentKey] = currentValue.trim();
+      currentKey = kv[1];
+      currentValue = kv[2].replace(/^["']|["']$/g, '');
+    } else if (currentKey && (line.startsWith('  ') || line.startsWith('\t'))) {
+      currentValue += ' ' + line.trim();
+    }
+  }
+  if (currentKey) fields[currentKey] = currentValue.trim();
+  return fields;
+}
+
+const CARD_FIELDS: { key: string; label: string; icon: string }[] = [
+  { key: 'description', label: 'Description', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg>' },
+  { key: 'tools', label: 'Tools', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.3-5.3a1.5 1.5 0 010-2.12l.88-.88a1.5 1.5 0 012.12 0l.88.88a1.5 1.5 0 002.12 0l3.18-3.18a1.5 1.5 0 012.12 0l1.77 1.77a1.5 1.5 0 010 2.12L15.66 12" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.07 4.93a1.5 1.5 0 010 2.12L15.66 12" /></svg>' },
+  { key: 'allowed-tools', label: 'Allowed Tools', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.3-5.3a1.5 1.5 0 010-2.12l.88-.88a1.5 1.5 0 012.12 0l.88.88a1.5 1.5 0 002.12 0l3.18-3.18a1.5 1.5 0 012.12 0l1.77 1.77a1.5 1.5 0 010 2.12L15.66 12" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.07 4.93a1.5 1.5 0 010 2.12L15.66 12" /></svg>' },
+  { key: 'model', label: 'Model', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>' },
+  { key: 'argument-hint', label: 'Arguments', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>' },
+  { key: 'version', label: 'Version', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>' },
+  { key: 'author', label: 'Author', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg>' },
+  { key: 'tags', label: 'Tags', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>' },
+  { key: 'license', label: 'License', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582" /></svg>' },
+  { key: 'server-name', label: 'Server', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7" /></svg>' },
+  { key: 'command', label: 'Command', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" /></svg>' },
+];
+
+const title = component ? formatName(component.name) : 'Component Not Found';
+const typePlural = type?.endsWith('s') ? type : (type + 's');
+const config = TYPE_CONFIG[typePlural ?? 'agents'];
+const installCmd = component ? getInstallCommand(component) : '';
+const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
+const infoCards = CARD_FIELDS.filter((f) => {
+  const v = frontmatter[f.key];
+  return v && v !== '[]' && v !== '""' && v !== "''";
+});
+
+// JSON-based types use JsonViewer instead of MarkdownViewer
+const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps';
+
+// Extract headings from markdown content for TOC
+const contentHeadings: { level: number; text: string; id: string }[] = [];
+if (component?.content && !isJsonType) {
+  const stripped = component.content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
+  const headingRegex = /^(#{1,4})\s+(.+)$/gm;
+  let m;
+  while ((m = headingRegex.exec(stripped)) !== null) {
+    const text = m[2].replace(/[*_`\[\]]/g, '').trim();
+    const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+    contentHeadings.push({ level: m[1].length, text, id });
+  }
+}
+
+// Reference files for skills (used for layout decisions)
+// Cast to any to access references which may not be in the TS type yet
+const refs: string[] = (component as any)?.references ?? [];
+---
+
+<DashboardLayout
+  title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
+  description={frontmatter.description ? `${frontmatter.description.slice(0, 155)}` : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`}
+>
+  <div class="max-w-5xl mx-auto py-8 px-6">
+    {/* Back nav */}
+    <a
+      href={`/${typePlural}`}
+      class="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors mb-6"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to {config?.label ?? 'Components'}
+    </a>
+
+    {error && (
+      <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+        <p class="text-sm text-red-400">{error}</p>
+      </div>
+    )}
+
+    {!component && !error && (
+      <div class="text-center py-16">
+        <p class="text-lg text-text-secondary">Component not found</p>
+        <a href={`/${typePlural}`} class="mt-4 inline-block text-sm text-primary-400 hover:underline">
+          Browse {config?.label}
+        </a>
+      </div>
+    )}
+
+    {component && (
+      <article>
+        {/* Header */}
+        <div class="flex items-start gap-4 mb-6">
+          <div
+            class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 [&>svg]:w-6 [&>svg]:h-6"
+            style={`background-color: ${config?.color ?? '#5e6ad2'}20; color: ${config?.color ?? '#5e6ad2'}`}
+            set:html={ICONS[typePlural ?? 'agents'] ?? ''}
+          />
+
+          <div class="flex-1 min-w-0">
+            <h1 class="text-xl font-bold text-text-primary">{title}</h1>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-secondary">
+                {config?.label}
+              </span>
+              {component.category && (
+                <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-tertiary">
+                  {component.category}
+                </span>
+              )}
+              {(component.downloads ?? 0) > 0 && (
+                <span class="text-xs text-emerald-400 flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                  {component.downloads?.toLocaleString()} downloads
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Install command */}
+        <div class="bg-surface-2 border border-border rounded-lg p-4 mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-text-secondary">Install</span>
+            <button
+              id="copyBtn"
+              class="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+              data-cmd={installCmd}
+            >
+              Copy
+            </button>
+          </div>
+          <code class="text-sm text-accent-400 font-mono break-all">{installCmd}</code>
+        </div>
+
+        {/* Metadata labels — click to see detail */}
+        {infoCards.length > 0 && (
+          <div class="mb-6 flex flex-wrap gap-1.5">
+            {infoCards.map((card, i) => (
+              <button
+                class="meta-label flex items-center gap-1.5 px-2.5 py-1 bg-surface-2 border border-border rounded-full text-[11px] text-text-secondary hover:text-text-primary hover:border-orange-500/40 transition-colors cursor-pointer"
+                data-meta-index={i}
+              >
+                <span class="text-orange-400/70 shrink-0 [&>svg]:w-3 [&>svg]:h-3" set:html={card.icon} />
+                <span class="font-medium">{card.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Metadata modal */}
+        <div id="metaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div class="bg-surface-2 border border-border rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-border">
+              <div class="flex items-center gap-2">
+                <span id="metaModalIcon" class="text-orange-400/70 [&>svg]:w-4 [&>svg]:h-4"></span>
+                <h4 id="metaModalTitle" class="text-sm font-semibold text-text-primary"></h4>
+              </div>
+              <button id="metaModalClose" class="text-text-tertiary hover:text-text-primary p-1 rounded hover:bg-surface-3 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div id="metaModalBody" class="px-4 py-4 text-sm text-text-secondary max-h-[60vh] overflow-y-auto"></div>
+          </div>
+        </div>
+        <script id="metaData" type="application/json" set:html={JSON.stringify(
+          infoCards.map((card) => {
+            const value = frontmatter[card.key];
+            const isChipList = card.key === 'tools' || card.key === 'allowed-tools' || card.key === 'tags';
+            return { label: card.label, icon: card.icon, value, isChipList };
+          })
+        )} />
+
+        {/* Content area with optional file tree sidebar */}
+        {/* Content viewer */}
+        <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Content</h3>
+        {refs.length > 0 ? (
+          <SkillExplorer
+            client:load
+            skillContent={component.content || ''}
+            skillName={component.name}
+            skillPath={component.path}
+            references={refs}
+            headings={contentHeadings}
+          />
+        ) : isJsonType ? (
+          <JsonViewer client:load content={component.content || ''} />
+        ) : (
+          <MarkdownViewer
+            client:load
+            content={component.content || ''}
+            headings={contentHeadings}
+          />
+        )}
+
+        {/* Action buttons */}
+        <div class="mt-6 flex items-center gap-3">
+          <SaveToCollectionButton
+            client:load
+            componentType={component.type}
+            componentPath={component.path}
+            componentName={component.name}
+            componentCategory={component.category ?? ''}
+          />
+        </div>
+      </article>
+    )}
+  </div>
+
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
+
+<script>
+  // Copy button
+  document.getElementById('copyBtn')?.addEventListener('click', (e) => {
+    const cmd = (e.currentTarget as HTMLElement).dataset.cmd;
+    if (cmd) {
+      navigator.clipboard.writeText(cmd);
+      (e.currentTarget as HTMLElement).textContent = 'Copied!';
+      setTimeout(() => {
+        (e.currentTarget as HTMLElement).textContent = 'Copy';
+      }, 2000);
+    }
+  });
+
+  // Metadata modal
+  const metaModal = document.getElementById('metaModal');
+  const metaModalIcon = document.getElementById('metaModalIcon');
+  const metaModalTitle = document.getElementById('metaModalTitle');
+  const metaModalBody = document.getElementById('metaModalBody');
+  const metaModalClose = document.getElementById('metaModalClose');
+  const metaDataEl = document.getElementById('metaData');
+
+  if (metaModal && metaDataEl) {
+    const metaItems: { label: string; icon: string; value: string; isChipList: boolean }[] = JSON.parse(metaDataEl.textContent || '[]');
+
+    document.querySelectorAll('.meta-label').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number((btn as HTMLElement).dataset.metaIndex);
+        const item = metaItems[idx];
+        if (!item) return;
+        if (metaModalIcon) metaModalIcon.innerHTML = item.icon;
+        if (metaModalTitle) metaModalTitle.textContent = item.label;
+        if (metaModalBody) {
+          if (item.isChipList) {
+            const chips = item.value.replace(/^\[|\]$/g, '').split(/,\s*/).map(s => s.trim()).filter(Boolean);
+            metaModalBody.innerHTML = '<div class="flex flex-wrap gap-1.5">' +
+              chips.map(c => `<span class="px-2 py-0.5 rounded-full bg-white/[0.06] text-text-primary font-mono text-[12px]">${c}</span>`).join('') +
+              '</div>';
+          } else {
+            metaModalBody.textContent = item.value;
+          }
+        }
+        metaModal.classList.remove('hidden');
+        metaModal.classList.add('flex');
+      });
+    });
+
+    metaModalClose?.addEventListener('click', () => {
+      metaModal.classList.add('hidden');
+      metaModal.classList.remove('flex');
+    });
+    metaModal.addEventListener('click', (e) => {
+      if (e.target === metaModal) {
+        metaModal.classList.add('hidden');
+        metaModal.classList.remove('flex');
+      }
+    });
+  }
+</script>

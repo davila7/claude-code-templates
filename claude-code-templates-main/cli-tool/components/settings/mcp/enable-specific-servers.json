@@ -1,0 +1,8 @@
+{
+  "description": "Enable only specific MCP servers from .mcp.json files. This provides granular control over which MCP integrations are active, allowing you to selectively enable trusted or required servers while blocking others.",
+  "enabledMcpjsonServers": [
+    "memory",
+    "github",
+    "filesystem"
+  ]
+}

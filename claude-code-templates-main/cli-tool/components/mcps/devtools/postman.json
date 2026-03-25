@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "postman-api-http-server": {
+        "description":"Postman's MCP server connects AI agents, assistants, and chatbots directly to your APIs on Postman. Use natural language to prompt AI to automate work across your Postman collections, environments, workspaces, and more.",
+        "type": "http",
+        "url": "https://mcp.postman.com/{minimal | mcp}",
+        "headers": {
+            "Authorization": "Bearer ${input:postman-api-key}"
+        }
+    }
+  }
+}

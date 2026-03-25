@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "imagesorcery-mcp": {
+            "description":"An MCP server providing tools for image processing operations",
+            "command": "imagesorcery-mcp",
+            "transportType": "stdio",
+            "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+            "timeout": 100
+        }
+    }
+}

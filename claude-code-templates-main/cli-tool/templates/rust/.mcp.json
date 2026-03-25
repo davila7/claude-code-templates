@@ -1,0 +1,78 @@
+{
+  "mcpServers": {
+    "rust-sdk": {
+      "name": "Rust MCP SDK",
+      "description": "Asynchronous, high-performance SDK for Rust",
+      "command": "rust_mcp_server",
+      "args": [],
+      "env": {}
+    },
+    "ht-mcp": {
+      "name": "HT MCP",
+      "description": "Pure Rust implementation for headless terminal interaction",
+      "command": "ht-mcp",
+      "args": [],
+      "env": {}
+    },
+    "rust-docs": {
+      "name": "Rust Docs MCP",
+      "description": "Prevents outdated code suggestions by providing updated Rust docs",
+      "command": "rust-docs-mcp-server",
+      "args": [],
+      "env": {}
+    },
+    "substrate": {
+      "name": "Substrate MCP",
+      "description": "MCP server for interacting with Substrate-based blockchains",
+      "command": "substrate-mcp-rs",
+      "args": [],
+      "env": {
+        "NODE_URL": "..."
+      }
+    },
+    "mcp-proxy": {
+      "name": "MCP Proxy",
+      "description": "Fast Rust-based proxy between stdio and SSE",
+      "command": "mcp-proxy",
+      "args": [],
+      "env": {}
+    },
+    "memory-bank": {
+      "name": "Memory Bank MCP",
+      "description": "Centralized memory system for AI agents",
+      "command": "server-memory",
+      "args": [],
+      "env": {}
+    },
+    "sequential-thinking": {
+      "name": "Sequential Thinking MCP",
+      "description": "Helps LLMs decompose complex tasks into logical steps",
+      "command": "code-reasoning",
+      "args": [],
+      "env": {}
+    },
+    "brave-search": {
+      "name": "Brave Search MCP",
+      "description": "Privacy-focused web search tool",
+      "command": "server-brave-search",
+      "args": [],
+      "env": {}
+    },
+    "google-maps": {
+      "name": "Google Maps MCP",
+      "description": "Integrates Google Maps for geolocation and directions",
+      "command": "server-google-maps",
+      "args": [],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "..."
+      }
+    },
+    "deep-graph": {
+      "name": "Deep Graph MCP (Code Graph)",
+      "description": "Transforms source code into semantic graphs via DeepGraph",
+      "command": "mcp-code-graph",
+      "args": [],
+      "env": {}
+    }
+  }
+}

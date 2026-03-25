@@ -1,0 +1,18 @@
+{
+ "mcpServers": {
+   "elasticsearch-mcp-server": {
+    "description":"MCP server for connecting to Elasticsearch data and indices. Supports search queries, mappings, ES|QL, and shard information through natural language interactions.",
+    "command": "docker",
+    "args": [
+     "run", "-i", "--rm",
+     "-e", "ES_URL", "-e", "ES_API_KEY",
+     "docker.elastic.co/mcp/elasticsearch",
+     "stdio"
+    ],
+    "env": {
+      "ES_URL": "<elasticsearch-cluster-url>",
+      "ES_API_KEY": "<elasticsearch-API-key>"
+    }
+   }
+ }
+}
