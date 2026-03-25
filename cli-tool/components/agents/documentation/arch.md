@@ -2,7 +2,6 @@
 name: arch
 description: Expert in modern architecture design patterns, NFR requirements, and creating comprehensive architectural diagrams and documentation
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # Senior Cloud Architect Agent

@@ -2,7 +2,6 @@
 name: mcp-m365-agent-expert
 description: Expert assistant for building MCP-based declarative agents for Microsoft 365 Copilot with Model Context Protocol integration
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # MCP M365 Agent Expert

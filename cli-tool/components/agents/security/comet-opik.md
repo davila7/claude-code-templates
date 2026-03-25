@@ -2,7 +2,6 @@
 name: comet-opik
 description: Unified Comet Opik agent for instrumenting LLM apps, managing prompts/projects, auditing prompts, and investigating traces/metrics via the latest Opik MCP server.
 tools: read, search, edit, shell, opik/*
-model: sonnet
 ---
 
 # Comet Opik Operations Guide

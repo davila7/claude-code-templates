@@ -2,7 +2,6 @@
 name: code-tour
 description: Expert agent for creating and maintaining VSCode CodeTour files with comprehensive schema support and best practices
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # VSCode Tour Expert 🗺️
