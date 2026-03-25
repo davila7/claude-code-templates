@@ -159,7 +159,7 @@ export default function CartSidebar() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto h-[calc(100%-148px)] scrollbar-thin scrollbar-thumb-[var(--color-surface-3)] scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-surface-3)] scrollbar-track-transparent" style={{ height: totalItems > 0 ? 'calc(100vh - 65px - 180px)' : 'calc(100vh - 65px)' }}>
           {totalItems === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
               <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center mb-5 shadow-sm">

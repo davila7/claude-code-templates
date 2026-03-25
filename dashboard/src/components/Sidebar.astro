@@ -186,17 +186,18 @@ function isActive(path: string): boolean {
     const path = window.location.pathname.replace(/^\//, '').split('/')[0] || 'skills';
     document.querySelectorAll('.sidebar-nav-link').forEach((link) => {
       const type = (link as HTMLElement).dataset.navType;
-      const icon = link.querySelector('.sidebar-nav-icon');
+      const iconWrapper = link.querySelector('.sidebar-nav-icon');
+      const iconSpan = iconWrapper?.querySelector('span');
       if (type === path) {
         link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
         link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
-        icon?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
-        icon?.classList.add('text-[var(--color-text-primary)]', 'scale-105');
+        iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+        iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
       } else {
         link.classList.remove('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
         link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
-        icon?.classList.remove('text-[var(--color-text-primary)]', 'scale-105');
-        icon?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+        iconSpan?.classList.remove('text-[var(--color-primary-500)]', 'scale-110');
+        iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
       }
     });
   }
@@ -290,8 +291,12 @@ function isActive(path: string): boolean {
       const element = el as HTMLElement;
       const text = element.dataset.tooltip || '';
       
+      // Check if already bound to prevent duplicate listeners
+      if (element.dataset.tooltipBound === 'true') return;
+      
       element.addEventListener('mouseenter', () => showTooltip(element, text));
       element.addEventListener('mouseleave', hideTooltip);
+      element.dataset.tooltipBound = 'true';
     });
   }
 
