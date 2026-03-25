@@ -6,9 +6,12 @@ export const THEME_KEY = 'claude-theme';
 export function getTheme(): Theme {
   if (typeof window === 'undefined') return 'dark';
   const stored = localStorage.getItem(THEME_KEY);
-  // Runtime validation to ensure only valid themes
   if (stored === 'light' || stored === 'dark') {
     return stored;
+  }
+  // Detect OS preference on first visit
+  if (window.matchMedia?.('(prefers-color-scheme: light)').matches) {
+    return 'light';
   }
   return 'dark';
 }

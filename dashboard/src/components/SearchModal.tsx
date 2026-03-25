@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import type { Component, ComponentsData } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
@@ -130,7 +130,7 @@ export default function SearchModal() {
   }, [open]);
 
   // Search results
-  const results = useCallback(() => {
+  const results = useMemo(() => {
     if (!data || !query.trim()) return [];
 
     const q = query.toLowerCase();
@@ -149,7 +149,7 @@ export default function SearchModal() {
           c.category?.toLowerCase().includes(q)
       )
       .slice(0, 20);
-  }, [data, query])();
+  }, [data, query]);
 
   // Keyboard navigation
   useEffect(() => {

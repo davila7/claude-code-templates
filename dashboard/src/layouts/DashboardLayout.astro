@@ -81,11 +81,11 @@ const schemaData = JSON.stringify({
     <script is:inline>
       // Initialize theme on page load (prevent flash)
       (function() {
-        const theme = localStorage.getItem('claude-theme') || 'dark';
-        const html = document.documentElement;
-        // Remove both classes first
+        var stored = localStorage.getItem('claude-theme');
+        var theme = (stored === 'light' || stored === 'dark') ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        var html = document.documentElement;
         html.classList.remove('light', 'dark');
-        // Add the correct class
         html.classList.add(theme);
       })();
     </script>
