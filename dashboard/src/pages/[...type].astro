@@ -6,39 +6,47 @@ import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
-import { VALID_TYPES } from '../lib/icons';
+import { VALID_TYPES, TYPE_CONFIG, ICONS } from '../lib/icons';
 
 export const prerender = true;
 
-const TYPE_META: Record<string, { title: string; description: string }> = {
+const TYPE_META: Record<string, { title: string; description: string; tagline: string }> = {
   skills: {
     title: 'Claude Code Skills: Pre-built Templates & Configurations',
-    description: 'Browse skills for Claude Code. Pre-built templates and configurations to enhance your AI development workflow. Install with a single npx command.'
+    description: 'Browse skills for Claude Code. Pre-built templates and configurations to enhance your AI development workflow. Install with a single npx command.',
+    tagline: 'Pre-built templates and configurations to supercharge your AI workflow'
   },
   agents: {
     title: '600+ AI Agents for Claude Code — Development, Security, DevOps',
-    description: '600+ specialized AI agents for Claude Code. Frontend, backend, security, DevOps, data science, and more. Install with a single npx command.'
+    description: '600+ specialized AI agents for Claude Code. Frontend, backend, security, DevOps, data science, and more. Install with a single npx command.',
+    tagline: 'Specialized AI agents for every development task'
   },
   commands: {
     title: '200+ Slash Commands for Claude Code Workflows',
-    description: '200+ custom slash commands for Claude Code. Automate testing, deployment, code review, and more. Install with a single npx command.'
+    description: '200+ custom slash commands for Claude Code. Automate testing, deployment, code review, and more. Install with a single npx command.',
+    tagline: 'Custom slash commands to automate your workflow'
   },
   settings: {
     title: 'Claude Code Settings: 60+ Configuration Templates',
-    description: '60+ configuration templates for Claude Code. Statuslines, permissions, model settings, and more. Install with a single npx command.'
+    description: '60+ configuration templates for Claude Code. Statuslines, permissions, model settings, and more. Install with a single npx command.',
+    tagline: 'Configuration templates for optimal Claude Code setup'
   },
   hooks: {
     title: '39+ Claude Code Hooks: Automation Triggers & Scripts',
-    description: '39+ automation hooks for Claude Code. Git hooks, notification triggers, and custom scripts. Install with a single npx command.'
+    description: '39+ automation hooks for Claude Code. Git hooks, notification triggers, and custom scripts. Install with a single npx command.',
+    tagline: 'Automation triggers and scripts for seamless integration'
   },
   mcps: {
     title: '55+ MCP Integrations for Claude Code — External Services',
-    description: '55+ Model Context Protocol integrations for Claude Code. Connect to databases, APIs, and external services. Install with a single npx command.'
+    description: '55+ Model Context Protocol integrations for Claude Code. Connect to databases, APIs, and external services. Install with a single npx command.',
+    tagline: 'Connect to databases, APIs, and external services'
   },
 };
 
 const { type } = Astro.params;
 const activeType = type && VALID_TYPES.includes(type) ? type : 'skills';
+const config = TYPE_CONFIG[activeType];
+const meta = TYPE_META[activeType];
 
 export function getStaticPaths() {
   return [
@@ -53,11 +61,45 @@ export function getStaticPaths() {
 ---
 
 <DashboardLayout
-  title={TYPE_META[activeType]?.title ?? `${activeType.charAt(0).toUpperCase() + activeType.slice(1)} - Claude Code Templates`}
-  description={TYPE_META[activeType]?.description ?? `Browse ${activeType} for Claude Code. Install with a single npx command.`}
+  title={meta?.title ?? `${activeType.charAt(0).toUpperCase() + activeType.slice(1)} - Claude Code Templates`}
+  description={meta?.description ?? `Browse ${activeType} for Claude Code. Install with a single npx command.`}
 >
   <TopBar />
   <PartnerBanner />
+  
+  <!-- Premium Page Header -->
+  <div class="relative overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-0)] to-[var(--color-surface-1)]">
+    <!-- Animated background gradient -->
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-500)]/10 via-transparent to-[var(--color-accent-400)]/10" style="animation: gradient-shimmer 8s ease infinite; background-size: 200% 200%;"></div>
+    </div>
+    
+    <!-- Decorative elements -->
+    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[var(--color-primary-500)]/5 to-transparent rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-[var(--color-accent-400)]/5 to-transparent rounded-full blur-3xl"></div>
+    
+    <div class="relative px-6 py-12 max-w-7xl mx-auto">
+      <div class="flex items-center gap-6">
+        <!-- Large icon -->
+        <div 
+          class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float"
+          style={`background: linear-gradient(135deg, ${config?.color ?? '#5e6ad2'}20 0%, ${config?.color ?? '#5e6ad2'}10 100%); border: 2px solid ${config?.color ?? '#5e6ad2'}30;`}
+        >
+          <div class="[&>svg]:w-10 [&>svg]:h-10" style={`color: ${config?.color ?? '#5e6ad2'}`} set:html={ICONS[activeType]} />
+        </div>
+        
+        <div class="flex-1">
+          <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-2 tracking-tight">
+            {config?.label ?? activeType}
+          </h1>
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
+            {meta?.tagline ?? meta?.description}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <FeaturedSection />
   <ComponentGrid client:load initialType={activeType} />
   <SearchModal client:idle />

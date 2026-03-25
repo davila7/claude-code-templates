@@ -134,13 +134,13 @@ const refs: string[] = (component as any)?.references ?? [];
   title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
   description={frontmatter.description ? `${frontmatter.description.slice(0, 155)}` : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`}
 >
-  <div class="max-w-7xl mx-auto py-10 px-6">
+  <div class="max-w-7xl mx-auto py-12 px-6">
     {/* Back nav */}
     <a
       href={`/${typePlural}`}
-      class="inline-flex items-center gap-2 text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:gap-2.5 transition-all duration-150 mb-8 group"
+      class="inline-flex items-center gap-2.5 text-[13px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:gap-3 transition-all duration-200 mb-10 group px-4 py-2 rounded-xl hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]"
     >
-      <svg class="w-4 h-4 transition-transform duration-150 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
       </svg>
       Back to {config?.label ?? 'Components'}
@@ -182,51 +182,68 @@ const refs: string[] = (component as any)?.references ?? [];
 
     {component && (
       <article>
-        {/* Header */}
-        <div class="flex items-start gap-5 mb-8">
-          <div
-            class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg [&>svg]:w-8 [&>svg]:h-8 transition-transform duration-150 hover:scale-105"
-            style={`background-color: ${config?.color ?? '#5e6ad2'}20; color: ${config?.color ?? '#5e6ad2'}`}
-            set:html={ICONS[typePlural ?? 'agents'] ?? ''}
-          />
+        {/* Header with premium styling */}
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--color-surface-1)] to-[var(--color-surface-2)] border border-[var(--color-border)] p-8 mb-10 shadow-2xl">
+          {/* Decorative background */}
+          <div class="absolute inset-0 opacity-20">
+            <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-500)]/20 via-transparent to-[var(--color-accent-400)]/20" style="background-size: 200% 200%; animation: gradient-shimmer 8s ease infinite;"></div>
+          </div>
+          
+          <div class="relative flex items-start gap-6">
+            <div
+              class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float [&>svg]:w-10 [&>svg]:h-10 transition-transform duration-300 hover:scale-110 hover:rotate-6"
+              style={`background: linear-gradient(135deg, ${config?.color ?? '#5e6ad2'}25 0%, ${config?.color ?? '#5e6ad2'}15 100%); color: ${config?.color ?? '#5e6ad2'}; border: 2px solid ${config?.color ?? '#5e6ad2'}40;`}
+              set:html={ICONS[typePlural ?? 'agents'] ?? ''}
+            />
 
-          <div class="flex-1 min-w-0">
-            <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mb-2">{title}</h1>
-            <div class="flex items-center flex-wrap gap-2">
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
-                {config?.label}
-              </span>
-              {component.category && (
-                <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
-                  {component.category}
+            <div class="flex-1 min-w-0">
+              <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-3 tracking-tight">{title}</h1>
+              <div class="flex items-center flex-wrap gap-2.5">
+                <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] border border-[var(--color-border)] shadow-sm">
+                  {config?.label}
                 </span>
-              )}
-              {(component.downloads ?? 0) > 0 && (
-                <span class="text-xs font-medium text-emerald-400 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                  {component.downloads?.toLocaleString()}
-                </span>
-              )}
+                {component.category && (
+                  <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)] shadow-sm">
+                    {component.category}
+                  </span>
+                )}
+                {(component.downloads ?? 0) > 0 && (
+                  <span class="text-xs font-bold text-emerald-400 flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/15 border border-emerald-500/30 shadow-lg shadow-emerald-500/10">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                    {component.downloads?.toLocaleString()}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Install command */}
-        <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl p-5 mb-8 shadow-sm hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">Install Command</span>
+        {/* Install command with premium styling */}
+        <div class="relative overflow-hidden bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] rounded-2xl p-6 mb-10 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+          {/* Animated gradient overlay */}
+          <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-primary-500)]/0 via-[var(--color-primary-500)]/5 to-[var(--color-primary-500)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="animation: shimmer-glow 3s ease-in-out infinite;"></div>
+          
+          <div class="relative flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/30 flex items-center justify-center">
+                <svg class="w-4 h-4 text-[var(--color-primary-400)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <span class="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Install Command</span>
+            </div>
             <button
               id="copyBtn"
-              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--color-primary-400)] hover:text-[var(--color-primary-300)] hover:bg-[var(--color-primary-500)]/10 rounded-lg transition-all duration-150 active:scale-95"
+              class="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] rounded-xl transition-all duration-200 active:scale-95 shadow-lg hover:shadow-xl"
               data-cmd={installCmd}
             >
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
               <span>Copy</span>
             </button>
           </div>
-          <code class="text-[13px] text-[var(--color-accent-400)] font-mono break-all leading-relaxed">{installCmd}</code>
+          <code class="relative text-[13px] text-[var(--color-accent-400)] font-mono break-all leading-relaxed block bg-[var(--color-surface-4)]/50 px-4 py-3 rounded-xl border border-[var(--color-border)]">{installCmd}</code>
         </div>
 
         {/* Metadata labels — click to see detail */}

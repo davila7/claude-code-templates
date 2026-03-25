@@ -15,15 +15,18 @@ function isActive(path: string): boolean {
 
 <div class="flex flex-col h-full bg-[var(--color-surface-0)] relative">
   <!-- Logo -->
-  <div class="px-4 py-4 border-b border-[var(--color-border)] flex items-center justify-between min-h-[65px] transition-all duration-300">
+  <div class="px-4 py-4 border-b border-[var(--color-border)] flex items-center justify-between min-h-[65px] transition-all duration-300 bg-[var(--color-surface-0)]">
     <a href="/" class="flex items-center gap-2.5 group min-w-0 overflow-hidden transition-all duration-300">
-      <img src="/logo.png" alt="AI Templates" class="w-7 h-7 shrink-0 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3" />
-      <span class="sidebar-text text-[14px] font-semibold text-[var(--color-text-primary)] tracking-tight whitespace-nowrap transition-all duration-300">AI Templates</span>
-      <span class="sidebar-text text-[7px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/20 shadow-sm whitespace-nowrap transition-all duration-300">Beta</span>
+      <div class="relative">
+        <img src="/logo.png" alt="AI Templates" class="w-8 h-8 shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:rotate-6" />
+        <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-400)]/20 to-[var(--color-accent-400)]/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"></div>
+      </div>
+      <span class="sidebar-text text-[14px] font-bold text-[var(--color-text-primary)] tracking-tight whitespace-nowrap transition-all duration-300">AI Templates</span>
+      <span class="sidebar-text text-[7px] font-bold uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-emerald-400 text-white px-1.5 py-0.5 rounded border border-emerald-400/30 shadow-sm whitespace-nowrap transition-all duration-300">Beta</span>
     </a>
     <button
       id="sidebar-toggle"
-      class="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] transition-all duration-200 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] active:scale-95"
+      class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] transition-all duration-200 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] active:scale-95 hover:rotate-180"
       aria-label="Toggle sidebar"
       title="Collapse sidebar"
     >
@@ -57,12 +60,15 @@ function isActive(path: string): boolean {
         data-nav-type={type}
         data-tooltip={config.label}
         class:list={[
-          'sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
+          'sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
           isActive(`/${type}`)
-            ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-medium shadow-sm'
+            ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-semibold shadow-sm border border-[var(--color-border)]'
             : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] hover:shadow-sm',
         ]}
       >
+        {isActive(`/${type}`) && (
+          <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+        )}
         <span
           class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center"
         >
@@ -70,14 +76,14 @@ function isActive(path: string): boolean {
             class:list={[
               'w-full h-full inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:flex-shrink-0 [&>svg]:block [&>svg]:m-auto transition-all duration-200',
               isActive(`/${type}`)
-                ? 'text-[var(--color-text-primary)] scale-105'
+                ? 'text-[var(--color-primary-500)] scale-110'
                 : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] group-hover:scale-105',
             ]}
             set:html={ICONS[type]}
           />
         </span>
         <span class="sidebar-text truncate transition-all duration-300">{config.label}</span>
-        <span class="sidebar-nav-count ml-auto text-[11px] font-medium tabular-nums text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)] px-1.5 py-0.5 rounded-md min-w-[20px] text-center transition-all duration-300" data-count-type={type}></span>
+        <span class="sidebar-nav-count ml-auto text-[11px] font-semibold tabular-nums text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)] px-2 py-0.5 rounded-md min-w-[24px] text-center transition-all duration-300 group-hover:bg-[var(--color-surface-3)]" data-count-type={type}></span>
       </a>
     ))}
 

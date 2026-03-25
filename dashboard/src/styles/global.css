@@ -296,14 +296,119 @@ body {
 }
 
 /* Subtle transition for all interactive elements */
-a, button {
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+a, button, input, select {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
 /* Keep inline SVG icons vertically centered in links/buttons */
 a svg, button svg {
   vertical-align: middle;
   display: inline-block;
+}
+
+/* Smooth scale animation for interactive cards */
+@keyframes card-hover {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    transform: scale(1.01) translateY(-2px);
+  }
+}
+
+/* Pulse animation for badges */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer-glow {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Float animation for empty states */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Fade in from bottom */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out;
+}
+
+/* Stagger animation for grid items */
+@keyframes stagger-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Gradient shimmer for premium elements */
+@keyframes gradient-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Smooth bounce for interactive elements */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Glow pulse effect */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(94, 106, 210, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(94, 106, 210, 0.5);
+  }
 }
 
 /* Skeleton loading animation */
