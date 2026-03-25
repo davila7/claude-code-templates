@@ -22,7 +22,7 @@ if (!item) {
     {/* Back nav */}
     <a
       href="/"
-      class="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors mb-6"
+      class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors mb-6"
     >
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -31,46 +31,66 @@ if (!item) {
     </a>
 
     {/* Header */}
-    <div class="flex items-start gap-5 mb-8 pb-6 border-b border-border relative">
-      {/* Logo */}
-      <div class="w-16 h-16 rounded-xl bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 p-2">
-        <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-lg" />
+    <div class="flex items-start gap-5 mb-8 pb-6 border-b border-[var(--color-border)] relative animate-fade-in">
+      {/* Logo with glow effect */}
+      <div class="w-16 h-16 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden shrink-0 p-2 relative group">
+        <div class="absolute inset-0 bg-gradient-to-br from-accent-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-lg relative z-10 group-hover:scale-110 transition-transform duration-500" />
       </div>
 
-      {/* Title + badges */}
+      {/* Title + badges with enhanced styling */}
       <div class="flex-1 min-w-0">
-        <h1 class="text-2xl font-bold text-text-primary">{item.name}</h1>
-        <div class="flex items-center gap-2 mt-2">
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="text-2xl font-bold text-[var(--color-text-primary)] bg-gradient-to-r from-[var(--color-text-primary)] to-accent-400 bg-clip-text">{item.name}</h1>
+          {/* Verified badge */}
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-500/10 border border-accent-500/30">
+            <svg class="w-3.5 h-3.5 text-accent-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-[10px] font-semibold text-accent-500 uppercase tracking-wide">Verified</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 mt-2 flex-wrap">
           <span
-            class="text-[11px] px-2.5 py-1 rounded-full font-semibold text-white uppercase tracking-wide"
-            style={`background-color: ${item.tagColor}`}
+            class="text-[11px] px-2.5 py-1 rounded-full font-semibold text-white uppercase tracking-wide shadow-lg animate-pulse-subtle"
+            style={`background: linear-gradient(135deg, ${item.tagColor}, ${item.tagColor}dd)`}
           >
             {item.tag}
           </span>
-          <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-secondary">
+          <span class="text-xs px-2.5 py-1 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
             {item.category}
+          </span>
+          {/* Social proof badge */}
+          <span class="text-xs px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 border border-green-500/30 font-medium flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+            </svg>
+            {slug === 'claudekit' && '4,000+ users'}
+            {slug === 'brightdata' && 'Trusted by 1000s'}
+            {slug === 'neon-instagres' && 'Production ready'}
+            {slug === 'braingrid' && 'Battle-tested'}
           </span>
         </div>
       </div>
 
-      {/* CTA + Share */}
+      {/* CTA + Share with premium styling */}
       <div class="flex items-center gap-2 shrink-0">
         <div class="relative" id="shareDropdown">
           <button
             id="shareBtn"
-            class="w-9 h-9 flex items-center justify-center rounded-lg border border-border hover:border-border-hover bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
+            class="w-9 h-9 flex items-center justify-center rounded-lg border border-[var(--color-border)] hover:border-accent-500/50 bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] hover:text-accent-500 transition-all hover:shadow-lg hover:shadow-accent-500/20 hover:scale-105"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
           </button>
-          <div id="shareOptions" class="hidden absolute right-0 top-full mt-2 bg-surface-3 border border-border rounded-lg shadow-lg z-50 min-w-[160px] overflow-hidden">
-            <button class="share-opt w-full text-left px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-4 transition-colors flex items-center gap-2" data-platform="x">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <div id="shareOptions" class="hidden absolute right-0 top-full mt-2 bg-[var(--color-surface-3)] border border-[var(--color-border)] rounded-lg shadow-2xl z-50 min-w-[180px] overflow-hidden backdrop-blur-xl">
+            <button class="share-opt w-full text-left px-3 py-2.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-accent-500/10 transition-all flex items-center gap-2 group" data-platform="x">
+              <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               Share on X
             </button>
-            <button class="share-opt w-full text-left px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-4 transition-colors flex items-center gap-2" data-platform="threads">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.6-.053-1.149-.16-1.644a4.158 4.158 0 00-.488-1.336 3.996 3.996 0 00-.82-1.084 4.015 4.015 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.014c-1.623.02-3.094.37-4.37 1.04a4.015 4.015 0 00-1.414 1.017 3.996 3.996 0 00-.82 1.084 4.158 4.158 0 00-.488 1.336c-.107.495-.16 1.044-.16 1.644 0 .6.053 1.149.16 1.644.107.496.27.941.488 1.336.218.394.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/></svg>
+            <button class="share-opt w-full text-left px-3 py-2.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-accent-500/10 transition-all flex items-center gap-2 group" data-platform="threads">
+              <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.781 3.631 2.695 6.54 2.717 1.623-.02 3.094-.37 4.37-1.04.558-.29 1.029-.63 1.414-1.017.33-.33.602-.69.82-1.084.218-.395.381-.84.488-1.336.107-.495.16-1.044.16-1.644 0-.6-.053-1.149-.16-1.644a4.158 4.158 0 00-.488-1.336 3.996 3.996 0 00-.82-1.084 4.015 4.015 0 00-1.414-1.017c-1.276-.67-2.747-1.02-4.37-1.04h-.014c-1.623.02-3.094.37-4.37 1.04a4.015 4.015 0 00-1.414 1.017 3.996 3.996 0 00-.82 1.084 4.158 4.158 0 00-.488 1.336c-.107.495-.16 1.044-.16 1.644 0 .6.053 1.149.16 1.644.107.496.27.941.488 1.336.218.394.49.754.82 1.084.385.387.856.727 1.414 1.017 1.276.67 2.747 1.02 4.37 1.04z"/></svg>
               Share on Threads
             </button>
           </div>
@@ -79,25 +99,29 @@ if (!item) {
           href={item.ctaUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg text-sm font-medium transition-colors"
+          class="cta-button inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-lg text-sm font-bold transition-all shadow-xl shadow-accent-500/30 hover:shadow-2xl hover:shadow-accent-500/50 hover:scale-105 relative overflow-hidden group"
         >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+          <svg class="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          {item.ctaLabel}
+          <span class="relative z-10">{item.ctaLabel}</span>
+          <svg class="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
         </a>
       </div>
     </div>
 
     {/* Navigation bar */}
-    <div class="flex border-b border-border mb-0 sticky top-0 bg-surface-0 z-30">
-      <span class="px-4 py-3 text-sm font-medium text-text-primary border-b-2 border-accent-500">
+    <div class="flex border-b border-[var(--color-border)] mb-0 sticky top-0 bg-[var(--color-surface-0)] z-30">
+      <span class="px-4 py-3 text-sm font-medium text-[var(--color-text-primary)] border-b-2 border-accent-500">
         <span class="flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
           Overview
         </span>
       </span>
-      <a href={item.websiteUrl} target="_blank" rel="noopener noreferrer" class="px-4 py-3 text-sm font-medium text-text-tertiary border-b-2 border-transparent hover:text-text-secondary transition-colors">
+      <a href={item.websiteUrl} target="_blank" rel="noopener noreferrer" class="px-4 py-3 text-sm font-medium text-[var(--color-text-tertiary)] border-b-2 border-transparent hover:text-[var(--color-text-secondary)] transition-colors">
         <span class="flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
           Website
@@ -107,6 +131,91 @@ if (!item) {
 
     {/* Content */}
     <div class="mt-0">
+      {/* Premium Hero CTA Banner with animated background */}
+      <div class="relative overflow-hidden bg-gradient-to-r from-accent-500/10 via-accent-600/15 to-accent-500/10 border-y border-accent-500/30 py-8 px-6 mb-6 animate-fade-in">
+        {/* Animated gradient orbs */}
+        <div class="absolute top-0 left-1/4 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-accent-600/20 rounded-full blur-3xl animate-float-delayed"></div>
+        
+        <div class="max-w-3xl mx-auto text-center space-y-5 relative z-10">
+          {/* Eyebrow text */}
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-500/20 border border-accent-500/30 backdrop-blur-sm">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-500"></span>
+            </span>
+            <span class="text-xs font-semibold text-accent-600 uppercase tracking-wide">
+              {slug === 'brightdata' && 'Most Popular Web Data Platform'}
+              {slug === 'neon-instagres' && 'Instant Database Provisioning'}
+              {slug === 'claudekit' && 'Trusted by 4,000+ Developers'}
+              {slug === 'braingrid' && 'Product Planning Made Simple'}
+            </span>
+          </div>
+
+          <h2 class="text-3xl md:text-4xl font-black text-[var(--color-text-primary)] leading-tight">
+            {slug === 'brightdata' && (
+              <>Start Scraping Web Data <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">in Minutes</span></>
+            )}
+            {slug === 'neon-instagres' && (
+              <>Get Your Postgres Database <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">in Seconds</span></>
+            )}
+            {slug === 'claudekit' && (
+              <>Supercharge Your Claude Code <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">Workflow</span></>
+            )}
+            {slug === 'braingrid' && (
+              <>Plan Your Product <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">Like a Pro</span></>
+            )}
+          </h2>
+
+          <p class="text-base text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
+            {slug === 'brightdata' && 'Join thousands of developers using Bright Data to power their web scraping and data extraction. Free tier includes 60+ tools and unlimited searches.'}
+            {slug === 'neon-instagres' && 'Instant Postgres provisioning with Neon Instagres. No setup, no config files. Just run one command and start building.'}
+            {slug === 'claudekit' && '4,000+ developers across 109 countries trust ClaudeKit. Battle-tested workflows, production-ready agents, and proven commands.'}
+            {slug === 'braingrid' && 'Turn messy ideas into clear specifications, UX flows, and engineering-ready prompts. The planning layer that makes Claude Code more effective.'}
+          </p>
+
+          <div class="flex flex-col items-center gap-4 pt-2">
+            <a
+              href={item.ctaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cta-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-xl text-base font-bold transition-all shadow-2xl shadow-accent-500/40 hover:shadow-accent-500/60 hover:scale-105 relative overflow-hidden group"
+            >
+              <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+              <svg class="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span class="relative z-10">{item.ctaLabel}</span>
+              <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+
+            {/* Trust indicators */}
+            <div class="flex items-center gap-6 text-xs text-[var(--color-text-tertiary)] flex-wrap justify-center">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">Free tier available</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">No credit card required</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">2 minute setup</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="pt-6">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 items-start">
           {/* Main content */}
@@ -120,7 +229,7 @@ if (!item) {
 
                 <h2>BrainGrid Is Like Claude Code Plan Mode for Your Entire Product</h2>
                 <p>Think of BrainGrid as Claude Code plan mode, but applied to your entire product, not just a single prompt.</p>
-                <div class="bg-surface-2 border border-border rounded-lg p-4 my-4 space-y-2">
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4 my-4 space-y-2">
                   <p><strong class="text-accent-400">Claude Code</strong> helps you plan a feature.</p>
                   <p><strong class="text-accent-400">BrainGrid</strong> helps you plan the product.</p>
                 </div>
@@ -129,13 +238,13 @@ if (!item) {
                 <h2>How BrainGrid Works With Claude Code</h2>
                 <p>BrainGrid is not a replacement for Claude Code—it works alongside it. It is a planning and orchestration layer that makes Claude Code more effective.</p>
                 <div class="space-y-3 my-4">
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128161;</span><div><p class="font-medium text-text-primary text-sm">Clarifying Questions</p><p class="text-text-secondary text-sm mt-0.5">Asks clarifying questions to surface edge cases and hidden complexity</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128506;</span><div><p class="font-medium text-text-primary text-sm">End-to-End UX Flows</p><p class="text-text-secondary text-sm mt-0.5">Maps end-to-end UX flows so features are planned as complete experiences</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128203;</span><div><p class="font-medium text-text-primary text-sm">Task Breakdown</p><p class="text-text-secondary text-sm mt-0.5">Breaks large ideas into small, scoped tasks with goals and acceptance criteria</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div><p class="font-medium text-text-primary text-sm">Claude Code-Ready Prompts</p><p class="text-text-secondary text-sm mt-0.5">Generates Claude Code-ready prompts with the right context attached</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128737;</span><div><p class="font-medium text-text-primary text-sm">Prevent Regressions</p><p class="text-text-secondary text-sm mt-0.5">Helps prevent regressions by ensuring new work fits the existing system</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128161;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Clarifying Questions</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Asks clarifying questions to surface edge cases and hidden complexity</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128506;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">End-to-End UX Flows</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Maps end-to-end UX flows so features are planned as complete experiences</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128203;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Task Breakdown</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Breaks large ideas into small, scoped tasks with goals and acceptance criteria</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Claude Code-Ready Prompts</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Generates Claude Code-ready prompts with the right context attached</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128737;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Prevent Regressions</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Helps prevent regressions by ensuring new work fits the existing system</p></div></div>
                 </div>
-                <div class="bg-surface-2 border-l-2 border-accent-500 rounded-r-lg p-3 my-4 text-sm text-text-secondary italic">Tasks can be sent to Claude Code via MCP, CLI or copied directly into the Claude Code workflow.</div>
+                <div class="bg-[var(--color-surface-2)] border-l-2 border-accent-500 rounded-r-lg p-3 my-4 text-sm text-[var(--color-text-secondary)] italic">Tasks can be sent to Claude Code via MCP, CLI or copied directly into the Claude Code workflow.</div>
 
                 <h2>Claude Code Integration</h2>
                 <p>BrainGrid seamlessly integrates with your Claude Code workflow. Once BrainGrid generates your product specifications and task breakdowns, you can:</p>
@@ -147,6 +256,54 @@ if (!item) {
 
                 <h2>Who BrainGrid Is For</h2>
                 <ul><li>Non-technical founders building real products, not just prototypes</li><li>Vibe coders hitting complexity walls as their apps grow</li><li>AI builders who need help planning scope, sequencing work, and evolving apps without breaking what already works</li></ul>
+
+                {/* Premium Inline CTA */}
+                <div class="relative overflow-hidden bg-gradient-to-br from-accent-500/15 via-accent-600/10 to-accent-500/15 border-2 border-accent-500/40 rounded-2xl p-8 my-10 text-center shadow-2xl animate-fade-in-up">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-accent-500/20 rounded-full blur-3xl"></div>
+                  <div class="absolute bottom-0 left-0 w-32 h-32 bg-accent-600/20 rounded-full blur-3xl"></div>
+                  
+                  <div class="relative z-10 space-y-4">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-500 to-accent-600 shadow-lg shadow-accent-500/50 mb-2">
+                      <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-[var(--color-text-primary)]">Plan Your Product Like a Pro</h3>
+                    <p class="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">Turn messy ideas into clear specs and engineering-ready prompts. Start building better products today.</p>
+                    
+                    <a
+                      href={item.ctaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="cta-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-xl text-base font-bold transition-all shadow-2xl shadow-accent-500/40 hover:shadow-accent-500/60 hover:scale-105 relative overflow-hidden group"
+                    >
+                      <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                      <svg class="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span class="relative z-10">{item.ctaLabel}</span>
+                      <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </a>
+
+                    <div class="flex items-center justify-center gap-4 text-xs text-[var(--color-text-tertiary)] pt-2">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        AI-powered
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Battle-tested
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </Fragment>
             )}
 
@@ -160,7 +317,7 @@ if (!item) {
 
                 <h3>1. Provisioning Layer</h3>
                 <p><strong>neon-instagres Skill</strong> — Auto-activating skill that provisions Postgres databases via <code>npx get-db</code>. Triggers on keywords like "database", "postgres", or "PostgreSQL".</p>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono">npx get-db --yes --ref 4eCjZDz</code></div>
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono">npx get-db --yes --ref 4eCjZDz</code></div>
                 <p>Creates three environment variables:</p>
                 <ul>
                   <li><code>DATABASE_URL</code> — Connection pooler endpoint</li>
@@ -173,11 +330,11 @@ if (!item) {
                 <h3>2. Agent Layer</h3>
                 <p>Five specialized agents handle different database operations:</p>
                 <div class="space-y-2 my-3">
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-database-architect</strong> — Schema design with Drizzle ORM. Handles table relationships, indexes, constraints, and migration generation.</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-auth-specialist</strong> — Authentication integration with Stack Auth. Multi-tenancy, RLS, and session management.</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-migration-specialist</strong> — Zero-downtime deployments, rollback procedures, and data migration patterns.</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-optimization-analyzer</strong> — Query performance analysis with <code>EXPLAIN ANALYZE</code>, index recommendations.</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">neon-expert</strong> — General consulting: branching workflows, compute autoscaling, Neon-specific features.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-database-architect</strong> — Schema design with Drizzle ORM. Handles table relationships, indexes, constraints, and migration generation.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-auth-specialist</strong> — Authentication integration with Stack Auth. Multi-tenancy, RLS, and session management.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-migration-specialist</strong> — Zero-downtime deployments, rollback procedures, and data migration patterns.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-optimization-analyzer</strong> — Query performance analysis with <code>EXPLAIN ANALYZE</code>, index recommendations.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-expert</strong> — General consulting: branching workflows, compute autoscaling, Neon-specific features.</p></div>
                 </div>
 
                 <h3>3. Integration Layer</h3>
@@ -188,10 +345,10 @@ if (!item) {
 
                 <h2>Installation</h2>
                 <h3>Option 1: Skills Only</h3>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon</code></div>
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon</code></div>
 
                 <h3>Option 2: Complete Template</h3>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
   --skill database/neon-instagres,database/using-neon \
   --agent database/neon-expert,database/neon-database-architect,database/neon-auth-specialist,data-ai/neon-migration-specialist,data-ai/neon-optimization-analyzer \
   --mcp database/neon \
@@ -214,6 +371,57 @@ if (!item) {
                   <li><a href="https://neon.tech/docs/introduction" target="_blank">Neon Platform Overview</a></li>
                   <li><a href="https://get.neon.com/4eCjZDz" target="_blank">Create Free Neon Account</a></li>
                 </ul>
+
+                {/* Premium Inline CTA */}
+                <div class="relative overflow-hidden bg-gradient-to-br from-accent-500/15 via-accent-600/10 to-accent-500/15 border-2 border-accent-500/40 rounded-2xl p-8 my-10 text-center shadow-2xl animate-fade-in-up">
+                  {/* Decorative elements */}
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-accent-500/20 rounded-full blur-3xl"></div>
+                  <div class="absolute bottom-0 left-0 w-32 h-32 bg-accent-600/20 rounded-full blur-3xl"></div>
+                  
+                  <div class="relative z-10 space-y-4">
+                    {/* Icon */}
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-500 to-accent-600 shadow-lg shadow-accent-500/50 mb-2">
+                      <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-[var(--color-text-primary)]">Ready to Get Started?</h3>
+                    <p class="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">Provision your Postgres database in seconds. No credit card required.</p>
+                    
+                    <a
+                      href={item.ctaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="cta-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-xl text-base font-bold transition-all shadow-2xl shadow-accent-500/40 hover:shadow-accent-500/60 hover:scale-105 relative overflow-hidden group"
+                    >
+                      <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                      <svg class="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span class="relative z-10">{item.ctaLabel}</span>
+                      <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </a>
+
+                    {/* Trust badges */}
+                    <div class="flex items-center justify-center gap-4 text-xs text-[var(--color-text-tertiary)] pt-2">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Free forever
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Setup in 30s
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </Fragment>
             )}
 
@@ -227,21 +435,21 @@ if (!item) {
 
                 <h3>1. Skills Layer</h3>
                 <div class="space-y-3 my-4">
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128269;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">search Skill</p><p class="text-text-secondary text-sm mt-0.5">Google search with structured JSON results. Returns titles, links, and descriptions via Web Unlocker API with parsed_light format.</p></div><a href="/component/skill/web-data/search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127760;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">scrape Skill</p><p class="text-text-secondary text-sm mt-0.5">Scrape any webpage as clean markdown. Automatic bot detection bypass, CAPTCHA solving, and JavaScript rendering via Web Unlocker.</p></div><a href="/component/skill/web-data/scrape" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128202;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">data-feeds Skill</p><p class="text-text-secondary text-sm mt-0.5">Extract structured data from 40+ websites. Covers e-commerce, professional networks, social media, and more with automatic polling.</p></div><a href="/component/skill/web-data/data-feeds" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">bright-data-mcp Skill</p><p class="text-text-secondary text-sm mt-0.5">Workflow orchestration guide that teaches Claude how to optimally use Bright Data's MCP server across all 60+ tools.</p></div><a href="/component/skill/web-data/bright-data-mcp" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128218;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">bright-data-best-practices Skill</p><p class="text-text-secondary text-sm mt-0.5">Production-ready API reference covering Web Unlocker, SERP API, Web Scraper API, and Browser API with code examples.</p></div><a href="/component/skill/web-data/bright-data-best-practices" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127912;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">design-mirror Skill</p><p class="text-text-secondary text-sm mt-0.5">Capture visual design from any website and apply it to your codebase. Extracts design tokens, colors, typography, and spacing.</p></div><a href="/component/skill/web-data/design-mirror" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128270;</span><div class="flex-1"><p class="font-medium text-text-primary text-sm">brightdata-local-search Skill</p><p class="text-text-secondary text-sm mt-0.5">Run local web searches using Bright Data SERP API with query expansion, multi-engine SERP retrieval, RRF reranking, deduplication, and domain clustering.</p></div><a href="/component/skill/development/brightdata-local-search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128269;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">search Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Google search with structured JSON results. Returns titles, links, and descriptions via Web Unlocker API with parsed_light format.</p></div><a href="/component/skill/web-data/search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#127760;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">scrape Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Scrape any webpage as clean markdown. Automatic bot detection bypass, CAPTCHA solving, and JavaScript rendering via Web Unlocker.</p></div><a href="/component/skill/web-data/scrape" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128202;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">data-feeds Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Extract structured data from 40+ websites. Covers e-commerce, professional networks, social media, and more with automatic polling.</p></div><a href="/component/skill/web-data/data-feeds" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">bright-data-mcp Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Workflow orchestration guide that teaches Claude how to optimally use Bright Data's MCP server across all 60+ tools.</p></div><a href="/component/skill/web-data/bright-data-mcp" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128218;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">bright-data-best-practices Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Production-ready API reference covering Web Unlocker, SERP API, Web Scraper API, and Browser API with code examples.</p></div><a href="/component/skill/web-data/bright-data-best-practices" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#127912;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">design-mirror Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Capture visual design from any website and apply it to your codebase. Extracts design tokens, colors, typography, and spacing.</p></div><a href="/component/skill/web-data/design-mirror" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128270;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">brightdata-local-search Skill</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Run local web searches using Bright Data SERP API with query expansion, multi-engine SERP retrieval, RRF reranking, deduplication, and domain clustering.</p></div><a href="/component/skill/development/brightdata-local-search" class="shrink-0 self-center text-xs font-medium text-accent-400 border border-accent-400/30 rounded-md px-3 py-1.5 hover:bg-accent-400/10 transition-colors no-underline">View</a></div>
                 </div>
 
                 <h3>2. Integration Layer</h3>
                 <p><strong>brightdata MCP</strong> — Model Context Protocol integration providing programmatic access to 60+ tools across three modes:</p>
                 <div class="space-y-2 my-3">
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Rapid Mode (Free)</strong> — <code>search_engine</code>, <code>scrape_as_markdown</code>, <code>search_engine_batch</code>, <code>scrape_batch</code></p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Pro Mode</strong> — Everything in Rapid plus browser automation (13 tools), web data APIs for 40+ platforms, and advanced scraping</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Custom Mode</strong> — Mix and match tool groups (ecommerce, social, business, finance, research, travel, browser, advanced_scraping)</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Rapid Mode (Free)</strong> — <code>search_engine</code>, <code>scrape_as_markdown</code>, <code>search_engine_batch</code>, <code>scrape_batch</code></p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Pro Mode</strong> — Everything in Rapid plus browser automation (13 tools), web data APIs for 40+ platforms, and advanced scraping</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Custom Mode</strong> — Mix and match tool groups (ecommerce, social, business, finance, research, travel, browser, advanced_scraping)</p></div>
                 </div>
 
                 <h3>3. Configuration Layer</h3>
@@ -253,17 +461,17 @@ if (!item) {
 
                 <h2>Installation</h2>
                 <h3>Option 1: Skills Only</h3>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices</code></div>
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices</code></div>
 
                 <h3>Option 2: Complete Template (Skills + MCP)</h3>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
   --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices \
   --mcp web-data/brightdata \
   --yes</code></div>
 
                 <h3>Option 3: MCP Only (No Skills)</h3>
                 <p>Add to your Claude Code MCP settings:</p>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">&#123;
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">&#123;
   "mcpServers": &#123;
     "brightdata": &#123;
       "url": "https://mcp.brightdata.com/mcp?token=YOUR_TOKEN&amp;pro=1"
@@ -286,12 +494,12 @@ if (!item) {
 
                 <h2>Use Cases</h2>
                 <div class="space-y-3 my-4">
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128200;</span><div><p class="font-medium text-text-primary text-sm">Research &amp; Analysis</p><p class="text-text-secondary text-sm mt-0.5">Search Google for structured results, scrape full articles as markdown, combine multiple sources into comprehensive reports.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#127919;</span><div><p class="font-medium text-text-primary text-sm">Competitive Intelligence</p><p class="text-text-secondary text-sm mt-0.5">Extract Amazon product data, LinkedIn company profiles, Crunchbase funding rounds, and social media metrics.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128101;</span><div><p class="font-medium text-text-primary text-sm">Lead Generation</p><p class="text-text-secondary text-sm mt-0.5">Pull LinkedIn person profiles, company data, and ZoomInfo records. Enrich with social media presence.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128241;</span><div><p class="font-medium text-text-primary text-sm">Social Media Monitoring</p><p class="text-text-secondary text-sm mt-0.5">Track profiles, posts, reels, and engagement metrics across Instagram, TikTok, Facebook, YouTube, Reddit, and X.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128722;</span><div><p class="font-medium text-text-primary text-sm">E-Commerce Intelligence</p><p class="text-text-secondary text-sm mt-0.5">Product details, pricing, ratings, and reviews from Amazon, Walmart, eBay, Best Buy, Etsy, and more.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 text-xl">&#128421;</span><div><p class="font-medium text-text-primary text-sm">Browser Automation</p><p class="text-text-secondary text-sm mt-0.5">Full browser control for JavaScript-heavy sites: navigate, click, type, screenshot, and extract via Scraping Browser tools.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128200;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Research &amp; Analysis</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Search Google for structured results, scrape full articles as markdown, combine multiple sources into comprehensive reports.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#127919;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Competitive Intelligence</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Extract Amazon product data, LinkedIn company profiles, Crunchbase funding rounds, and social media metrics.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128101;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Lead Generation</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Pull LinkedIn person profiles, company data, and ZoomInfo records. Enrich with social media presence.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128241;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Social Media Monitoring</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Track profiles, posts, reels, and engagement metrics across Instagram, TikTok, Facebook, YouTube, Reddit, and X.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128722;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">E-Commerce Intelligence</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Product details, pricing, ratings, and reviews from Amazon, Walmart, eBay, Best Buy, Etsy, and more.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128421;</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Browser Automation</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Full browser control for JavaScript-heavy sites: navigate, click, type, screenshot, and extract via Scraping Browser tools.</p></div></div>
                 </div>
 
                 <h2>Additional Resources</h2>
@@ -302,6 +510,54 @@ if (!item) {
                   <li><a href="https://github.com/brightdata/skills" target="_blank">Skills Plugin Repository</a></li>
                   <li><a href="https://get.brightdata.com/lcqorc6nzp9w" target="_blank">Create Free Bright Data Account</a></li>
                 </ul>
+
+                {/* Premium Inline CTA */}
+                <div class="relative overflow-hidden bg-gradient-to-br from-accent-500/15 via-accent-600/10 to-accent-500/15 border-2 border-accent-500/40 rounded-2xl p-8 my-10 text-center shadow-2xl animate-fade-in-up">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-accent-500/20 rounded-full blur-3xl"></div>
+                  <div class="absolute bottom-0 left-0 w-32 h-32 bg-accent-600/20 rounded-full blur-3xl"></div>
+                  
+                  <div class="relative z-10 space-y-4">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-500 to-accent-600 shadow-lg shadow-accent-500/50 mb-2">
+                      <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      </svg>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-[var(--color-text-primary)]">Start Scraping Web Data Today</h3>
+                    <p class="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">60+ tools, unlimited searches, free tier available. No credit card required.</p>
+                    
+                    <a
+                      href={item.ctaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="cta-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-xl text-base font-bold transition-all shadow-2xl shadow-accent-500/40 hover:shadow-accent-500/60 hover:scale-105 relative overflow-hidden group"
+                    >
+                      <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                      <svg class="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span class="relative z-10">{item.ctaLabel}</span>
+                      <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </a>
+
+                    <div class="flex items-center justify-center gap-4 text-xs text-[var(--color-text-tertiary)] pt-2">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        1000s of users
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        60+ tools
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </Fragment>
             )}
 
@@ -312,7 +568,7 @@ if (!item) {
                 <p><strong>4,000+ happy users across 109 countries trust ClaudeKit to power their development workflow.</strong></p>
 
                 <h2>Quick Installation</h2>
-                <div class="bg-surface-2 border border-border rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono whitespace-pre-wrap"># Login with your GitHub account
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono whitespace-pre-wrap"># Login with your GitHub account
 gh auth login
 
 # Install ClaudeKit CLI
@@ -326,30 +582,78 @@ ck init -g</code></div>
 
                 <h2>The Battle-Tested Workflow</h2>
                 <div class="space-y-3 my-4">
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">1</span><div><p class="font-medium text-text-primary text-sm">/docs:init</p><p class="text-text-secondary text-sm mt-0.5">Scans your codebase, generates specs: structure, architecture, code standards, product overview, and design guidelines.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">2</span><div><p class="font-medium text-text-primary text-sm">/brainstorm</p><p class="text-text-secondary text-sm mt-0.5">Describe what you want to build. AI asks questions, challenges you, and produces requirement specs.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">3</span><div><p class="font-medium text-text-primary text-sm">/plan</p><p class="text-text-secondary text-sm mt-0.5">Researches approaches, spawns researcher agents in parallel, creates a comprehensive implementation plan.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">4</span><div><p class="font-medium text-text-primary text-sm">/clear</p><p class="text-text-secondary text-sm mt-0.5">Fresh context window before implementation for best code quality output.</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-sm font-bold text-accent-400">5</span><div><p class="font-medium text-text-primary text-sm">/code:auto</p><p class="text-text-secondary text-sm mt-0.5">Reads the plan, implements phase by phase. Write code, tests, code review, verification, iterate, then update specs.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-[var(--color-surface-3)] flex items-center justify-center text-sm font-bold text-accent-400">1</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">/docs:init</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Scans your codebase, generates specs: structure, architecture, code standards, product overview, and design guidelines.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-[var(--color-surface-3)] flex items-center justify-center text-sm font-bold text-accent-400">2</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">/brainstorm</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Describe what you want to build. AI asks questions, challenges you, and produces requirement specs.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-[var(--color-surface-3)] flex items-center justify-center text-sm font-bold text-accent-400">3</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">/plan</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Researches approaches, spawns researcher agents in parallel, creates a comprehensive implementation plan.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-[var(--color-surface-3)] flex items-center justify-center text-sm font-bold text-accent-400">4</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">/clear</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Fresh context window before implementation for best code quality output.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 w-7 h-7 rounded-lg bg-[var(--color-surface-3)] flex items-center justify-center text-sm font-bold text-accent-400">5</span><div><p class="font-medium text-[var(--color-text-primary)] text-sm">/code:auto</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Reads the plan, implements phase by phase. Write code, tests, code review, verification, iterate, then update specs.</p></div></div>
                 </div>
 
                 <h2>ClaudeKit Engineer</h2>
                 <div class="space-y-3 my-4">
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Feature Development — <code>/cook</code></p><p class="text-text-secondary text-sm mt-0.5">Standalone implementation with internal planning and development workflows</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Multi-Agent Code Review — <code>/code:review</code></p><p class="text-text-secondary text-sm mt-0.5">Specialized agents for security, performance, and standards enforcement</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Automated Testing — <code>/test</code></p><p class="text-text-secondary text-sm mt-0.5">Generates comprehensive test suites: E2E, integration, and unit tests</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Bug Diagnosis — <code>/debug</code></p><p class="text-text-secondary text-sm mt-0.5">Analyzes logs, CI/CD failures, root cause analysis</p></div></div>
-                  <div class="flex gap-3 p-3 bg-surface-2 border border-border rounded-lg hover:border-border-hover transition-colors"><div><p class="font-medium text-text-primary text-sm">Documentation Sync — <code>/docs</code></p><p class="text-text-secondary text-sm mt-0.5">Maintains synchronized technical docs: PRD, codebase summary, code standards, architecture</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Feature Development — <code>/cook</code></p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Standalone implementation with internal planning and development workflows</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Multi-Agent Code Review — <code>/code:review</code></p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Specialized agents for security, performance, and standards enforcement</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Automated Testing — <code>/test</code></p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Generates comprehensive test suites: E2E, integration, and unit tests</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Bug Diagnosis — <code>/debug</code></p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Analyzes logs, CI/CD failures, root cause analysis</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><div><p class="font-medium text-[var(--color-text-primary)] text-sm">Documentation Sync — <code>/docs</code></p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Maintains synchronized technical docs: PRD, codebase summary, code standards, architecture</p></div></div>
                 </div>
 
                 <h2>ClaudeKit Marketing</h2>
                 <p>Go beyond code. ClaudeKit Marketing handles the go-to-market side:</p>
                 <div class="space-y-2 my-3">
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Content Strategy</strong> — <code>/plan "Q1 content strategy"</code> with TOFU/MOFU/BOFU funnel stages</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Copywriting</strong> — <code>/content/good</code> and <code>/content/cro</code> for landing pages</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">SEO</strong> — <code>/seo:audit</code> and <code>/seo:keywords</code> for keyword research</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Campaign &amp; Email</strong> — <code>/campaign:email</code> via SendGrid and Resend MCPs</p></div>
-                  <div class="p-3 bg-surface-2 border border-border rounded-lg"><p class="text-sm"><strong class="text-text-primary">Analytics</strong> — GA4 + Google Ads MCPs for data-driven optimization</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Content Strategy</strong> — <code>/plan "Q1 content strategy"</code> with TOFU/MOFU/BOFU funnel stages</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Copywriting</strong> — <code>/content/good</code> and <code>/content/cro</code> for landing pages</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">SEO</strong> — <code>/seo:audit</code> and <code>/seo:keywords</code> for keyword research</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Campaign &amp; Email</strong> — <code>/campaign:email</code> via SendGrid and Resend MCPs</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Analytics</strong> — GA4 + Google Ads MCPs for data-driven optimization</p></div>
+                </div>
+
+                {/* Premium Inline CTA */}
+                <div class="relative overflow-hidden bg-gradient-to-br from-accent-500/15 via-accent-600/10 to-accent-500/15 border-2 border-accent-500/40 rounded-2xl p-8 my-10 text-center shadow-2xl animate-fade-in-up">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-accent-500/20 rounded-full blur-3xl"></div>
+                  <div class="absolute bottom-0 left-0 w-32 h-32 bg-accent-600/20 rounded-full blur-3xl"></div>
+                  
+                  <div class="relative z-10 space-y-4">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-500 to-accent-600 shadow-lg shadow-accent-500/50 mb-2">
+                      <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-[var(--color-text-primary)]">Join 4,000+ Developers Using ClaudeKit</h3>
+                    <p class="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">Battle-tested workflows trusted across 109 countries. Get started in 2 minutes.</p>
+                    
+                    <a
+                      href={item.ctaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="cta-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-xl text-base font-bold transition-all shadow-2xl shadow-accent-500/40 hover:shadow-accent-500/60 hover:scale-105 relative overflow-hidden group"
+                    >
+                      <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                      <svg class="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span class="relative z-10">{item.ctaLabel}</span>
+                      <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </a>
+
+                    <div class="flex items-center justify-center gap-4 text-xs text-[var(--color-text-tertiary)] pt-2">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        4,000+ users
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        109 countries
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </Fragment>
             )}
@@ -358,32 +662,41 @@ ck init -g</code></div>
           {/* Sidebar */}
           <aside class="space-y-4 lg:sticky lg:top-20 self-start">
             {/* About card */}
-            <div class="bg-surface-2 border border-border rounded-lg p-4">
-              <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">About {item.name}</h3>
+            <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4">
+              <h3 class="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wide mb-3 pb-2 border-b border-[var(--color-border)]">About {item.name}</h3>
               <div class="flex flex-col items-center gap-3 text-center">
                 <img src={item.logo} alt={item.name} class="max-w-[160px] w-full h-auto rounded-xl" />
-                <p class="text-sm text-text-secondary leading-relaxed">{item.description} for Claude Code</p>
+                <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed">{item.description} for Claude Code</p>
               </div>
             </div>
 
-            {/* CTA */}
-            <a
-              href={item.ctaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-accent-500 hover:bg-accent-600 text-white rounded-lg text-sm font-medium transition-colors"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              {item.ctaLabel}
-            </a>
+            {/* Premium CTA with enhanced styling */}
+            <div class="space-y-3">
+              <a
+                href={item.ctaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="cta-button flex items-center justify-center gap-2 w-full px-5 py-4 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 bg-size-200 hover:bg-pos-100 text-white rounded-xl text-base font-black transition-all shadow-2xl shadow-accent-500/40 hover:shadow-accent-500/60 hover:scale-105 relative overflow-hidden group"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                <svg class="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span class="relative z-10">{item.ctaLabel}</span>
+              </a>
+              <div class="flex items-center justify-center gap-2 text-[10px] text-[var(--color-text-tertiary)]">
+                <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-semibold">Free tier • No credit card</span>
+              </div>
+            </div>
 
             {/* Install command (Neon only) */}
             {item.installCommand && (
-              <div class="bg-surface-2 border border-border rounded-lg p-4">
-                <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">Quick Install</h3>
-                <div class="bg-surface-1 border border-border rounded-md p-3">
+              <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4">
+                <h3 class="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wide mb-3 pb-2 border-b border-[var(--color-border)]">Quick Install</h3>
+                <div class="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-md p-3">
                   <code id="installCmd" class="text-xs text-accent-400 font-mono break-all leading-relaxed">{item.installCommand}</code>
                 </div>
                 <button id="copyInstallBtn" class="mt-2 w-full text-xs font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-md px-3 py-1.5 transition-colors">Copy</button>
@@ -391,36 +704,36 @@ ck init -g</code></div>
             )}
 
             {/* Metadata */}
-            <div class="bg-surface-2 border border-border rounded-lg p-4">
-              <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">Details</h3>
+            <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4">
+              <h3 class="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wide mb-3 pb-2 border-b border-[var(--color-border)]">Details</h3>
               <div class="space-y-0">
-                <div class="flex justify-between items-center py-2 border-b border-border">
-                  <span class="text-xs text-text-tertiary">Type</span>
-                  <span class="text-xs text-text-primary font-mono">{item.tag}</span>
+                <div class="flex justify-between items-center py-2 border-b border-[var(--color-border)]">
+                  <span class="text-xs text-[var(--color-text-tertiary)]">Type</span>
+                  <span class="text-xs text-[var(--color-text-primary)] font-mono">{item.tag}</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-border">
-                  <span class="text-xs text-text-tertiary">Category</span>
-                  <span class="text-xs text-text-primary font-mono">{item.category}</span>
+                <div class="flex justify-between items-center py-2 border-b border-[var(--color-border)]">
+                  <span class="text-xs text-[var(--color-text-tertiary)]">Category</span>
+                  <span class="text-xs text-[var(--color-text-primary)] font-mono">{item.category}</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-border">
-                  <span class="text-xs text-text-tertiary">Website</span>
+                <div class="flex justify-between items-center py-2 border-b border-[var(--color-border)]">
+                  <span class="text-xs text-[var(--color-text-tertiary)]">Website</span>
                   <a href={item.websiteUrl} target="_blank" class="text-xs text-accent-400 hover:underline font-mono">{item.websiteUrl.replace('https://', '')}</a>
                 </div>
                 {Object.entries(item.metadata).map(([label, value]) => (
-                  <div class="flex justify-between items-center py-2 border-b border-border last:border-b-0">
-                    <span class="text-xs text-text-tertiary">{label}</span>
-                    <span class="text-xs text-text-primary font-mono">{value}</span>
+                  <div class="flex justify-between items-center py-2 border-b border-[var(--color-border)] last:border-b-0">
+                    <span class="text-xs text-[var(--color-text-tertiary)]">{label}</span>
+                    <span class="text-xs text-[var(--color-text-primary)] font-mono">{value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Links */}
-            <div class="bg-surface-2 border border-border rounded-lg p-4">
-              <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-3 pb-2 border-b border-border">Links</h3>
+            <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4">
+              <h3 class="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wide mb-3 pb-2 border-b border-[var(--color-border)]">Links</h3>
               <div class="space-y-0">
                 {item.links.map((link) => (
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 py-2 border-b border-border last:border-b-0 text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 py-2 border-b border-[var(--color-border)] last:border-b-0 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                     <svg class="w-3.5 h-3.5 shrink-0 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                     {link.label}
                   </a>
@@ -436,6 +749,40 @@ ck init -g</code></div>
 
   <SearchModal client:idle />
   <CartSidebar client:idle />
+
+  {/* Premium Sticky Bottom CTA Bar */}
+  <div id="stickyCtaBar" class="hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-accent-500 via-accent-600 to-accent-500 border-t-2 border-accent-400 shadow-2xl z-50 backdrop-blur-xl animate-slide-up">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shrink-0 p-1.5">
+          <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-lg" />
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-black text-white truncate flex items-center gap-2">
+            {item.name}
+            <svg class="w-4 h-4 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+          </p>
+          <p class="text-xs text-white/90 truncate font-medium">{item.description} • Free tier available</p>
+        </div>
+      </div>
+      <a
+        href={item.ctaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 text-accent-600 rounded-xl text-sm font-black transition-all shadow-2xl hover:scale-105 shrink-0 group"
+      >
+        <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span>{item.ctaLabel}</span>
+        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+  </div>
 </DashboardLayout>
 
 <style>
@@ -481,6 +828,139 @@ ck init -g</code></div>
     color: var(--color-accent-400);
     font-family: var(--font-mono);
   }
+
+  /* Premium Animations */
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+    }
+    50% {
+      transform: translateY(-20px) translateX(10px);
+    }
+  }
+
+  @keyframes float-delayed {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+    }
+    50% {
+      transform: translateY(20px) translateX(-10px);
+    }
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float-delayed 8s ease-in-out infinite;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
+
+  /* Gradient background utilities */
+  .bg-size-200 {
+    background-size: 200% 100%;
+  }
+
+  .bg-pos-100 {
+    background-position: 100% 0;
+  }
+
+  /* CTA Button hover effects */
+  .cta-button {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  .cta-button:active {
+    transform: translateY(0) scale(1.02);
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface-1);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-surface-3);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-400);
+  }
 </style>
 
 <script>
@@ -521,4 +1001,34 @@ ck init -g</code></div>
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
   });
+
+  // Sticky CTA Bar on scroll
+  const stickyCtaBar = document.getElementById('stickyCtaBar');
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  const updateStickyBar = () => {
+    const scrollY = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Show sticky bar after scrolling 50% of the page
+    if (scrollY > windowHeight * 0.5 && scrollY < documentHeight - windowHeight - 100) {
+      stickyCtaBar?.classList.remove('hidden');
+    } else {
+      stickyCtaBar?.classList.add('hidden');
+    }
+    
+    lastScrollY = scrollY;
+    ticking = false;
+  };
+
+  const requestTick = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateStickyBar);
+      ticking = true;
+    }
+  };
+
+  window.addEventListener('scroll', requestTick, { passive: true });
 </script>

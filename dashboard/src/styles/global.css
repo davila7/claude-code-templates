@@ -23,33 +23,91 @@
   --color-accent-800: #663320;
   --color-accent-900: #3f1f13;
 
-  --color-surface-0: #000000;
-  --color-surface-1: #0a0a0a;
-  --color-surface-2: #111111;
-  --color-surface-3: #1a1a1a;
-  --color-surface-4: #252525;
-
-  --color-border: #1f1f1f;
-  --color-border-hover: #333333;
-
-  --color-text-primary: #ededed;
-  --color-text-secondary: #a1a1a1;
-  --color-text-tertiary: #666666;
-
   --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Dark mode (default) */
+:root,
+html.dark {
+  /* Backgrounds - Modern grey palette */
+  --color-surface-0: #0f0f0f;
+  --color-surface-1: #1a1a1a;
+  --color-surface-2: #232323;
+  --color-surface-3: #2a2a2a;
+  --color-surface-4: #353535;
+
+  /* Borders - Subtle, semi-transparent */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.15);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Text colors */
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #a3a3a3;
+  --color-text-tertiary: #737373;
+
+  /* Accent color */
+  --color-accent: #d57455;
+  --color-accent-hover: #e38d6e;
+  --color-accent-light: rgba(213, 116, 85, 0.1);
+
+  /* Card backgrounds */
+  --color-card-bg: #1a1a1a;
+  --color-card-hover: #232323;
+  
+  /* Card shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Light mode */
+html.light {
+  /* Backgrounds - Clean whites */
+  --color-surface-0: #ffffff;
+  --color-surface-1: #fafafa;
+  --color-surface-2: #f5f5f5;
+  --color-surface-3: #efefef;
+  --color-surface-4: #e8e8e8;
+
+  /* Borders - Soft grays */
+  --color-border: #e5e5e5;
+  --color-border-hover: #d4d4d4;
+  --color-border-strong: #cbd5e0;
+
+  /* Text colors */
+  --color-text-primary: #0f0f0f;
+  --color-text-secondary: #525252;
+  --color-text-tertiary: #8a8a8a;
+
+  /* Accent color */
+  --color-accent: #d57455;
+  --color-accent-hover: #c5654a;
+  --color-accent-light: rgba(213, 116, 85, 0.08);
+
+  /* Card backgrounds */
+  --color-card-bg: #ffffff;
+  --color-card-hover: #fafafa;
+  
+  /* Card shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 html {
   background-color: var(--color-surface-0);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-surface-0);
+  color: var(--color-text-primary);
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 /* Scrollbar - Vercel thin style */
@@ -63,12 +121,167 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--color-surface-4);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--color-border-hover);
+}
+
+/* Sidebar scrollbar - slightly thicker for better UX */
+#sidebar ::-webkit-scrollbar {
+  width: 6px;
+}
+
+#sidebar ::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 3px;
+}
+
+#sidebar ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-4);
+}
+
+/* Sidebar collapse animations */
+#sidebar {
+  overflow-x: hidden;
+}
+
+#sidebar .sidebar-text,
+#sidebar .sidebar-nav-count {
+  transition: opacity 300ms ease-in-out, width 300ms ease-in-out;
+  white-space: nowrap;
+}
+
+#sidebar[data-collapsed="true"] .sidebar-text,
+#sidebar[data-collapsed="true"] .sidebar-nav-count {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* Tooltip for collapsed sidebar items */
+#sidebar[data-collapsed="true"] a,
+#sidebar[data-collapsed="true"] button {
+  position: relative;
+}
+
+#sidebar[data-collapsed="true"] a[title]:hover::after,
+#sidebar[data-collapsed="true"] button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-surface-4);
+  color: var(--color-text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border);
+  animation: tooltip-fade-in 150ms ease-out;
+}
+
+#sidebar[data-collapsed="true"] a[title]:hover::before,
+#sidebar[data-collapsed="true"] button[title]:hover::before {
+  content: '';
+  position: absolute;
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: var(--color-surface-4);
+  z-index: 1001;
+  pointer-events: none;
+  animation: tooltip-fade-in 150ms ease-out;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* Collapsed sidebar - center icons */
+#sidebar[data-collapsed="true"] nav {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+#sidebar[data-collapsed="true"] .sidebar-nav-link,
+#sidebar[data-collapsed="true"] nav > a {
+  justify-content: center !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  gap: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+#sidebar[data-collapsed="true"] .sidebar-nav-icon {
+  margin: 0 !important;
+  transform-origin: center center !important;
+}
+
+#sidebar[data-collapsed="true"] .sidebar-nav-icon > span {
+  transform-origin: center center !important;
+}
+
+/* When collapsed, the count badge uses `ml-auto`; even when width:0 it can
+   still reserve remaining flex space and shift the icon off-center. */
+#sidebar[data-collapsed="true"] .sidebar-nav-count {
+  margin-left: 0 !important;
+}
+
+/* Center header content in collapsed state */
+#sidebar[data-collapsed="true"] > div > div:first-child {
+  justify-content: center !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+#sidebar[data-collapsed="true"] > div > div:first-child > a {
+  width: auto !important;
+  min-width: auto !important;
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+#sidebar[data-collapsed="true"] > div > div:first-child > button {
+  margin: 0 auto !important;
+}
+
+/* Center bottom section in collapsed state */
+#sidebar[data-collapsed="true"] > div > div:last-child {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+#sidebar[data-collapsed="true"] > div > div:last-child > div {
+  justify-content: center !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  gap: 0 !important;
+}
+
+/* Hide section headers in collapsed state */
+#sidebar[data-collapsed="true"] nav > div {
+  display: none !important;
+}
+
+/* Hide dividers in collapsed state */
+#sidebar[data-collapsed="true"] .my-4 {
+  display: none !important;
 }
 
 /* Selection */
@@ -85,6 +298,49 @@ body {
 /* Subtle transition for all interactive elements */
 a, button {
   transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}
+
+/* Keep inline SVG icons vertically centered in links/buttons */
+a svg, button svg {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Slide in animation for file tree */
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.2s ease-out;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 0%,
+    var(--color-surface-3) 50%,
+    var(--color-surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 /* Markdown preview styles */
@@ -281,4 +537,136 @@ mark.md-search-hl {
   color: var(--color-text-primary);
   border-radius: 2px;
   padding: 0 1px;
+}
+
+/* Trending page stat icons - theme-aware colors */
+.stat-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+html.dark .stat-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+html.light .stat-blue {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+}
+
+html.dark .stat-purple {
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+}
+
+html.light .stat-purple {
+  background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+}
+
+html.dark .stat-emerald {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+html.light .stat-emerald {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+html.dark .stat-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+html.light .stat-orange {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+html.dark .stat-pink {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+}
+
+html.light .stat-pink {
+  background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+}
+
+html.dark .stat-cyan {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+html.light .stat-cyan {
+  background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+}
+
+/* Medal colors for trending ranks - theme-aware */
+.medal-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.medal-silver {
+  background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.3);
+}
+
+.medal-bronze {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.3);
+}
+
+html.light .medal-gold {
+  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+}
+
+html.light .medal-silver {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.4);
+}
+
+html.light .medal-bronze {
+  background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%);
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.4);
+}
+
+.medal-default {
+  background: var(--color-surface-3);
+  color: var(--color-text-tertiary);
+}
+
+/* Hot badge - theme-aware */
+.hot-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+html.dark .hot-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+html.light .hot-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+/* Today stats active color - theme-aware */
+html.dark .stat-today-active {
+  color: #10b981;
+}
+
+html.light .stat-today-active {
+  color: #059669;
 }

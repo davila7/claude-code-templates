@@ -3,13 +3,18 @@ import FeaturedCard from './FeaturedCard.astro';
 import { FEATURED_ITEMS } from '../lib/constants';
 ---
 
-<section class="px-6 py-4">
-  <div class="flex items-center gap-2 mb-3">
-    <h2 class="text-sm font-semibold text-text-primary">Featured</h2>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-    {FEATURED_ITEMS.map((item) => (
-      <FeaturedCard item={item} />
-    ))}
+<section class="px-6 py-5 mb-2">
+  <div class="bg-[var(--color-surface-1)] rounded-2xl p-5 border border-[var(--color-border)]">
+    <div class="flex items-center gap-2 mb-4">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-accent-400)">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      <h2 class="text-[15px] font-semibold text-[var(--color-text-primary)]">Featured Integrations</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {FEATURED_ITEMS.map((item) => (
+        <FeaturedCard item={item} />
+      ))}
+    </div>
   </div>
 </section>

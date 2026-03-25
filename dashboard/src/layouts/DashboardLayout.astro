@@ -77,21 +77,156 @@ const schemaData = JSON.stringify({
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
-  <body class="bg-surface-0 text-text-primary antialiased">
+  <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200">
+    <script is:inline>
+      // Initialize theme on page load (prevent flash)
+      (function() {
+        const theme = localStorage.getItem('claude-theme') || 'dark';
+        const html = document.documentElement;
+        // Remove both classes first
+        html.classList.remove('light', 'dark');
+        // Add the correct class
+        html.classList.add(theme);
+      })();
+    </script>
     <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
       <aside
         id="sidebar"
-        class="hidden md:flex w-[220px] flex-col border-r border-border bg-surface-0 fixed inset-y-0 left-0 z-40"
+        class="hidden md:flex w-[220px] flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-0)] fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out"
+        data-collapsed="false"
       >
         <Sidebar />
       </aside>
 
       <!-- Main content -->
-      <main class="flex-1 md:ml-[220px] overflow-y-auto bg-surface-0">
+      <main id="main-content" class="flex-1 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
         <slot />
       </main>
     </div>
+
+    <script>
+      // Sidebar collapse functionality
+      function initSidebarCollapse() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        
+        if (!sidebar || !mainContent || !toggleBtn) return;
+
+        // Load saved state
+        const savedState = localStorage.getItem('sidebar-collapsed');
+        const isCollapsed = savedState === 'true';
+        
+        if (isCollapsed) {
+          applySidebarState(true);
+        }
+
+        // Toggle handler
+        toggleBtn.addEventListener('click', () => {
+          const currentState = sidebar.dataset.collapsed === 'true';
+          const newState = !currentState;
+          applySidebarState(newState);
+          localStorage.setItem('sidebar-collapsed', String(newState));
+        });
+
+        function applySidebarState(collapsed: boolean) {
+          if (!sidebar || !mainContent) return;
+          
+          sidebar.dataset.collapsed = String(collapsed);
+          
+          if (collapsed) {
+            sidebar.classList.remove('w-[220px]');
+            sidebar.classList.add('w-[72px]');
+            mainContent.classList.remove('md:ml-[220px]');
+            mainContent.classList.add('md:ml-[72px]');
+            
+            // Hide text elements
+            document.querySelectorAll('.sidebar-text').forEach(el => {
+              (el as HTMLElement).style.opacity = '0';
+              (el as HTMLElement).style.width = '0';
+              (el as HTMLElement).style.overflow = 'hidden';
+            });
+            
+            // Hide nav counts
+            document.querySelectorAll('.sidebar-nav-count').forEach(el => {
+              (el as HTMLElement).style.opacity = '0';
+              (el as HTMLElement).style.width = '0';
+            });
+            
+            // Center all nav links with flex
+            document.querySelectorAll('.sidebar-nav-link, nav > a, nav > button').forEach(el => {
+              (el as HTMLElement).style.display = 'flex';
+              (el as HTMLElement).style.justifyContent = 'center';
+              (el as HTMLElement).style.alignItems = 'center';
+              (el as HTMLElement).style.padding = '0.5rem';
+              (el as HTMLElement).style.gap = '0';
+            });
+            
+            // Ensure icon containers are centered
+            document.querySelectorAll('.sidebar-nav-icon, nav > a > span:first-child, nav > button > span:first-child').forEach(el => {
+              (el as HTMLElement).style.display = 'flex';
+              (el as HTMLElement).style.justifyContent = 'center';
+              (el as HTMLElement).style.alignItems = 'center';
+              (el as HTMLElement).style.margin = '0';
+            });
+            
+            // Rotate toggle icon
+            if (toggleBtn) {
+              const icon = toggleBtn.querySelector('svg');
+              if (icon) icon.style.transform = 'rotate(180deg)';
+            }
+          } else {
+            sidebar.classList.remove('w-[72px]');
+            sidebar.classList.add('w-[220px]');
+            mainContent.classList.remove('md:ml-[72px]');
+            mainContent.classList.add('md:ml-[220px]');
+            
+            // Show text elements
+            document.querySelectorAll('.sidebar-text').forEach(el => {
+              (el as HTMLElement).style.opacity = '1';
+              (el as HTMLElement).style.width = 'auto';
+              (el as HTMLElement).style.overflow = 'visible';
+            });
+            
+            // Show nav counts
+            document.querySelectorAll('.sidebar-nav-count').forEach(el => {
+              (el as HTMLElement).style.opacity = '1';
+              (el as HTMLElement).style.width = 'auto';
+            });
+            
+            // Reset nav links alignment
+            document.querySelectorAll('.sidebar-nav-link, nav > a, nav > button').forEach(el => {
+              (el as HTMLElement).style.display = '';
+              (el as HTMLElement).style.justifyContent = '';
+              (el as HTMLElement).style.alignItems = '';
+              (el as HTMLElement).style.padding = '';
+              (el as HTMLElement).style.gap = '';
+            });
+            
+            // Reset icon containers
+            document.querySelectorAll('.sidebar-nav-icon, nav > a > span:first-child, nav > button > span:first-child').forEach(el => {
+              (el as HTMLElement).style.display = '';
+              (el as HTMLElement).style.justifyContent = '';
+              (el as HTMLElement).style.alignItems = '';
+              (el as HTMLElement).style.margin = '';
+            });
+            
+            // Reset toggle icon
+            if (toggleBtn) {
+              const icon = toggleBtn.querySelector('svg');
+              if (icon) icon.style.transform = 'rotate(0deg)';
+            }
+          }
+        }
+      }
+
+      // Initialize on load
+      initSidebarCollapse();
+      
+      // Re-initialize on navigation (for SPA-like behavior)
+      document.addEventListener('astro:page-load', initSidebarCollapse);
+    </script>
 
     <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
     <ClerkIsland client:load />

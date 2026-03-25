@@ -177,7 +177,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     return (
       <button
         onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }}
-        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[--color-text-tertiary] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
+        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
         title="Sign in to save"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -194,7 +194,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
         className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all ${
           isSaved
             ? 'text-blue-400'
-            : 'text-[--color-text-tertiary] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10'
+            : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10'
         }`}
         title={isSaved ? 'Saved to collection' : 'Save to collection'}
       >
@@ -204,19 +204,19 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-56 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
+        <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 py-1">
           {loading ? (
             <div className="px-3 py-4 text-center">
-              <div className="w-4 h-4 border-2 border-[--color-text-tertiary] border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-4 h-4 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin mx-auto" />
             </div>
           ) : (
             <>
-              <div className="px-3 py-1.5 text-[11px] font-medium text-[--color-text-tertiary] uppercase tracking-wide">
+              <div className="px-3 py-1.5 text-[11px] font-medium text-[var(--color-text-tertiary)] uppercase tracking-wide">
                 Save to collection
               </div>
 
               {collections.length === 0 && (
-                <div className="px-3 py-2 text-[12px] text-[--color-text-tertiary]">
+                <div className="px-3 py-2 text-[12px] text-[var(--color-text-tertiary)]">
                   No collections yet
                 </div>
               )}
@@ -226,10 +226,10 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                   <button
                     key={col.id}
                     onClick={(e) => { e.stopPropagation(); handleToggleCollection(col.id); }}
-                    className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06)] transition-colors"
                   >
                     <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 ${
-                      savedIn.has(col.id) ? 'bg-blue-500 border-blue-500' : 'border-[#444]'
+                      savedIn.has(col.id) ? 'bg-blue-500 border-blue-500' : 'border-[var(--color-border-hover)]'
                     }`}>
                       {savedIn.has(col.id) && (
                         <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
@@ -238,14 +238,14 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                       )}
                     </span>
                     <span className="truncate">{col.name}</span>
-                    <span className="ml-auto text-[10px] text-[--color-text-tertiary]">
+                    <span className="ml-auto text-[10px] text-[var(--color-text-tertiary)]">
                       {col.collection_items?.length ?? 0}
                     </span>
                   </button>
                 ))}
               </div>
 
-              <div className="border-t border-[#2a2a2a] mt-1 pt-1 px-2 pb-1">
+              <div className="border-t border-[var(--color-border)] mt-1 pt-1 px-2 pb-1">
                 <div className="flex items-center gap-1">
                   <input
                     type="text"
@@ -254,7 +254,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
                     onClick={(e) => e.stopPropagation()}
                     placeholder="New collection..."
-                    className="flex-1 bg-transparent border-none text-[12px] text-[--color-text-primary] placeholder:text-[--color-text-tertiary] px-1 py-1 outline-none"
+                    className="flex-1 bg-transparent border-none text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] px-1 py-1 outline-none"
                     maxLength={100}
                   />
                   <button
