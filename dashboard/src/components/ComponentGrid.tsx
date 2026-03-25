@@ -92,12 +92,13 @@ export default function ComponentGrid({ initialType }: Props) {
   const filtered = useMemo(() => {
     let items = typeComponents;
     
-    // Category filter
-    if (category !== 'all') items = items.filter((c) => c.category === category);
-    
-    // Multi-category filter (advanced)
+    // Apply either single-category OR multi-category filter, not both
     if (selectedCategories.length > 0) {
+      // Multi-category filter takes precedence
       items = items.filter((c) => selectedCategories.includes(c.category ?? ''));
+    } else if (category !== 'all') {
+      // Single-category filter
+      items = items.filter((c) => c.category === category);
     }
     
     // Search filter
@@ -120,7 +121,10 @@ export default function ComponentGrid({ initialType }: Props) {
     const sorted = [...items];
     if (sortBy === 'downloads') sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
     else if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
-    else if (sortBy === 'recent') sorted.sort((a, b) => b.name.localeCompare(a.name)); // Placeholder for actual date
+    else if (sortBy === 'recent') {
+      // TODO: Sort by actual date when available. Currently sorts by downloads as fallback.
+      sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
+    }
     
     return sorted;
   }, [typeComponents, category, selectedCategories, search, sortBy, minDownloads]);

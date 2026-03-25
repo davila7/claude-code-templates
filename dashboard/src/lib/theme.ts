@@ -6,7 +6,11 @@ export const THEME_KEY = 'claude-theme';
 export function getTheme(): Theme {
   if (typeof window === 'undefined') return 'dark';
   const stored = localStorage.getItem(THEME_KEY);
-  return (stored as Theme) || 'dark';
+  // Runtime validation to ensure only valid themes
+  if (stored === 'light' || stored === 'dark') {
+    return stored;
+  }
+  return 'dark';
 }
 
 export function setTheme(theme: Theme): void {

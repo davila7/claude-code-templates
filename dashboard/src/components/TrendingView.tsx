@@ -347,7 +347,10 @@ export default function TrendingView() {
                   <div className="flex items-center gap-3 min-w-0">
                     <div
                       className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-200"
-                      style={{ backgroundColor: `${config?.color ?? 'var(--color-text-tertiary)'}15`, color: config?.color ?? 'var(--color-text-tertiary)' }}
+                      style={{ 
+                        backgroundColor: config?.color ? `${config.color}15` : 'rgba(115, 115, 115, 0.15)', 
+                        color: config?.color ?? 'var(--color-text-tertiary)' 
+                      }}
                     >
                       <TypeIcon type={typePlural} size={16} />
                     </div>

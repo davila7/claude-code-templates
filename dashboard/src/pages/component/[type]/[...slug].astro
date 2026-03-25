@@ -363,9 +363,17 @@ const refs: string[] = (component as any)?.references ?? [];
         if (metaModalBody) {
           if (item.isChipList) {
             const chips = item.value.replace(/^\[|\]$/g, '').split(/,\s*/).map(s => s.trim()).filter(Boolean);
-            metaModalBody.innerHTML = '<div class="flex flex-wrap gap-2">' +
-              chips.map(c => `<span class="px-3 py-1.5 rounded-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-mono text-[12px] font-medium">${c}</span>`).join('') +
-              '</div>';
+            // Use textContent to prevent XSS
+            metaModalBody.innerHTML = '';
+            const container = document.createElement('div');
+            container.className = 'flex flex-wrap gap-2';
+            chips.forEach(c => {
+              const chip = document.createElement('span');
+              chip.className = 'px-3 py-1.5 rounded-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-mono text-[12px] font-medium';
+              chip.textContent = c; // Safe: uses textContent instead of innerHTML
+              container.appendChild(chip);
+            });
+            metaModalBody.appendChild(container);
           } else {
             metaModalBody.textContent = item.value;
           }

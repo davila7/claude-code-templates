@@ -623,6 +623,7 @@ export default function JobsView() {
                     src={job.companyIcon || getCompanyLogo(job.company)}
                     alt={job.company}
                     className="w-7 h-7 object-contain"
+                    style={{ display: 'block' }}
                     onError={(e) => { 
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
@@ -695,6 +696,7 @@ export default function JobsView() {
                           className="text-[10px] text-[var(--color-text-secondary)] bg-[var(--color-surface-2)] px-2 py-0.5 rounded border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-colors cursor-pointer"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             setSelectedTag(tag);
                           }}
                         >

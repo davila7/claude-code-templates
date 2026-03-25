@@ -59,28 +59,41 @@ export default function SearchModal() {
     window.addEventListener('keydown', handleKey);
 
     // Use MutationObserver to watch for the trigger button
+    let observer: MutationObserver | null = null;
+    let timeoutId: number | null = null;
+    
     const trigger = document.getElementById('searchTrigger');
     if (trigger) {
       trigger.addEventListener('click', handleTriggerClick);
     } else {
       // Watch for the button to be added to the DOM
-      const observer = new MutationObserver(() => {
+      observer = new MutationObserver(() => {
         const btn = document.getElementById('searchTrigger');
         if (btn) {
           btn.addEventListener('click', handleTriggerClick);
-          observer.disconnect();
+          observer?.disconnect();
+          observer = null;
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });
       
       // Cleanup observer after 5 seconds if button never appears
-      setTimeout(() => observer.disconnect(), 5000);
+      timeoutId = window.setTimeout(() => {
+        observer?.disconnect();
+        observer = null;
+      }, 5000);
     }
 
     return () => {
       window.removeEventListener('keydown', handleKey);
       const trigger = document.getElementById('searchTrigger');
       trigger?.removeEventListener('click', handleTriggerClick);
+      if (observer) {
+        observer.disconnect();
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [open]);
 
@@ -91,7 +104,9 @@ export default function SearchModal() {
 
   function closeModal() {
     setIsAnimating(false);
-    setTimeout(() => setOpen(false), 200); // Match animation duration
+    const timeoutId = setTimeout(() => setOpen(false), 200); // Match animation duration
+    // Store timeout ID for potential cleanup
+    return () => clearTimeout(timeoutId);
   }
 
   // Focus input when opened

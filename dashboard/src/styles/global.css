@@ -145,7 +145,7 @@ body {
 
 /* Sidebar collapse animations */
 #sidebar {
-  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #sidebar .sidebar-text,

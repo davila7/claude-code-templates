@@ -226,7 +226,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                   <button
                     key={col.id}
                     onClick={(e) => { e.stopPropagation(); handleToggleCollection(col.id); }}
-                    className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06)] transition-colors"
+                    className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06] transition-colors"
                   >
                     <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 ${
                       savedIn.has(col.id) ? 'bg-blue-500 border-blue-500' : 'border-[var(--color-border-hover)]'
