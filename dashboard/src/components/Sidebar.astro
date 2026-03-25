@@ -3,7 +3,6 @@ import { NAV_LINKS } from '../lib/constants';
 import { TYPE_CONFIG, ICONS } from '../lib/icons';
 import AuthButton from './AuthButton';
 import MyComponentsSidebarItem from './MyComponentsSidebarItem';
-import ThemeToggle from './ThemeToggle';
 
 const currentPath = Astro.url.pathname;
 
@@ -173,10 +172,6 @@ function isActive(path: string): boolean {
 
   <!-- Bottom -->
   <div class="px-3 py-3 border-t border-[var(--color-border)] space-y-2.5 bg-[var(--color-surface-0)] overflow-hidden">
-    <div class="flex items-center gap-2.5 px-2">
-      <ThemeToggle client:load />
-      <span class="sidebar-text text-[11px] font-medium text-[var(--color-text-tertiary)] transition-all duration-300">Theme</span>
-    </div>
     <AuthButton client:load />
   </div>
 </div>

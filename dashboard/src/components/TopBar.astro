@@ -1,5 +1,5 @@
 ---
-// TopBar component - no imports needed
+import ThemeToggle from './ThemeToggle.tsx';
 ---
 
 <header class="sticky top-0 z-20 bg-[var(--color-surface-0)]/95 backdrop-blur-xl border-b border-[var(--color-border)] shadow-sm transition-all duration-200">
@@ -43,6 +43,7 @@
         </svg>
         <span class="hidden sm:inline">GitHub</span>
       </a>
+      <ThemeToggle client:load />
       <div id="cart-button-mount"></div>
     </div>
   </div>

@@ -6,15 +6,6 @@ interface Props {
 }
 
 const { item } = Astro.props;
-
-// Define gradient colors for each featured item
-const gradientMap: Record<string, { from: string; to: string }> = {
-  'Bright Data': { from: '#2563eb', to: '#60a5fa' }, // Blue gradient
-  'BrainGrid': { from: '#84cc16', to: '#bef264' }, // Neon lime/green gradient
-  'ClaudeKit': { from: '#f97316', to: '#fb923c' }, // Orange gradient
-};
-
-const gradient = gradientMap[item.name] || { from: '#6366f1', to: '#a78bfa' }; // Default purple gradient
 ---
 
 <a
@@ -24,14 +15,8 @@ const gradient = gradientMap[item.name] || { from: '#6366f1', to: '#a78bfa' }; /
   onmouseenter="this.style.boxShadow = 'var(--shadow-card-hover)'"
   onmouseleave="this.style.boxShadow = 'var(--shadow-card)'"
 >
-  <div class="relative w-11 h-11 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center overflow-visible shrink-0 p-2">
-    <!-- Glowing gradient circle behind logo -->
-    <div 
-      class="absolute inset-0 rounded-lg opacity-40 blur-xl transition-opacity group-hover:opacity-60"
-      style={`background: radial-gradient(circle at 30% 30%, ${gradient.from}, ${gradient.to}, transparent 70%);`}
-    ></div>
-    <!-- Logo -->
-    <img src={item.logo} alt={item.name} class="relative w-full h-full object-contain rounded-md z-10" loading="lazy" onerror="this.style.display='none'" />
+  <div class="w-11 h-11 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 p-2">
+    <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-md" loading="lazy" onerror="this.style.display='none'" />
   </div>
   <div class="min-w-0 flex-1">
     <div class="flex items-center gap-2">
