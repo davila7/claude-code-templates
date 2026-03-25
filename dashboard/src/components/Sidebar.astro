@@ -16,12 +16,8 @@ function isActive(path: string): boolean {
   <!-- Logo -->
   <div class="px-4 py-4 border-b border-[var(--color-border)] flex items-center justify-between min-h-[65px] transition-all duration-300 bg-[var(--color-surface-0)]">
     <a href="/" class="flex items-center gap-2.5 group min-w-0 overflow-hidden transition-all duration-300">
-      <div class="relative">
-        <img src="/logo.png" alt="AI Templates" class="w-8 h-8 shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:rotate-6" />
-        <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-400)]/20 to-[var(--color-accent-400)]/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"></div>
-      </div>
+      <img src="/logo.png" alt="AI Templates" class="w-8 h-8 shrink-0 transition-all duration-200 group-hover:scale-110" />
       <span class="sidebar-text text-[14px] font-bold text-[var(--color-text-primary)] tracking-tight whitespace-nowrap transition-all duration-300">AI Templates</span>
-      <span class="sidebar-text text-[7px] font-bold uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-emerald-400 text-white px-1.5 py-0.5 rounded border border-emerald-400/30 shadow-sm whitespace-nowrap transition-all duration-300">Beta</span>
     </a>
     <button
       id="sidebar-toggle"
