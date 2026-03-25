@@ -26,6 +26,7 @@ export default function SearchModal() {
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
 
   // Load data lazily on first open
   useEffect(() => {
@@ -98,15 +99,25 @@ export default function SearchModal() {
   }, [open]);
 
   function openModal() {
+    // Clear any pending close timeout to prevent race conditions
+    if (closeTimeoutRef.current !== null) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
     setOpen(true);
     setIsAnimating(true);
   }
 
   function closeModal() {
     setIsAnimating(false);
-    const timeoutId = setTimeout(() => setOpen(false), 200); // Match animation duration
-    // Store timeout ID for potential cleanup
-    return () => clearTimeout(timeoutId);
+    // Clear any existing timeout before setting a new one
+    if (closeTimeoutRef.current !== null) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    closeTimeoutRef.current = window.setTimeout(() => {
+      setOpen(false);
+      closeTimeoutRef.current = null;
+    }, 200); // Match animation duration
   }
 
   // Focus input when opened

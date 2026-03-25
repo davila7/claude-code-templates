@@ -122,8 +122,8 @@ export default function ComponentGrid({ initialType }: Props) {
     if (sortBy === 'downloads') sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
     else if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
     else if (sortBy === 'recent') {
-      // TODO: Sort by actual date when available. Currently sorts by downloads as fallback.
-      sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
+      // TODO: Sort by actual date when available. Using reverse name sort as approximation.
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
     }
     
     return sorted;
