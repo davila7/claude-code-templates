@@ -118,12 +118,12 @@ export default function CartSidebar() {
 
       {/* Sidebar panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-1)] to-[var(--color-surface-0)]">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-1)] to-[var(--color-surface-0)] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent)]/70 flex items-center justify-center shadow-md shadow-[var(--color-accent)]/20">
               <svg className="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -159,7 +159,7 @@ export default function CartSidebar() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-surface-3)] scrollbar-track-transparent" style={{ height: totalItems > 0 ? 'calc(100vh - 65px - 180px)' : 'calc(100vh - 65px)' }}>
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-surface-3)] scrollbar-track-transparent min-h-0">
           {totalItems === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
               <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center mb-5 shadow-sm">
@@ -240,7 +240,7 @@ export default function CartSidebar() {
 
         {/* Footer */}
         {totalItems > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 border-t border-[var(--color-border)] bg-gradient-to-t from-[var(--color-surface-1)] to-[var(--color-surface-0)] p-4 space-y-3 shadow-[0_-8px_16px_rgba(0,0,0,0.08)]">
+          <div className="border-t border-[var(--color-border)] bg-gradient-to-t from-[var(--color-surface-1)] to-[var(--color-surface-0)] p-4 space-y-3 shadow-[0_-8px_16px_rgba(0,0,0,0.08)] shrink-0">
             {/* Command preview */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
