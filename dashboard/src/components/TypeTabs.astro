@@ -9,7 +9,7 @@ interface Props {
 const { activeType, counts = {} } = Astro.props;
 ---
 
-<nav class="flex items-center gap-1 px-6 py-2 border-b border-border overflow-x-auto">
+<nav class="flex items-center gap-1 px-6 py-2 border-b border-[var(--color-border)] overflow-x-auto">
   {Object.entries(TYPE_CONFIG).map(([type, config]) => {
     const isActive = type === activeType;
     const count = counts[type] ?? 0;
@@ -20,7 +20,7 @@ const { activeType, counts = {} } = Astro.props;
           'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm whitespace-nowrap transition-colors',
           isActive
             ? 'bg-primary-500/15 text-primary-400 font-medium'
-            : 'text-text-secondary hover:text-text-primary hover:bg-surface-3',
+            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)]',
         ]}
         data-astro-prefetch
       >
@@ -32,7 +32,7 @@ const { activeType, counts = {} } = Astro.props;
               'text-xs px-1.5 py-0.5 rounded-full',
               isActive
                 ? 'bg-primary-500/20 text-primary-400'
-                : 'bg-surface-3 text-text-tertiary',
+                : 'bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)]',
             ]}
           >
             {count}

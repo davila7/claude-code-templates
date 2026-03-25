@@ -517,6 +517,16 @@ def collect_weworkremotely():
             company = company_match.group(1).strip() if company_match else "Remote Company"
             position = company_match.group(2).strip() if company_match else title
 
+            # Convert RFC-2822 date to ISO 8601 for consistent sorting
+            iso_date = pub_date
+            if pub_date:
+                try:
+                    from email.utils import parsedate_to_datetime
+                    dt = parsedate_to_datetime(pub_date)
+                    iso_date = dt.isoformat()
+                except Exception:
+                    pass  # Keep original if parsing fails
+
             jobs.append({
                 "id": f"wwr-{link.rstrip('/').split('/')[-1] if link else 'unknown'}",
                 "company": company[:80],
@@ -528,7 +538,7 @@ def collect_weworkremotely():
                 "applyUrl": link,
                 "source": "WeWorkRemotely",
                 "sourceUrl": link,
-                "postedAt": pub_date,
+                "postedAt": iso_date,
                 "tags": extract_tech_tags(full_text),
                 "companyIcon": company_icon(company),
             })

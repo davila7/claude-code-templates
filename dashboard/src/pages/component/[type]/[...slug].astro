@@ -134,28 +134,47 @@ const refs: string[] = (component as any)?.references ?? [];
   title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
   description={frontmatter.description ? `${frontmatter.description.slice(0, 155)}` : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`}
 >
-  <div class="max-w-5xl mx-auto py-8 px-6">
+  <div class="max-w-7xl mx-auto py-12 px-6">
     {/* Back nav */}
     <a
       href={`/${typePlural}`}
-      class="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors mb-6"
+      class="inline-flex items-center gap-2.5 text-[13px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:gap-3 transition-all duration-200 mb-10 group px-4 py-2 rounded-xl hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]"
     >
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
       </svg>
       Back to {config?.label ?? 'Components'}
     </a>
 
     {error && (
-      <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
-        <p class="text-sm text-red-400">{error}</p>
+      <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-5 mb-8">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <p class="text-sm font-medium text-red-400 mb-1">Error loading component</p>
+            <p class="text-sm text-red-400/80">{error}</p>
+          </div>
+        </div>
       </div>
     )}
 
     {!component && !error && (
-      <div class="text-center py-16">
-        <p class="text-lg text-text-secondary">Component not found</p>
-        <a href={`/${typePlural}`} class="mt-4 inline-block text-sm text-primary-400 hover:underline">
+      <div class="flex flex-col items-center justify-center py-32 px-6">
+        <div class="w-24 h-24 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center mb-6 shadow-lg">
+          <svg class="w-12 h-12 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">Component not found</h3>
+        <p class="text-[14px] text-[var(--color-text-secondary)] text-center max-w-md mb-8 leading-relaxed">
+          The component you're looking for doesn't exist or may have been removed.
+        </p>
+        <a 
+          href={`/${typePlural}`} 
+          class="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] hover:shadow-lg transition-all duration-150 active:scale-95"
+        >
           Browse {config?.label}
         </a>
       </div>
@@ -163,60 +182,80 @@ const refs: string[] = (component as any)?.references ?? [];
 
     {component && (
       <article>
-        {/* Header */}
-        <div class="flex items-start gap-4 mb-6">
-          <div
-            class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 [&>svg]:w-6 [&>svg]:h-6"
-            style={`background-color: ${config?.color ?? '#5e6ad2'}20; color: ${config?.color ?? '#5e6ad2'}`}
-            set:html={ICONS[typePlural ?? 'agents'] ?? ''}
-          />
+        {/* Header with premium styling */}
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--color-surface-1)] to-[var(--color-surface-2)] border border-[var(--color-border)] p-8 mb-10 shadow-2xl">
+          {/* Decorative background */}
+          <div class="absolute inset-0 opacity-20">
+            <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-500)]/20 via-transparent to-[var(--color-accent-400)]/20" style="background-size: 200% 200%; animation: gradient-shimmer 8s ease infinite;"></div>
+          </div>
+          
+          <div class="relative flex items-start gap-6">
+            <div
+              class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float [&>svg]:w-10 [&>svg]:h-10 transition-transform duration-300 hover:scale-110 hover:rotate-6"
+              style={`background: linear-gradient(135deg, ${config?.color ?? '#5e6ad2'}25 0%, ${config?.color ?? '#5e6ad2'}15 100%); color: ${config?.color ?? '#5e6ad2'}; border: 2px solid ${config?.color ?? '#5e6ad2'}40;`}
+              set:html={ICONS[typePlural ?? 'agents'] ?? ''}
+            />
 
-          <div class="flex-1 min-w-0">
-            <h1 class="text-xl font-bold text-text-primary">{title}</h1>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-secondary">
-                {config?.label}
-              </span>
-              {component.category && (
-                <span class="text-xs px-2 py-0.5 rounded-full bg-surface-3 text-text-tertiary">
-                  {component.category}
+            <div class="flex-1 min-w-0">
+              <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-3 tracking-tight">{title}</h1>
+              <div class="flex items-center flex-wrap gap-2.5">
+                <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] border border-[var(--color-border)] shadow-sm">
+                  {config?.label}
                 </span>
-              )}
-              {(component.downloads ?? 0) > 0 && (
-                <span class="text-xs text-emerald-400 flex items-center gap-1">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                  {component.downloads?.toLocaleString()} downloads
-                </span>
-              )}
+                {component.category && (
+                  <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)] shadow-sm">
+                    {component.category}
+                  </span>
+                )}
+                {(component.downloads ?? 0) > 0 && (
+                  <span class="text-xs font-bold text-emerald-400 flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/15 border border-emerald-500/30 shadow-lg shadow-emerald-500/10">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                    {component.downloads?.toLocaleString()}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Install command */}
-        <div class="bg-surface-2 border border-border rounded-lg p-4 mb-6">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-text-secondary">Install</span>
+        {/* Install command with premium styling */}
+        <div class="relative overflow-hidden bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] rounded-2xl p-6 mb-10 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+          {/* Animated gradient overlay */}
+          <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-primary-500)]/0 via-[var(--color-primary-500)]/5 to-[var(--color-primary-500)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="animation: shimmer-glow 3s ease-in-out infinite;"></div>
+          
+          <div class="relative flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/30 flex items-center justify-center">
+                <svg class="w-4 h-4 text-[var(--color-primary-400)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <span class="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Install Command</span>
+            </div>
             <button
               id="copyBtn"
-              class="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+              class="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] rounded-xl transition-all duration-200 active:scale-95 shadow-lg hover:shadow-xl"
               data-cmd={installCmd}
             >
-              Copy
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Copy</span>
             </button>
           </div>
-          <code class="text-sm text-accent-400 font-mono break-all">{installCmd}</code>
+          <code class="relative text-[13px] text-[var(--color-accent-400)] font-mono break-all leading-relaxed block bg-[var(--color-surface-4)]/50 px-4 py-3 rounded-xl border border-[var(--color-border)]">{installCmd}</code>
         </div>
 
         {/* Metadata labels — click to see detail */}
         {infoCards.length > 0 && (
-          <div class="mb-6 flex flex-wrap gap-1.5">
+          <div class="mb-8 flex flex-wrap gap-2">
             {infoCards.map((card, i) => (
               <button
-                class="meta-label flex items-center gap-1.5 px-2.5 py-1 bg-surface-2 border border-border rounded-full text-[11px] text-text-secondary hover:text-text-primary hover:border-orange-500/40 transition-colors cursor-pointer"
+                class="meta-label flex items-center gap-2 px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-primary-500)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
                 data-meta-index={i}
               >
-                <span class="text-orange-400/70 shrink-0 [&>svg]:w-3 [&>svg]:h-3" set:html={card.icon} />
-                <span class="font-medium">{card.label}</span>
+                <span class="text-[var(--color-primary-400)] shrink-0 [&>svg]:w-3.5 [&>svg]:h-3.5" set:html={card.icon} />
+                <span>{card.label}</span>
               </button>
             ))}
           </div>
@@ -224,17 +263,17 @@ const refs: string[] = (component as any)?.references ?? [];
 
         {/* Metadata modal */}
         <div id="metaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div class="bg-surface-2 border border-border rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-border">
-              <div class="flex items-center gap-2">
-                <span id="metaModalIcon" class="text-orange-400/70 [&>svg]:w-4 [&>svg]:h-4"></span>
-                <h4 id="metaModalTitle" class="text-sm font-semibold text-text-primary"></h4>
+          <div class="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
+              <div class="flex items-center gap-3">
+                <span id="metaModalIcon" class="text-[var(--color-primary-400)] [&>svg]:w-5 [&>svg]:h-5"></span>
+                <h4 id="metaModalTitle" class="text-[15px] font-bold text-[var(--color-text-primary)]"></h4>
               </div>
-              <button id="metaModalClose" class="text-text-tertiary hover:text-text-primary p-1 rounded hover:bg-surface-3 transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <button id="metaModalClose" class="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] p-2 rounded-lg hover:bg-[var(--color-surface-3)] transition-all duration-150 active:scale-95">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            <div id="metaModalBody" class="px-4 py-4 text-sm text-text-secondary max-h-[60vh] overflow-y-auto"></div>
+            <div id="metaModalBody" class="px-5 py-5 text-[13px] text-[var(--color-text-secondary)] max-h-[60vh] overflow-y-auto leading-relaxed"></div>
           </div>
         </div>
         <script id="metaData" type="application/json" set:html={JSON.stringify(
@@ -247,7 +286,7 @@ const refs: string[] = (component as any)?.references ?? [];
 
         {/* Content area with optional file tree sidebar */}
         {/* Content viewer */}
-        <h3 class="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Content</h3>
+        <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
         {refs.length > 0 ? (
           <SkillExplorer
             client:load
@@ -268,7 +307,7 @@ const refs: string[] = (component as any)?.references ?? [];
         )}
 
         {/* Action buttons */}
-        <div class="mt-6 flex items-center gap-3">
+        <div class="mt-8 flex items-center gap-3">
           <SaveToCollectionButton
             client:load
             componentType={component.type}
@@ -285,15 +324,20 @@ const refs: string[] = (component as any)?.references ?? [];
   <CartSidebar client:idle />
 </DashboardLayout>
 
-<script>
+<script is:inline>
   // Copy button
   document.getElementById('copyBtn')?.addEventListener('click', (e) => {
-    const cmd = (e.currentTarget as HTMLElement).dataset.cmd;
+    const btn = e.currentTarget;
+    const cmd = btn.dataset.cmd;
     if (cmd) {
       navigator.clipboard.writeText(cmd);
-      (e.currentTarget as HTMLElement).textContent = 'Copied!';
+      const icon = btn.querySelector('svg');
+      const text = btn.querySelector('span');
+      if (icon) icon.style.display = 'none';
+      if (text) text.textContent = 'Copied!';
       setTimeout(() => {
-        (e.currentTarget as HTMLElement).textContent = 'Copy';
+        if (icon) icon.style.display = '';
+        if (text) text.textContent = 'Copy';
       }, 2000);
     }
   });
@@ -307,11 +351,11 @@ const refs: string[] = (component as any)?.references ?? [];
   const metaDataEl = document.getElementById('metaData');
 
   if (metaModal && metaDataEl) {
-    const metaItems: { label: string; icon: string; value: string; isChipList: boolean }[] = JSON.parse(metaDataEl.textContent || '[]');
+    const metaItems = JSON.parse(metaDataEl.textContent || '[]');
 
     document.querySelectorAll('.meta-label').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const idx = Number((btn as HTMLElement).dataset.metaIndex);
+        const idx = Number(btn.dataset.metaIndex);
         const item = metaItems[idx];
         if (!item) return;
         if (metaModalIcon) metaModalIcon.innerHTML = item.icon;
@@ -319,9 +363,17 @@ const refs: string[] = (component as any)?.references ?? [];
         if (metaModalBody) {
           if (item.isChipList) {
             const chips = item.value.replace(/^\[|\]$/g, '').split(/,\s*/).map(s => s.trim()).filter(Boolean);
-            metaModalBody.innerHTML = '<div class="flex flex-wrap gap-1.5">' +
-              chips.map(c => `<span class="px-2 py-0.5 rounded-full bg-white/[0.06] text-text-primary font-mono text-[12px]">${c}</span>`).join('') +
-              '</div>';
+            // Use textContent to prevent XSS
+            metaModalBody.innerHTML = '';
+            const container = document.createElement('div');
+            container.className = 'flex flex-wrap gap-2';
+            chips.forEach(c => {
+              const chip = document.createElement('span');
+              chip.className = 'px-3 py-1.5 rounded-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-mono text-[12px] font-medium';
+              chip.textContent = c; // Safe: uses textContent instead of innerHTML
+              container.appendChild(chip);
+            });
+            metaModalBody.appendChild(container);
           } else {
             metaModalBody.textContent = item.value;
           }

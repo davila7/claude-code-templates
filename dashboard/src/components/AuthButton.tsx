@@ -55,7 +55,7 @@ function UserMenu({ user }: { user: ClerkUser }) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors w-full"
+        className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors w-full"
       >
         {user.imageUrl ? (
           <img
@@ -72,13 +72,13 @@ function UserMenu({ user }: { user: ClerkUser }) {
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 mb-1 w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
+        <div className="absolute bottom-full left-0 mb-1 w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 py-1">
           <button
             onClick={() => {
               (window as any).Clerk?.signOut?.();
               setOpen(false);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-white/[0.06] transition-colors"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -97,8 +97,8 @@ export default function AuthButton() {
   if (!isLoaded) {
     return (
       <div className="flex items-center gap-2.5 px-2.5 py-[6px]">
-        <div className="w-6 h-6 rounded-full bg-[--color-surface-3] animate-pulse" />
-        <div className="h-3 w-16 bg-[--color-surface-3] rounded animate-pulse" />
+        <div className="w-6 h-6 rounded-full bg-[var(--color-surface-3)] animate-pulse" />
+        <div className="h-3 w-16 bg-[var(--color-surface-3)] rounded animate-pulse" />
       </div>
     );
   }
@@ -110,7 +110,7 @@ export default function AuthButton() {
   return (
     <button
       onClick={() => (window as any).Clerk?.openSignIn?.()}
-      className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors w-full"
+      className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors w-full"
     >
       <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

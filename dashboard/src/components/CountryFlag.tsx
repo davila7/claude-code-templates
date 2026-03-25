@@ -1,0 +1,171 @@
+interface CountryFlagProps {
+  code: string;
+  className?: string;
+}
+
+// SVG flag components for top countries
+const FLAGS: Record<string, React.FC<{ className?: string }>> = {
+  US: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M0 0h512v512H0z"/>
+        <path fill="#d80027" d="M0 0h512v39.4H0zm0 78.8h512v39.4H0zm0 78.7h512v39.4H0zm0 78.8h512v39.4H0zm0 78.8h512v39.3H0zm0 78.7h512v39.4H0zm0 78.8h512V512H0z"/>
+        <path fill="#0052b4" d="M0 0h256v275.8H0z"/>
+        <path fill="#eee" d="m99.8 66.3 4.4 13.5H118l-11.5 8.4 4.4 13.5-11.4-8.3-11.5 8.3 4.4-13.5-11.4-8.4h14.1zm-55 0 4.3 13.5h14.2l-11.5 8.4 4.4 13.5-11.4-8.3-11.5 8.3 4.4-13.5-11.4-8.4h14.1zm110 0 4.4 13.5h14.1l-11.4 8.4 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.4h14.2zm-55 44.5 4.4 13.5h14.1l-11.4 8.3 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.3h14.2zm-55 0 4.3 13.5h14.2l-11.5 8.3 4.4 13.5-11.4-8.3-11.5 8.3 4.4-13.5-11.4-8.3h14.1zm110 0 4.4 13.5h14.1l-11.4 8.3 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.3h14.2zm-55 44.4 4.4 13.5h14.1l-11.4 8.4 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.4h14.2zm-55 0 4.3 13.5h14.2l-11.5 8.4 4.4 13.5-11.4-8.3-11.5 8.3 4.4-13.5-11.4-8.4h14.1zm110 0 4.4 13.5h14.1l-11.4 8.4 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.4h14.2zm-55 44.5 4.4 13.5h14.1l-11.4 8.3 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.3h14.2zm-55 0 4.3 13.5h14.2l-11.5 8.3 4.4 13.5-11.4-8.3-11.5 8.3 4.4-13.5-11.4-8.3h14.1zm110 0 4.4 13.5h14.1l-11.4 8.3 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.3h14.2zm-55 44.5 4.4 13.5h14.1l-11.4 8.3 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.3h14.2zm-55 0 4.3 13.5h14.2l-11.5 8.3 4.4 13.5-11.4-8.3-11.5 8.3 4.4-13.5-11.4-8.3h14.1zm110 0 4.4 13.5h14.1l-11.4 8.3 4.4 13.5-11.5-8.3-11.4 8.3 4.4-13.5-11.5-8.3h14.2z"/>
+      </g>
+    </svg>
+  ),
+  KR: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M0 0h512v512H0z"/>
+        <circle cx="256" cy="256" r="111.3" fill="#d80027"/>
+        <path fill="#0052b4" d="M345.3 256a89.3 89.3 0 0 1-89.3 89.3 111.3 111.3 0 0 0 0-178.6 89.3 89.3 0 0 1 89.3 89.3z"/>
+        <path fill="#333" d="m350.4 334.7 23.4 17-8.9 28.8 23.4-17 23.4 17-9-28.8 23.5-17h-29l-8.9-28.8-8.9 28.8zm-34.3-22.3-8.9 28.8 23.4-17 23.4 17-8.9-28.8 23.4-17h-29l-8.9-28.8-8.9 28.8h-28.9zm22.3 133.9 8.9-28.8h29l-23.4-17 8.9-28.8-23.4 17-23.4-17 8.9 28.8-23.4 17h29zm-34.3-22.3 23.4-17-8.9-28.8 23.4 17 23.4-17-8.9 28.8 23.4 17h-29l-8.9 28.8-8.9-28.8zM127.7 88.8l23.4 17-8.9 28.8 23.4-17 23.4 17-8.9-28.8 23.4-17h-29l-8.9-28.8-8.9 28.8zm-34.3-22.3-8.9 28.8 23.4-17 23.4 17-8.9-28.8 23.4-17h-29l-8.9-28.8-8.9 28.8H70.1zm22.3 133.9 8.9-28.8h29l-23.4-17 8.9-28.8-23.4 17-23.4-17 8.9 28.8-23.4 17h29zm-34.3-22.3 23.4-17-8.9-28.8 23.4 17 23.4-17-8.9 28.8 23.4 17h-29l-8.9 28.8-8.9-28.8z"/>
+      </g>
+    </svg>
+  ),
+  BR: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#6da544" d="M0 0h512v512H0z"/>
+        <path fill="#ffda44" d="M256 100.2 467.5 256 256 411.8 44.5 256z"/>
+        <circle cx="256" cy="256" r="89" fill="#0052b4"/>
+        <path fill="#eee" d="M211.2 250.1c-5.4 0-10.8.4-16 1.3 0-2.7-.1-5.4-.1-8.2 0-53.2 18.9-101.3 50.2-138.6-79.6 4.4-143 71-143 152.6 0 84.4 68.5 152.9 152.9 152.9 39.5 0 75.6-15 102.8-39.7-27.8 22.8-63.3 36.5-101.9 36.5-88.4 0-160.2-71.7-160.2-160.1 0-41.2 15.6-78.8 41.3-107.3z"/>
+      </g>
+    </svg>
+  ),
+  CN: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#d80027" d="M0 0h512v512H0z"/>
+        <path fill="#ffda44" d="m226.8 157.2 12 37h38.9l-31.5 22.9 12 37-31.4-22.9-31.5 22.9 12-37-31.4-22.9h38.9zm87.1 38.5 3.9 11.9 12.5.1-10.1 7.4 3.8 11.9-10.1-7.3-10.1 7.3 3.9-11.9-10.1-7.4 12.4-.1zm13.6 53.3 11.8 4.3 7.6-9.7-.5 12.5 11.9 4.2-12.3 2-.5 12.4-4.9-11.4-12.4 2 7.7-9.7zm-44.8 52.7 9.4 8.1 10.2-6.5-5.1 11.3 9.4 8-12.4-.9-5.2 11.2-1.1-12.4-12.4-.9 10.2-6.5zm-46.3-29.3 4.3 11.8 9.7 7.6-12.5-.5-4.2 11.9-2-12.3-12.4-.5 11.4-4.9-2-12.4 9.7 7.7z"/>
+      </g>
+    </svg>
+  ),
+  ES: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#d80027" d="M0 0h512v128l-39.8 130.3L512 384v128H0V384l37.1-124L0 128z"/>
+        <path fill="#ffda44" d="M0 128h512v256H0z"/>
+      </g>
+    </svg>
+  ),
+  GB: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#0052b4" d="M0 0h512v512H0z"/>
+        <path fill="#eee" d="M512 0v64L322 256l190 192v64h-64L258 320 68 512H0v-64l190-192L0 64V0h64l190 192L444 0z"/>
+        <path fill="#d80027" d="M0 0v32l160 160h32L0 0zm352 192 160 160v-32L384 192h-32zM0 512h32l160-160v-32L0 512zm352-192 160 160h-32L320 320v32z"/>
+        <path fill="#eee" d="M176 0v512h160V0H176zM0 176v160h512V176H0z"/>
+        <path fill="#d80027" d="M0 208v96h512v-96H0zM208 0v512h96V0h-96z"/>
+      </g>
+    </svg>
+  ),
+  DE: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#333" d="M0 0h512v170.7H0z"/>
+        <path fill="#d80027" d="M0 170.7h512v170.6H0z"/>
+        <path fill="#ffda44" d="M0 341.3h512V512H0z"/>
+      </g>
+    </svg>
+  ),
+  FR: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M167 0h178l25.9 252.3L345 512H167l-29.8-253.4z"/>
+        <path fill="#0052b4" d="M0 0h167v512H0z"/>
+        <path fill="#d80027" d="M345 0h167v512H345z"/>
+      </g>
+    </svg>
+  ),
+  IN: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M0 167l253.8-19.3L512 167v178l-254.9 32.3L0 345z"/>
+        <path fill="#ff9811" d="M0 0h512v167H0z"/>
+        <path fill="#6da544" d="M0 345h512v167H0z"/>
+        <circle cx="256" cy="256" r="89" fill="#0052b4"/>
+        <circle cx="256" cy="256" r="55.7" fill="#eee"/>
+        <circle cx="256" cy="256" r="22.3" fill="#0052b4"/>
+      </g>
+    </svg>
+  ),
+  JP: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M0 0h512v512H0z"/>
+        <circle cx="256" cy="256" r="111.3" fill="#d80027"/>
+      </g>
+    </svg>
+  ),
+  CA: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M144.7 0h222.6v512H144.7z"/>
+        <path fill="#d80027" d="M0 0h144.7v512H0zm367.3 0H512v512H367.3z"/>
+        <path fill="#d80027" d="m300.5 289.4-16.7-4.9-16.6 5 6.2-16.4-10.8-13.6 17.6-.4 6.9-16.1 6.9 16 17.6.5-10.8 13.6zm-89 0 16.7-4.9 16.6 5-6.2-16.4 10.8-13.6-17.6-.4-6.9-16.1-6.9 16-17.6.5 10.8 13.6zm44.5-50.5 4.9 16.7-5 16.6 16.4-6.2 13.6 10.8.4-17.6 16.1-6.9-16-6.9-.5-17.6-13.6 10.8zm0 122.2-4.9-16.7 5-16.6-16.4 6.2-13.6-10.8-.4 17.6-16.1 6.9 16 6.9.5 17.6 13.6-10.8zm-44.5-27.8 16.7 5 16.6-5-6.2 16.4 10.8 13.6-17.6.4-6.9 16.1-6.9-16-17.6-.5 10.8-13.6zm89 0-16.7 5-16.6-5 6.2 16.4-10.8 13.6 17.6.4 6.9 16.1 6.9-16 17.6-.5-10.8-13.6z"/>
+      </g>
+    </svg>
+  ),
+  AU: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#0052b4" d="M0 0h512v512H0z"/>
+        <path fill="#eee" d="m154 300.5 8.3 25.5h26.8l-21.7 15.7 8.3 25.5-21.7-15.8-21.7 15.8 8.3-25.5-21.7-15.7h26.8zm206.6-89 4.2 12.7h13.4L367.4 232l4.1 12.8-10.8-7.9-10.9 7.9 4.2-12.8-10.9-7.9h13.4zm0 155.8 4.2 12.8h13.4l-10.8 7.8 4.1 12.8-10.8-7.9-10.9 7.9 4.2-12.8-10.9-7.8h13.4zm-44.5-66.9 4.2 12.8h13.4l-10.8 7.8 4.1 12.8-10.8-7.9-10.9 7.9 4.2-12.8-10.9-7.8h13.4zm88.9 0 4.2 12.8H423l-10.8 7.8 4.1 12.8-10.8-7.9-10.9 7.9 4.2-12.8-10.9-7.8h13.4z"/>
+        <path fill="#0052b4" d="M256 0v32l-45.3 32H256v64h-46.9L256 154.7V192h-22.1L160 134v58H96v-58l-73.9 58H0v-37.3L54.9 128H0V64h54.9L0 37.3V0h22.1L96 58V0h64v58l73.9-58H256z"/>
+        <path fill="#eee" d="M144 0v69.3L32 0H0v32l112 80v80h32v-80l112-80V0h-32l-112 69.3V0h-32z"/>
+        <path fill="#d80027" d="M0 0v15.1L138.7 96H160v-15.1L21.3 0H0zM160 0v15.1L21.3 96H0v-15.1L138.7 0H160z"/>
+      </g>
+    </svg>
+  ),
+  IT: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M167 0h178l25.9 252.3L345 512H167l-29.8-253.4z"/>
+        <path fill="#6da544" d="M0 0h167v512H0z"/>
+        <path fill="#d80027" d="M345 0h167v512H345z"/>
+      </g>
+    </svg>
+  ),
+  MX: ({ className = "w-6 h-6" }) => (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <mask id="a"><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask="url(#a)">
+        <path fill="#eee" d="M167 0h178l25.9 252.3L345 512H167l-29.8-253.4z"/>
+        <path fill="#6da544" d="M0 0h167v512H0z"/>
+        <path fill="#d80027" d="M345 0h167v512H345z"/>
+        <path fill="#6da544" d="M208 256c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48-48-21.5-48-48z"/>
+      </g>
+    </svg>
+  ),
+};
+
+export default function CountryFlag({ code, className }: CountryFlagProps) {
+  const FlagComponent = FLAGS[code];
+  
+  if (!FlagComponent) {
+    // Fallback to a generic globe icon if flag not found
+    return (
+      <svg className={className || "w-6 h-6"} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  }
+  
+  return <FlagComponent className={className} />;
+}
