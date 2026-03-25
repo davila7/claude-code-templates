@@ -1,39 +1,12 @@
 {
-  "lastUpdated": "2026-03-24T03:51:47.044153+00:00",
-  "totalJobs": 72,
+  "lastUpdated": "2026-03-25T03:50:31.755618+00:00",
+  "totalJobs": 71,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
-    {
-      "id": "wwr-summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "company": "Summedd",
-      "position": "Full Stack Engineer with AI Coding expertise for SaaS Platform",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: New York URL: http://summed.com Full Stack Engineer We're looking for a Full Stack Engineer who can build across the entire stack and has hands-on experience with AI coding tools. You’ll be working for a new SaaS product that simplifies accounting tax processes. You'll own features...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "postedAt": "Sun, 22 Feb 2026 04:18:34 +0000",
-      "tags": [
-        "React",
-        "Python",
-        "Go",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
     {
       "id": "anth-5160757008",
       "company": "Anthropic",
