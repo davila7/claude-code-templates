@@ -35,7 +35,7 @@ export default function ComponentGrid({ initialType }: Props) {
   const [activeType, setActiveType] = useState<string>(initialType);
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'downloads' | 'name' | 'recent'>('downloads');
+  const [sortBy, setSortBy] = useState<'downloads' | 'name'>('downloads');
   const [page, setPage] = useState(1);
   const [cart, setCart] = useState<CartState>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -121,10 +121,6 @@ export default function ComponentGrid({ initialType }: Props) {
     const sorted = [...items];
     if (sortBy === 'downloads') sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
     else if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
-    else if (sortBy === 'recent') {
-      // TODO: Sort by actual date when available. Using reverse name sort as approximation.
-      sorted.sort((a, b) => b.name.localeCompare(a.name));
-    }
     
     return sorted;
   }, [typeComponents, category, selectedCategories, search, sortBy, minDownloads]);
@@ -353,12 +349,11 @@ export default function ComponentGrid({ initialType }: Props) {
             <span className="text-[11px] text-[var(--color-text-tertiary)] font-medium hidden sm:inline">Sort by</span>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'downloads' | 'name' | 'recent')}
+              onChange={(e) => setSortBy(e.target.value as 'downloads' | 'name')}
               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-secondary)] font-medium px-3.5 py-2.5 pr-9 outline-none focus:bg-[var(--color-surface-3)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 cursor-pointer transition-all appearance-none hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23737373%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
               <option value="downloads">Most Popular</option>
               <option value="name">Alphabetical</option>
-              <option value="recent">Recently Added</option>
             </select>
           </div>
         </div>
