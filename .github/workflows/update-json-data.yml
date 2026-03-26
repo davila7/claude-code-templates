@@ -6,6 +6,9 @@ on:
     - cron: '0 3 * * *'
   workflow_dispatch: # Permite ejecutar manualmente desde GitHub UI
 
+permissions:
+  contents: write
+
 jobs:
   update-json:
     runs-on: ubuntu-latest
@@ -37,7 +40,7 @@ jobs:
       - name: Install Node.js dependencies
         run: |
           cd cli-tool
-          npm ci
+          npm ci --ignore-scripts
 
       - name: Create .env file with secrets
         run: |

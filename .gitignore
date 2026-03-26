@@ -71,3 +71,13 @@ openspec/
 
 # Crawl output (cf-crawl skill)
 .crawl-output/
+
+# Secrets and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+*-credentials.json
+.npmrc.local

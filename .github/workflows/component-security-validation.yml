@@ -12,6 +12,10 @@ on:
     paths:
       - 'cli-tool/components/**/*.md'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   security-audit:
     name: Security Audit
@@ -33,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd cli-tool
-          npm ci
+          npm ci --ignore-scripts
 
       - name: Run Security Audit
         id: audit
