@@ -1,38 +1,32 @@
 {
-  "lastUpdated": "2026-03-24T03:51:47.044153+00:00",
+  "lastUpdated": "2026-03-26T04:03:20.934106+00:00",
   "totalJobs": 72,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
     {
-      "id": "wwr-summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "company": "Summedd",
-      "position": "Full Stack Engineer with AI Coding expertise for SaaS Platform",
-      "location": "Remote",
-      "remote": true,
+      "id": "anth-5161402008",
+      "company": "Anthropic",
+      "position": "Data Scientist, Marketing",
+      "location": "San Francisco, CA",
+      "remote": false,
       "salary": "",
-      "description": "Headquarters: New York URL: http://summed.com Full Stack Engineer We're looking for a Full Stack Engineer who can build across the entire stack and has hands-on experience with AI coding tools. You’ll be working for a new SaaS product that simplifies accounting tax processes. You'll own features...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "postedAt": "Sun, 22 Feb 2026 04:18:34 +0000",
+      "description": "As part of our growing Data Science team, you will play an instrumental role in our company’s mission of building safe and beneficial artificial intelligence by driving data-informed decision making across our organization. You’ve worked in cultures of excellence in the past, and are eager to apply...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
+      "postedAt": "2026-03-23T16:37:20-04:00",
       "tags": [
-        "React",
         "Python",
-        "Go",
-        "Node.js",
-        "PostgreSQL",
+        "Rust",
         "AWS",
-        "GCP",
-        "Azure",
         "Claude Code",
-        "Cursor"
+        "Anthropic"
       ],
-      "companyIcon": ""
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5160757008",

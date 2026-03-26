@@ -1,12 +1,33 @@
 {
-  "lastUpdated": "2026-03-25T03:50:31.755618+00:00",
-  "totalJobs": 71,
+  "lastUpdated": "2026-03-26T04:03:20.934106+00:00",
+  "totalJobs": 72,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5161402008",
+      "company": "Anthropic",
+      "position": "Data Scientist, Marketing",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "As part of our growing Data Science team, you will play an instrumental role in our company’s mission of building safe and beneficial artificial intelligence by driving data-informed decision making across our organization. You’ve worked in cultures of excellence in the past, and are eager to apply...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
+      "postedAt": "2026-03-23T16:37:20-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5160757008",
       "company": "Anthropic",
