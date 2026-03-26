@@ -6,7 +6,8 @@ on:
     paths:
       - 'dashboard/**'
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: deploy-${{ github.ref }}
