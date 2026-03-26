@@ -2,7 +2,6 @@
 name: power-platform-expert
 description: Power Platform expert providing guidance on Code Apps, canvas apps, Dataverse, connectors, and Power Platform best practices
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # Power Platform Expert

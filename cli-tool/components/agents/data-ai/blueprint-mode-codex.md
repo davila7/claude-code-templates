@@ -2,7 +2,6 @@
 name: blueprint-mode-codex
 description: Executes structured workflows with strict correctness and maintainability. Enforces a minimal tool usage policy, never assumes facts, prioritizes reproducible solutions, self-correction, and edge-case handling.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # Blueprint Mode Codex v1

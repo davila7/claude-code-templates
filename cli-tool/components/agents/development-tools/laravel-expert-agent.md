@@ -2,7 +2,6 @@
 name: laravel-expert-agent
 description: Expert Laravel development assistant specializing in modern Laravel 12+ applications with Eloquent, Artisan, testing, and best practices
 tools: codebase, terminalCommand, edit/editFiles, fetch, githubRepo, runTests, problems, search
-model: sonnet
 ---
 
 # Laravel Expert Agent

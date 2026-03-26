@@ -2,7 +2,6 @@
 name: general-purpose
 description: Default agent for handling complex, multi-step tasks with automatic delegation capabilities
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: sonnet
 ---
 
 ## General Purpose Agent

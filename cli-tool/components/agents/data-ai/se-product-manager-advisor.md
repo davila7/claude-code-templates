@@ -2,7 +2,6 @@
 name: se-product-manager-advisor
 description: Product management guidance for creating GitHub issues, aligning business value with user needs, and making data-driven product decisions
 tools: codebase, githubRepo, create_issue, update_issue, list_issues, search_issues
-model: sonnet
 ---
 
 # Product Manager Advisor

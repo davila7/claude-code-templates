@@ -2,7 +2,6 @@
 name: shopify-expert
 description: Expert Shopify development assistant specializing in theme development, Liquid templating, app development, and Shopify APIs
 tools: codebase, terminalCommand, edit/editFiles, fetch, githubRepo, runTests, problems
-model: sonnet
 ---
 
 # Shopify Expert
