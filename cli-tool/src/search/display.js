@@ -61,7 +61,7 @@ function displaySearchResults(results, options = {}) {
   const { showInstallCommand = true, compact = false } = options;
 
   console.log('');
-  console.log(chalk.bold.white(`🔍 Found ${chalk.green(results.total)} component${results.total !== 1 ? 's' : ''} matching "${chalk.cyan(results.query)}"`));
+  console.log(chalk.yellow(`🔍 Found ${results.total} component${results.total !== 1 ? 's' : ''} matching "${results.query}"`));
   console.log('');
 
   // Display each component type
@@ -89,7 +89,7 @@ function displaySearchResults(results, options = {}) {
 
     if (firstResult) {
       const installCmd = getInstallCommand(firstResult);
-      console.log(chalk.gray('Example: ') + chalk.white(installCmd));
+      console.log(chalk.gray('Install: ') + chalk.white(installCmd));
       console.log('');
     }
   }
@@ -116,28 +116,28 @@ function displayComponent(component, style, options = {}) {
   const { compact = false, showScore = false } = options;
 
   // Component header with icon and name
-  const header = `${style.icon} ${style.color.bold(component.displayName || component.name)}`;
-  console.log(`  ${header}`);
+  const header = `${style.icon} ${chalk.white.bold(component.displayName || component.name)}`;
+  console.log(header);
 
   // Description (indented)
   if (!compact && component.description) {
-    const description = truncate(component.description, 65);
-    console.log(chalk.gray(`     ${description}`));
+    const description = truncate(component.description, 70);
+    console.log(chalk.gray(`   ${description}`));
   }
 
   // Metadata line (indented)
   const metadata = [];
   
   if (component.category && component.category !== 'general') {
-    metadata.push(chalk.cyan(`Category: ${component.category}`));
+    metadata.push(chalk.blue(`Category: ${component.category}`));
   }
 
   if (component.downloads) {
-    metadata.push(chalk.green(`${formatDownloads(component.downloads)} downloads`));
+    metadata.push(chalk.orange(`${formatDownloads(component.downloads)} downloads`));
   }
 
   if (component.trending && component.trending > 0) {
-    metadata.push(chalk.red(`↑ ${component.trending}%`));
+    metadata.push(chalk.green(`↑ ${component.trending}%`));
   }
 
   if (showScore && component.score) {
@@ -145,7 +145,7 @@ function displayComponent(component, style, options = {}) {
   }
 
   if (metadata.length > 0) {
-    console.log(chalk.gray(`     ${metadata.join(' • ')}`));
+    console.log(chalk.gray(`   ${metadata.join(' | ')}`));
   }
 
   console.log('');
@@ -208,9 +208,7 @@ function displayComponentDetails(component) {
  */
 function displayTrending(components, category = null) {
   console.log('');
-  console.log(chalk.cyan('━'.repeat(70)));
-  console.log(chalk.bold.white(`📈 Trending ${category ? category.toUpperCase() : 'Components'} ${chalk.gray('(Last 7 days)')}`));
-  console.log(chalk.cyan('━'.repeat(70)));
+  console.log(chalk.yellow.bold(`📈 Trending ${category ? category.toUpperCase() : 'Components'} (Last 7 days)`));
   console.log('');
 
   if (components.length === 0) {
@@ -222,20 +220,21 @@ function displayTrending(components, category = null) {
 
   components.forEach((component, index) => {
     const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-    const rank = chalk.gray(`${(index + 1).toString().padStart(2, ' ')}.`);
+    const rank = `${index + 1}.`;
     const trend = component.trending > 0 
-      ? chalk.red.bold(`↑ ${component.trending}%`) 
+      ? chalk.green.bold(`↑ ${component.trending}%`) 
       : chalk.gray('--');
     const downloads = component.downloads 
-      ? chalk.green(`(${formatDownloads(component.downloads)} downloads)`)
+      ? chalk.gray(`| ${chalk.orange(formatDownloads(component.downloads) + ' downloads')}`)
+      : '';
+    const categoryInfo = component.category 
+      ? chalk.gray(`| ${chalk.blue('Category: ' + component.category)}`)
       : '';
 
-    console.log(`  ${rank} 🔥 ${style.color(component.displayName || component.name)} ${trend} ${downloads}`);
+    console.log(`${rank} 🔥 ${chalk.white.bold(component.displayName || component.name)}`);
+    console.log(`   ${trend} ${downloads} ${categoryInfo}`);
+    console.log('');
   });
-
-  console.log('');
-  console.log(chalk.cyan('━'.repeat(70)));
-  console.log('');
 }
 
 /**
@@ -245,9 +244,7 @@ function displayTrending(components, category = null) {
  */
 function displayPopular(components, category = null) {
   console.log('');
-  console.log(chalk.cyan('━'.repeat(70)));
-  console.log(chalk.bold.white(`⭐ Most Popular ${category ? category.toUpperCase() : 'Components'} ${chalk.gray('(All time)')}`));
-  console.log(chalk.cyan('━'.repeat(70)));
+  console.log(chalk.yellow.bold(`⭐ Most Popular ${category ? category.toUpperCase() : 'Components'} (All time)`));
   console.log('');
 
   if (components.length === 0) {
@@ -259,16 +256,14 @@ function displayPopular(components, category = null) {
 
   components.forEach((component, index) => {
     const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-    const rank = chalk.gray(`${(index + 1).toString().padStart(2, ' ')}.`);
+    const rank = `${index + 1}.`;
     const downloads = component.downloads 
-      ? chalk.green(`${formatDownloads(component.downloads)} downloads`)
+      ? chalk.orange(`${formatDownloads(component.downloads)} downloads`)
       : chalk.gray('No data');
 
-    console.log(`  ${rank} ${style.icon} ${style.color(component.displayName || component.name)} ${chalk.gray('•')} ${downloads}`);
+    console.log(`${rank} ${style.icon} ${chalk.white.bold(component.displayName || component.name)} ${chalk.gray('|')} ${downloads}`);
   });
 
-  console.log('');
-  console.log(chalk.cyan('━'.repeat(70)));
   console.log('');
 }
 
@@ -278,46 +273,48 @@ function displayPopular(components, category = null) {
  */
 function displayDiscoveryRecommendations(recommendations) {
   console.log('');
-  console.log(chalk.bold.white(`🎯 Recommended components for ${chalk.cyan(recommendations.projectType)} projects:`));
+  console.log(chalk.yellow.bold(`🎯 Recommended components for your ${recommendations.projectType} project:`));
   console.log('');
 
   // Essential components
   if (recommendations.essential && recommendations.essential.length > 0) {
-    console.log(chalk.bold.green('ESSENTIAL (Auto-detected from your project):'));
+    console.log(chalk.magenta.bold('ESSENTIAL (Auto-detected):'));
     console.log('');
     recommendations.essential.forEach(component => {
       const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-      console.log(`✅ ${style.color(component.displayName || component.name)} - ${chalk.gray(truncate(component.description, 60))}`);
+      console.log(`✅ ${chalk.white.bold(component.displayName || component.name)} ${chalk.gray('- ' + truncate(component.description, 50))}`);
     });
     console.log('');
   }
 
   // Popular components
   if (recommendations.popular && recommendations.popular.length > 0) {
-    console.log(chalk.bold.yellow('POPULAR:'));
+    console.log(chalk.magenta.bold('POPULAR:'));
     console.log('');
     recommendations.popular.forEach(component => {
       const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-      const downloads = component.downloads ? chalk.gray(`(${formatDownloads(component.downloads)} downloads)`) : '';
-      console.log(`⭐ ${style.color(component.displayName || component.name)} ${downloads}`);
+      const downloads = component.downloads ? chalk.orange(`(${formatDownloads(component.downloads)} downloads)`) : '';
+      console.log(`⭐ ${chalk.white.bold(component.displayName || component.name)} ${downloads}`);
     });
     console.log('');
   }
 
   // Trending components
   if (recommendations.trending && recommendations.trending.length > 0) {
-    console.log(chalk.bold.red('TRENDING THIS WEEK:'));
+    console.log(chalk.magenta.bold('TRENDING THIS WEEK:'));
     console.log('');
     recommendations.trending.forEach(component => {
       const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-      const trend = component.trending > 0 ? chalk.red(`↑ ${component.trending}%`) : '';
-      console.log(`📈 ${style.color(component.displayName || component.name)} ${trend}`);
+      const trend = component.trending > 0 ? chalk.green(`(↑ ${component.trending}%)`) : '';
+      console.log(`📈 ${chalk.white.bold(component.displayName || component.name)} ${trend}`);
     });
     console.log('');
   }
 
   // Install command
   if (recommendations.essential && recommendations.essential.length > 0) {
+    console.log(chalk.gray('💡 Quick Install:'));
+    console.log('');
     const installCommands = recommendations.essential.map(c => {
       const typeMap = {
         'agents': '--agent',
@@ -329,7 +326,7 @@ function displayDiscoveryRecommendations(recommendations) {
       return `${flag} ${c.id}`;
     });
 
-    console.log(chalk.gray('Install all essential:'));
+    console.log(chalk.gray('# Install all essential components:'));
     console.log(chalk.white(`npx cct ${installCommands.join(' ')}`));
     console.log('');
   }
