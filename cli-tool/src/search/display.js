@@ -61,7 +61,7 @@ function displaySearchResults(results, options = {}) {
   const { showInstallCommand = true, compact = false } = options;
 
   console.log('');
-  console.log(chalk.bold.white(`🔍 Found ${results.total} component${results.total !== 1 ? 's' : ''} matching "${results.query}":`));
+  console.log(chalk.bold.white(`🔍 Found ${chalk.green(results.total)} component${results.total !== 1 ? 's' : ''} matching "${chalk.cyan(results.query)}"`));
   console.log('');
 
   // Display each component type
@@ -77,8 +77,6 @@ function displaySearchResults(results, options = {}) {
     for (const component of components) {
       displayComponent(component, style, { compact, showScore: options.showScore });
     }
-
-    console.log('');
   }
 
   // Show install command examples
@@ -91,18 +89,19 @@ function displaySearchResults(results, options = {}) {
 
     if (firstResult) {
       const installCmd = getInstallCommand(firstResult);
-      console.log(chalk.gray('Install: ') + chalk.white(installCmd));
+      console.log(chalk.gray('Example: ') + chalk.white(installCmd));
       console.log('');
     }
   }
 
   // No results message
   if (results.total === 0) {
-    console.log(chalk.yellow('No components found matching your search.'));
+    console.log(chalk.yellow('💡 No components found matching your search.'));
+    console.log('');
     console.log(chalk.gray('Try:'));
-    console.log(chalk.gray('  - Using different keywords'));
-    console.log(chalk.gray('  - Removing filters'));
-    console.log(chalk.gray('  - Running: npx cct --discover'));
+    console.log(chalk.gray('  • Using different keywords'));
+    console.log(chalk.gray('  • Removing filters'));
+    console.log(chalk.gray('  • Running: npx cct --discover'));
     console.log('');
   }
 }
@@ -116,17 +115,17 @@ function displaySearchResults(results, options = {}) {
 function displayComponent(component, style, options = {}) {
   const { compact = false, showScore = false } = options;
 
-  // Component header
+  // Component header with icon and name
   const header = `${style.icon} ${style.color.bold(component.displayName || component.name)}`;
-  console.log(header);
+  console.log(`  ${header}`);
 
-  // Description
-  if (!compact) {
-    const description = truncate(component.description, 70);
-    console.log(chalk.gray(`   ${description}`));
+  // Description (indented)
+  if (!compact && component.description) {
+    const description = truncate(component.description, 65);
+    console.log(chalk.gray(`     ${description}`));
   }
 
-  // Metadata line
+  // Metadata line (indented)
   const metadata = [];
   
   if (component.category && component.category !== 'general') {
@@ -134,7 +133,7 @@ function displayComponent(component, style, options = {}) {
   }
 
   if (component.downloads) {
-    metadata.push(chalk.green(`Downloads: ${formatDownloads(component.downloads)}`));
+    metadata.push(chalk.green(`${formatDownloads(component.downloads)} downloads`));
   }
 
   if (component.trending && component.trending > 0) {
@@ -146,7 +145,7 @@ function displayComponent(component, style, options = {}) {
   }
 
   if (metadata.length > 0) {
-    console.log(chalk.gray(`   ${metadata.join(' | ')}`));
+    console.log(chalk.gray(`     ${metadata.join(' • ')}`));
   }
 
   console.log('');
@@ -209,28 +208,33 @@ function displayComponentDetails(component) {
  */
 function displayTrending(components, category = null) {
   console.log('');
-  console.log(chalk.bold.white(`📈 Trending ${category ? category.toUpperCase() : 'Components'} (Last 7 days):`));
+  console.log(chalk.cyan('━'.repeat(70)));
+  console.log(chalk.bold.white(`📈 Trending ${category ? category.toUpperCase() : 'Components'} ${chalk.gray('(Last 7 days)')}`));
+  console.log(chalk.cyan('━'.repeat(70)));
   console.log('');
 
   if (components.length === 0) {
-    console.log(chalk.yellow('No trending data available yet.'));
+    console.log(chalk.yellow('💡 No trending data available yet.'));
+    console.log(chalk.gray('   Components will appear here as download data is collected.'));
     console.log('');
     return;
   }
 
   components.forEach((component, index) => {
     const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-    const rank = chalk.gray(`${index + 1}.`);
+    const rank = chalk.gray(`${(index + 1).toString().padStart(2, ' ')}.`);
     const trend = component.trending > 0 
-      ? chalk.red(`↑ ${component.trending}%`) 
+      ? chalk.red.bold(`↑ ${component.trending}%`) 
       : chalk.gray('--');
     const downloads = component.downloads 
       ? chalk.green(`(${formatDownloads(component.downloads)} downloads)`)
       : '';
 
-    console.log(`${rank} 🔥 ${style.color(component.displayName || component.name)} ${trend} ${downloads}`);
+    console.log(`  ${rank} 🔥 ${style.color(component.displayName || component.name)} ${trend} ${downloads}`);
   });
 
+  console.log('');
+  console.log(chalk.cyan('━'.repeat(70)));
   console.log('');
 }
 
@@ -241,25 +245,30 @@ function displayTrending(components, category = null) {
  */
 function displayPopular(components, category = null) {
   console.log('');
-  console.log(chalk.bold.white(`⭐ Most Popular ${category ? category.toUpperCase() : 'Components'} (All time):`));
+  console.log(chalk.cyan('━'.repeat(70)));
+  console.log(chalk.bold.white(`⭐ Most Popular ${category ? category.toUpperCase() : 'Components'} ${chalk.gray('(All time)')}`));
+  console.log(chalk.cyan('━'.repeat(70)));
   console.log('');
 
   if (components.length === 0) {
-    console.log(chalk.yellow('No download data available yet.'));
+    console.log(chalk.yellow('💡 No download data available yet.'));
+    console.log(chalk.gray('   Components will appear here as download data is collected.'));
     console.log('');
     return;
   }
 
   components.forEach((component, index) => {
     const style = COMPONENT_STYLES[component.componentType] || COMPONENT_STYLES.agents;
-    const rank = chalk.gray(`${index + 1}.`);
+    const rank = chalk.gray(`${(index + 1).toString().padStart(2, ' ')}.`);
     const downloads = component.downloads 
       ? chalk.green(`${formatDownloads(component.downloads)} downloads`)
       : chalk.gray('No data');
 
-    console.log(`${rank} ${style.icon} ${style.color(component.displayName || component.name)} - ${downloads}`);
+    console.log(`  ${rank} ${style.icon} ${style.color(component.displayName || component.name)} ${chalk.gray('•')} ${downloads}`);
   });
 
+  console.log('');
+  console.log(chalk.cyan('━'.repeat(70)));
   console.log('');
 }
 

@@ -41,14 +41,27 @@ async function runSearch(query, options = {}) {
 
     // Display results
     displaySearchResults(results, {
-      showInstallCommand: true,
+      showInstallCommand: false, // Don't show install command, we'll prompt instead
       compact: options.compact || false,
       showScore: options.verbose || false
     });
 
-    // Offer to install if results found
-    if (results.total > 0 && options.interactive) {
-      await promptInstallFromSearch(results);
+    // Ask if user wants to install
+    if (results.total > 0) {
+      const { wantsToInstall } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'wantsToInstall',
+        message: chalk.bold('Would you like to install any of these components?'),
+        default: false
+      }]);
+
+      if (wantsToInstall) {
+        await promptInstallFromSearch(results, options);
+      } else {
+        console.log('');
+        console.log(chalk.gray('💡 You can search again or install later using: npx cct --agent <name>'));
+        console.log('');
+      }
     }
 
     // Show suggestions if no results
@@ -233,8 +246,9 @@ async function runInteractiveSearch(options = {}) {
 /**
  * Prompt user to install components from search results
  * @param {Object} results - Search results
+ * @param {Object} options - Options
  */
-async function promptInstallFromSearch(results) {
+async function promptInstallFromSearch(results, options = {}) {
   try {
     // Collect all components
     const allComponents = [
@@ -246,30 +260,162 @@ async function promptInstallFromSearch(results) {
 
     if (allComponents.length === 0) return;
 
-    // Create choices
-    const choices = allComponents.map(component => ({
-      name: `${component.displayName || component.name} (${component.componentType})`,
-      value: component,
-      short: component.name
-    }));
+    console.log('');
+    console.log(chalk.bold.white('📦 Select Components to Install'));
+    console.log(chalk.gray('Use ↑↓ to navigate, Space to select, a to toggle all, Enter to confirm'));
+    console.log('');
+
+    // Group components by type
+    const groups = {
+      agents: results.agents,
+      commands: results.commands,
+      mcps: results.mcps,
+      skills: results.skills
+    };
+
+    // Create grouped choices with separators
+    const choices = [];
+
+    // Add AGENTS group
+    if (groups.agents.length > 0) {
+      choices.push(
+        new inquirer.Separator(chalk.magenta.bold('✨ AGENTS'))
+      );
+      
+      groups.agents.forEach(component => {
+        choices.push({
+          name: `  ${chalk.bold(component.displayName || component.name)} ${chalk.gray('- ' + (component.description?.substring(0, 50) + '...' || ''))}`,
+          value: component,
+          short: `✨ ${component.displayName || component.name}`
+        });
+      });
+      
+      choices.push(new inquirer.Separator(''));
+    }
+
+    // Add COMMANDS group
+    if (groups.commands.length > 0) {
+      choices.push(
+        new inquirer.Separator(chalk.yellow.bold('⚡ COMMANDS'))
+      );
+      
+      groups.commands.forEach(component => {
+        choices.push({
+          name: `  ${chalk.bold(component.displayName || component.name)} ${chalk.gray('- ' + (component.description?.substring(0, 50) + '...' || ''))}`,
+          value: component,
+          short: `⚡ ${component.displayName || component.name}`
+        });
+      });
+      
+      choices.push(new inquirer.Separator(''));
+    }
+
+    // Add MCP SERVERS group
+    if (groups.mcps.length > 0) {
+      choices.push(
+        new inquirer.Separator(chalk.blue.bold('🔌 MCP SERVERS'))
+      );
+      
+      groups.mcps.forEach(component => {
+        choices.push({
+          name: `  ${chalk.bold(component.displayName || component.name)} ${chalk.gray('- ' + (component.description?.substring(0, 50) + '...' || ''))}`,
+          value: component,
+          short: `🔌 ${component.displayName || component.name}`
+        });
+      });
+      
+      choices.push(new inquirer.Separator(''));
+    }
+
+    // Add SKILLS group
+    if (groups.skills.length > 0) {
+      choices.push(
+        new inquirer.Separator(chalk.cyan.bold('🎨 SKILLS'))
+      );
+      
+      groups.skills.forEach(component => {
+        choices.push({
+          name: `  ${chalk.bold(component.displayName || component.name)} ${chalk.gray('- ' + (component.description?.substring(0, 50) + '...' || ''))}`,
+          value: component,
+          short: `🎨 ${component.displayName || component.name}`
+        });
+      });
+      
+      choices.push(new inquirer.Separator(''));
+    }
 
     // Prompt for selection
     const { selected } = await inquirer.prompt([{
       type: 'checkbox',
       name: 'selected',
-      message: 'Select components to install:',
+      message: chalk.bold('Select components to install:'),
       choices,
-      pageSize: 10
+      pageSize: 15,
+      loop: true
     }]);
 
-    if (selected.length === 0) {
-      console.log(chalk.yellow('No components selected'));
+    // Handle selection
+    let finalSelection = selected;
+
+    if (finalSelection.length === 0) {
+      console.log('');
+      console.log(chalk.yellow('⚠️  No components selected'));
+      console.log('');
       return;
+    }
+
+    // Show selection summary grouped by type
+    console.log('');
+    console.log(chalk.cyan('━'.repeat(70)));
+    console.log(chalk.bold.white(`📋 Selected ${chalk.green(finalSelection.length)} component${finalSelection.length !== 1 ? 's' : ''}:`));
+    console.log(chalk.cyan('━'.repeat(70)));
+    console.log('');
+
+    // Group selected items by type for display
+    const selectedByType = {
+      agents: finalSelection.filter(c => c.componentType === 'agents'),
+      commands: finalSelection.filter(c => c.componentType === 'commands'),
+      mcps: finalSelection.filter(c => c.componentType === 'mcps'),
+      skills: finalSelection.filter(c => c.componentType === 'skills')
+    };
+
+    let itemNumber = 1;
+    
+    if (selectedByType.agents.length > 0) {
+      console.log(chalk.magenta.bold('  ✨ AGENTS:'));
+      selectedByType.agents.forEach(component => {
+        console.log(`     ${chalk.gray(`${itemNumber++}.`)} ${chalk.white(component.displayName || component.name)}`);
+      });
+      console.log('');
+    }
+
+    if (selectedByType.commands.length > 0) {
+      console.log(chalk.yellow.bold('  ⚡ COMMANDS:'));
+      selectedByType.commands.forEach(component => {
+        console.log(`     ${chalk.gray(`${itemNumber++}.`)} ${chalk.white(component.displayName || component.name)}`);
+      });
+      console.log('');
+    }
+
+    if (selectedByType.mcps.length > 0) {
+      console.log(chalk.blue.bold('  🔌 MCP SERVERS:'));
+      selectedByType.mcps.forEach(component => {
+        console.log(`     ${chalk.gray(`${itemNumber++}.`)} ${chalk.white(component.displayName || component.name)}`);
+      });
+      console.log('');
+    }
+
+    if (selectedByType.skills.length > 0) {
+      console.log(chalk.cyan.bold('  🎨 SKILLS:'));
+      selectedByType.skills.forEach(component => {
+        console.log(`     ${chalk.gray(`${itemNumber++}.`)} ${chalk.white(component.displayName || component.name)}`);
+      });
+      console.log('');
     }
 
     // Build install command
     const installParts = [];
-    for (const component of selected) {
+    for (const component of finalSelection) {
       const typeMap = {
         'agents': '--agent',
         'commands': '--command',
@@ -282,29 +428,92 @@ async function promptInstallFromSearch(results) {
 
     const installCmd = `npx cct ${installParts.join(' ')}`;
 
+    console.log(chalk.cyan('━'.repeat(70)));
+    console.log(chalk.bold.white('📦 Installation Command:'));
+    console.log(chalk.cyan('━'.repeat(70)));
     console.log('');
-    console.log(chalk.green('Install command:'));
-    console.log(chalk.white(installCmd));
+    console.log(chalk.green(installCmd));
+    console.log('');
+    console.log(chalk.gray('💡 Tip: You can copy this command to install later'));
     console.log('');
 
     // Ask to execute
     const { execute } = await inquirer.prompt([{
       type: 'confirm',
       name: 'execute',
-      message: 'Execute installation now?',
+      message: chalk.bold('🚀 Install these components now?'),
       default: true
     }]);
 
     if (execute) {
-      // TODO: Execute installation
-      console.log(chalk.blue('Installing components...'));
-      console.log(chalk.gray('(Installation integration coming soon)'));
+      console.log('');
+      console.log(chalk.cyan('━'.repeat(70)));
+      console.log(chalk.bold.blue('⚙️  Installing components...'));
+      console.log(chalk.cyan('━'.repeat(70)));
+      console.log('');
+
+      // Import install functions from main module
+      const mainModule = require('./index');
+      const targetDir = options.directory || process.cwd();
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const component of finalSelection) {
+        try {
+          let success = false;
+          
+          // Call the appropriate install function based on component type
+          if (component.componentType === 'agents') {
+            success = await mainModule.installIndividualAgent(component.id, targetDir, { silent: false });
+          } else if (component.componentType === 'commands') {
+            success = await mainModule.installIndividualCommand(component.id, targetDir, { silent: false });
+          } else if (component.componentType === 'mcps') {
+            success = await mainModule.installIndividualMCP(component.id, targetDir, { silent: false });
+          } else if (component.componentType === 'skills') {
+            success = await mainModule.installIndividualSkill(component.id, targetDir, { silent: false });
+          }
+
+          if (success) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch (error) {
+          console.error(chalk.red(`❌ Failed to install ${component.name}:`), error.message);
+          failCount++;
+        }
+      }
+
+      console.log('');
+      console.log(chalk.cyan('━'.repeat(70)));
+      if (successCount === finalSelection.length) {
+        console.log(chalk.bold.green(`✅ Successfully installed all ${successCount} component${successCount !== 1 ? 's' : ''}!`));
+        console.log('');
+        console.log(chalk.gray('🎉 Components are ready to use in your project'));
+      } else {
+        console.log(chalk.bold.yellow(`⚠️  Installed ${successCount}/${finalSelection.length} components`));
+        if (failCount > 0) {
+          console.log(chalk.red(`   ${failCount} failed - check errors above`));
+        }
+      }
+      console.log(chalk.cyan('━'.repeat(70)));
+      console.log('');
+    } else {
+      console.log('');
+      console.log(chalk.yellow('⏹️  Installation cancelled'));
+      console.log(chalk.gray('💡 You can install later using the command above'));
+      console.log('');
     }
 
   } catch (error) {
-    // User cancelled
+    // User cancelled with Ctrl+C
     if (error.isTtyError) {
-      console.error(chalk.red('Interactive mode not supported'));
+      console.error(chalk.red('\n❌ Interactive mode not supported in this terminal'));
+    } else {
+      console.log('');
+      console.log(chalk.yellow('⏹️  Selection cancelled'));
+      console.log('');
     }
   }
 }
