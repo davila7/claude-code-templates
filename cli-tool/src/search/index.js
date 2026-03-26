@@ -22,6 +22,13 @@ async function runSearch(query, options = {}) {
   const spinner = ora('Searching components...').start();
 
   try {
+    // Validate query
+    if (!query || query.trim().length === 0) {
+      spinner.fail('Search query cannot be empty');
+      console.log(chalk.yellow('💡 Try: npx cct --search "security"'));
+      return;
+    }
+
     // Track search usage
     trackingService.trackCommandExecution('search', {
       query,
@@ -41,7 +48,7 @@ async function runSearch(query, options = {}) {
 
     // Display results
     displaySearchResults(results, {
-      showInstallCommand: false, // Don't show install command, we'll prompt instead
+      showInstallCommand: false,
       compact: options.compact || false,
       showScore: options.verbose || false
     });
@@ -68,18 +75,29 @@ async function runSearch(query, options = {}) {
     if (results.total === 0) {
       const suggestions = await getSearchSuggestions(query, 5);
       if (suggestions.length > 0) {
-        console.log(chalk.yellow('Did you mean:'));
-        suggestions.forEach(s => console.log(chalk.cyan(`  - ${s}`)));
+        console.log('');
+        console.log(chalk.yellow('💡 Did you mean:'));
+        suggestions.forEach(s => console.log(chalk.cyan(`   • ${s}`)));
+        console.log('');
+        console.log(chalk.gray('Try searching with one of these terms'));
+      } else {
+        console.log('');
+        console.log(chalk.yellow('💡 Try:'));
+        console.log(chalk.gray('   • Using broader search terms'));
+        console.log(chalk.gray('   • Browsing categories: npx cct --categories'));
+        console.log(chalk.gray('   • Discovering for your project: npx cct --discover'));
         console.log('');
       }
     }
 
   } catch (error) {
     spinner.fail('Search failed');
-    console.error(chalk.red('Error:'), error.message);
+    console.error(chalk.red('❌ Error:'), error.message);
     if (options.verbose) {
       console.error(error.stack);
     }
+    console.log('');
+    console.log(chalk.yellow('💡 Try running: npx cct --health-check'));
   }
 }
 
@@ -107,16 +125,32 @@ async function runDiscovery(targetDir, options = {}) {
     displayDiscoveryRecommendations(discovery.recommendations);
 
     // Offer to install essentials
-    if (options.interactive && discovery.recommendations.essential.length > 0) {
-      await promptInstallEssentials(discovery.recommendations.essential);
+    if (discovery.recommendations.essential && discovery.recommendations.essential.length > 0) {
+      const { wantsToInstall } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'wantsToInstall',
+        message: chalk.bold('Would you like to install the essential components?'),
+        default: false
+      }]);
+
+      if (wantsToInstall) {
+        await promptInstallEssentials(discovery.recommendations.essential, options);
+      }
+    } else {
+      console.log('');
+      console.log(chalk.gray('💡 No essential components found for this project type'));
+      console.log(chalk.gray('   Try searching: npx cct --search "your-framework"'));
+      console.log('');
     }
 
   } catch (error) {
     spinner.fail('Discovery failed');
-    console.error(chalk.red('Error:'), error.message);
+    console.error(chalk.red('❌ Error:'), error.message);
     if (options.verbose) {
       console.error(error.stack);
     }
+    console.log('');
+    console.log(chalk.yellow('💡 Try: npx cct --search "your-framework"'));
   }
 }
 
@@ -521,43 +555,116 @@ async function promptInstallFromSearch(results, options = {}) {
 /**
  * Prompt user to install essential components
  * @param {Array} essentials - Essential components
+ * @param {Object} options - Options
  */
-async function promptInstallEssentials(essentials) {
+async function promptInstallEssentials(essentials, options = {}) {
   try {
-    const { install } = await inquirer.prompt([{
+    if (!essentials || essentials.length === 0) {
+      return;
+    }
+
+    // Show what will be installed
+    console.log('');
+    console.log(chalk.bold.white(`📦 Essential Components (${essentials.length}):`));
+    console.log('');
+
+    essentials.forEach((component, index) => {
+      const icon = {
+        'agents': '✨',
+        'commands': '⚡',
+        'mcps': '🔌',
+        'skills': '🎨'
+      }[component.componentType] || '📦';
+      console.log(`  ${chalk.gray(`${index + 1}.`)} ${icon} ${chalk.white(component.displayName || component.name)}`);
+    });
+
+    console.log('');
+
+    // Build install command
+    const installParts = essentials.map(component => {
+      const typeMap = {
+        'agents': '--agent',
+        'commands': '--command',
+        'mcps': '--mcp',
+        'skills': '--skill'
+      };
+      const flag = typeMap[component.componentType];
+      return `${flag} ${component.id}`;
+    });
+
+    const installCmd = `npx cct ${installParts.join(' ')}`;
+
+    console.log(chalk.gray('Install command:'));
+    console.log(chalk.green(installCmd));
+    console.log('');
+
+    // Confirm installation
+    const { execute } = await inquirer.prompt([{
       type: 'confirm',
-      name: 'install',
-      message: `Install ${essentials.length} essential component${essentials.length !== 1 ? 's' : ''}?`,
+      name: 'execute',
+      message: chalk.bold('🚀 Install all essential components now?'),
       default: true
     }]);
 
-    if (install) {
-      // Build install command
-      const installParts = essentials.map(component => {
-        const typeMap = {
-          'agents': '--agent',
-          'commands': '--command',
-          'mcps': '--mcp',
-          'skills': '--skill'
-        };
-        const flag = typeMap[component.componentType];
-        return `${flag} ${component.id}`;
-      });
-
-      const installCmd = `npx cct ${installParts.join(' ')}`;
-
+    if (execute) {
       console.log('');
-      console.log(chalk.green('Install command:'));
-      console.log(chalk.white(installCmd));
+      console.log(chalk.blue('⚙️  Installing essential components...'));
       console.log('');
 
-      // TODO: Execute installation
-      console.log(chalk.blue('Installing components...'));
-      console.log(chalk.gray('(Installation integration coming soon)'));
+      const mainModule = require('./index');
+      const targetDir = options.directory || process.cwd();
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const component of essentials) {
+        try {
+          let success = false;
+          
+          if (component.componentType === 'agents') {
+            success = await mainModule.installIndividualAgent(component.id, targetDir, { silent: false });
+          } else if (component.componentType === 'commands') {
+            success = await mainModule.installIndividualCommand(component.id, targetDir, { silent: false });
+          } else if (component.componentType === 'mcps') {
+            success = await mainModule.installIndividualMCP(component.id, targetDir, { silent: false });
+          } else if (component.componentType === 'skills') {
+            success = await mainModule.installIndividualSkill(component.id, targetDir, { silent: false });
+          }
+
+          if (success) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch (error) {
+          console.error(chalk.red(`❌ Failed to install ${component.name}:`), error.message);
+          failCount++;
+        }
+      }
+
+      console.log('');
+      if (successCount === essentials.length) {
+        console.log(chalk.bold.green(`✅ Successfully installed all ${successCount} essential component${successCount !== 1 ? 's' : ''}!`));
+        console.log(chalk.gray('🎉 Your project is ready to go!'));
+      } else {
+        console.log(chalk.bold.yellow(`⚠️  Installed ${successCount}/${essentials.length} components`));
+        if (failCount > 0) {
+          console.log(chalk.red(`   ${failCount} failed - check errors above`));
+        }
+      }
+      console.log('');
+    } else {
+      console.log('');
+      console.log(chalk.yellow('⏹️  Installation cancelled'));
+      console.log(chalk.gray('💡 You can install later using the command above'));
+      console.log('');
     }
 
   } catch (error) {
     // User cancelled
+    console.log('');
+    console.log(chalk.yellow('⏹️  Installation cancelled'));
+    console.log('');
   }
 }
 
@@ -570,23 +677,37 @@ async function showCategories(options = {}) {
 
   try {
     const categories = await getCategories();
-    spinner.succeed('Categories loaded');
+    spinner.succeed(`Found ${categories.length} categories`);
 
     console.log('');
     console.log(chalk.bold.white('📂 Available Categories:'));
     console.log('');
 
-    categories.forEach(category => {
-      console.log(`  ${chalk.cyan(category.name)} ${chalk.gray(`(${category.count} components)`)}`);
+    if (categories.length === 0) {
+      console.log(chalk.yellow('💡 No categories found'));
+      console.log(chalk.gray('   This might indicate a data loading issue'));
+      console.log('');
+      return;
+    }
+
+    categories.forEach((category, index) => {
+      const icon = index < 3 ? '🔥' : '📦';
+      console.log(`  ${icon} ${chalk.cyan(category.name.padEnd(25))} ${chalk.gray(`(${category.count} components)`)}`);
     });
 
     console.log('');
-    console.log(chalk.gray('Browse category: npx cct --search "category-name"'));
+    console.log(chalk.gray('💡 Browse category: npx cct --search "category-name"'));
+    console.log(chalk.gray('💡 Filter search: npx cct --search "query" --category agents'));
     console.log('');
 
   } catch (error) {
     spinner.fail('Failed to load categories');
-    console.error(chalk.red('Error:'), error.message);
+    console.error(chalk.red('❌ Error:'), error.message);
+    if (options.verbose) {
+      console.error(error.stack);
+    }
+    console.log('');
+    console.log(chalk.yellow('💡 Try: npx cct --health-check'));
   }
 }
 
