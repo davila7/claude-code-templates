@@ -6,6 +6,9 @@ on:
     paths:
       - 'dashboard/**'
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false

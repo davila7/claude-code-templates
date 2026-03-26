@@ -96,7 +96,7 @@ echo "-----------------------------------------"
 # Install root dependencies
 if [ -f "package.json" ]; then
     info "Installing root dependencies..."
-    if npm install --silent; then
+    if npm install --silent --ignore-scripts; then
         success "Root dependencies installed"
     else
         error "Failed to install root dependencies"
@@ -108,7 +108,7 @@ fi
 if [ -f "api/package.json" ]; then
     info "Installing API dependencies..."
     cd api
-    if npm install --silent; then
+    if npm install --silent --ignore-scripts; then
         success "API dependencies installed"
     else
         error "Failed to install API dependencies"
