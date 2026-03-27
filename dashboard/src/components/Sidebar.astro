@@ -241,13 +241,22 @@ function isActive(path: string): boolean {
 
 <script>
   function updateSidebarActive() {
-    const path = window.location.pathname.replace(/^\//, '').split('/')[0] || 'skills';
+    const path = window.location.pathname;
+    const firstSegment = path.replace(/^\//, '').split('/')[0] || 'skills';
+    
     document.querySelectorAll('.sidebar-nav-link').forEach((link) => {
       const type = (link as HTMLElement).dataset.navType;
       if (!type) return; // Skip links without data-nav-type
+      
       const iconWrapper = link.querySelector('.sidebar-nav-icon');
       const iconSpan = iconWrapper?.querySelector('span');
-      if (type === path) {
+      
+      // Special handling for autonomous-teams which also covers /build-team
+      const isActive = type === 'autonomous-teams' 
+        ? (path.startsWith('/autonomous-teams') || path.startsWith('/build-team'))
+        : type === firstSegment;
+      
+      if (isActive) {
         link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
         link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
         iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');

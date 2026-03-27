@@ -10,32 +10,32 @@ export const GET: APIRoute = async ({ params }) => {
   }
 
   try {
+    // Security check FIRST: validate paths before any filesystem operations
+    const templatesPath = resolve('../cli-tool/templates') + pathSep;
+    const componentsPath = resolve('../cli-tool/components/agents/development-tools') + pathSep;
+    
     // Construct the file path - check both templates and components/agents folders
     let basePath = resolve('../cli-tool/templates');
     let filePath = join(basePath, teamSlug, path);
+    let normalizedPath = filePath + pathSep;
     
-    // If not found in templates, try components/agents
-    try {
-      await readFile(filePath, 'utf-8');
-    } catch (error: any) {
-      // Only fallback on ENOENT (file not found), surface other errors
-      if (error.code !== 'ENOENT') {
-        throw error;
-      }
+    // Validate first path
+    let isValid = normalizedPath.startsWith(templatesPath);
+    
+    // If not in templates, try components path
+    if (!isValid) {
       basePath = resolve('../cli-tool/components/agents/development-tools');
       filePath = join(basePath, teamSlug, path);
+      normalizedPath = filePath + pathSep;
+      isValid = normalizedPath.startsWith(componentsPath);
     }
     
-    // Security check: ensure the path is within the allowed directory
-    // Use path.sep to enforce directory boundaries and prevent sibling path attacks
-    const templatesPath = resolve('../cli-tool/templates') + pathSep;
-    const componentsPath = resolve('../cli-tool/components/agents/development-tools') + pathSep;
-    const normalizedPath = filePath + pathSep;
-    if (!normalizedPath.startsWith(templatesPath) && !normalizedPath.startsWith(componentsPath)) {
+    // Reject if neither path is valid
+    if (!isValid) {
       return new Response('Invalid path', { status: 403 });
     }
 
-    // Read the file
+    // Now safe to attempt file read
     const content = await readFile(filePath, 'utf-8');
     
     // Determine content type

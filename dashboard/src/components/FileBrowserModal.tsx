@@ -92,6 +92,7 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
 
   const loadFile = async (path: string) => {
     setLoading(true);
+    const loadingPath = path; // Capture the path for this specific load
     setSelectedFile(path);
     
     // Clear headings immediately when loading starts
@@ -102,23 +103,26 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
       if (response.ok) {
         const content = await response.text();
         
-        // Guard against stale responses by checking if this is still the selected file
-        if (path === selectedFile || !selectedFile) {
-          setFileContent(content);
-          
-          // Extract headings for markdown files
-          if (path.endsWith('.md')) {
-            const headingRegex = /^(#{1,4})\s+(.+)$/gm;
-            const extractedHeadings: { level: number; text: string; id: string }[] = [];
-            let m;
-            while ((m = headingRegex.exec(content)) !== null) {
-              const text = m[2].replace(/[*_`\[\]]/g, '').trim();
-              const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-              extractedHeadings.push({ level: m[1].length, text, id });
+        // Guard against stale responses by checking if this path is still the one being displayed
+        setSelectedFile(currentPath => {
+          if (currentPath === loadingPath) {
+            setFileContent(content);
+            
+            // Extract headings for markdown files
+            if (path.endsWith('.md')) {
+              const headingRegex = /^(#{1,4})\s+(.+)$/gm;
+              const extractedHeadings: { level: number; text: string; id: string }[] = [];
+              let m;
+              while ((m = headingRegex.exec(content)) !== null) {
+                const text = m[2].replace(/[*_`\[\]]/g, '').trim();
+                const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+                extractedHeadings.push({ level: m[1].length, text, id });
+              }
+              setHeadings(extractedHeadings);
             }
-            setHeadings(extractedHeadings);
           }
-        }
+          return currentPath;
+        });
       } else {
         setFileContent('# Error\n\nFailed to load file.');
         setHeadings([]);
