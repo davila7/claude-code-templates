@@ -119,7 +119,7 @@ function isActive(path: string): boolean {
       href="/autonomous-teams"
       data-tooltip="Autonomous Team Template"
       class:list={[
-        'att-link sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
+        'att-link sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative',
         isActive('/autonomous-teams') || isActive('/build-team')
           ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-[var(--color-text-primary)] font-semibold shadow-sm border border-blue-500/20'
           : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-purple-500/5 hover:shadow-sm hover:border hover:border-blue-500/10',
@@ -142,7 +142,7 @@ function isActive(path: string): boolean {
           </svg>
         </span>
       </span>
-      <span class="att-text sidebar-text truncate transition-all duration-300 relative">
+      <span class="att-text sidebar-text transition-all duration-300 relative whitespace-nowrap">
         <span class="att-letters inline-flex gap-[2px]">
           <span class="letter" data-final="A" style="--delay: 0"></span>
           <span class="letter" data-final="u" style="--delay: 1"></span>
@@ -170,7 +170,7 @@ function isActive(path: string): boolean {
           <span class="letter hidden" data-final="e" style="--delay: 23"></span>
         </span>
       </span>
-      <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300">Beta</span>
+      <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300 shrink-0">Beta</span>
     </a>
 
     <!-- Divider -->
