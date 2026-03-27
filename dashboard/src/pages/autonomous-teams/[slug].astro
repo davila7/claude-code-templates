@@ -9,6 +9,34 @@ export const prerender = true;
 
 // Team data with professional icons (SVG paths)
 const teamsData = {
+  'autonomous-team-template': {
+    name: 'Autonomous Team Template',
+    tagline: 'Complete template for building custom autonomous agent teams',
+    description: 'A comprehensive template structure for creating your own autonomous AI agent teams. Includes orchestrator patterns, agent templates, rule systems, and complete documentation to help you build specialized teams for any task.',
+    category: 'Template',
+    agents: [],
+    rules: [],
+    features: [
+      'Complete team structure with orchestrator and agents',
+      'Flexible agent template with role definitions',
+      'Rule system for specialized knowledge',
+      'Documentation and architecture guides',
+      'Example execution workflows',
+      'Output templates for consistent results',
+      'Step-by-step creation guide',
+      'Best practices and patterns',
+    ],
+    workflow: {
+      phases: []
+    },
+    installCommand: 'npx claude-code-templates@latest --template autonomous-team-template --yes',
+    githubUrl: 'https://github.com/davila7/claude-code-templates/tree/main/cli-tool/templates/autonomous-team-template',
+    stats: {
+      agents: 'Custom',
+      rules: 'Custom',
+      templates: 4,
+    }
+  },
   'code-review-system': {
     name: 'Code Review Team',
     tagline: 'Comprehensive code analysis through specialized expertise',
@@ -198,7 +226,7 @@ if (!team) {
 
 export function getStaticPaths() {
   return [
-    { params: { slug: 'code-review-system' } },
+    { params: { slug: 'autonomous-team-template' } },
   ];
 }
 
@@ -268,121 +296,199 @@ const description = `${team.tagline}. ${team.stats.agents} specialized agents wo
     <!-- Main Content Grid -->
     <div class="px-6 pb-16 grid lg:grid-cols-3 gap-8">
       
-      <!-- Left Column: Team Members & Workflow -->
+      <!-- Left Column: Template Structure & Documentation -->
       <div class="lg:col-span-2 space-y-8">
         
-        <!-- Team Members -->
-        <section>
-          <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Team Members</h2>
-          
-          <div class="space-y-3">
-            {team.agents.map((agent, index) => (
-              <details class="group rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200">
-                <summary class="flex items-center gap-4 p-5 cursor-pointer list-none">
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" set:html={agent.icon} />
-                  </div>
-                  
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-1">
-                      <h3 class="text-[15px] font-semibold text-[var(--color-text-primary)]">{agent.name}</h3>
-                      <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-tertiary)]">
-                        P{agent.priority}
-                      </span>
+        {team.agents.length > 0 ? (
+          <>
+            <!-- Team Members -->
+            <section>
+              <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Team Members</h2>
+              
+              <div class="space-y-3">
+                {team.agents.map((agent, index) => (
+                  <details class="group rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200">
+                    <summary class="flex items-center gap-4 p-5 cursor-pointer list-none">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" set:html={agent.icon} />
+                      </div>
+                      
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                          <h3 class="text-[15px] font-semibold text-[var(--color-text-primary)]">{agent.name}</h3>
+                          <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-tertiary)]">
+                            P{agent.priority}
+                          </span>
+                        </div>
+                        <p class="text-[13px] text-[var(--color-text-secondary)]">{agent.description}</p>
+                      </div>
+                      
+                      <svg class="w-5 h-5 text-[var(--color-text-tertiary)] shrink-0 transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    
+                    <div class="px-5 pb-5 pt-2 border-t border-[var(--color-border)]">
+                      <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
+                          <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div class="flex-1">
+                          <div class="text-xs font-medium text-[var(--color-text-secondary)] mb-2">{agent.role}</div>
+                          <p class="text-[13px] text-[var(--color-text-secondary)] leading-relaxed">{agent.details}</p>
+                        </div>
+                      </div>
                     </div>
-                    <p class="text-[13px] text-[var(--color-text-secondary)]">{agent.description}</p>
-                  </div>
-                  
-                  <svg class="w-5 h-5 text-[var(--color-text-tertiary)] shrink-0 transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
+                  </details>
+                ))}
+              </div>
+            </section>
+
+            <!-- Workflow Diagram -->
+            {team.workflow.phases.length > 0 && (
+              <section>
+                <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Review Workflow</h2>
                 
-                <div class="px-5 pb-5 pt-2 border-t border-[var(--color-border)]">
-                  <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                      <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div class="rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)] p-8">
+                  <div class="space-y-6">
+                    {team.workflow.phases.map((phase, index) => (
+                      <div class="relative">
+                        {index > 0 && (
+                          <div class="absolute left-6 -top-6 w-0.5 h-6 bg-gradient-to-b from-[var(--color-border)] to-transparent"></div>
+                        )}
+                        
+                        <div class="flex items-start gap-4">
+                          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                            <span class="text-sm font-semibold text-blue-500">{index + 1}</span>
+                          </div>
+                          
+                          <div class="flex-1 pt-1">
+                            <div class="flex items-center gap-3 mb-3">
+                              <h3 class="text-[15px] font-semibold text-[var(--color-text-primary)]">{phase.name}</h3>
+                              <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-tertiary)] uppercase">
+                                {phase.type}
+                              </span>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2">
+                              {phase.agents.map(agentName => (
+                                <span class="px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)]">
+                                  {agentName}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {team.exampleUrl && (
+              <section>
+                <div class="rounded-2xl bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20 p-8">
+                  <div class="flex items-start gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                      <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div class="flex-1">
-                      <div class="text-xs font-medium text-[var(--color-text-secondary)] mb-2">{agent.role}</div>
-                      <p class="text-[13px] text-[var(--color-text-secondary)] leading-relaxed">{agent.details}</p>
+                      <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">See it in action</h3>
+                      <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed mb-4">
+                        We used this team to review our own dashboard and found 32 actionable issues across security, performance, and code quality.
+                      </p>
+                      <a
+                        href={team.exampleUrl}
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text-primary)] hover:border-green-500/30 hover:bg-green-500/5 transition-all duration-200"
+                      >
+                        View Real Example
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </a>
                     </div>
                   </div>
                 </div>
-              </details>
-            ))}
-          </div>
-        </section>
-
-        <!-- Workflow Diagram -->
-        <section>
-          <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Review Workflow</h2>
-          
-          <div class="rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)] p-8">
-            <div class="space-y-6">
-              {team.workflow.phases.map((phase, index) => (
-                <div class="relative">
-                  {index > 0 && (
-                    <div class="absolute left-6 -top-6 w-0.5 h-6 bg-gradient-to-b from-[var(--color-border)] to-transparent"></div>
-                  )}
-                  
-                  <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                      <span class="text-sm font-semibold text-blue-500">{index + 1}</span>
-                    </div>
-                    
-                    <div class="flex-1 pt-1">
-                      <div class="flex items-center gap-3 mb-3">
-                        <h3 class="text-[15px] font-semibold text-[var(--color-text-primary)]">{phase.name}</h3>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-tertiary)] uppercase">
-                          {phase.type}
-                        </span>
-                      </div>
-                      
-                      <div class="flex flex-wrap gap-2">
-                        {phase.agents.map(agentName => (
-                          <span class="px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)]">
-                            {agentName}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+              </section>
+            )}
+          </>
+        ) : (
+          <!-- Template Structure -->
+          <section>
+            <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">What's Included</h2>
+            
+            <div class="space-y-4">
+              <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Orchestrator Template</h3>
+                    <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
+                      Central coordinator that manages agent collaboration, task distribution, and result synthesis. Includes patterns for parallel and sequential execution.
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              </div>
 
-        <!-- Real Example -->
-        <section>
-          <div class="rounded-2xl bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20 p-8">
-            <div class="flex items-start gap-4 mb-4">
-              <div class="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
-                <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Agent Templates</h3>
+                    <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
+                      Structured templates for creating specialized agents with clear roles, responsibilities, and communication protocols.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div class="flex-1">
-                <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">See it in action</h3>
-                <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed mb-4">
-                  We used this team to review our own dashboard and found 32 actionable issues across security, performance, and code quality.
-                </p>
-                <a
-                  href={team.exampleUrl}
-                  class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text-primary)] hover:border-green-500/30 hover:bg-green-500/5 transition-all duration-200"
-                >
-                  View Real Example
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </a>
+
+              <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Rule System</h3>
+                    <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
+                      Template for defining specialized knowledge, guidelines, and decision-making rules that agents follow.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Complete Documentation</h3>
+                    <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
+                      Step-by-step guides, architecture documentation, examples, and best practices for building effective teams.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
       </div>
 
@@ -405,17 +511,19 @@ const description = `${team.tagline}. ${team.stats.agents} specialized agents wo
         </section>
 
         <!-- Rule Sets -->
-        <section>
-          <h2 class="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Rule Sets</h2>
-          <div class="space-y-2">
-            {team.rules.map(rule => (
-              <div class="p-4 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
-                <h3 class="text-[13px] font-semibold text-[var(--color-text-primary)] mb-1">{rule.name}</h3>
-                <p class="text-xs text-[var(--color-text-secondary)]">{rule.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {team.rules.length > 0 && (
+          <section>
+            <h2 class="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Rule Sets</h2>
+            <div class="space-y-2">
+              {team.rules.map(rule => (
+                <div class="p-4 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                  <h3 class="text-[13px] font-semibold text-[var(--color-text-primary)] mb-1">{rule.name}</h3>
+                  <p class="text-xs text-[var(--color-text-secondary)]">{rule.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <!-- Installation -->
         <section>
