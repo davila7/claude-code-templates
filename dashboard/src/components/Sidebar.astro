@@ -114,6 +114,41 @@ function isActive(path: string): boolean {
       <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-yellow-500/15 text-yellow-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300">New</span>
     </a>
 
+    <!-- A.T.T (Autonomous Team Template) -->
+    <a
+      href="/autonomous-teams"
+      data-tooltip="Autonomous Team Template"
+      class:list={[
+        'att-link sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
+        isActive('/autonomous-teams') || isActive('/build-team')
+          ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-[var(--color-text-primary)] font-semibold shadow-sm border border-blue-500/20'
+          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-purple-500/5 hover:shadow-sm hover:border hover:border-blue-500/10',
+      ]}
+    >
+      {(isActive('/autonomous-teams') || isActive('/build-team')) && (
+        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full"></span>
+      )}
+      <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
+        <span
+          class:list={[
+            'w-full h-full inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:flex-shrink-0 [&>svg]:block [&>svg]:m-auto transition-all duration-200',
+            isActive('/autonomous-teams') || isActive('/build-team')
+              ? 'text-blue-500 scale-110'
+              : 'text-[var(--color-text-tertiary)] group-hover:text-blue-500 group-hover:scale-105',
+          ]}
+        >
+          <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </span>
+      </span>
+      <span class="att-text sidebar-text truncate transition-all duration-300 relative">
+        <span class="att-short inline-block transition-all duration-300">A.T.T</span>
+        <span class="att-full absolute left-0 top-0 opacity-0 whitespace-nowrap transition-all duration-300">Autonomous Team Template</span>
+      </span>
+      <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300">Beta</span>
+    </a>
+
     <!-- Divider -->
     <div class="my-4 mx-2 border-t border-[var(--color-border)] opacity-60"></div>
 
@@ -327,3 +362,45 @@ function isActive(path: string): boolean {
   initTooltips();
   document.addEventListener('astro:page-load', initTooltips);
 </script>
+
+<style>
+  /* A.T.T Animation */
+  .att-link:hover .att-short {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  
+  .att-link:hover .att-full {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .att-full {
+    transform: translateX(10px);
+  }
+  
+  /* Smooth transitions for text */
+  .att-short,
+  .att-full {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Add glow effect on hover */
+  .att-link:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  }
+  
+  /* Animate the icon on hover */
+  .att-link:hover .sidebar-nav-icon svg {
+    animation: pulse 1s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+</style>
