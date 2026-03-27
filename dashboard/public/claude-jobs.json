@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-03-26T04:03:20.934106+00:00",
+  "lastUpdated": "2026-03-27T03:58:48.654858+00:00",
   "totalJobs": 72,
   "sources": [
     "Anthropic",
@@ -7,6 +7,26 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5104689008",
+      "company": "Anthropic",
+      "position": "Product Designer, Claude Code",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5104689008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5104689008",
+      "postedAt": "2026-03-26T16:40:33-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5161402008",
       "company": "Anthropic",
@@ -1049,26 +1069,6 @@
         "Claude Code",
         "Copilot",
         "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5097348008",
-      "company": "Anthropic",
-      "position": "Certification Content & Systems Architect",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is seeking a Certification Content and Systems Architect to design and build the educational content and assessment components that power Anthropic's credentialing efforts. You'll own the substance of what certifications teach and measure: curriculum architecture, assessment design,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5097348008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5097348008",
-      "postedAt": "2026-01-27T15:23:13-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
