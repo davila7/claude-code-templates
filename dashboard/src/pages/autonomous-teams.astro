@@ -1,0 +1,151 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+
+export const prerender = true;
+
+const title = 'Autonomous Teams — AI Agent Teams for Complex Tasks';
+const description = 'Browse autonomous AI agent teams. Pre-built teams of specialized agents that work together to accomplish complex tasks like code review, testing, deployment, and more.';
+
+// Autonomous teams data
+const teams = [
+  {
+    slug: 'code-review-system',
+    name: 'Code Review Team',
+    description: '17 specialized agents for comprehensive code analysis',
+    agents: 17,
+    category: 'Development',
+    tags: ['Security', 'Performance', 'Quality'],
+    gradient: 'from-blue-500/10 to-purple-500/10',
+    borderGradient: 'from-blue-500/20 to-purple-500/20'
+  },
+];
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden border-b border-[var(--color-border)]">
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-surface-0)] via-[var(--color-surface-1)] to-[var(--color-surface-0)]"></div>
+    
+    <div class="relative px-6 py-20 max-w-7xl mx-auto">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs font-medium text-[var(--color-text-secondary)] mb-6">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Autonomous AI Teams
+        </div>
+        
+        <h1 class="text-5xl md:text-6xl font-semibold text-[var(--color-text-primary)] mb-6 tracking-tight leading-[1.1]">
+          Teams that think<br/>and work together
+        </h1>
+        
+        <p class="text-xl text-[var(--color-text-secondary)] leading-relaxed">
+          Pre-built teams of specialized AI agents that collaborate autonomously to accomplish complex tasks with precision and depth.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="px-6 py-16 max-w-7xl mx-auto">
+    
+    <!-- What Are Autonomous Teams -->
+    <section class="mb-20">
+      <h2 class="text-3xl font-semibold text-[var(--color-text-primary)] mb-12">Built for collaboration</h2>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Collaborative</h3>
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">Agents work together, sharing insights and building on each other's findings to provide comprehensive analysis.</p>
+        </div>
+        
+        <div class="group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Specialized</h3>
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">Each agent is an expert in their domain with deep knowledge, specific rules, and focused responsibilities.</p>
+        </div>
+        
+        <div class="group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Autonomous</h3>
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">Teams self-organize and coordinate through an orchestrator, requiring minimal human intervention.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Teams Grid -->
+    <section>
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-semibold text-[var(--color-text-primary)]">Available teams</h2>
+        <span class="text-sm text-[var(--color-text-secondary)]">{teams.length} {teams.length === 1 ? 'team' : 'teams'}</span>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        {teams.map(team => (
+          <a 
+            href={`/autonomous-teams/${team.slug}`}
+            class="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br {team.gradient} border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--color-primary-500)]/5"
+          >
+            <div class="relative z-10">
+              <div class="flex items-start justify-between mb-6">
+                <div class="flex-1">
+                  <h3 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-2 group-hover:text-[var(--color-primary-500)] transition-colors">
+                    {team.name}
+                  </h3>
+                  <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">{team.description}</p>
+                </div>
+                <svg class="w-6 h-6 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-primary-500)] group-hover:translate-x-1 transition-all shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+              
+              <div class="flex items-center gap-6 text-sm mb-4">
+                <div class="flex items-center gap-2 text-[var(--color-text-secondary)]">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span class="font-medium">{team.agents}</span>
+                  <span>agents</span>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs font-medium">{team.category}</span>
+              </div>
+              
+              <div class="flex flex-wrap gap-2">
+                {team.tags.map(tag => (
+                  <span class="px-2.5 py-1 rounded-lg bg-[var(--color-surface-2)]/50 border border-[var(--color-border)]/50 text-xs text-[var(--color-text-secondary)]">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            
+            <!-- Subtle gradient overlay on hover -->
+            <div class="absolute inset-0 bg-gradient-to-br {team.borderGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+  </div>
+
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

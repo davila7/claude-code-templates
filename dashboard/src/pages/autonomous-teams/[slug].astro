@@ -1,0 +1,477 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import SearchModal from '../../components/SearchModal.tsx';
+import CartSidebar from '../../components/CartSidebar.tsx';
+import FileBrowserModal from '../../components/FileBrowserModal.tsx';
+
+export const prerender = true;
+
+// Team data with professional icons (SVG paths)
+const teamsData = {
+  'code-review-system': {
+    name: 'Code Review Team',
+    tagline: 'Comprehensive code analysis through specialized expertise',
+    description: 'An autonomous team of 17 specialized AI agents that work together through an orchestrator to provide comprehensive code review. Each agent analyzes code from security, performance, accessibility, and quality perspectives, delivering actionable insights with precision.',
+    category: 'Development',
+    agents: [
+      { 
+        name: 'Security Reviewer', 
+        role: 'Security Analysis',
+        description: 'XSS, injection, authentication vulnerabilities', 
+        details: 'Analyzes code for security vulnerabilities including cross-site scripting attacks, SQL injection, authentication flaws, authorization issues, insecure data storage, and OWASP Top 10 vulnerabilities.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />',
+        priority: 2
+      },
+      { 
+        name: 'Performance Reviewer', 
+        role: 'Performance Optimization',
+        description: 'Bottlenecks, algorithms, memory optimization', 
+        details: 'Identifies performance bottlenecks, inefficient algorithms, memory leaks, and optimization opportunities. Analyzes time and space complexity, caching strategies, and resource utilization.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />',
+        priority: 2
+      },
+      { 
+        name: 'Frontend Reviewer', 
+        role: 'UI/UX Analysis',
+        description: 'React patterns, component architecture', 
+        details: 'Reviews React/Vue/Angular patterns, component architecture, state management, hooks usage, rendering optimization, and frontend best practices.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />',
+        priority: 3
+      },
+      { 
+        name: 'Backend Reviewer', 
+        role: 'API & Server Logic',
+        description: 'API design, error handling, validation', 
+        details: 'Examines API design, error handling patterns, request validation, response formatting, middleware implementation, and backend architecture.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />',
+        priority: 3
+      },
+      { 
+        name: 'Accessibility Reviewer', 
+        role: 'Inclusive Design',
+        description: 'WCAG compliance, ARIA, keyboard navigation', 
+        details: 'Ensures WCAG 2.1 AA compliance, proper ARIA labels, keyboard navigation, screen reader support, color contrast ratios, and semantic HTML.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />',
+        priority: 3
+      },
+      { 
+        name: 'Async Reviewer', 
+        role: 'Concurrency Analysis',
+        description: 'Race conditions, promises, async patterns', 
+        details: 'Detects race conditions, promise handling issues, async/await patterns, callback management, and concurrency problems in asynchronous code.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />',
+        priority: 2
+      },
+      { 
+        name: 'Memory Safety Reviewer', 
+        role: 'Resource Management',
+        description: 'Memory leaks, cleanup, resource disposal', 
+        details: 'Identifies memory leaks, improper cleanup, event listener management, subscription handling, and resource disposal issues.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />',
+        priority: 2
+      },
+      { 
+        name: 'Dependency Reviewer', 
+        role: 'Supply Chain Security',
+        description: 'Vulnerable packages, license compliance', 
+        details: 'Checks for vulnerable dependencies, outdated packages, license compliance, supply chain security, and dependency tree optimization.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />',
+        priority: 2
+      },
+      { 
+        name: 'API Contract Reviewer', 
+        role: 'Interface Consistency',
+        description: 'API contracts, versioning, compatibility', 
+        details: 'Reviews API contracts, versioning strategies, backward compatibility, breaking changes, and API documentation quality.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
+        priority: 2
+      },
+      { 
+        name: 'Database Reviewer', 
+        role: 'Data Layer Optimization',
+        description: 'Query optimization, indexes, N+1 problems', 
+        details: 'Analyzes database queries, index usage, N+1 query problems, connection pooling, transaction management, and data modeling.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />',
+        priority: 2
+      },
+      { 
+        name: 'Architecture Reviewer', 
+        role: 'System Design',
+        description: 'Design patterns, coupling, modularity', 
+        details: 'Evaluates architecture patterns, component coupling, separation of concerns, SOLID principles, and overall system design quality.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />',
+        priority: 1
+      },
+      { 
+        name: 'Code Reviewer', 
+        role: 'Code Quality',
+        description: 'Best practices, code smells, duplication', 
+        details: 'Reviews code quality, naming conventions, code smells, duplication, complexity metrics, and adherence to coding standards.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />',
+        priority: 1
+      },
+      { 
+        name: 'Style Reviewer', 
+        role: 'Consistency',
+        description: 'Formatting, conventions, standards', 
+        details: 'Ensures code style consistency, formatting standards, naming conventions, file organization, and project-specific conventions.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />',
+        priority: 3
+      },
+      { 
+        name: 'Test Reviewer', 
+        role: 'Test Quality',
+        description: 'Coverage, edge cases, test patterns', 
+        details: 'Analyzes test coverage, test quality, edge case handling, mocking strategies, test organization, and testing best practices.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />',
+        priority: 3
+      },
+      { 
+        name: 'DevOps Reviewer', 
+        role: 'Infrastructure',
+        description: 'CI/CD, deployment, infrastructure as code', 
+        details: 'Reviews CI/CD pipelines, deployment strategies, infrastructure as code, containerization, monitoring, and DevOps practices.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />',
+        priority: 3
+      },
+      { 
+        name: 'Mobile Reviewer', 
+        role: 'Mobile Experience',
+        description: 'Responsive design, touch, mobile performance', 
+        details: 'Checks responsive design, mobile performance, touch interactions, viewport handling, and mobile-specific optimization.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />',
+        priority: 3
+      },
+      { 
+        name: 'Mockdata Reviewer', 
+        role: 'Test Data Quality',
+        description: 'Fixtures, data generation, mock quality', 
+        details: 'Reviews test data quality, fixture management, data generation strategies, mock implementations, and test data maintenance.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />',
+        priority: 3
+      },
+    ],
+    rules: [
+      { name: 'Security Rules', description: 'XSS, injection, authentication, authorization', file: 'rules/security.md' },
+      { name: 'Algorithm Rules', description: 'Time complexity, space complexity, optimization', file: 'rules/algorithms.md' },
+      { name: 'Concurrency Rules', description: 'Race conditions, state management, async patterns', file: 'rules/concurrency.md' },
+      { name: 'Cross-file Rules', description: 'Dependencies, coupling, architecture', file: 'rules/cross-file.md' },
+      { name: 'Predictive Rules', description: 'Maintainability, scalability, technical debt', file: 'rules/predictive.md' },
+    ],
+    features: [
+      'Comprehensive analysis across 17 specialized domains',
+      'Real-time collaboration between autonomous agents',
+      'Actionable findings with code examples and fixes',
+      'Priority-based categorization (Critical/High/Medium/Low)',
+      'CI/CD integration via GitHub Actions and GitLab',
+      'Incremental analysis for faster review cycles',
+      'ML-powered false positive filtering',
+      'Continuous learning from team feedback',
+    ],
+    workflow: {
+      phases: [
+        { name: 'Initial Analysis', agents: ['Code Reviewer', 'Architecture Reviewer', 'Dependency Reviewer', 'DevOps Reviewer'], type: 'parallel' },
+        { name: 'Security Analysis', agents: ['Security Reviewer', 'Memory Safety Reviewer'], type: 'parallel' },
+        { name: 'Specialized Review', agents: ['Performance Reviewer', 'Async Reviewer', 'Database Reviewer', 'API Contract Reviewer'], type: 'parallel' },
+        { name: 'Platform Review', agents: ['Frontend Reviewer', 'Backend Reviewer', 'Mobile Reviewer'], type: 'parallel' },
+        { name: 'Quality Polish', agents: ['Style Reviewer', 'Test Reviewer', 'Accessibility Reviewer', 'Mockdata Reviewer'], type: 'parallel' },
+      ]
+    },
+    installCommand: 'npx claude-code-templates@latest --agent development-tools/code-review-system --yes',
+    githubUrl: 'https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/agents/development-tools/code-review-system',
+    exampleUrl: '/autonomous-teams/code-review-system/example',
+    stats: {
+      agents: 17,
+      rules: 5,
+      templates: 3,
+    }
+  }
+};
+
+const { slug } = Astro.params;
+const team = teamsData[slug as keyof typeof teamsData];
+
+if (!team) {
+  return Astro.redirect('/autonomous-teams');
+}
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'code-review-system' } },
+  ];
+}
+
+const title = `${team.name} — Autonomous AI Agent Team`;
+const description = `${team.tagline}. ${team.stats.agents} specialized agents working together through an orchestrator.`;
+---
+
+<DashboardLayout title={title} description={description}>
+  <TopBar />
+  
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Back Navigation -->
+    <div class="px-6 pt-8">
+      <a
+        href="/autonomous-teams"
+        class="inline-flex items-center gap-2 text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200 group"
+      >
+        <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Teams
+      </a>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="px-6 py-12">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--color-surface-1)] to-[var(--color-surface-2)] border border-[var(--color-border)] p-12">
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="px-3 py-1 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs font-medium text-[var(--color-text-secondary)]">
+              {team.category}
+            </span>
+            <span class="text-sm text-[var(--color-text-tertiary)]">•</span>
+            <span class="text-sm text-[var(--color-text-secondary)]">{team.stats.agents} Specialized Agents</span>
+          </div>
+          
+          <h1 class="text-5xl font-semibold text-[var(--color-text-primary)] mb-4 tracking-tight">
+            {team.name}
+          </h1>
+          
+          <p class="text-xl text-[var(--color-text-secondary)] leading-relaxed max-w-3xl">
+            {team.tagline}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="px-6 pb-12">
+      <div class="grid grid-cols-3 gap-4">
+        <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+          <div class="text-4xl font-semibold text-[var(--color-text-primary)] mb-2">{team.stats.agents}</div>
+          <div class="text-sm text-[var(--color-text-secondary)]">Specialized Agents</div>
+        </div>
+        <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+          <div class="text-4xl font-semibold text-[var(--color-text-primary)] mb-2">{team.stats.rules}</div>
+          <div class="text-sm text-[var(--color-text-secondary)]">Rule Sets</div>
+        </div>
+        <div class="p-6 rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+          <div class="text-4xl font-semibold text-[var(--color-text-primary)] mb-2">{team.workflow.phases.length}</div>
+          <div class="text-sm text-[var(--color-text-secondary)]">Review Phases</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="px-6 pb-16 grid lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column: Team Members & Workflow -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Team Members -->
+        <section>
+          <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Team Members</h2>
+          
+          <div class="space-y-3">
+            {team.agents.map((agent, index) => (
+              <details class="group rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200">
+                <summary class="flex items-center gap-4 p-5 cursor-pointer list-none">
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" set:html={agent.icon} />
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h3 class="text-[15px] font-semibold text-[var(--color-text-primary)]">{agent.name}</h3>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-tertiary)]">
+                        P{agent.priority}
+                      </span>
+                    </div>
+                    <p class="text-[13px] text-[var(--color-text-secondary)]">{agent.description}</p>
+                  </div>
+                  
+                  <svg class="w-5 h-5 text-[var(--color-text-tertiary)] shrink-0 transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                
+                <div class="px-5 pb-5 pt-2 border-t border-[var(--color-border)]">
+                  <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
+                      <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-xs font-medium text-[var(--color-text-secondary)] mb-2">{agent.role}</div>
+                      <p class="text-[13px] text-[var(--color-text-secondary)] leading-relaxed">{agent.details}</p>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <!-- Workflow Diagram -->
+        <section>
+          <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Review Workflow</h2>
+          
+          <div class="rounded-2xl bg-[var(--color-surface-1)] border border-[var(--color-border)] p-8">
+            <div class="space-y-6">
+              {team.workflow.phases.map((phase, index) => (
+                <div class="relative">
+                  {index > 0 && (
+                    <div class="absolute left-6 -top-6 w-0.5 h-6 bg-gradient-to-b from-[var(--color-border)] to-transparent"></div>
+                  )}
+                  
+                  <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                      <span class="text-sm font-semibold text-blue-500">{index + 1}</span>
+                    </div>
+                    
+                    <div class="flex-1 pt-1">
+                      <div class="flex items-center gap-3 mb-3">
+                        <h3 class="text-[15px] font-semibold text-[var(--color-text-primary)]">{phase.name}</h3>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-tertiary)] uppercase">
+                          {phase.type}
+                        </span>
+                      </div>
+                      
+                      <div class="flex flex-wrap gap-2">
+                        {phase.agents.map(agentName => (
+                          <span class="px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)]">
+                            {agentName}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <!-- Real Example -->
+        <section>
+          <div class="rounded-2xl bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20 p-8">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">See it in action</h3>
+                <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed mb-4">
+                  We used this team to review our own dashboard and found 32 actionable issues across security, performance, and code quality.
+                </p>
+                <a
+                  href={team.exampleUrl}
+                  class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text-primary)] hover:border-green-500/30 hover:bg-green-500/5 transition-all duration-200"
+                >
+                  View Real Example
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Right Column: Features, Rules, Installation -->
+      <div class="space-y-8">
+        
+        <!-- Features -->
+        <section>
+          <h2 class="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Key Features</h2>
+          <div class="space-y-2">
+            {team.features.map(feature => (
+              <div class="flex items-start gap-3 p-3 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-[13px] text-[var(--color-text-secondary)] leading-relaxed">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- Rule Sets -->
+        <section>
+          <h2 class="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Rule Sets</h2>
+          <div class="space-y-2">
+            {team.rules.map(rule => (
+              <div class="p-4 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)]">
+                <h3 class="text-[13px] font-semibold text-[var(--color-text-primary)] mb-1">{rule.name}</h3>
+                <p class="text-xs text-[var(--color-text-secondary)]">{rule.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- Installation -->
+        <section>
+          <h2 class="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Installation</h2>
+          <div class="rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-medium text-[var(--color-text-secondary)]">Terminal</span>
+              <button
+                onclick={`navigator.clipboard.writeText('${team.installCommand}')`}
+                class="px-2 py-1 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] transition-colors"
+              >
+                Copy
+              </button>
+            </div>
+            <code class="block text-xs text-[var(--color-text-primary)] font-mono break-all">
+              {team.installCommand}
+            </code>
+          </div>
+          
+          <a
+            href={team.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-[var(--color-surface-1)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-surface-2)] transition-all duration-200"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </a>
+          
+          <button
+            id="browse-files-btn"
+            class="mt-3 flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-sm font-medium text-blue-500 hover:border-blue-500/30 hover:from-blue-500/15 hover:to-purple-500/15 transition-all duration-200"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            Browse Files
+          </button>
+        </section>
+
+      </div>
+      
+    </div>
+
+  </div>
+
+  <FileBrowserModal client:load teamSlug={slug} />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
+
+<script>
+  document.getElementById('browse-files-btn')?.addEventListener('click', () => {
+    const event = new CustomEvent('open-file-browser');
+    window.dispatchEvent(event);
+  });
+</script>

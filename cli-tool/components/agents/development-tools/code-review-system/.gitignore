@@ -1,0 +1,12 @@
+# Review outputs
+review-report.json
+review-stream.jsonl
+.review-cache/
+.review-context.json
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

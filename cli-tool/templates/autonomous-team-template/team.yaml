@@ -1,0 +1,149 @@
+# Autonomous Team Template Configuration
+# Replace all [PLACEHOLDER] values with your team's details
+
+team:
+  name: [TEAM-NAME]  # e.g., customer-support-team, content-creation-team
+  version: 1.0.0
+  description: [BRIEF DESCRIPTION OF WHAT YOUR TEAM DOES]
+  
+  # Optional: Marketplace metadata for monetization
+  marketplace:
+    tier: free  # free, premium, enterprise
+    price: 0    # USD (if premium/enterprise)
+    license: mit  # mit, commercial, proprietary
+    creator_id: [YOUR-CREATOR-ID]
+    tags: [tag1, tag2, tag3]
+    category: [CATEGORY]  # development-tools, content, support, analytics, etc.
+
+orchestrator:
+  agent: [ORCHESTRATOR-NAME]  # Name of your orchestrator file (without .md)
+  role: [ORCHESTRATOR ROLE DESCRIPTION]
+  
+agents:
+  # Priority 1: Core agents that run first
+  - id: [AGENT-1-ID]
+    role: [WHAT THIS AGENT DOES]
+    priority: 1
+    dependencies: []  # No dependencies for first agents
+    
+  - id: [AGENT-2-ID]
+    role: [WHAT THIS AGENT DOES]
+    priority: 1
+    dependencies: []
+    
+  # Priority 2: Agents that depend on Priority 1
+  - id: [AGENT-3-ID]
+    role: [WHAT THIS AGENT DOES]
+    priority: 2
+    dependencies: [AGENT-1-ID]  # Waits for agent-1
+    
+  # Priority 3: Final polish agents
+  - id: [AGENT-4-ID]
+    role: [WHAT THIS AGENT DOES]
+    priority: 3
+    dependencies: [AGENT-3-ID]
+
+workflow:
+  mode: hybrid  # sequential, parallel, or hybrid
+  
+  phases:
+    # Phase 1: Initial work (parallel)
+    - name: [PHASE-1-NAME]  # e.g., initial-analysis, data-collection
+      type: parallel
+      agents: [AGENT-1-ID, AGENT-2-ID]
+      
+    # Phase 2: Specialized work (parallel, waits for Phase 1)
+    - name: [PHASE-2-NAME]  # e.g., specialized-processing, analysis
+      type: parallel
+      agents: [AGENT-3-ID]
+      wait_for: [PHASE-1-NAME]
+      
+    # Phase 3: Synthesis (sequential, waits for Phase 2)
+    - name: synthesis
+      type: sequential
+      agents: [ORCHESTRATOR-NAME]
+      wait_for: [PHASE-2-NAME]
+
+# Performance Optimizations
+optimization:
+  # Incremental processing - only process changed items
+  incremental:
+    enabled: true
+    only_changed_items: true
+    context_size: 5
+  
+  # Caching - skip unchanged work
+  caching:
+    enabled: true
+    cache_duration: 24h
+    cache_key: item_hash
+  
+  # Smart scoping - skip irrelevant agents
+  smart_scoping:
+    enabled: true
+    auto_select_agents: true
+  
+  # Parallel execution limits
+  parallelism:
+    max_concurrent_agents: 5
+    max_concurrent_items: 10
+  
+  # Confidence filtering
+  filtering:
+    minimum_confidence: 85%
+    require_consensus: false
+    human_review_threshold: 70%
+
+# Quality Improvements
+quality:
+  # Multi-agent validation
+  validation:
+    critical_issues_require_2_agents: true
+    cross_validate_important: true
+  
+  # Learning from feedback
+  learning:
+    track_false_positives: true
+    adjust_confidence_scores: true
+    improve_patterns: true
+    feedback_loop: interactive
+
+# Shared resources available to all agents
+shared_context:
+  rules:
+    - rules/[RULE-FILE-1].md
+    - rules/[RULE-FILE-2].md
+    
+  templates:
+    - templates/[TEMPLATE-FILE-1].txt
+    - templates/[TEMPLATE-FILE-2].txt
+    
+  examples:
+    - examples/[EXAMPLE-FILE-1].md
+
+# How agents communicate
+communication:
+  type: shared-memory
+  context_file: .[TEAM-NAME]-context.json
+  
+# Error handling strategy
+error_handling:
+  on_agent_failure: continue  # continue, stop, retry
+  on_critical_failure: escalate  # escalate, stop, retry
+  max_retries: 2
+  
+# Output configuration
+output:
+  format: markdown  # markdown, json, html
+  aggregation: [ORCHESTRATOR-NAME]
+  location: ./[TEAM-NAME]-report.md
+
+# Monitoring and metrics
+monitoring:
+  enabled: true
+  metrics:
+    - execution_time
+    - agent_performance
+    - quality_scores
+    - error_rates
+  log_level: info  # debug, info, warn, error
