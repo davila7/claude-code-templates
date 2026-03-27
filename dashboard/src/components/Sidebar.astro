@@ -143,8 +143,32 @@ function isActive(path: string): boolean {
         </span>
       </span>
       <span class="att-text sidebar-text truncate transition-all duration-300 relative">
-        <span class="att-short inline-block transition-all duration-300">A.T.T</span>
-        <span class="att-full absolute left-0 top-0 opacity-0 whitespace-nowrap transition-all duration-300">Autonomous Team Template</span>
+        <span class="att-letters inline-flex gap-[2px]">
+          <span class="letter" data-final="A" style="--delay: 0">A</span>
+          <span class="letter" data-final="u" style="--delay: 1">.</span>
+          <span class="letter" data-final="t" style="--delay: 2">T</span>
+          <span class="letter" data-final="o" style="--delay: 3">.</span>
+          <span class="letter" data-final="n" style="--delay: 4">T</span>
+          <span class="letter hidden" data-final="o" style="--delay: 5">o</span>
+          <span class="letter hidden" data-final="m" style="--delay: 6">m</span>
+          <span class="letter hidden" data-final="o" style="--delay: 7">o</span>
+          <span class="letter hidden" data-final="u" style="--delay: 8">u</span>
+          <span class="letter hidden" data-final="s" style="--delay: 9">s</span>
+          <span class="letter hidden" data-final=" " style="--delay: 10">&nbsp;</span>
+          <span class="letter hidden" data-final="T" style="--delay: 11">T</span>
+          <span class="letter hidden" data-final="e" style="--delay: 12">e</span>
+          <span class="letter hidden" data-final="a" style="--delay: 13">a</span>
+          <span class="letter hidden" data-final="m" style="--delay: 14">m</span>
+          <span class="letter hidden" data-final=" " style="--delay: 15">&nbsp;</span>
+          <span class="letter hidden" data-final="T" style="--delay: 16">T</span>
+          <span class="letter hidden" data-final="e" style="--delay: 17">e</span>
+          <span class="letter hidden" data-final="m" style="--delay: 18">m</span>
+          <span class="letter hidden" data-final="p" style="--delay: 19">p</span>
+          <span class="letter hidden" data-final="l" style="--delay: 20">l</span>
+          <span class="letter hidden" data-final="a" style="--delay: 21">a</span>
+          <span class="letter hidden" data-final="t" style="--delay: 22">t</span>
+          <span class="letter hidden" data-final="e" style="--delay: 23">e</span>
+        </span>
       </span>
       <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300">Beta</span>
     </a>
@@ -364,25 +388,59 @@ function isActive(path: string): boolean {
 </script>
 
 <style>
-  /* A.T.T Animation */
-  .att-link:hover .att-short {
-    opacity: 0;
-    transform: translateX(-10px);
+  /* A.T.T Letter Animation */
+  .att-letters {
+    position: relative;
+    display: inline-flex;
+    white-space: nowrap;
   }
   
-  .att-link:hover .att-full {
+  .att-letters .letter {
+    display: inline-block;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition-delay: calc(var(--delay) * 0.03s);
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
   }
   
-  .att-full {
-    transform: translateX(10px);
+  .att-letters .letter.hidden {
+    opacity: 0;
+    transform: translateY(10px) scale(0.5);
+    width: 0;
+    overflow: hidden;
   }
   
-  /* Smooth transitions for text */
-  .att-short,
-  .att-full {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* On hover, show all letters and animate them */
+  .att-link:hover .att-letters .letter {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    width: auto !important;
+  }
+  
+  /* Morph effect: change content on hover */
+  .att-link:hover .att-letters .letter::before {
+    content: attr(data-final);
+    animation: letterMorph 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation-delay: calc(var(--delay) * 0.03s);
+  }
+  
+  .att-letters .letter::before {
+    display: inline-block;
+  }
+  
+  @keyframes letterMorph {
+    0% {
+      transform: rotateY(90deg) scale(0.5);
+      opacity: 0;
+    }
+    50% {
+      transform: rotateY(45deg) scale(0.8);
+      opacity: 0.5;
+    }
+    100% {
+      transform: rotateY(0deg) scale(1);
+      opacity: 1;
+    }
   }
   
   /* Add glow effect on hover */
@@ -402,5 +460,10 @@ function isActive(path: string): boolean {
     50% {
       transform: scale(1.1);
     }
+  }
+  
+  /* Smooth width transition for the text container */
+  .att-text {
+    overflow: visible;
   }
 </style>
