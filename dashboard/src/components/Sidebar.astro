@@ -257,7 +257,24 @@ function isActive(path: string): boolean {
         ? (path.startsWith('/autonomous-teams') || path.startsWith('/build-team'))
         : type === firstSegment;
       
+      // Find existing indicator
+      let indicator = link.querySelector('.active-indicator');
+      
       if (isActive) {
+        // Add indicator if it doesn't exist
+        if (!indicator) {
+          indicator = document.createElement('span');
+          indicator.className = 'active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full';
+          
+          if (isAttLink) {
+            indicator.classList.add('bg-gradient-to-b', 'from-blue-500', 'to-purple-500');
+          } else {
+            indicator.classList.add('bg-[var(--color-primary-500)]');
+          }
+          
+          link.insertBefore(indicator, link.firstChild);
+        }
+        
         if (isAttLink) {
           // A.T.T specific active styles
           link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-gradient-to-r', 'hover:from-blue-500/5', 'hover:to-purple-500/5', 'hover:shadow-sm', 'hover:border', 'hover:border-blue-500/10');
@@ -272,6 +289,11 @@ function isActive(path: string): boolean {
           iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
         }
       } else {
+        // Remove indicator if it exists
+        if (indicator) {
+          indicator.remove();
+        }
+        
         if (isAttLink) {
           // A.T.T specific inactive styles
           link.classList.remove('bg-gradient-to-r', 'from-blue-500/10', 'to-purple-500/10', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-blue-500/20');
