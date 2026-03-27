@@ -283,8 +283,8 @@ cat [TEAM-NAME]-report.md
 
 ## Related Examples
 
-- [Example 2](./example-2.md) - [Description]
-- [Example 3](./example-3.md) - [Description]
+- [Example 2](https://github.com/bitreonx/Autonomous-Agent-Teams/blob/master/examples/example-2.md) - [Description]
+- [Example 3](https://github.com/bitreonx/Autonomous-Agent-Teams/blob/master/examples/example-3.md) - [Description]
 
 ---
 

@@ -205,7 +205,7 @@ When you publish to the marketplace:
 - Email Support
 
 ### Examples
-- [Code Review System](../../components/agents/development-tools/code-review-system/)
+- [Code Review System](https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/agents/development-tools/code-review-system)
 - More examples coming soon
 
 ## Best Practices

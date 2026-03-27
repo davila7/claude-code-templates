@@ -103,7 +103,7 @@ workflow:
 
 ### Step 2: Orchestrator (orchestrator.md)
 
-```markdown
+````markdown
 # [Team Name] Orchestrator
 
 You are the orchestrator for the [Team Name] - an autonomous system of specialized agents.
@@ -132,13 +132,13 @@ You coordinate the entire workflow by:
 ## Example Execution
 
 ✏️ [Show a real execution flow]
-```
+````
 
 ### Step 3: Specialized Agents (agents/*.md)
 
 For each agent, create a file like `agents/agent-1.md`:
 
-```markdown
+````markdown
 ---
 name: agent-1
 role: What this agent does
@@ -178,13 +178,13 @@ You are a specialized agent responsible for ✏️ [specific task].
 
 ## Examples
 ✏️ [Link to examples]
-```
+````
 
 ### Step 4: Rules (rules/*.md)
 
 Create domain-specific rules:
 
-```markdown
+````markdown
 # Rule Category Name
 
 ## Overview
@@ -203,12 +203,12 @@ Create domain-specific rules:
 
 ### Rule 2: [Rule Name]
 ...
-```
+````
 
 ### Step 5: Documentation
 
 #### README.md
-```markdown
+````markdown
 # [Team Name]
 
 ✏️ [One-line description]
@@ -232,10 +232,10 @@ Create domain-specific rules:
 
 ## Examples
 ✏️ [Link to examples]
-```
+````
 
 #### INDEX.md
-```markdown
+````markdown
 # [Team Name] - Complete Index
 
 ## Quick Navigation
@@ -252,7 +252,7 @@ Create domain-specific rules:
 
 ## Examples
 - [example-1.md](examples/example-1.md) - ✏️ [Description]
-```
+````
 
 ## 🎨 Design Patterns
 
@@ -363,8 +363,8 @@ claude-code --team my-team-name --target ./sample
 
 ### 3. Add to Repository
 ```bash
-# Move to components directory
-mv my-team-name cli-tool/components/agents/[category]/my-team-name
+# Move to components directory (replace [category] with actual category like 'development-tools')
+mv my-team-name cli-tool/components/agents/development-tools/my-team-name
 
 # Commit
 git add .

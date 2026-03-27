@@ -245,7 +245,7 @@ const teams: Team[] = [
           {teams.map(team => (
             <a 
               href={`/autonomous-teams/${team.slug}`}
-              class="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br {team.gradient} border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--color-primary-500)]/5"
+              class={`group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br ${team.gradient} border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--color-primary-500)]/5`}
             >
               <div class="relative z-10">
                 <div class="flex items-start justify-between mb-6">
@@ -281,7 +281,7 @@ const teams: Team[] = [
               </div>
               
               <!-- Subtle gradient overlay on hover -->
-              <div class="absolute inset-0 bg-gradient-to-br {team.borderGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class={`absolute inset-0 bg-gradient-to-br ${team.borderGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
             </a>
           ))}
         </div>

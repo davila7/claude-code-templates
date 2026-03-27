@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { readFile } from 'node:fs/promises';
-import { resolve, join } from 'node:path';
+import { resolve, join, sep as pathSep } from 'node:path';
 
 export const GET: APIRoute = async ({ params }) => {
   const { teamSlug, path } = params;
@@ -17,15 +17,21 @@ export const GET: APIRoute = async ({ params }) => {
     // If not found in templates, try components/agents
     try {
       await readFile(filePath, 'utf-8');
-    } catch {
+    } catch (error: any) {
+      // Only fallback on ENOENT (file not found), surface other errors
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
       basePath = resolve('../cli-tool/components/agents/development-tools');
       filePath = join(basePath, teamSlug, path);
     }
     
     // Security check: ensure the path is within the allowed directory
-    const templatesPath = resolve('../cli-tool/templates');
-    const componentsPath = resolve('../cli-tool/components/agents/development-tools');
-    if (!filePath.startsWith(templatesPath) && !filePath.startsWith(componentsPath)) {
+    // Use path.sep to enforce directory boundaries and prevent sibling path attacks
+    const templatesPath = resolve('../cli-tool/templates') + pathSep;
+    const componentsPath = resolve('../cli-tool/components/agents/development-tools') + pathSep;
+    const normalizedPath = filePath + pathSep;
+    if (!normalizedPath.startsWith(templatesPath) && !normalizedPath.startsWith(componentsPath)) {
       return new Response('Invalid path', { status: 403 });
     }
 

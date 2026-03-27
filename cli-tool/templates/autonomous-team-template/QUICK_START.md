@@ -63,8 +63,8 @@ claude-code --team my-awesome-team --target ./sample
 ## 7. Publish
 
 ```bash
-# Move to components
-mv my-awesome-team cli-tool/components/agents/[category]/my-awesome-team
+# Move to components (replace [category] with actual category like 'development-tools')
+mv my-awesome-team cli-tool/components/agents/development-tools/my-awesome-team
 
 # Commit
 git add .
@@ -86,8 +86,8 @@ Your autonomous team is ready to use!
 
 **Q: Team not found**
 ```bash
-# Make sure it's in the right location
-ls cli-tool/components/agents/[category]/my-awesome-team
+# Make sure it's in the right location (replace [category] with actual category)
+ls cli-tool/components/agents/development-tools/my-awesome-team
 ```
 
 **Q: Agents not running**

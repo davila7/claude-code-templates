@@ -135,7 +135,7 @@ const patterns = [
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {steps.map((step) => (
           <div class="group relative">
-            <div class="relative p-8 rounded-3xl bg-gradient-to-br from-[var(--color-surface-1)] to-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-{step.color}-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-{step.color}-500/5 h-full">
+            <div class={`relative p-8 rounded-3xl bg-gradient-to-br from-[var(--color-surface-1)] to-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-${step.color}-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-${step.color}-500/5 h-full`}>
               <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${step.color}-500/10 to-${step.color}-600/10 border border-${step.color}-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                 <svg class={`w-8 h-8 text-${step.color}-500`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" set:html={step.icon} />
               </div>

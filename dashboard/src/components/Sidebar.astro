@@ -117,6 +117,7 @@ function isActive(path: string): boolean {
     <!-- A.T.T (Autonomous Team Template) -->
     <a
       href="/autonomous-teams"
+      data-nav-type="autonomous-teams"
       data-tooltip="Autonomous Team Template"
       class:list={[
         'att-link sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative',
@@ -243,6 +244,7 @@ function isActive(path: string): boolean {
     const path = window.location.pathname.replace(/^\//, '').split('/')[0] || 'skills';
     document.querySelectorAll('.sidebar-nav-link').forEach((link) => {
       const type = (link as HTMLElement).dataset.navType;
+      if (!type) return; // Skip links without data-nav-type
       const iconWrapper = link.querySelector('.sidebar-nav-icon');
       const iconSpan = iconWrapper?.querySelector('span');
       if (type === path) {
