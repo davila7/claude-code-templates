@@ -10,7 +10,18 @@ const title = 'Autonomous Teams — AI Agent Teams for Complex Tasks';
 const description = 'Browse autonomous AI agent teams. Pre-built teams of specialized agents that work together to accomplish complex tasks like code review, testing, deployment, and more.';
 
 // Autonomous teams data
-const teams = [
+interface Team {
+  slug: string;
+  name: string;
+  description: string;
+  agents: number;
+  category: string;
+  tags: string[];
+  gradient: string;
+  borderGradient: string;
+}
+
+const teams: Team[] = [
   // Coming soon: Pre-built autonomous teams
 ];
 ---

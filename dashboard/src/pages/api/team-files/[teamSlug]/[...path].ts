@@ -10,12 +10,22 @@ export const GET: APIRoute = async ({ params }) => {
   }
 
   try {
-    // Construct the file path
-    const basePath = resolve('../cli-tool/components/agents/development-tools');
-    const filePath = join(basePath, teamSlug, path);
+    // Construct the file path - check both templates and components/agents folders
+    let basePath = resolve('../cli-tool/templates');
+    let filePath = join(basePath, teamSlug, path);
+    
+    // If not found in templates, try components/agents
+    try {
+      await readFile(filePath, 'utf-8');
+    } catch {
+      basePath = resolve('../cli-tool/components/agents/development-tools');
+      filePath = join(basePath, teamSlug, path);
+    }
     
     // Security check: ensure the path is within the allowed directory
-    if (!filePath.startsWith(basePath)) {
+    const templatesPath = resolve('../cli-tool/templates');
+    const componentsPath = resolve('../cli-tool/components/agents/development-tools');
+    if (!filePath.startsWith(templatesPath) && !filePath.startsWith(componentsPath)) {
       return new Response('Invalid path', { status: 403 });
     }
 

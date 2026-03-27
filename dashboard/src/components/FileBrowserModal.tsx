@@ -34,38 +34,24 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
 
   const fileTree: FileNode[] = [
     {
-      name: 'code-review-system',
-      path: 'code-review-system',
+      name: 'autonomous-team-template',
+      path: 'autonomous-team-template',
       type: 'folder',
       children: [
         { name: 'README.md', path: 'README.md', type: 'file' },
         { name: 'INDEX.md', path: 'INDEX.md', type: 'file' },
+        { name: 'TEMPLATE_README.md', path: 'TEMPLATE_README.md', type: 'file' },
+        { name: 'CREATE_NEW_TEAM_GUIDE.md', path: 'CREATE_NEW_TEAM_GUIDE.md', type: 'file' },
+        { name: 'QUICK_START.md', path: 'QUICK_START.md', type: 'file' },
         { name: 'CHANGELOG.md', path: 'CHANGELOG.md', type: 'file' },
-        { name: 'EXAMPLE_REVIEW.md', path: 'EXAMPLE_REVIEW.md', type: 'file' },
         { name: 'orchestrator.md', path: 'orchestrator.md', type: 'file' },
-        { name: 'review-planner.md', path: 'review-planner.md', type: 'file' },
         { name: 'team.yaml', path: 'team.yaml', type: 'file' },
         {
-          name: 'reviewers',
-          path: 'reviewers',
+          name: 'agents',
+          path: 'agents',
           type: 'folder',
           children: [
-            { name: 'security-reviewer.md', path: 'reviewers/security-reviewer.md', type: 'file' },
-            { name: 'code-reviewer.md', path: 'reviewers/code-reviewer.md', type: 'file' },
-            { name: 'architecture-reviewer.md', path: 'reviewers/architecture-reviewer.md', type: 'file' },
-            { name: 'frontend-reviewer.md', path: 'reviewers/frontend-reviewer.md', type: 'file' },
-            { name: 'backend-reviewer.md', path: 'reviewers/backend-reviewer.md', type: 'file' },
-            { name: 'accessibility-reviewer.md', path: 'reviewers/accessibility-reviewer.md', type: 'file' },
-            { name: 'async-reviewer.md', path: 'reviewers/async-reviewer.md', type: 'file' },
-            { name: 'memory-safety-reviewer.md', path: 'reviewers/memory-safety-reviewer.md', type: 'file' },
-            { name: 'dependency-reviewer.md', path: 'reviewers/dependency-reviewer.md', type: 'file' },
-            { name: 'api-contract-reviewer.md', path: 'reviewers/api-contract-reviewer.md', type: 'file' },
-            { name: 'database-reviewer.md', path: 'reviewers/database-reviewer.md', type: 'file' },
-            { name: 'style-reviewer.md', path: 'reviewers/style-reviewer.md', type: 'file' },
-            { name: 'test-reviewer.md', path: 'reviewers/test-reviewer.md', type: 'file' },
-            { name: 'devops-reviewer.md', path: 'reviewers/devops-reviewer.md', type: 'file' },
-            { name: 'mobile-reviewer.md', path: 'reviewers/mobile-reviewer.md', type: 'file' },
-            { name: 'mockdata-reviewer.md', path: 'reviewers/mockdata-reviewer.md', type: 'file' },
+            { name: 'agent-template.md', path: 'agents/agent-template.md', type: 'file' },
           ]
         },
         {
@@ -73,11 +59,7 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
           path: 'rules',
           type: 'folder',
           children: [
-            { name: 'security.md', path: 'rules/security.md', type: 'file' },
-            { name: 'algorithms.md', path: 'rules/algorithms.md', type: 'file' },
-            { name: 'concurrency.md', path: 'rules/concurrency.md', type: 'file' },
-            { name: 'cross-file.md', path: 'rules/cross-file.md', type: 'file' },
-            { name: 'predictive.md', path: 'rules/predictive.md', type: 'file' },
+            { name: 'rule-template.md', path: 'rules/rule-template.md', type: 'file' },
           ]
         },
         {
@@ -85,9 +67,7 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
           path: 'templates',
           type: 'folder',
           children: [
-            { name: 'database-types-template.ts', path: 'templates/database-types-template.ts', type: 'file' },
-            { name: 'migration-template.sql', path: 'templates/migration-template.sql', type: 'file' },
-            { name: 'supabase-client-template.ts', path: 'templates/supabase-client-template.ts', type: 'file' },
+            { name: 'output-template.md', path: 'templates/output-template.md', type: 'file' },
           ]
         },
         {
@@ -95,7 +75,15 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
           path: 'examples',
           type: 'folder',
           children: [
-            { name: 'mockdata-review-example.md', path: 'examples/mockdata-review-example.md', type: 'file' },
+            { name: 'execution-example.md', path: 'examples/execution-example.md', type: 'file' },
+          ]
+        },
+        {
+          name: 'docs',
+          path: 'docs',
+          type: 'folder',
+          children: [
+            { name: 'ARCHITECTURE.md', path: 'docs/ARCHITECTURE.md', type: 'file' },
           ]
         },
       ]
@@ -156,7 +144,7 @@ export default function FileBrowserModal({ isOpen = false, onClose, teamSlug }: 
           <div>
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">Browse Files</h2>
             <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-              Explore the code review system structure
+              Explore the autonomous team template structure
             </p>
           </div>
           <button
