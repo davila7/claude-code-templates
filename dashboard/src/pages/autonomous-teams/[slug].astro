@@ -414,7 +414,7 @@ const description = `${team.tagline}. ${team.stats.agents} specialized agents wo
               </section>
             )}
 
-            {team.exampleUrl && (
+            {'exampleUrl' in team && team.exampleUrl && (
               <section>
                 <div class="rounded-2xl bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20 p-8">
                   <div class="flex items-start gap-4 mb-4">

@@ -33,22 +33,50 @@ const teams: Team[] = [
   <div class="relative overflow-hidden border-b border-[var(--color-border)]">
     <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-surface-0)] via-[var(--color-surface-1)] to-[var(--color-surface-0)]"></div>
     
-    <div class="relative px-6 py-20 max-w-7xl mx-auto">
-      <div class="max-w-3xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-border)] text-xs font-medium text-[var(--color-text-secondary)] mb-6">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <!-- Animated background elements -->
+    <div class="absolute inset-0 overflow-hidden opacity-30">
+      <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+    
+    <div class="relative px-6 py-24 max-w-7xl mx-auto">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-sm font-medium text-[var(--color-text-primary)] mb-8 backdrop-blur-sm">
+          <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           Autonomous AI Teams
         </div>
         
-        <h1 class="text-5xl md:text-6xl font-semibold text-[var(--color-text-primary)] mb-6 tracking-tight leading-[1.1]">
+        <h1 class="text-6xl md:text-7xl font-bold text-[var(--color-text-primary)] mb-8 tracking-tight leading-[1.05]">
           Teams that think<br/>and work together
         </h1>
         
-        <p class="text-xl text-[var(--color-text-secondary)] leading-relaxed">
+        <p class="text-2xl text-[var(--color-text-secondary)] leading-relaxed mb-12 max-w-3xl mx-auto">
           Pre-built teams of specialized AI agents that collaborate autonomously to accomplish complex tasks with precision and depth.
         </p>
+        
+        <!-- Quick action buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a 
+            href="#create-your-own"
+            class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[var(--color-primary-500)] text-white text-lg font-semibold hover:bg-[var(--color-primary-600)] transition-all duration-300 hover:scale-105 shadow-lg shadow-[var(--color-primary-500)]/25"
+          >
+            <span>Create Your Team</span>
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a 
+            href="/build-team"
+            class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[var(--color-surface-2)] text-[var(--color-text-primary)] text-lg font-semibold border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <span>Interactive Guide</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -57,69 +85,159 @@ const teams: Team[] = [
   <div class="px-6 py-16 max-w-7xl mx-auto">
     
     <!-- What Are Autonomous Teams -->
-    <section class="mb-20">
-      <h2 class="text-3xl font-semibold text-[var(--color-text-primary)] mb-12">Built for collaboration</h2>
+    <section class="mb-24">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-text-primary)] mb-4">Built for collaboration</h2>
+        <p class="text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto">
+          Autonomous teams combine specialized expertise with seamless coordination
+        </p>
+      </div>
       
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="group">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-            <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-blue-500/5 to-blue-600/5 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+              <svg class="w-7 h-7 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[var(--color-text-primary)] mb-3">Collaborative</h3>
+            <p class="text-base text-[var(--color-text-secondary)] leading-relaxed">Agents work together, sharing insights and building on each other's findings to provide comprehensive analysis.</p>
           </div>
-          <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Collaborative</h3>
-          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">Agents work together, sharing insights and building on each other's findings to provide comprehensive analysis.</p>
         </div>
         
-        <div class="group">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-            <svg class="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
+        <div class="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-purple-500/5 to-purple-600/5 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors duration-500"></div>
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+              <svg class="w-7 h-7 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[var(--color-text-primary)] mb-3">Specialized</h3>
+            <p class="text-base text-[var(--color-text-secondary)] leading-relaxed">Each agent is an expert in their domain with deep knowledge, specific rules, and focused responsibilities.</p>
           </div>
-          <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Specialized</h3>
-          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">Each agent is an expert in their domain with deep knowledge, specific rules, and focused responsibilities.</p>
         </div>
         
-        <div class="group">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-            <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
+        <div class="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-green-500/5 to-green-600/5 border border-green-500/20 hover:border-green-500/40 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/10 hover:-translate-y-1">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors duration-500"></div>
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+              <svg class="w-7 h-7 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[var(--color-text-primary)] mb-3">Autonomous</h3>
+            <p class="text-base text-[var(--color-text-secondary)] leading-relaxed">Teams self-organize and coordinate through an orchestrator, requiring minimal human intervention.</p>
           </div>
-          <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Autonomous</h3>
-          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">Teams self-organize and coordinate through an orchestrator, requiring minimal human intervention.</p>
         </div>
       </div>
     </section>
 
     <!-- Teams Grid -->
-    <section>
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-3xl font-semibold text-[var(--color-text-primary)]">Available teams</h2>
+    <section class="mb-24">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-text-primary)] mb-4">Pre-built teams</h2>
+        <p class="text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto">
+          Ready-to-use autonomous teams for common workflows
+        </p>
       </div>
       
       {teams.length === 0 ? (
-        <div class="relative overflow-hidden p-16 rounded-3xl bg-gradient-to-br from-blue-500/5 to-purple-500/5 border border-[var(--color-border)] text-center">
-          <div class="relative z-10 max-w-2xl mx-auto">
-            <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 flex items-center justify-center mb-6 mx-auto">
-              <svg class="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 border border-[var(--color-border)]">
+          <!-- Animated gradient background -->
+          <div class="absolute inset-0 opacity-50">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1.5s;"></div>
+          </div>
+          
+          <div class="relative z-10 p-16 text-center">
+            <div class="max-w-3xl mx-auto">
+              <!-- Icon with animation -->
+              <div class="relative w-24 h-24 mx-auto mb-8">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-3xl animate-pulse"></div>
+                <div class="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/30 flex items-center justify-center backdrop-blur-sm">
+                  <svg class="w-12 h-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Status badge -->
+              <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 text-sm font-semibold text-amber-600 dark:text-amber-400 mb-6">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                In Development
+              </div>
+              
+              <h3 class="text-4xl font-bold text-[var(--color-text-primary)] mb-6">Pre-built teams coming soon</h3>
+              <p class="text-xl text-[var(--color-text-secondary)] leading-relaxed mb-10">
+                We're crafting specialized autonomous teams for code review, testing, deployment, and more. While we perfect these, you can create your own custom teams using our comprehensive template.
+              </p>
+              
+              <!-- Action buttons -->
+              <div class="flex flex-wrap items-center justify-center gap-4 mb-12">
+                <a 
+                  href="#create-your-own"
+                  class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[var(--color-primary-500)] text-white text-lg font-semibold hover:bg-[var(--color-primary-600)] transition-all duration-300 hover:scale-105 shadow-lg shadow-[var(--color-primary-500)]/25"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Create Your Own Team</span>
+                </a>
+                <a 
+                  href="/build-team"
+                  class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[var(--color-surface-2)] text-[var(--color-text-primary)] text-lg font-semibold border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>View Interactive Guide</span>
+                </a>
+              </div>
+              
+              <!-- Feature highlights -->
+              <div class="grid md:grid-cols-3 gap-6 text-left">
+                <div class="p-6 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50 backdrop-blur-sm">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-[var(--color-text-primary)]">Complete Template</h4>
+                  </div>
+                  <p class="text-sm text-[var(--color-text-secondary)]">Full structure with orchestrator, agents, rules, and documentation ready to customize</p>
+                </div>
+                
+                <div class="p-6 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50 backdrop-blur-sm">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-[var(--color-text-primary)]">Fully Customizable</h4>
+                  </div>
+                  <p class="text-sm text-[var(--color-text-secondary)]">Adapt every aspect to match your specific workflow and requirements</p>
+                </div>
+                
+                <div class="p-6 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50 backdrop-blur-sm">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-[var(--color-text-primary)]">Well Documented</h4>
+                  </div>
+                  <p class="text-sm text-[var(--color-text-secondary)]">Step-by-step guides and examples to get you started quickly</p>
+                </div>
+              </div>
             </div>
-            <h3 class="text-3xl font-semibold text-[var(--color-text-primary)] mb-4">Coming Soon</h3>
-            <p class="text-lg text-[var(--color-text-secondary)] leading-relaxed mb-8">
-              Pre-built autonomous agent teams are currently in development. In the meantime, you can create your own custom teams using the template below.
-            </p>
-            <a 
-              href="#create-your-own"
-              class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary-500)] text-white font-medium hover:bg-[var(--color-primary-600)] transition-colors"
-            >
-              <span>Create Your Own Team</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </a>
           </div>
         </div>
       ) : (
@@ -171,66 +289,121 @@ const teams: Team[] = [
     </section>
 
     <!-- Create Your Own Team Section -->
-    <section id="create-your-own" class="mt-20 scroll-mt-20">
-      <div class="relative overflow-hidden p-12 rounded-3xl bg-gradient-to-br from-green-500/5 to-emerald-500/5 border border-[var(--color-border)]">
-        <div class="relative z-10 max-w-4xl">
-          <div class="flex items-start gap-6 mb-8">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-green-500/20 flex items-center justify-center shrink-0">
-              <svg class="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h2 class="text-3xl font-semibold text-[var(--color-text-primary)] mb-3">Create your own team</h2>
-              <p class="text-lg text-[var(--color-text-secondary)] leading-relaxed mb-6">
-                Use our comprehensive template to build custom autonomous agent teams tailored to your specific needs. Includes orchestrator patterns, agent templates, and complete documentation.
-              </p>
-              <div class="flex flex-wrap gap-4">
-                <a 
-                  href="/autonomous-teams/autonomous-team-template"
-                  class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary-500)] text-white font-medium hover:bg-[var(--color-primary-600)] transition-colors"
-                >
-                  <span>View Template</span>
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+    <section id="create-your-own" class="scroll-mt-20">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-500/5 via-emerald-500/5 to-teal-500/5 border border-green-500/20">
+        <!-- Animated background -->
+        <div class="absolute inset-0 opacity-30">
+          <div class="absolute top-10 right-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div class="absolute bottom-10 left-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+        </div>
+        
+        <div class="relative z-10 p-12">
+          <div class="max-w-5xl mx-auto">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row items-start gap-8 mb-12">
+              <div class="shrink-0">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 border border-green-500/30 flex items-center justify-center backdrop-blur-sm">
+                  <svg class="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
-                </a>
-                <a 
-                  href="/build-team"
-                  class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-[var(--color-text-primary)] font-medium border border-blue-500/20 hover:border-blue-500/30 transition-colors"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </div>
+              </div>
+              
+              <div class="flex-1">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-sm font-semibold text-green-600 dark:text-green-400 mb-4">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Interactive Guide</span>
-                </a>
-                <a 
-                  href="https://github.com/cline/claude-code-templates"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-surface-2)] text-[var(--color-text-primary)] font-medium border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-colors"
-                >
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
-                  </svg>
-                  <span>View on GitHub</span>
-                </a>
+                  Available Now
+                </div>
+                
+                <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-text-primary)] mb-4">Create your own team</h2>
+                <p class="text-xl text-[var(--color-text-secondary)] leading-relaxed mb-8">
+                  Use our comprehensive template to build custom autonomous agent teams tailored to your specific needs. Includes orchestrator patterns, agent templates, and complete documentation.
+                </p>
+                
+                <!-- Action buttons -->
+                <div class="flex flex-wrap gap-4 mb-8">
+                  <a 
+                    href="/autonomous-teams/autonomous-team-template"
+                    class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[var(--color-primary-500)] text-white text-lg font-semibold hover:bg-[var(--color-primary-600)] transition-all duration-300 hover:scale-105 shadow-lg shadow-[var(--color-primary-500)]/25"
+                  >
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span>View Template</span>
+                  </a>
+                  <a 
+                    href="/build-team"
+                    class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-[var(--color-text-primary)] text-lg font-semibold border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                  >
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>Interactive Guide</span>
+                  </a>
+                  <a 
+                    href="https://github.com/cline/claude-code-templates"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[var(--color-surface-2)] text-[var(--color-text-primary)] text-lg font-semibold border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/30 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                  >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                    </svg>
+                    <span>View on GitHub</span>
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="grid md:grid-cols-3 gap-6">
-            <div class="p-6 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50">
-              <div class="text-3xl font-bold text-[var(--color-primary-500)] mb-2">Complete</div>
-              <p class="text-sm text-[var(--color-text-secondary)]">Full template structure with orchestrator, agents, rules, and documentation</p>
-            </div>
-            <div class="p-6 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50">
-              <div class="text-3xl font-bold text-[var(--color-primary-500)] mb-2">Flexible</div>
-              <p class="text-sm text-[var(--color-text-secondary)]">Customize every aspect to match your team's specific requirements</p>
-            </div>
-            <div class="p-6 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50">
-              <div class="text-3xl font-bold text-[var(--color-primary-500)] mb-2">Documented</div>
-              <p class="text-sm text-[var(--color-text-secondary)]">Step-by-step guides and examples to get you started quickly</p>
+            
+            <!-- Feature grid -->
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="group relative overflow-hidden p-8 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50 backdrop-blur-sm hover:border-green-500/30 transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors duration-300"></div>
+                <div class="relative">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div class="text-3xl font-bold text-[var(--color-primary-500)]">Complete</div>
+                  </div>
+                  <p class="text-base text-[var(--color-text-secondary)] leading-relaxed">Full template structure with orchestrator, agents, rules, and comprehensive documentation</p>
+                </div>
+              </div>
+              
+              <div class="group relative overflow-hidden p-8 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50 backdrop-blur-sm hover:border-emerald-500/30 transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors duration-300"></div>
+                <div class="relative">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      </svg>
+                    </div>
+                    <div class="text-3xl font-bold text-[var(--color-primary-500)]">Flexible</div>
+                  </div>
+                  <p class="text-base text-[var(--color-text-secondary)] leading-relaxed">Customize every aspect to match your team's specific requirements and workflows</p>
+                </div>
+              </div>
+              
+              <div class="group relative overflow-hidden p-8 rounded-2xl bg-[var(--color-surface-1)]/50 border border-[var(--color-border)]/50 backdrop-blur-sm hover:border-teal-500/30 transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-teal-500/5 rounded-full blur-2xl group-hover:bg-teal-500/10 transition-colors duration-300"></div>
+                <div class="relative">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-teal-600/20 border border-teal-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg class="w-6 h-6 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <div class="text-3xl font-bold text-[var(--color-primary-500)]">Documented</div>
+                  </div>
+                  <p class="text-base text-[var(--color-text-secondary)] leading-relaxed">Step-by-step guides and examples to get you started quickly and efficiently</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
