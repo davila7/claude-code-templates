@@ -144,30 +144,30 @@ function isActive(path: string): boolean {
       </span>
       <span class="att-text sidebar-text truncate transition-all duration-300 relative">
         <span class="att-letters inline-flex gap-[2px]">
-          <span class="letter" data-final="A" style="--delay: 0">A</span>
-          <span class="letter" data-final="u" style="--delay: 1">.</span>
-          <span class="letter" data-final="t" style="--delay: 2">T</span>
-          <span class="letter" data-final="o" style="--delay: 3">.</span>
-          <span class="letter" data-final="n" style="--delay: 4">T</span>
-          <span class="letter hidden" data-final="o" style="--delay: 5">o</span>
-          <span class="letter hidden" data-final="m" style="--delay: 6">m</span>
-          <span class="letter hidden" data-final="o" style="--delay: 7">o</span>
-          <span class="letter hidden" data-final="u" style="--delay: 8">u</span>
-          <span class="letter hidden" data-final="s" style="--delay: 9">s</span>
-          <span class="letter hidden" data-final=" " style="--delay: 10">&nbsp;</span>
-          <span class="letter hidden" data-final="T" style="--delay: 11">T</span>
-          <span class="letter hidden" data-final="e" style="--delay: 12">e</span>
-          <span class="letter hidden" data-final="a" style="--delay: 13">a</span>
-          <span class="letter hidden" data-final="m" style="--delay: 14">m</span>
-          <span class="letter hidden" data-final=" " style="--delay: 15">&nbsp;</span>
-          <span class="letter hidden" data-final="T" style="--delay: 16">T</span>
-          <span class="letter hidden" data-final="e" style="--delay: 17">e</span>
-          <span class="letter hidden" data-final="m" style="--delay: 18">m</span>
-          <span class="letter hidden" data-final="p" style="--delay: 19">p</span>
-          <span class="letter hidden" data-final="l" style="--delay: 20">l</span>
-          <span class="letter hidden" data-final="a" style="--delay: 21">a</span>
-          <span class="letter hidden" data-final="t" style="--delay: 22">t</span>
-          <span class="letter hidden" data-final="e" style="--delay: 23">e</span>
+          <span class="letter" data-final="A" style="--delay: 0"></span>
+          <span class="letter" data-final="u" style="--delay: 1"></span>
+          <span class="letter" data-final="t" style="--delay: 2"></span>
+          <span class="letter" data-final="o" style="--delay: 3"></span>
+          <span class="letter" data-final="n" style="--delay: 4"></span>
+          <span class="letter hidden" data-final="o" style="--delay: 5"></span>
+          <span class="letter hidden" data-final="m" style="--delay: 6"></span>
+          <span class="letter hidden" data-final="o" style="--delay: 7"></span>
+          <span class="letter hidden" data-final="u" style="--delay: 8"></span>
+          <span class="letter hidden" data-final="s" style="--delay: 9"></span>
+          <span class="letter hidden" data-final=" " style="--delay: 10"></span>
+          <span class="letter hidden" data-final="T" style="--delay: 11"></span>
+          <span class="letter hidden" data-final="e" style="--delay: 12"></span>
+          <span class="letter hidden" data-final="a" style="--delay: 13"></span>
+          <span class="letter hidden" data-final="m" style="--delay: 14"></span>
+          <span class="letter hidden" data-final=" " style="--delay: 15"></span>
+          <span class="letter hidden" data-final="T" style="--delay: 16"></span>
+          <span class="letter hidden" data-final="e" style="--delay: 17"></span>
+          <span class="letter hidden" data-final="m" style="--delay: 18"></span>
+          <span class="letter hidden" data-final="p" style="--delay: 19"></span>
+          <span class="letter hidden" data-final="l" style="--delay: 20"></span>
+          <span class="letter hidden" data-final="a" style="--delay: 21"></span>
+          <span class="letter hidden" data-final="t" style="--delay: 22"></span>
+          <span class="letter hidden" data-final="e" style="--delay: 23"></span>
         </span>
       </span>
       <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300">Beta</span>
@@ -401,7 +401,21 @@ function isActive(path: string): boolean {
     transition-delay: calc(var(--delay) * 0.03s);
     opacity: 1;
     transform: translateY(0) scale(1);
+    font-size: inherit;
   }
+  
+  /* Show content via ::before */
+  .att-letters .letter::before {
+    content: attr(data-final);
+    display: inline-block;
+  }
+  
+  /* Initially show only first 5 letters (A.T.T with dots) */
+  .att-letters .letter:nth-child(1)::before { content: 'A'; }
+  .att-letters .letter:nth-child(2)::before { content: '.'; }
+  .att-letters .letter:nth-child(3)::before { content: 'T'; }
+  .att-letters .letter:nth-child(4)::before { content: '.'; }
+  .att-letters .letter:nth-child(5)::before { content: 'T'; }
   
   .att-letters .letter.hidden {
     opacity: 0;
@@ -417,15 +431,10 @@ function isActive(path: string): boolean {
     width: auto !important;
   }
   
-  /* Morph effect: change content on hover */
+  /* On hover, change to final content with morph animation */
   .att-link:hover .att-letters .letter::before {
-    content: attr(data-final);
     animation: letterMorph 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     animation-delay: calc(var(--delay) * 0.03s);
-  }
-  
-  .att-letters .letter::before {
-    display: inline-block;
   }
   
   @keyframes letterMorph {
