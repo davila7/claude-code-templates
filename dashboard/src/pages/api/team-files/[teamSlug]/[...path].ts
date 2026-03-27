@@ -14,29 +14,42 @@ export const GET: APIRoute = async ({ params }) => {
     const templatesPath = resolve('../cli-tool/templates') + pathSep;
     const componentsPath = resolve('../cli-tool/components/agents/development-tools') + pathSep;
     
-    // Construct the file path - check both templates and components/agents folders
+    // Try templates path first
     let basePath = resolve('../cli-tool/templates');
     let filePath = join(basePath, teamSlug, path);
     let normalizedPath = filePath + pathSep;
     
-    // Validate first path
+    // Validate templates path
     let isValid = normalizedPath.startsWith(templatesPath);
     
-    // If not in templates, try components path
-    if (!isValid) {
-      basePath = resolve('../cli-tool/components/agents/development-tools');
-      filePath = join(basePath, teamSlug, path);
-      normalizedPath = filePath + pathSep;
-      isValid = normalizedPath.startsWith(componentsPath);
-    }
-    
-    // Reject if neither path is valid
     if (!isValid) {
       return new Response('Invalid path', { status: 403 });
     }
 
-    // Now safe to attempt file read
-    const content = await readFile(filePath, 'utf-8');
+    // Try to read from templates first
+    let content: string;
+    try {
+      content = await readFile(filePath, 'utf-8');
+    } catch (error: any) {
+      // If file not found in templates, try components path as fallback
+      if (error.code === 'ENOENT') {
+        basePath = resolve('../cli-tool/components/agents/development-tools');
+        filePath = join(basePath, teamSlug, path);
+        normalizedPath = filePath + pathSep;
+        
+        // Validate components path
+        isValid = normalizedPath.startsWith(componentsPath);
+        
+        if (!isValid) {
+          return new Response('Invalid path', { status: 403 });
+        }
+        
+        // Try reading from components
+        content = await readFile(filePath, 'utf-8');
+      } else {
+        throw error;
+      }
+    }
     
     // Determine content type
     let contentType = 'text/plain';

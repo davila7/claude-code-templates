@@ -250,6 +250,7 @@ function isActive(path: string): boolean {
       
       const iconWrapper = link.querySelector('.sidebar-nav-icon');
       const iconSpan = iconWrapper?.querySelector('span');
+      const isAttLink = link.classList.contains('att-link');
       
       // Special handling for autonomous-teams which also covers /build-team
       const isActive = type === 'autonomous-teams' 
@@ -257,15 +258,33 @@ function isActive(path: string): boolean {
         : type === firstSegment;
       
       if (isActive) {
-        link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
-        link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
-        iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
-        iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
+        if (isAttLink) {
+          // A.T.T specific active styles
+          link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-gradient-to-r', 'hover:from-blue-500/5', 'hover:to-purple-500/5', 'hover:shadow-sm', 'hover:border', 'hover:border-blue-500/10');
+          link.classList.add('bg-gradient-to-r', 'from-blue-500/10', 'to-purple-500/10', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-blue-500/20');
+          iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-blue-500', 'group-hover:scale-105');
+          iconSpan?.classList.add('text-blue-500', 'scale-110');
+        } else {
+          // Generic active styles
+          link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
+          link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-[var(--color-border)]');
+          iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+          iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
+        }
       } else {
-        link.classList.remove('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
-        link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
-        iconSpan?.classList.remove('text-[var(--color-primary-500)]', 'scale-110');
-        iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+        if (isAttLink) {
+          // A.T.T specific inactive styles
+          link.classList.remove('bg-gradient-to-r', 'from-blue-500/10', 'to-purple-500/10', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-blue-500/20');
+          link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-gradient-to-r', 'hover:from-blue-500/5', 'hover:to-purple-500/5', 'hover:shadow-sm', 'hover:border', 'hover:border-blue-500/10');
+          iconSpan?.classList.remove('text-blue-500', 'scale-110');
+          iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-blue-500', 'group-hover:scale-105');
+        } else {
+          // Generic inactive styles
+          link.classList.remove('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-[var(--color-border)]');
+          link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
+          iconSpan?.classList.remove('text-[var(--color-primary-500)]', 'scale-110');
+          iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+        }
       }
     });
   }
