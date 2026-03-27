@@ -1,0 +1,394 @@
+[
+  {
+    "slug": "everything-claude-code",
+    "name": "Everything Claude Code",
+    "author": "affaan-m",
+    "description": "The most comprehensive Claude Code toolkit with performance optimization, security scanning, and cross-agent compatibility",
+    "github": "https://github.com/affaan-m/everything-claude-code",
+    "stars": 111000,
+    "tags": ["skills", "hooks", "commands", "rules", "mcps"],
+    "contains": {
+      "skills": 45,
+      "agents": 30,
+      "hooks": 20,
+      "commands": 25,
+      "mcps": 12,
+      "rules": 15
+    },
+    "highlights": [
+      "Cross-compatible with Codex, Opencode, and Cursor",
+      "Agent harness performance optimization system",
+      "Built-in security scanning workflows"
+    ]
+  },
+  {
+    "slug": "mcp-servers",
+    "name": "MCP Servers (Official)",
+    "author": "modelcontextprotocol",
+    "description": "Official Model Context Protocol server implementations for filesystem, GitHub, Slack, Google Drive, Postgres, and more",
+    "github": "https://github.com/modelcontextprotocol/servers",
+    "stars": 82000,
+    "tags": ["mcps"],
+    "contains": {
+      "mcps": 40
+    },
+    "highlights": [
+      "Maintained by Anthropic",
+      "Reference implementations for MCP protocol",
+      "Covers major platforms: GitHub, Slack, Google Drive, Postgres"
+    ]
+  },
+  {
+    "slug": "awesome-claude-skills-composio",
+    "name": "Awesome Claude Skills",
+    "author": "ComposioHQ",
+    "description": "Curated collection of skills, resources, and tools for Claude AI workflows by Composio (YC-backed)",
+    "github": "https://github.com/ComposioHQ/awesome-claude-skills",
+    "stars": 48000,
+    "tags": ["skills", "agents", "commands"],
+    "contains": {
+      "skills": 120,
+      "agents": 40,
+      "commands": 30
+    },
+    "highlights": [
+      "YC-backed company curation",
+      "Regularly updated with community contributions",
+      "Categorized by use case and industry"
+    ]
+  },
+  {
+    "slug": "awesome-claude-code",
+    "name": "Awesome Claude Code",
+    "author": "hesreallyhim",
+    "description": "The definitive awesome list for Claude Code — skills, hooks, slash-commands, agent orchestrators, and plugins",
+    "github": "https://github.com/hesreallyhim/awesome-claude-code",
+    "stars": 33000,
+    "tags": ["skills", "hooks", "commands", "agents"],
+    "contains": {
+      "skills": 80,
+      "agents": 50,
+      "hooks": 25,
+      "commands": 35
+    },
+    "highlights": [
+      "Most comprehensive awesome list in the ecosystem",
+      "Indexed with star counts and categories",
+      "Community-maintained with regular updates"
+    ]
+  },
+  {
+    "slug": "claude-plugins-official",
+    "name": "Claude Plugins (Official)",
+    "author": "anthropics",
+    "description": "Official Anthropic-curated plugins directory — the canonical source for verified Claude Code plugins",
+    "github": "https://github.com/anthropics/claude-plugins-official",
+    "stars": 15000,
+    "tags": ["skills", "agents", "hooks", "commands", "mcps"],
+    "contains": {
+      "skills": 60,
+      "agents": 25,
+      "hooks": 15,
+      "commands": 20,
+      "mcps": 18
+    },
+    "highlights": [
+      "Official Anthropic repository",
+      "Available in Claude Code's /plugin Discover tab",
+      "Security-verified plugins"
+    ]
+  },
+  {
+    "slug": "awesome-agent-skills",
+    "name": "Awesome Agent Skills",
+    "author": "VoltAgent",
+    "description": "1,000+ agent skills from official dev teams — Anthropic, Google Labs, Vercel, Stripe, Cloudflare, and more",
+    "github": "https://github.com/VoltAgent/awesome-agent-skills",
+    "stars": 13000,
+    "tags": ["skills", "agents"],
+    "contains": {
+      "skills": 1000,
+      "agents": 150
+    },
+    "highlights": [
+      "Skills from official vendor dev teams",
+      "Cross-compatible with Codex, Gemini CLI, Cursor, GitHub Copilot",
+      "Enterprise-grade quality standards"
+    ]
+  },
+  {
+    "slug": "awesome-claude-skills-travisvn",
+    "name": "Awesome Claude Skills",
+    "author": "travisvn",
+    "description": "Community-driven curated collection of Claude Code skills, resources, and developer tools",
+    "github": "https://github.com/travisvn/awesome-claude-skills",
+    "stars": 10000,
+    "tags": ["skills", "commands", "hooks"],
+    "contains": {
+      "skills": 95,
+      "commands": 20,
+      "hooks": 10
+    },
+    "highlights": [
+      "Strong community engagement",
+      "Focus on practical, production-ready skills",
+      "Well-organized by development domain"
+    ]
+  },
+  {
+    "slug": "claude-skills-alirezarezvani",
+    "name": "Claude Skills Collection",
+    "author": "alirezarezvani",
+    "description": "192+ skills and agent plugins spanning engineering, marketing, product management, compliance, and C-level advisory",
+    "github": "https://github.com/alirezarezvani/claude-skills",
+    "stars": 7300,
+    "tags": ["skills", "agents"],
+    "contains": {
+      "skills": 192,
+      "agents": 45
+    },
+    "highlights": [
+      "Cross-compatible with 8+ coding agents",
+      "Broad enterprise and business coverage",
+      "Includes C-level and compliance advisory skills"
+    ]
+  },
+  {
+    "slug": "claude-code-showcase",
+    "name": "Claude Code Showcase",
+    "author": "ChrisWiles",
+    "description": "Curated hooks, skills, agents, commands, and GitHub Actions workflows with auto-suggest evaluation system",
+    "github": "https://github.com/ChrisWiles/claude-code-showcase",
+    "stars": 5600,
+    "tags": ["hooks", "skills", "agents", "commands"],
+    "contains": {
+      "skills": 35,
+      "agents": 20,
+      "hooks": 25,
+      "commands": 15
+    },
+    "highlights": [
+      "Skill evaluation system with auto-suggestions",
+      "Intent pattern matching for skill discovery",
+      "GitHub Actions workflow templates"
+    ]
+  },
+  {
+    "slug": "claude-code-hooks-mastery",
+    "name": "Claude Code Hooks Mastery",
+    "author": "disler",
+    "description": "Educational deep-dive into Claude Code hooks — sub-agents, meta-agent patterns, and team-based validation",
+    "github": "https://github.com/disler/claude-code-hooks-mastery",
+    "stars": 3400,
+    "tags": ["hooks", "agents"],
+    "contains": {
+      "hooks": 40,
+      "agents": 15
+    },
+    "highlights": [
+      "Best educational resource for hooks",
+      "Deterministic control patterns",
+      "Agent orchestration via hooks"
+    ]
+  },
+  {
+    "slug": "buildwithclaude",
+    "name": "Build With Claude",
+    "author": "davepoon",
+    "description": "Hub for 494+ extensions covering Claude Code, Claude Desktop, Agent SDK, and OpenClaw with a web UI",
+    "github": "https://github.com/davepoon/buildwithclaude",
+    "website": "https://buildwithclaude.com/",
+    "stars": 2700,
+    "tags": ["skills", "agents", "commands", "hooks", "mcps"],
+    "contains": {
+      "skills": 150,
+      "agents": 120,
+      "commands": 80,
+      "hooks": 60,
+      "mcps": 84
+    },
+    "highlights": [
+      "Web UI for browsing extensions",
+      "Covers Claude Desktop and Agent SDK too",
+      "494+ total extensions"
+    ]
+  },
+  {
+    "slug": "claude-code-ultimate-guide",
+    "name": "Claude Code Ultimate Guide",
+    "author": "FlorianBruniaux",
+    "description": "Production-ready templates, agentic workflow guides, cheatsheets, and interactive quizzes for Claude Code",
+    "github": "https://github.com/FlorianBruniaux/claude-code-ultimate-guide",
+    "stars": 2300,
+    "tags": ["skills", "commands", "rules"],
+    "contains": {
+      "skills": 30,
+      "commands": 15,
+      "rules": 20
+    },
+    "highlights": [
+      "Comprehensive learning resource",
+      "Production-ready workflow templates",
+      "Interactive quizzes and cheatsheets"
+    ]
+  },
+  {
+    "slug": "claude-code-plugins-plus-skills",
+    "name": "Claude Plugins + Skills",
+    "author": "jeremylongshore",
+    "description": "Open-source marketplace with 340 plugins, 1,367 agent skills, CCPI package manager, and interactive tutorials",
+    "github": "https://github.com/jeremylongshore/claude-code-plugins-plus-skills",
+    "stars": 1700,
+    "tags": ["skills", "agents", "commands", "hooks"],
+    "contains": {
+      "skills": 1367,
+      "agents": 200,
+      "commands": 80,
+      "hooks": 60
+    },
+    "highlights": [
+      "CCPI package manager included",
+      "Interactive tutorials for beginners",
+      "Production orchestration patterns"
+    ]
+  },
+  {
+    "slug": "awesome-claude-plugins-composio",
+    "name": "Awesome Claude Plugins",
+    "author": "ComposioHQ",
+    "description": "Curated plugins focusing on commands, agents, hooks, and MCP servers by Composio",
+    "github": "https://github.com/ComposioHQ/awesome-claude-plugins",
+    "stars": 1200,
+    "tags": ["commands", "agents", "hooks", "mcps"],
+    "contains": {
+      "commands": 45,
+      "agents": 35,
+      "hooks": 20,
+      "mcps": 25
+    },
+    "highlights": [
+      "Composio-curated quality plugins",
+      "Focus on production-ready integrations",
+      "Regular community contributions"
+    ]
+  },
+  {
+    "slug": "awesome-claude-code-toolkit",
+    "name": "Claude Code Toolkit",
+    "author": "rohitg00",
+    "description": "Was #1 trending on GitHub — 135 agents, 35 skills, 42 commands, 150+ plugins, 19 hooks, and more",
+    "github": "https://github.com/rohitg00/awesome-claude-code-toolkit",
+    "stars": 918,
+    "tags": ["agents", "skills", "commands", "hooks", "mcps", "rules"],
+    "contains": {
+      "agents": 135,
+      "skills": 35,
+      "commands": 42,
+      "hooks": 19,
+      "mcps": 8,
+      "rules": 15
+    },
+    "highlights": [
+      "#1 trending on GitHub (Feb 2026)",
+      "Most comprehensive single toolkit",
+      "400K+ skills via SkillKit integration"
+    ]
+  },
+  {
+    "slug": "cc-marketplace",
+    "name": "CC Marketplace",
+    "author": "ananddtyagi",
+    "description": "Community marketplace for Claude Code plugins with install count tracking and community voting",
+    "github": "https://github.com/ananddtyagi/cc-marketplace",
+    "stars": 669,
+    "tags": ["skills", "agents", "commands"],
+    "contains": {
+      "skills": 80,
+      "agents": 40,
+      "commands": 30
+    },
+    "highlights": [
+      "Install count tracking",
+      "Community voting system",
+      "Curated by popularity and quality"
+    ]
+  },
+  {
+    "slug": "awesome-claude-code-plugins",
+    "name": "Awesome Claude Code Plugins",
+    "author": "ccplugins",
+    "description": "Focused collection of slash commands, subagents, MCP servers, and hooks for Claude Code",
+    "github": "https://github.com/ccplugins/awesome-claude-code-plugins",
+    "stars": 649,
+    "tags": ["commands", "agents", "mcps", "hooks"],
+    "contains": {
+      "commands": 50,
+      "agents": 30,
+      "mcps": 20,
+      "hooks": 15
+    },
+    "highlights": [
+      "Plugin-format focused",
+      "Well-categorized by functionality",
+      "Active community contributions"
+    ]
+  },
+  {
+    "slug": "gmickel-claude-marketplace",
+    "name": "Claude Marketplace",
+    "author": "gmickel",
+    "description": "High-quality opinionated plugins — Flow-Next workflows, Ralph autonomous coding, multi-model review gates",
+    "github": "https://github.com/gmickel/gmickel-claude-marketplace",
+    "stars": 553,
+    "tags": ["skills", "agents", "hooks"],
+    "contains": {
+      "skills": 15,
+      "agents": 10,
+      "hooks": 8
+    },
+    "highlights": [
+      "Plan-first workflow patterns (Flow-Next)",
+      "Autonomous overnight coding (Ralph)",
+      "Multi-model review gates and receipt-based gating"
+    ]
+  },
+  {
+    "slug": "hashicorp-agent-skills",
+    "name": "HashiCorp Agent Skills",
+    "author": "hashicorp",
+    "description": "Official enterprise-grade Claude Code skills for Terraform, Packer, and HashiCorp products",
+    "github": "https://github.com/hashicorp/agent-skills",
+    "stars": 489,
+    "tags": ["skills"],
+    "contains": {
+      "skills": 12
+    },
+    "highlights": [
+      "Official HashiCorp release",
+      "First major enterprise vendor Claude Code skills",
+      "Terraform and Packer integration"
+    ]
+  },
+  {
+    "slug": "claude-plugins-registry",
+    "name": "Claude Plugins Registry",
+    "author": "Kamalnrf",
+    "description": "Auto-indexing registry of 11,989 plugins and 63,065 agent skills with CLI tools and web UI",
+    "github": "https://github.com/Kamalnrf/claude-plugins",
+    "website": "https://claude-plugins.dev/",
+    "stars": 486,
+    "tags": ["skills", "agents", "commands", "hooks", "mcps"],
+    "contains": {
+      "skills": 63065,
+      "agents": 5000,
+      "commands": 2000,
+      "hooks": 800,
+      "mcps": 1100
+    },
+    "highlights": [
+      "Auto-indexes all public Claude plugins on GitHub",
+      "CLI tool for discovery and installation",
+      "Web UI at claude-plugins.dev"
+    ]
+  }
+]
