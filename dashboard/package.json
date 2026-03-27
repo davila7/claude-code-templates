@@ -16,7 +16,7 @@
     "@clerk/backend": "^3.0.1",
     "@clerk/clerk-react": "^5.60.1",
     "@neondatabase/serverless": "^1.0.2",
-    "@supabase/supabase-js": "^2.98.0",
+    "@supabase/supabase-js": "^2.100.1",
     "@tailwindcss/vite": "^4.2.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
