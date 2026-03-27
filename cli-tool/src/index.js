@@ -3506,4 +3506,11 @@ async function executeE2BSandbox(options, targetDir) {
   }
 }
 
-module.exports = { createClaudeConfig, showMainMenu };
+module.exports = { 
+  createClaudeConfig, 
+  showMainMenu,
+  installIndividualAgent,
+  installIndividualCommand,
+  installIndividualMCP,
+  installIndividualSkill
+};
