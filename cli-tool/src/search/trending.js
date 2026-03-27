@@ -138,9 +138,29 @@ async function getRecentComponents(options = {}) {
   ];
 
   // TODO: Add createdAt timestamp to components
-  // For now, return random selection as "recent"
-  const shuffled = allComponents.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, limit);
+  // Filter by createdAt if available, otherwise return all
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+  
+  const recentComponents = allComponents.filter(c => {
+    if (c.createdAt) {
+      const createdDate = new Date(c.createdAt);
+      return createdDate >= cutoffDate;
+    }
+    // If no createdAt, include in results (backward compatibility)
+    return true;
+  });
+
+  // Sort by createdAt (newest first) if available, otherwise by name
+  recentComponents.sort((a, b) => {
+    if (a.createdAt && b.createdAt) {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    }
+    // Fallback to alphabetical if no dates
+    return (a.name || '').localeCompare(b.name || '');
+  });
+
+  return recentComponents.slice(0, limit);
 }
 
 /**

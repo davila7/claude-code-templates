@@ -487,7 +487,7 @@ async function promptInstallFromSearch(results, options = {}) {
       console.log('');
 
       // Import install functions from main module
-      const mainModule = require('./index');
+      const mainModule = require('../index');
       const targetDir = options.directory || process.cwd();
 
       let successCount = 0;
@@ -611,7 +611,7 @@ async function promptInstallEssentials(essentials, options = {}) {
       console.log(chalk.blue('⚙️  Installing essential components...'));
       console.log('');
 
-      const mainModule = require('./index');
+      const mainModule = require('../index');
       const targetDir = options.directory || process.cwd();
 
       let successCount = 0;

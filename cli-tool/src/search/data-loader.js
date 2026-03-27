@@ -213,6 +213,11 @@ function determineProjectTypes(keywords) {
 
   const types = new Set(['all']); // All components work with 'all' by default
 
+  // Guard against missing or invalid keywords
+  if (!keywords || !Array.isArray(keywords)) {
+    return Array.from(types);
+  }
+
   for (const keyword of keywords) {
     const lowerKeyword = keyword.toLowerCase();
     if (projectTypeMap[lowerKeyword]) {
