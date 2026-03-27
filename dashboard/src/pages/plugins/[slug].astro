@@ -1,0 +1,212 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import SearchModal from '../../components/SearchModal.tsx';
+
+export const prerender = true;
+
+import fs from 'node:fs';
+import nodePath from 'node:path';
+
+const pluginsFilePath = nodePath.join(process.cwd(), 'public', 'plugins.json');
+let allPlugins: any[] = [];
+try {
+  allPlugins = JSON.parse(fs.readFileSync(pluginsFilePath, 'utf-8'));
+} catch { allPlugins = []; }
+
+export function getStaticPaths() {
+  const data = JSON.parse(fs.readFileSync(nodePath.join(process.cwd(), 'public', 'plugins.json'), 'utf-8'));
+  return data.map((p: any) => ({ params: { slug: p.slug } }));
+}
+
+const plugins = allPlugins;
+
+const { slug } = Astro.params;
+const plugin = plugins.find((p: any) => p.slug === slug);
+if (!plugin) return Astro.redirect('/plugins');
+
+function formatStars(stars: number): string {
+  if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1)}k`;
+  return String(stars);
+}
+
+function formatNumber(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return String(n);
+}
+
+const TAG_COLORS: Record<string, string> = {
+  skills: '#f59e0b',
+  agents: '#3b82f6',
+  commands: '#10b981',
+  hooks: '#f97316',
+  mcps: '#06b6d4',
+  settings: '#8b5cf6',
+  rules: '#ec4899',
+};
+
+const TAG_ICONS: Record<string, string> = {
+  skills: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+  agents: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><path d="M9 17h6"/></svg>',
+  commands: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+  hooks: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>',
+  mcps: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242"/><path d="M12 12v9"/><path d="M8 17l4 4 4-4"/></svg>',
+  settings: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/></svg>',
+  rules: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+};
+
+const containsEntries = Object.entries(plugin.contains ?? {}).filter(([, v]) => (v as number) > 0);
+const totalItems = containsEntries.reduce((sum, [, v]) => sum + (v as number), 0);
+---
+
+<DashboardLayout
+  title={`${plugin.name} — Claude Code Plugin Collection`}
+  description={plugin.description}
+>
+  <TopBar />
+
+  <!-- Breadcrumb -->
+  <div class="px-6 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-0)]">
+    <nav class="flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)]">
+      <a href="/plugins" class="hover:text-[var(--color-text-primary)] transition-colors">Plugins</a>
+      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+      <span class="text-[var(--color-text-primary)] font-medium">{plugin.name}</span>
+    </nav>
+  </div>
+
+  <!-- Plugin Header -->
+  <div class="relative overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-0)] to-[var(--color-surface-1)]">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-purple-500/10"></div>
+    </div>
+    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-500/5 to-transparent rounded-full blur-3xl"></div>
+
+    <div class="relative px-6 py-10 max-w-5xl mx-auto">
+      <div class="flex items-start gap-6">
+        <!-- Icon -->
+        <div
+          class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl text-[32px] font-bold select-none"
+          style="background: linear-gradient(135deg, #ffd93d20 0%, #ffd93d10 100%); border: 2px solid #ffd93d30; color: #ffd93d;"
+        >
+          {plugin.author.charAt(0).toUpperCase()}
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-3 mb-2 flex-wrap">
+            <h1 class="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+              {plugin.name}
+            </h1>
+            <span class="text-[12px] font-semibold px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/15 to-amber-400/15 text-yellow-400 flex items-center gap-1.5 border border-yellow-500/25">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              {formatStars(plugin.stars)} stars
+            </span>
+          </div>
+
+          <p class="text-[13px] text-[var(--color-text-tertiary)] mb-3">
+            by <span class="text-[var(--color-text-secondary)] font-medium">{plugin.author}</span>
+          </p>
+
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mb-5">
+            {plugin.description}
+          </p>
+
+          <!-- Tags -->
+          <div class="flex items-center gap-2 flex-wrap mb-5">
+            {plugin.tags.map((tag: string) => (
+              <span
+                class="text-[11px] font-semibold px-3 py-1.5 rounded-full border"
+                style={`background: ${TAG_COLORS[tag] ?? '#666'}15; color: ${TAG_COLORS[tag] ?? '#666'}; border-color: ${TAG_COLORS[tag] ?? '#666'}30;`}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <!-- CTA buttons -->
+          <div class="flex items-center gap-3">
+            <a
+              href={plugin.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-text-primary)] text-[var(--color-surface-0)] text-[13px] font-semibold hover:opacity-90 transition-all duration-200 no-underline"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+              View on GitHub
+            </a>
+            {plugin.website && (
+              <a
+                href={plugin.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface-3)] text-[var(--color-text-primary)] text-[13px] font-semibold border border-[var(--color-border)] hover:bg-[var(--color-surface-4)] transition-all duration-200 no-underline"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                Visit Website
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="px-6 py-8 max-w-5xl mx-auto space-y-8">
+
+    <!-- What's Inside -->
+    {containsEntries.length > 0 && (
+      <div>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-1">What's Inside</h2>
+        <p class="text-[13px] text-[var(--color-text-tertiary)] mb-5">{formatNumber(totalItems)} total components across {containsEntries.length} categories</p>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {containsEntries.map(([type, count]) => (
+            <div
+              class="relative p-5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200 group"
+              style={`box-shadow: var(--shadow-card);`}
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 group-hover:scale-110 [&>svg]:w-5 [&>svg]:h-5"
+                  style={`background: ${TAG_COLORS[type] ?? '#666'}15; color: ${TAG_COLORS[type] ?? '#666'}; border: 1px solid ${TAG_COLORS[type] ?? '#666'}25;`}
+                  set:html={TAG_ICONS[type] ?? TAG_ICONS.skills}
+                />
+                <span class="text-[13px] font-semibold text-[var(--color-text-primary)] capitalize">{type}</span>
+              </div>
+              <div class="text-2xl font-bold text-[var(--color-text-primary)]" style={`color: ${TAG_COLORS[type] ?? '#666'};`}>
+                {formatNumber(count as number)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Highlights -->
+    {plugin.highlights && plugin.highlights.length > 0 && (
+      <div>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Highlights</h2>
+        <div class="space-y-3">
+          {plugin.highlights.map((highlight: string) => (
+            <div class="flex items-start gap-3 p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)]" style="box-shadow: var(--shadow-card);">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5" style="background: #ffd93d20; color: #ffd93d;">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <p class="text-[14px] text-[var(--color-text-secondary)] leading-relaxed">{highlight}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Back link -->
+    <div class="pt-4">
+      <a href="/plugins" class="inline-flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors no-underline">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        Back to all plugins
+      </a>
+    </div>
+  </div>
+
+  <SearchModal client:idle />
+</DashboardLayout>

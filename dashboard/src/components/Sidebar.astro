@@ -82,6 +82,38 @@ function isActive(path: string): boolean {
       </a>
     ))}
 
+    <!-- Plugins (external marketplaces) -->
+    <a
+      href="/plugins"
+      data-tooltip="Plugins"
+      class:list={[
+        'sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
+        isActive('/plugins')
+          ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-semibold shadow-sm border border-[var(--color-border)]'
+          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] hover:shadow-sm',
+      ]}
+    >
+      {isActive('/plugins') && (
+        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+      )}
+      <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
+        <span
+          class:list={[
+            'w-full h-full inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:flex-shrink-0 [&>svg]:block [&>svg]:m-auto transition-all duration-200',
+            isActive('/plugins')
+              ? 'text-[var(--color-primary-500)] scale-110'
+              : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] group-hover:scale-105',
+          ]}
+        >
+          <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </span>
+      </span>
+      <span class="sidebar-text truncate transition-all duration-300">Plugins</span>
+      <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-yellow-500/15 text-yellow-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300">New</span>
+    </a>
+
     <!-- Divider -->
     <div class="my-4 mx-2 border-t border-[var(--color-border)] opacity-60"></div>
 
