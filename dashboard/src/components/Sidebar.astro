@@ -62,7 +62,7 @@ function isActive(path: string): boolean {
         ]}
       >
         {isActive(`/${type}`) && (
-          <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+          <span class="active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
         )}
         <span
           class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center"
@@ -94,7 +94,7 @@ function isActive(path: string): boolean {
       ]}
     >
       {isActive('/plugins') && (
-        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+        <span class="active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
       )}
       <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
         <span
@@ -127,7 +127,7 @@ function isActive(path: string): boolean {
       ]}
     >
       {(isActive('/autonomous-teams') || isActive('/build-team')) && (
-        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full"></span>
+        <span class="active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full"></span>
       )}
       <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
         <span
