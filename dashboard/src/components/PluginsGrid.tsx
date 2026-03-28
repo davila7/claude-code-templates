@@ -211,20 +211,6 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
               {/* Gradient overlay on hover */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-500/0 to-purple-500/0 group-hover:from-yellow-500/5 group-hover:to-purple-500/5 transition-all duration-300 pointer-events-none" />
 
-              {/* Type badge */}
-              {plugin.type === 'marketplace' && (
-                <span
-                  className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
-                  style={{
-                    background: 'rgba(139, 92, 246, 0.15)',
-                    color: '#a78bfa',
-                    border: '1px solid rgba(139, 92, 246, 0.25)',
-                  }}
-                >
-                  Marketplace
-                </span>
-              )}
-
               {/* Header */}
               <div className="relative z-10 flex items-start gap-4 mb-4">
                 <div
