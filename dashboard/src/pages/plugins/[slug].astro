@@ -361,4 +361,19 @@ function getSourceLabel(p: any): string {
   </div>
 
   <SearchModal client:idle />
+
+  <!-- Emit sidebar counts (ComponentGrid not present on this page) -->
+  <script>
+    fetch('/components.json')
+      .then(r => r.json())
+      .then((data: any[]) => {
+        const counts: Record<string, number> = {};
+        data.forEach((c: any) => {
+          const t = c.type;
+          if (t) counts[t] = (counts[t] || 0) + 1;
+        });
+        window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
+      })
+      .catch(() => {});
+  </script>
 </DashboardLayout>
