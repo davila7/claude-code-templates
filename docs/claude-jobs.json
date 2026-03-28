@@ -1,12 +1,34 @@
 {
-  "lastUpdated": "2026-03-27T03:58:48.654858+00:00",
-  "totalJobs": 72,
+  "lastUpdated": "2026-03-28T03:52:50.539800+00:00",
+  "totalJobs": 73,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5168829008",
+      "company": "Anthropic",
+      "position": "Software Engineer, Cloud Inference Safeguards",
+      "location": "San Francisco, CA | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "We are seeking a Software Engineer to build and operate the safety, oversight, and intervention mechanisms that protect Claude on third-party cloud service provider (CSP) platforms. As the engineer responsible for Safeguards on those surfaces, you will ensure that every request served through our...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5168829008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5168829008",
+      "postedAt": "2026-03-27T17:15:24-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5104689008",
       "company": "Anthropic",
@@ -1378,7 +1400,7 @@
       "id": "anth-5023089008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, Platform",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
       "description": "We are looking for backend / platform software engineers to join our Product Foundations org. We build foundational primitives that help accelerate product development across Anthropic. Some examples of what we own and maintain are our core sampling pipeline, our rate limiting platform, and our RAG...",
