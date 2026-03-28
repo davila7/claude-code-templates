@@ -2,6 +2,7 @@
 import DashboardLayout from '../../layouts/DashboardLayout.astro';
 import TopBar from '../../components/TopBar.astro';
 import SearchModal from '../../components/SearchModal.tsx';
+import PluginsGrid from '../../components/PluginsGrid.tsx';
 
 export const prerender = true;
 
@@ -14,24 +15,6 @@ let plugins: any[] = [];
 try {
   plugins = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 } catch { plugins = []; }
-
-// Sort by stars descending
-plugins.sort((a: any, b: any) => (b.stars ?? 0) - (a.stars ?? 0));
-
-function formatStars(stars: number): string {
-  if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1)}k`;
-  return String(stars);
-}
-
-const TAG_COLORS: Record<string, string> = {
-  skills: '#f59e0b',
-  agents: '#3b82f6',
-  commands: '#10b981',
-  hooks: '#f97316',
-  mcps: '#06b6d4',
-  settings: '#8b5cf6',
-  rules: '#ec4899',
-};
 ---
 
 <DashboardLayout
@@ -77,63 +60,7 @@ const TAG_COLORS: Record<string, string> = {
     </div>
   </div>
 
-  <!-- Grid -->
-  <div class="px-6 py-8 max-w-7xl mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-      {plugins.map((plugin: any, idx: number) => (
-        <a
-          href={`/plugins/${plugin.slug}`}
-          class="group relative flex flex-col p-6 rounded-2xl bg-[var(--color-card-bg)] hover:bg-[var(--color-card-hover)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:-translate-y-1 animate-fade-in-up no-underline"
-          style={`box-shadow: var(--shadow-card); animation-delay: ${idx * 50}ms; animation-fill-mode: both;`}
-        >
-          {/* Gradient overlay on hover */}
-          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-500/0 to-purple-500/0 group-hover:from-yellow-500/5 group-hover:to-purple-500/5 transition-all duration-300 pointer-events-none" />
-
-          {/* Header: Icon + Name + Stars */}
-          <div class="relative z-10 flex items-start gap-4 mb-4">
-            <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 text-[22px] font-bold select-none"
-              style="background: linear-gradient(135deg, #ffd93d18 0%, #ffd93d08 100%); border: 1.5px solid #ffd93d30; color: #ffd93d;"
-            >
-              {plugin.author.charAt(0).toUpperCase()}
-            </div>
-
-            <div class="min-w-0 flex-1">
-              <h3 class="text-[15px] font-bold text-[var(--color-text-primary)] leading-tight mb-1 group-hover:text-[var(--color-text-primary)] transition-colors">
-                {plugin.name}
-              </h3>
-              <p class="text-[12px] text-[var(--color-text-tertiary)]">
-                by {plugin.author}
-              </p>
-            </div>
-
-            {/* Stars badge */}
-            <span class="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-gradient-to-r from-yellow-500/15 to-amber-400/15 text-yellow-400 flex items-center gap-1 border border-yellow-500/25 transition-all group-hover:from-yellow-500/25 group-hover:to-amber-400/25 group-hover:border-yellow-500/40">
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              {formatStars(plugin.stars)}
-            </span>
-          </div>
-
-          {/* Description */}
-          <p class="relative z-10 text-[13px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6] mb-4 flex-1">
-            {plugin.description}
-          </p>
-
-          {/* Tags */}
-          <div class="relative z-10 flex items-center gap-1.5 flex-wrap">
-            {plugin.tags.slice(0, 5).map((tag: string) => (
-              <span
-                class="text-[10px] font-semibold px-2.5 py-1 rounded-full border transition-all"
-                style={`background: ${TAG_COLORS[tag] ?? '#666'}12; color: ${TAG_COLORS[tag] ?? '#666'}; border-color: ${TAG_COLORS[tag] ?? '#666'}25;`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </a>
-      ))}
-    </div>
-  </div>
+  <PluginsGrid client:load plugins={plugins} />
 
   <SearchModal client:idle />
 </DashboardLayout>

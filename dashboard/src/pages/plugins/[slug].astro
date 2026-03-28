@@ -19,20 +19,13 @@ export function getStaticPaths() {
   return data.map((p: any) => ({ params: { slug: p.slug } }));
 }
 
-const plugins = allPlugins;
-
 const { slug } = Astro.params;
-const plugin = plugins.find((p: any) => p.slug === slug);
+const plugin = allPlugins.find((p: any) => p.slug === slug);
 if (!plugin) return Astro.redirect('/plugins');
 
 function formatStars(stars: number): string {
   if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1)}k`;
   return String(stars);
-}
-
-function formatNumber(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
-  return String(n);
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -41,26 +34,37 @@ const TAG_COLORS: Record<string, string> = {
   commands: '#10b981',
   hooks: '#f97316',
   mcps: '#06b6d4',
+  lsps: '#a78bfa',
   settings: '#8b5cf6',
   rules: '#ec4899',
 };
 
-const TAG_ICONS: Record<string, string> = {
-  skills: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
-  agents: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><path d="M9 17h6"/></svg>',
-  commands: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
-  hooks: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>',
-  mcps: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242"/><path d="M12 12v9"/><path d="M8 17l4 4 4-4"/></svg>',
-  settings: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/></svg>',
-  rules: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-};
+const isMarketplace = plugin.type === 'marketplace';
+const pluginsList: any[] = plugin.plugins_list ?? [];
+const manifest = plugin.plugin_manifest ?? {};
+const containsObj = plugin.contains ?? {};
+const componentsTotals = containsObj.components ?? {};
+const pluginCount = containsObj.plugins ?? 0;
 
-const containsEntries = Object.entries(plugin.contains ?? {}).filter(([, v]) => (v as number) > 0);
-const totalItems = containsEntries.reduce((sum, [, v]) => sum + (v as number), 0);
+// Install commands
+const repoPath = plugin.github.replace('https://github.com/', '');
+const addMarketplaceCmd = `/plugin marketplace add ${repoPath}`;
+const marketplaceName = repoPath.replace('/', '-');
+
+// Categorize marketplace plugins by source type
+function getSourceLabel(p: any): string {
+  const src = p.source ?? '';
+  if (typeof src === 'string') {
+    if (src.startsWith('./') || src.startsWith('../')) return 'local';
+    if (src.includes('github.com') || src.includes('.git')) return 'github';
+    if (src.includes('/')) return 'github';
+  }
+  return 'local';
+}
 ---
 
 <DashboardLayout
-  title={`${plugin.name} — Claude Code Plugin Collection`}
+  title={`${plugin.name} — Claude Code Plugin`}
   description={plugin.description}
 >
   <TopBar />
@@ -81,9 +85,8 @@ const totalItems = containsEntries.reduce((sum, [, v]) => sum + (v as number), 0
     </div>
     <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-500/5 to-transparent rounded-full blur-3xl"></div>
 
-    <div class="relative px-6 py-10 max-w-5xl mx-auto">
+    <div class="relative px-6 py-10 max-w-6xl mx-auto">
       <div class="flex items-start gap-6">
-        <!-- Icon -->
         <div
           class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl text-[32px] font-bold select-none"
           style="background: linear-gradient(135deg, #ffd93d20 0%, #ffd93d10 100%); border: 2px solid #ffd93d30; color: #ffd93d;"
@@ -100,13 +103,18 @@ const totalItems = containsEntries.reduce((sum, [, v]) => sum + (v as number), 0
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
               {formatStars(plugin.stars)} stars
             </span>
+            {isMarketplace && (
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.25);">
+                Marketplace
+              </span>
+            )}
           </div>
 
           <p class="text-[13px] text-[var(--color-text-tertiary)] mb-3">
             by <span class="text-[var(--color-text-secondary)] font-medium">{plugin.author}</span>
           </p>
 
-          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mb-5">
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mb-4">
             {plugin.description}
           </p>
 
@@ -123,7 +131,7 @@ const totalItems = containsEntries.reduce((sum, [, v]) => sum + (v as number), 0
           </div>
 
           <!-- CTA buttons -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 flex-wrap">
             <a
               href={plugin.github}
               target="_blank"
@@ -151,33 +159,177 @@ const totalItems = containsEntries.reduce((sum, [, v]) => sum + (v as number), 0
   </div>
 
   <!-- Content -->
-  <div class="px-6 py-8 max-w-5xl mx-auto space-y-8">
+  <div class="px-6 py-8 max-w-6xl mx-auto space-y-10">
 
-    <!-- What's Inside -->
-    {containsEntries.length > 0 && (
+    <!-- Install Commands -->
+    <div>
+      <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Install</h2>
+      <div class="space-y-3">
+        <!-- Step 1: Add marketplace -->
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style="background: #ffd93d25; color: #ffd93d;">1</span>
+            <span class="text-[13px] text-[var(--color-text-secondary)]">Add the marketplace to Claude Code</span>
+          </div>
+          <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{addMarketplaceCmd}</code></pre>
+        </div>
+
+        <!-- Step 2: Install plugin -->
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style="background: #ffd93d25; color: #ffd93d;">2</span>
+            <span class="text-[13px] text-[var(--color-text-secondary)]">
+              {isMarketplace
+                ? 'Install any plugin from the marketplace'
+                : 'Install the plugin'
+              }
+            </span>
+          </div>
+          {isMarketplace && pluginsList.length > 0 ? (
+            <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{`/plugin install <plugin-name>@${marketplaceName}`}</code></pre>
+          ) : (
+            <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{`/plugin install ${plugin.slug}@${marketplaceName}`}</code></pre>
+          )}
+        </div>
+
+        <!-- Tip -->
+        <div class="flex items-start gap-2 px-4 py-3 rounded-lg text-[12px]" style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15); color: rgba(147, 197, 253, 0.9);">
+          <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Or use <code class="font-mono px-1 py-0.5 rounded bg-[var(--color-surface-3)]">/plugin</code> to open the interactive plugin manager and browse the Discover tab.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Overview (for marketplaces) -->
+    {isMarketplace && pluginCount > 0 && (
       <div>
-        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-1">What's Inside</h2>
-        <p class="text-[13px] text-[var(--color-text-tertiary)] mb-5">{formatNumber(totalItems)} total components across {containsEntries.length} categories</p>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Overview</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div class="p-5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)]" style="box-shadow: var(--shadow-card);">
+            <div class="text-[12px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-medium">Plugins</div>
+            <div class="text-2xl font-bold" style="color: #ffd93d;">{pluginCount}</div>
+          </div>
+          {Object.entries(componentsTotals).map(([type, count]) => (
+            <div class="p-5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)]" style="box-shadow: var(--shadow-card);">
+              <div class="text-[12px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-medium">{type}</div>
+              <div class="text-2xl font-bold" style={`color: ${TAG_COLORS[type] ?? '#888'};`}>{count}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
 
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {containsEntries.map(([type, count]) => (
-            <div
-              class="relative p-5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200 group"
-              style={`box-shadow: var(--shadow-card);`}
-            >
-              <div class="flex items-center gap-3 mb-3">
-                <div
-                  class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 group-hover:scale-110 [&>svg]:w-5 [&>svg]:h-5"
-                  style={`background: ${TAG_COLORS[type] ?? '#666'}15; color: ${TAG_COLORS[type] ?? '#666'}; border: 1px solid ${TAG_COLORS[type] ?? '#666'}25;`}
-                  set:html={TAG_ICONS[type] ?? TAG_ICONS.skills}
-                />
-                <span class="text-[13px] font-semibold text-[var(--color-text-primary)] capitalize">{type}</span>
+    <!-- Plugin Manifest (for individual plugins) -->
+    {!isMarketplace && Object.keys(manifest).length > 0 && (
+      <div>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Components</h2>
+        <div class="space-y-5">
+          {Object.entries(manifest).map(([type, items]: [string, any]) => (
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span
+                  class="text-[11px] font-semibold px-2.5 py-1 rounded-full border uppercase tracking-wider"
+                  style={`background: ${TAG_COLORS[type] ?? '#666'}15; color: ${TAG_COLORS[type] ?? '#666'}; border-color: ${TAG_COLORS[type] ?? '#666'}30;`}
+                >
+                  {type}
+                </span>
+                <span class="text-[12px] text-[var(--color-text-tertiary)]">
+                  {Array.isArray(items) ? items.length : Object.keys(items).length} items
+                </span>
               </div>
-              <div class="text-2xl font-bold text-[var(--color-text-primary)]" style={`color: ${TAG_COLORS[type] ?? '#666'};`}>
-                {formatNumber(count as number)}
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {(Array.isArray(items) ? items : Object.keys(items)).map((item: string) => {
+                  const name = item.replace(/^\.\//, '').replace(/\.(md|json|js|ts)$/, '').split('/').pop() ?? item;
+                  return (
+                    <div class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px]">
+                      <span class="w-1.5 h-1.5 rounded-full shrink-0" style={`background: ${TAG_COLORS[type] ?? '#666'};`}></span>
+                      <span class="text-[var(--color-text-secondary)] truncate font-mono text-[12px]">{name}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Marketplace Plugins List -->
+    {isMarketplace && pluginsList.length > 0 && (
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-[var(--color-text-primary)]">
+            Plugins ({pluginsList.length})
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {pluginsList.map((p: any, idx: number) => {
+            const sourceType = getSourceLabel(p);
+            const hasAuthor = p.author && p.author !== plugin.author;
+            const hasComponents = p.components && Object.keys(p.components).length > 0;
+            return (
+              <div
+                class="flex flex-col p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200"
+                style="box-shadow: var(--shadow-card);"
+              >
+                <div class="flex items-start gap-3 mb-2">
+                  <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-[12px] font-bold select-none"
+                    style="background: linear-gradient(135deg, #ffd93d12 0%, #ffd93d08 100%); border: 1px solid #ffd93d20; color: #ffd93d99;"
+                  >
+                    {(p.name ?? '?').charAt(0).toUpperCase()}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <h3 class="text-[13px] font-semibold text-[var(--color-text-primary)] truncate">
+                        {p.name}
+                      </h3>
+                      {sourceType === 'github' && (
+                        <span class="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
+                          external
+                        </span>
+                      )}
+                    </div>
+                    {hasAuthor && (
+                      <p class="text-[11px] text-[var(--color-text-tertiary)]">by {p.author}</p>
+                    )}
+                  </div>
+                </div>
+
+                {p.description && (
+                  <p class="text-[12px] text-[var(--color-text-secondary)] leading-[1.5] line-clamp-2 mb-2 flex-1">
+                    {p.description}
+                  </p>
+                )}
+
+                {/* Component tags */}
+                {hasComponents && (
+                  <div class="flex items-center gap-1.5 flex-wrap mt-auto">
+                    {Object.entries(p.components).map(([type, count]) => (
+                      <span
+                        class="text-[9px] font-semibold px-2 py-0.5 rounded-full border"
+                        style={`background: ${TAG_COLORS[type] ?? '#666'}10; color: ${TAG_COLORS[type] ?? '#666'}; border-color: ${TAG_COLORS[type] ?? '#666'}20;`}
+                      >
+                        {count} {type}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Plugin tags from marketplace */}
+                {p.tags && p.tags.length > 0 && !hasComponents && (
+                  <div class="flex items-center gap-1.5 flex-wrap mt-auto">
+                    {p.tags.slice(0, 4).map((tag: string) => (
+                      <span class="text-[9px] font-medium px-2 py-0.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     )}
