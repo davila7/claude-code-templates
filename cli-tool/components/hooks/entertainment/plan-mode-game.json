@@ -1,0 +1,92 @@
+{
+  "description": "Play mini-games while Claude plans! When Claude enters Plan Mode, a browser-based game hub launches with 3 games: Dino Runner, Snake, and Flappy Bird. The game reacts to Claude's activity in real-time via SSE — each tool call feeds the activity panel. Games pause automatically when Claude needs your input (Notification hook) and resume when planning continues. When Claude exits Plan Mode, a 'Claude Finished!' announcement with confetti appears. Includes score tracking with localStorage, shareable verified scores via HMAC-signed URLs, and a locked screen when not in plan mode. Also detects /plan command usage (Write to .claude/plans/). Requires Node.js for the local game server (port 3456).",
+  "supportingFiles": [
+    {
+      "source": "plan-mode-game-start.sh",
+      "destination": ".claude/hooks/plan-mode-game/start.sh",
+      "executable": true
+    },
+    {
+      "source": "plan-mode-game-activity.sh",
+      "destination": ".claude/hooks/plan-mode-game/activity.sh",
+      "executable": true
+    },
+    {
+      "source": "plan-mode-game-announce.sh",
+      "destination": ".claude/hooks/plan-mode-game/announce.sh",
+      "executable": true
+    },
+    {
+      "source": "plan-mode-game-needs-input.sh",
+      "destination": ".claude/hooks/plan-mode-game/needs-input.sh",
+      "executable": true
+    },
+    {
+      "source": "plan-mode-game-detect.sh",
+      "destination": ".claude/hooks/plan-mode-game/plan-detect.sh",
+      "executable": true
+    },
+    {
+      "source": "plan-mode-game-server.js",
+      "destination": ".claude/hooks/plan-mode-game/server.js",
+      "executable": false
+    },
+    {
+      "source": "plan-mode-game.html",
+      "destination": ".claude/hooks/plan-mode-game/index.html",
+      "executable": false
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "EnterPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-mode-game/start.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob|Grep|WebFetch|WebSearch|Task|Bash|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-mode-game/activity.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-mode-game/plan-detect.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-mode-game/announce.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plan-mode-game/needs-input.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
