@@ -65,17 +65,18 @@ try {
   <SearchModal client:idle />
 
   <!-- Emit sidebar counts (ComponentGrid not present on this page) -->
-  <script>
+  <script is:inline>
     fetch('/components.json')
-      .then(r => r.json())
-      .then((data: any[]) => {
-        const counts: Record<string, number> = {};
-        data.forEach((c: any) => {
-          const t = c.type;
-          if (t) counts[t] = (counts[t] || 0) + 1;
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var counts = {};
+        Object.keys(data).forEach(function(type) {
+          if (Array.isArray(data[type])) {
+            counts[type] = data[type].length;
+          }
         });
         window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
       })
-      .catch(() => {});
+      .catch(function() {});
   </script>
 </DashboardLayout>
