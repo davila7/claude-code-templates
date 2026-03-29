@@ -146,7 +146,7 @@ const totalComponents = items.length;
           </h1>
           <div class="flex items-center gap-3 flex-wrap">
             <span class="text-[13px] text-[var(--color-text-tertiary)]">
-              {totalComponents} component{totalComponents !== 1 ? 's' : ''}
+              {totalComponents} {totalComponents === 1 ? 'component' : 'components'}
             </span>
             {groups.map(g => (
               <span
@@ -200,7 +200,7 @@ const totalComponents = items.length;
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {group.items.map((item: any) => (
             <a
-              href={`/component/${pluralType(item.component_type)}/${item.component_path.replace(/^cli-tool\/components\/[^/]+\//, '').replace(/\.(md|json)$/, '')}`}
+              href={`/component/${pluralType(item.component_type)}/${cleanPath(item.component_path).replace(/\.(md|json)$/, '')}`}
               class="flex items-center gap-3 p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200 no-underline group/card"
               style="box-shadow: var(--shadow-card);"
             >
