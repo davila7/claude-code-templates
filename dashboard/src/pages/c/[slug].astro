@@ -1,0 +1,285 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import SearchModal from '../../components/SearchModal.tsx';
+import { getNeonClient } from '../../lib/api/neon';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/');
+
+// Fetch collection data server-side
+const sql = getNeonClient();
+
+let collection: any = null;
+let items: any[] = [];
+let authorName = 'user';
+
+try {
+  const collections = await sql`
+    SELECT uc.id, uc.name, uc.share_slug, uc.clerk_user_id, uc.created_at
+    FROM user_collections uc
+    WHERE uc.share_slug = ${slug} AND uc.is_public = true
+  `;
+
+  if (collections.length === 0) return Astro.redirect('/');
+
+  collection = collections[0];
+
+  items = await sql`
+    SELECT component_type, component_path, component_name, component_category
+    FROM collection_items
+    WHERE collection_id = ${collection.id}
+    ORDER BY added_at ASC
+  `;
+
+  // Get author name from Clerk
+  try {
+    const { createClerkClient } = await import('@clerk/backend');
+    const clerkSecret = import.meta.env.CLERK_SECRET_KEY;
+    if (clerkSecret) {
+      const clerk = createClerkClient({ secretKey: clerkSecret });
+      const user = await clerk.users.getUser(collection.clerk_user_id);
+      authorName = user.username || user.firstName || 'user';
+    }
+  } catch {}
+} catch (e) {
+  console.error('Shared collection error:', e);
+  return Astro.redirect('/');
+}
+
+// Helpers
+const TAG_COLORS: Record<string, string> = {
+  skills: '#f59e0b',
+  agents: '#3b82f6',
+  commands: '#10b981',
+  hooks: '#f97316',
+  mcps: '#06b6d4',
+  settings: '#8b5cf6',
+};
+
+const TYPE_FLAGS: Record<string, string> = {
+  agents: '--agent', commands: '--command', settings: '--setting',
+  hooks: '--hook', mcps: '--mcp', skills: '--skill', templates: '--template',
+};
+
+function pluralType(type: string): string {
+  return type.endsWith('s') ? type : type + 's';
+}
+
+function cleanPath(path: string): string {
+  return path.replace(/^cli-tool\/components\/[^/]+\//, '');
+}
+
+function humanName(name: string): string {
+  return name.replace(/\.(md|json)$/, '').replace(/-/g, ' ')
+    .split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+// Build install command
+function generateCommand(collItems: any[]): string {
+  const grouped: Record<string, string[]> = {};
+  for (const item of collItems) {
+    const t = pluralType(item.component_type);
+    if (!grouped[t]) grouped[t] = [];
+    grouped[t].push(cleanPath(item.component_path));
+  }
+  let cmd = 'npx claude-code-templates@latest';
+  for (const [type, paths] of Object.entries(grouped)) {
+    const flag = TYPE_FLAGS[type];
+    if (flag) cmd += ` ${flag} ${paths.join(',')}`;
+  }
+  return cmd;
+}
+
+// Group items by type
+function groupByType(collItems: any[]): { type: string; color: string; items: any[] }[] {
+  const map: Record<string, any[]> = {};
+  for (const item of collItems) {
+    const t = pluralType(item.component_type);
+    if (!map[t]) map[t] = [];
+    map[t].push(item);
+  }
+  const order = ['agents', 'skills', 'commands', 'hooks', 'mcps', 'settings', 'templates'];
+  return order
+    .filter(t => map[t])
+    .map(t => ({ type: t, color: TAG_COLORS[t] ?? '#888', items: map[t] }));
+}
+
+const installCmd = generateCommand(items);
+const groups = groupByType(items);
+const totalComponents = items.length;
+---
+
+<DashboardLayout
+  title={`${collection.name} — Shared Collection | Claude Code Templates`}
+  description={`${authorName}'s "${collection.name}" collection with ${totalComponents} Claude Code components. Install with one command.`}
+>
+  <TopBar />
+
+  <!-- Header -->
+  <div class="relative overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-0)] to-[var(--color-surface-1)]">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10"></div>
+    </div>
+    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/5 to-transparent rounded-full blur-3xl"></div>
+
+    <div class="relative px-6 py-10 max-w-5xl mx-auto">
+      <div class="flex items-start gap-5">
+        <!-- Avatar -->
+        <div
+          class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-xl text-[28px] font-bold select-none"
+          style="background: linear-gradient(135deg, #3b82f620 0%, #8b5cf620 100%); border: 2px solid #3b82f630; color: #60a5fa;"
+        >
+          {authorName.charAt(0).toUpperCase()}
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[13px] text-[var(--color-text-tertiary)]">
+              Shared by <span class="text-[var(--color-text-secondary)] font-medium">{authorName}</span>
+            </span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight mb-2">
+            {collection.name}
+          </h1>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="text-[13px] text-[var(--color-text-tertiary)]">
+              {totalComponents} component{totalComponents !== 1 ? 's' : ''}
+            </span>
+            {groups.map(g => (
+              <span
+                class="text-[10px] font-semibold px-2.5 py-1 rounded-full border"
+                style={`background: ${g.color}12; color: ${g.color}; border-color: ${g.color}25;`}
+              >
+                {g.items.length} {g.type}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="px-6 py-8 max-w-5xl mx-auto space-y-8">
+
+    <!-- Install Command -->
+    <div>
+      <h2 class="text-sm font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3">Install all components</h2>
+      <div class="relative group">
+        <pre
+          id="installCmd"
+          class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono leading-relaxed whitespace-pre-wrap break-all"
+        ><code>$ {installCmd}</code></pre>
+        <button
+          id="copyBtn"
+          class="absolute top-3 right-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 opacity-0 group-hover:opacity-100"
+          style="background: var(--color-surface-3); color: var(--color-text-secondary); border: 1px solid var(--color-border);"
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <!-- Components by type -->
+    {groups.map(group => (
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <span
+            class="w-6 h-6 rounded-md flex items-center justify-center"
+            style={`background: ${group.color}15; border: 1px solid ${group.color}25;`}
+          >
+            <span class="w-3 h-3 rounded-full" style={`background: ${group.color};`}></span>
+          </span>
+          <h2 class="text-base font-bold text-[var(--color-text-primary)] capitalize">{group.type}</h2>
+          <span class="text-[12px] text-[var(--color-text-tertiary)]">({group.items.length})</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {group.items.map((item: any) => (
+            <a
+              href={`/component/${pluralType(item.component_type)}/${item.component_path.replace(/^cli-tool\/components\/[^/]+\//, '').replace(/\.(md|json)$/, '')}`}
+              class="flex items-center gap-3 p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200 no-underline group/card"
+              style="box-shadow: var(--shadow-card);"
+            >
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-[14px] font-bold select-none transition-transform duration-200 group-hover/card:scale-110"
+                style={`background: ${group.color}12; border: 1px solid ${group.color}20; color: ${group.color};`}
+              >
+                {humanName(item.component_name).charAt(0)}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-[13px] font-semibold text-[var(--color-text-primary)] truncate">
+                  {humanName(item.component_name)}
+                </div>
+                {item.component_category && (
+                  <div class="text-[11px] text-[var(--color-text-tertiary)]">{item.component_category}</div>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+
+    <!-- CTA: Create your own -->
+    <div class="relative overflow-hidden rounded-2xl p-8 text-center" style="background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.08) 100%); border: 1px solid rgba(59,130,246,0.15);">
+      <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl"></div>
+      <div class="relative z-10">
+        <h3 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">
+          Create your own collections
+        </h3>
+        <p class="text-[14px] text-[var(--color-text-secondary)] mb-5 max-w-md mx-auto">
+          Sign up for free to create, organize, and share your favorite Claude Code components with your team.
+        </p>
+        <a
+          href="/my-components"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-[13px] font-semibold transition-all duration-200 hover:scale-105 no-underline"
+          style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(59,130,246,0.3);"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Start Building Collections
+        </a>
+      </div>
+    </div>
+
+    <!-- Back -->
+    <div>
+      <a href="/" class="inline-flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors no-underline">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        Browse all components
+      </a>
+    </div>
+  </div>
+
+  <SearchModal client:idle />
+
+  <!-- Emit sidebar counts -->
+  <script is:inline>
+    fetch('/components.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var counts = {};
+        Object.keys(data).forEach(function(type) {
+          if (Array.isArray(data[type])) counts[type] = data[type].length;
+        });
+        window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
+      })
+      .catch(function() {});
+  </script>
+
+  <!-- Copy button -->
+  <script is:inline>
+    document.getElementById('copyBtn')?.addEventListener('click', function() {
+      var cmd = document.getElementById('installCmd')?.textContent?.replace(/^\$\s*/, '') ?? '';
+      navigator.clipboard.writeText(cmd);
+      this.textContent = 'Copied!';
+      var btn = this;
+      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+    });
+  </script>
+</DashboardLayout>
