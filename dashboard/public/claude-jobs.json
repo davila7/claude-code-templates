@@ -1,10 +1,11 @@
 {
-  "lastUpdated": "2026-03-28T03:52:50.539800+00:00",
-  "totalJobs": 73,
+  "lastUpdated": "2026-03-29T04:05:37.817496+00:00",
+  "totalJobs": 77,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK"
+    "RemoteOK",
+    "WeWorkRemotely"
   ],
   "jobs": [
     {
@@ -28,6 +29,30 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
+      "company": "Arbiter AI",
+      "position": "Senior Backend Engineer Integrations",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Arbiter is the AI-powered care orchestration system that unites healthcare. We are launching our best-in-class, patient-facing Agentic platform to optimize patient outcomes through a unique multimodal approach. We optimize complex healthcare workflows that interface with patients using the latest...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
+      "postedAt": "2026-03-27T16:00:44+00:00",
+      "tags": [
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Claude Code",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5104689008",
@@ -452,6 +477,27 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-level-senior-frontend-engineer",
+      "company": "Level",
+      "position": "Senior Frontend Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Asheville, NC URL: https://level.io Level is a modern RMM platform built around real-time data, automation, and an uncompromising focus on UX. We're profitable, growing, and shipping fast with a small team. Our platform manages devices across thousands of organizations. We're hiring...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
+      "postedAt": "2026-03-03T17:26:57+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-47232351",
       "company": "Innolitics",
       "position": "Senior Web/Mobile Medical Device Engineer",
@@ -789,6 +835,27 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-uncanny-owl-wordpress-developer",
+      "company": "Uncanny Owl",
+      "position": "WordPress Developer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: [Remote] URL: https://automatorplugin.com As a WordPress Developer, you're responsible for Making Stuff Go. You'll build and maintain integrations that connect WordPress to hundreds of external services—from CRMs and email platforms to payment gateways and social networks. You'll own...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
+      "postedAt": "2026-02-04T21:57:47+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Claude Code",
+        "Vue.js",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-46881503",
       "company": "Language REACTOR",
       "position": "Software Engineer",
@@ -1048,6 +1115,30 @@
       "postedAt": "2026-02-02T16:40:02+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-walter-senior-software-engineer",
+      "company": "WALTER",
+      "position": "Senior Software Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote URL: http://gowalter.co Senior Software Engineers at Stamped are hands-on builders responsible for designing, developing, and delivering high-quality software that powers our products. This role combines technical depth with product intuition — engineers are expected to think...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
+      "postedAt": "2026-01-29T21:06:16+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Node.js",
+        "AWS",
+        "Copilot",
+        "Vue.js"
       ],
       "companyIcon": ""
     },
