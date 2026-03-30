@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tinyfish": {
+      "description": "TinyFish Web Agent - Web browsing and data extraction via MCP with real-time progress streaming, async tasks, and stealth browser profiles. Requires a TinyFish account (tinyfish.ai) with active subscription. Uses OAuth 2.1 authentication.",
+      "type": "http",
+      "url": "https://agent.tinyfish.ai/mcp"
+    }
+  }
+}
