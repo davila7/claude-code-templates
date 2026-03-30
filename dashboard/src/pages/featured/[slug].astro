@@ -67,7 +67,7 @@ if (!item) {
             </svg>
             {slug === 'claudekit' && '4,000+ users'}
             {slug === 'brightdata' && 'Trusted by 1000s'}
-            {slug === 'neon-instagres' && 'Production ready'}
+            {slug === 'tinyfish' && '98.7% success rate'}
             {slug === 'braingrid' && 'Battle-tested'}
           </span>
         </div>
@@ -146,7 +146,7 @@ if (!item) {
             </span>
             <span class="text-xs font-semibold text-accent-600 uppercase tracking-wide">
               {slug === 'brightdata' && 'Most Popular Web Data Platform'}
-              {slug === 'neon-instagres' && 'Instant Database Provisioning'}
+              {slug === 'tinyfish' && 'AI-Powered Web Automation'}
               {slug === 'claudekit' && 'Trusted by 4,000+ Developers'}
               {slug === 'braingrid' && 'Product Planning Made Simple'}
             </span>
@@ -156,8 +156,8 @@ if (!item) {
             {slug === 'brightdata' && (
               <>Start Scraping Web Data <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">in Minutes</span></>
             )}
-            {slug === 'neon-instagres' && (
-              <>Get Your Postgres Database <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">in Seconds</span></>
+            {slug === 'tinyfish' && (
+              <>Automate the Web <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">with AI Agents</span></>
             )}
             {slug === 'claudekit' && (
               <>Supercharge Your Claude Code <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600">Workflow</span></>
@@ -169,7 +169,7 @@ if (!item) {
 
           <p class="text-base text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
             {slug === 'brightdata' && 'Join thousands of developers using Bright Data to power their web scraping and data extraction. Free tier includes 60+ tools and unlimited searches.'}
-            {slug === 'neon-instagres' && 'Instant Postgres provisioning with Neon Instagres. No setup, no config files. Just run one command and start building.'}
+            {slug === 'tinyfish' && 'Run web automation tasks at scale with natural language. Extract data, navigate authenticated sites, and automate workflows — all from Claude Code.'}
             {slug === 'claudekit' && '4,000+ developers across 109 countries trust ClaudeKit. Battle-tested workflows, production-ready agents, and proven commands.'}
             {slug === 'braingrid' && 'Turn messy ideas into clear specifications, UX flows, and engineering-ready prompts. The planning layer that makes Claude Code more effective.'}
           </p>
@@ -307,69 +307,61 @@ if (!item) {
               </Fragment>
             )}
 
-            {slug === 'neon-instagres' && (
+            {slug === 'tinyfish' && (
               <Fragment>
                 <h2>Overview</h2>
-                <p>The Neon template provides a complete Postgres infrastructure for Claude Code projects. It combines Neon's Instagres provisioning service with specialized AI agents, MCP integration, and monitoring tools.</p>
+                <p>TinyFish is a serverless platform for AI-powered web automation at enterprise scale. It enables Claude Code to browse websites, extract data, navigate authenticated systems, and automate workflows using natural language — all without managing browsers or proxies.</p>
 
-                <h2>Template Architecture</h2>
-                <p>The template consists of 10 components organized into four layers:</p>
-
-                <h3>1. Provisioning Layer</h3>
-                <p><strong>neon-instagres Skill</strong> — Auto-activating skill that provisions Postgres databases via <code>npx get-db</code>. Triggers on keywords like "database", "postgres", or "PostgreSQL".</p>
-                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono">npx get-db --yes --ref 4eCjZDz</code></div>
-                <p>Creates three environment variables:</p>
-                <ul>
-                  <li><code>DATABASE_URL</code> — Connection pooler endpoint</li>
-                  <li><code>DATABASE_URL_DIRECT</code> — Direct connection (required for migrations)</li>
-                  <li><code>PUBLIC_INSTAGRES_CLAIM_URL</code> — Claim URL with 72-hour validity</li>
-                </ul>
-
-                <p><strong>using-neon Skill</strong> — Comprehensive guides for working with Neon Serverless Postgres. Includes 28 reference documents covering core guides, database drivers, auth, data API, platform API, and CLI.</p>
-
-                <h3>2. Agent Layer</h3>
-                <p>Five specialized agents handle different database operations:</p>
+                <h2>Why TinyFish?</h2>
                 <div class="space-y-2 my-3">
-                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-database-architect</strong> — Schema design with Drizzle ORM. Handles table relationships, indexes, constraints, and migration generation.</p></div>
-                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-auth-specialist</strong> — Authentication integration with Stack Auth. Multi-tenancy, RLS, and session management.</p></div>
-                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-migration-specialist</strong> — Zero-downtime deployments, rollback procedures, and data migration patterns.</p></div>
-                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-optimization-analyzer</strong> — Query performance analysis with <code>EXPLAIN ANALYZE</code>, index recommendations.</p></div>
-                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">neon-expert</strong> — General consulting: branching workflows, compute autoscaling, Neon-specific features.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">98.7% Success Rate</strong> — Enterprise-grade reliability for production web automation tasks.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">$0.04 Per Operation</strong> — All-inclusive pricing covering LLM costs, remote browsers, residential proxies, and anti-bot protection.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Up to 1,000 Parallel Agents</strong> — Scale from 2 concurrent agents on free tier to 1,000 on enterprise plans.</p></div>
                 </div>
 
-                <h3>3. Integration Layer</h3>
-                <p><strong>neon MCP</strong> — Model Context Protocol integration providing programmatic access to Neon's management API.</p>
+                <h2>Available MCP Tools</h2>
+                <p>The TinyFish MCP integration provides four tools accessible directly from Claude Code:</p>
+                <div class="space-y-3 my-4">
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#9889;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">run_web_automation</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Execute web tasks with real-time progress streaming via SSE. Provide a URL, describe your goal in natural language, and choose between lite or stealth browser profiles.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128337;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">run_web_automation_async</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Launch long-running automation tasks asynchronously. Returns a run ID for tracking progress without blocking your workflow.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128200;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">get_run</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">Retrieve the status and results of a specific automation run by its ID. Check progress, get extracted data, or diagnose failures.</p></div></div>
+                  <div class="flex gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-border)]-hover transition-colors"><span class="shrink-0 text-xl">&#128203;</span><div class="flex-1"><p class="font-medium text-[var(--color-text-primary)] text-sm">list_runs</p><p class="text-[var(--color-text-secondary)] text-sm mt-0.5">List past automation runs with optional filtering by status and pagination. Monitor your automation history and results.</p></div></div>
+                </div>
 
-                <h3>4. Monitoring Layer</h3>
-                <p><strong>neon-database-dev</strong> — Development metrics statusline. <strong>neon-database-resources</strong> — Resource monitoring statusline.</p>
+                <h2>Use Cases</h2>
+                <ul>
+                  <li><strong>Data Extraction</strong> — Scrape product data, prices, and inventory from e-commerce sites as structured JSON</li>
+                  <li><strong>Competitive Monitoring</strong> — Track competitor prices, MAP violations, and market changes in real-time</li>
+                  <li><strong>Authenticated Workflows</strong> — Navigate login-protected portals, fill forms, and extract data behind paywalls</li>
+                  <li><strong>Research Automation</strong> — Monitor regulatory filings, clinical trials, SEC submissions, and industry publications</li>
+                  <li><strong>Supply Chain Tracking</strong> — Cross-carrier shipment tracking and raw material price monitoring</li>
+                </ul>
+
+                <h2>Browser Profiles</h2>
+                <div class="space-y-2 my-3">
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Lite Mode</strong> — Fast, lightweight browser for standard websites. Best for data extraction and simple navigation tasks.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Stealth Mode</strong> — Anti-detection browser with residential proxies. Use for sites with aggressive bot protection.</p></div>
+                </div>
 
                 <h2>Installation</h2>
-                <h3>Option 1: Skills Only</h3>
-                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon</code></div>
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">npx claude-code-templates@latest --mcp web/tinyfish --yes</code></div>
+                <p>Or add directly to Claude Code:</p>
+                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all">claude mcp add --transport http tinyfish https://agent.tinyfish.ai/mcp</code></div>
 
-                <h3>Option 2: Complete Template</h3>
-                <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 my-3"><code class="text-sm text-accent-400 font-mono break-all whitespace-pre-wrap">npx claude-code-templates@latest \
-  --skill database/neon-instagres,database/using-neon \
-  --agent database/neon-expert,database/neon-database-architect,database/neon-auth-specialist,data-ai/neon-migration-specialist,data-ai/neon-optimization-analyzer \
-  --mcp database/neon \
-  --setting statusline/neon-database-dev,statusline/neon-database-resources \
-  --yes</code></div>
-
-                <h2>Framework Integration</h2>
-                <ul>
-                  <li><strong>Next.js</strong> — <code>.env.local</code>, server components and API routes</li>
-                  <li><strong>Vite</strong> — <code>.env</code> with <code>VITE_</code> prefix</li>
-                  <li><strong>Express</strong> — Standard <code>.env</code> with connection pooling</li>
-                  <li><strong>SvelteKit</strong> — <code>$env/static/private</code> patterns</li>
-                  <li><strong>Remix</strong> — <code>.env</code> for server-side loaders</li>
-                </ul>
-                <p>ORM support: Drizzle, Prisma, TypeORM, Kysely, and raw SQL via node-postgres.</p>
+                <h2>Pricing</h2>
+                <div class="space-y-2 my-3">
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Pay-as-you-go</strong> — $0.015/step, 2 concurrent agents. No commitment.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Starter</strong> — $15/month, 1,650 steps, 10 concurrent agents.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Pro</strong> — $150/month, 16,500 steps, 50 concurrent agents.</p></div>
+                  <div class="p-3 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg"><p class="text-sm"><strong class="text-[var(--color-text-primary)]">Enterprise</strong> — Custom pricing and concurrency. Contact sales.</p></div>
+                </div>
+                <p>All plans include LLM costs, remote browsers, residential proxies, and anti-bot protection.</p>
 
                 <h2>Additional Resources</h2>
                 <ul>
-                  <li><a href="https://neon.tech/docs/guides/instagres" target="_blank">Neon Instagres Documentation</a></li>
-                  <li><a href="https://neon.tech/docs/introduction" target="_blank">Neon Platform Overview</a></li>
-                  <li><a href="https://get.neon.com/4eCjZDz" target="_blank">Create Free Neon Account</a></li>
+                  <li><a href="https://docs.tinyfish.ai" target="_blank">TinyFish Documentation</a></li>
+                  <li><a href="https://docs.tinyfish.ai/mcp-integration" target="_blank">MCP Integration Guide</a></li>
+                  <li><a href="https://tinyfish.ai" target="_blank">tinyfish.ai</a></li>
                 </ul>
 
                 {/* Premium Inline CTA */}
@@ -377,7 +369,7 @@ if (!item) {
                   {/* Decorative elements */}
                   <div class="absolute top-0 right-0 w-32 h-32 bg-accent-500/20 rounded-full blur-3xl"></div>
                   <div class="absolute bottom-0 left-0 w-32 h-32 bg-accent-600/20 rounded-full blur-3xl"></div>
-                  
+
                   <div class="relative z-10 space-y-4">
                     {/* Icon */}
                     <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-500 to-accent-600 shadow-lg shadow-accent-500/50 mb-2">
@@ -386,9 +378,9 @@ if (!item) {
                       </svg>
                     </div>
 
-                    <h3 class="text-2xl font-black text-[var(--color-text-primary)]">Ready to Get Started?</h3>
-                    <p class="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">Provision your Postgres database in seconds. No credit card required.</p>
-                    
+                    <h3 class="text-2xl font-black text-[var(--color-text-primary)]">Ready to Automate?</h3>
+                    <p class="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">Start automating web tasks with AI agents. Pay-as-you-go available.</p>
+
                     <a
                       href={item.ctaUrl}
                       target="_blank"
@@ -411,13 +403,13 @@ if (!item) {
                         <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        Free forever
+                        Pay-as-you-go
                       </span>
                       <span class="flex items-center gap-1">
                         <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        Setup in 30s
+                        98.7% success rate
                       </span>
                     </div>
                   </div>
