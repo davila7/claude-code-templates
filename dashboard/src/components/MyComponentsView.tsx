@@ -479,6 +479,8 @@ export default function MyComponentsView() {
   const [showSendToRepo, setShowSendToRepo] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   useEffect(() => {
     if (isSignedIn) loadCollections();
@@ -574,16 +576,18 @@ export default function MyComponentsView() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  async function toggleShare() {
+  function openShareModal(url: string) {
+    setShareUrl(url);
+    setShowShareModal(true);
+  }
+
+  async function handleShare() {
     if (!selectedCollection) return;
     const isCurrentlyPublic = !!(selectedCollection as any).is_public;
 
-    // If already shared, just copy the link again (don't toggle off)
+    // If already shared, open modal with existing link
     if (isCurrentlyPublic && (selectedCollection as any).share_slug) {
-      const url = `${window.location.origin}/c/${(selectedCollection as any).share_slug}`;
-      navigator.clipboard.writeText(url);
-      setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 3000);
+      openShareModal(`${window.location.origin}/c/${(selectedCollection as any).share_slug}`);
       return;
     }
 
@@ -604,14 +608,11 @@ export default function MyComponentsView() {
             : c
         ));
         if (data.is_public && data.share_slug) {
-          const url = `${window.location.origin}/c/${data.share_slug}`;
-          navigator.clipboard.writeText(url);
-          setShareCopied(true);
-          setTimeout(() => setShareCopied(false), 3000);
+          openShareModal(`${window.location.origin}/c/${data.share_slug}`);
         }
       }
     } catch (err) {
-      console.error('Share toggle failed:', err);
+      console.error('Share failed:', err);
     } finally {
       setShareLoading(false);
     }
@@ -841,7 +842,7 @@ export default function MyComponentsView() {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
-                  onClick={toggleShare}
+                  onClick={handleShare}
                   disabled={shareLoading}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-[13px] font-medium transition-colors ${
                     (selectedCollection as any)?.is_public
@@ -999,6 +1000,96 @@ export default function MyComponentsView() {
           collectionName={selectedCollection.name}
           onClose={() => setShowSendToRepo(false)}
         />
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowShareModal(false)}
+        >
+          <div
+            className="relative w-full max-w-md mx-4 p-6 rounded-2xl border"
+            style={{ background: 'var(--color-surface-1)', borderColor: 'var(--color-border)', boxShadow: '0 25px 50px rgba(0,0,0,0.4)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="absolute top-4 right-4 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                <svg className="w-5 h-5" style={{ color: '#60a5fa' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+              </div>
+              <div>
+                <h3 className="text-[15px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Share Collection</h3>
+                <p className="text-[12px]" style={{ color: 'var(--color-text-tertiary)' }}>{selectedCollection?.name}</p>
+              </div>
+            </div>
+
+            {/* Link */}
+            <div className="mb-4">
+              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Public link</label>
+              <div className="flex items-center gap-2">
+                <input
+                  readOnly
+                  value={shareUrl}
+                  className="flex-1 px-3 py-2.5 rounded-lg text-[13px] font-mono outline-none"
+                  style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}
+                  onFocus={(e) => e.target.select()}
+                />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareUrl);
+                    setShareCopied(true);
+                    setTimeout(() => setShareCopied(false), 2000);
+                  }}
+                  className="px-4 py-2.5 rounded-lg text-[13px] font-semibold transition-all shrink-0"
+                  style={{
+                    background: shareCopied ? 'rgba(34,197,94,0.15)' : 'var(--color-surface-3)',
+                    color: shareCopied ? '#22c55e' : 'var(--color-text-primary)',
+                    border: `1px solid ${shareCopied ? 'rgba(34,197,94,0.3)' : 'var(--color-border)'}`,
+                  }}
+                >
+                  {shareCopied ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Share on socials */}
+            <div>
+              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Share on</label>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Check out my "${selectedCollection?.name}" Claude Code collection!`)}&url=${encodeURIComponent(shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all hover:scale-[1.02] no-underline"
+                  style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Post on X
+                </a>
+                <a
+                  href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Check out my "${selectedCollection?.name}" Claude Code collection! ${shareUrl}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all hover:scale-[1.02] no-underline"
+                  style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.59 12c.025 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.96-.065-1.187.408-2.26 1.33-3.02.86-.706 2.035-1.107 3.402-1.162 1.163-.047 2.21.1 3.127.436-.055-.79-.271-1.418-.644-1.88-.478-.593-1.223-.896-2.216-.902h-.04c-.78.003-1.81.27-2.2.992l-1.76-.978C8.737 6.074 10.17 5.47 11.87 5.46h.06c1.49.009 2.686.505 3.535 1.46.745.836 1.2 1.964 1.352 3.353.58.226 1.1.507 1.553.84 1.118.82 1.927 1.907 2.372 3.166.775 2.19.592 4.9-1.346 6.797-1.83 1.793-4.093 2.588-7.218 2.612l.012.012zm-1.677-7.87c-.746.04-1.5.186-1.91.476-.38.27-.533.642-.51 1.065.04.703.57 1.39 1.88 1.39h.14c1.44-.072 2.406-1.16 2.72-3.076-.73-.263-1.535-.396-2.32-.355z"/></svg>
+                  Post on Threads
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
