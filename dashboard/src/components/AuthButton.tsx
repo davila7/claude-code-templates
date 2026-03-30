@@ -4,6 +4,7 @@ interface ClerkUser {
   fullName?: string | null;
   firstName?: string | null;
   imageUrl?: string;
+  email?: string;
 }
 
 // Mock user data for local testing
@@ -71,6 +72,7 @@ function useGlobalAuth() {
             fullName: clerk.user.fullName,
             firstName: clerk.user.firstName,
             imageUrl: clerk.user.imageUrl,
+            email: clerk.user.primaryEmailAddress?.emailAddress || '',
           } : null,
         });
       }
@@ -128,26 +130,12 @@ function UserMenu({ user }: { user: ClerkUser }) {
               {displayName}
             </div>
             <div className="text-[11px] text-[var(--color-text-secondary)] truncate">
-              {window.__authMockEnabled ? 'Bitreon@example.com' : 'user@example.com'}
+              {user.email || ''}
             </div>
           </div>
 
           {/* Menu Items */}
           <div className="py-1">
-            <button
-              onClick={() => {
-                console.log('Navigate to My Collections');
-                window.location.href = '/collections';
-                setOpen(false);
-              }}
-              className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              My Collections
-            </button>
-
             <button
               onClick={() => {
                 console.log('Navigate to My Components');
