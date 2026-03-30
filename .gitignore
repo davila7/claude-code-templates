@@ -72,6 +72,9 @@ openspec/
 # Crawl output (cf-crawl skill)
 .crawl-output/
 
+# Migrations (applied directly to Neon, not needed in repo)
+scripts/migrations/
+
 # Secrets and credentials
 *.pem
 *.key

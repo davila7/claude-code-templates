@@ -477,6 +477,8 @@ export default function MyComponentsView() {
   const [renameValue, setRenameValue] = useState('');
   const [copied, setCopied] = useState(false);
   const [showSendToRepo, setShowSendToRepo] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     if (isSignedIn) loadCollections();
@@ -570,6 +572,49 @@ export default function MyComponentsView() {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function toggleShare() {
+    if (!selectedCollection) return;
+    const isCurrentlyPublic = !!(selectedCollection as any).is_public;
+
+    // If already shared, just copy the link again (don't toggle off)
+    if (isCurrentlyPublic && (selectedCollection as any).share_slug) {
+      const url = `${window.location.origin}/c/${(selectedCollection as any).share_slug}`;
+      navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 3000);
+      return;
+    }
+
+    setShareLoading(true);
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const res = await fetch('/api/collections/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ collectionId: selectedCollection.id, enable: true }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCollections(prev => prev.map(c =>
+          c.id === selectedCollection.id
+            ? { ...c, share_slug: data.share_slug, is_public: data.is_public } as any
+            : c
+        ));
+        if (data.is_public && data.share_slug) {
+          const url = `${window.location.origin}/c/${data.share_slug}`;
+          navigator.clipboard.writeText(url);
+          setShareCopied(true);
+          setTimeout(() => setShareCopied(false), 3000);
+        }
+      }
+    } catch (err) {
+      console.error('Share toggle failed:', err);
+    } finally {
+      setShareLoading(false);
+    }
   }
 
   // ── Not loaded ──
@@ -795,6 +840,25 @@ export default function MyComponentsView() {
                 </span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={toggleShare}
+                  disabled={shareLoading}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-[13px] font-medium transition-colors ${
+                    (selectedCollection as any)?.is_public
+                      ? 'bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20'
+                      : 'bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] border-[var(--color-border)]'
+                  }`}
+                  title={(selectedCollection as any)?.is_public ? 'Click to copy link or disable sharing' : 'Share this collection publicly'}
+                >
+                  {shareLoading ? (
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  ) : shareCopied ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                  )}
+                  {shareCopied ? 'Link Copied!' : (selectedCollection as any)?.is_public ? 'Shared' : 'Share'}
+                </button>
                 {canSendToRepo && (
                   <button
                     onClick={() => setShowSendToRepo(true)}
