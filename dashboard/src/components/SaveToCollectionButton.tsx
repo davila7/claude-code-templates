@@ -188,7 +188,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   }
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={`relative ${open ? 'z-[100]' : ''}`} ref={dropdownRef}>
       <button
         onClick={handleToggle}
         className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all ${
