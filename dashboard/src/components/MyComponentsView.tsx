@@ -576,19 +576,28 @@ export default function MyComponentsView() {
 
   async function toggleShare() {
     if (!selectedCollection) return;
+    const isCurrentlyPublic = !!(selectedCollection as any).is_public;
+
+    // If already shared, just copy the link again (don't toggle off)
+    if (isCurrentlyPublic && (selectedCollection as any).share_slug) {
+      const url = `${window.location.origin}/c/${(selectedCollection as any).share_slug}`;
+      navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 3000);
+      return;
+    }
+
     setShareLoading(true);
     try {
       const token = await getToken();
       if (!token) return;
-      const isCurrentlyPublic = !!(selectedCollection as any).is_public;
       const res = await fetch('/api/collections/share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ collectionId: selectedCollection.id, enable: !isCurrentlyPublic }),
+        body: JSON.stringify({ collectionId: selectedCollection.id, enable: true }),
       });
       const data = await res.json();
       if (res.ok) {
-        // Update collection in local state
         setCollections(prev => prev.map(c =>
           c.id === selectedCollection.id
             ? { ...c, share_slug: data.share_slug, is_public: data.is_public } as any
