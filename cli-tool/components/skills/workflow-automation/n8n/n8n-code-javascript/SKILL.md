@@ -1,6 +1,6 @@
 ---
 name: n8n-code-javascript
-description: Write JavaScript code in n8n Code nodes. Use when writing JavaScript in n8n, using $input/$json/$node syntax, making HTTP requests with $helpers, working with dates using DateTime, troubleshooting Code node errors, or choosing between Code node modes.
+description: Write effective JavaScript code in n8n Code nodes. Use when writing JavaScript in n8n, using $input/$json/$node syntax, making HTTP requests with $helpers, working with dates using DateTime, troubleshooting Code node errors, or choosing between Code node modes.
 ---
 
 # JavaScript Code Node
@@ -31,9 +31,10 @@ return processed;
 
 1. **Choose "Run Once for All Items" mode** (recommended for most use cases)
 2. **Access data**: `$input.all()`, `$input.first()`, or `$input.item`
-3. **CRITICAL**: Must return `[{json: {...}}]` format
-4. **CRITICAL**: Webhook data is under `$json.body` (not `$json` directly)
-5. **Built-ins available**: $helpers.httpRequest(), DateTime (Luxon), $jmespath()
+3. **Prefer `$input.all()`** for most logic; use `$input.item` only in "Each Item" mode
+4. **CRITICAL**: Must return `[{json: {...}}]` format
+5. **CRITICAL**: Webhook data is under `$json.body` (not `$json` directly)
+6. **Built-ins available**: $helpers.httpRequest(), DateTime (Luxon), $jmespath()
 
 ---
 

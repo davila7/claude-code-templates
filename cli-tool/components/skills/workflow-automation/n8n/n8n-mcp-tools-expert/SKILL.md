@@ -1,6 +1,6 @@
 ---
 name: n8n-mcp-tools-expert
-description: Expert guide for using n8n-mcp MCP tools effectively. Use when searching for nodes, validating configurations, accessing templates, managing workflows, or using any n8n-mcp tool. Provides tool selection guidance, parameter formats, and common patterns.
+description: Expert guide for using n8n-mcp MCP tools effectively. Use when searching for nodes, validating configurations, accessing templates, managing workflows, or using any n8n-mcp tool. Provides tool selection guidance, parameter formats, common patterns, and highest-priority n8n-mcp usage rules.
 ---
 
 # n8n MCP Tools Expert
@@ -33,6 +33,15 @@ n8n-mcp provides **40+ tools** organized into categories:
 | `n8n_create_workflow` | Creating workflows | 96.8% | 100-500ms |
 | `n8n_update_partial_workflow` | Editing workflows (MOST USED!) | 99.0% | 50-200ms |
 | `validate_workflow` | Checking complete workflow | 95.5% | 100-500ms |
+
+---
+
+## Execution Rules (Highest Priority)
+
+1. **Templates first**: always check `search_templates` before building from scratch.
+2. **Parallelize independent calls**: run tool calls concurrently, then respond after all complete.
+3. **Validate in order**: minimal â†’ runtime â†’ workflow validation.
+4. **Never trust defaults**: explicitly set all parameters that control node behavior.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: n8n-expression-syntax
-description: Validate n8n expression syntax and fix common errors. Use when writing n8n expressions, using {{}} syntax, accessing $json/$node variables, troubleshooting expression errors, or working with webhook data in workflows.
+description: Validate n8n expression syntax and fix common errors. Use when writing n8n expressions, using {{}} syntax, accessing $json/$node variables, troubleshooting expression errors, working with webhook data in workflows, or applying common expression patterns.
 ---
 
 # n8n Expression Syntax
@@ -127,6 +127,9 @@ Access environment variables:
 // Bracket notation for spaces
 {{$json['field name']}}
 {{$json['user data']['first name']}}
+
+// Optional chaining (avoid errors when data is missing)
+{{$json.metadata?.tags?.join(', ')}}
 ```
 
 ### Reference Other Nodes
@@ -350,6 +353,9 @@ Price: ${{$node["HTTP Request"].json.data.items[0].price}}
 
 // Bracket notation (with spaces or dynamic)
 {{$json['user data'].email}}
+
+// Get object keys
+{{Object.keys($json.data).join(', ')}}
 ```
 
 ### Strings

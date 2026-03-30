@@ -1,6 +1,6 @@
 ---
 name: n8n-workflow-patterns
-description: Proven workflow architectural patterns from real n8n workflows. Use when building new workflows, designing workflow structure, choosing workflow patterns, planning workflow architecture, or asking about webhook processing, HTTP API integration, database operations, AI agent workflows, or scheduled tasks.
+description: Proven workflow architectural patterns from real n8n workflows. Use when building new workflows, connecting nodes, designing automations, choosing workflow patterns, planning workflow architecture, or asking about webhook processing, HTTP API integration, database operations, AI agent workflows, or scheduled tasks. Uses real examples from 2,700+ templates.
 ---
 
 # n8n Workflow Patterns
@@ -116,12 +116,14 @@ When building ANY workflow, follow this checklist:
 - [ ] List required nodes (use search_nodes)
 - [ ] Understand data flow (input → transform → output)
 - [ ] Plan error handling strategy
+- [ ] Check templates first (search_templates)
 
 ### Implementation Phase
 - [ ] Create workflow with appropriate trigger
 - [ ] Add data source nodes
 - [ ] Configure authentication/credentials
 - [ ] Add transformation nodes (Set, Code, IF)
+- [ ] Configure all parameters explicitly (never trust defaults)
 - [ ] Add output/action nodes
 - [ ] Configure error handling
 

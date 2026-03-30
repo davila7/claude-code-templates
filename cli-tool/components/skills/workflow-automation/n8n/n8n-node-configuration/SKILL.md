@@ -1,6 +1,6 @@
 ---
 name: n8n-node-configuration
-description: Operation-aware node configuration guidance. Use when configuring nodes, understanding property dependencies, determining required fields, choosing between get_node_essentials and get_node_info, or learning common configuration patterns by node type.
+description: Operation-aware node configuration guidance. Use when configuring nodes, understanding property dependencies, determining required fields, setting up AI workflows, choosing between get_node_essentials and get_node_info, or learning common configuration patterns by node type.
 ---
 
 # n8n Node Configuration
@@ -17,6 +17,7 @@ Configuration best practices:
 - get_node_essentials is the most used discovery pattern
 - 56 seconds average between configuration edits
 - 91.7% success rate with essentials-based configuration
+- **Never trust defaults**: explicitly set all parameters that control node behavior
 
 **Key insight**: Most configurations need only essentials, not full schema!
 
