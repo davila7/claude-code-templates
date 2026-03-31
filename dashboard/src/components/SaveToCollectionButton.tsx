@@ -44,6 +44,8 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(false);
   const [newName, setNewName] = useState('');
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const [creating, setCreating] = useState(false);
   const [savedIn, setSavedIn] = useState<Set<string>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -168,6 +170,13 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     }
   }
 
+  useEffect(() => {
+    if (open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 4, left: rect.right - 224 });
+    }
+  }, [open]);
+
   if (!isLoaded) return null;
 
   const isSaved = savedIn.size > 0;
@@ -186,16 +195,6 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
       </button>
     );
   }
-
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (open && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setDropdownPos({ top: rect.bottom + 4, left: rect.right - 224 }); // 224 = w-56
-    }
-  }, [open]);
 
   return (
     <div className="relative" ref={dropdownRef}>
