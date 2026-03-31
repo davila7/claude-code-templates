@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-03-30T04:05:43.140645+00:00",
-  "totalJobs": 77,
+  "lastUpdated": "2026-03-31T03:59:57.810511+00:00",
+  "totalJobs": 76,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -1115,30 +1115,6 @@
       "postedAt": "2026-02-02T16:40:02+00:00",
       "tags": [
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-walter-senior-software-engineer",
-      "company": "WALTER",
-      "position": "Senior Software Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote URL: http://gowalter.co Senior Software Engineers at Stamped are hands-on builders responsible for designing, developing, and delivering high-quality software that powers our products. This role combines technical depth with product intuition — engineers are expected to think...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
-      "postedAt": "2026-01-29T21:06:16+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "AWS",
-        "Copilot",
-        "Vue.js"
       ],
       "companyIcon": ""
     },
