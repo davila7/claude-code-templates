@@ -187,9 +187,20 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     );
   }
 
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 4, left: rect.right - 224 }); // 224 = w-56
+    }
+  }, [open]);
+
   return (
-    <div className={`relative ${open ? 'z-[100]' : ''}`} ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       <button
+        ref={buttonRef}
         onClick={handleToggle}
         className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all ${
           isSaved
@@ -204,7 +215,10 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 py-1">
+        <div
+          className="fixed w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-[9999] py-1"
+          style={{ top: dropdownPos.top, left: dropdownPos.left }}
+        >
           {loading ? (
             <div className="px-3 py-4 text-center">
               <div className="w-4 h-4 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin mx-auto" />
