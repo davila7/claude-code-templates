@@ -85,13 +85,23 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     }
   }
 
+  // Elevate the parent card's z-index when dropdown is open
+  useEffect(() => {
+    const card = dropdownRef.current?.closest('.group') as HTMLElement | null;
+    if (!card) return;
+    if (open) {
+      card.style.zIndex = '50';
+      card.style.position = 'relative';
+    } else {
+      card.style.zIndex = '';
+      card.style.position = '';
+    }
+    return () => { card.style.zIndex = ''; card.style.position = ''; };
+  }, [open]);
+
   async function handleToggle(e: React.MouseEvent) {
     e.stopPropagation();
     if (!open) {
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setDropdownPos({ top: rect.bottom + 4, left: rect.right - 224 });
-      }
       setOpen(true);
       await loadCollections();
     } else {
@@ -211,10 +221,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
       </button>
 
       {open && (
-        <div
-          className="fixed w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-[9999] py-1"
-          style={{ top: dropdownPos.top, left: dropdownPos.left }}
-        >
+        <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-[9999] py-1">
           {loading ? (
             <div className="px-3 py-4 text-center">
               <div className="w-4 h-4 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin mx-auto" />
