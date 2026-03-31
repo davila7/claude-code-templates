@@ -28,7 +28,73 @@
 </p>
 
 ---
+<p align="center">
+  <a href="https://www.npmjs.com/package/claude-code-templates">
+    <img src="https://img.shields.io/npm/v/claude-code-templates.svg" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/claude-code-templates">
+    <img src="https://img.shields.io/npm/dt/claude-code-templates.svg" alt="npm downloads" />
+  </a>
+  <a href="https://github.com/davila7/claude-code-templates">
+    <img src="https://img.shields.io/github/stars/davila7/claude-code-templates.svg?style=social" alt="GitHub stars" />
+  </a>
+</p>
 
+<p align="center">
+  <strong>Production-ready templates, agents, and tools for Claude Code</strong>
+</p>
+
+<p align="center">
+  Build faster with reusable AI workflows, commands, integrations, and developer tooling.
+</p>
+
+<p align="center">
+  <a href="https://aitmpl.com"><strong>🌐 Browse Templates</strong></a> •
+  <a href="https://docs.aitmpl.com/"><strong>📚 Documentation</strong></a> •
+  <a href="CONTRIBUTING.md"><strong>🤝 Contribute</strong></a>
+</p>
+
+---
+
+## 🚀 Claude Code Templates
+
+A curated ecosystem of **ready-to-use configurations** for Claude Code:
+
+- 🤖 AI Agents (specialized roles)
+- ⚡ Commands (slash workflows)
+- 🔌 MCP Integrations (GitHub, DBs, APIs)
+- ⚙️ Settings (performance & behavior)
+- 🪝 Hooks (automation triggers)
+- 🎨 Skills (modular capabilities)
+
+> Designed to turn Claude Code into a **full development platform**, not just a coding assistant.
+
+---
+
+## 🧪 New: Interactive Dashboard
+
+Explore, install, and manage components visually:
+
+👉 **https://www.aitmpl.com** *(Beta — feedback welcome)*
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e3617410-9b1c-4731-87b7-a3858800b737" width="900" />
+</p>
+
+---
+
+## ⚡ Quick Start
+
+```bash
+# Install full development setup
+npx claude-code-templates@latest \
+  --agent development-team/frontend-developer \
+  --command testing/generate-tests \
+  --mcp development/github-integration \
+  --yes
+
+# Interactive installer
+npx claude-code-templates@latest
 > **🧪 NEW: Dashboard** — Explore components, manage collections, and track installations at **[www.aitmpl.com](https://www.aitmpl.com)**. Currently in beta — feedback welcome!
 
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
