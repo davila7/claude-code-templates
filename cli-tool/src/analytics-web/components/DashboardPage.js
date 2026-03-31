@@ -1208,12 +1208,27 @@ class DashboardPage {
   /**
    * Apply date filter
    */
-  applyDateFilter() {
+  async applyDateFilter() {
     if (this.allData) {
       this.updateChartData(this.allData);
     }
-    if (this.agentData) {
-      this.updateAgentCharts(this.agentData);
+
+    const { fromDate, toDate } = this.getDateRange();
+    const params = new URLSearchParams({
+      startDate: fromDate.toISOString().split('T')[0],
+      endDate: toDate.toISOString().split('T')[0]
+    });
+
+    try {
+      const filteredAgentData = await this.dataService.cachedFetch(`/api/agents?${params.toString()}`);
+      if (filteredAgentData) {
+        this.updateAgentCharts(filteredAgentData);
+      }
+    } catch (error) {
+      console.error('Error fetching filtered agent data:', error);
+      if (this.agentData) {
+        this.updateAgentCharts(this.agentData);
+      }
     }
   }
 
@@ -1734,15 +1749,30 @@ class DashboardPage {
     if (existingChart) existingChart.destroy();
 
     const ctx = canvas.getContext('2d');
-    const tokenData = data.detailedTokenUsage || {};
-    
-    console.log('Token type chart data:', tokenData);
+    const { fromDate, toDate } = this.getDateRange();
+    const conversations = data.conversations || [];
+    const filteredConversations = conversations.filter(conv => {
+      const convDate = new Date(conv.lastModified);
+      return convDate >= fromDate && convDate <= toDate;
+    });
+
+    const tokenTotals = { inputTokens: 0, outputTokens: 0, cacheCreationTokens: 0, cacheReadTokens: 0 };
+    filteredConversations.forEach(conv => {
+      if (conv.tokenUsage) {
+        tokenTotals.inputTokens += conv.tokenUsage.inputTokens || 0;
+        tokenTotals.outputTokens += conv.tokenUsage.outputTokens || 0;
+        tokenTotals.cacheCreationTokens += conv.tokenUsage.cacheCreationTokens || 0;
+        tokenTotals.cacheReadTokens += conv.tokenUsage.cacheReadTokens || 0;
+      }
+    });
+
+    console.log('Token type chart data (filtered):', tokenTotals);
 
     const chartData = [
-      tokenData.inputTokens || 0,
-      tokenData.outputTokens || 0,
-      tokenData.cacheCreationTokens || 0,
-      tokenData.cacheReadTokens || 0
+      tokenTotals.inputTokens,
+      tokenTotals.outputTokens,
+      tokenTotals.cacheCreationTokens,
+      tokenTotals.cacheReadTokens
     ];
     
     const totalTokens = chartData.reduce((sum, val) => sum + val, 0);
@@ -2044,14 +2074,18 @@ class DashboardPage {
   }
 
   calculateDailyProductivity(data) {
+    const { fromDate, toDate } = this.getDateRange();
     const conversations = data.conversations || [];
     const dailyStats = {};
 
     // Group data by day
     conversations.forEach(conv => {
       if (!conv.lastModified) return;
-      
-      const date = new Date(conv.lastModified).toDateString();
+
+      const convDate = new Date(conv.lastModified);
+      if (convDate < fromDate || convDate > toDate) return;
+
+      const date = convDate.toDateString();
       if (!dailyStats[date]) {
         dailyStats[date] = { messages: 0, tokens: 0 };
       }
