@@ -88,6 +88,10 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   async function handleToggle(e: React.MouseEvent) {
     e.stopPropagation();
     if (!open) {
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setDropdownPos({ top: rect.bottom + 4, left: rect.right - 224 });
+      }
       setOpen(true);
       await loadCollections();
     } else {
@@ -169,13 +173,6 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
       setCreating(false);
     }
   }
-
-  useEffect(() => {
-    if (open && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setDropdownPos({ top: rect.bottom + 4, left: rect.right - 224 });
-    }
-  }, [open]);
 
   if (!isLoaded) return null;
 
