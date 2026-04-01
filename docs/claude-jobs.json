@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-03-23T03:59:37.715795+00:00",
-  "totalJobs": 72,
+  "lastUpdated": "2026-04-01T04:03:54.480895+00:00",
+  "totalJobs": 75,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -9,30 +9,91 @@
   ],
   "jobs": [
     {
-      "id": "wwr-summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "company": "Summedd",
-      "position": "Full Stack Engineer with AI Coding expertise for SaaS Platform",
+      "id": "anth-5168829008",
+      "company": "Anthropic",
+      "position": "Software Engineer, Cloud Inference Safeguards",
+      "location": "San Francisco, CA | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "We are seeking a Software Engineer to build and operate the safety, oversight, and intervention mechanisms that protect Claude on third-party cloud service provider (CSP) platforms. As the engineer responsible for Safeguards on those surfaces, you will ensure that every request served through our...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5168829008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5168829008",
+      "postedAt": "2026-03-27T17:15:24-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
+      "company": "Arbiter AI",
+      "position": "Senior Backend Engineer Integrations",
       "location": "Remote",
       "remote": true,
       "salary": "",
-      "description": "Headquarters: New York URL: http://summed.com Full Stack Engineer We're looking for a Full Stack Engineer who can build across the entire stack and has hands-on experience with AI coding tools. You’ll be working for a new SaaS product that simplifies accounting tax processes. You'll own features...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/summedd-full-stack-engineer-with-ai-coding-expertise-for-saas-platform",
-      "postedAt": "Sun, 22 Feb 2026 04:18:34 +0000",
+      "description": "Arbiter is the AI-powered care orchestration system that unites healthcare. We are launching our best-in-class, patient-facing Agentic platform to optimize patient outcomes through a unique multimodal approach. We optimize complex healthcare workflows that interface with patients using the latest...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
+      "postedAt": "2026-03-27T16:00:44+00:00",
       "tags": [
-        "React",
         "Python",
-        "Go",
-        "Node.js",
         "PostgreSQL",
         "AWS",
         "GCP",
         "Azure",
         "Claude Code",
-        "Cursor"
+        "Cursor",
+        "Copilot"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5104689008",
+      "company": "Anthropic",
+      "position": "Product Designer, Claude Code",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5104689008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5104689008",
+      "postedAt": "2026-03-26T16:40:33-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5161402008",
+      "company": "Anthropic",
+      "position": "Data Scientist, Marketing",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "As part of our growing Data Science team, you will play an instrumental role in our company’s mission of building safe and beneficial artificial intelligence by driving data-informed decision making across our organization. You’ve worked in cultures of excellence in the past, and are eager to apply...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
+      "postedAt": "2026-03-23T16:37:20-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5160757008",
@@ -412,6 +473,27 @@
         "Claude Code",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-level-senior-frontend-engineer",
+      "company": "Level",
+      "position": "Senior Frontend Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Asheville, NC URL: https://level.io Level is a modern RMM platform built around real-time data, automation, and an uncompromising focus on UX. We're profitable, growing, and shipping fast with a small team. Our platform manages devices across thousands of organizations. We're hiring...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
+      "postedAt": "2026-03-03T17:26:57+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -1060,26 +1142,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5097348008",
-      "company": "Anthropic",
-      "position": "Certification Content & Systems Architect",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is seeking a Certification Content and Systems Architect to design and build the educational content and assessment components that power Anthropic's credentialing efforts. You'll own the substance of what certifications teach and measure: curriculum architecture, assessment design,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5097348008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5097348008",
-      "postedAt": "2026-01-27T15:23:13-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5096878008",
       "company": "Anthropic",
       "position": "Research Product Manager, Labs",
@@ -1384,7 +1446,7 @@
       "id": "anth-5023089008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, Platform",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
       "description": "We are looking for backend / platform software engineers to join our Product Foundations org. We build foundational primitives that help accelerate product development across Anthropic. Some examples of what we own and maintain are our core sampling pipeline, our rate limiting platform, and our RAG...",

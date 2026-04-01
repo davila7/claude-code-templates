@@ -2,7 +2,6 @@
 name: dotnet-upgrade
 description: Perform janitorial tasks on C#/.NET code including cleanup, modernization, and tech debt remediation.
 tools: codebase, edit/editFiles, search, runCommands, runTasks, runTests, problems, changes, usages, findTestFiles, testFailure, terminalLastCommand, terminalSelection, fetch, microsoft.docs.mcp
-model: sonnet
 ---
 
 # .NET Upgrade Collection

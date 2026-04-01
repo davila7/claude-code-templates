@@ -262,13 +262,13 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-surface-3 rounded-lg p-0.5">
+            <div className="flex items-center gap-1 bg-[var(--color-surface-3)] rounded-lg p-0.5">
               <button
                 onClick={() => setMode('code')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   mode === 'code'
-                    ? 'bg-surface-2 text-text-primary shadow-sm'
-                    : 'text-text-tertiary hover:text-text-secondary'
+                    ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] shadow-sm'
+                    : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'
                 }`}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -280,8 +280,8 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                 onClick={() => setMode('preview')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   mode === 'preview'
-                    ? 'bg-surface-2 text-text-primary shadow-sm'
-                    : 'text-text-tertiary hover:text-text-secondary'
+                    ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] shadow-sm'
+                    : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'
                 }`}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -301,7 +301,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors ${
                 searchOpen
                   ? 'bg-accent-500/15 text-accent-400'
-                  : 'text-text-tertiary hover:text-text-secondary hover:bg-white/[0.04]'
+                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-white/[0.04]'
               }`}
               title="Search in document (Cmd+F)"
             >
@@ -309,7 +309,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <span className="hidden sm:inline">Search</span>
-              <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-text-tertiary font-mono ml-1">
+              <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-[var(--color-text-tertiary)] font-mono ml-1">
                 {navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}F
               </kbd>
             </button>
@@ -317,7 +317,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
 
           <button
             onClick={handleCopy}
-            className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-text-tertiary hover:text-text-primary transition-colors"
+            className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             Copy
           </button>
@@ -327,7 +327,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
         {searchOpen && (
           <div className="mb-3 relative">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-tertiary pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-text-tertiary)] pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <input
@@ -337,18 +337,18 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Search sections and content..."
-                className="w-full bg-surface-2 border border-border rounded-lg pl-9 pr-20 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 font-sans"
+                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg pl-9 pr-20 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 font-sans"
                 autoFocus
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 {searchQuery.length >= 2 && (
-                  <span className="text-[10px] text-text-tertiary">
+                  <span className="text-[10px] text-[var(--color-text-tertiary)]">
                     {highlightCount > 0 ? `${highlightCount} match${highlightCount !== 1 ? 'es' : ''}` : 'No matches'}
                   </span>
                 )}
                 <button
                   onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
-                  className="text-text-tertiary hover:text-text-secondary"
+                  className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -359,7 +359,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
 
             {/* Search results dropdown */}
             {searchResults.length > 0 && (
-              <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-surface-2 border border-border rounded-lg shadow-xl overflow-hidden max-h-72 overflow-y-auto">
+              <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl overflow-hidden max-h-72 overflow-y-auto">
                 {searchResults.map((result, i) => (
                   <button
                     key={`${result.id}-${i}`}
@@ -374,28 +374,28 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5h13.5m-13.5 4.5h7.5m-7.5 4.5h13.5" />
                       </svg>
                     ) : (
-                      <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                       </svg>
                     )}
                     <div className="flex-1 min-w-0">
                       {result.type === 'heading' ? (
-                        <HighlightText text={result.text} query={searchQuery} className="text-sm text-text-primary font-medium" />
+                        <HighlightText text={result.text} query={searchQuery} className="text-sm text-[var(--color-text-primary)] font-medium" />
                       ) : (
                         <>
-                          <div className="text-[11px] text-text-tertiary mb-0.5">
+                          <div className="text-[11px] text-[var(--color-text-tertiary)] mb-0.5">
                             {headings.find((h) => h.id === result.id)?.text ?? ''}
                           </div>
                           <HighlightText
                             text={result.context || ''}
                             query={searchQuery}
-                            className="text-xs text-text-secondary leading-relaxed"
+                            className="text-xs text-[var(--color-text-secondary)] leading-relaxed"
                           />
                         </>
                       )}
                     </div>
                     {i === selectedIdx && (
-                      <kbd className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-text-tertiary font-mono self-center shrink-0">
+                      <kbd className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-[var(--color-text-tertiary)] font-mono self-center shrink-0">
                         Enter
                       </kbd>
                     )}
@@ -411,7 +411,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
           {mode === 'code' ? (
             <div
               ref={codeRef}
-              className={`bg-surface-2 border border-border rounded-lg p-6 text-sm text-text-primary leading-relaxed whitespace-pre-wrap font-mono overflow-hidden transition-[max-height] duration-300 ${
+              className={`bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-6 text-sm text-[var(--color-text-primary)] leading-relaxed whitespace-pre-wrap font-mono overflow-hidden transition-[max-height] duration-300 ${
                 expanded ? '' : 'max-h-[32rem]'
               }`}
             >
@@ -420,38 +420,34 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
           ) : (
             <div
               ref={previewRef}
-              className={`md-preview bg-surface-2 border border-border rounded-lg p-6 overflow-hidden transition-[max-height] duration-300 ${
+              className={`md-preview bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-6 overflow-hidden transition-[max-height] duration-300 ${
                 expanded ? '' : 'max-h-[32rem]'
               }`}
               dangerouslySetInnerHTML={{ __html: html }}
             />
           )}
 
-          {/* Gradient fade + expand */}
           {!expanded && (
-            <div className="absolute bottom-0 left-0 right-0 rounded-b-lg overflow-hidden">
-              <div className="h-24 bg-gradient-to-t from-[var(--color-surface-2)] to-transparent pointer-events-none" />
-              <div className="bg-[var(--color-surface-2)] px-4 pb-3 flex justify-center border-x border-b border-[var(--color-border)] rounded-b-lg -mt-px">
-                <button
-                  onClick={() => setExpanded(true)}
-                  className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-3)] transition-colors"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                  Show full {mode === 'preview' ? 'document' : 'source'}
-                </button>
-              </div>
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => setExpanded(true)}
+                className="text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/40 transition-all duration-150 active:scale-95"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+                Show full {mode === 'preview' ? 'document' : 'source'}
+              </button>
             </div>
           )}
 
           {expanded && (
-            <div className="flex justify-center mt-2">
+            <div className="flex justify-center mt-4">
               <button
                 onClick={() => setExpanded(false)}
-                className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-3)] transition-colors"
+                className="text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/40 transition-all duration-150 active:scale-95"
               >
-                <svg className="w-3.5 h-3.5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
                 Collapse
@@ -463,26 +459,26 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
 
       {/* Table of Contents sidebar */}
       {headings.length > 1 && mode === 'preview' && (
-        <nav className="hidden lg:block w-52 shrink-0">
-          <div className="sticky top-24">
-            <h4 className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+        <nav className="hidden xl:block w-56 shrink-0 ml-6">
+          <div className="sticky top-28">
+            <h4 className="text-[10px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-3 px-3">
               On this page
             </h4>
-            <ul className="space-y-0.5 text-[12px] border-l border-border max-h-[calc(100vh-10rem)] overflow-y-auto">
+            <ul className="space-y-1 text-[12px] border-l-2 border-[var(--color-border)] max-h-[calc(100vh-12rem)] overflow-y-auto">
               {headings.map((h) => (
                 <li key={h.id}>
                   <button
                     onClick={() => scrollToHeading(h.id)}
-                    className={`block w-full text-left py-1 transition-colors border-l-2 -ml-px ${
+                    className={`block w-full text-left py-1.5 transition-all duration-150 border-l-2 -ml-0.5 ${
                       h.level === 1 ? 'pl-3' : h.level === 2 ? 'pl-5' : 'pl-7'
                     } ${
                       activeHeading === h.id
-                        ? 'border-accent-400 text-accent-400'
-                        : 'border-transparent text-text-tertiary hover:text-text-secondary hover:border-border'
+                        ? 'border-[var(--color-primary-400)] text-[var(--color-primary-400)] font-medium'
+                        : 'border-transparent text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:border-[var(--color-border)]'
                     }`}
                     title={h.text}
                   >
-                    <span className="line-clamp-1">{h.text}</span>
+                    <span className="line-clamp-2 leading-snug">{h.text}</span>
                   </button>
                 </li>
               ))}

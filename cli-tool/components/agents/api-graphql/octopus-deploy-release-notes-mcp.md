@@ -2,7 +2,6 @@
 name: octopus-deploy-release-notes-mcp
 description: Generate release notes for a release in Octopus Deploy. The tools for this MCP server provide access to the Octopus Deploy APIs.
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # Release Notes for Octopus Deploy

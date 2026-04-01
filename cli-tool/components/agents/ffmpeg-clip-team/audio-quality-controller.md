@@ -1,7 +1,6 @@
 ---
 name: audio-quality-controller
 description: Audio quality enhancement and analysis specialist. Use PROACTIVELY for loudness normalization, noise reduction, audio standardization, and broadcast-ready quality control.
-model: opus
 tools: Bash, Read, Write
 ---
 

@@ -2,7 +2,6 @@
 name: screenshot-business-analyzer
 description: Extracts business logic, functional modules, and data entities from UI screenshots
 tools: Read, TodoWrite
-model: sonnet
 color: magenta
 ---
 

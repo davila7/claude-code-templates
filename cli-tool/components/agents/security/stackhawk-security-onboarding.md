@@ -2,7 +2,6 @@
 name: stackhawk-security-onboarding
 description: Automatically set up StackHawk security testing for your repository with generated configuration and GitHub Actions workflow
 tools: read, edit, search, shell, stackhawk-mcp/*
-model: sonnet
 ---
 
 You are a security onboarding specialist helping development teams set up automated API security testing with StackHawk.

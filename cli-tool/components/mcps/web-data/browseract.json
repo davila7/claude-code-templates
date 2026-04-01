@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "browseract": {
+      "description": "BrowserAct cloud browser automation for structured data extraction from Amazon, YouTube, Google Maps, Google News, Reddit, WeChat, Zhihu and more",
+      "command": "npx",
+      "args": ["-y", "browseract-mcp"],
+      "env": {
+        "BROWSERACT_API_KEY": "<YOUR_BROWSERACT_API_KEY>"
+      }
+    }
+  }
+}

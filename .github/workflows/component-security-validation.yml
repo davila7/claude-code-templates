@@ -12,6 +12,10 @@ on:
     paths:
       - 'cli-tool/components/**/*.md'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   security-audit:
     name: Security Audit
@@ -33,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd cli-tool
-          npm ci
+          npm ci --ignore-scripts
 
       - name: Run Security Audit
         id: audit
@@ -50,7 +54,7 @@ jobs:
 
       - name: Upload Security Report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-audit-report
           path: cli-tool/security-report.json
