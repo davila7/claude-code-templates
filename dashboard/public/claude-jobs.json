@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-03-31T03:59:57.810511+00:00",
-  "totalJobs": 76,
+  "lastUpdated": "2026-04-01T04:03:54.480895+00:00",
+  "totalJobs": 75,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -831,27 +831,6 @@
         "AWS",
         "Cursor",
         "Tailwind"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-uncanny-owl-wordpress-developer",
-      "company": "Uncanny Owl",
-      "position": "WordPress Developer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: [Remote] URL: https://automatorplugin.com As a WordPress Developer, you're responsible for Making Stuff Go. You'll build and maintain integrations that connect WordPress to hundreds of external services—from CRMs and email platforms to payment gateways and social networks. You'll own...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
-      "postedAt": "2026-02-04T21:57:47+00:00",
-      "tags": [
-        "React",
-        "JavaScript",
-        "Claude Code",
-        "Vue.js",
-        "MySQL"
       ],
       "companyIcon": ""
     },
