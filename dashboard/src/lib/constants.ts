@@ -41,8 +41,8 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
   //   tagColor: '#0891b2',
   //   category: 'Infrastructure',
   //   ctaLabel: 'Try TinyFish',
-  //   ctaUrl: 'https://tinyfish.ai',
-  //   websiteUrl: 'https://tinyfish.ai',
+  //   ctaUrl: 'https://www.tinyfish.ai/?utm_source=partner&utm_medium=cpc&utm_campaign=aitmpl-mcp-developer-2026q2',
+  //   websiteUrl: 'https://www.tinyfish.ai/?utm_source=partner&utm_medium=cpc&utm_campaign=aitmpl-mcp-developer-2026q2',
   //   installCommand: 'npx claude-code-templates@latest --mcp web/tinyfish --yes',
   //   metadata: {
   //     Components: '1',
@@ -52,7 +52,7 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
   //   links: [
   //     { label: 'Documentation', url: 'https://docs.tinyfish.ai' },
   //     { label: 'MCP Integration', url: 'https://docs.tinyfish.ai/mcp-integration' },
-  //     { label: 'tinyfish.ai', url: 'https://tinyfish.ai' },
+  //     { label: 'tinyfish.ai', url: 'https://www.tinyfish.ai/?utm_source=partner&utm_medium=cpc&utm_campaign=aitmpl-mcp-developer-2026q2' },
   //   ],
   // },
   {
