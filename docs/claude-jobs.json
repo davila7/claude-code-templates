@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-01T04:03:54.480895+00:00",
-  "totalJobs": 75,
+  "lastUpdated": "2026-04-02T03:58:55.827921+00:00",
+  "totalJobs": 78,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,87 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47607283",
+      "company": "MintMCP",
+      "position": "Software Engineer",
+      "location": "SF Bay Area (ONSITE)",
+      "remote": false,
+      "salary": "",
+      "description": "MintMCP helps enterprises safely do more with Agents (e.g, governance around MCP tools and agents like Claude Code / Cowork, and others). We're building an MCP gateway as the foundation with the proper abstractions that enterprises need to allow long running agents to be safely deployed across an...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47607283",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47607283",
+      "postedAt": "2026-04-01T22:20:51+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47607127",
+      "company": "Scorecard AI",
+      "position": "Software Engineer",
+      "location": "San Francisco (Onsite)",
+      "remote": false,
+      "salary": "",
+      "description": "Scorecard builds simulation environments and reward models that frontier AI labs and enterprises use to train and evaluate their agents. Same discipline that made self-driving cars work, applied to LLM-based agents. Our founding team built simulation infrastructure at Waymo, SpaceX, and Uber ATG....",
+      "applyUrl": "https://news.ycombinator.com/item?id=47607127",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47607127",
+      "postedAt": "2026-04-01T22:05:23+00:00",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "GCP",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5153580008",
+      "company": "Anthropic",
+      "position": "Head of Programmatic Outcomes — Product",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic has 2% knowledge-worker AI penetration against ChatGPT’s 9–10% and Gemini’s 8%. The Programmatic Outcomes team exists to close that gap before distribution lock-out becomes permanent. The Head of Programmatic Outcomes (Product) shapes the product-led growth strategy, in-product activation...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153580008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153580008",
+      "postedAt": "2026-04-01T18:58:12-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5173031008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Solutions Architecture - Partnerships",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "As the Manager of the Partnerships Applied AI Solutions Architect team, you will drive adoption of frontier AI by enabling deployment of Anthropic’s products (Claude for Enterprise, Claude Code, API) through our Global and Regional System Integrators, cloud partners (AWS, GCP, Azure), and strategic...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5173031008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5173031008",
+      "postedAt": "2026-04-01T16:58:51-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5168829008",
       "company": "Anthropic",
@@ -138,21 +219,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-58134729590-marketing-operations-execution-lead-activate-talent-1130841",
-      "company": "Activate Talent",
-      "position": "58134729590 Marketing Operations & Execution Lead",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "We are a modern men’s skincare brand rooted in ancient wisdom—focused on simple, 100% natural ingredients with zero shortcuts. Our mission is to build the #1 personal care brand for health-conscious, high-performing men who value discipline and results. Co-founded by Sahil Bloom, we are an...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-58134729590-marketing-operations-execution-lead-activate-talent-1130841",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-58134729590-marketing-operations-execution-lead-activate-talent-1130841",
-      "postedAt": "2026-03-20T00:00:04+00:00",
-      "tags": [],
-      "companyIcon": ""
     },
     {
       "id": "anth-5153586008",
