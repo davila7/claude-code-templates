@@ -11,7 +11,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/react": "^4.4.2",
+    "@astrojs/react": "^5.0.2",
     "@astrojs/vercel": "^9.0.4",
     "@clerk/backend": "^3.0.1",
     "@clerk/clerk-react": "^5.60.1",
