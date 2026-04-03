@@ -25,7 +25,7 @@ Then list any existing worktrees and exit.
 ### Step 2: Show Branch Info
 
 1. Get current branch: `git branch --show-current`
-2. Verify it follows the `wt/*` naming convention
+2. Verify it follows the `claude/*`, `claude-daniel/*`, or `review/*` naming convention
 3. Show how many commits ahead of origin/main: `git rev-list --count origin/main..HEAD`
 
 ### Step 3: Read Task
@@ -47,7 +47,7 @@ Present a clean summary:
 ```
 Worktree Status
 ──────────────────────────────────
-Branch:    wt/<name>
+Branch:    claude/<name>
 Task:      <task description from .worktree-task.md>
 Commits:   <N> ahead of main
 Modified:  <N> files

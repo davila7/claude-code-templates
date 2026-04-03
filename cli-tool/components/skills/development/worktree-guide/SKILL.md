@@ -47,7 +47,7 @@ Welcome! I'll guide you through setting up and using parallel worktrees for mult
 │  ┌──────────────────────┬──────────────────────┐           │
 │  │                      │                      │           │
 │  │   Claude (Task 1)    │   Claude (Task 2)    │           │
-│  │   wt/login-page      │   wt/fix-auth-bug    │           │
+│  │   claude/login-page   │   claude/fix-auth-bug │           │
 │  │                      │                      │           │
 │  ├──────────────────────┴──────────────────────┤           │
 │  │              Lazygit (monitoring)           │           │
@@ -208,9 +208,9 @@ Example usage:
 /worktree-init add user authentication | fix login bug | improve dashboard performance
 
 This creates:
-├── ../worktrees/<repo>/wt-add-user-authentication/
-├── ../worktrees/<repo>/wt-fix-login-bug/
-└── ../worktrees/<repo>/wt-improve-dashboard-performance/
+├── ../worktrees/<repo>/claude-add-user-authentication/
+├── ../worktrees/<repo>/claude-fix-login-bug/
+└── ../worktrees/<repo>/claude-improve-dashboard-performance/
 ```
 
 ### Step 4.2: Open Ghostty Panels
@@ -288,7 +288,7 @@ After your PRs are merged on GitHub:
 Run `/worktree-check` — it shows your branch, task, and status.
 
 Alternatively:
-$ git branch --show-current    # Shows wt/<name>
+$ git branch --show-current    # Shows claude/<name>
 $ pwd                          # Shows the worktree path
 
 ---
@@ -326,8 +326,8 @@ $ git stash pop
 ### "I want to abandon a worktree"
 
 From the main repo:
-$ git worktree remove ../worktrees/repo/wt-<name> --force
-$ git branch -D wt/<name>
+$ git worktree remove ../worktrees/repo/claude-<name> --force
+$ git branch -D claude/<name>
 
 Note: Force is needed if there are uncommitted changes.
 
@@ -341,7 +341,7 @@ Try:
 $ git push -u origin HEAD
 
 If there's a conflict with remote, pull first:
-$ git pull --rebase origin wt/<name>
+$ git pull --rebase origin claude/<name>
 
 ---
 
@@ -384,7 +384,7 @@ $ git worktree prune
 │  GIT (manual)                                                               │
 │  ─────────                                                                  │
 │  git worktree list                   List all worktrees                     │
-│  git worktree add -b wt/name path    Create worktree manually               │
+│  git worktree add -b claude/name path Create worktree manually               │
 │  git worktree remove path            Remove a worktree                      │
 │  git worktree prune                  Clean up stale worktree refs           │
 │                                                                             │

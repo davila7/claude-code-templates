@@ -15,7 +15,7 @@ You are inside a worktree. Package up the work and deliver it as a PR.
 
 1. Verify this is a worktree (not the main working tree) using `git worktree list`
 2. Get current branch: `git branch --show-current`
-3. Verify branch follows `wt/*` pattern. If not, warn the user and ask if they want to continue.
+3. Verify branch follows `claude/*`, `claude-daniel/*`, or `review/*` pattern. If not, warn the user and ask if they want to continue.
 4. Read `.worktree-task.md` if it exists to get the original task description
 
 ### Step 2: Review Changes
@@ -112,7 +112,7 @@ gh pr create --base <main-branch> --title "<PR title>" --body "$(cat <<'EOF'
 <git diff --stat summary>
 
 ---
-Created from worktree `wt/<name>` using `/worktree-deliver`
+Created from worktree `claude/<name>` using `/worktree-deliver`
 EOF
 )"
 ```

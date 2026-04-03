@@ -28,8 +28,8 @@ If `$ARGUMENTS` is empty, use AskUserQuestion to ask the user to describe their 
 
 For each task description:
 - Trim whitespace
-- Generate a kebab-case branch name: `wt/<kebab-case-task>` (max 50 chars, alphanumeric and hyphens only)
-- Generate a worktree directory path: `../worktrees/<repo-name>/wt-<kebab-case-task>`
+- Generate a kebab-case branch name: `claude/<kebab-case-task>` (max 50 chars, alphanumeric and hyphens only)
+- Generate a worktree directory path: `../worktrees/<repo-name>/claude-<kebab-case-task>`
 
 ### Step 3: Create Worktrees
 
@@ -38,13 +38,13 @@ For each task:
 1. Create the parent directory if needed: `mkdir -p ../worktrees/<repo-name>`
 2. Create the worktree:
    ```bash
-   git worktree add -b wt/<name> ../worktrees/<repo-name>/wt-<name> origin/<main-branch>
+   git worktree add -b claude/<name> ../worktrees/<repo-name>/claude-<name> origin/<main-branch>
    ```
 3. Write a `.worktree-task.md` file inside the new worktree with this content:
    ```markdown
    # Worktree Task
 
-   **Branch:** wt/<name>
+   **Branch:** claude/<name>
    **Task:** <original task description>
    **Created:** <ISO date>
    **Source repo:** <path to main repo>
@@ -67,7 +67,7 @@ Display a clear summary table:
 ```
 | # | Task | Branch | Path |
 |---|------|--------|------|
-| 1 | ... | wt/... | ../worktrees/repo/wt-... |
+| 1 | ... | claude/... | ../worktrees/repo/claude-... |
 ```
 
 Then display ready-to-copy commands for Ghostty panels. For each worktree:
