@@ -1,12 +1,51 @@
 {
-  "lastUpdated": "2026-04-03T03:57:50.605743+00:00",
-  "totalJobs": 73,
+  "lastUpdated": "2026-04-04T03:55:47.230155+00:00",
+  "totalJobs": 76,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK"
+    "RemoteOK",
+    "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47632126",
+      "company": "Pinehurst, TX",
+      "position": "Senior Systems Architect",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Overview We are looking for a senior systems architect, not a feature developer. This role is for someone who: . has designed systems end-to-end . understands how to structure complex backend systems . can work alongside AI-assisted development (not against it) If your primary strength is writing...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47632126",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47632126",
+      "postedAt": "2026-04-03T20:53:59+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47628976",
+      "company": "Onos Health",
+      "position": "Staff Software Engineer",
+      "location": "San Francisco (Hybrid)",
+      "remote": false,
+      "salary": "",
+      "description": "30 cents of every behavioral health dollar in the U.S. is wasted — on ineffective care, administrative overhead, and outright fraud. Onos fixes this by ensuring every healthcare dollar goes toward high quality care. Our AI platform helps health plans identify where care is going wrong, get members...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47628976",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47628976",
+      "postedAt": "2026-04-03T16:44:58+00:00",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "Django"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47613220",
       "company": "Scite (scite.ai)",
@@ -784,6 +823,27 @@
         "AWS",
         "Cursor",
         "Tailwind"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-uncanny-owl-wordpress-developer",
+      "company": "Uncanny Owl",
+      "position": "WordPress Developer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: [Remote] URL: https://automatorplugin.com As a WordPress Developer, you're responsible for Making Stuff Go. You'll build and maintain integrations that connect WordPress to hundreds of external services—from CRMs and email platforms to payment gateways and social networks. You'll own...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
+      "postedAt": "2026-02-04T21:57:47+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Claude Code",
+        "Vue.js",
+        "MySQL"
       ],
       "companyIcon": ""
     },
