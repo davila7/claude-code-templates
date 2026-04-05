@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "redis": {
+      "description": "Official Redis MCP Server providing natural language interface for Redis databases. Query, manage, and interact with Redis data through Claude.",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "redis-mcp-server@latest",
+        "redis-mcp-server"
+      ],
+      "env": {
+        "REDIS_URL": "<your-redis-url>"
+      }
+    }
+  }
+}

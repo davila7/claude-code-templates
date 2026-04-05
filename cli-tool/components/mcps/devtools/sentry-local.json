@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "sentry": {
+      "description": "Official Sentry MCP Server (local). Run Sentry integration locally via npx for debugging, error tracking, and performance monitoring.",
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server@latest"],
+      "env": {
+        "SENTRY_ACCESS_TOKEN": "<your-sentry-auth-token>"
+      }
+    }
+  }
+}

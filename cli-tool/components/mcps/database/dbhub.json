@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "dbhub": {
+      "description": "Zero-dependency, token-efficient database MCP server supporting PostgreSQL, MySQL, MariaDB, SQL Server, and SQLite connections.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@bytebase/dbhub@latest"
+      ],
+      "env": {
+        "DATABASE_DSN": "<your-database-dsn>"
+      }
+    }
+  }
+}
