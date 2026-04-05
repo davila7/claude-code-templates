@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "jina-ai": {
+      "description": "Official Jina AI MCP Server for web reading, search, grounding, and fact-checking capabilities powered by Jina AI APIs.",
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.jina.ai/v1"],
+      "env": {
+        "JINA_API_KEY": "<your-jina-api-key>"
+      }
+    }
+  }
+}

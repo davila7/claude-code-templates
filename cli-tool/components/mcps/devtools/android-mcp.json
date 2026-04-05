@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "android-mcp": {
+      "description": "MCP Server for interacting with Android devices. Control, inspect, and automate Android devices via ADB through Claude.",
+      "command": "uvx",
+      "args": ["--python", "3.13", "android-mcp"]
+    }
+  }
+}
