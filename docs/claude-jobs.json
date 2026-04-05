@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-04T03:55:47.230155+00:00",
-  "totalJobs": 76,
+  "lastUpdated": "2026-04-05T04:04:31.700827+00:00",
+  "totalJobs": 77,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,29 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47638363",
+      "company": "Adclear",
+      "position": "Senior Fullstack Engineer",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "We're turning compliance from a bottleneck into a creative advantage for regulated brands. Clients include Monzo, Lloyds, PensionBee, and Plum. Raised £2.6m+ from Outward VC in our first 14 months. The problem: we run multi-agent AI pipelines that evaluate regulated marketing content in real time....",
+      "applyUrl": "https://news.ycombinator.com/item?id=47638363",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47638363",
+      "postedAt": "2026-04-04T12:12:57+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code",
+        "Cursor",
+        "Tailwind"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47632126",
       "company": "Pinehurst, TX",
