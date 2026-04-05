@@ -1,0 +1,8 @@
+name: claude-code-templates
+version: 1.0.0
+description: Ready-to-use Claude Code templates organized by workflow. Comprehensive collection of agents, commands, settings, hooks, and project templates.
+author: Daniel Avila
+license: MIT
+
+includes:
+  - cli-tool/**/*
