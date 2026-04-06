@@ -161,7 +161,7 @@ number of files affected.
 3. Do not modify any file before receiving explicit approval.
 4. Apply changes one item at a time: CRITICAL → WARNING → INFO.
 5. After each file change, verify result is valid (no broken frontmatter, valid JSON).
-6. When extracting a Skill from CLAUDE.md: create the new file, remove the original content.
+6. When extracting a Skill from CLAUDE.md: create the new skill file, then remove only the migrated section from CLAUDE.md — do not delete or overwrite the rest of the file.
 7. After all changes, re-scan to confirm no new anti-patterns were introduced.
 
 ---
