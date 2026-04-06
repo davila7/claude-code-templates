@@ -1,13 +1,36 @@
 {
-  "lastUpdated": "2026-04-05T04:04:31.700827+00:00",
+  "lastUpdated": "2026-04-06T04:02:47.469389+00:00",
   "totalJobs": 77,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
+      "company": "Symmetry Systems",
+      "position": "Associate Forward Deployed Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About Symmetry Systems Symmetry Systems is the Data+AI Security company. Our data security posture management platform is engineered specifically to address modern data security and privacy challenges at scale from the data out, providing organizations the ability to innovate with confidence. With...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
+      "postedAt": "2026-04-05T00:00:05+00:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47638363",
       "company": "Adclear",
@@ -846,27 +869,6 @@
         "AWS",
         "Cursor",
         "Tailwind"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-uncanny-owl-wordpress-developer",
-      "company": "Uncanny Owl",
-      "position": "WordPress Developer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: [Remote] URL: https://automatorplugin.com As a WordPress Developer, you're responsible for Making Stuff Go. You'll build and maintain integrations that connect WordPress to hundreds of external services—from CRMs and email platforms to payment gateways and social networks. You'll own...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/uncanny-owl-wordpress-developer",
-      "postedAt": "2026-02-04T21:57:47+00:00",
-      "tags": [
-        "React",
-        "JavaScript",
-        "Claude Code",
-        "Vue.js",
-        "MySQL"
       ],
       "companyIcon": ""
     },
