@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "apify": {
+      "description": "Extract data from social media, search engines, maps, and e-commerce sites using Apify's ready-made scrapers and actors via MCP.",
+      "command": "npx",
+      "args": ["-y", "@apify/actors-mcp-server"],
+      "env": {
+        "APIFY_TOKEN": "<your-apify-token>"
+      }
+    }
+  }
+}

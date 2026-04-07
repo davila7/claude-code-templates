@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "searxng": {
+      "description": "MCP Server for SearXNG, a privacy-respecting metasearch engine. Perform web searches across multiple search engines without tracking.",
+      "command": "npx",
+      "args": ["-y", "mcp-searxng"],
+      "env": {
+        "SEARXNG_URL": "<your-searxng-instance-url>"
+      }
+    }
+  }
+}

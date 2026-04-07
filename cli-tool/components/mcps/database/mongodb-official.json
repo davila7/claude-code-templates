@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mongodb-official": {
+      "description": "Official MongoDB MCP Server by MongoDB. Connect to MongoDB databases and Atlas clusters for querying, aggregation, and collection management.",
+      "command": "npx",
+      "args": ["-y", "mongodb-mcp-server@latest"],
+      "env": {
+        "MDB_MCP_CONNECTION_STRING": "<your-mongodb-connection-string>"
+      }
+    }
+  }
+}
