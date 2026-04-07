@@ -102,6 +102,23 @@ const schemaData = JSON.stringify({
       <!-- Main content -->
       <main id="main-content" class="flex-1 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
         <slot />
+        <footer class="border-t border-[var(--color-border)] mt-12 py-6 px-6 text-center text-sm text-[var(--color-text-secondary)]">
+          <p class="mb-3">Supported by the open source programs of</p>
+          <div class="flex items-center justify-center gap-6 flex-wrap">
+            <a href="https://vercel.com/open-source-program" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
+              <img src="https://cdn.simpleicons.org/vercel/currentColor" alt="Vercel" class="h-5 w-5" />
+              <span>Vercel</span>
+            </a>
+            <a href="https://neon.tech/open-source" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
+              <img src="https://neon.tech/favicon/favicon.svg" alt="Neon" class="h-5 w-5" />
+              <span>Neon</span>
+            </a>
+            <a href="https://claude.com/contact-sales/claude-for-oss" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
+              <img src="https://cdn.simpleicons.org/anthropic/currentColor" alt="Claude" class="h-5 w-5" />
+              <span>Claude</span>
+            </a>
+          </div>
+        </footer>
       </main>
     </div>
 
