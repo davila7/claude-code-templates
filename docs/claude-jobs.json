@@ -1,12 +1,72 @@
 {
-  "lastUpdated": "2026-04-06T04:02:47.469389+00:00",
-  "totalJobs": 77,
+  "lastUpdated": "2026-04-07T03:59:39.666277+00:00",
+  "totalJobs": 80,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK"
+    "RemoteOK",
+    "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47667862",
+      "company": "Integral",
+      "position": "Full Stack Developer",
+      "location": "Remote (LATAM or US)",
+      "remote": true,
+      "salary": "",
+      "description": "Integral is a fractional CTO and AI transformation partnership for scaling businesses ($10M-$100M). We embed with clients as their technology team across strategy, architecture, and hands-on implementation. These are long-term retainer partnerships, not project work. We are a team of 4 today,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47667862",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47667862",
+      "postedAt": "2026-04-06T22:02:14+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "Supabase",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47664663",
+      "company": "Location: Chicago, Illinois, US Remote: Yes",
+      "position": "Software Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Willing to relocate: No Technologies: Claude Code, Cursor, Vercel, Supabase, Expo, SQL Résumé/CV: https://www.linkedin.com/in/kirill-polevoy/ Email: kpolevoy [at-symbol] gmail [dot] com GitHub: https://github.com/kirillpolevoy 10+ years as product leader across B2C/B2B Fintech,insurtech, corp...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47664663",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47664663",
+      "postedAt": "2026-04-06T18:12:04+00:00",
+      "tags": [
+        "Supabase",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-revops-ai-analyst-intern-actian-corporation-1130997",
+      "company": "Actian Corporation",
+      "position": "RevOps AI Analyst Intern",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Company At Actian we believe data should be a competitive advantage. Through the deployment of data technology, underpinned by a relentless and trusted service commitment, we help business critical systems transact and integrate at their very best. As a trusted leader in data management,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-revops-ai-analyst-intern-actian-corporation-1130997",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-revops-ai-analyst-intern-actian-corporation-1130997",
+      "postedAt": "2026-04-06T00:00:10+00:00",
+      "tags": [
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
       "company": "Symmetry Systems",
@@ -519,6 +579,23 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-clickguard-inc-ai-process-optimization-lead",
+      "company": "ClickGUARD Inc.",
+      "position": "AI Process Optimization Lead",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: United States URL: https://www.clickguard.com/ About the Job We’re looking for a curious and practical AI specialist to help optimize workflows across the company using AI. You will work with product, engineering, marketing, sales, and operations to identify inefficiencies and...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/clickguard-inc-ai-process-optimization-lead",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/clickguard-inc-ai-process-optimization-lead",
+      "postedAt": "2026-03-13T17:21:55+00:00",
+      "tags": [
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5153756008",
       "company": "Anthropic",
       "position": "Technical Lead Manager, Model Quality - Claude Code",
@@ -760,26 +837,6 @@
       "tags": [
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5117652008",
-      "company": "Anthropic",
-      "position": "Manager of Solutions Architecture, Applied AI (Industries)",
-      "location": "Munich, Germany",
-      "remote": false,
-      "salary": "",
-      "description": "As the Manager of the Applied AI Architect team for DACH Industries at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across our Industries accounts: large enterprises across all non-tech...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
-      "postedAt": "2026-02-12T05:17:16-05:00",
-      "tags": [
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
