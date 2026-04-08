@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-07T03:59:39.666277+00:00",
+  "lastUpdated": "2026-04-08T04:04:17.222830+00:00",
   "totalJobs": 80,
   "sources": [
     "Anthropic",
@@ -8,6 +8,44 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47679881",
+      "company": "BrandMultiplier",
+      "position": "Head of AI & Engineer",
+      "location": "Fractional-to-Full-Time (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "We're a profitable B2B services company ($3M–$50M ARR clients) actively building a proprietary AI platform — and we need the technical leader to own the execution. WHAT WE'RE BUILDING: A multi-agent AI platform that operationalizes our founder-story methodology into deployable client systems....",
+      "applyUrl": "https://news.ycombinator.com/item?id=47679881",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47679881",
+      "postedAt": "2026-04-07T19:05:22+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "Python",
+        "Node.js",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47673019",
+      "company": "MinimalistechOS (minimalistechos.polsia.app)",
+      "position": "Senior Agentic AI Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "We staff Claude Code / agentic AI engineers for Series A-C companies. Unlike traditional recruiters, we vet for production agent systems experience—not just prompt engineering. Looking for engineers with 5-10+ years who've shipped multi-agent orchestration in production (LangGraph, AutoGen, custom...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47673019",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47673019",
+      "postedAt": "2026-04-07T10:26:43+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47667862",
       "company": "Integral",
@@ -474,27 +512,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5161402008",
-      "company": "Anthropic",
-      "position": "Data Scientist, Marketing",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "As part of our growing Data Science team, you will play an instrumental role in our company’s mission of building safe and beneficial artificial intelligence by driving data-informed decision making across our organization. You’ve worked in cultures of excellence in the past, and are eager to apply...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5161402008",
-      "postedAt": "2026-03-23T16:37:20-04:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5160757008",
       "company": "Anthropic",
       "position": "Security Risk & Compliance, HIPAA",
@@ -550,6 +567,26 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153586008",
       "postedAt": "2026-03-19T12:09:53-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5153773008",
+      "company": "Anthropic",
+      "position": "Product Manager, Claude Growth (Monetization) ",
+      "location": "New York City, NY | Seattle, WA; San Francisco, CA | New York City, NY | Seattle",
+      "remote": false,
+      "salary": "",
+      "description": "As a Product Manager for Monetization, you’ll drive revenue growth across our product suite spanning Claude.ai , Claude Code, Claude Cowork, and Claude Platform. You’ll work closely with other growth teams that are focused on driving growth for specific audiences. You’ll also partner with a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153773008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153773008",
+      "postedAt": "2026-03-17T14:25:05-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -782,27 +819,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5125387008",
-      "company": "Anthropic",
-      "position": "Analytics Data Engineering Manager, Product",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As an Analytics Data Engineering Manager focused on Product, you will build and lead the analytics engineering team responsible for creating the data foundations that enable data-driven decision making across Anthropic’s Product organization. You will oversee the development of scalable data...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
-      "postedAt": "2026-02-19T19:49:54-05:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5124533008",
       "company": "Anthropic",
       "position": "Solutions Architect, Applied AI (Creatives)",
@@ -837,6 +853,26 @@
       "tags": [
         "Rust",
         "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5117652008",
+      "company": "Anthropic",
+      "position": "Manager of Solutions Architecture, Applied AI (Industries)",
+      "location": "Munich, Germany",
+      "remote": false,
+      "salary": "",
+      "description": "As the Manager of the Applied AI Architect team for DACH Industries at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across our Industries accounts: large enterprises across all non-tech...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
+      "postedAt": "2026-02-12T05:17:16-05:00",
+      "tags": [
+        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
@@ -1191,28 +1227,6 @@
         "Claude Code"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5098506008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Windows (Claude Code)",
-      "location": "San Francisco, CA | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "At Anthropic, we believe new AI capabilities are best achieved through secure foundations, not in spite of them. As capabilities grow more advanced, it is critical that progress moves forward safely and for the benefit of all society. It is the reason why security sits at the center of our work,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5098506008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5098506008",
-      "postedAt": "2026-01-29T15:54:36-05:00",
-      "tags": [
-        "TypeScript",
-        "Rust",
-        "Node.js",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5075093008",
@@ -1613,30 +1627,6 @@
       "postedAt": "2025-10-14T18:54:53-04:00",
       "tags": [
         "React",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-4816198008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Claude Code",
-      "location": "New York City, NY; San Francisco, CA; Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4816198008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4816198008",
-      "postedAt": "2025-07-30T12:25:00-04:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
         "Rust",
         "AWS",
         "Claude Code",
