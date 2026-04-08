@@ -1,0 +1,23 @@
+{
+  "description": "Auto-lint after edits. Detects the language from the file extension, runs the appropriate linter (ESLint, Ruff, Rubocop, golangci-lint, cargo clippy, stylelint), and feeds lint errors back to Claude as context so it can fix them automatically. Supports JS/TS, Python, Ruby, Go, Rust, and CSS.",
+  "supportingFiles": [
+    {
+      "source": "auto-lint.sh",
+      "destination": ".claude/hooks/auto-lint.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/auto-lint.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

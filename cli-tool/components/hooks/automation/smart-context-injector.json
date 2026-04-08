@@ -1,0 +1,22 @@
+{
+  "description": "Smart context injector. On session startup and after context compaction, injects useful project context into Claude's memory: current git branch, recent commits, modified files, open TODOs, and custom project reminders. Keeps Claude oriented after long sessions. Can be scoped to fire only on compaction.",
+  "supportingFiles": [
+    {
+      "source": "smart-context-injector.sh",
+      "destination": ".claude/hooks/smart-context-injector.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/smart-context-injector.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

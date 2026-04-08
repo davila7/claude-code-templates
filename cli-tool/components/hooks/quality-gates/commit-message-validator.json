@@ -1,0 +1,23 @@
+{
+  "description": "Commit message validator. Intercepts git commit commands and validates that the commit message follows the Conventional Commits format (feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert). Blocks non-compliant messages with clear feedback. Customizable allowed types and format pattern.",
+  "supportingFiles": [
+    {
+      "source": "commit-message-validator.sh",
+      "destination": ".claude/hooks/commit-message-validator.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/commit-message-validator.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

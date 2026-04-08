@@ -1,0 +1,23 @@
+{
+  "description": "Network exfiltration guard. Prevents commands from sending data to untrusted external hosts. Blocks curl, wget, nc, scp, and rsync to any domain not on your allowlist. Catches piping sensitive files (.env, SSH keys, tokens) to any external destination. Customizable domain allowlist and sensitive file patterns.",
+  "supportingFiles": [
+    {
+      "source": "network-exfiltration-guard.sh",
+      "destination": ".claude/hooks/network-exfiltration-guard.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/network-exfiltration-guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

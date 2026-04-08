@@ -1,0 +1,22 @@
+{
+  "description": "Full session audit logger. Logs every tool call with timestamp, session ID, tool name, and tool inputs as a JSON-lines file (.claude/logs/audit-YYYY-MM-DD.jsonl). Useful for compliance, debugging, and understanding how Claude interacts with your codebase. Fires for all tools by default.",
+  "supportingFiles": [
+    {
+      "source": "session-audit-logger.sh",
+      "destination": ".claude/hooks/session-audit-logger.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-audit-logger.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
