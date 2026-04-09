@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-08T04:04:17.222830+00:00",
-  "totalJobs": 80,
+  "lastUpdated": "2026-04-09T03:58:26.511254+00:00",
+  "totalJobs": 81,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,123 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5174747008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Full-stack",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic’s Product Engineering org is looking for experienced engineers with strong full-stack fundamentals to join one of teams owning our current or emergent products. You'll be a technical leader who thinks holistically about the consumer and/or enterprise end user experience - be that via...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174747008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174747008",
+      "postedAt": "2026-04-08T14:57:51-04:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5174755008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Backend",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is looking for experienced, product-minded engineers to own the backend systems that power user experiences across our API, Claude Code, and Claude.ai. You'll independently scope complex, multi-month projects through ambiguous problem spaces and lead peers through technical and product...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "postedAt": "2026-04-08T14:57:22-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5157844008",
+      "company": "Anthropic",
+      "position": "Software Engineer, Platform",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "We are looking for software engineers to join our Platform organization. We build the foundational primitives that accelerate product development across Anthropic, and own infrastructure and systems that teams depend on to ship reliably and at scale - either internally or by hundreds of thousands...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157844008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157844008",
+      "postedAt": "2026-04-08T14:05:44-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5157847008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Platform",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "We are looking for experienced software engineers to join our Platform organization. We build the foundational primitives that accelerate product development across Anthropic, and own infrastructure and systems that teams depend on to ship reliably and at scale - either internally or by hundreds of...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157847008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157847008",
+      "postedAt": "2026-04-08T12:56:33-04:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
+      "company": "Luxury Presence",
+      "position": "Staff Software Engineer CRM LATAM",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Luxury Presence is building the AI growth platform for real estate. Backed by Bessemer Venture Partners and other top investors, we're a Series C company on track to hit $100M in annual recurring revenue in the next six months. More than 87,000 real estate professionals, including over 30% of the...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
+      "postedAt": "2026-04-08T00:00:04+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Kubernetes",
+        "Claude Code",
+        "Tailwind",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47679881",
       "company": "BrandMultiplier",
@@ -633,26 +750,6 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5153756008",
-      "company": "Anthropic",
-      "position": "Technical Lead Manager, Model Quality - Claude Code",
-      "location": "New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "We're looking for a Technical Lead Manager to build and lead the Model Quality engineering team within Claude Code. This team sits at the intersection of engineering and research, building the eval systems, data pipelines, and experimentation infrastructure that tell us where Claude's coding...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153756008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153756008",
-      "postedAt": "2026-03-13T16:46:44-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5146261008",
       "company": "Anthropic",
       "position": "Software Engineer, Billing Platform",
@@ -1178,7 +1275,7 @@
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
-      "description": "We're looking for a Software Engineer to work at the intersection of engineering and research on the Claude Code team. In this role, you'll collaborate directly with Anthropic's researchers to improve Claude’s coding capabilities through tooling, infrastructure, and evaluations. You'll build...",
+      "description": "We're looking for a Staff Software Engineer to set technical direction at the intersection of engineering and research on the Claude Code team. In this role, you'll partner directly with Anthropic's researchers and engineering leadership to shape how we measure, understand, and improve Claude's...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5098025008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5098025008",
@@ -1552,27 +1649,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5023089008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Platform",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "We are looking for backend / platform software engineers to join our Product Foundations org. We build foundational primitives that help accelerate product development across Anthropic. Some examples of what we own and maintain are our core sampling pipeline, our rate limiting platform, and our RAG...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5023089008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5023089008",
-      "postedAt": "2025-12-08T20:12:53-05:00",
-      "tags": [
-        "React",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-4985920008",
       "company": "Anthropic",
       "position": "Product Manager, Claude Code",
@@ -1607,47 +1683,6 @@
       "tags": [
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-4955107008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Platform",
-      "location": "New York City, NY; San Francisco, CA; Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "We are looking for backend / platform software engineers to join our Product Foundations org. We build foundational primitives that help accelerate product development across Anthropic. Some examples of what we own and maintain are our core sampling pipeline, our rate limiting platform, and our RAG...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4955107008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4955107008",
-      "postedAt": "2025-10-14T18:54:53-04:00",
-      "tags": [
-        "React",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-4667572008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Enterprise Foundations",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Enterprise is central to Anthropic's mission. The organizations that could benefit most from Claude in healthcare, financial services, and government are often the most demanding buyers, with rigorous requirements around security, compliance, and control. We believe earning their trust is essential...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4667572008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4667572008",
-      "postedAt": "2025-04-30T18:08:59-04:00",
-      "tags": [
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
