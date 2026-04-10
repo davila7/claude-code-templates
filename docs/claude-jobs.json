@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-09T03:58:26.511254+00:00",
-  "totalJobs": 81,
+  "lastUpdated": "2026-04-10T04:04:25.643097+00:00",
+  "totalJobs": 82,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,47 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47712573",
+      "company": "RDE Advisors",
+      "position": "Senior Full-Stack Engineer",
+      "location": "REMOTE (Europe, LatAm, India)",
+      "remote": true,
+      "salary": "$4,000–5,000",
+      "description": "We're a boutique commercial real estate advisory in NYC building two production web applications: a CRE search platform and a property management platform with QuickBooks integration. Both are live with real users. Stack is Next.js 14, TypeScript, Supabase/Postgres, Prisma, Anthropic Claude API,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47712573",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47712573",
+      "postedAt": "2026-04-10T01:41:53+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "PostgreSQL",
+        "Supabase"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5181763008",
+      "company": "Anthropic",
+      "position": "Manager, Customer Productivity",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is seeking an experienced professional to build and lead our customer productivity and training program. As a key member of the Go-to-Market team, you will be responsible for designing the frameworks, resources, and engagement motions that ensure our customers are successfully adopting...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5181763008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5181763008",
+      "postedAt": "2026-04-09T18:57:31-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5174747008",
       "company": "Anthropic",
@@ -98,6 +139,32 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-staff-engineer-digital-lending-oaknorth-1131028",
+      "company": "OakNorth",
+      "position": "Staff Engineer Digital Lending",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "At OakNorth, we’re on a mission to empower the UK’s most ambitious businesses. Since 2015, we’ve lent over $21 billion across the UK and US, helped create more than 58,000 new homes and 36,000 new jobs, and supported hundreds of thousands of personal savers — all while fuelling the UK economy. Team...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-staff-engineer-digital-lending-oaknorth-1131028",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-staff-engineer-digital-lending-oaknorth-1131028",
+      "postedAt": "2026-04-08T08:00:12+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Claude Code"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "rok-remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
@@ -518,26 +585,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-47602252",
-      "company": "Atem Intelligence",
-      "position": "Software Engineer",
-      "location": "REMOTE (EU or US timezone)",
-      "remote": true,
-      "salary": "",
-      "description": "Building an AI-powered iOS app that helps professionals make better daily decisions about fueling, movement, recovery, and schedule - timed to their real-world context (calendar, biometrics, personal history), not generic advice. The technical challenges: HealthKit data ingestion across multiple...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47602252",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47602252",
-      "postedAt": "2026-04-01T15:32:00+00:00",
-      "tags": [
-        "PostgreSQL",
-        "Supabase",
-        "Cursor",
-        "Swift"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "hn-47601886",
       "company": "Di Rezze Family Office",
       "position": "Software Engineer",
@@ -583,30 +630,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
-      "company": "Arbiter AI",
-      "position": "Senior Backend Engineer Integrations",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Arbiter is the AI-powered care orchestration system that unites healthcare. We are launching our best-in-class, patient-facing Agentic platform to optimize patient outcomes through a unique multimodal approach. We optimize complex healthcare workflows that interface with patients using the latest...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-backend-engineer-integrations-arbiter-ai-1130908",
-      "postedAt": "2026-03-27T16:00:44+00:00",
-      "tags": [
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Claude Code",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5104689008",
@@ -695,8 +718,8 @@
     {
       "id": "anth-5153773008",
       "company": "Anthropic",
-      "position": "Product Manager, Claude Growth (Monetization) ",
-      "location": "New York City, NY | Seattle, WA; San Francisco, CA | New York City, NY | Seattle",
+      "position": "Product Manager, Monetization",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
       "description": "As a Product Manager for Monetization, you’ll drive revenue growth across our product suite spanning Claude.ai , Claude Code, Claude Cowork, and Claude Platform. You’ll work closely with other growth teams that are focused on driving growth for specific audiences. You’ll also partner with a...",
