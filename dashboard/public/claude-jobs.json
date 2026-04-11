@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-11T04:00:58.334172+00:00",
-  "totalJobs": 83,
+  "lastUpdated": "2026-04-11T20:40:10.170071+00:00",
+  "totalJobs": 85,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,47 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-47727983",
+      "company": "Deepline",
+      "position": "Software Engineer",
+      "location": "On-site",
+      "remote": false,
+      "salary": "$160k–$220k",
+      "description": "User interfaces are dead. Knowledge workers will exclusively work through agent interfaces like Claude Code/Cowork. We've built the interface layer to enable that. One API that unifies hundreds of data providers, workflows, and data infrastructure to agents like Claude Code. We shipped our mvp last...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47727983",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47727983",
+      "postedAt": "2026-04-11T06:23:06+00:00",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-engineering-manager-hinge-health-1131068",
+      "company": "Hinge Health",
+      "position": "Engineering Manager",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "The Opportunity Hinge Health is hiring an Engineering Manager for our Growth Data Platform (GDP) pod in Bangalore. This is a pivot-point role for a leader who is ready to move beyond traditional software management and lead a team into the era of AI-Native Engineering and ML-Driven Growth. The GDP...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-engineering-manager-hinge-health-1131068",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-engineering-manager-hinge-health-1131068",
+      "postedAt": "2026-04-10T08:00:14+00:00",
+      "tags": [
+        "Rust",
+        "Claude Code",
+        "Cursor",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5182430008",
       "company": "Anthropic",
