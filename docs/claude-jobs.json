@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-10T04:04:25.643097+00:00",
-  "totalJobs": 82,
+  "lastUpdated": "2026-04-11T04:00:58.334172+00:00",
+  "totalJobs": 83,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,26 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5182430008",
+      "company": "Anthropic",
+      "position": "Insider Risk Investigator - Technical & Human Intelligence",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "We are seeking an exceptional Insider Risk Investigator with expertise in both human and technical investigations to support and protect Anthropic's mission. The Insider Risk Team works cross-functionally to deter, identify, investigate and mitigate risks to Anthropic's most critical assets—our...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182430008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182430008",
+      "postedAt": "2026-04-10T02:42:06-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-47712573",
       "company": "RDE Advisors",
@@ -650,6 +670,32 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-moxie-staff-product-engineer-fullstack-ic-4",
+      "company": "Moxie",
+      "position": "Staff product engineer (fullstack) (IC-4)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote - US At Moxie, we empower ambitious aesthetic entrepreneurs to build profitable, independent practices—without burnout, overwhelm, or guesswork. In just a few years, we’ve grown from an idea to a global, remote-first team of more than 140 people, supporting hundreds of...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/moxie-staff-product-engineer-fullstack-ic-4",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/moxie-staff-product-engineer-fullstack-ic-4",
+      "postedAt": "2026-03-21T20:31:51+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5160757008",
@@ -1504,30 +1550,6 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5062712008",
       "postedAt": "2026-01-15T12:42:51-05:00",
       "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5055672008",
-      "company": "Anthropic",
-      "position": "Technical Product Marketing Lead",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "We're looking for a Technical Product Marketing Lead who can build experiences that tell the story of AI's transformative potential. You'll create narratives, demos, and interactive experiences across our entire suite of products—the Claude app, Claude Code, and our API platform—that help people...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5055672008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5055672008",
-      "postedAt": "2026-01-15T00:58:51-05:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
         "Rust",
         "AWS",
         "Claude Code",
