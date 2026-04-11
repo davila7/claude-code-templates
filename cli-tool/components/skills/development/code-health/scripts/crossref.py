@@ -9,6 +9,7 @@ Usage:
     python crossref.py html
 """
 
+import html as html_mod
 import json
 import math
 import re
@@ -731,7 +732,7 @@ def analyze(src_path):
             "avg_cc": round(avg_cc, 1),
             "total_ruff": total_ruff,
             "communities": len(
-                set(n.get("community") for n in nodes.values() if n.get("community"))
+                set(n.get("community") for n in nodes.values() if n.get("community") is not None)
             ),
         },
         "top_risks": risk_scores[:25],
@@ -895,11 +896,12 @@ def generate_html(results=None):
         bar_w = min(round(risk_val / (top[0]["risk"] or 1) * 100), 100)
         cc_display = r["cc"] if r["cc"] else "—"
         mi_display = round(r["mi"], 1) if r["mi"] else "—"
+        esc_id = html_mod.escape(str(r["id"]), quote=True)
         risk_rows += (
-            f'<tr class="risk-row" data-node-id="{r["id"]}" '
+            f'<tr class="risk-row" data-node-id="{esc_id}" '
             f'style="cursor:pointer;">'
-            f'<td>{r["label"]}</td>'
-            f'<td style="color:var(--text-muted)">{r["file"]}</td>'
+            f'<td>{html_mod.escape(str(r["label"]))}</td>'
+            f'<td style="color:var(--text-muted)">{html_mod.escape(str(r["file"]))}</td>'
             f'<td class="mono">{r["degree"]}</td>'
             f'<td class="mono">{cc_display}</td>'
             f'<td class="mono">{mi_display}</td>'
@@ -907,8 +909,8 @@ def generate_html(results=None):
             f'<div class="severity-bar"><div class="severity-bar-fill {bar_cls}" '
             f'style="width:{bar_w}%"></div></div>'
             f'<span class="{rcls}">{risk_val}</span></div></td></tr>\n'
-            f'<tr class="detail-row" id="detail-{r["id"]}" style="display:none;">'
-            f'<td colspan="6"><div class="detail-panel" id="panel-{r["id"]}"></div></td></tr>\n'
+            f'<tr class="detail-row" id="detail-{esc_id}" style="display:none;">'
+            f'<td colspan="6"><div class="detail-panel" id="panel-{esc_id}"></div></td></tr>\n'
         )
 
     # Build community data for JS detail panels
@@ -999,15 +1001,8 @@ def generate_html(results=None):
         </div>"""
 
     # ── Main Sequence plot (SDP + SAP) ──
-    # Get architecture metrics from results (re-compute if needed)
-    arch_path = Path("code-health-out/crossref.json")
-    if arch_path.exists():
-        cross_data = json.loads(arch_path.read_text())
-        arch_metrics = cross_data.get("architecture_metrics", {})
-        cycles_data = cross_data.get("cycles", [])
-    else:
-        arch_metrics = {}
-        cycles_data = []
+    arch_metrics = results.get("architecture_metrics", {})
+    cycles_data = results.get("cycles", [])
 
     # Build Main Sequence plot data.
     # Note: what our code calls "stability" is actually "instability" in

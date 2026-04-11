@@ -117,12 +117,16 @@ HTML dashboard: code-health-out/health_report.html
 
 ### Subcommands
 
-- `--report` — skips Step 2, runs only cross-reference on the existing graph
-- `--html` — runs only the HTML generator from existing `code-health-out/crossref.json`
+- `--report` — prints the top-risk summary from existing `code-health-out/crossref.json` to stdout (no HTML regeneration)
+- `--html` — regenerates the HTML dashboard from existing `code-health-out/crossref.json` (no re-analysis)
 
-Both are passed through to crossref.py:
+Pass the matching subcommand to crossref.py:
 
 ```bash
+# Print risk summary only
+python3 "$SKILL_DIR/scripts/crossref.py" report
+
+# Regenerate HTML only
 python3 "$SKILL_DIR/scripts/crossref.py" html
 ```
 
