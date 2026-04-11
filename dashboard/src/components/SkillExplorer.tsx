@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import SkillSlideView from './SkillSlideView';
 
 interface Heading {
   level: number;
@@ -135,7 +136,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
   const [fileContent, setFileContent] = useState(skillContent);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'code' | 'preview'>('preview');
+  const [mode, setMode] = useState<'code' | 'preview' | 'slides'>('preview');
   const [expanded, setExpanded] = useState(false);
   const [activeHeading, setActiveHeading] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -290,7 +291,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
 
   const handleFileClick = (path: string) => {
     setSelectedFile(path);
-    setMode('preview');
+    if (mode === 'slides') setMode('preview');
     setSearchOpen(false);
     setSearchQuery('');
     setExpanded(false);
@@ -374,6 +375,15 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                   </svg>
                   Preview
                 </button>
+                {selectedFile === 'SKILL.md' && (
+                  <button onClick={() => setMode('slides')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${mode === 'slides' ? 'bg-surface-2 text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-secondary'}`}>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                    </svg>
+                    Slides
+                  </button>
+                )}
               </div>
             )}
             {isMarkdown && (
@@ -397,7 +407,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
         </div>
 
         {/* Search bar */}
-        {searchOpen && isMarkdown && (
+        {searchOpen && isMarkdown && mode !== 'slides' && (
           <div className="mb-3 relative">
             <div className="relative">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-text-tertiary)] pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -452,6 +462,11 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
           </div>
         )}
 
+        {/* Slides mode */}
+        {mode === 'slides' && selectedFile === 'SKILL.md' ? (
+          <SkillSlideView content={skillContent} skillName={skillName} />
+        ) : (
+        <>
         {/* Content + TOC — identical layout to MarkdownViewer */}
         <div className="flex gap-0 items-stretch">
           {/* File tree panel */}
@@ -532,6 +547,8 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
           )}
           </div>
         </div>
+        </>
+        )}
       </div>
   );
 }
