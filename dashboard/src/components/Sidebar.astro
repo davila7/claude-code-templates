@@ -233,15 +233,31 @@ function isActive(path: string): boolean {
 
   window.addEventListener('popstate', updateSidebarActive);
 
-  // Listen for component counts from React grid
-  window.addEventListener('component-counts', ((e: CustomEvent) => {
-    const counts = e.detail as Record<string, number>;
+  // Load component counts directly — no dependency on page components
+  function applyCounts(counts: Record<string, number>) {
     document.querySelectorAll('.sidebar-nav-count').forEach((el) => {
       const type = (el as HTMLElement).dataset.countType;
       if (type && counts[type]) {
         el.textContent = String(counts[type]);
       }
     });
+  }
+
+  // Fetch counts on load
+  fetch('/components.json')
+    .then((r) => r.json())
+    .then((data: Record<string, unknown>) => {
+      const counts: Record<string, number> = {};
+      for (const type of Object.keys(data)) {
+        if (Array.isArray(data[type])) counts[type] = (data[type] as unknown[]).length;
+      }
+      applyCounts(counts);
+    })
+    .catch(() => {});
+
+  // Also listen for counts from React grid (may arrive with more accurate data)
+  window.addEventListener('component-counts', ((e: CustomEvent) => {
+    applyCounts(e.detail as Record<string, number>);
   }) as EventListener);
 
   // Custom tooltip functionality
