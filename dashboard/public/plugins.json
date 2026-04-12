@@ -97,7 +97,7 @@
       },
       {
         "name": "aikido",
-        "description": "Aikido Security scanning for Claude Code — SAST, secrets, and IaC vulnerability detection powered by the Aikido MCP server.",
+        "description": "Aikido Security scanning for Claude Code \u2014 SAST, secrets, and IaC vulnerability detection powered by the Aikido MCP server.",
         "source": "https://github.com/AikidoSec/aikido-claude-plugin.git"
       },
       {
@@ -197,7 +197,7 @@
       },
       {
         "name": "cockroachdb",
-        "description": "CockroachDB plugin for Claude Code — explore schemas, write optimized SQL, debug queries, and manage distributed database clusters directly from your AI coding agent.",
+        "description": "CockroachDB plugin for Claude Code \u2014 explore schemas, write optimized SQL, debug queries, and manage distributed database clusters directly from your AI coding agent.",
         "source": "https://github.com/cockroachdb/claude-plugin.git"
       },
       {
@@ -220,7 +220,7 @@
       },
       {
         "name": "coderabbit",
-        "description": "Your code review partner. CodeRabbit provides external validation using a specialized AI architecture and 40+ integrated static analyzers—offering a different perspective that catches bugs, security vulnerabilities, logic errors, and edge cases. Context-aware analysis via AST parsing and codegraph relationships. Automatically incorporates CLAUDE.md and project coding guidelines into reviews. Useful after writing or modifying code, before commits, when implementing complex or security-sensitive logic, or when a second opinion would increase confidence in the changes. Returns specific findings with suggested fixes that can be applied immediately. Free to use.",
+        "description": "Your code review partner. CodeRabbit provides external validation using a specialized AI architecture and 40+ integrated static analyzers\u2014offering a different perspective that catches bugs, security vulnerabilities, logic errors, and edge cases. Context-aware analysis via AST parsing and codegraph relationships. Automatically incorporates CLAUDE.md and project coding guidelines into reviews. Useful after writing or modifying code, before commits, when implementing complex or security-sensitive logic, or when a second opinion would increase confidence in the changes. Returns specific findings with suggested fixes that can be applied immediately. Free to use.",
         "source": "https://github.com/coderabbitai/claude-plugin.git"
       },
       {
@@ -275,7 +275,7 @@
       },
       {
         "name": "elixir-ls-lsp",
-        "description": "Elixir language server (ElixirLS) for Claude Code — provides code intelligence and diagnostics for .ex, .exs, and .heex files.",
+        "description": "Elixir language server (ElixirLS) for Claude Code \u2014 provides code intelligence and diagnostics for .ex, .exs, and .heex files.",
         "source": "https://github.com/MikaelFangel/claude-elixir-ls-lsp.git"
       },
       {
@@ -382,7 +382,7 @@
       },
       {
         "name": "helius",
-        "description": "Build on Solana with Helius — live blockchain tools, expert coding patterns, and autonomous account signup",
+        "description": "Build on Solana with Helius \u2014 live blockchain tools, expert coding patterns, and autonomous account signup",
         "source": "helius-labs/core-ai",
         "source_path": "helius-plugin"
       },
@@ -501,7 +501,7 @@
       },
       {
         "name": "netlify-skills",
-        "description": "Netlify platform skills for Claude Code — functions, edge functions, blobs, database, image CDN, forms, config, CLI, frameworks, caching, AI gateway, and deployment.",
+        "description": "Netlify platform skills for Claude Code \u2014 functions, edge functions, blobs, database, image CDN, forms, config, CLI, frameworks, caching, AI gateway, and deployment.",
         "source": "https://github.com/netlify/context-and-tools.git"
       },
       {
@@ -511,7 +511,7 @@
       },
       {
         "name": "nimble",
-        "description": "Nimble web data toolkit — search, extract, map, crawl the web and work with structured data agents",
+        "description": "Nimble web data toolkit \u2014 search, extract, map, crawl the web and work with structured data agents",
         "source": "https://github.com/Nimbleway/agent-skills.git"
       },
       {
@@ -521,12 +521,12 @@
       },
       {
         "name": "opsera-devsecops",
-        "description": "Opsera DevSecOps Agent — AI-powered architecture analysis, security scanning, compliance auditing, and SQL security for your codebase. Free trial included.",
+        "description": "Opsera DevSecOps Agent \u2014 AI-powered architecture analysis, security scanning, compliance auditing, and SQL security for your codebase. Free trial included.",
         "source": "https://github.com/opsera-agents/opsera-devsecops.git"
       },
       {
         "name": "optibot",
-        "description": "AI code review that catches production-breaking bugs, business logic issues, and security vulnerabilities — directly in Claude Code.",
+        "description": "AI code review that catches production-breaking bugs, business logic issues, and security vulnerabilities \u2014 directly in Claude Code.",
         "source": "https://github.com/Optimal-AI/optibot-skill.git"
       },
       {
@@ -555,7 +555,7 @@
       },
       {
         "name": "playground",
-        "description": "Creates interactive HTML playgrounds — self-contained single-file explorers with visual controls, live preview, and prompt output with copy button. Includes templates for design playgrounds, data explorers, concept maps, and document critique.",
+        "description": "Creates interactive HTML playgrounds \u2014 self-contained single-file explorers with visual controls, live preview, and prompt output with copy button. Includes templates for design playgrounds, data explorers, concept maps, and document critique.",
         "source": "./plugins/playground",
         "author": "Anthropic",
         "components": {
@@ -610,7 +610,7 @@
       },
       {
         "name": "product-tracking-skills",
-        "description": "AI agent skills that make SaaS products data-ready for product analytics — from codebase scan to tracking plan to working instrumentation code.",
+        "description": "AI agent skills that make SaaS products data-ready for product analytics \u2014 from codebase scan to tracking plan to working instrumentation code.",
         "source": "https://github.com/Accoil/product-tracking-skills.git"
       },
       {
@@ -624,7 +624,7 @@
       },
       {
         "name": "qodo-skills",
-        "description": "Qodo Skills provides a curated library of reusable AI agent capabilities that extend Claude's functionality for software development workflows. Each skill is designed to integrate seamlessly into your development process, enabling tasks like code quality checks, automated testing, security scanning, and compliance validation. Skills operate across your entire SDLC—from IDE to CI/CD—ensuring consistent standards and catching issues early.",
+        "description": "Qodo Skills provides a curated library of reusable AI agent capabilities that extend Claude's functionality for software development workflows. Each skill is designed to integrate seamlessly into your development process, enabling tasks like code quality checks, automated testing, security scanning, and compliance validation. Skills operate across your entire SDLC\u2014from IDE to CI/CD\u2014ensuring consistent standards and catching issues early.",
         "source": "https://github.com/qodo-ai/qodo-skills.git"
       },
       {
@@ -684,7 +684,7 @@
       },
       {
         "name": "searchfit-seo",
-        "description": "Free AI-powered SEO toolkit — audit websites, plan content strategy, optimize pages, generate schema markup, cluster keywords, and track AI visibility. Works with any website or codebase.",
+        "description": "Free AI-powered SEO toolkit \u2014 audit websites, plan content strategy, optimize pages, generate schema markup, cluster keywords, and track AI visibility. Works with any website or codebase.",
         "source": "https://github.com/searchfit/searchfit-seo.git"
       },
       {
@@ -1052,7 +1052,7 @@
       },
       {
         "name": "apollo",
-        "description": "Prospect, enrich leads, and load outreach sequences with Apollo.io — one-click MCP server integration for Claude Code and Cowork.",
+        "description": "Prospect, enrich leads, and load outreach sequences with Apollo.io \u2014 one-click MCP server integration for Claude Code and Cowork.",
         "source": "./partner-built/apollo",
         "author": "Apollo.io",
         "components": {
@@ -1071,7 +1071,7 @@
       },
       {
         "name": "engineering",
-        "description": "Streamline engineering workflows — standups, code review, architecture decisions, incident response, and technical documentation. Works with your existing tools or standalone.",
+        "description": "Streamline engineering workflows \u2014 standups, code review, architecture decisions, incident response, and technical documentation. Works with your existing tools or standalone.",
         "source": "./engineering",
         "components": {
           "skills": 10
@@ -1079,7 +1079,7 @@
       },
       {
         "name": "human-resources",
-        "description": "Streamline people operations — recruiting, onboarding, performance reviews, compensation analysis, and policy guidance. Maintain compliance and keep your team running smoothly.",
+        "description": "Streamline people operations \u2014 recruiting, onboarding, performance reviews, compensation analysis, and policy guidance. Maintain compliance and keep your team running smoothly.",
         "source": "./human-resources",
         "components": {
           "skills": 9
@@ -1087,7 +1087,7 @@
       },
       {
         "name": "design",
-        "description": "Accelerate design workflows — critique, design system management, UX writing, accessibility audits, research synthesis, and dev handoff. From exploration to pixel-perfect specs.",
+        "description": "Accelerate design workflows \u2014 critique, design system management, UX writing, accessibility audits, research synthesis, and dev handoff. From exploration to pixel-perfect specs.",
         "source": "./design",
         "components": {
           "skills": 7
@@ -1095,7 +1095,7 @@
       },
       {
         "name": "operations",
-        "description": "Optimize business operations — vendor management, process documentation, change management, capacity planning, and compliance tracking. Keep your organization running efficiently.",
+        "description": "Optimize business operations \u2014 vendor management, process documentation, change management, capacity planning, and compliance tracking. Keep your organization running efficiently.",
         "source": "./operations",
         "components": {
           "skills": 9
@@ -1156,7 +1156,7 @@
       },
       {
         "name": "cockroachdb",
-        "description": "CockroachDB plugin for Claude Code — explore schemas, write optimized SQL, debug queries, and manage distributed database clusters directly from your AI coding agent.",
+        "description": "CockroachDB plugin for Claude Code \u2014 explore schemas, write optimized SQL, debug queries, and manage distributed database clusters directly from your AI coding agent.",
         "source": "https://github.com/cockroachdb/claude-plugin.git"
       },
       {
@@ -1176,7 +1176,7 @@
       },
       {
         "name": "nimble",
-        "description": "Nimble web data toolkit — search, extract, map, crawl the web and work with structured data agents",
+        "description": "Nimble web data toolkit \u2014 search, extract, map, crawl the web and work with structured data agents",
         "source": "https://github.com/Nimbleway/agent-skills.git"
       },
       {
@@ -1186,7 +1186,7 @@
       },
       {
         "name": "searchfit-seo",
-        "description": "Free AI-powered SEO toolkit — audit websites, plan content strategy, optimize pages, generate schema markup, cluster keywords, and track AI visibility. Works with any website or codebase.",
+        "description": "Free AI-powered SEO toolkit \u2014 audit websites, plan content strategy, optimize pages, generate schema markup, cluster keywords, and track AI visibility. Works with any website or codebase.",
         "source": "https://github.com/searchfit/searchfit-seo.git"
       },
       {
@@ -1202,7 +1202,7 @@
       },
       {
         "name": "product-tracking-skills",
-        "description": "AI agent skills that make SaaS products data-ready for product analytics — from codebase scan to tracking plan to working instrumentation code.",
+        "description": "AI agent skills that make SaaS products data-ready for product analytics \u2014 from codebase scan to tracking plan to working instrumentation code.",
         "source": "https://github.com/Accoil/product-tracking-skills.git"
       },
       {
@@ -1217,7 +1217,7 @@
       },
       {
         "name": "pdf-viewer",
-        "description": "View, annotate, and sign PDFs in a live interactive viewer. Mark up contracts, fill forms with visual feedback, stamp approvals, and place signatures — then download the annotated copy.",
+        "description": "View, annotate, and sign PDFs in a live interactive viewer. Mark up contracts, fill forms with visual feedback, stamp approvals, and place signatures \u2014 then download the annotated copy.",
         "source": "./pdf-viewer",
         "components": {
           "skills": 1,
@@ -1230,7 +1230,7 @@
     "slug": "alirezarezvani-claude-skills",
     "name": "Claude Skills",
     "author": "alirezarezvani",
-    "description": "+192 Claude Code skills & agent plugins for Claude Code, Codex, Gemini CLI, Cursor, and 8 more coding agents — engineering, marketing, product, compliance, C-level advisory.",
+    "description": "+192 Claude Code skills & agent plugins for Claude Code, Codex, Gemini CLI, Cursor, and 8 more coding agents \u2014 engineering, marketing, product, compliance, C-level advisory.",
     "github": "https://github.com/alirezarezvani/claude-skills",
     "stars": 7463,
     "type": "marketplace",
@@ -1453,7 +1453,7 @@
       },
       {
         "name": "autoresearch-agent",
-        "description": "Autonomous experiment loop — optimize any file by a measurable metric. 5 slash commands (/ar:setup, /ar:run, /ar:loop, /ar:status, /ar:resume), 8 built-in evaluators, configurable loop intervals (10min to monthly).",
+        "description": "Autonomous experiment loop \u2014 optimize any file by a measurable metric. 5 slash commands (/ar:setup, /ar:run, /ar:loop, /ar:status, /ar:resume), 8 built-in evaluators, configurable loop intervals (10min to monthly).",
         "source": "./engineering/autoresearch-agent",
         "author": "Alireza Rezvani",
         "tags": [
@@ -1593,7 +1593,7 @@
       },
       {
         "name": "agenthub",
-        "description": "Multi-agent collaboration — spawn N parallel subagents that compete on code optimization, content drafts, research approaches, or any task that benefits from diverse solutions. 7 slash commands (/hub:init, /hub:spawn, /hub:status, /hub:eval, /hub:merge, /hub:board, /hub:run), agent templates, DAG-based orchestration, LLM judge mode, message board coordination.",
+        "description": "Multi-agent collaboration \u2014 spawn N parallel subagents that compete on code optimization, content drafts, research approaches, or any task that benefits from diverse solutions. 7 slash commands (/hub:init, /hub:spawn, /hub:status, /hub:eval, /hub:merge, /hub:board, /hub:run), agent templates, DAG-based orchestration, LLM judge mode, message board coordination.",
         "source": "./engineering/agenthub",
         "author": "Alireza Rezvani",
         "tags": [
@@ -1648,7 +1648,7 @@
       },
       {
         "name": "docker-development",
-        "description": "Docker and container development — Dockerfile optimization, docker-compose orchestration, multi-stage builds, security hardening, and CI/CD container pipelines.",
+        "description": "Docker and container development \u2014 Dockerfile optimization, docker-compose orchestration, multi-stage builds, security hardening, and CI/CD container pipelines.",
         "source": "./engineering/docker-development",
         "author": "Alireza Rezvani",
         "tags": [
@@ -1661,7 +1661,7 @@
       },
       {
         "name": "helm-chart-builder",
-        "description": "Helm chart development — chart scaffolding, values design, template patterns, dependency management, and Kubernetes deployment strategies.",
+        "description": "Helm chart development \u2014 chart scaffolding, values design, template patterns, dependency management, and Kubernetes deployment strategies.",
         "source": "./engineering/helm-chart-builder",
         "author": "Alireza Rezvani",
         "tags": [
@@ -1674,7 +1674,7 @@
       },
       {
         "name": "terraform-patterns",
-        "description": "Terraform infrastructure-as-code — module design patterns, state management, provider configuration, CI/CD integration, and multi-environment strategies.",
+        "description": "Terraform infrastructure-as-code \u2014 module design patterns, state management, provider configuration, CI/CD integration, and multi-environment strategies.",
         "source": "./engineering/terraform-patterns",
         "author": "Alireza Rezvani",
         "tags": [
@@ -1687,7 +1687,7 @@
       },
       {
         "name": "research-summarizer",
-        "description": "Structured research summarization — summarize academic papers, market research, user interviews, and competitive analysis into actionable insights.",
+        "description": "Structured research summarization \u2014 summarize academic papers, market research, user interviews, and competitive analysis into actionable insights.",
         "source": "./product-team/research-summarizer",
         "author": "Alireza Rezvani",
         "tags": [
@@ -2864,7 +2864,7 @@
     "slug": "claude-octopus",
     "name": "Claude Octopus",
     "author": "nyldn",
-    "description": "Multi-LLM orchestration plugin for Claude Code — 8 providers (Codex, Gemini, Claude, Perplexity, OpenRouter, Copilot, Qwen, Ollama), 47 commands, 50 skills, Double Diamond workflows",
+    "description": "Multi-LLM orchestration plugin for Claude Code \u2014 8 providers (Codex, Gemini, Claude, Perplexity, OpenRouter, Copilot, Qwen, Ollama), 47 commands, 50 skills, Double Diamond workflows",
     "github": "https://github.com/nyldn/claude-octopus",
     "stars": 2132,
     "type": "plugin",
@@ -7635,7 +7635,7 @@
       },
       {
         "name": "b12-claude-plugin",
-        "description": "B12 Website Generator — an official plugin by B12.io. Ships a single auto-activating skill (website-generator) that collects a business name and description, then generates a production-ready B12 website signup link instantly.",
+        "description": "B12 Website Generator \u2014 an official plugin by B12.io. Ships a single auto-activating skill (website-generator) that collects a business name and description, then generates a production-ready B12 website signup link instantly.",
         "source": "./plugins/community/b12-claude-plugin",
         "author": "B12.io",
         "tags": [
@@ -8902,7 +8902,7 @@
       },
       {
         "name": "pr-to-spec",
-        "description": "The flight envelope for agentic coding — convert PRs and local diffs into structured, agent-consumable specs with intent drift detection",
+        "description": "The flight envelope for agentic coding \u2014 convert PRs and local diffs into structured, agent-consumable specs with intent drift detection",
         "source": "./plugins/mcp/pr-to-spec",
         "author": "Jeremy Longshore",
         "tags": [
@@ -8915,7 +8915,7 @@
       },
       {
         "name": "slack-channel",
-        "description": "Two-way Slack channel for Claude Code — chat from Slack DMs and channels via Socket Mode",
+        "description": "Two-way Slack channel for Claude Code \u2014 chat from Slack DMs and channels via Socket Mode",
         "source": "./plugins/mcp/slack-channel",
         "author": "Jeremy Longshore",
         "tags": [
@@ -8929,7 +8929,7 @@
       },
       {
         "name": "x-bug-triage-plugin",
-        "description": "Closed-loop bug triage: X complaints → clusters → repo evidence → owner routing → Slack review → filed issues",
+        "description": "Closed-loop bug triage: X complaints \u2192 clusters \u2192 repo evidence \u2192 owner routing \u2192 Slack review \u2192 filed issues",
         "source": "./plugins/mcp/x-bug-triage",
         "author": "Jeremy Longshore",
         "tags": [
@@ -9362,7 +9362,7 @@
       },
       {
         "name": "ultrathink",
-        "description": "Use /ultrathink <TASK_DESCRIPTION> to launch a Coordinator Agent that directs four specialist sub-agents—Architect, Research, Coder, and Tester—to analyze, design, implement, and validate your coding task. The process breaks the task into clear steps, gathers insights, and synthesizes a cohesive solution with actionable outputs. Relevant files can be referenced ad-hoc using @ filename syntax.",
+        "description": "Use /ultrathink <TASK_DESCRIPTION> to launch a Coordinator Agent that directs four specialist sub-agents\u2014Architect, Research, Coder, and Tester\u2014to analyze, design, implement, and validate your coding task. The process breaks the task into clear steps, gathers insights, and synthesizes a cohesive solution with actionable outputs. Relevant files can be referenced ad-hoc using @ filename syntax.",
         "source": "./plugins/ultrathink",
         "author": "Jeronim Morina",
         "tags": [
@@ -9974,7 +9974,7 @@
         "name": "deployment-engineer",
         "description": "Use this agent when setting up CI/CD pipelines, configuring Docker containers, deploying applications to cloud platforms, setting up Kubernetes clusters, implementing infrastructure as code, or automating deployment workflows. Examples: <example>Context: User is setting up a new project and needs deployment automation. user: \"I've built a FastAPI application and need to deploy it to production with proper CI/CD\" assistant: \"I'll use the deployment-engineer agent to set up a complete deployment pipeline with Docker, GitHub Actions, and production-ready configurations.\"</example> <example>Context: User mentions containerization or deployment issues. user: \"Our deployment process is manual and error-prone. We need to automate it.\" assistant: \"Let me use the deployment-engineer agent to design an automated CI/CD pipeline that eliminates manual steps and ensures reliable deployments.\"</example>",
         "source": "./plugins/deployment-engineer",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -10163,7 +10163,7 @@
         "name": "n8n-workflow-builder",
         "description": "Use this agent when you need to design, build, or validate n8n automation workflows. This agent specializes in creating efficient n8n workflows using proper validation techniques and MCP tools integration.\\n\\nExamples:\\n- <example>\\n  Context: User wants to create a Slack notification workflow when a new GitHub issue is created.\\n  user: \"I need to create an n8n workflow that sends a Slack message whenever a new GitHub issue is opened\"\\n  assistant: \"I'll use the n8n-workflow-builder agent to design and build this GitHub-to-Slack automation workflow with proper validation.\"\\n  <commentary>\\n  The user needs n8n workflow creation, so use the n8n-workflow-builder agent to handle the complete workflow design, validation, and deployment process.\\n  </commentary>\\n</example>\\n- <example>\\n  Context: User has an existing n8n workflow that needs debugging and optimization.\\n  user: \"My n8n workflow keeps failing at the HTTP Request node, can you help me fix it?\"\\n  assistant: \"I'll use the n8n-workflow-builder agent to analyze and debug your workflow, focusing on the HTTP Request node configuration.\"\\n  <commentary>\\n  Since this involves n8n workflow troubleshooting and validation, use the n8n-workflow-builder agent to diagnose and fix the issue.\\n  </commentary>\\n</example>\\n- <example>\\n  Context: User wants to understand n8n best practices and available nodes for a specific use case.\\n  user: \"What are the best n8n nodes for processing CSV data and sending email reports?\"\\n  assistant: \"I'll use the n8n-workflow-builder agent to explore the available nodes and recommend the best approach for CSV processing and email automation.\"\\n  <commentary>\\n  This requires n8n expertise and node discovery, so use the n8n-workflow-builder agent to provide comprehensive guidance.\\n  </commentary>\\n</example>",
         "source": "./plugins/n8n-workflow-builder",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -10199,7 +10199,7 @@
         "name": "prd-specialist",
         "description": "Use this agent when you need to create comprehensive Product Requirements Documents (PRDs) that combine business strategy, technical architecture, and user research. Examples: <example>Context: The user needs to create a PRD for a new feature or product launch. user: \"I need to create a PRD for our new user authentication system that will support SSO and multi-factor authentication\" assistant: \"I'll use the prd-specialist agent to create a comprehensive PRD that covers the strategic foundation, technical requirements, and implementation blueprint for your authentication system.\"</example> <example>Context: The user is planning a major product initiative and needs strategic documentation. user: \"We're launching a mobile app for our e-commerce platform and need a detailed PRD to guide development\" assistant: \"Let me engage the prd-specialist agent to develop a thorough PRD that includes market analysis, user research integration, technical architecture, and implementation roadmap for your mobile app initiative.\"</example>",
         "source": "./plugins/prd-specialist",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -10253,7 +10253,7 @@
         "name": "python-expert",
         "description": "Use this agent when working with Python code that requires advanced features, performance optimization, or comprehensive refactoring. Examples: <example>Context: User needs to optimize a slow Python function that processes large datasets. user: \"This function is taking too long to process our data, can you help optimize it?\" assistant: \"I'll use the python-expert agent to analyze and optimize your Python code with advanced techniques and performance profiling.\"</example> <example>Context: User wants to implement async/await patterns in their existing synchronous Python code. user: \"I need to convert this synchronous code to use async/await for better performance\" assistant: \"Let me use the python-expert agent to refactor your code with proper async/await patterns and concurrent programming techniques.\"</example> <example>Context: User needs help implementing complex Python design patterns. user: \"I want to implement a factory pattern with decorators for my API endpoints\" assistant: \"I'll use the python-expert agent to implement advanced Python patterns with decorators and proper design principles.\"</example>",
         "source": "./plugins/python-expert",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -10535,7 +10535,7 @@
     "slug": "agentsys",
     "name": "Agentsys",
     "author": "agent-sh",
-    "description": "AI writes code. This automates everything else · 19 plugins, 47 agents, and 39 skills · for Claude Code, OpenCode, Codex, Cursor, Kiro.",
+    "description": "AI writes code. This automates everything else \u00b7 19 plugins, 47 agents, and 39 skills \u00b7 for Claude Code, OpenCode, Codex, Cursor, Kiro.",
     "github": "https://github.com/agent-sh/agentsys",
     "stars": 658,
     "type": "marketplace",
@@ -10656,7 +10656,7 @@
     "slug": "ccplugins-awesome-claude-code-plugins",
     "name": "Awesome Claude Code Plugins",
     "author": "ccplugins",
-    "description": "Awesome Claude Code plugins — a curated list of slash commands, subagents, MCP servers, and hooks for Claude Code",
+    "description": "Awesome Claude Code plugins \u2014 a curated list of slash commands, subagents, MCP servers, and hooks for Claude Code",
     "github": "https://github.com/ccplugins/awesome-claude-code-plugins",
     "stars": 649,
     "type": "marketplace",
@@ -10728,7 +10728,7 @@
       },
       {
         "name": "ultrathink",
-        "description": "Use /ultrathink <TASK_DESCRIPTION> to launch a Coordinator Agent that directs four specialist sub-agents—Architect, Research, Coder, and Tester—to analyze, design, implement, and validate your coding task. The process breaks the task into clear steps, gathers insights, and synthesizes a cohesive solution with actionable outputs. Relevant files can be referenced ad-hoc using @ filename syntax.",
+        "description": "Use /ultrathink <TASK_DESCRIPTION> to launch a Coordinator Agent that directs four specialist sub-agents\u2014Architect, Research, Coder, and Tester\u2014to analyze, design, implement, and validate your coding task. The process breaks the task into clear steps, gathers insights, and synthesizes a cohesive solution with actionable outputs. Relevant files can be referenced ad-hoc using @ filename syntax.",
         "source": "./plugins/ultrathink",
         "author": "Jeronim Morina",
         "tags": [
@@ -11343,7 +11343,7 @@
         "name": "deployment-engineer",
         "description": "Use this agent when setting up CI/CD pipelines, configuring Docker containers, deploying applications to cloud platforms, setting up Kubernetes clusters, implementing infrastructure as code, or automating deployment workflows. Examples: <example>Context: User is setting up a new project and needs deployment automation. user: \"I've built a FastAPI application and need to deploy it to production with proper CI/CD\" assistant: \"I'll use the deployment-engineer agent to set up a complete deployment pipeline with Docker, GitHub Actions, and production-ready configurations.\"</example> <example>Context: User mentions containerization or deployment issues. user: \"Our deployment process is manual and error-prone. We need to automate it.\" assistant: \"Let me use the deployment-engineer agent to design an automated CI/CD pipeline that eliminates manual steps and ensures reliable deployments.\"</example>",
         "source": "./plugins/deployment-engineer",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -11532,7 +11532,7 @@
         "name": "n8n-workflow-builder",
         "description": "Use this agent when you need to design, build, or validate n8n automation workflows. This agent specializes in creating efficient n8n workflows using proper validation techniques and MCP tools integration.\\n\\nExamples:\\n- <example>\\n  Context: User wants to create a Slack notification workflow when a new GitHub issue is created.\\n  user: \"I need to create an n8n workflow that sends a Slack message whenever a new GitHub issue is opened\"\\n  assistant: \"I'll use the n8n-workflow-builder agent to design and build this GitHub-to-Slack automation workflow with proper validation.\"\\n  <commentary>\\n  The user needs n8n workflow creation, so use the n8n-workflow-builder agent to handle the complete workflow design, validation, and deployment process.\\n  </commentary>\\n</example>\\n- <example>\\n  Context: User has an existing n8n workflow that needs debugging and optimization.\\n  user: \"My n8n workflow keeps failing at the HTTP Request node, can you help me fix it?\"\\n  assistant: \"I'll use the n8n-workflow-builder agent to analyze and debug your workflow, focusing on the HTTP Request node configuration.\"\\n  <commentary>\\n  Since this involves n8n workflow troubleshooting and validation, use the n8n-workflow-builder agent to diagnose and fix the issue.\\n  </commentary>\\n</example>\\n- <example>\\n  Context: User wants to understand n8n best practices and available nodes for a specific use case.\\n  user: \"What are the best n8n nodes for processing CSV data and sending email reports?\"\\n  assistant: \"I'll use the n8n-workflow-builder agent to explore the available nodes and recommend the best approach for CSV processing and email automation.\"\\n  <commentary>\\n  This requires n8n expertise and node discovery, so use the n8n-workflow-builder agent to provide comprehensive guidance.\\n  </commentary>\\n</example>",
         "source": "./plugins/n8n-workflow-builder",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -11568,7 +11568,7 @@
         "name": "prd-specialist",
         "description": "Use this agent when you need to create comprehensive Product Requirements Documents (PRDs) that combine business strategy, technical architecture, and user research. Examples: <example>Context: The user needs to create a PRD for a new feature or product launch. user: \"I need to create a PRD for our new user authentication system that will support SSO and multi-factor authentication\" assistant: \"I'll use the prd-specialist agent to create a comprehensive PRD that covers the strategic foundation, technical requirements, and implementation blueprint for your authentication system.\"</example> <example>Context: The user is planning a major product initiative and needs strategic documentation. user: \"We're launching a mobile app for our e-commerce platform and need a detailed PRD to guide development\" assistant: \"Let me engage the prd-specialist agent to develop a thorough PRD that includes market analysis, user research integration, technical architecture, and implementation roadmap for your mobile app initiative.\"</example>",
         "source": "./plugins/prd-specialist",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -11622,7 +11622,7 @@
         "name": "python-expert",
         "description": "Use this agent when working with Python code that requires advanced features, performance optimization, or comprehensive refactoring. Examples: <example>Context: User needs to optimize a slow Python function that processes large datasets. user: \"This function is taking too long to process our data, can you help optimize it?\" assistant: \"I'll use the python-expert agent to analyze and optimize your Python code with advanced techniques and performance profiling.\"</example> <example>Context: User wants to implement async/await patterns in their existing synchronous Python code. user: \"I need to convert this synchronous code to use async/await for better performance\" assistant: \"Let me use the python-expert agent to refactor your code with proper async/await patterns and concurrent programming techniques.\"</example> <example>Context: User needs help implementing complex Python design patterns. user: \"I want to implement a factory pattern with decorators for my API endpoints\" assistant: \"I'll use the python-expert agent to implement advanced Python patterns with decorators and proper design principles.\"</example>",
         "source": "./plugins/python-expert",
-        "author": "Jure Šunić",
+        "author": "Jure \u0160uni\u0107",
         "tags": [
           "subagent"
         ]
@@ -11894,7 +11894,7 @@
     "slug": "claude-forge",
     "name": "Claude Forge",
     "author": "sangrokjung",
-    "description": "Supercharge Claude Code with 11 AI agents, 36 commands & 15 skills — the claude-code plugin framework inspired by oh-my-zsh. 6-layer security hooks included. 5-min install.",
+    "description": "Supercharge Claude Code with 11 AI agents, 36 commands & 15 skills \u2014 the claude-code plugin framework inspired by oh-my-zsh. 6-layer security hooks included. 5-min install.",
     "github": "https://github.com/sangrokjung/claude-forge",
     "stars": 612,
     "type": "plugin",
@@ -12129,7 +12129,7 @@
     "slug": "claude-notifications-go",
     "name": "Claude Notifications Go",
     "author": "777genius",
-    "description": "🔔 Cross-platform smart notifications plugin for Claude Code. 6 types. Click-to-focus. 1 line installation. Instant. Analyze context. Zero dependencies. webhooks (ntfy, slack, telegram...). Linux, MacOS, Windows.",
+    "description": "\ud83d\udd14 Cross-platform smart notifications plugin for Claude Code. 6 types. Click-to-focus. 1 line installation. Instant. Analyze context. Zero dependencies. webhooks (ntfy, slack, telegram...). Linux, MacOS, Windows.",
     "github": "https://github.com/777genius/claude-notifications-go",
     "stars": 392,
     "type": "plugin",
@@ -12156,7 +12156,7 @@
     "slug": "claude-equity-research",
     "name": "Claude Equity Research",
     "author": "quant-sentiment-ai",
-    "description": "🔌 Claude Code Plugin for institutional-grade equity research.   Install with /plugin marketplace add. Generates professional   buy/sell recommendations with comprehensive fundamental   analysis, technical indicators, and risk assessment. Educational    use only - not financial advice.",
+    "description": "\ud83d\udd0c Claude Code Plugin for institutional-grade equity research.   Install with /plugin marketplace add. Generates professional   buy/sell recommendations with comprehensive fundamental   analysis, technical indicators, and risk assessment. Educational    use only - not financial advice.",
     "github": "https://github.com/quant-sentiment-ai/claude-equity-research",
     "stars": 389,
     "type": "plugin",
@@ -12548,7 +12548,7 @@
       },
       {
         "name": "lean4-lake-lsp",
-        "description": "Lean 4 language server via Lake — for Lake projects with dependencies (e.g., Mathlib). Replaces the inefficient CLI-based lake build workflow with native LSP integration for interactive theorem proving.",
+        "description": "Lean 4 language server via Lake \u2014 for Lake projects with dependencies (e.g., Mathlib). Replaces the inefficient CLI-based lake build workflow with native LSP integration for interactive theorem proving.",
         "source": "./lean4-lake-lsp",
         "author": "Yingte Xu",
         "tags": [
@@ -12565,7 +12565,7 @@
       },
       {
         "name": "lean4-lean-lsp",
-        "description": "Lean 4 language server via the lean binary — for standalone .lean files outside Lake projects. Replaces the inefficient CLI-based workflow with native LSP integration for interactive theorem proving.",
+        "description": "Lean 4 language server via the lean binary \u2014 for standalone .lean files outside Lake projects. Replaces the inefficient CLI-based workflow with native LSP integration for interactive theorem proving.",
         "source": "./lean4-lean-lsp",
         "author": "Yingte Xu",
         "tags": [
@@ -12618,5 +12618,22 @@
         "pinion"
       ]
     }
+  },
+  {
+    "slug": "claude-ops",
+    "name": "claude-ops",
+    "author": "Lifecycle-Innovations-Limited",
+    "description": "Business operations command center for Claude Code. Morning briefings, inbox zero across WhatsApp/Slack/Email/Telegram, autonomous PR merge pipeline, infrastructure monitoring, revenue tracking, YOLO autonomous mode. 13 skills, 9 agents.",
+    "github": "https://github.com/Lifecycle-Innovations-Limited/claude-ops",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "commands"
+    ],
+    "contains": {},
+    "highlights": [],
+    "website": ""
   }
 ]
