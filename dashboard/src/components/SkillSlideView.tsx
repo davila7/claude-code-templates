@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import { encode } from 'gpt-tokenizer';
 
 interface Slide {
   type: 'title' | 'content';
@@ -132,13 +133,20 @@ function buildSlides(content: string, skillName: string): Slide[] {
 }
 
 // ─── Main Component ───────────────────────────────────────────────
+const SLIDE_HEIGHT = '32rem';
+
 export default function SkillSlideView({ content, skillName }: SkillSlideViewProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const slides = useMemo(() => buildSlides(content, skillName), [content, skillName]);
   const totalSlides = slides.length;
+
+  // Token counting
+  const totalTokens = useMemo(() => encode(content).length, [content]);
+  const slideTokens = useMemo(() => slides.map((s) => encode(s.body).length), [slides]);
 
   const goTo = useCallback((idx: number) => {
     setCurrentSlide(Math.max(0, Math.min(idx, totalSlides - 1)));
@@ -185,29 +193,68 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
       className={`flex flex-col ${isFullscreen ? 'bg-[#0d0d0f] h-screen' : ''}`}
     >
       {/* Slide area */}
-      <div className={`relative bg-surface-2 border border-border rounded-xl overflow-hidden flex flex-col ${isFullscreen ? 'flex-1 rounded-none border-0' : 'min-h-[28rem]'}`}>
+      <div className={`relative bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl overflow-hidden flex flex-col ${isFullscreen ? 'flex-1 rounded-none border-0' : ''}`}>
         {/* Slide content */}
-        <div className={`flex-1 overflow-y-auto ${isFullscreen ? 'px-16 py-12' : 'px-8 py-8'}`}>
+        <div
+          className={`${isFullscreen ? 'flex-1 px-16 py-12 overflow-y-auto' : 'px-8 py-8'}`}
+          style={!isFullscreen && !expanded ? { height: SLIDE_HEIGHT, overflow: 'hidden' } : undefined}
+        >
           {slide.type === 'title' ? (
-            <TitleSlide slide={slide} isFullscreen={isFullscreen} />
+            <TitleSlide slide={slide} isFullscreen={isFullscreen} totalTokens={totalTokens} />
           ) : (
             <ContentSlide slide={slide} isFullscreen={isFullscreen} />
           )}
         </div>
 
-        {/* Navigation bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-1/50 backdrop-blur-sm">
-          {/* Left: prev button */}
+        {/* Show more / Collapse */}
+        {!isFullscreen && (
           <button
-            onClick={goPrev}
-            disabled={currentSlide === 0}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary hover:bg-white/[0.06]"
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center justify-center gap-1.5 w-full py-2 text-xs font-medium text-[var(--color-accent-400)] hover:text-[var(--color-text-primary)] border-t border-[var(--color-border)] hover:bg-[var(--color-surface-3)] transition-colors"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Prev
+            {expanded ? (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                </svg>
+                Collapse
+              </>
+            ) : (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+                Show full document
+              </>
+            )}
           </button>
+        )}
+
+        {/* Navigation bar */}
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--color-border)] bg-[var(--color-surface-1)]/50 backdrop-blur-sm">
+          {/* Left: prev button + token info */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={goPrev}
+              disabled={currentSlide === 0}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06]"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Prev
+            </button>
+            <div className="hidden sm:flex items-center gap-1.5 font-mono">
+              <span title="Tokens in this slide" className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--color-accent-400)]/10 text-[var(--color-accent-400)] text-[10px] font-bold">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                </svg>
+                {slideTokens[currentSlide]?.toLocaleString()}
+              </span>
+              <span className="text-[var(--color-text-tertiary)] text-[9px]">/</span>
+              <span title="Total tokens" className="text-[10px] text-[var(--color-text-tertiary)] font-medium">{totalTokens.toLocaleString()}</span>
+            </div>
+          </div>
 
           {/* Center: slide dots + counter */}
           <div className="flex items-center gap-3">
@@ -218,14 +265,14 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
                   onClick={() => goTo(i)}
                   className={`rounded-full transition-all duration-200 ${
                     i === currentSlide
-                      ? 'w-6 h-1.5 bg-accent-400'
-                      : 'w-1.5 h-1.5 bg-text-tertiary/40 hover:bg-text-tertiary'
+                      ? 'w-6 h-1.5 bg-[var(--color-accent-400)]'
+                      : 'w-1.5 h-1.5 bg-[var(--color-text-tertiary)]/40 hover:bg-[var(--color-text-tertiary)]'
                   }`}
                   title={`Slide ${i + 1}: ${slides[i].title}`}
                 />
               ))}
             </div>
-            <span className="text-[11px] text-text-tertiary font-mono tabular-nums">
+            <span className="text-[11px] text-[var(--color-text-tertiary)] font-mono tabular-nums">
               {currentSlide + 1} / {totalSlides}
             </span>
           </div>
@@ -235,7 +282,7 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
             <button
               onClick={goNext}
               disabled={currentSlide === totalSlides - 1}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary hover:bg-white/[0.06]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06]"
             >
               Next
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -244,7 +291,7 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
             </button>
             <button
               onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-white/[0.06] transition-colors"
+              className="p-1.5 rounded-lg text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06] transition-colors"
               title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'}
             >
               {isFullscreen ? (
@@ -262,15 +309,15 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
       </div>
 
       {/* Keyboard hints */}
-      <div className="flex justify-center gap-3 mt-3 text-[10px] text-text-tertiary">
+      <div className="flex justify-center gap-3 mt-3 text-[10px] text-[var(--color-text-tertiary)]">
         <span className="flex items-center gap-1">
-          <kbd className="px-1 py-0.5 rounded bg-surface-3 font-mono text-[9px]">&larr;</kbd>
-          <kbd className="px-1 py-0.5 rounded bg-surface-3 font-mono text-[9px]">&rarr;</kbd>
+          <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">&larr;</kbd>
+          <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">&rarr;</kbd>
           Navigate
         </span>
         <span className="flex items-center gap-1">
-          <kbd className="px-1 py-0.5 rounded bg-surface-3 font-mono text-[9px]">Home</kbd>
-          <kbd className="px-1 py-0.5 rounded bg-surface-3 font-mono text-[9px]">End</kbd>
+          <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">Home</kbd>
+          <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">End</kbd>
           First / Last
         </span>
       </div>
@@ -279,42 +326,54 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
 }
 
 // ─── Title Slide ──────────────────────────────────────────────────
-function TitleSlide({ slide, isFullscreen }: { slide: Slide; isFullscreen: boolean }) {
+function TitleSlide({ slide, isFullscreen, totalTokens }: { slide: Slide; isFullscreen: boolean; totalTokens: number }) {
   const metaEntries = Object.entries(slide.metadata || {});
+  const allBadges = [...metaEntries, ['Tokens', totalTokens.toLocaleString()]];
 
   return (
     <div className={`flex flex-col items-center justify-center text-center h-full min-h-[20rem] ${isFullscreen ? 'min-h-[60vh]' : ''}`}>
       {/* Icon */}
-      <div className="w-16 h-16 rounded-2xl bg-accent-500/15 flex items-center justify-center mb-6">
-        <svg className="w-8 h-8 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: 'rgba(213, 116, 85, 0.15)' }}>
+        <svg className="w-8 h-8" style={{ color: 'var(--color-accent-400)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
         </svg>
       </div>
 
       {/* Title */}
-      <h1 className={`font-bold text-text-primary mb-3 leading-tight ${isFullscreen ? 'text-4xl' : 'text-2xl'}`}>
+      <h1 className={`font-bold text-[var(--color-text-primary)] mb-3 leading-tight ${isFullscreen ? 'text-4xl' : 'text-2xl'}`}>
         {slide.title}
       </h1>
 
       {/* Description */}
       {slide.body && (
-        <p className={`text-text-secondary leading-relaxed max-w-2xl ${isFullscreen ? 'text-lg' : 'text-sm'}`}>
+        <p className={`text-[var(--color-text-secondary)] leading-relaxed max-w-2xl ${isFullscreen ? 'text-lg' : 'text-sm'}`}>
           {slide.body}
         </p>
       )}
 
       {/* Metadata badges */}
-      {metaEntries.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-2 mt-6">
-          {metaEntries.map(([key, value]) => (
-            <span
-              key={key}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-3 border border-border text-xs"
-            >
-              <span className="text-text-tertiary">{key}:</span>
-              <span className="text-text-primary font-medium font-mono">{value}</span>
-            </span>
-          ))}
+      {allBadges.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2.5 mt-8">
+          {allBadges.map(([key, value]) => {
+            const isTokens = key === 'Tokens';
+            return (
+              <div
+                key={key}
+                className={`flex flex-col items-center px-4 py-2.5 rounded-xl border text-center min-w-[5rem] ${
+                  isTokens
+                    ? 'bg-[var(--color-accent-400)]/10 border-[var(--color-accent-400)]/25'
+                    : 'bg-[var(--color-surface-3)]/60 border-[var(--color-border)]'
+                }`}
+              >
+                <span className={`text-[10px] uppercase tracking-widest font-semibold mb-0.5 ${
+                  isTokens ? 'text-[var(--color-accent-400)]' : 'text-[var(--color-text-tertiary)]'
+                }`}>{key}</span>
+                <span className={`text-sm font-bold font-mono ${
+                  isTokens ? 'text-[var(--color-accent-400)]' : 'text-[var(--color-text-primary)]'
+                }`}>{value}</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -326,7 +385,7 @@ function ContentSlide({ slide, isFullscreen }: { slide: Slide; isFullscreen: boo
   return (
     <div className={`h-full ${isFullscreen ? 'max-w-4xl mx-auto' : ''}`}>
       {/* Slide title */}
-      <h2 className={`font-bold text-text-primary mb-6 pb-3 border-b border-border ${isFullscreen ? 'text-3xl' : 'text-xl'}`}>
+      <h2 className={`font-bold text-[var(--color-text-primary)] mb-6 pb-3 border-b border-[var(--color-border)] ${isFullscreen ? 'text-3xl' : 'text-xl'}`}>
         {slide.title}
       </h2>
 

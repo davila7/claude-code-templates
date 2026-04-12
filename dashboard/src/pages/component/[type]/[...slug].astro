@@ -289,7 +289,7 @@ const refs: string[] = (component as any)?.references ?? [];
         <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
         {refs.length > 0 ? (
           <SkillExplorer
-            client:only="react"
+            client:load
             skillContent={component.content || ''}
             skillName={component.name}
             skillPath={component.path}
