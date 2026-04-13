@@ -34,8 +34,8 @@ if echo "$COMMAND" | grep -qE '(sh|bash|zsh|dash)\s+-c\s+'; then
 fi
 
 # === Check 2: Python one-liners ===
-if echo "$COMMAND" | grep -qE 'python[23]?\s+-c\s+'; then
-    INNER=$(echo "$COMMAND" | sed -E "s/.*python[23]?\s+-c\s+['\"]?//" | sed "s/['\"]?\s*$//")
+if echo "$COMMAND" | grep -qE 'python[23]?(\.[0-9]+)?\s+-c\s+'; then
+    INNER=$(echo "$COMMAND" | sed -E "s/.*python[23]?(\.[0-9]+)?\s+-c\s+['\"]?//" | sed "s/['\"]?\s*$//")
     if echo "$INNER" | grep -qiE "os\.system\(.*($DESTRUCT_PATTERN)|subprocess\.(run|call|Popen)\(.*($DESTRUCT_PATTERN)|shutil\.rmtree\s*\(\s*['\"/~]"; then
         echo "BLOCKED: Destructive command in Python one-liner" >&2
         exit 2
@@ -69,9 +69,9 @@ if echo "$COMMAND" | grep -qE '(sh|bash)\s+-c\s+.*(sh|bash)\s+-c'; then
 fi
 
 # === Check 6: Pipe to shell (echo "rm -rf /" | sh) ===
-if echo "$COMMAND" | grep -qE '\|\s*(sh|bash|zsh)\s*$'; then
-    # Extract the piped content
-    PIPED=$(echo "$COMMAND" | sed -E 's/\s*\|\s*(sh|bash|zsh)\s*$//')
+if echo "$COMMAND" | grep -qE '\|\s*(sh|bash|zsh)(\s|$)'; then
+    # Extract the piped content (handles "| sh", "| sh -s", "| bash -c ...")
+    PIPED=$(echo "$COMMAND" | sed -E 's/\s*\|\s*(sh|bash|zsh)(\s.*)?$//')
     if echo "$PIPED" | grep -qE "$DESTRUCT_PATTERN"; then
         echo "BLOCKED: Destructive command piped to shell" >&2
         exit 2
