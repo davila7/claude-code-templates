@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-13T04:10:51.069759+00:00",
+  "lastUpdated": "2026-04-14T04:12:15.168167+00:00",
   "totalJobs": 94,
   "sources": [
     "Anthropic",
@@ -8,6 +8,52 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5186669008",
+      "company": "Anthropic",
+      "position": "Finance Systems Engineer, Revenue",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic’s Finance Systems team builds and owns the infrastructure that powers our quote-to-cash lifecycle—from pricing and billing through revenue recognition and financial close. As our revenue model grows in complexity, the team is moving beyond configuring off-the-shelf platforms and into...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5186669008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5186669008",
+      "postedAt": "2026-04-13T18:21:58-04:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "Java",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5185501008",
+      "company": "Anthropic",
+      "position": "Technical Enablement Lead, Claude Code",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is looking for a Technical Enablement Lead to curate & deliver the technical curriculum that lets our go-to-market teams, partner, and customers demonstrate and support Claude Code with confidence. You'll own Claude Code enablement—building demos, labs, and content that help sellers...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5185501008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5185501008",
+      "postedAt": "2026-04-13T12:44:46-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-47738222",
       "company": "Farmer Sam LLC",
@@ -187,7 +233,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
@@ -992,27 +1037,6 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5146261008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Billing Platform",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic exists to ensure the world safely navigates the transition through transformative AI. That work is funded by commercial revenue — and every dollar of it runs through Billing Platform. We build and operate the infrastructure that turns product usage into revenue across everything Anthropic...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146261008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146261008",
-      "postedAt": "2026-03-10T13:15:11-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5146298008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, Billing Platform",
@@ -1123,7 +1147,7 @@
       "id": "anth-5140403008",
       "company": "Anthropic",
       "position": "Solutions Architect, Applied AI (State and Local Government, West)",
-      "location": "San Francisco, CA",
+      "location": "San Francisco, CA | New York City, NY | Washington, DC",
       "remote": false,
       "salary": "",
       "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping state and local government agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology...",
@@ -1371,26 +1395,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5127559008",
       "postedAt": "2026-02-25T00:36:00-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5124533008",
-      "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (Creatives)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is seeking a Solutions Architect to serve as the technical lead for our partnerships with cultural institutions, creative communities, and artists. In this role, you will bridge the gap between Anthropic's cutting-edge AI capabilities and the creative professionals who can benefit from...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5124533008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5124533008",
-      "postedAt": "2026-02-19T10:34:50-05:00",
       "tags": [
         "Rust",
         "AWS",
