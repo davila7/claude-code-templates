@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-14T04:12:15.168167+00:00",
-  "totalJobs": 94,
+  "lastUpdated": "2026-04-15T04:04:00.550621+00:00",
+  "totalJobs": 95,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,32 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-sr-software-engineer-b-e-rebuy-inc-1131104",
+      "company": "Rebuy, Inc.",
+      "position": "Sr Software Engineer B E",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "The Company You’ll Join At Rebuy, we’re on a mission to revolutionize shopping with intelligent, personalized experiences that wow customers around the globe. As a fully remote team, we power some of the fastest-growing DTC brands like Aviator Nation, Liquid Death, Magic Spoon, Blenders, Laird...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-sr-software-engineer-b-e-rebuy-inc-1131104",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-sr-software-engineer-b-e-rebuy-inc-1131104",
+      "postedAt": "2026-04-14T00:01:13+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Go",
+        "GCP",
+        "Claude Code",
+        "Cursor",
+        "Vue.js",
+        "Angular",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5186669008",
       "company": "Anthropic",
@@ -1081,7 +1107,7 @@
     {
       "id": "anth-5146999008",
       "company": "Anthropic",
-      "position": "Manager of Solutions Architecture, Applied AI (Partnerships)",
+      "position": "Head of International - Partner Solutions Architecture, Applied AI",
       "location": "London, UK",
       "remote": false,
       "salary": "",
