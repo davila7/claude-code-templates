@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-15T04:04:00.550621+00:00",
-  "totalJobs": 95,
+  "lastUpdated": "2026-04-16T04:06:01.988839+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,24 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-software-engineer-payment-operations-wingspan-1131116",
+      "company": "Wingspan",
+      "position": "Software Engineer Payment Operations",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Who We Are Wingspan is the first payroll platform designed specifically for independent contractors and their businesses. We simplify onboarding, payments, and compliance for flexible workforces of all sizes, from solo operators to large enterprises. We're a Series B startup based in NYC with...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-software-engineer-payment-operations-wingspan-1131116",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-software-engineer-payment-operations-wingspan-1131116",
+      "postedAt": "2026-04-15T00:01:21+00:00",
+      "tags": [
+        "Node.js",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-sr-software-engineer-b-e-rebuy-inc-1131104",
       "company": "Rebuy, Inc.",
@@ -64,7 +82,7 @@
       "id": "anth-5185501008",
       "company": "Anthropic",
       "position": "Technical Enablement Lead, Claude Code",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "Boston, MA; San Francisco, CA | New York City, NY; Seattle, WA; Washington, DC",
       "remote": false,
       "salary": "",
       "description": "Anthropic is looking for a Technical Enablement Lead to curate & deliver the technical curriculum that lets our go-to-market teams, partner, and customers demonstrate and support Claude Code with confidence. You'll own Claude Code enablement—building demos, labs, and content that help sellers...",
@@ -483,47 +501,6 @@
         "Supabase",
         "Claude Code",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-revops-ai-analyst-intern-actian-corporation-1130997",
-      "company": "Actian Corporation",
-      "position": "RevOps AI Analyst Intern",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Company At Actian we believe data should be a competitive advantage. Through the deployment of data technology, underpinned by a relentless and trusted service commitment, we help business critical systems transact and integrate at their very best. As a trusted leader in data management,...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-revops-ai-analyst-intern-actian-corporation-1130997",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-revops-ai-analyst-intern-actian-corporation-1130997",
-      "postedAt": "2026-04-06T00:00:10+00:00",
-      "tags": [
-        "Rust"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
-      "company": "Symmetry Systems",
-      "position": "Associate Forward Deployed Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About Symmetry Systems Symmetry Systems is the Data+AI Security company. Our data security posture management platform is engineered specifically to address modern data security and privacy challenges at scale from the data out, providing organizations the ability to innovate with confidence. With...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-associate-forward-deployed-engineer-symmetry-systems-1130994",
-      "postedAt": "2026-04-05T00:00:05+00:00",
-      "tags": [
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -991,26 +968,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153773008",
       "postedAt": "2026-03-17T14:25:05-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5152817008",
-      "company": "Anthropic",
-      "position": "Product Designer",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5152817008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5152817008",
-      "postedAt": "2026-03-14T16:42:09-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -1937,26 +1894,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5062712008",
       "postedAt": "2026-01-15T12:42:51-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5055669008",
-      "company": "Anthropic",
-      "position": "Product Marketing Lead, Agents",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "We're looking for a Product Marketing Lead to own the go-to-market strategy for our first-party agent products—including Claude.ai , Cowork, Claude Code, and Claude Enterprise—the products that are defining how enterprises adopt AI to empower employees and transform productivity. This is a...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5055669008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5055669008",
-      "postedAt": "2026-01-08T13:01:14-05:00",
       "tags": [
         "Rust",
         "AWS",
