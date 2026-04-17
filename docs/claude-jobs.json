@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-16T04:06:01.988839+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-04-17T04:11:17.179903+00:00",
+  "totalJobs": 89,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -373,58 +373,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "rok-remote-staff-engineer-digital-lending-oaknorth-1131028",
-      "company": "OakNorth",
-      "position": "Staff Engineer Digital Lending",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "At OakNorth, we’re on a mission to empower the UK’s most ambitious businesses. Since 2015, we’ve lent over $21 billion across the UK and US, helped create more than 58,000 new homes and 36,000 new jobs, and supported hundreds of thousands of personal savers — all while fuelling the UK economy. Team...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-staff-engineer-digital-lending-oaknorth-1131028",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-staff-engineer-digital-lending-oaknorth-1131028",
-      "postedAt": "2026-04-08T08:00:12+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Docker",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
-      "company": "Luxury Presence",
-      "position": "Staff Software Engineer CRM LATAM",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Luxury Presence is building the AI growth platform for real estate. Backed by Bessemer Venture Partners and other top investors, we're a Series C company on track to hit $100M in annual recurring revenue in the next six months. More than 87,000 real estate professionals, including over 30% of the...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-staff-software-engineer-crm-latam-luxury-presence-1131023",
-      "postedAt": "2026-04-08T00:00:04+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Rust",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Kubernetes",
-        "Claude Code",
-        "Tailwind",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "hn-47679881",
       "company": "BrandMultiplier",
       "position": "Head of AI & Engineer",
@@ -459,29 +407,6 @@
       "postedAt": "2026-04-07T10:26:43+00:00",
       "tags": [
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47667862",
-      "company": "Integral",
-      "position": "Full Stack Developer",
-      "location": "Remote (LATAM or US)",
-      "remote": true,
-      "salary": "",
-      "description": "Integral is a fractional CTO and AI transformation partnership for scaling businesses ($10M-$100M). We embed with clients as their technology team across strategy, architecture, and hands-on implementation. These are long-term retainer partnerships, not project work. We are a team of 4 today,...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47667862",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47667862",
-      "postedAt": "2026-04-06T22:02:14+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "Node.js",
-        "Supabase",
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -821,6 +746,29 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-eventmobi-senior-front-end-engineer-remote-1",
+      "company": "EventMobi",
+      "position": "Senior Front End Engineer - Remote",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$50k",
+      "description": "Headquarters: 151 Yonge Street 11th Floor Toronto, Ontario M5C 2W7 URL: https://www.eventmobi.com/ *** EventMobi is an all-remote company and this is a fully remote position, open to all candidates with a focus in Pakistan, India, Brazil, Columbia, Argentina and Mexico. You will need to be able to...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/eventmobi-senior-front-end-engineer-remote-1",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/eventmobi-senior-front-end-engineer-remote-1",
+      "postedAt": "2026-03-27T17:07:25+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Go",
+        "AWS",
+        "Docker",
+        "React Native"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5104689008",
@@ -1875,26 +1823,6 @@
       "tags": [
         "TypeScript",
         "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5062712008",
-      "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (Beneficial Deployments)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "We're looking for a Solutions Architect to join Beneficial Deployments. This role combines technical expertise with deep relationship-building to help partners accelerate their impact through AI adoption and deployment. You'll be the primary technical advisor for partners across segments, driving...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5062712008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5062712008",
-      "postedAt": "2026-01-15T12:42:51-05:00",
-      "tags": [
         "Rust",
         "AWS",
         "Claude Code",
