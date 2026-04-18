@@ -1,0 +1,77 @@
+name: Component PR Welcome
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+    paths:
+      - 'cli-tool/components/**'
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  welcome:
+    name: Welcome & Label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add review-pending label and welcome comment
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = context.issue.number;
+            const author = context.payload.pull_request.user.login;
+
+            const labelName = 'review-pending';
+            const labelColor = 'fbca04';
+            const labelDescription = 'Component PR awaiting maintainer review';
+
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: labelName });
+            } catch (err) {
+              if (err.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo,
+                  name: labelName,
+                  color: labelColor,
+                  description: labelDescription,
+                });
+              } else {
+                throw err;
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: prNumber,
+              labels: [labelName],
+            });
+
+            const body = [
+              `## 👋 Thanks for contributing, @${author}!`,
+              ``,
+              `This PR touches \`cli-tool/components/**\` and has been marked **\`review-pending\`**.`,
+              ``,
+              `### What happens next`,
+              `1. 🤖 **Automated security audit** runs and posts results on this PR.`,
+              `2. 👀 **Maintainer review** — a human reviewer validates the component with the \`component-reviewer\` agent (format, naming, security, clarity).`,
+              `3. ✅ **Merge** — once approved, your PR is merged to \`main\`.`,
+              `4. 📦 **Catalog regeneration** — the component catalog is rebuilt automatically.`,
+              `5. 🚀 **Live on [aitmpl.com](https://www.aitmpl.com)** — your component appears on the website after deploy.`,
+              ``,
+              `### While you wait`,
+              `- Check the **Security Audit** comment below for any issues to fix.`,
+              `- Make sure your component follows the [contribution guide](https://github.com/${owner}/${repo}/blob/main/CLAUDE.md#component-system).`,
+              ``,
+              `_This is an automated message. No action is required from you right now — a maintainer will review soon._`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: prNumber,
+              body,
+            });
