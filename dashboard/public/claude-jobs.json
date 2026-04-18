@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-17T04:11:17.179903+00:00",
-  "totalJobs": 89,
+  "lastUpdated": "2026-04-18T03:59:38.404200+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,72 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5192805008",
+      "company": "Anthropic",
+      "position": "Solutions Architect, Applied AI (Commercial)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping customers understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology stack. You'll combine...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192805008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192805008",
+      "postedAt": "2026-04-17T16:25:27-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5192104008",
+      "company": "Anthropic",
+      "position": "Global Leader, Applied AI Architects, Beneficial Deployments",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
+      "postedAt": "2026-04-17T10:45:07-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-senior-react-native-developer-headway-1131173",
+      "company": "Headway",
+      "position": "Senior React Native Developer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About Headway Founded in 2015, Headway was born out of a passion to bring entrepreneurial ideas to market and keep them there. We work holistically with our client partners as a true extension of their product team, not just as an execution arm of their business. If we see something broken, whether...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-react-native-developer-headway-1131173",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-react-native-developer-headway-1131173",
+      "postedAt": "2026-04-16T18:16:22+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Rust",
+        "Claude Code",
+        "React Native",
+        "Ruby",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-software-engineer-payment-operations-wingspan-1131116",
       "company": "Wingspan",
