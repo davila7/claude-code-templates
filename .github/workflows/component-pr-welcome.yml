@@ -28,15 +28,6 @@ jobs:
             const labelDescription = 'Component PR awaiting maintainer review';
             const marker = '<!-- component-pr-welcome:v1 -->';
 
-            const existing = await github.paginate(
-              github.rest.issues.listComments,
-              { owner, repo, issue_number: prNumber, per_page: 100 }
-            );
-            if (existing.some(c => c.body && c.body.includes(marker))) {
-              core.info('Welcome comment already posted — skipping.');
-              return;
-            }
-
             try {
               await github.rest.issues.getLabel({ owner, repo, name: labelName });
             } catch (err) {
@@ -59,6 +50,15 @@ jobs:
               issue_number: prNumber,
               labels: [labelName],
             });
+
+            const existing = await github.paginate(
+              github.rest.issues.listComments,
+              { owner, repo, issue_number: prNumber, per_page: 100 }
+            );
+            if (existing.some(c => c.body && c.body.includes(marker))) {
+              core.info('Welcome comment already posted — skipping comment, label ensured.');
+              return;
+            }
 
             const body = [
               marker,
