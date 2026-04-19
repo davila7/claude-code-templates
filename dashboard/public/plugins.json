@@ -12623,7 +12623,7 @@
     "slug": "claude-ops",
     "name": "claude-ops",
     "author": "Lifecycle-Innovations-Limited",
-    "description": "Business operations command center for Claude Code. Morning briefings, inbox zero across WhatsApp/Slack/Email/Telegram, autonomous PR merge pipeline, infrastructure monitoring, revenue tracking, YOLO autonomous mode. 13 skills, 9 agents.",
+    "description": "Business operations command center for Claude Code — 30 skills, 14 agents, smart background daemon. Manage communications (WhatsApp/Email/Slack/Telegram), projects, infrastructure (AWS), revenue (Stripe+RevenueCat), e-commerce, marketing, monitoring (Datadog/New Relic/OTEL), and voice. Includes /gtm go-to-market planner, /ops:projects portfolio dashboard, and 4 parallel C-suite agents (YOLO mode).",
     "github": "https://github.com/Lifecycle-Innovations-Limited/claude-ops",
     "stars": 0,
     "type": "plugin",
@@ -12632,8 +12632,13 @@
       "agents",
       "commands"
     ],
-    "contains": {},
-    "highlights": [],
+    "contains": {
+      "skills": 30,
+      "agents": 14
+    },
+    "highlights": [
+      "Plugin declares: 30 skills, 14 agents"
+    ],
     "website": ""
   }
 ]
