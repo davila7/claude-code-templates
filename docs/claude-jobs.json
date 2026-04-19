@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-18T03:59:38.404200+00:00",
+  "lastUpdated": "2026-04-19T04:07:24.747863+00:00",
   "totalJobs": 92,
   "sources": [
     "Anthropic",
@@ -29,6 +29,26 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-ai-transformation-lead-insider-one-1131194",
+      "company": "Insider One",
+      "position": "AI Transformation Lead",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Before jumping into all the information about the role and what you can bring to the table, let us introduce ourselves real quick. About us Insider One is the #1 platform that brings everything marketing and customer engagement teams need in one place so they can reach their peak potential and...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ai-transformation-lead-insider-one-1131194",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ai-transformation-lead-insider-one-1131194",
+      "postedAt": "2026-04-17T16:00:04+00:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5192104008",
@@ -220,47 +240,6 @@
         "Python",
         "PostgreSQL",
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-machine-learning-engineer-radformation-1131082",
-      "company": "Radformation",
-      "position": "Machine Learning Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About Radformation Radformation is transforming the way cancer clinics deliver care. Our innovative software automates and standardizes radiation oncology workflows, enabling clinicians to plan and deliver treatments faster, safer, and more consistently, so patients everywhere can receive the same...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-machine-learning-engineer-radformation-1131082",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-machine-learning-engineer-radformation-1131082",
-      "postedAt": "2026-04-11T00:01:01+00:00",
-      "tags": [
-        "Python",
-        "AWS",
-        "Azure",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-engineering-manager-hinge-health-1131068",
-      "company": "Hinge Health",
-      "position": "Engineering Manager",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "The Opportunity Hinge Health is hiring an Engineering Manager for our Growth Data Platform (GDP) pod in Bangalore. This is a pivot-point role for a leader who is ready to move beyond traditional software management and lead a team into the era of AI-Native Engineering and ML-Driven Growth. The GDP...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-engineering-manager-hinge-health-1131068",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-engineering-manager-hinge-health-1131068",
-      "postedAt": "2026-04-10T08:00:14+00:00",
-      "tags": [
-        "Rust",
-        "Claude Code",
-        "Cursor",
-        "Rails"
       ],
       "companyIcon": ""
     },
@@ -788,6 +767,25 @@
         "Claude Code",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-contentjet-inc-ai-agent-architect-builder",
+      "company": "ContentJet Inc.",
+      "position": "AI Agent Architect / Builder",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Montreal, Canada URL: https://www.contentjet.com ABOUT CONTENTJET ContentJet is a Canadian UGC creative agency that connects brands with creators to produce high-performing user-generated content at scale. We serve global clients across e-commerce, healthcare, and marketing verticals....",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-ai-agent-architect-builder",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-ai-agent-architect-builder",
+      "postedAt": "2026-03-30T12:49:53+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Claude Code"
       ],
       "companyIcon": ""
     },
