@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-19T04:07:24.747863+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-04-20T04:09:27.841338+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -771,6 +771,48 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-eventmobi-front-end-engineer-remote",
+      "company": "EventMobi",
+      "position": "Front End Engineer - Remote",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$40k",
+      "description": "Headquarters: 151 Yonge Street 11th Floor Toronto, Ontario M5C 2W7 URL: https://www.eventmobi.com/ *** EventMobi is an all-remote company and this is a fully remote position, open to all candidates with a focus in Pakistan, India, Brazil, Columbia, Argentina and Mexico. You will need to be able to...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/eventmobi-front-end-engineer-remote",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/eventmobi-front-end-engineer-remote",
+      "postedAt": "2026-03-31T18:28:48+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-contentjet-inc-automation-integration-engineer",
+      "company": "ContentJet Inc.",
+      "position": "Automation & Integration Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Montreal, Canada URL: https://www.contentjet.com ABOUT CONTENTJET ContentJet is a Canadian UGC creative agency that connects brands with creators to produce high-performing user-generated content at scale. Our delivery engine runs entirely on AI automation and intelligent integration...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-automation-integration-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-automation-integration-engineer",
+      "postedAt": "2026-03-30T12:52:41+00:00",
+      "tags": [
+        "JavaScript",
+        "Python",
+        "PostgreSQL",
+        "Docker",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "wwr-contentjet-inc-ai-agent-architect-builder",
       "company": "ContentJet Inc.",
       "position": "AI Agent Architect / Builder",
@@ -1226,6 +1268,27 @@
         "Claude Code",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-level-senior-frontend-engineer",
+      "company": "Level",
+      "position": "Senior Frontend Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Asheville, NC URL: https://level.io Level is a modern RMM platform built around real-time data, automation, and an uncompromising focus on UX. We're profitable, growing, and shipping fast with a small team. Our platform manages devices across thousands of organizations. We're hiring...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
+      "postedAt": "2026-03-03T17:26:57+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -1785,6 +1848,30 @@
       "postedAt": "2026-02-02T16:40:02+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-walter-senior-software-engineer",
+      "company": "WALTER",
+      "position": "Senior Software Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote URL: http://gowalter.co Senior Software Engineers at Stamped are hands-on builders responsible for designing, developing, and delivering high-quality software that powers our products. This role combines technical depth with product intuition — engineers are expected to think...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
+      "postedAt": "2026-01-29T21:06:16+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Node.js",
+        "AWS",
+        "Copilot",
+        "Vue.js"
       ],
       "companyIcon": ""
     },
