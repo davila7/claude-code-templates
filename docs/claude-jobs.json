@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-20T04:09:27.841338+00:00",
+  "lastUpdated": "2026-04-21T04:05:52.821018+00:00",
   "totalJobs": 96,
   "sources": [
     "Anthropic",
@@ -8,6 +8,32 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5191433008",
+      "company": "Anthropic",
+      "position": "Software Engineer, Safeguards Foundations (Internal Tooling)",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "The Safeguards team is responsible for the systems that detect, review, and act on misuse of Anthropic's models — work that sits at the very centre of our mission to develop AI safely. Within Safeguards, the Foundations team builds the platforms, infrastructure, and internal tools that the rest of...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5191433008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5191433008",
+      "postedAt": "2026-04-20T11:22:41-04:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5192805008",
       "company": "Anthropic",
@@ -344,7 +370,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
@@ -917,32 +942,6 @@
         "Cursor",
         "Copilot",
         "Tailwind"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-moxie-staff-product-engineer-fullstack-ic-4",
-      "company": "Moxie",
-      "position": "Staff product engineer (fullstack) (IC-4)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote - US At Moxie, we empower ambitious aesthetic entrepreneurs to build profitable, independent practices—without burnout, overwhelm, or guesswork. In just a few years, we’ve grown from an idea to a global, remote-first team of more than 140 people, supporting hundreds of...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/moxie-staff-product-engineer-fullstack-ic-4",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/moxie-staff-product-engineer-fullstack-ic-4",
-      "postedAt": "2026-03-21T20:31:51+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
