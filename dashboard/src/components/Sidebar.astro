@@ -62,7 +62,7 @@ function isActive(path: string): boolean {
         ]}
       >
         {isActive(`/${type}`) && (
-          <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+          <span class="active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
         )}
         <span
           class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center"
@@ -94,7 +94,7 @@ function isActive(path: string): boolean {
       ]}
     >
       {isActive('/plugins') && (
-        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+        <span class="active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
       )}
       <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
         <span
@@ -111,6 +111,41 @@ function isActive(path: string): boolean {
         </span>
       </span>
       <span class="sidebar-text truncate transition-all duration-300">Plugins</span>
+    </a>
+
+    <!-- A.T.T (Autonomous Team Template) -->
+    <a
+      href="/autonomous-teams"
+      data-nav-type="autonomous-teams"
+      data-tooltip="Autonomous Team Template"
+      class:list={[
+        'att-link sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative',
+        isActive('/autonomous-teams') || isActive('/build-team')
+          ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-[var(--color-text-primary)] font-semibold shadow-sm border border-blue-500/20'
+          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-purple-500/5 hover:shadow-sm hover:border hover:border-blue-500/10',
+      ]}
+    >
+      {(isActive('/autonomous-teams') || isActive('/build-team')) && (
+        <span class="active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full"></span>
+      )}
+      <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
+        <span
+          class:list={[
+            'w-full h-full inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:flex-shrink-0 [&>svg]:block [&>svg]:m-auto transition-all duration-200',
+            isActive('/autonomous-teams') || isActive('/build-team')
+              ? 'text-blue-500 scale-110'
+              : 'text-[var(--color-text-tertiary)] group-hover:text-blue-500 group-hover:scale-105',
+          ]}
+        >
+          <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </span>
+      </span>
+      <span class="att-text sidebar-text transition-all duration-300 relative whitespace-nowrap">
+        A.T.T
+      </span>
+      <span class="sidebar-text ml-auto text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-400 px-1.5 py-0.5 rounded-md shadow-sm transition-all duration-300 shrink-0">Beta</span>
     </a>
 
     <!-- Divider -->
@@ -205,21 +240,72 @@ function isActive(path: string): boolean {
 
 <script>
   function updateSidebarActive() {
-    const path = window.location.pathname.replace(/^\//, '').split('/')[0] || 'skills';
+    const path = window.location.pathname;
+    const firstSegment = path.replace(/^\//, '').split('/')[0] || 'skills';
+    
     document.querySelectorAll('.sidebar-nav-link').forEach((link) => {
       const type = (link as HTMLElement).dataset.navType;
+      if (!type) return; // Skip links without data-nav-type
+      
       const iconWrapper = link.querySelector('.sidebar-nav-icon');
       const iconSpan = iconWrapper?.querySelector('span');
-      if (type === path) {
-        link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
-        link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
-        iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
-        iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
+      const isAttLink = link.classList.contains('att-link');
+      
+      // Special handling for autonomous-teams which also covers /build-team
+      const isActive = type === 'autonomous-teams' 
+        ? (path.startsWith('/autonomous-teams') || path.startsWith('/build-team'))
+        : type === firstSegment;
+      
+      // Find existing indicator
+      let indicator = link.querySelector('.active-indicator');
+      
+      if (isActive) {
+        // Add indicator if it doesn't exist
+        if (!indicator) {
+          indicator = document.createElement('span');
+          indicator.className = 'active-indicator absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full';
+          
+          if (isAttLink) {
+            indicator.classList.add('bg-gradient-to-b', 'from-blue-500', 'to-purple-500');
+          } else {
+            indicator.classList.add('bg-[var(--color-primary-500)]');
+          }
+          
+          link.insertBefore(indicator, link.firstChild);
+        }
+        
+        if (isAttLink) {
+          // A.T.T specific active styles
+          link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-gradient-to-r', 'hover:from-blue-500/5', 'hover:to-purple-500/5', 'hover:shadow-sm', 'hover:border', 'hover:border-blue-500/10');
+          link.classList.add('bg-gradient-to-r', 'from-blue-500/10', 'to-purple-500/10', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-blue-500/20');
+          iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-blue-500', 'group-hover:scale-105');
+          iconSpan?.classList.add('text-blue-500', 'scale-110');
+        } else {
+          // Generic active styles
+          link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
+          link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-[var(--color-border)]');
+          iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+          iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
+        }
       } else {
-        link.classList.remove('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
-        link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
-        iconSpan?.classList.remove('text-[var(--color-primary-500)]', 'scale-110');
-        iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+        // Remove indicator if it exists
+        if (indicator) {
+          indicator.remove();
+        }
+        
+        if (isAttLink) {
+          // A.T.T specific inactive styles
+          link.classList.remove('bg-gradient-to-r', 'from-blue-500/10', 'to-purple-500/10', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-blue-500/20');
+          link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-gradient-to-r', 'hover:from-blue-500/5', 'hover:to-purple-500/5', 'hover:shadow-sm', 'hover:border', 'hover:border-blue-500/10');
+          iconSpan?.classList.remove('text-blue-500', 'scale-110');
+          iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-blue-500', 'group-hover:scale-105');
+        } else {
+          // Generic inactive styles
+          link.classList.remove('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-semibold', 'shadow-sm', 'border', 'border-[var(--color-border)]');
+          link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
+          iconSpan?.classList.remove('text-[var(--color-primary-500)]', 'scale-110');
+          iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
+        }
       }
     });
   }
@@ -342,3 +428,93 @@ function isActive(path: string): boolean {
   initTooltips();
   document.addEventListener('astro:page-load', initTooltips);
 </script>
+
+<style>
+  /* A.T.T Letter Animation */
+  .att-letters {
+    position: relative;
+    display: inline-flex;
+    white-space: nowrap;
+  }
+  
+  .att-letters .letter {
+    display: inline-block;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition-delay: calc(var(--delay) * 0.03s);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    font-size: inherit;
+  }
+  
+  /* Show content via ::before */
+  .att-letters .letter::before {
+    content: attr(data-final);
+    display: inline-block;
+  }
+  
+  /* Initially show only first 5 letters (A.T.T with dots) */
+  .att-letters .letter:nth-child(1)::before { content: 'A'; }
+  .att-letters .letter:nth-child(2)::before { content: '.'; }
+  .att-letters .letter:nth-child(3)::before { content: 'T'; }
+  .att-letters .letter:nth-child(4)::before { content: '.'; }
+  .att-letters .letter:nth-child(5)::before { content: 'T'; }
+  
+  .att-letters .letter.hidden {
+    opacity: 0;
+    transform: translateY(10px) scale(0.5);
+    width: 0;
+    overflow: hidden;
+  }
+  
+  /* On hover, show all letters and animate them */
+  .att-link:hover .att-letters .letter {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    width: auto !important;
+  }
+  
+  /* On hover, change to final content with morph animation */
+  .att-link:hover .att-letters .letter::before {
+    animation: letterMorph 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation-delay: calc(var(--delay) * 0.03s);
+  }
+  
+  @keyframes letterMorph {
+    0% {
+      transform: rotateY(90deg) scale(0.5);
+      opacity: 0;
+    }
+    50% {
+      transform: rotateY(45deg) scale(0.8);
+      opacity: 0.5;
+    }
+    100% {
+      transform: rotateY(0deg) scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Add glow effect on hover */
+  .att-link:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  }
+  
+  /* Animate the icon on hover */
+  .att-link:hover .sidebar-nav-icon svg {
+    animation: pulse 1s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+  
+  /* Smooth width transition for the text container */
+  .att-text {
+    overflow: visible;
+  }
+</style>
