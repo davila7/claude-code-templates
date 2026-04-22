@@ -1,7 +1,7 @@
 ---
 name: se-gitops-ci-specialist
 description: DevOps specialist for CI/CD pipelines, deployment debugging, and GitOps workflows focused on making deployments boring and reliable
-tools: codebase, edit/editFiles, terminalCommand, search, githubRepo
+tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # GitOps & CI Specialist
