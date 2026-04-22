@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-21T04:05:52.821018+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-04-22T04:04:50.354460+00:00",
+  "totalJobs": 93,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,24 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-senior-technical-lead-calibrate-group-ai-1131230",
+      "company": "Calibrate Group AI",
+      "position": "Senior Technical Lead",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "We're hiring our founding technical hire — a Senior Technical Lead who will own the entire technical vision and execution. This is a co-builder role, not a cog-in-machine role. What You'll Own: Designing and building custom AI implementations for SMB clients — from discovery through deployment...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-technical-lead-calibrate-group-ai-1131230",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-technical-lead-calibrate-group-ai-1131230",
+      "postedAt": "2026-04-20T18:38:56+00:00",
+      "tags": [
+        "Kubernetes",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5191433008",
       "company": "Anthropic",
@@ -139,32 +157,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-sr-software-engineer-b-e-rebuy-inc-1131104",
-      "company": "Rebuy, Inc.",
-      "position": "Sr Software Engineer B E",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "The Company You’ll Join At Rebuy, we’re on a mission to revolutionize shopping with intelligent, personalized experiences that wow customers around the globe. As a fully remote team, we power some of the fastest-growing DTC brands like Aviator Nation, Liquid Death, Magic Spoon, Blenders, Laird...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-sr-software-engineer-b-e-rebuy-inc-1131104",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-sr-software-engineer-b-e-rebuy-inc-1131104",
-      "postedAt": "2026-04-14T00:01:13+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Rust",
-        "Go",
-        "GCP",
-        "Claude Code",
-        "Cursor",
-        "Vue.js",
-        "Angular",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5186669008",
       "company": "Anthropic",
       "position": "Finance Systems Engineer, Revenue",
@@ -227,26 +219,6 @@
         "Python"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5179882008",
-      "company": "Anthropic",
-      "position": "Product Operations Manager, Feedback Loops",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "We're hiring a Product Operations Manager — Feedback Loops to own and continuously improve how customer signal flows into product and research decisions at Anthropic. This is a horizontal, org-wide role — you won't be embedded in a single product team, you'll build the shared operating system for...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
-      "postedAt": "2026-04-11T22:14:11-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-47727983",
@@ -1201,26 +1173,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5141849008",
-      "company": "Anthropic",
-      "position": "Incentive Compensation System Engineer",
-      "location": "Ontario, CAN (Remote)",
-      "remote": true,
-      "salary": "",
-      "description": "As an Incentive Compensation Systems Engineer, you will lead the technical implementation, configuration, and optimization of our incentive compensation management (ICM) platform. You will work closely with Revenue Operations, Data Engineering, Finance, Accounting, and HR to translate incentive...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5141849008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5141849008",
-      "postedAt": "2026-03-05T11:17:52-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "hn-47241620",
       "company": "Mobasi",
       "position": "Software Engineer",
@@ -1973,26 +1925,6 @@
       "tags": [
         "TypeScript",
         "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5042002008",
-      "company": "Anthropic",
-      "position": "Incentive Compensation System Engineer",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As an Incentive Compensation Systems Engineer, you will lead the technical implementation, configuration, and optimization of our incentive compensation management (ICM) platform. You will work closely with Revenue Operations, Data Engineering, Finance, Accounting, and HR to translate incentive...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5042002008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5042002008",
-      "postedAt": "2025-12-20T00:02:30-05:00",
-      "tags": [
         "Rust",
         "AWS",
         "Claude Code",
