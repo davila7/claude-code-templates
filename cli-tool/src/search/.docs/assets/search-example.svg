@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <style>
+      .terminal-bg { fill: #1e1e1e; }
+      .terminal-text { fill: #d4d4d4; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; }
+      .terminal-green { fill: #4ec9b0; }
+      .terminal-blue { fill: #569cd6; }
+      .terminal-yellow { fill: #dcdcaa; }
+      .terminal-purple { fill: #c586c0; }
+      .terminal-orange { fill: #ce9178; }
+      .terminal-gray { fill: #808080; }
+      .terminal-white { fill: #ffffff; }
+    </style>
+  </defs>
+  
+  <!-- Terminal Background -->
+  <rect class="terminal-bg" width="800" height="600" rx="8"/>
+  
+  <!-- Terminal Header -->
+  <rect fill="#2d2d30" width="800" height="35" rx="8"/>
+  <circle cx="20" cy="17.5" r="6" fill="#ff5f56"/>
+  <circle cx="40" cy="17.5" r="6" fill="#ffbd2e"/>
+  <circle cx="60" cy="17.5" r="6" fill="#27c93f"/>
+  <text class="terminal-text" x="400" y="23" text-anchor="middle">Terminal - npx cct --search "security"</text>
+  
+  <!-- Command Input -->
+  <text class="terminal-text" x="20" y="65">
+    <tspan class="terminal-green">$</tspan>
+    <tspan class="terminal-white"> npx cct --search "security"</tspan>
+  </text>
+  
+  <!-- Loading Spinner -->
+  <text class="terminal-blue" x="20" y="95">⠋ Loading components...</text>
+  
+  <!-- Search Results Header -->
+  <text class="terminal-yellow" x="20" y="125">🔍 Found 8 components matching "security"</text>
+  
+  <!-- Agents Section -->
+  <text class="terminal-purple" x="20" y="160" font-weight="bold">AGENTS:</text>
+  
+  <text class="terminal-text" x="20" y="185">
+    <tspan class="terminal-green">✨</tspan>
+    <tspan class="terminal-white" font-weight="bold"> Security Auditor</tspan>
+  </text>
+  <text class="terminal-gray" x="20" y="205">   Enterprise security toolkit with auditing, penetration testing...</text>
+  <text class="terminal-blue" x="20" y="220">   Category: security</text>
+  
+  <text class="terminal-text" x="20" y="245">
+    <tspan class="terminal-green">✨</tspan>
+    <tspan class="terminal-white" font-weight="bold"> Penetration Tester</tspan>
+  </text>
+  <text class="terminal-gray" x="20" y="265">   Advanced penetration testing and vulnerability assessment</text>
+  <text class="terminal-blue" x="20" y="280">   Category: security</text>
+  
+  <text class="terminal-text" x="20" y="305">
+    <tspan class="terminal-green">✨</tspan>
+    <tspan class="terminal-white" font-weight="bold"> Compliance Specialist</tspan>
+  </text>
+  <text class="terminal-gray" x="20" y="325">   Ensure compliance with security standards and regulations</text>
+  <text class="terminal-blue" x="20" y="340">   Category: security</text>
+  
+  <!-- Commands Section -->
+  <text class="terminal-purple" x="20" y="375" font-weight="bold">COMMANDS:</text>
+  
+  <text class="terminal-text" x="20" y="400">
+    <tspan class="terminal-yellow">⚡</tspan>
+    <tspan class="terminal-white" font-weight="bold"> Security Audit</tspan>
+  </text>
+  <text class="terminal-gray" x="20" y="420">   Comprehensive security audit for your codebase</text>
+  <text class="terminal-blue" x="20" y="435">   Category: security</text>
+  
+  <text class="terminal-text" x="20" y="460">
+    <tspan class="terminal-yellow">⚡</tspan>
+    <tspan class="terminal-white" font-weight="bold"> Code Security Review</tspan>
+  </text>
+  <text class="terminal-gray" x="20" y="480">   Review code for security vulnerabilities and best practices</text>
+  <text class="terminal-blue" x="20" y="495">   Category: security</text>
+  
+  <!-- Install Prompt -->
+  <text class="terminal-text" x="20" y="530">
+    <tspan class="terminal-green">?</tspan>
+    <tspan class="terminal-white"> Would you like to install any components? </tspan>
+    <tspan class="terminal-gray">(Y/n)</tspan>
+  </text>
+  
+  <!-- Cursor -->
+  <rect x="470" y="518" width="10" height="18" fill="#ffffff" opacity="0.7"/>
+</svg>

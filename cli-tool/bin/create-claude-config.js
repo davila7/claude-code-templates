@@ -82,6 +82,14 @@ program
   .option('--e2b-api-key <key>', 'E2B API key for sandbox execution (alternative to environment variable)')
   .option('--anthropic-api-key <key>', 'Anthropic API key for Claude Code (alternative to environment variable)')
   .option('--clone-session <url>', 'download and import a shared Claude Code session from URL')
+  .option('--search <query>', 'search for components (agents, commands, MCPs, skills)')
+  .option('--discover', 'discover recommended components for your project')
+  .option('--trending', 'show trending components')
+  .option('--popular', 'show most popular components')
+  .option('--categories', 'list all available categories')
+  .option('--category <category>', 'filter by category (use with --search, --trending, --popular)')
+  .option('--project-type <type>', 'specify project type (use with --discover)')
+  .option('--interactive', 'enable interactive mode for search and discovery')
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands

@@ -244,6 +244,56 @@ async function createClaudeConfig(options = {}) {
     return;
   }
 
+  // Handle search & discovery commands
+  const { runSearch, runDiscovery, runTrending, runPopular, runInteractiveSearch, showCategories } = require('./search');
+  
+  if (options.search) {
+    await runSearch(options.search, {
+      category: options.category,
+      projectType: options.projectType,
+      interactive: options.interactive,
+      verbose: options.verbose
+    });
+    return;
+  }
+  
+  if (options.discover) {
+    await runDiscovery(targetDir, {
+      projectType: options.projectType,
+      interactive: options.interactive,
+      verbose: options.verbose
+    });
+    return;
+  }
+  
+  if (options.trending) {
+    await runTrending({
+      category: options.category,
+      verbose: options.verbose
+    });
+    return;
+  }
+  
+  if (options.popular) {
+    await runPopular({
+      category: options.category,
+      verbose: options.verbose
+    });
+    return;
+  }
+  
+  if (options.categories) {
+    await showCategories();
+    return;
+  }
+  
+  if (options.interactive && !options.search && !options.discover) {
+    await runInteractiveSearch({
+      verbose: options.verbose
+    });
+    return;
+  }
+
   // Handle 2025 Year in Review dashboard
   if (options['2025']) {
     trackingService.trackCommandExecution('2025-year-in-review');
@@ -3456,4 +3506,11 @@ async function executeE2BSandbox(options, targetDir) {
   }
 }
 
-module.exports = { createClaudeConfig, showMainMenu };
+module.exports = { 
+  createClaudeConfig, 
+  showMainMenu,
+  installIndividualAgent,
+  installIndividualCommand,
+  installIndividualMCP,
+  installIndividualSkill
+};
