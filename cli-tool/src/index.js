@@ -1150,9 +1150,34 @@ async function installIndividualHook(hookName, targetDir, options) {
       // Bash file is optional, silently continue if not found
     }
 
-    // Remove description field before merging
+    // Download supporting files declared in the component JSON
+    if (hookConfig.supportingFiles && Array.isArray(hookConfig.supportingFiles)) {
+      const baseUrl = githubUrl.replace(/\/[^/]+$/, '');
+      for (const sf of hookConfig.supportingFiles) {
+        const fileUrl = `${baseUrl}/${sf.source}`;
+        try {
+          console.log(chalk.gray(`📥 Downloading supporting file: ${sf.source}...`));
+          const sfResponse = await fetch(fileUrl);
+          if (sfResponse.ok) {
+            const sfContent = await sfResponse.text();
+            additionalFiles[sf.destination] = {
+              content: sfContent,
+              executable: sf.executable === true
+            };
+            console.log(chalk.green(`✓ Found supporting file: ${sf.source} → ${sf.destination}`));
+          } else {
+            console.log(chalk.yellow(`⚠️  Supporting file not found: ${sf.source}`));
+          }
+        } catch (error) {
+          console.log(chalk.yellow(`⚠️  Failed to download supporting file: ${sf.source}`));
+        }
+      }
+    }
+
+    // Remove description and supportingFiles fields before merging into settings
     if (hookConfig && typeof hookConfig === 'object') {
       delete hookConfig.description;
+      delete hookConfig.supportingFiles;
     }
     
     // Use shared locations if provided (batch mode), otherwise ask user
