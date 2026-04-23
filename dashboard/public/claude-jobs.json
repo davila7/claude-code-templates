@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-22T04:04:50.354460+00:00",
-  "totalJobs": 93,
+  "lastUpdated": "2026-04-23T04:07:08.841284+00:00",
+  "totalJobs": 91,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -139,24 +139,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-software-engineer-payment-operations-wingspan-1131116",
-      "company": "Wingspan",
-      "position": "Software Engineer Payment Operations",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Who We Are Wingspan is the first payroll platform designed specifically for independent contractors and their businesses. We simplify onboarding, payments, and compliance for flexible workforces of all sizes, from solo operators to large enterprises. We're a Series B startup based in NYC with...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-software-engineer-payment-operations-wingspan-1131116",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-software-engineer-payment-operations-wingspan-1131116",
-      "postedAt": "2026-04-15T00:01:21+00:00",
-      "tags": [
-        "Node.js",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5186669008",
       "company": "Anthropic",
       "position": "Finance Systems Engineer, Revenue",
@@ -186,7 +168,7 @@
       "id": "anth-5185501008",
       "company": "Anthropic",
       "position": "Technical Enablement Lead, Claude Code",
-      "location": "Boston, MA; San Francisco, CA | New York City, NY; Seattle, WA; Washington, DC",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA; Washington, DC",
       "remote": false,
       "salary": "",
       "description": "Anthropic is looking for a Technical Enablement Lead to curate & deliver the technical curriculum that lets our go-to-market teams, partner, and customers demonstrate and support Claude Code with confidence. You'll own Claude Code enablement—building demos, labs, and content that help sellers...",
@@ -283,29 +265,9 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5181763008",
-      "company": "Anthropic",
-      "position": "Manager, Customer Productivity",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is seeking an experienced professional to build and lead our customer productivity and training program. As a key member of the Go-to-Market team, you will be responsible for designing the frameworks, resources, and engagement motions that ensure our customers are successfully adopting...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5181763008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5181763008",
-      "postedAt": "2026-04-09T18:57:31-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5174743008",
       "company": "Anthropic",
-      "position": "Software Engineer, Full-stack",
+      "position": "Senior Software Engineer, Full-stack",
       "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
@@ -369,7 +331,7 @@
     {
       "id": "anth-5157844008",
       "company": "Anthropic",
-      "position": "Software Engineer, Platform",
+      "position": "Senior Software Engineer, Platform",
       "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
