@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-23T04:07:08.841284+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-04-24T04:07:44.282095+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,27 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5194007008",
+      "company": "Anthropic",
+      "position": "Applied AI Architect (Public Sector)",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI team member at Anthropic, you will be a pre-sales architect focused on becoming a trusted technical advisor to the UK and Northern Europe public sector — with a primary focus on UK Central Government departments, executive agencies, and arm’s length bodies, and a reach extending...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5194007008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5194007008",
+      "postedAt": "2026-04-23T03:34:39-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "rok-remote-senior-technical-lead-calibrate-group-ai-1131230",
       "company": "Calibrate Group AI",
@@ -856,30 +877,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "wwr-leadup-ai-full-stack-developer-junior",
-      "company": "LeadUp AI",
-      "position": "Full-Stack Developer (Junior)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: United States URL: http://www.leadupgym.com The Role You build the majority of the user-facing application. You work from a detailed specification and follow patterns set by the senior developer. AI coding tools are a core part of your workflow. This is a fast-moving environment....",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/leadup-ai-full-stack-developer-junior",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/leadup-ai-full-stack-developer-junior",
-      "postedAt": "2026-03-25T02:14:15+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "Python",
-        "PostgreSQL",
-        "Claude Code",
-        "Cursor",
-        "Copilot",
-        "Tailwind"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5160757008",
       "company": "Anthropic",
       "position": "Security Risk & Compliance, HIPAA",
@@ -1095,7 +1092,7 @@
     {
       "id": "anth-5140405008",
       "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (Government Technology)",
+      "position": "Applied AI Architect, Government Technology",
       "location": "New York City, NY; Washington, DC",
       "remote": false,
       "salary": "",
@@ -1116,7 +1113,7 @@
     {
       "id": "anth-5140403008",
       "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (State and Local Government, West)",
+      "position": "Applied AI Architect, State and Local Government (West)",
       "location": "San Francisco, CA | New York City, NY | Washington, DC",
       "remote": false,
       "salary": "",
@@ -1181,27 +1178,6 @@
         "Claude Code",
         "Cursor",
         "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-level-senior-frontend-engineer",
-      "company": "Level",
-      "position": "Senior Frontend Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Asheville, NC URL: https://level.io Level is a modern RMM platform built around real-time data, automation, and an uncompromising focus on UX. We're profitable, growing, and shipping fast with a small team. Our platform manages devices across thousands of organizations. We're hiring...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/level-senior-frontend-engineer",
-      "postedAt": "2026-03-03T17:26:57+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -1833,7 +1809,7 @@
     {
       "id": "anth-5079511008",
       "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (National Security)",
+      "position": "Applied AI Architect, National Security",
       "location": "Washington, DC",
       "remote": false,
       "salary": "",
@@ -1854,7 +1830,7 @@
     {
       "id": "anth-5079540008",
       "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (Federal Civilian)",
+      "position": "Applied AI Architect, Federal Civilian",
       "location": "New York City, NY; Washington, DC",
       "remote": false,
       "salary": "",
