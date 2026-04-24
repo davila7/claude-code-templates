@@ -65,7 +65,7 @@
   "license": "MIT",
   "dependencies": {
     "boxen": "^5.1.2",
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.2",
     "chokidar": "^3.5.3",
     "commander": "^11.1.0",
     "express": "^4.18.2",
