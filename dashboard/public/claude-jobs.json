@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-24T04:07:44.282095+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-04-25T04:02:07.075548+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -9,9 +9,68 @@
   ],
   "jobs": [
     {
+      "id": "anth-5197538008",
+      "company": "Anthropic",
+      "position": "Manager of Applied AI Architecture, Enterprise Tech (Cyber)",
+      "location": "New York City, NY; San Francisco, CA | New York City, NY; Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Applied AI Architect, Enterprise Tech (Cyber) team at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across Enterprise Tech companies and digital-first organizations. You'll...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
+      "postedAt": "2026-04-24T12:17:48-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5184077008",
+      "company": "Anthropic",
+      "position": "Head of ANZ, Applied AI",
+      "location": "Sydney, Australia",
+      "remote": false,
+      "salary": "",
+      "description": "As the founding leader of Applied AI Solutions Architecture in ANZ, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across Australian and New Zealand enterprises and digital-first organizations. You'll...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5184077008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5184077008",
+      "postedAt": "2026-04-24T10:30:10-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-mid-senior-ai-video-artist-everai-1131288",
+      "company": "EverAI",
+      "position": "Mid Senior AI Video Artist",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Our Vision & Products ð EverAI — Building the Future of AI Companionship One of the Top 15 Largest & Fastest-Growing AI Companies in the World 50 Million Users in 2 years — Help Us Reach 100M first, 500M next At EverAI , we’re shaping what it means to connect with AI. With 50 million users and...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-mid-senior-ai-video-artist-everai-1131288",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-mid-senior-ai-video-artist-everai-1131288",
+      "postedAt": "2026-04-23T08:11:46+00:00",
+      "tags": [
+        "AWS",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5194007008",
       "company": "Anthropic",
-      "position": "Applied AI Architect (Public Sector)",
+      "position": "Applied AI Architect, Public Sector",
       "location": "London, UK",
       "remote": false,
       "salary": "",
@@ -76,7 +135,7 @@
     {
       "id": "anth-5192805008",
       "company": "Anthropic",
-      "position": "Solutions Architect, Applied AI (Commercial)",
+      "position": "Applied AI Architect, Commercial",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -118,11 +177,11 @@
     {
       "id": "anth-5192104008",
       "company": "Anthropic",
-      "position": "Global Leader, Applied AI Architects, Beneficial Deployments",
+      "position": "Global Applied AI Architecture Lead, Beneficial Deployments",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "description": "As the Global Leader of Applied AI Architects for Beneficial Deployments, you will lead the team of Applied AI Architects who serve as the primary technical partners to mission-driven organizations and non-profits adopting Claude. You'll build and scale a world-class, globally distributed team that...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
@@ -135,29 +194,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-senior-react-native-developer-headway-1131173",
-      "company": "Headway",
-      "position": "Senior React Native Developer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About Headway Founded in 2015, Headway was born out of a passion to bring entrepreneurial ideas to market and keep them there. We work holistically with our client partners as a true extension of their product team, not just as an execution arm of their business. If we see something broken, whether...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-react-native-developer-headway-1131173",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-react-native-developer-headway-1131173",
-      "postedAt": "2026-04-16T18:16:22+00:00",
-      "tags": [
-        "React",
-        "JavaScript",
-        "Rust",
-        "Claude Code",
-        "React Native",
-        "Ruby",
-        "Rails"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5186669008",
@@ -664,7 +700,7 @@
     {
       "id": "anth-5173031008",
       "company": "Anthropic",
-      "position": "Manager, Applied AI Solutions Architecture - Partnerships",
+      "position": "Manager of Applied AI Architecture, Partnerships",
       "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
@@ -1048,7 +1084,7 @@
     {
       "id": "anth-5146999008",
       "company": "Anthropic",
-      "position": "Head of International - Partner Solutions Architecture, Applied AI",
+      "position": "Head of International Applied AI Architecture, Partnerships",
       "location": "London, UK",
       "remote": false,
       "salary": "",
@@ -1113,8 +1149,8 @@
     {
       "id": "anth-5140403008",
       "company": "Anthropic",
-      "position": "Applied AI Architect, State and Local Government (West)",
-      "location": "San Francisco, CA | New York City, NY | Washington, DC",
+      "position": "Applied AI Architect, State and Local Government",
+      "location": "New York City, NY; Washington, DC",
       "remote": false,
       "salary": "",
       "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping state and local government agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology...",
@@ -1374,7 +1410,7 @@
     {
       "id": "anth-5117652008",
       "company": "Anthropic",
-      "position": "Manager of Solutions Architecture, Applied AI (Industries)",
+      "position": "Manager of Applied AI Architecture, Industries",
       "location": "Munich, Germany",
       "remote": false,
       "salary": "",
@@ -1394,7 +1430,7 @@
     {
       "id": "anth-5115884008",
       "company": "Anthropic",
-      "position": "Manager of Solutions Architecture, Applied AI (Industries)",
+      "position": "Manager of Applied AI Architecture, Industries",
       "location": "London, UK",
       "remote": false,
       "salary": "",
