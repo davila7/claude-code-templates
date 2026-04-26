@@ -147,6 +147,10 @@ def _load_sessions():
 def _get_cwd(session_id: str):
     with _sessions_lock:
         s = _sessions.get(session_id)
+    if not s:
+        _load_sessions()  # daemon started before this session was registered
+        with _sessions_lock:
+            s = _sessions.get(session_id)
     return s["cwd"] if s else None
 
 # ── JSONL incremental reader ───────────────────────────────────────────────────
