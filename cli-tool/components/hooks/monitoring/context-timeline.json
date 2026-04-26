@@ -1,0 +1,49 @@
+{
+  "description": "Real-time browser visualization of Claude Code's context window and subagent/tool execution as a git-graph timeline. Opens http://localhost:7878 on SessionStart with a vertical timeline (most recent on top), one column per agent (main + subagents branching from their Task tool call). Tool calls are color-coded by type (Read=green, Edit/Write=orange, Bash=red, Grep/Glob=cyan, Task=purple, Web=yellow, MCP=gray). Right sidebar shows context-window usage (tokens/200K) with cache_read/cache_creation/input/output breakdown plus per-subagent mini-context. Reads ~/.claude/projects/<encoded-cwd>/<session_id>.jsonl directly — no data replication, no network calls. Pure stdlib Python, zero pip dependencies. Persistent daemon HTTP server on port 7878 (auto-fallback 7879-7888 if busy; override with CONTEXT_TIMELINE_PORT env var). Watchdog auto-shutdown after 1h of inactivity. Disable browser auto-open with CONTEXT_TIMELINE_NO_BROWSER=1. Manual shutdown: python3 .claude/hooks/context-timeline.py --shutdown",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-timeline.py\" --server-start"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-timeline.py\" --event PreToolUse"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-timeline.py\" --event PostToolUse"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/context-timeline.py\" --event Stop"
+          }
+        ]
+      }
+    ]
+  }
+}
