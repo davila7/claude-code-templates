@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-25T04:02:07.075548+00:00",
+  "lastUpdated": "2026-04-26T04:18:28.774627+00:00",
   "totalJobs": 92,
   "sources": [
     "Anthropic",
@@ -8,6 +8,26 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-hq-ai-enablement-lead-everfield-1131322",
+      "company": "Everfield",
+      "position": "HQ AI Enablement Lead",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About Everfield Everfield buys, builds, and grows European vertical market and specialist software companies, providing them with the tools they need to move to the next level. Our mission is to foster ambition, fuel growth, and unlock opportunities for Europe's software ecosystem. Companies in the...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-hq-ai-enablement-lead-everfield-1131322",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-hq-ai-enablement-lead-everfield-1131322",
+      "postedAt": "2026-04-25T00:00:49+00:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "Azure",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5197538008",
       "company": "Anthropic",
@@ -153,26 +173,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-ai-transformation-lead-insider-one-1131194",
-      "company": "Insider One",
-      "position": "AI Transformation Lead",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Before jumping into all the information about the role and what you can bring to the table, let us introduce ourselves real quick. About us Insider One is the #1 platform that brings everything marketing and customer engagement teams need in one place so they can reach their peak potential and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ai-transformation-lead-insider-one-1131194",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ai-transformation-lead-insider-one-1131194",
-      "postedAt": "2026-04-17T16:00:04+00:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5192104008",
