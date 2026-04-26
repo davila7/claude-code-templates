@@ -3,44 +3,61 @@ const path = require('path');
 const app = express();
 const port = 3001;
 
-// Serve static files from docs directory
-app.use(express.static('docs'));
-
-// Handle filter routes - redirect to index.html
-const filterRoutes = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates'];
-filterRoutes.forEach(filter => {
-    app.get(`/${filter}`, (req, res) => {
-        res.sendFile(path.join(__dirname, 'docs', 'index.html'));
-    });
+// --- Middleware for logging requests ---
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
 });
 
-// Handle component routes
-app.get('/component/:type/:name', (req, res) => {
-    res.sendFile(path.join(__dirname, 'docs', 'component.html'));
-});
-
-// Handle blog routes
-app.get('/blog/*', (req, res) => {
-    const blogPath = req.path.replace('/blog', '');
-    res.sendFile(path.join(__dirname, 'docs', 'blog', blogPath, 'index.html'), (err) => {
+// --- Helper function to safely send files ---
+const sendHtml = (res, filePath) => {
+    res.sendFile(filePath, (err) => {
         if (err) {
-            res.status(404).send('Blog post not found');
+            console.error('File error:', err.message);
+            res.status(err.status || 500).send('Page not found');
         }
     });
+};
+
+// Serve static files
+app.use(express.static('docs'));
+
+// Filter routes
+const filterRoutes = ['agents', 'commands', 'settings', 'hooks', 'mcps', 'templates'];
+filterRoutes.forEach(route => {
+    app.get(`/${route}`, (req, res) => {
+        sendHtml(res, path.join(__dirname, 'docs', 'index.html'));
+    });
 });
 
-// Default route
+// Component route
+app.get('/component/:type/:name', (req, res) => {
+    sendHtml(res, path.join(__dirname, 'docs', 'component.html'));
+});
+
+// Blog route with safer path handling
+app.get('/blog/*', (req, res) => {
+    const blogPath = req.params[0]; // safer than replace
+    const fullPath = path.join(__dirname, 'docs', 'blog', blogPath, 'index.html');
+    sendHtml(res, fullPath);
+});
+
+// Root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'docs', 'index.html'));
+    sendHtml(res, path.join(__dirname, 'docs', 'index.html'));
+});
+
+// --- Global 404 handler ---
+app.use((req, res) => {
+    res.status(404).send('Route not found');
+});
+
+// --- Global error handler ---
+app.use((err, req, res, next) => {
+    console.error('Unexpected error:', err.stack);
+    res.status(500).send('Something went wrong');
 });
 
 app.listen(port, () => {
     console.log(`Development server running at http://localhost:${port}`);
-    console.log('Testing URLs:');
-    console.log(`- http://localhost:${port}/ (agents)`);
-    console.log(`- http://localhost:${port}/mcps`);
-    console.log(`- http://localhost:${port}/commands`);
-    console.log(`- http://localhost:${port}/settings`);
-    console.log(`- http://localhost:${port}/hooks`);
-    console.log(`- http://localhost:${port}/templates`);
 });
