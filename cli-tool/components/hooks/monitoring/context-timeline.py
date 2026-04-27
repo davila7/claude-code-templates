@@ -9,6 +9,7 @@ Modes (called by Claude Code hooks via stdin JSON):
   --run-server <PORT>   Internal: daemon entry point (do not call directly)
 """
 import argparse
+import re
 import gzip
 import io
 import json
@@ -41,7 +42,8 @@ def _state_dir() -> pathlib.Path:
     return _STATE_DIR
 
 def _encode_cwd(cwd: str) -> str:
-    return cwd.replace("/", "-")
+    # Replace any non-alphanumeric character with "-" (cross-platform)
+    return re.sub(r"[^a-zA-Z0-9]", "-", os.path.normpath(os.path.abspath(cwd)))
 
 def _transcript_path(session_id: str, cwd: str) -> pathlib.Path:
     base = pathlib.Path.home() / ".claude" / "projects" / _encode_cwd(cwd)
