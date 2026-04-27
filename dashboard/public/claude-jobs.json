@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-26T04:18:28.774627+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-04-27T04:15:51.894875+00:00",
+  "totalJobs": 91,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -868,29 +868,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-eventmobi-senior-front-end-engineer-remote-1",
-      "company": "EventMobi",
-      "position": "Senior Front End Engineer - Remote",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$50k",
-      "description": "Headquarters: 151 Yonge Street 11th Floor Toronto, Ontario M5C 2W7 URL: https://www.eventmobi.com/ *** EventMobi is an all-remote company and this is a fully remote position, open to all candidates with a focus in Pakistan, India, Brazil, Columbia, Argentina and Mexico. You will need to be able to...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/eventmobi-senior-front-end-engineer-remote-1",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/eventmobi-senior-front-end-engineer-remote-1",
-      "postedAt": "2026-03-27T17:07:25+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Go",
-        "AWS",
-        "Docker",
-        "React Native"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5104689008",
