@@ -93,7 +93,7 @@ const schemaData = JSON.stringify({
     </script>
     <style>
       html[data-sidebar-collapsed="true"] #sidebar { width: 72px; }
-      html[data-sidebar-collapsed="true"] #main-content { margin-left: 72px; }
+@media (min-width: 768px) { html[data-sidebar-collapsed="true"] #main-content { margin-left: 72px; } }
       html[data-sidebar-collapsed="true"] .sidebar-text { opacity: 0; width: 0; overflow: hidden; }
       html[data-sidebar-collapsed="true"] .sidebar-nav-count { opacity: 0; width: 0; }
       html[data-sidebar-collapsed="true"] .sidebar-nav-link,
