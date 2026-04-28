@@ -79,7 +79,6 @@ const schemaData = JSON.stringify({
   </head>
   <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200">
     <script is:inline>
-      // Initialize theme on page load (prevent flash)
       (function() {
         var stored = localStorage.getItem('claude-theme');
         var theme = (stored === 'light' || stored === 'dark') ? stored
@@ -87,8 +86,21 @@ const schemaData = JSON.stringify({
         var html = document.documentElement;
         html.classList.remove('light', 'dark');
         html.classList.add(theme);
+        if (localStorage.getItem('sidebar-collapsed') === 'true') {
+          html.setAttribute('data-sidebar-collapsed', 'true');
+        }
       })();
     </script>
+    <style>
+      html[data-sidebar-collapsed="true"] #sidebar { width: 72px; }
+@media (min-width: 768px) { html[data-sidebar-collapsed="true"] #main-content { margin-left: 72px; } }
+      html[data-sidebar-collapsed="true"] .sidebar-text { opacity: 0; width: 0; overflow: hidden; }
+      html[data-sidebar-collapsed="true"] .sidebar-nav-count { opacity: 0; width: 0; }
+      html[data-sidebar-collapsed="true"] .sidebar-nav-link,
+      html[data-sidebar-collapsed="true"] nav > a { justify-content: center; padding: 0.5rem; gap: 0; }
+      html[data-sidebar-collapsed="true"] .sidebar-nav-icon { display: flex; justify-content: center; align-items: center; margin: 0; }
+      html[data-sidebar-collapsed="true"] #sidebar-toggle svg { transform: rotate(180deg); pointer-events: none; }
+    </style>
     <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
       <aside
@@ -123,7 +135,6 @@ const schemaData = JSON.stringify({
     </div>
 
     <script>
-      // Sidebar collapse functionality
       function initSidebarCollapse() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');
@@ -131,15 +142,25 @@ const schemaData = JSON.stringify({
         
         if (!sidebar || !mainContent || !toggleBtn) return;
 
-        // Load saved state
         const savedState = localStorage.getItem('sidebar-collapsed');
         const isCollapsed = savedState === 'true';
-        
+
+        // Suppress SVG transition during CSS→JS handoff to prevent a brief
+        // reverse-rotation glitch (the SVG would animate from 180°→0° before
+        // JS re-applies 180° in applySidebarState below).
+        const toggleSvg = toggleBtn.querySelector('svg') as HTMLElement | null;
+        if (toggleSvg) toggleSvg.style.transition = 'none';
+        document.documentElement.removeAttribute('data-sidebar-collapsed');
+
         if (isCollapsed) {
           applySidebarState(true);
         }
 
-        // Toggle handler
+        // Re-enable SVG transition after the frame so clicks animate normally.
+        requestAnimationFrame(() => {
+          if (toggleSvg) toggleSvg.style.transition = '';
+        });
+
         toggleBtn.addEventListener('click', () => {
           const currentState = sidebar.dataset.collapsed === 'true';
           const newState = !currentState;
@@ -158,20 +179,17 @@ const schemaData = JSON.stringify({
             mainContent.classList.remove('md:ml-[220px]');
             mainContent.classList.add('md:ml-[72px]');
             
-            // Hide text elements
             document.querySelectorAll('.sidebar-text').forEach(el => {
               (el as HTMLElement).style.opacity = '0';
               (el as HTMLElement).style.width = '0';
               (el as HTMLElement).style.overflow = 'hidden';
             });
             
-            // Hide nav counts
             document.querySelectorAll('.sidebar-nav-count').forEach(el => {
               (el as HTMLElement).style.opacity = '0';
               (el as HTMLElement).style.width = '0';
             });
             
-            // Center all nav links with flex
             document.querySelectorAll('.sidebar-nav-link, nav > a, nav > button').forEach(el => {
               (el as HTMLElement).style.display = 'flex';
               (el as HTMLElement).style.justifyContent = 'center';
@@ -180,7 +198,6 @@ const schemaData = JSON.stringify({
               (el as HTMLElement).style.gap = '0';
             });
             
-            // Ensure icon containers are centered
             document.querySelectorAll('.sidebar-nav-icon, nav > a > span:first-child, nav > button > span:first-child').forEach(el => {
               (el as HTMLElement).style.display = 'flex';
               (el as HTMLElement).style.justifyContent = 'center';
@@ -188,10 +205,10 @@ const schemaData = JSON.stringify({
               (el as HTMLElement).style.margin = '0';
             });
             
-            // Rotate toggle icon
-            if (toggleBtn) {
-              const icon = toggleBtn.querySelector('svg');
-              if (icon) icon.style.transform = 'rotate(180deg)';
+            toggleBtn.setAttribute('aria-label', 'Expand sidebar');
+            const icon = toggleBtn.querySelector('svg');
+            if (icon) {
+              icon.style.transform = 'rotate(180deg)';
             }
           } else {
             sidebar.classList.remove('w-[72px]');
@@ -199,20 +216,17 @@ const schemaData = JSON.stringify({
             mainContent.classList.remove('md:ml-[72px]');
             mainContent.classList.add('md:ml-[220px]');
             
-            // Show text elements
             document.querySelectorAll('.sidebar-text').forEach(el => {
               (el as HTMLElement).style.opacity = '1';
               (el as HTMLElement).style.width = 'auto';
               (el as HTMLElement).style.overflow = 'visible';
             });
             
-            // Show nav counts
             document.querySelectorAll('.sidebar-nav-count').forEach(el => {
               (el as HTMLElement).style.opacity = '1';
               (el as HTMLElement).style.width = 'auto';
             });
             
-            // Reset nav links alignment
             document.querySelectorAll('.sidebar-nav-link, nav > a, nav > button').forEach(el => {
               (el as HTMLElement).style.display = '';
               (el as HTMLElement).style.justifyContent = '';
@@ -221,7 +235,6 @@ const schemaData = JSON.stringify({
               (el as HTMLElement).style.gap = '';
             });
             
-            // Reset icon containers
             document.querySelectorAll('.sidebar-nav-icon, nav > a > span:first-child, nav > button > span:first-child').forEach(el => {
               (el as HTMLElement).style.display = '';
               (el as HTMLElement).style.justifyContent = '';
@@ -229,23 +242,19 @@ const schemaData = JSON.stringify({
               (el as HTMLElement).style.margin = '';
             });
             
-            // Reset toggle icon
-            if (toggleBtn) {
-              const icon = toggleBtn.querySelector('svg');
-              if (icon) icon.style.transform = 'rotate(0deg)';
+            toggleBtn.setAttribute('aria-label', 'Collapse sidebar');
+            const icon = toggleBtn.querySelector('svg');
+            if (icon) {
+              icon.style.transform = 'rotate(0deg)';
             }
           }
         }
       }
 
-      // Initialize on load
       initSidebarCollapse();
-      
-      // Re-initialize on navigation (for SPA-like behavior)
       document.addEventListener('astro:page-load', initSidebarCollapse);
     </script>
 
-    <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
     <ClerkIsland client:load />
   </body>
 </html>
