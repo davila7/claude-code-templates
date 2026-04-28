@@ -28,10 +28,11 @@ from urllib.parse import parse_qs, urlparse
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
-DEFAULT_PORT     = 7878
-CONTEXT_LIMIT    = 200_000
-WATCHDOG_SECONDS = 3600
-CACHE_TTL        = 0.25
+DEFAULT_PORT             = 7878
+DEFAULT_CONTEXT_LIMIT    = 200_000
+EXTENDED_CONTEXT_LIMIT   = 1_000_000
+WATCHDOG_SECONDS         = 3600
+CACHE_TTL                = 0.25
 
 _STATE_DIR = pathlib.Path.home() / ".claude" / "state" / "context-timeline"
 
@@ -62,6 +63,40 @@ def _pid_file()      -> pathlib.Path: return _state_dir() / "server.pid"
 def _port_file()     -> pathlib.Path: return _state_dir() / "server.port"
 def _log_file()      -> pathlib.Path: return _state_dir() / "server.log"
 def _sessions_file() -> pathlib.Path: return _state_dir() / "sessions.json"
+
+# ── Context limit detection ────────────────────────────────────────────────────
+
+def _detect_context_limit(cwd: str) -> int:
+    """Resolve the model context window in tokens.
+
+    Resolution order:
+      1. CONTEXT_TIMELINE_LIMIT env var (explicit override).
+      2. "[1m]" / "[200k]" / "[1M]" suffix in the active model setting,
+         read from <cwd>/.claude/settings.json or ~/.claude/settings.json.
+      3. DEFAULT_CONTEXT_LIMIT (200_000).
+    """
+    env = os.environ.get("CONTEXT_TIMELINE_LIMIT")
+    if env:
+        try:
+            return int(env)
+        except ValueError:
+            pass
+
+    for path in (
+        pathlib.Path(cwd) / ".claude" / "settings.json",
+        pathlib.Path.home() / ".claude" / "settings.json",
+    ):
+        try:
+            cfg   = json.loads(path.read_text())
+            model = str(cfg.get("model", "")).lower()
+            if "[1m]" in model or "[1000k]" in model:
+                return EXTENDED_CONTEXT_LIMIT
+            if "[200k]" in model:
+                return DEFAULT_CONTEXT_LIMIT
+        except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError):
+            continue
+
+    return DEFAULT_CONTEXT_LIMIT
 
 # ── Pid file ───────────────────────────────────────────────────────────────────
 
@@ -216,7 +251,7 @@ def _fresh_agent(aid: str, atype="", desc="") -> dict:
         "nodes": [],
     }
 
-def _fresh_state(session_id: str) -> dict:
+def _fresh_state(session_id: str, limit: int = DEFAULT_CONTEXT_LIMIT) -> dict:
     return {
         "session_id": session_id,
         "started_at": time.time(),
@@ -225,7 +260,7 @@ def _fresh_state(session_id: str) -> dict:
         "context_window": {
             "input_tokens": 0, "output_tokens": 0,
             "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0,
-            "total_used": 0, "limit": CONTEXT_LIMIT,
+            "total_used": 0, "limit": limit,
             "last_update_ts": time.time(),
         },
         "edges": [],
@@ -236,7 +271,8 @@ class _Builder:
     def __init__(self, session_id: str, cwd: str):
         self._sid   = session_id
         self._cwd   = cwd
-        self._state = _fresh_state(session_id)
+        self._limit = _detect_context_limit(cwd)
+        self._state = _fresh_state(session_id, self._limit)
         self._tail  = _Tail()
 
     def update(self) -> dict:
@@ -288,7 +324,7 @@ class _Builder:
                 ctx["total_used"] = sum(ctx.values())
                 agent["context"] = ctx
                 if agent["id"] == "main":
-                    s["context_window"].update({**ctx, "last_update_ts": ts, "limit": CONTEXT_LIMIT})
+                    s["context_window"].update({**ctx, "last_update_ts": ts, "limit": self._limit})
             for block in (msg.get("content") or []):
                 if not isinstance(block, dict) or block.get("type") != "tool_use":
                     continue
