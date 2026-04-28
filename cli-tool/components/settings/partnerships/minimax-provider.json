@@ -1,0 +1,10 @@
+{
+  "description": "MiniMax AI Provider - Configure Claude Code to use MiniMax's Anthropic-compatible API. MiniMax-M2.7 delivers peak performance at exceptional value for complex reasoning tasks, while MiniMax-M2.7-highspeed offers the same performance with faster, more agile responses. Requires a MiniMax API key from https://platform.minimax.io",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR-MINIMAX-API-KEY",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.7",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.7"
+  }
+}
