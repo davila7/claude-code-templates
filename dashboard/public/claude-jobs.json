@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-27T04:15:51.894875+00:00",
+  "lastUpdated": "2026-04-28T04:19:14.859789+00:00",
   "totalJobs": 91,
   "sources": [
     "Anthropic",
@@ -60,6 +60,26 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5184077008",
       "postedAt": "2026-04-24T10:30:10-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5197597008",
+      "company": "Anthropic",
+      "position": "Technical Specialist, Claude Code",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic launches products at lightning speed and many of them grow at an unprecedented pace, too. For no product is this more true than Claude Code, the fastest-growing software product in history. That said, speed of adoption is not the same as depth of adoption. We’re building a team of...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197597008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197597008",
+      "postedAt": "2026-04-23T18:13:14-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -639,7 +659,7 @@
     {
       "id": "anth-5153580008",
       "company": "Anthropic",
-      "position": "Head of Programmatic Outcomes — Product",
+      "position": "Head of Programmatic Outcomes, Product",
       "location": "San Francisco, CA",
       "remote": false,
       "salary": "",
@@ -884,28 +904,6 @@
       "tags": [
         "Rust",
         "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5160757008",
-      "company": "Anthropic",
-      "position": "Security Risk & Compliance, HIPAA",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA; Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5160757008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5160757008",
-      "postedAt": "2026-03-20T17:36:54-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "GCP",
-        "Azure",
         "Claude Code",
         "Anthropic"
       ],
