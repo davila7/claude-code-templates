@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "trace-mcp": {
+      "description": "Framework-aware code intelligence — semantic navigation, impact analysis, and refactoring across 60 framework integrations and 81 languages with up to 99% token reduction.",
+      "command": "npx",
+      "args": ["-y", "trace-mcp@latest"]
+    }
+  }
+}
