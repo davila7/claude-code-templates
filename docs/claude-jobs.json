@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-28T04:19:14.859789+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-04-29T04:18:03.774251+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,21 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
+      "company": "Smile Digital Health",
+      "position": "Senior Product Marketing Manager US",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Working for a company like Smile Digital Health means supporting our mandate for #BetterGlobalHealth . We strive towards this goal every day, and the results can be seen in the impact of our innovative health data platform and data management solutions, which are used in over 20 countries. We were...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
+      "postedAt": "2026-04-28T00:00:03+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-hq-ai-enablement-lead-everfield-1131322",
       "company": "Everfield",
@@ -127,24 +142,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-senior-technical-lead-calibrate-group-ai-1131230",
-      "company": "Calibrate Group AI",
-      "position": "Senior Technical Lead",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "We're hiring our founding technical hire — a Senior Technical Lead who will own the entire technical vision and execution. This is a co-builder role, not a cog-in-machine role. What You'll Own: Designing and building custom AI implementations for SMB clients — from discovery through deployment...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-technical-lead-calibrate-group-ai-1131230",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-technical-lead-calibrate-group-ai-1131230",
-      "postedAt": "2026-04-20T18:38:56+00:00",
-      "tags": [
-        "Kubernetes",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5191433008",
@@ -902,28 +899,6 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5104689008",
       "postedAt": "2026-03-26T16:40:33-04:00",
       "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5159669008",
-      "company": "Anthropic",
-      "position": "Prompt Engineer, Claude Code",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "$320,000-405,000",
-      "description": "As a Prompt Engineer on the Claude Code team, you'll own Claude's behaviors specifically within Claude Code — ensuring users get a consistent, safe, and high-quality experience as we ship new models and evolve the product. This is a highly specialized role sitting at the intersection of model...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5159669008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5159669008",
-      "postedAt": "2026-03-20T05:23:26-04:00",
-      "tags": [
-        "TypeScript",
-        "Python",
         "Rust",
         "AWS",
         "Claude Code",
