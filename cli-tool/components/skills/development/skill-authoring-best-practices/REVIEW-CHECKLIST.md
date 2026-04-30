@@ -4,16 +4,39 @@ Mechanical pass for any skill before merging or publishing. Run through every bo
 
 ## Frontmatter
 
-- [ ] `name` field present, kebab-case
+### Required / recommended fields
+
+- [ ] `name` field present, kebab-case, max 64 characters
 - [ ] `name` matches the directory name exactly
 - [ ] `description` field present and non-empty
 - [ ] Description first sentence describes a **capability**, not a category
 - [ ] Description contains the phrase `Use when` followed by **specific** triggers
 - [ ] Description triggers include verbatim user phrases, file types, or domain keywords
 - [ ] Description is under 1024 characters
+- [ ] Combined `description` + `when_to_use` stays under the 1,536-character listing cap
 - [ ] Description is third-person, active voice (no "I" or "this skill should be used by me")
 - [ ] No time-sensitive content ("as of 2024", "currently", "latest version is...")
-- [ ] If the skill is slash-only, `disable-model-invocation: true` is set
+
+### Optional fields — verify each one is justified
+
+- [ ] `when_to_use` is set only if `description` cannot fit all desired triggers
+- [ ] `disable-model-invocation: true` is set only for side-effecting workflows or one-shot prompts
+- [ ] `user-invocable: false` is set only for background-knowledge skills not useful as commands
+- [ ] `allowed-tools` lists specific tools the skill needs (not `*` or overly broad globs)
+- [ ] `argument-hint` is set whenever the skill accepts arguments
+- [ ] `arguments` matches the `$name` substitutions used in the body
+- [ ] `paths` patterns are broad enough to work in monorepos (`**/*.ext`, not `src/**/*.ext`)
+- [ ] `context: fork` is only used on skills with explicit task instructions (not reference skills)
+- [ ] `agent` is set when `context: fork` is used (or `general-purpose` is acceptable)
+- [ ] `model` and `effort` overrides are explicitly justified — most skills should inherit
+- [ ] `shell: powershell` is set only for Windows-specific tooling
+
+### Forbidden / non-standard fields
+
+- [ ] No `license` field in frontmatter (use `LICENSE.txt` at directory root if needed)
+- [ ] No `version` field in frontmatter (track via git or a separate file)
+- [ ] No `metadata.*` block (silently ignored by the catalog generator)
+- [ ] No fields outside the official schema documented in [FRONTMATTER-REFERENCE.md](FRONTMATTER-REFERENCE.md)
 
 ## SKILL.md body
 

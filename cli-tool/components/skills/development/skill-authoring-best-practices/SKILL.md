@@ -36,9 +36,6 @@ description: One sentence on what this does. Use when [specific triggers, keywor
 
 ## Workflow
 [Numbered steps, checklists, anti-patterns]
-
-## Advanced
-See [REFERENCE.md](REFERENCE.md).
 ```
 
 ## The description field is everything
@@ -46,16 +43,19 @@ See [REFERENCE.md](REFERENCE.md).
 The description is the **only** signal the loader sees when deciding to surface this skill. Everything else is invisible until the skill is invoked.
 
 **Format rules:**
-- Max 1024 characters
+- Max 1024 characters (combined `description` + `when_to_use` is capped at 1,536 in the listing)
 - Third person, active voice
 - First sentence: what it does (capability)
 - Second sentence: `Use when [triggers]` — list real keywords, file types, contexts users mention
 
 **✅ Good:** `Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when user mentions PDFs, forms, or document extraction.`
-
 **❌ Bad:** `Helps with documents.`
 
-The bad example gives the loader nothing to discriminate against other document skills. See [DESCRIPTION-GUIDE.md](DESCRIPTION-GUIDE.md) for ten before/after rewrites and the discrimination test.
+See [DESCRIPTION-GUIDE.md](DESCRIPTION-GUIDE.md) for ten before/after rewrites and [FRONTMATTER-REFERENCE.md](FRONTMATTER-REFERENCE.md) for every supported field.
+
+## Frontmatter: stay minimal
+
+The official schema has 15 fields, but only `description` is recommended. Default to `name` + `description`. Add other fields (`disable-model-invocation`, `allowed-tools`, `paths`, `context: fork`) only when justified. Avoid non-standard fields (`license`, `version`, `metadata.*`) — silently ignored by the catalog generator. Full field-by-field guide: [FRONTMATTER-REFERENCE.md](FRONTMATTER-REFERENCE.md).
 
 ## Keep SKILL.md under 100 lines
 
@@ -85,14 +85,15 @@ Then walk [REVIEW-CHECKLIST.md](REVIEW-CHECKLIST.md). Most common failures: miss
 ❌ **Generic description** — `"Helps with code"`. Loader can't discriminate.
 ❌ **First-person voice** — `"I help you..."`. Rewrite as `Use when ...`.
 ❌ **One giant SKILL.md** — every reference table dumped into the entry point.
-❌ **Nested references** — `SKILL.md → A.md → B.md → C.md`. Stop at one level.
-❌ **Time-sensitive** — `"latest version is 3.2"` rots within months.
+❌ **Nested references** — stop at one level.
+❌ **Non-standard frontmatter** — `license`, `version`, `metadata.*` are silently ignored.
 
-Full anti-pattern catalog: [STRUCTURE-GUIDE.md](STRUCTURE-GUIDE.md) and [DESCRIPTION-GUIDE.md](DESCRIPTION-GUIDE.md).
+Full catalog: [STRUCTURE-GUIDE.md](STRUCTURE-GUIDE.md), [DESCRIPTION-GUIDE.md](DESCRIPTION-GUIDE.md), [FRONTMATTER-REFERENCE.md](FRONTMATTER-REFERENCE.md).
 
 ## Reference files
 
 - [DESCRIPTION-GUIDE.md](DESCRIPTION-GUIDE.md) — Writing trigger-rich descriptions, ten rewrite examples
+- [FRONTMATTER-REFERENCE.md](FRONTMATTER-REFERENCE.md) — Every supported frontmatter field, with anti-patterns
 - [STRUCTURE-GUIDE.md](STRUCTURE-GUIDE.md) — When to split, when to add scripts, progressive disclosure
 - [REVIEW-CHECKLIST.md](REVIEW-CHECKLIST.md) — Full auditable checklist
 - [scripts/audit-skill.sh](scripts/audit-skill.sh) — Mechanical lint pass for any SKILL.md

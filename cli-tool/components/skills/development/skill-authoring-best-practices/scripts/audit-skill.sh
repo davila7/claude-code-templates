@@ -138,7 +138,35 @@ else
   ok "No absolute paths in SKILL.md"
 fi
 
-# 8. Reference depth (look for nested references)
+# 8. Frontmatter field whitelist
+# Official fields per https://code.claude.com/docs/en/skills#frontmatter-reference
+official_fields="name description when_to_use argument-hint arguments disable-model-invocation user-invocable allowed-tools model effort context agent hooks paths shell"
+declared_fields=$(echo "$fm" | grep -E '^[a-zA-Z_-]+:' | sed 's/:.*//' | tr -d ' ')
+unknown_count=0
+for field in $declared_fields; do
+  if ! echo " $official_fields " | grep -q " $field "; then
+    case "$field" in
+      # Common non-standard fields we want to flag explicitly
+      license|version|author|tags|category|metadata)
+        warn "Non-standard frontmatter field: '$field' (not in the official schema)"
+        unknown_count=$((unknown_count + 1))
+        ;;
+      *)
+        info "Unknown frontmatter field: '$field' (verify against FRONTMATTER-REFERENCE.md)"
+        ;;
+    esac
+  fi
+done
+if [ "$unknown_count" -eq 0 ]; then
+  ok "All frontmatter fields are part of the official schema"
+fi
+
+# 8b. name length
+if [ -n "$name" ] && [ ${#name} -gt 64 ]; then
+  warn "name '$name' exceeds 64 characters (max per official schema)"
+fi
+
+# 9. Reference depth (look for nested references)
 skill_dir=$(dirname "$skill_md")
 ref_files=$(find "$skill_dir" -maxdepth 2 -name '*.md' ! -name 'SKILL.md' 2>/dev/null)
 nested=0
