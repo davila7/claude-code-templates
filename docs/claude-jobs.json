@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-04-29T04:18:03.774251+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-04-30T04:17:06.963682+00:00",
+  "totalJobs": 87,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,29 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-front-end-full-stack-developer-honor-foods-1131370",
+      "company": "Honor Foods",
+      "position": "Front End Full Stack Developer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Front-End / Full Stack Developer (React + Java) ð Remote | Full-Time Want to build tech that actually moves a business? At Honor Foods, our developers power real-world logistics—systems that keep products flowing and customers happy. We're looking for a front-end focused developer who loves...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-front-end-full-stack-developer-honor-foods-1131370",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-front-end-full-stack-developer-honor-foods-1131370",
+      "postedAt": "2026-04-29T00:00:19+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "PostgreSQL",
+        "Copilot",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
       "company": "Smile Digital Health",
@@ -654,26 +677,6 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5153580008",
-      "company": "Anthropic",
-      "position": "Head of Programmatic Outcomes, Product",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "The Head of Programmatic Outcomes (Product) shapes the product-led growth strategy, in-product activation design, and adoption loops that reach every knowledge worker — not account by account, but at population scale — in deep partnership with Anthropic’s Product, Growth Marketing, and Strategy...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153580008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153580008",
-      "postedAt": "2026-04-01T18:58:12-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "hn-47604920",
       "company": "Mixpeek",
       "position": "Senior Infrastructure Engineer",
@@ -821,46 +824,6 @@
         "JavaScript",
         "Rust",
         "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-contentjet-inc-automation-integration-engineer",
-      "company": "ContentJet Inc.",
-      "position": "Automation & Integration Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Montreal, Canada URL: https://www.contentjet.com ABOUT CONTENTJET ContentJet is a Canadian UGC creative agency that connects brands with creators to produce high-performing user-generated content at scale. Our delivery engine runs entirely on AI automation and intelligent integration...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-automation-integration-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-automation-integration-engineer",
-      "postedAt": "2026-03-30T12:52:41+00:00",
-      "tags": [
-        "JavaScript",
-        "Python",
-        "PostgreSQL",
-        "Docker",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-contentjet-inc-ai-agent-architect-builder",
-      "company": "ContentJet Inc.",
-      "position": "AI Agent Architect / Builder",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Montreal, Canada URL: https://www.contentjet.com ABOUT CONTENTJET ContentJet is a Canadian UGC creative agency that connects brands with creators to produce high-performing user-generated content at scale. We serve global clients across e-commerce, healthcare, and marketing verticals....",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-ai-agent-architect-builder",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/contentjet-inc-ai-agent-architect-builder",
-      "postedAt": "2026-03-30T12:49:53+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -1723,30 +1686,6 @@
       "postedAt": "2026-02-02T16:40:02+00:00",
       "tags": [
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-walter-senior-software-engineer",
-      "company": "WALTER",
-      "position": "Senior Software Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote URL: http://gowalter.co Senior Software Engineers at Stamped are hands-on builders responsible for designing, developing, and delivering high-quality software that powers our products. This role combines technical depth with product intuition — engineers are expected to think...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/walter-senior-software-engineer",
-      "postedAt": "2026-01-29T21:06:16+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "AWS",
-        "Copilot",
-        "Vue.js"
       ],
       "companyIcon": ""
     },
