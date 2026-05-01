@@ -1,11 +1,10 @@
 {
-  "lastUpdated": "2026-04-30T04:17:06.963682+00:00",
-  "totalJobs": 87,
+  "lastUpdated": "2026-05-01T04:24:23.441858+00:00",
+  "totalJobs": 86,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
     {
@@ -803,27 +802,6 @@
         "Claude Code",
         "Cursor",
         "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-eventmobi-front-end-engineer-remote",
-      "company": "EventMobi",
-      "position": "Front End Engineer - Remote",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$40k",
-      "description": "Headquarters: 151 Yonge Street 11th Floor Toronto, Ontario M5C 2W7 URL: https://www.eventmobi.com/ *** EventMobi is an all-remote company and this is a fully remote position, open to all candidates with a focus in Pakistan, India, Brazil, Columbia, Argentina and Mexico. You will need to be able to...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/eventmobi-front-end-engineer-remote",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/eventmobi-front-end-engineer-remote",
-      "postedAt": "2026-03-31T18:28:48+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Rust",
-        "Go"
       ],
       "companyIcon": ""
     },
