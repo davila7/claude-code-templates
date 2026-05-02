@@ -1,12 +1,69 @@
 {
-  "lastUpdated": "2026-05-01T04:24:23.441858+00:00",
-  "totalJobs": 86,
+  "lastUpdated": "2026-05-02T04:09:50.872418+00:00",
+  "totalJobs": 87,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-47982567",
+      "company": "MintMCP",
+      "position": "Software Engineer",
+      "location": "SF Bay Area (ONSITE)",
+      "remote": false,
+      "salary": "",
+      "description": "MintMCP helps enterprises safely roll out agents to the entire organization (e.g, governance around MCP tools and agents like Claude Code / Codex / Cowork). We're building an MCP gateway with abstractions useful for 1) preventing agents from doing the unintentionally bad things you hear about every...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47982567",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47982567",
+      "postedAt": "2026-05-02T01:54:55+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47980891",
+      "company": "Startup working on AI Healthcare solutions",
+      "position": "Software Engineer",
+      "location": "REMOTE(US, Pacific time zone)",
+      "remote": true,
+      "salary": "",
+      "description": "Full time engineering role (Remote, US person required; Pacific time zone) Stack: C#, Python, Gemini API on Windows, lots of legacy systems/constrained enterprise environment. Health systems experience preferred. Understanding of cost effective, reliable LLM API use. Should be flexible: do PM-like...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47980891",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47980891",
+      "postedAt": "2026-05-01T21:51:26+00:00",
+      "tags": [
+        "Python",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47977567",
+      "company": "vvd",
+      "position": "Design Engineer",
+      "location": "Remote (work from anywhere)",
+      "remote": true,
+      "salary": "",
+      "description": "https://vvd.world We’re building tools for storytellers, worldbuilders, writers, and creators. We’re looking for a Design Engineer who can design and build polished product experiences end-to-end. You should care deeply about taste, interaction, motion, and frontend craft, but also understand...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47977567",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47977567",
+      "postedAt": "2026-05-01T17:33:44+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-front-end-full-stack-developer-honor-foods-1131370",
       "company": "Honor Foods",
@@ -124,25 +181,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-mid-senior-ai-video-artist-everai-1131288",
-      "company": "EverAI",
-      "position": "Mid Senior AI Video Artist",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Our Vision & Products ð EverAI — Building the Future of AI Companionship One of the Top 15 Largest & Fastest-Growing AI Companies in the World 50 Million Users in 2 years — Help Us Reach 100M first, 500M next At EverAI , we’re shaping what it means to connect with AI. With 50 million users and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-mid-senior-ai-video-artist-everai-1131288",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-mid-senior-ai-video-artist-everai-1131288",
-      "postedAt": "2026-04-23T08:11:46+00:00",
-      "tags": [
-        "AWS",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5194007008",
@@ -419,31 +457,6 @@
       "tags": [
         "Rust",
         "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5157844008",
-      "company": "Anthropic",
-      "position": "Senior Software Engineer, Platform",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "We are looking for software engineers to join our Platform organization. We build the foundational primitives that accelerate product development across Anthropic, and own infrastructure and systems that teams depend on to ship reliably and at scale - either internally or by hundreds of thousands...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157844008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157844008",
-      "postedAt": "2026-04-08T14:05:44-04:00",
-      "tags": [
-        "TypeScript",
-        "Python",
-        "Rust",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes",
         "Claude Code",
         "Anthropic"
       ],
