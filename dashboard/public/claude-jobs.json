@@ -1,12 +1,32 @@
 {
-  "lastUpdated": "2026-05-02T04:09:50.872418+00:00",
-  "totalJobs": 87,
+  "lastUpdated": "2026-05-03T04:20:39.687171+00:00",
+  "totalJobs": 83,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-47985407",
+      "company": "Axis Communications",
+      "position": "Software Engineer",
+      "location": "Linköping, Sweden (Onsite)",
+      "remote": false,
+      "salary": "",
+      "description": "Join a newly formed R&D team at Axis focused on rethinking how software is built using AI coding agents. Build next-generation video management software for cloud and on-prem environments while experimenting with tools like Claude Code, Copilot, Codex, and emerging agent workflows. This is a rare...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47985407",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47985407",
+      "postedAt": "2026-05-02T11:21:46+00:00",
+      "tags": [
+        "TypeScript",
+        "Rust",
+        "Claude Code",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47982567",
       "company": "MintMCP",
@@ -25,6 +45,21 @@
       "companyIcon": ""
     },
     {
+      "id": "hn-47981963",
+      "company": "FeedbackPulse",
+      "position": "Software Engineer",
+      "location": "Remote (SEA-based)",
+      "remote": true,
+      "salary": "",
+      "description": "Mission: Build better culture & growth systems for companies that don’t have them. Then make them stick. Role: Somewhere between product, customer success, and HR consulting. You won’t “manage HR internally.” You will operate as an embedded advisor across multiple companies, helping them design,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47981963",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47981963",
+      "postedAt": "2026-05-02T00:09:13+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-47980891",
       "company": "Startup working on AI Healthcare solutions",
       "position": "Software Engineer",
@@ -39,6 +74,43 @@
       "tags": [
         "Python",
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47978937",
+      "company": "Railway",
+      "position": "Senior Infra Engineer",
+      "location": "REMOTE (Worldwide)",
+      "remote": true,
+      "salary": "",
+      "description": "Do you feel scared and alone when opening the AWS console? Do you wish you could just tell Claude to manage your infra, and it would just work? Do you dream of a future where software is abundant and developers and normies alike are free to build their wildest dreams? We're Railway, and we think...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47978937",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47978937",
+      "postedAt": "2026-05-01T19:17:50+00:00",
+      "tags": [
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47977662",
+      "company": "Form AI",
+      "position": "AI Engineer",
+      "location": "REMOTE (US) / Austin",
+      "remote": true,
+      "salary": "$150k-$220k",
+      "description": "Form is an AI fluency/integration startup for executives & their teams. We build AI applications tailored to how clients work, and need an engineer to do the building. A typical engagement starts with a client describing a workflow eating their week. You scope alongside them, then build something...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47977662",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47977662",
+      "postedAt": "2026-05-01T17:40:29+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python"
       ],
       "companyIcon": ""
     },
@@ -61,6 +133,96 @@
         "Go",
         "Claude Code",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47976768",
+      "company": "Opendate",
+      "position": "Senior Full Stack Engineer",
+      "location": "REMOTE (US only)",
+      "remote": true,
+      "salary": "",
+      "description": "Opendate is the operating system for live music venues — booking, ticketing, marketing, and settlement, all in one place. We replace the tangle of spreadsheets, holds-and-confirms email chains, and ticketing platforms that independent venues, promoters, and festivals have been duct-taping together...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47976768",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47976768",
+      "postedAt": "2026-05-01T16:35:57+00:00",
+      "tags": [
+        "React",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Claude Code",
+        "Cursor",
+        "Copilot",
+        "Ruby"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47975833",
+      "company": "Deep Core Technology",
+      "position": "Software Engineer",
+      "location": "REMOTE (CANADA)",
+      "remote": true,
+      "salary": "$105,000 - $125,000",
+      "description": "Company: We’re building a geologic modelling software, based on reasoning, to help mining and mineral exploration companies work faster. Our goal is to create a way to enable open-ended, interpretive geologic problem solving to be done programmatically, changing the way to explore for hard rock and...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47975833",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47975833",
+      "postedAt": "2026-05-01T15:19:16+00:00",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Supabase",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47975788",
+      "company": "Normcore.io",
+      "position": "Software Engineer",
+      "location": "Remote PT/ET Hours",
+      "remote": true,
+      "salary": "",
+      "description": "I'm the founder of Normcore.io, an autoscaling game server hosting service and Unity plugin that includes all of the pieces you need to create a multiplayer game. We launched a few years ago and have hosted over 1 billion multiplayer games since launch. We also make our own VR titles that are built...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47975788",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47975788",
+      "postedAt": "2026-05-01T15:15:56+00:00",
+      "tags": [
+        "Go",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47975598",
+      "company": "INDATA",
+      "position": "Software Engineer",
+      "location": "REMOTE (US) or San Diego",
+      "remote": true,
+      "salary": "$95,000–$115,000",
+      "description": "We're hiring a junior dev who is genuinely AI-native — your primary tool is Claude Code or Cursor, not your own typing. You'll extend our agentic AI copilot embedded in Architect AI, our portfolio-management web app: text-to-SQL over financial schemas (holdings, transactions, performance), RAG over...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47975598",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47975598",
+      "postedAt": "2026-05-01T15:01:34+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Go",
+        "Azure",
+        "Docker",
+        "Claude Code",
+        "Cursor",
+        "Copilot",
+        "Redis"
       ],
       "companyIcon": ""
     },
@@ -901,49 +1063,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "hn-47360403",
-      "company": "Breezy",
-      "position": "Product Engineer",
-      "location": "Remote (US)",
-      "remote": true,
-      "salary": "$120k–150k",
-      "description": "Breezy builds modern field service software for residential HVAC companies. The industry still runs on legacy systems like ServiceTitan and Housecall Pro. We’re replacing them with a modern platform that combines strong product design, practical automation, and applied AI. We’re a small, senior...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47360403",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47360403",
-      "postedAt": "2026-03-13T03:37:00+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Kubernetes",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47353878",
-      "company": "Succeed",
-      "position": "Software Engineer",
-      "location": "Remote (Europe preferred)",
-      "remote": true,
-      "salary": "",
-      "description": "Succeed is building a platform to help high-school students discover academic opportunities around the world — summer schools, competitions, research programmes, and university experiences that many students never hear about. Our goal is simple: reach one million students and open doors that are...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47353878",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47353878",
-      "postedAt": "2026-03-12T17:00:29+00:00",
-      "tags": [
-        "PostgreSQL",
-        "Supabase",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5146298008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, Billing Platform",
@@ -1007,29 +1126,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "hn-47277766",
-      "company": "Collective Intelligence Project",
-      "position": "Lead Product Engineer",
-      "location": "Remote (US time zones, PST preferred)",
-      "remote": true,
-      "salary": "$150k",
-      "description": "The Collective Intelligence Project ( http://www.cip.org ) builds platforms that allow large groups of people to participate in decisions about AI systems. In short, we’re building the democratic infrastructure for AI. We partner with AI labs and governments to evaluate frontier models on questions...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47277766",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47277766",
-      "postedAt": "2026-03-06T17:05:39+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "PostgreSQL",
-        "Supabase",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5140405008",
       "company": "Anthropic",
       "position": "Applied AI Architect, Government Technology",
@@ -1070,205 +1166,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "hn-47241620",
-      "company": "Mobasi",
-      "position": "Software Engineer",
-      "location": "Austin, TX / Remote",
-      "remote": true,
-      "salary": "$240k",
-      "description": "Mobasi builds autonomous AI agents for digital forensics. Our software orchestrates 150+ forensic tools to help law enforcement turn days of manual evidence analysis into minutes, aiding in cases involving child exploitation, trafficking, and homicide. We are bootstrapped, profitable, and shipping...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47241620",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47241620",
-      "postedAt": "2026-03-04T01:05:51+00:00",
-      "tags": [
-        "Next.js",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47237652",
-      "company": "Di Rezze Family Office",
-      "position": "Software Engineer",
-      "location": "Miami, FL (ONSITE)",
-      "remote": false,
-      "salary": "$130K-$200K",
-      "description": "We're building an AI-native clinical data platform from the ground up, not a legacy system with AI bolted on. AI is core to the architecture, the development workflow, and the product itself. Fully funded by a private family office, no outside capital needed, no fundraising runway concerns. We're...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47237652",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47237652",
-      "postedAt": "2026-03-03T19:32:51+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "Docker",
-        "Claude Code",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47232351",
-      "company": "Innolitics",
-      "position": "Senior Web/Mobile Medical Device Engineer",
-      "location": "REMOTE (US)",
-      "remote": true,
-      "salary": "",
-      "description": "Innolitics builds AI/ML software for medical devices — the kind that detects ear infections, tracks metastatic cancer, and plans radiation therapy. 60+ FDA clearances. We need engineers who want their work to matter. We're a remote-only firm (since 2012) that does engineering, regulatory, and...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47232351",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47232351",
-      "postedAt": "2026-03-03T13:55:38+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Claude Code",
-        "Django"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47223326",
-      "company": "Nectar Social (  )",
-      "position": "Staff Backend Engineer",
-      "location": "Palo Alto, CA",
-      "remote": false,
-      "salary": "",
-      "description": "Hi HN. I am an Engineering Manager at Nectar Social, and we're hiring across product, design and engineering. The traditional playbook of buying ads on social media platforms no longer works for most brands. Buyers make purchasing decisions from organic conversations on social media platforms like...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47223326",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47223326",
-      "postedAt": "2026-03-02T20:03:43+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "PostgreSQL",
-        "AWS",
-        "Claude Code",
-        "Cursor",
-        "React Native"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47223283",
-      "company": "Top of Mind (  )",
-      "position": "Software Engineer",
-      "location": "REMOTE (EU timezone)",
-      "remote": true,
-      "salary": "",
-      "description": "We're building relationship intelligence. Not another CRM, not another note-taking app. Top of Mind turns conversations, meetings, and interactions into structured knowledge you can actually act on. A knowledge layer between raw information and real understanding. Small team, shipping fast,...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47223283",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47223283",
-      "postedAt": "2026-03-02T20:00:19+00:00",
-      "tags": [
-        "React",
-        "Claude Code",
-        "React Native"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47221220",
-      "company": "exe.dev",
-      "position": "Software Engineer",
-      "location": "Full time",
-      "remote": false,
-      "salary": "",
-      "description": "Support Engineer - If you want to use Claude or Codex (or Shelley!) to trawl through our code base, augmented with (carefully scoped) API keys to make our customers lives better, we are hiring. Designer - If you want to use Claude or Codex (or Shelley!) to make our product functional and beautiful,...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47221220",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47221220",
-      "postedAt": "2026-03-02T17:37:23+00:00",
-      "tags": [
-        "Rust"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47220401",
-      "company": "Schema Labs (OpenCouncil)",
-      "position": "Software Engineer",
-      "location": "Athens, Greece (Remote)",
-      "remote": true,
-      "salary": "55K-65K",
-      "description": "We're a 4-person non-profit building OpenCouncil ( https://opencouncil.gr ), an AI platform that makes Greek municipal council meetings accessible to citizens. We take hours-long council sessions and turn them into searchable, per-topic video clips, SMS/email notifications, and speaker analytics....",
-      "applyUrl": "https://news.ycombinator.com/item?id=47220401",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47220401",
-      "postedAt": "2026-03-02T16:44:48+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "PostgreSQL",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47220346",
-      "company": "BillionToOne (NASDAQ: BLLN)",
-      "position": "Senior Software Engineer",
-      "location": "Menlo Park, CA",
-      "remote": false,
-      "salary": "$280K-307K",
-      "description": "BillionToOne builds molecular diagnostics that detect disease at the single-molecule level. Our prenatal test is the only non-invasive screen for both recessive conditions and aneuploidies from one blood draw. Our oncology platform finds 50%+ more cancer treatment options than standard testing....",
-      "applyUrl": "https://news.ycombinator.com/item?id=47220346",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47220346",
-      "postedAt": "2026-03-02T16:41:17+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "Docker",
-        "Claude Code",
-        "Cursor",
-        "Copilot",
-        "Django"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-47219927",
-      "company": "Normcore.io",
-      "position": "Senior SWE Kubernetes / Devops Engineer",
-      "location": "Remote PT/ET Hours",
-      "remote": true,
-      "salary": "",
-      "description": "I'm the founder of Normcore.io, an autoscaling game server hosting service and Unity plugin that includes all of the pieces you need to create a multiplayer game. We launched a few years ago and have hosted over 1 billion multiplayer games since launch. I'm actively scaling the team to keep up with...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47219927",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47219927",
-      "postedAt": "2026-03-02T16:15:43+00:00",
-      "tags": [
-        "TypeScript",
-        "Go",
-        "PostgreSQL",
-        "Kubernetes",
-        "Claude Code"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5127559008",
