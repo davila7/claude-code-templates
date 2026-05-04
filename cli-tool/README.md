@@ -149,7 +149,7 @@ Skills from [anthropics/skills](https://github.com/anthropics/skills):
 - **Open Source** (Apache 2.0): algorithmic-art, mcp-builder, skill-creator, artifacts-builder, and more
 - **Source-Available** (Reference): docx, pdf-anthropic, pptx, xlsx
 
-See [ANTHROPIC_ATTRIBUTION.md](cli-tool/components/skills/ANTHROPIC_ATTRIBUTION.md) for complete license information.
+See [ANTHROPIC_ATTRIBUTION.md](components/skills/ANTHROPIC_ATTRIBUTION.md) for complete license information.
 
 ## 📖 Documentation
 
@@ -168,7 +168,7 @@ We welcome contributions! Browse available templates and components at **[aitmpl
 
 ## 📄 License
 
-MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](../LICENSE) file for details.
 
 ## 🔗 Links
 
