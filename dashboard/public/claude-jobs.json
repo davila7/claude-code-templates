@@ -1,12 +1,53 @@
 {
-  "lastUpdated": "2026-05-03T04:20:39.687171+00:00",
-  "totalJobs": 83,
+  "lastUpdated": "2026-05-04T04:48:15.915412+00:00",
+  "totalJobs": 85,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-48000122",
+      "company": "TrakPro",
+      "position": "Senior Rails Engineer",
+      "location": "REMOTE (overlap with Ireland 9–5 GMT)",
+      "remote": true,
+      "salary": "€48–60k",
+      "description": "We're a construction payment management SaaS based in Ireland. Main contractors and subcontractors use us to track subcontracts, payment applications, and retentions — replacing the spreadsheets they currently rely on. Small team of 5 (3 in engineering), customers in Ireland and the UK. We're...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48000122",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48000122",
+      "postedAt": "2026-05-03T18:51:22+00:00",
+      "tags": [
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-47999884",
+      "company": "Kepler",
+      "position": "Full Stack Engineer",
+      "location": "New York, NY (Remote)",
+      "remote": true,
+      "salary": "$230K-$260K",
+      "description": "We're building the trust layer for AI in high-stakes industries. https://kepler.ai LLMs hallucinate, so they can't be the thing producing your numbers. In Kepler, the LLM orchestrates (decides what data to gather, what to compute, how to structure the output), but the model never touches the data...",
+      "applyUrl": "https://news.ycombinator.com/item?id=47999884",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=47999884",
+      "postedAt": "2026-05-03T18:28:34+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "PostgreSQL",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-47985407",
       "company": "Axis Communications",
