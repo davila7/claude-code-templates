@@ -5,7 +5,8 @@ const chalk = require('chalk');
 const boxen = require('boxen');
 const { createClaudeConfig } = require('../src/index');
 
-const pkg = require('../package.json');
+// Root package.json is the npm publish source; cli-tool/package.json drifts (see #348).
+const pkg = require('../../package.json');
 
 const title = 'Claude Code Templates';
 const subtitle = 'Your starting point for Claude Code projects';
@@ -44,7 +45,7 @@ function showBanner() {
 program
   .name('create-claude-config')
   .description('Setup Claude Code configurations and create global AI agents powered by Claude Code SDK')
-  .version(require('../package.json').version)
+  .version(pkg.version)
   .option('-l, --language <language>', 'specify programming language (deprecated, use --template)')
   .option('-f, --framework <framework>', 'specify framework (deprecated, use --template)')
   .option('-t, --template <template>', 'specify template (e.g., common, javascript-typescript, python, ruby)')
