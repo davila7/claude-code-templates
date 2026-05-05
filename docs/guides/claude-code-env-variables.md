@@ -10,14 +10,14 @@ A variable is marked **NEW** when no file under `cli-tool/`, `dashboard/`, `docs
 ## Summary
 
 - **Total documented variables**: ~138
-- **Already known to this repo** (referenced somewhere): 26
+- **Already known to this repo** (referenced somewhere): 24
 - **New / not yet covered**: 110+
 
 The repo currently exposes only a small subset through its `cli-tool/components/settings/environment/` settings (bash timeouts, telemetry, terminal title, nonessential traffic). The vast majority of Claude Code's surface — plugin caches, OAuth tokens, IDE integration, file checkpointing, agent teams, Foundry/Azure auth, mTLS, fast mode, 1M context, adaptive thinking, etc. — is undocumented here.
 
 ---
 
-## Already referenced in this repo (26)
+## Already referenced in this repo (24)
 
 ```
 ANTHROPIC_API_KEY                          ANTHROPIC_AUTH_TOKEN
@@ -34,7 +34,9 @@ CLAUDE_CODE_REMOTE                         CLAUDE_CODE_USE_BEDROCK   [legacy]
 CLAUDE_CODE_USE_VERTEX  [legacy]           MAX_MCP_OUTPUT_TOKENS
 ```
 
-Note: `ANTHROPIC_ATTRIBUTION`, `ANTHROPIC_FOUNDRY_AUTH_TOKEN`, and `ANTHROPIC_TOOLS` are referenced in this repo but are **not** listed in the official docs — they look like names invented by component authors. The official equivalents are `CLAUDE_CODE_ATTRIBUTION_HEADER` and `ANTHROPIC_FOUNDRY_API_KEY` (no equivalent for `ANTHROPIC_TOOLS`).
+### Inconsistency to fix
+
+`cli-tool/components/skills/development/claude-api/php/claude-api.md:48` calls `getenv('ANTHROPIC_FOUNDRY_AUTH_TOKEN')`, but that name is not in the official docs. The correct official variable is **`ANTHROPIC_FOUNDRY_API_KEY`**.
 
 ---
 
@@ -274,5 +276,4 @@ These are the most strategic additions:
 
 1. Update `cli-tool/components/settings/environment/*` with new presets covering the most-requested toggles (fast mode, 1M context, OAuth, plugin cache, mTLS, agent teams).
 2. Mark `ANTHROPIC_SMALL_FAST_MODEL` references as **deprecated** in favor of `ANTHROPIC_DEFAULT_HAIKU_MODEL` + `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION`.
-3. Replace any uses of `ANTHROPIC_FOUNDRY_AUTH_TOKEN` with the official `ANTHROPIC_FOUNDRY_API_KEY`.
-4. Replace component-author-invented `ANTHROPIC_ATTRIBUTION` with `CLAUDE_CODE_ATTRIBUTION_HEADER`.
+3. Fix `cli-tool/components/skills/development/claude-api/php/claude-api.md:48` — replace `ANTHROPIC_FOUNDRY_AUTH_TOKEN` with the official `ANTHROPIC_FOUNDRY_API_KEY`.
