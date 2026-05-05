@@ -1,12 +1,94 @@
 {
-  "lastUpdated": "2026-05-04T04:48:15.915412+00:00",
-  "totalJobs": 85,
+  "lastUpdated": "2026-05-05T04:04:25.727846+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-48013515",
+      "company": "Location: Charleston, SC",
+      "position": "Software Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Remote: Yes Willing to relocate: Yes Technologies: Ruby, Python, JavaScript (ES6), TypeScript, React, Node.js, PostgreSQL, MongoDB, OpenSearch/Elasticsearch, AWS (ECS, EC2, VPC, ALB, Secrets Manager), Docker, Terraform, OpenTelemetry, Jaeger, Prometheus Resume/CV:...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48013515",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48013515",
+      "postedAt": "2026-05-04T19:12:01+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Ruby",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48012401",
+      "company": "Waypoint Learning (EdTech)",
+      "position": "Software Engineer",
+      "location": "NYC or Remote (US)",
+      "remote": true,
+      "salary": "",
+      "description": "Students with disabilities are not receiving the support they deserve, and Waypoint is changing that. We're building AI tools that special education teachers use to better support students with Individualized Education Programs (IEPs). Hiring a founding engineer and running a one-week challenge to...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48012401",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48012401",
+      "postedAt": "2026-05-04T18:00:21+00:00",
+      "tags": [
+        "TypeScript",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48011307",
+      "company": "AirOps",
+      "position": "Software Engineer",
+      "location": "SF · NYC · Montevideo",
+      "remote": false,
+      "salary": "",
+      "description": "Search is being rewritten — buyers ask ChatGPT, Claude, and Perplexity, and the brands cited in those answers win. AirOps is the runtime marketing teams at Ramp, Chime, Carta, and Rippling use to earn those citations: orchestrated LLMs, RAG, JS/Python code steps, evals, human-in-the-loop. Backed by...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48011307",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48011307",
+      "postedAt": "2026-05-04T16:50:57+00:00",
+      "tags": [
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48005277",
+      "company": "Deepline",
+      "position": "Software Engineer",
+      "location": "On-site",
+      "remote": false,
+      "salary": "$160k–$220k",
+      "description": "User interfaces are dead. Knowledge workers will exclusively work through agent interfaces like Claude Code/Cowork. We've built the interface layer to enable that. One API that unifies hundreds of data providers, workflows, and data infrastructure to agents like Claude Code. We shipped our mvp last...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48005277",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48005277",
+      "postedAt": "2026-05-04T06:25:03+00:00",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-48000122",
       "company": "TrakPro",
@@ -1024,11 +1106,11 @@
     {
       "id": "anth-5168829008",
       "company": "Anthropic",
-      "position": "Software Engineer, Cloud Inference Safeguards",
+      "position": "Staff Software Engineer, Cloud Inference Safeguards",
       "location": "San Francisco, CA | Seattle, WA",
       "remote": false,
       "salary": "",
-      "description": "We are seeking a Software Engineer to build and operate the safety, oversight, and intervention mechanisms that protect Claude on third-party cloud service provider (CSP) platforms. As the engineer responsible for Safeguards on those surfaces, you will ensure that every request served through our...",
+      "description": "We are seeking a Staff Software Engineer to build and operate the safety, oversight, and intervention mechanisms that protect Claude on third-party cloud service provider (CSP) platforms. As the engineer responsible for Safeguards on those surfaces, you will ensure that every request served through...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5168829008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5168829008",
@@ -1058,6 +1140,28 @@
       "tags": [
         "Rust",
         "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5160757008",
+      "company": "Anthropic",
+      "position": "Security Risk & Compliance, HIPAA",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA; Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5160757008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5160757008",
+      "postedAt": "2026-03-20T17:36:54-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Azure",
         "Claude Code",
         "Anthropic"
       ],
