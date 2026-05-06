@@ -1,38 +1,12 @@
 {
-  "lastUpdated": "2026-05-05T04:04:25.727846+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-05-06T04:18:47.901490+00:00",
+  "totalJobs": 88,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
-    {
-      "id": "hn-48013515",
-      "company": "Location: Charleston, SC",
-      "position": "Software Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Remote: Yes Willing to relocate: Yes Technologies: Ruby, Python, JavaScript (ES6), TypeScript, React, Node.js, PostgreSQL, MongoDB, OpenSearch/Elasticsearch, AWS (ECS, EC2, VPC, ALB, Secrets Manager), Docker, Terraform, OpenTelemetry, Jaeger, Prometheus Resume/CV:...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48013515",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48013515",
-      "postedAt": "2026-05-04T19:12:01+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Docker",
-        "Ruby",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
     {
       "id": "hn-48012401",
       "company": "Waypoint Learning (EdTech)",
@@ -388,26 +362,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-hq-ai-enablement-lead-everfield-1131322",
-      "company": "Everfield",
-      "position": "HQ AI Enablement Lead",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About Everfield Everfield buys, builds, and grows European vertical market and specialist software companies, providing them with the tools they need to move to the next level. Our mission is to foster ambition, fuel growth, and unlock opportunities for Europe's software ecosystem. Companies in the...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-hq-ai-enablement-lead-everfield-1131322",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-hq-ai-enablement-lead-everfield-1131322",
-      "postedAt": "2026-04-25T00:00:49+00:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "Azure",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5197538008",
       "company": "Anthropic",
       "position": "Manager of Applied AI Architecture, Enterprise Tech (Cyber)",
@@ -760,11 +714,13 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157847008",
       "postedAt": "2026-04-08T12:56:33-04:00",
       "tags": [
-        "React",
         "TypeScript",
         "Python",
         "Rust",
         "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
         "Claude Code",
         "Anthropic"
       ],
@@ -1211,7 +1167,7 @@
       "id": "anth-5146298008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, Billing Platform",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
       "description": "Anthropic exists to ensure the world safely navigates the transition through transformative AI. That work is funded by commercial revenue — and every dollar of it runs through Billing Platform. We build and operate the infrastructure that turns product usage into revenue across everything Anthropic...",
