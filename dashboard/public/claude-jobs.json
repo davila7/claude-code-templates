@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-06T04:18:47.901490+00:00",
-  "totalJobs": 88,
+  "lastUpdated": "2026-05-07T04:17:26.383781+00:00",
+  "totalJobs": 86,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -344,21 +344,6 @@
         "Copilot",
         "Rails"
       ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
-      "company": "Smile Digital Health",
-      "position": "Senior Product Marketing Manager US",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Working for a company like Smile Digital Health means supporting our mandate for #BetterGlobalHealth . We strive towards this goal every day, and the results can be seen in the impact of our innovative health data platform and data management solutions, which are used in over 20 countries. We were...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-product-marketing-manager-us-smile-digital-health-1131348",
-      "postedAt": "2026-04-28T00:00:03+00:00",
-      "tags": [],
       "companyIcon": ""
     },
     {
@@ -1321,26 +1306,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
       "postedAt": "2026-02-12T05:17:16-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5115884008",
-      "company": "Anthropic",
-      "position": "Manager of Applied AI Architecture, Industries",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "As the Manager of the Applied AI Architect team for Northern European Industries at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across our Industries accounts: large enterprises across all...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5115884008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5115884008",
-      "postedAt": "2026-02-11T14:30:14-05:00",
       "tags": [
         "Rust",
         "AWS",
