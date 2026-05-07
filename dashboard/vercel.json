@@ -18,14 +18,32 @@
       "source": "/components.json",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+        { "key": "Access-Control-Allow-Methods", "value": "GET" },
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=3600" }
       ]
     },
     {
       "source": "/trending-data.json",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+        { "key": "Access-Control-Allow-Methods", "value": "GET" },
+        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=300" }
+      ]
+    },
+    {
+      "source": "/plugins.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" },
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=3600" }
+      ]
+    },
+    {
+      "source": "/claude-jobs.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" },
+        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=300" }
       ]
     },
     {
