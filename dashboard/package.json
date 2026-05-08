@@ -20,7 +20,7 @@
     "@tailwindcss/vite": "^4.2.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^5.17.2",
+    "astro": "^6.1.9",
     "discord-interactions": "^4.4.0",
     "gpt-tokenizer": "^3.4.0",
     "marked": "^17.0.4",
