@@ -1,12 +1,52 @@
 {
-  "lastUpdated": "2026-05-07T04:17:26.383781+00:00",
-  "totalJobs": 86,
+  "lastUpdated": "2026-05-08T04:10:47.353754+00:00",
+  "totalJobs": 85,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5182605008",
+      "company": "Anthropic",
+      "position": "Data Scientist, Product",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As part of our growing Data Science and Analytics team, you will play an instrumental role in our company’s mission of building safe and beneficial artificial intelligence by driving data-informed decision making across our organization. You’ve worked in cultures of excellence in the past, and are...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182605008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182605008",
+      "postedAt": "2026-05-07T14:28:01-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
+      "company": "EverAI",
+      "position": "Mid Senior AI Cinematic Video Editor",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Our Vision & Products ð EverAI — Building the Future of AI Companionship One of the Top 15 Largest & Fastest-Growing AI Companies in the World 50 Million Users in 2 years — Help Us Reach 100M first, 500M next At EverAI , we’re shaping what it means to connect with AI. With 50 million users and...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
+      "postedAt": "2026-05-06T11:27:14+00:00",
+      "tags": [
+        "AWS",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-48012401",
       "company": "Waypoint Learning (EdTech)",
@@ -320,29 +360,6 @@
         "Cursor",
         "Copilot",
         "Redis"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-front-end-full-stack-developer-honor-foods-1131370",
-      "company": "Honor Foods",
-      "position": "Front End Full Stack Developer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Front-End / Full Stack Developer (React + Java) ð Remote | Full-Time Want to build tech that actually moves a business? At Honor Foods, our developers power real-world logistics—systems that keep products flowing and customers happy. We're looking for a front-end focused developer who loves...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-front-end-full-stack-developer-honor-foods-1131370",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-front-end-full-stack-developer-honor-foods-1131370",
-      "postedAt": "2026-04-29T00:00:19+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "PostgreSQL",
-        "Copilot",
-        "Rails"
       ],
       "companyIcon": ""
     },
@@ -1254,26 +1271,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5127559008",
-      "company": "Anthropic",
-      "position": "Product Manager, Consumer",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "The Consumer team at Anthropic builds AI that millions of people use every day to think better, create more, and accomplish what matters to them. We're looking for a former consumer founder who deeply understands what makes experiences intuitive and indispensable, spikes on 0 to 1 product...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5127559008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5127559008",
-      "postedAt": "2026-02-25T00:36:00-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5123769008",
       "company": "Anthropic",
       "position": "Technical Program Manager, Security (Coordinated Vulnerability Disclosure)",
@@ -1288,26 +1285,6 @@
       "tags": [
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5117652008",
-      "company": "Anthropic",
-      "position": "Manager of Applied AI Architecture, Industries",
-      "location": "Munich, Germany",
-      "remote": false,
-      "salary": "",
-      "description": "As the Manager of the Applied AI Architect team for DACH Industries at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across our Industries accounts: large enterprises across all non-tech...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5117652008",
-      "postedAt": "2026-02-12T05:17:16-05:00",
-      "tags": [
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
