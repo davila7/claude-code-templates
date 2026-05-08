@@ -10,7 +10,7 @@ export async function authenticateRequest(request: Request): Promise<string | nu
 
   try {
     const payload = await verifyToken(token, {
-      secretKey: import.meta.env.CLERK_SECRET_KEY,
+      secretKey: (import.meta.env.CLERK_SECRET_KEY || process.env.CLERK_SECRET_KEY),
     });
     return payload.sub;
   } catch (err) {
@@ -28,7 +28,7 @@ export async function authenticateAndGetEmail(request: Request): Promise<{ userI
   if (!userId) return null;
 
   try {
-    const clerk = createClerkClient({ secretKey: import.meta.env.CLERK_SECRET_KEY });
+    const clerk = createClerkClient({ secretKey: (import.meta.env.CLERK_SECRET_KEY || process.env.CLERK_SECRET_KEY) });
     const user = await clerk.users.getUser(userId);
     const email = user.emailAddresses.find(
       (e) => e.id === user.primaryEmailAddressId
