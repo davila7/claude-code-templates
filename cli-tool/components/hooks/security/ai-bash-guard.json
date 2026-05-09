@@ -1,0 +1,18 @@
+{
+  "description": "AI-powered bash command security guard. Before any Bash command runs, a lightweight Claude subagent evaluates it for destructive or irreversible patterns — recursive deletes, force pushes to protected branches, database drops, and credential exposure — and blocks execution with a clear explanation if flagged. Uses PreToolUse with type:agent, which is the only hook pattern that can block tool execution via AI reasoning.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a security guard for a developer's terminal. Evaluate the bash command provided in the tool input for destructive or irreversible risk.\n\nDENY the command if it matches ANY of these patterns:\n- Recursive deletion outside /tmp: rm -rf on non-temporary paths\n- Force push to protected branches: git push --force or -f targeting main, master, develop, or production\n- Destructive database operations without a WHERE clause: DROP TABLE, TRUNCATE, DELETE on production-named databases\n- Credential exposure: commands that write environment variables containing KEY, TOKEN, SECRET, or PASSWORD to files or network destinations\n- Disk-level destruction: dd, shred, or mkfs targeting non-loop devices\n\nALLOW everything else, including rm on /tmp, force pushes to personal feature branches, and DROP TABLE in databases named test, dev, or local.\n\nRespond ONLY with a JSON object in exactly this format:\n\nIf DENYING:\n{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"<one sentence: what is dangerous and what to do instead>\"}}\n\nIf ALLOWING:\n{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}",
+            "timeout": 20,
+            "model": "haiku"
+          }
+        ]
+      }
+    ]
+  }
+}
