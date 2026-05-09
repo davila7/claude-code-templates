@@ -1,0 +1,14 @@
+name = "aitmpl-crons"
+main = "index.js"
+compatibility_date = "2024-09-23"
+
+# Cron triggers:
+# - claude-code-check: every 30 minutes (monitors Claude Code npm releases)
+# - health-check: every hour (was every 15 min on Vercel, reduced to save invocations)
+[triggers]
+crons = ["*/30 * * * *", "0 * * * *"]
+
+# Environment variables — set via: wrangler secret put <KEY>
+# Required:
+# - DASHBOARD_URL: https://www.aitmpl.com (no trailing slash)
+# - TRIGGER_SECRET: shared secret for authenticating internal cron calls

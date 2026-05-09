@@ -10,8 +10,8 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const clientId = import.meta.env.GITHUB_CLIENT_ID;
-  const clientSecret = import.meta.env.GITHUB_CLIENT_SECRET;
+  const clientId = (import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID);
+  const clientSecret = (import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET);
 
   if (!clientId || !clientSecret) {
     return new Response(JSON.stringify({ error: 'GitHub OAuth not configured' }), {

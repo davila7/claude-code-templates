@@ -54,7 +54,7 @@ async function checkEndpoint(endpoint: { url: string; method: string }): Promise
 }
 
 async function sendDiscordAlert(failures: EndpointResult[]) {
-  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG;
+  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || process.env.DISCORD_WEBHOOK_URL_CHANGELOG;
   if (!webhookUrl || failures.length === 0) return;
 
   const failureList = failures

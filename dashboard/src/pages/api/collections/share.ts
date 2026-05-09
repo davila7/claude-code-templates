@@ -109,7 +109,7 @@ export const GET: APIRoute = async ({ request }) => {
     let displayName = 'user';
     try {
       const { createClerkClient } = await import('@clerk/backend');
-      const clerkSecret = import.meta.env.CLERK_SECRET_KEY;
+      const clerkSecret = import.meta.env.CLERK_SECRET_KEY || process.env.CLERK_SECRET_KEY;
       if (clerkSecret) {
         const clerk = createClerkClient({ secretKey: clerkSecret });
         const user = await clerk.users.getUser(collection.clerk_user_id);

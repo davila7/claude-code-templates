@@ -21,7 +21,7 @@ async function sendToDiscord(
   formatted: ReturnType<typeof formatForDiscord>,
   summary: ReturnType<typeof generateSummary>,
 ) {
-  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL;
+  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || process.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL || process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     throw new Error('Discord webhook URL not configured');
@@ -197,7 +197,7 @@ async function handleCheck() {
         response_body
       ) VALUES (
         ${versionId},
-        ${import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL},
+        ${import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || process.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL || process.env.DISCORD_WEBHOOK_URL},
         ${JSON.stringify(discordResult.payload)},
         ${discordResult.status},
         ${'Success'}
