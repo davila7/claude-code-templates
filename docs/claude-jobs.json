@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-08T04:10:47.353754+00:00",
-  "totalJobs": 85,
+  "lastUpdated": "2026-05-09T04:14:30.372757+00:00",
+  "totalJobs": 87,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,25 +8,40 @@
   ],
   "jobs": [
     {
-      "id": "anth-5182605008",
-      "company": "Anthropic",
-      "position": "Data Scientist, Product",
-      "location": "San Francisco, CA | New York City, NY",
+      "id": "hn-48062670",
+      "company": "We The Flywheel",
+      "position": "Software Engineer",
+      "location": "Ho Chi Minh City (Hybrid)",
       "remote": false,
       "salary": "",
-      "description": "As part of our growing Data Science and Analytics team, you will play an instrumental role in our company’s mission of building safe and beneficial artificial intelligence by driving data-informed decision making across our organization. You’ve worked in cultures of excellence in the past, and are...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182605008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182605008",
-      "postedAt": "2026-05-07T14:28:01-04:00",
+      "description": "We are a global media network, digital consultancy, and product studio focused on helping companies grow through technology and reach audiences at scale. We’re opening up a role for an Entry-Level Agentic Engineer in Ho Chi Minh City — someone who’s already experimenting with AI tools to build,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48062670",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48062670",
+      "postedAt": "2026-05-08T13:17:11+00:00",
       "tags": [
-        "Python",
-        "Rust",
-        "AWS",
         "Claude Code",
-        "Anthropic"
+        "Cursor"
       ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48059654",
+      "company": "HME Technologies",
+      "position": "Software Engineer",
+      "location": "Full-Time (Remote)",
+      "remote": true,
+      "salary": "$40k-$75k",
+      "description": "HME Technologies ( https://hmetech.com/ ) is a small, profitable media and affiliate marketing company. We build audiences, sell sponsorships, and run a growing portfolio of content properties across YouTube and emerging platforms. We're operator-run, AI-native, and looking for our first AI...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48059654",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48059654",
+      "postedAt": "2026-05-08T07:02:43+00:00",
+      "tags": [
+        "JavaScript",
+        "Python"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "rok-remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
@@ -1261,6 +1276,27 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5140403008",
       "postedAt": "2026-03-05T14:58:48-05:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5125387008",
+      "company": "Anthropic",
+      "position": "Analytics Data Engineering Manager, Product",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "As an Analytics Data Engineering Manager focused on Product, you will build and lead the analytics engineering team responsible for creating the data foundations that enable data-driven decision making across Anthropic’s Product organization. You will oversee the development of scalable data...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
+      "postedAt": "2026-02-19T19:49:54-05:00",
       "tags": [
         "Python",
         "Rust",
