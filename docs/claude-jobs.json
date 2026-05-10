@@ -1,10 +1,11 @@
 {
-  "lastUpdated": "2026-05-09T04:14:30.372757+00:00",
-  "totalJobs": 87,
+  "lastUpdated": "2026-05-10T04:23:31.209221+00:00",
+  "totalJobs": 89,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK"
+    "RemoteOK",
+    "WeWorkRemotely"
   ],
   "jobs": [
     {
@@ -527,6 +528,38 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-housecall-pro-senior-product-operations-manager-i",
+      "company": "Housecall Pro",
+      "position": "Senior Product Operations Manager I",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$120,000-$149,000",
+      "description": "Headquarters: United States Why Housecall Pro? Help us build solutions that build better lives. At Housecall Pro, we show up to work every day to make a difference for real people: the home service professionals that support America’s 100 million homes. We’re all about the Pro, and dedicate our...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/housecall-pro-senior-product-operations-manager-i",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/housecall-pro-senior-product-operations-manager-i",
+      "postedAt": "2026-04-16T20:31:12+00:00",
+      "tags": [
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-monograph-content-marketer-product",
+      "company": "Monograph",
+      "position": "Content Marketer (Product)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$70,000 - $80,000",
+      "description": "Headquarters: US, Remote Look around you today, every store, home, hospital, school, was made possible by the coordination of architects and a team of professionals. They are charged with the responsibility of creating our shelters and yet, they are left with nothing more than Excel to manage their...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/monograph-content-marketer-product",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/monograph-content-marketer-product",
+      "postedAt": "2026-04-16T20:31:11+00:00",
+      "tags": [],
+      "companyIcon": ""
     },
     {
       "id": "anth-5186669008",
