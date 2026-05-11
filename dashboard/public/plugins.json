@@ -1,5 +1,31 @@
 [
   {
+    "slug": "mercadopago-claude-marketplace",
+    "name": "Mercado Pago",
+    "author": "mercadopago",
+    "description": "Official Claude Code plugin from the Mercado Pago Developer Experience team. Scaffold, review, and maintain payment integrations across 7 countries and 13 products — Checkout Pro, Bricks, Subscriptions, QR, Marketplace, and more.",
+    "github": "https://github.com/mercadopago/mercadopago-claude-marketplace",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "agents",
+      "commands",
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "agents": 1,
+      "commands": 3,
+      "skills": 13,
+      "hooks": 1
+    },
+    "highlights": [
+      "7 countries: AR, BR, MX, CL, CO, PE, UY",
+      "13 products: Checkout Pro, Bricks, QR, Subscriptions, Marketplace, and more"
+    ],
+    "website": "https://www.mercadopago.com/developers"
+  },
+  {
     "slug": "everything-claude-code",
     "name": "Everything Claude Code",
     "author": "affaan-m",
