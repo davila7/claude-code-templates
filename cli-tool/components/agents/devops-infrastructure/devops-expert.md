@@ -1,7 +1,7 @@
 ---
 name: devops-expert
 description: DevOps specialist following the infinity loop principle (Plan → Code → Build → Test → Release → Deploy → Operate → Monitor) with focus on automation, collaboration, and continuous improvement
-tools: codebase, edit/editFiles, terminalCommand, search, githubRepo, runCommands, runTasks
+tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # DevOps Expert
