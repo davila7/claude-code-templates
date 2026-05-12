@@ -4,8 +4,13 @@ compatibility_flags = ["nodejs_compat"]
 
 pages_build_output_dir = "./dist"
 
+# Plain-text build-time vars (PUBLIC_* must be here, not as secrets)
+[vars]
+PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuYWl0bXBsLmNvbSQ"
+PUBLIC_COMPONENTS_JSON_URL = "/components.json"
+PUBLIC_GITHUB_CLIENT_ID = "Ov23li3KjfA4cuLi5c0k"
+
 # Secrets are set via Cloudflare Dashboard or `wrangler secret put`:
-# PUBLIC_CLERK_PUBLISHABLE_KEY
 # CLERK_SECRET_KEY
 # SUPABASE_URL
 # SUPABASE_SERVICE_ROLE_KEY
@@ -14,8 +19,8 @@ pages_build_output_dir = "./dist"
 # DISCORD_BOT_TOKEN
 # DISCORD_PUBLIC_KEY
 # DISCORD_WEBHOOK_URL_CHANGELOG
-# PUBLIC_GITHUB_CLIENT_ID
 # GITHUB_CLIENT_SECRET
+# (PUBLIC_GITHUB_CLIENT_ID moved to [vars] above)
 #
 # Cron jobs (claude-code-check, health-check) are handled by the separate
 # cloudflare-workers/crons Worker, not by this Pages project.
