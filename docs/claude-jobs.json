@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-11T04:27:36.321224+00:00",
-  "totalJobs": 89,
+  "lastUpdated": "2026-05-12T04:18:17.854039+00:00",
+  "totalJobs": 91,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,25 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-48102189",
+      "company": "Revieve",
+      "position": "Product Engineer",
+      "location": "Remote (Helsinki HQ)",
+      "remote": true,
+      "salary": "",
+      "description": "Revieve builds AI-powered personalization for 120+ beauty brands across 40+ countries — think skin analysis, AR try-on, and recommendation engines used by some of the world's largest retailers. We're profitable, ~30 people, a dozen engineers, millions of end users. We've reorganized around the idea...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48102189",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48102189",
+      "postedAt": "2026-05-11T23:32:00+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-48062670",
       "company": "We The Flywheel",
@@ -459,6 +478,24 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-calibrate-group-ai-senior-technical-lead",
+      "company": "Calibrate Group AI",
+      "position": "Senior Technical Lead",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Florida URL: http://Calibrategroup.ai About the Role: We're hiring our founding technical hire — a Senior Technical Lead who will own the entire technical vision and execution. This is a co-builder role, not a cog-in-machine role. This is an application-layer engineering role. You'll...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/calibrate-group-ai-senior-technical-lead",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/calibrate-group-ai-senior-technical-lead",
+      "postedAt": "2026-04-20T18:01:26+00:00",
+      "tags": [
+        "Kubernetes",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5191433008",
