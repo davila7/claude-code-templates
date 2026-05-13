@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-12T04:18:17.854039+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-05-13T04:21:21.846180+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,27 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5204401008",
+      "company": "Anthropic",
+      "position": "Senior Staff Software Engineer",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic’s Consumer Products team is hiring a Senior Staff Software Engineer to serve as the technical lead for Claude’s core chat experience on mobile — the surface where most people meet Claude for the first time. You’ll own the technical direction for our iOS and Android apps and shape how the...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5204401008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5204401008",
+      "postedAt": "2026-05-12T15:15:01-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-48102189",
       "company": "Revieve",
