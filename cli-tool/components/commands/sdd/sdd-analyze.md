@@ -1,5 +1,5 @@
 ---
-description: "Cross-artifact consistency analysis — verify spec, plan, and tasks align before implementation (read-only)"
+description: "Cross-artifact consistency analysis — verify spec, plan, and tasks align before TDD and implementation (read-only)"
 argument-hint: "[optional: focus area or specific concern]"
 allowed-tools: Bash(git:*), Read
 ---
@@ -25,6 +25,71 @@ Verify `$BRANCH` matches `NNN-feature-name`. Load from `specs/$BRANCH/`:
 - **Required**: `CONSTITUTION.md` — load from **project root** (not from `specs/$BRANCH/`)
 
 If `spec.md` or `plan.md` are missing, abort with instruction to run the missing command first.
+
+### Step 1a: Mandatory Expert Analysis (PARALLEL)
+
+⛔ **CRITICAL GATE**: These analyses MUST complete before findings are reported.
+
+Spawn these agents IN PARALLEL:
+
+#### Architect Reviewer Analysis
+
+**Prompt to architect-reviewer:**
+```
+You are the Architect Reviewer. Read the following artifacts completely:
+1. specs/[BRANCH]/spec.md — functional specification
+2. specs/[BRANCH]/plan.md — technical plan
+3. specs/[BRANCH]/data-model.md — data model (if exists)
+4. specs/[BRANCH]/contracts/ — API contracts (if exist)
+5. CONSTITUTION.md — project principles
+
+Your task (EXIGENT):
+Analyze for architectural misalignment:
+1. **Spec-Plan Mismatches** — spec requires X but plan doesn't address it
+2. **Over-Engineered Components** — plan includes component not justified by spec requirements
+3. **Missing Components** — spec requires X but plan is silent
+4. **Constitution Violations** — plan violates MUST principles from CONSTITUTION.md
+5. **Architectural Decisions Creating Problems** — decisions that will cause pain during implementation
+
+For each finding:
+- Specify severity: CRITICAL / HIGH / MEDIUM / LOW
+- Quote the relevant text from artifacts
+- Propose concrete fix
+
+Output: Structured findings list with severity.
+```
+
+#### Code Reviewer Analysis
+
+**Prompt to code-reviewer:**
+```
+You are the Code Reviewer. Read the following artifacts completely:
+1. specs/[BRANCH]/plan.md — technical plan
+2. specs/[BRANCH]/data-model.md — data model (if exists)
+3. specs/[BRANCH]/contracts/api-spec.md — API contracts (if exist)
+
+Your task (EXIGENT):
+Analyze for interface/contract issues:
+1. **Interface Design Issues** — naming, consistency, usability problems
+2. **API Contract Incompleteness** — missing error responses, missing auth requirements, missing validation rules
+3. **Data Model Issues** — missing indexes, missing constraints, N+1 query risks, foreign key consistency
+4. **Naming Inconsistencies** — same concept named differently across files (terminology drift)
+5. **Abstraction Leaks** — implementation details showing through API contracts
+
+For each finding:
+- Specify severity: CRITICAL / HIGH / MEDIUM / LOW
+- Quote the relevant text from artifacts
+- Propose concrete fix
+
+Output: Structured findings list with severity.
+```
+
+### Step 1a Validation
+
+Both agents MUST complete:
+- Collect all findings from architect-reviewer
+- Collect all findings from code-reviewer
+- Merge into unified findings list for Step 5 report
 
 ### Step 2: Build Semantic Models
 
@@ -63,6 +128,8 @@ Internally construct (do not output):
 - Tasks with no mapped requirement or user story
 - Non-functional requirements (performance, security) not reflected in plan or tasks
 - User stories not covered by at least one task phase
+- **TDD Coverage**: Every FR must have corresponding test cases planned (from tasks.md TDD tasks)
+- **Test Framework**: Testing framework specified in plan.md matches framework in tasks.md/test files
 
 #### F. Inconsistency
 - Same concept named differently across files (terminology drift)
@@ -70,13 +137,19 @@ Internally construct (do not output):
 - Spec says X, plan implements Y (contradictions)
 - Task ordering issues (integration before foundation)
 
+#### G. TDD Coverage (NEW REQUIREMENT)
+- Every user story phase must have TDD/test tasks BEFORE implementation tasks
+- Every acceptance scenario from spec must map to at least one test case
+- Missing test coverage = HIGH severity finding
+- No testing framework configured in plan.md = CRITICAL finding
+
 **Focus if `$ARGUMENTS` provided**: prioritize that specific area in analysis.
 
 ### Step 4: Assign Severity
 
-- **CRITICAL**: Constitution MUST violation, missing core artifact, zero-coverage requirement blocking baseline
-- **HIGH**: Duplicate/conflicting requirement, ambiguous security/performance criterion, untestable acceptance
-- **MEDIUM**: Terminology drift, missing NFR task coverage, underspecified edge case
+- **CRITICAL**: Constitution MUST violation, missing core artifact, zero-coverage requirement blocking baseline, missing test framework, missing TDD tasks for user story
+- **HIGH**: Duplicate/conflicting requirement, ambiguous security/performance criterion, untestable acceptance, incomplete API contract, missing test coverage for FR
+- **MEDIUM**: Terminology drift, missing NFR task coverage, underspecified edge case, test ordering issues
 - **LOW**: Wording improvements, minor redundancy, style issues
 
 ### Step 5: Output Analysis Report
@@ -87,6 +160,14 @@ Internally construct (do not output):
 **Analyzed**: YYYY-MM-DD
 **Artifacts**: spec.md ✅ | plan.md ✅ | tasks.md [✅/—] | CONSTITUTION.md ✅
 
+### Expert Agent Findings
+
+#### Architect Review
+[Findings from architect-reviewer, condensed]
+
+#### Code Review
+[Findings from code-reviewer, condensed]
+
 ### Findings
 
 | ID | Category | Severity | Location | Summary | Recommendation |
@@ -94,15 +175,24 @@ Internally construct (do not output):
 | D1 | Duplication | HIGH | spec.md FR-002, FR-007 | Similar requirements ... | Merge, keep clearer phrasing |
 | A1 | Ambiguity | MEDIUM | spec.md SC-001 | "fast" without metric | Add: "under 2 seconds" |
 | C1 | Constitution | CRITICAL | plan.md | Uses MySQL, constitution requires PostgreSQL | Switch to PostgreSQL |
+| T1 | TDD Coverage | HIGH | plan.md | No testing framework specified | Add Jest/pytest/etc to plan |
+| T2 | TDD Coverage | HIGH | tasks.md | Missing test tasks for US2 | Add TDD tasks before US2 implementation |
 
 *(Max 50 findings; summarize overflow)*
 
 ### Coverage Summary
 
-| Requirement | Covered by Tasks | Task IDs | Notes |
-|-------------|-----------------|----------|-------|
-| FR-001 | ✅ | T003, T004 | |
-| FR-002 | ❌ | — | No task maps to this requirement |
+| Requirement | Covered by Tasks | Task IDs | Test Coverage | Notes |
+|-------------|-----------------|----------|---------------|-------|
+| FR-001 | ✅ | T003, T004 | ✅ Tests in T003 | |
+| FR-002 | ❌ | — | ❌ No tests planned | No task maps to this requirement |
+
+### TDD Coverage Analysis
+
+| User Story | Test Tasks Planned | Test Framework | Acceptance Scenarios Covered |
+|------------|-------------------|-----------------|------------------------------|
+| US1 | T003, T004 | Jest | Scenario A, Scenario B, Error Case |
+| US2 | ❌ Missing | — | — |
 
 ### Constitution Alignment
 
@@ -114,6 +204,8 @@ Internally construct (do not output):
 - Total User Stories: N
 - Total Tasks: N (if tasks.md exists)
 - Coverage: N% (requirements with ≥1 task)
+- TDD Coverage: N% (requirements with test tasks)
+- Test Framework Configured: ✅ / ❌
 - Critical Issues: N
 - High Issues: N
 - Medium/Low Issues: N
@@ -125,20 +217,26 @@ Based on findings:
 
 **If CRITICAL issues exist:**
 ```
-⛔ CRITICAL issues found — resolve before /sdd-implement
+⛔ CRITICAL issues found — resolve before /sdd-tasks (or /sdd-tdd if tasks already exist)
 
 Critical items:
   [C1] [summary] → [action]
+  [T1] [summary] → [action]
 
 Recommended commands:
   - /sdd-specify to refine [area]
   - /sdd-plan to adjust [decision]
-  - Edit tasks.md manually to add coverage for [requirement]
+  - Edit tasks.md manually to add TDD coverage for [requirement]
+
+After fixes, re-run:
+  /sdd-analyze
 ```
 
 **If only MEDIUM/LOW:**
 ```
-✅ No blockers found. You may proceed to /sdd-implement.
+✅ No blockers found. You may proceed to:
+  - /sdd-tasks if no tasks.md exists
+  - /sdd-tdd if tasks.md exists
 
 Suggestions (optional improvements):
   [list]
@@ -147,7 +245,9 @@ Suggestions (optional improvements):
 **If zero issues:**
 ```
 ✅ Perfect consistency — all artifacts aligned.
-Proceed with: /sdd-implement
+Proceed with:
+  - /sdd-tasks if not done
+  - /sdd-tdd if tasks.md exists and no .tdd-gate marker
 ```
 
 ### Step 7: Offer Remediation
@@ -155,3 +255,19 @@ Proceed with: /sdd-implement
 Ask: "Would you like concrete remediation suggestions for the top N issues?"
 
 Do NOT apply changes automatically — analysis is strictly read-only.
+
+---
+
+## Critical Severity Definitions (Updated)
+
+These findings automatically become CRITICAL and BLOCK progression:
+
+1. **Constitution MUST violation** — Any plan decision that violates a non-negotiable principle
+2. **Missing core artifact** — spec.md, plan.md, or tasks.md incomplete or malformed
+3. **Zero-coverage requirement** — Functional requirement with zero tasks assigned (unmappable)
+4. **Missing test framework** — plan.md does not specify a testing framework
+5. **Missing TDD tasks** — Any user story phase without test/TDD tasks BEFORE implementation tasks
+6. **Incomplete API contract** — External API endpoint missing error responses, auth requirements, or validation rules
+7. **Architecture blocking baseline** — Tech choice that prevents spec requirements from being met
+
+These cannot be worked around — they must be fixed before `/sdd-tasks`, `/sdd-tdd`, or `/sdd-implement` can proceed.

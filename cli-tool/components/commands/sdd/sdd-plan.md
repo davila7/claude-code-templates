@@ -1,5 +1,5 @@
 ---
-description: "Generate technical implementation plan from the feature spec — define stack, architecture, and design artifacts"
+description: "Generate technical implementation plan from the feature spec — define stack, architecture, and design artifacts with mandatory expert review"
 argument-hint: "[tech stack and architecture choices, e.g., 'TypeScript, Express, PostgreSQL, Docker']"
 allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(date:*), Read, Write, WebSearch
 ---
@@ -10,7 +10,7 @@ Generate technical implementation plan: $ARGUMENTS
 
 ## Instructions
 
-Translate the functional spec into a concrete technical plan. This is where you define HOW — tech stack, architecture, data model, and contracts.
+Translate the functional spec into a concrete technical plan. This is where you define HOW — tech stack, architecture, data model, and contracts. Include mandatory expert architecture review.
 
 ### Step 1: Validate Prerequisites
 
@@ -46,6 +46,73 @@ If a principle is violated:
 - Either adjust the approach to comply, or justify the exception explicitly
 
 **This check is a GATE — do not proceed if there are unjustified constitution violations.**
+
+### Step 3a: Mandatory Expert Architecture Review (PARALLEL)
+
+⛔ **CRITICAL GATE**: This step MUST complete before plan.md is written.
+
+Spawn these agents IN PARALLEL:
+
+#### Architect Review Agent
+
+**Prompt to architect-reviewer:**
+```
+You are the Architect Reviewer. Read the following artifacts completely:
+1. specs/[BRANCH]/spec.md — the functional specification
+2. CONSTITUTION.md — project principles and constraints
+
+Proposed tech stack: $ARGUMENTS
+
+Your task (EXIGENT):
+Analyze the proposed tech stack AGAINST the spec requirements. Identify:
+1. **Architectural Risks** — what could go wrong with this stack for these requirements?
+2. **Over-Engineering vs Under-Engineering** — is the proposed stack heavier/lighter than needed?
+3. **Missing Components** — what critical components are missing from the spec requirements?
+4. **Scalability Concerns** — can this architecture handle the success criteria (performance, throughput, concurrency)?
+5. **Security Architecture Gaps** — authentication, authorization, data protection, input validation approach?
+
+Output format:
+✅ APPROVED [reasons why this stack is solid]
+OR
+❌ BLOCKED [critical concerns that must be resolved before planning]
+
+Be specific. Generic approval is not acceptable.
+```
+
+#### Developer Review Agent (Language-Appropriate)
+
+**Choose ONE agent based on primary language in $ARGUMENTS:**
+- TypeScript/JavaScript → backend-developer
+- Python → backend-developer (Python-specialist if available)
+- Go → backend-developer
+- Frontend stack (React, Vue, etc.) → frontend-developer
+
+**Prompt to backend-developer or frontend-developer:**
+```
+You are the [Backend/Frontend] Developer. Read the following artifacts completely:
+1. specs/[BRANCH]/spec.md — the functional specification
+2. Proposed tech stack: $ARGUMENTS
+
+Your task (EXIGENT):
+Based on the tech stack, propose the concrete technical approach:
+1. **Project Structure** — exact directory layout (src/, tests/, config/, etc.)
+2. **Key Abstractions** — main classes/modules/functions you'd create
+3. **Data Flow** — how data moves through the system (input → processing → output)
+4. **Error Handling Strategy** — how errors are caught, logged, reported
+5. **Testing Approach** — what testing pyramid you'll build (unit, integration, e2e)
+6. **Implementation Risks per Story** — which user stories in the spec are technically tricky and why?
+
+Output: Concrete, actionable recommendations that will inform plan.md. Include specific directory names and module names.
+```
+
+### Step 3a Validation
+
+Both agents MUST complete before proceeding:
+- ⛔ If architect-reviewer returns **BLOCKED**: STOP immediately, show the blocker to the user, refuse to create plan.md
+- ⛔ If architect-reviewer returns **APPROVED but with warnings**: Document warnings in plan.md under "Architecture Review Concerns"
+- ⛔ If developer agent provides "risks per story": Use these to inform Task dependencies in `/sdd-tasks`
+
+Output from both agents goes into the next section.
 
 ### Step 4: Phase 0 — Research
 
@@ -98,6 +165,36 @@ Create `specs/$BRANCH/plan.md`:
 | Principle | Status | Notes |
 |-----------|--------|-------|
 | [Principle I] | ✅ Compliant / ⚠️ Exception | [notes] |
+
+## Expert Review
+
+### Architect Review Summary
+[Output from architect-reviewer agent, condensed]
+
+### Developer Review Summary
+[Output from backend/frontend-developer agent, condensed. Include implementation risks per story]
+
+## Security Architecture
+
+[Mandatory section: derived from spec and architect review]
+
+- **Authentication Strategy**: [How users identify themselves]
+- **Authorization Model**: [How permissions are checked]
+- **Data Protection**: [Encryption at rest/transit, PII handling]
+- **Input Validation**: [XSS, SQL injection, command injection prevention]
+- **Secret Management**: [API keys, credentials, tokens]
+
+## Test Strategy
+
+[Mandatory section]
+
+- **Testing Framework**: [e.g., Jest with Supertest for HTTP]
+- **Testing Pyramid**:
+  - Unit Tests: [X% target, individual functions/classes]
+  - Integration Tests: [X% target, multi-component interactions]
+  - E2E Tests: [if applicable, key user flows]
+- **TDD Approach**: [RED tests first, then implementation]
+- **Coverage Goals**: [e.g., 80% code coverage minimum]
 
 ## Architecture
 
@@ -211,20 +308,28 @@ Update `.claude/sdd-context.md`:
 
 Artifacts:
   specs/NNN-feature-name/
-  ├── plan.md          — Implementation plan ✅
-  ├── research.md      — Tech decisions ✅
-  ├── data-model.md    — Entity definitions ✅  (or: N/A)
-  └── contracts/       — API contracts ✅       (or: N/A)
+  ├── plan.md                    — Implementation plan ✅
+  ├── research.md                — Tech decisions ✅
+  ├── data-model.md              — Entity definitions ✅  (or: N/A)
+  ├── contracts/                 — API contracts ✅       (or: N/A)
+  └── .tdd-gate                  — [not yet created]
 
 Constitution: ✅ All principles satisfied  (or: ⚠️ N exceptions documented)
+
+Architecture Review:
+  ✅ Approved (or: ⚠️ Concerns documented in plan.md)
 
 Review plan.md before proceeding to verify:
   - Tech choices match your environment
   - Architecture aligns with team standards
   - No over-engineered components
+  - Security architecture is documented
+  - Test strategy is clear
 
 Next steps:
-  1. Review and adjust plan.md
+  1. Review and adjust plan.md if needed
   2. Run /sdd-analyze for cross-artifact consistency check
   3. Then run /sdd-tasks to generate the task breakdown
+  4. Then run /sdd-tdd to generate RED tests
+  5. Then run /sdd-implement to write code
 ```
