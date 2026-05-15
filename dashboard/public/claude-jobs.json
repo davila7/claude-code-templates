@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-14T04:20:58.430493+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-05-15T04:28:30.723259+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,40 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-capture-analyst-altarum-1131585",
+      "company": "Altarum",
+      "position": "Capture Analyst",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "At Altarum , we work at the intersection of strategy, health impact, and innovation. We help public sector and health-focused organizations solve complex challenges that improve lives and strengthen communities. We’re looking for a highly organized, analytical, and proactive Capture Analyst to help...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-capture-analyst-altarum-1131585",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-capture-analyst-altarum-1131585",
+      "postedAt": "2026-05-14T00:01:18+00:00",
+      "tags": [
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-revenue-cycle-specialist-osmind-1131580",
+      "company": "Osmind",
+      "position": "Revenue Cycle Specialist",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About Us Osmind is a technology, services, and data company focused exclusively on psychiatry. Mental health disorders are one of the leading causes of death worldwide and are tied to shortening lifespans. Yet, we have cause for hope: there have been developments in new psychiatric medications and...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-revenue-cycle-specialist-osmind-1131580",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-revenue-cycle-specialist-osmind-1131580",
+      "postedAt": "2026-05-13T16:02:43+00:00",
+      "tags": [
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5218395008",
       "company": "Anthropic",
