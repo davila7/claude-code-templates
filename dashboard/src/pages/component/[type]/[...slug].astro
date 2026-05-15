@@ -128,12 +128,54 @@ if (component?.content && !isJsonType) {
 // Reference files for skills (used for layout decisions)
 // Cast to any to access references which may not be in the TS type yet
 const refs: string[] = (component as any)?.references ?? [];
+
+const seoDescription = frontmatter.description
+  ? frontmatter.description.slice(0, 155)
+  : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`;
+
+const canonicalPath = `/component/${typePlural}/${component?.path?.replace(/\.(md|json)$/, '') ?? ''}`;
+
+const componentSchema = component
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'SoftwareApplication',
+          name: title,
+          description: seoDescription,
+          url: `https://www.aitmpl.com${canonicalPath}`,
+          applicationCategory: 'DeveloperApplication',
+          operatingSystem: 'Windows, macOS, Linux',
+          softwareRequirements: 'Node.js 18+, Claude Code CLI',
+          installUrl: 'https://www.npmjs.com/package/claude-code-templates',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          author: { '@id': 'https://www.aitmpl.com/#organization' },
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aitmpl.com/' },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: config?.label ?? typePlural,
+              item: `https://www.aitmpl.com/${typePlural}`,
+            },
+            { '@type': 'ListItem', position: 3, name: title },
+          ],
+        },
+      ],
+    }
+  : null;
 ---
 
 <DashboardLayout
   title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
-  description={frontmatter.description ? `${frontmatter.description.slice(0, 155)}` : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`}
+  description={seoDescription}
 >
+  {componentSchema && (
+    <script type="application/ld+json" set:html={JSON.stringify(componentSchema)} />
+  )}
   <div class="max-w-7xl mx-auto py-12 px-6">
     {/* Back nav */}
     <a
