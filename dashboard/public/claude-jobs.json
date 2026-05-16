@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-15T04:28:30.723259+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-05-16T04:15:15.869201+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -136,25 +136,6 @@
       "tags": [
         "JavaScript",
         "Python"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
-      "company": "EverAI",
-      "position": "Mid Senior AI Cinematic Video Editor",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Our Vision & Products ð EverAI — Building the Future of AI Companionship One of the Top 15 Largest & Fastest-Growing AI Companies in the World 50 Million Users in 2 years — Help Us Reach 100M first, 500M next At EverAI , we’re shaping what it means to connect with AI. With 50 million users and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1131485",
-      "postedAt": "2026-05-06T11:27:14+00:00",
-      "tags": [
-        "AWS",
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -1778,26 +1759,6 @@
         "Claude Code",
         "Copilot",
         "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5064817008",
-      "company": "Anthropic",
-      "position": "Head of Solutions Architects, Applied AI (Korea)",
-      "location": "Seoul, South Korea",
-      "remote": false,
-      "salary": "",
-      "description": "As the founding leader of Applied AI Solutions Architecture in Korea, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across Korean enterprises and digital-first organizations. You'll leverage your technical...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5064817008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5064817008",
-      "postedAt": "2026-01-23T07:43:37-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
