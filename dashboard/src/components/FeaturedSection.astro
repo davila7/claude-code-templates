@@ -1,6 +1,10 @@
 ---
 import FeaturedCard from './FeaturedCard.astro';
 import { FEATURED_ITEMS } from '../lib/constants';
+
+const gridColsClass = FEATURED_ITEMS.length % 2 === 0
+  ? 'md:grid-cols-2'
+  : 'md:grid-cols-3';
 ---
 
 <section class="px-6 py-5 mb-2">
@@ -11,7 +15,7 @@ import { FEATURED_ITEMS } from '../lib/constants';
       </svg>
       <h2 class="text-[15px] font-semibold text-[var(--color-text-primary)]">Featured Integrations</h2>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div class={`grid grid-cols-1 ${gridColsClass} gap-3`}>
       {FEATURED_ITEMS.map((item) => (
         <FeaturedCard item={item} />
       ))}
