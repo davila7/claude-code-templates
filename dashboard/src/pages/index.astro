@@ -1,7 +1,6 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
-import PartnerBanner from '../components/PartnerBanner.astro';
 import FeaturedSection from '../components/FeaturedSection.astro';
 import JobsPreview from '../components/JobsPreview.tsx';
 import ComponentGrid from '../components/ComponentGrid.tsx';
@@ -31,7 +30,6 @@ export const prerender = true;
     "license": "https://opensource.org/licenses/MIT"
   })} />
   <TopBar />
-  <PartnerBanner />
   <FeaturedSection />
   <JobsPreview client:idle />
   <ComponentGrid client:load initialType="skills" />

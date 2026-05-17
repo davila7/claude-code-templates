@@ -1,7 +1,6 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
-import PartnerBanner from '../components/PartnerBanner.astro';
 import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
@@ -65,8 +64,7 @@ export function getStaticPaths() {
   description={meta?.description ?? `Browse ${activeType} for Claude Code. Install with a single npx command.`}
 >
   <TopBar />
-  <PartnerBanner />
-  
+
   <!-- Premium Page Header -->
   <div class="relative overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-0)] to-[var(--color-surface-1)]">
     <!-- Animated background gradient -->
