@@ -74,6 +74,25 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
       { label: 'claudekit.cc', url: 'https://claudekit.cc' },
     ],
   },
+  {
+    name: 'BrainGrid',
+    description: 'Plan. Build. Verify. Repeat.',
+    logo: '/braingrid-logo.png',
+    url: '/featured/braingrid',
+    tag: 'Planning',
+    tagColor: '#c5e063',
+    category: 'Product Planning',
+    ctaLabel: 'Try BrainGrid',
+    ctaUrl: 'https://www.braingrid.ai?utm_source=aitmpl&utm_medium=featured&utm_campaign=partner',
+    websiteUrl: 'https://www.braingrid.ai',
+    metadata: {
+      Integration: 'MCP, CLI',
+      Stage: 'Battle-tested',
+    },
+    links: [
+      { label: 'braingrid.ai', url: 'https://www.braingrid.ai' },
+    ],
+  },
 ];
 
 export const NAV_LINKS = {
