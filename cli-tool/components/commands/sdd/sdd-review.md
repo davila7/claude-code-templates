@@ -1,5 +1,5 @@
 ---
-description: "Mandatory multi-agent review gate — runs 5 expert agents and creates the PR gate marker"
+description: "Mandatory multi-agent review gate — runs 6 expert agents and creates the PR gate marker"
 argument-hint: "[optional: 'quick' for CRITICAL-only scan, default: full review]"
 allowed-tools: Bash(git:*), Bash(touch:*), Read, Grep
 ---
@@ -10,7 +10,7 @@ Mandatory multi-agent review gate: $ARGUMENTS
 
 ## Instructions
 
-Post-implementation review gate orchestrated by 5 expert agents. This command runs BEFORE the PR can be created. All CRÍTICO and ALTO findings must be resolved. Agents verify: security, code quality, architecture alignment, test quality, and enterprise security standards.
+Post-implementation review gate orchestrated by 6 expert agents. This command runs BEFORE the PR can be created. All CRÍTICO and ALTO findings must be resolved. Agents verify: security, code quality, architecture alignment, test quality, enterprise security standards, and functionality completeness.
 
 ### Step 1: Detect Active Feature
 
@@ -84,7 +84,7 @@ Files in scope for review:
   [List with line counts per file]
 ```
 
-### Step 4: Spawn 5 Review Agents (Sequential)
+### Step 4: Spawn 6 Review Agents (Sequential)
 
 Each agent reads the COMPLETE diff and relevant spec artifacts. Agents run one-by-one; wait for each to complete before spawning the next.
 
@@ -514,14 +514,69 @@ SEVERITY SUMMARY: [N] CRÍTICO, [N] ALTO, [N] MEDIO, [N] BAJO
 
 ---
 
+#### Agent 6: functionality-completeness-reviewer
+
+Spawn Agent with this exact prompt:
+
+```
+You are a functionality completeness specialist. Your ONLY job is to verify that every behavior described in the spec or issue is (a) implemented in code and (b) covered by a test that would actually fail if the implementation were removed. You do NOT review code quality, security, or architecture — other agents handle that.
+
+Your task:
+
+1. Read COMPLETE spec.md (or the issue body if no spec exists) — every sentence describing expected behavior, every acceptance scenario, every FR-NNN, every UI behavior, every API contract
+2. Read ALL changed files in the diff — the actual implementation
+3. Read ALL test files added or modified — unit, integration, e2e, contract
+
+For EVERY described behavior, expected outcome, or acceptance criterion:
+
+  a. Find the code that implements it — or mark as MISSING
+  b. Find the test that verifies it — or mark as UNTESTED
+  c. Classify the test type:
+     - BEHAVIORAL: fires a real trigger (HTTP call, user event click, state change) and asserts the outcome
+     - STATIC: checks element presence or attribute without triggering any action
+  d. Answer the "regression guard" question: "Would this test FAIL if I deleted or reverted the implementation?" 
+     - YES = the test catches regressions
+     - NO = the test would still pass even if the feature were broken or missing
+
+Output a Functionality Coverage Matrix:
+
+| Behavior Described | Implemented? | Test? | Test Type | Catches Regression? |
+|--------------------|-------------|-------|-----------|---------------------|
+| Save button enables after audience change | ✅ YES | ❌ NO | — | — |
+| API returns 502 when AWS call fails | ✅ YES | ✅ YES | BEHAVIORAL | YES |
+| creation_status stays draft if schedule fails | ✅ YES | ✅ YES | BEHAVIORAL | YES |
+| Error message is user-friendly (not stack trace) | ✅ YES | ❌ NO | — | — |
+
+After the matrix, list:
+
+CRITICAL GAPS (blocking — must be fixed before PR):
+- [Behavior]: Implemented but UNTESTED — no test catches regressions
+- [Behavior]: NOT implemented — code was not written
+
+NON-CRITICAL GAPS (warn — follow-up issue recommended):
+- [Behavior]: Tested with STATIC test only — test would pass even if feature were removed
+
+VERDICT: COMPLETE or INCOMPLETE — [list every blocking gap if INCOMPLETE]
+
+IMPORTANT rules:
+- "Tested" means a test that calls through the real HTTP handler or fires a real user event — NOT a test that only asserts element presence or calls a business logic function directly
+- For React/frontend behaviors: only Playwright tests count as behavioral — Node.js scripts without a DOM renderer CANNOT test React interactions
+- For Django/API behaviors: only tests using the Django test client or equivalent count — calling service functions directly does NOT count
+- A test with assertEqual(True, True) or assertIsNotNone(x) that would pass on broken code is NOT a valid test — mark as static
+- Be exhaustive: read every sentence in the spec. Vague descriptions should be flagged as ambiguous, not skipped
+- Minimum: flag ALL behaviors that have NO regression-catching test as CRITICAL GAPS
+```
+
+---
+
 ### Step 5: Aggregate Review Findings
 
-After all 5 agents complete, collect all findings:
+After all 6 agents complete, collect all findings:
 
 ```bash
 # Pseudo code for aggregation
 all_findings = [
-  agent1.findings + agent2.findings + agent3.findings + agent4.findings + agent5.findings
+  agent1.findings + agent2.findings + agent3.findings + agent4.findings + agent5.findings + agent6.findings
 ]
 ```
 
@@ -611,7 +666,7 @@ Quick review mode: CRÍTICO/ALTO scan only
 Result: [BLOCKED or OK to proceed]
 ```
 
-Skip agents 2-5, skip gate creation logic if only CRÍTICO/ALTO scanned.
+Skip agents 2-6, skip gate creation logic if only CRÍTICO/ALTO scanned.
 
 ### Step 9: Comprehensive Report Output
 
@@ -653,6 +708,11 @@ CRÍTICO: [N] | ALTO: [N] | MEDIO: [N] | BAJO: [N]
 ### Agent 5: Enterprise Security
 [Table of findings from se-security-reviewer]
 CRÍTICO: [N] | ALTO: [N] | MEDIO: [N] | BAJO: [N]
+
+### Agent 6: Functionality Completeness
+[Coverage matrix from functionality-completeness-reviewer]
+CRITICAL GAPS: [N] | NON-CRITICAL GAPS: [N]
+VERDICT: COMPLETE or INCOMPLETE
 
 ---
 
