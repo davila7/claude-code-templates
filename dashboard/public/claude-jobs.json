@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-16T04:15:15.869201+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-05-17T04:26:40.974853+00:00",
+  "totalJobs": 88,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,21 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-operations-manager-a379-pearl-1131609",
+      "company": "Pearl",
+      "position": "Operations Manager A379",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Industry E-commerce | Health & Wellness | Consumer Goods | Supply Chain Operations Work Arrangement Fully Remote Job Type Full-time Work Schedule No fixed timezone overlap required Locations Philippines | LATAM | South Africa | EMEA | Anywhere Remote About Pearl Talent Pearl works with the top 1%...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-operations-manager-a379-pearl-1131609",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-operations-manager-a379-pearl-1131609",
+      "postedAt": "2026-05-16T00:00:08+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-capture-analyst-altarum-1131585",
       "company": "Altarum",
@@ -622,38 +637,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-housecall-pro-senior-product-operations-manager-i",
-      "company": "Housecall Pro",
-      "position": "Senior Product Operations Manager I",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$120,000-$149,000",
-      "description": "Headquarters: United States Why Housecall Pro? Help us build solutions that build better lives. At Housecall Pro, we show up to work every day to make a difference for real people: the home service professionals that support America’s 100 million homes. We’re all about the Pro, and dedicate our...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/housecall-pro-senior-product-operations-manager-i",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/housecall-pro-senior-product-operations-manager-i",
-      "postedAt": "2026-04-16T20:31:12+00:00",
-      "tags": [
-        "Rust"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-monograph-content-marketer-product",
-      "company": "Monograph",
-      "position": "Content Marketer (Product)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$70,000 - $80,000",
-      "description": "Headquarters: US, Remote Look around you today, every store, home, hospital, school, was made possible by the coordination of architects and a team of professionals. They are charged with the responsibility of creating our shelters and yet, they are left with nothing more than Excel to manage their...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/monograph-content-marketer-product",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/monograph-content-marketer-product",
-      "postedAt": "2026-04-16T20:31:11+00:00",
-      "tags": [],
-      "companyIcon": ""
     },
     {
       "id": "anth-5186669008",
@@ -1362,27 +1345,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146298008",
       "postedAt": "2026-03-10T13:14:01-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5146363008",
-      "company": "Anthropic",
-      "position": "Engineering Manager, Product Monetization (Billing Platform)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic exists to ensure the world safely navigates the transition through transformative AI. That work is funded by commercial revenue — and that revenue runs through Billing Platform. The Product Monetization team builds the on-rails that let every product team at Anthropic — Claude.ai , the...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146363008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146363008",
-      "postedAt": "2026-03-10T13:12:42-04:00",
       "tags": [
         "Rust",
         "AWS",
