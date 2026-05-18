@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-17T04:26:40.974853+00:00",
-  "totalJobs": 88,
+  "lastUpdated": "2026-05-18T04:32:12.448101+00:00",
+  "totalJobs": 89,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,25 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-senior-database-reliability-engineer-cloudlinux-1131613",
+      "company": "Cloudlinux",
+      "position": "Senior Database Reliability Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "CloudLinux / TuxCare is a remote-first infrastructure and security company. More than 300 engineers build and operate products used by hosting providers, enterprises, and internal service teams worldwide. Our Infrastructure Department runs the platforms behind CloudLinux OS, Imunify, KernelCare,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-database-reliability-engineer-cloudlinux-1131613",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-database-reliability-engineer-cloudlinux-1131613",
+      "postedAt": "2026-05-16T16:00:03+00:00",
+      "tags": [
+        "PostgreSQL",
+        "Redis",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-operations-manager-a379-pearl-1131609",
       "company": "Pearl",
