@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-18T04:32:12.448101+00:00",
+  "lastUpdated": "2026-05-19T04:33:34.520594+00:00",
   "totalJobs": 89,
   "sources": [
     "Anthropic",
@@ -8,6 +8,27 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5222289008",
+      "company": "Anthropic",
+      "position": "Manager of Solutions Architecture, Applied AI (Enterprise Tech)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Industries Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers include tech forward companies within verticals like...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
+      "postedAt": "2026-05-18T17:11:30-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "rok-remote-senior-database-reliability-engineer-cloudlinux-1131613",
       "company": "Cloudlinux",
@@ -542,27 +563,6 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197597008",
       "postedAt": "2026-04-23T18:13:14-04:00",
       "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5194007008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Public Sector",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a pre-sales architect focused on becoming a trusted technical advisor to the UK and Northern Europe public sector — with a primary focus on UK Central Government departments, executive agencies, and arm’s length bodies, and a reach extending...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5194007008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5194007008",
-      "postedAt": "2026-04-23T03:34:39-04:00",
-      "tags": [
-        "Python",
         "Rust",
         "AWS",
         "Claude Code",
