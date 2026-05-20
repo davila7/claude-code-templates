@@ -74,7 +74,7 @@ Nominations go to `blueprint/.reflection/proposals/<timestamp>-<slug>.md` - one 
 
 ## What I propose
 <The change. Be specific. If it's a rule, write the rule text exactly as it
-should appear in schema/rules.md.>
+should appear in .claude/rules/blueprint-schema.md.>
 
 ## Why
 <The reasoning. Cite the wiki files that support this.>
@@ -289,7 +289,7 @@ The base skill has one subagent (KB Curator). The agent team expands this into f
 |---|---|---|---|---|---|
 | **Researcher** | Web research; ingests external content into `raw/research/` with citations | `WebFetch, WebSearch, Read, Write` | external web | `blueprint/raw/research/` | `.claude/agents/researcher.md` |
 | **Curator** | Compiles `raw/` into `plan/`; rebuilds `index.md` and `.graph/graph.json` | `Read, Write, Edit, Glob, Grep` | `blueprint/` | `blueprint/plan/`, `blueprint/index.md`, `blueprint/.graph/` | `.claude/agents/kb-curator.md` |
-| **Linter** | Reflection pass; finds gaps, contradictions, rule violations; writes to `.reflection/proposals/` | `Read, Glob, Grep` | `blueprint/`, `.claude/rules/` | `blueprint/.reflection/proposals/` | `.claude/agents/kb-linter.md` |
+| **Linter** | Reflection pass; finds gaps, contradictions, rule violations; writes to `.reflection/proposals/` | `Read, Write, Glob, Grep` | `blueprint/`, `.claude/rules/` | `blueprint/.reflection/proposals/` | `.claude/agents/kb-linter.md` |
 | **Auditor** | Validates Linter proposals; approves/rejects/escalates | (read-only, set by hook) | `blueprint/.reflection/proposals/` | `blueprint/.reflection/verdicts/`, `blueprint/.reflection/escalations/` | **Agent hook** on `SubagentStop` matched to `kb-linter` (no separate agent file) |
 
 The KB Curator from `claude-code-integration.md` is the same Curator role here - just renamed conceptually. The other three are new files in `.claude/agents/`.
@@ -424,7 +424,7 @@ Rule violations land in `.reflection/proposals/` with the AP/file that violated 
 
 ### How rules evolve
 
-Rules are added through the reflection loop, not by hand. When the Reflector notices a recurring pattern in the wiki, it proposes a new rule. The Auditor reviews. If it escalates, the human approves the rule text. The rule lands in `schema/rules.md` and starts being enforced on the next cycle.
+Rules are added through the reflection loop, not by hand. When the Reflector notices a recurring pattern in the wiki, it proposes a new rule. The Auditor reviews. If it escalates, the human approves the rule text. The rule lands in `.claude/rules/blueprint-schema.md` and starts being enforced on the next cycle.
 
 This means the schema **co-evolves** with the wiki - which is the whole point. The human's editorial role shifts from writing wiki content to refining the rules that govern the wiki content.
 
@@ -571,7 +571,7 @@ External integrations bring outside materials into `raw/` automatically. All of 
 Each integration follows the same pattern:
 
 1. **Pull** - the MCP (or a scheduled script) writes raw content to a subdirectory of `raw/`. Filenames include a timestamp and source ID.
-2. **Detect** - the `PostToolUse` hook on `Write` to `raw/**` fires.
+2. **Detect** - the `FileChanged` hook on `raw/**` fires (regardless of whether an MCP server, a scheduled script, or Claude wrote the file).
 3. **Compile** - the Curator picks up the new file, reads it, and decides whether it warrants a new plan/research entry, an update to an existing entry, or just sits in `raw/` as reference material.
 4. **Cite** - anything the Curator carries into plan/ files cites the original raw source so the chain of evidence is preserved.
 
@@ -592,7 +592,7 @@ When the user asks for advanced capabilities (or you notice the blueprint is get
 > 1. **Reflection loop** - Linter proposes improvements, Auditor validates, schema co-evolves.
 > 2. **Knowledge graph + episodic/semantic split** - derived graph layer, separate episodic memory from synthesized articles.
 > 3. **Agent team** - Researcher / Curator / Linter / Auditor with locked tool whitelists.
-> 4. **Schema-as-code** - explicit rules in `schema/rules.md` enforced on every cycle.
+> 4. **Schema-as-code** - explicit rules in `.claude/rules/blueprint-schema.md` enforced on every cycle.
 > 5. **Multimodal ingest** - PDFs, images, screenshots get described and compiled.
 > 6. **Observability** - wiki health score and telemetry log.
 > 7. **External integrations** - MCPs for GitHub, Linear, meeting notes, web search.
