@@ -370,14 +370,14 @@ This is the "clean loop" pattern from Claude Code session-management best practi
 
 ## Hooking into Claude Code (optional but recommended)
 
-If running inside Claude Code, the resume protocol can be hooked into `SessionStart` so it fires automatically on every session resume:
+If running inside Claude Code, the resume protocol can be hooked into `SessionStart` so it fires automatically on session start or resume:
 
 ```json
 {
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "resume",
+        "matcher": "startup|resume",
         "hooks": [{
           "type": "command",
           "command": "test -f blueprint/SESSION.md && cat blueprint/SESSION.md && echo '---' && cat blueprint/NEXT.md"

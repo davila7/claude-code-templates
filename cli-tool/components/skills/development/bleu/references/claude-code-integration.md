@@ -397,7 +397,7 @@ In `.claude/settings.json`:
 Or, when launching the main agent via `--agent`, set its `tools` to:
 
 ```yaml
-tools: Agent(researcher, kb-curator, kb-linter, kb-auditor), Read, Write, Edit, WebFetch, WebSearch
+tools: Agent(researcher, kb-curator, kb-linter), Read, Write, Edit, WebFetch, WebSearch
 ```
 
 `Agent(name1, name2)` is an allowlist. **Note:** the Task tool was renamed to `Agent` in Claude Code v2.1.63; existing `Task(...)` references still work as aliases.
@@ -407,7 +407,7 @@ tools: Agent(researcher, kb-curator, kb-linter, kb-auditor), Read, Write, Edit, 
 Two hook types I previously didn't surface - both supported on `PermissionRequest`, `PostToolUse`, `PostToolUseFailure`, `PreToolUse`, `Stop`, `SubagentStop`, `TaskCompleted`, `TaskCreated`, and `UserPromptSubmit`:
 
 - **Prompt hooks** (`type: "prompt"`) - instead of running a shell command, send the hook input + a prompt to a Claude model (Haiku by default) for a structured yes/no decision. Cheap, no script to maintain. Example: a prompt hook on `Stop` of the curator that reads the changed plan files and asks Haiku "do these files violate any rule in `.claude/rules/blueprint-schema.md`?"
-- **Agent hooks** (`type: "agent"`) - spawn a verification subagent with tool access (Read/Grep/Glob) to inspect the actual files before deciding. More expensive but grounded. This is what the **Auditor** from `advanced-architecture.md` should be: an agent hook on `SubagentStop` of the kb-linter that spawns the auditor to validate the linter's proposals.
+- **Agent hooks** (`type: "agent"`) - spawn a verification subagent with tool access (Read/Grep/Glob, plus Write scoped to `.reflection/` when it needs to record a verdict) to inspect the actual files before deciding. More expensive but grounded. This is what the **Auditor** from `advanced-architecture.md` should be: an agent hook on `SubagentStop` of the kb-linter that spawns the auditor to validate the linter's proposals.
 
 Where these matter for the blueprint workspace:
 

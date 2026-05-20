@@ -90,7 +90,7 @@ should appear in .claude/rules/blueprint-schema.md.>
 
 The Auditor's only job is to validate proposals. It's a separate concern from the Reflector (or the KB Curator) so the proposer-validator distinction is preserved - you don't want the same agent both proposing and approving its own changes.
 
-The cleanest implementation is an **`agent` hook** on `SubagentStop` of the kb-linter, not a manually invoked subagent. When the linter finishes writing proposals, the agent hook fires automatically, spawns a verifier with read-only tools (Read, Grep, Glob), passes it the proposals, and returns approve/reject/escalate. No file-passing dance, no separate invocation.
+The cleanest implementation is an **`agent` hook** on `SubagentStop` of the kb-linter, not a manually invoked subagent. When the linter finishes writing proposals, the agent hook fires automatically, spawns a verifier with Read, Grep, Glob plus Write scoped to `.reflection/` (it records verdicts and escalations there but never touches the wiki or the proposals), passes it the proposals, and returns approve/reject/escalate. No file-passing dance, no separate invocation.
 
 In `.claude/settings.json`:
 
@@ -103,7 +103,7 @@ In `.claude/settings.json`:
         "hooks": [
           {
             "type": "agent",
-            "prompt": "Read every file in blueprint/.reflection/proposals/ that doesn't yet have a matching verdict in blueprint/.reflection/verdicts/. For each proposal: APPROVE if evidence is solid and the change doesn't touch architecture/data-model/AP-dependency-graph. ESCALATE if it touches any of those (write to blueprint/.reflection/escalations/<id>.md with a yes/no question for the human). REJECT if the proposal lacks file-path evidence or contradicts an existing rule in .claude/rules/blueprint-schema.md without retiring that rule. Write one verdict file per proposal at blueprint/.reflection/verdicts/<id>.md. You have read-only tools. Never write outside .reflection/.",
+            "prompt": "Read every file in blueprint/.reflection/proposals/ that doesn't yet have a matching verdict in blueprint/.reflection/verdicts/. For each proposal: APPROVE if evidence is solid and the change doesn't touch architecture/data-model/AP-dependency-graph. ESCALATE if it touches any of those (write to blueprint/.reflection/escalations/<id>.md with a yes/no question for the human). REJECT if the proposal lacks file-path evidence or contradicts an existing rule in .claude/rules/blueprint-schema.md without retiring that rule. Write one verdict file per proposal at blueprint/.reflection/verdicts/<id>.md. Your tools are read-only against the wiki and the proposals; Write is allowed only inside .reflection/. Never write outside .reflection/.",
             "timeout": 180
           }
         ]
@@ -290,9 +290,11 @@ The base skill has one subagent (KB Curator). The agent team expands this into f
 | **Researcher** | Web research; ingests external content into `raw/research/` with citations | `WebFetch, WebSearch, Read, Write` | external web | `blueprint/raw/research/` | `.claude/agents/researcher.md` |
 | **Curator** | Compiles `raw/` into `plan/`; rebuilds `index.md` and `.graph/graph.json` | `Read, Write, Edit, Glob, Grep` | `blueprint/` | `blueprint/plan/`, `blueprint/index.md`, `blueprint/.graph/` | `.claude/agents/kb-curator.md` |
 | **Linter** | Reflection pass; finds gaps, contradictions, rule violations; writes to `.reflection/proposals/` | `Read, Write, Glob, Grep` | `blueprint/`, `.claude/rules/` | `blueprint/.reflection/proposals/` | `.claude/agents/kb-linter.md` |
-| **Auditor** | Validates Linter proposals; approves/rejects/escalates | (read-only, set by hook) | `blueprint/.reflection/proposals/` | `blueprint/.reflection/verdicts/`, `blueprint/.reflection/escalations/` | **Agent hook** on `SubagentStop` matched to `kb-linter` (no separate agent file) |
+| **Auditor** | Validates Linter proposals; approves/rejects/escalates | (Read/Grep/Glob + Write scoped to `.reflection/`, set by hook) | `blueprint/.reflection/proposals/` | `blueprint/.reflection/verdicts/`, `blueprint/.reflection/escalations/` | **Agent hook** on `SubagentStop` matched to `kb-linter` (no separate agent file) |
 
 The KB Curator from `claude-code-integration.md` is the same Curator role here - just renamed conceptually. The other three are new files in `.claude/agents/`.
+
+**Research paths:** the Researcher stages raw captures in `raw/research/` (episodic memory); the Curator promotes synthesized, cited findings to `research/` (semantic memory). In the base workflow without an agent team, research is written directly to `research/`.
 
 ### The GAN-inspired three-agent baseline (Anthropic, 2026)
 
@@ -311,7 +313,7 @@ If the user is on a recent Opus model and the project is small, the four-agent t
 
 ### Why four agents and not one
 
-- **Tool isolation.** The Researcher needs web access. The Curator needs filesystem write. The Linter and Auditor need to be read-only. One agent with all four capabilities is a much wider attack surface - and prone to "while I'm at it" drift where it modifies things outside its job.
+- **Tool isolation.** The Researcher needs web access. The Curator needs filesystem write. The Linter and Auditor are read-only against canonical content (each writes only its own outputs under `.reflection/`). One agent with all four capabilities is a much wider attack surface - and prone to "while I'm at it" drift where it modifies things outside its job.
 - **Proposer-validator separation.** The Linter proposes changes; the Auditor validates them. Same agent doing both is just self-approval.
 - **Parallel execution.** When the user is working through a complex blueprint, Researcher and Curator can run on different files in parallel without context contamination.
 - **Audit trail.** Each agent's outputs land in distinct directories, so it's clear which agent touched what. Useful for debugging "why did this entry change?"
