@@ -269,8 +269,10 @@ Or, if not using `.claude/rules/`: `@blueprint/plan/00-vision.md` (the
 "non-goals" and "success criteria" sections function as constitution
 principles).
 
-To use with Spec Kit:
+To use with Spec Kit (if using `.claude/rules/`):
   cp .claude/rules/blueprint-schema.md .specify/memory/constitution.md
+Otherwise, seed it from the vision file:
+  cp blueprint/plan/00-vision.md .specify/memory/constitution.md
 
 ## Specify
 Source: `@blueprint/plan/00-vision.md` + `@blueprint/raw/intake.md`

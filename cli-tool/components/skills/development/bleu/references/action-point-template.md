@@ -112,7 +112,7 @@ CREATE INDEX tokens_user_id_idx ON tokens(user_id);
 
 ## The dependency graph
 
-After all APs are drafted, write `action-points/README.md` containing:
+After all APs are drafted, write `blueprint/action-points/README.md` containing:
 
 - A one-paragraph overview of the AP set.
 - A table of all APs with ID, title, complexity, and dependencies.
