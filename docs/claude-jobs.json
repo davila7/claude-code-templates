@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-19T04:33:34.520594+00:00",
-  "totalJobs": 89,
+  "lastUpdated": "2026-05-20T04:27:21.018192+00:00",
+  "totalJobs": 88,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -1264,26 +1264,6 @@
         "AWS",
         "GCP",
         "Azure",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5153586008",
-      "company": "Anthropic",
-      "position": "Communications Lead, Claude Code",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is looking for a Communications Lead to own comms for Claude Code. You'll sit on the Product Communications team, working day-to-day with the Claude Code product team, developer relations, and marketing. The media landscape for developer tools doesn't look like it did five years ago. We...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153586008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153586008",
-      "postedAt": "2026-03-19T12:09:53-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
         "Claude Code",
         "Anthropic"
       ],
