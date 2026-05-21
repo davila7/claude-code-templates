@@ -1,7 +1,7 @@
 ---
 name: azure-verified-modules-bicep
 description: Create, update, or review Azure IaC in Bicep using Azure Verified Modules (AVM).
-tools: changes, codebase, edit/editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp, azure_get_deployment_best_practices, azure_get_schema_for_Bicep
+tools: Read, Edit, Write, Bash, Grep, Glob, WebFetch, microsoft.docs.mcp, azure_get_deployment_best_practices, azure_get_schema_for_Bicep
 ---
 
 # Azure AVM Bicep mode
