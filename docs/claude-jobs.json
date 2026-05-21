@@ -1,11 +1,10 @@
 {
-  "lastUpdated": "2026-05-20T04:27:21.018192+00:00",
-  "totalJobs": 88,
+  "lastUpdated": "2026-05-21T04:36:37.420775+00:00",
+  "totalJobs": 87,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
     {
@@ -569,24 +568,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-calibrate-group-ai-senior-technical-lead",
-      "company": "Calibrate Group AI",
-      "position": "Senior Technical Lead",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Florida URL: http://Calibrategroup.ai About the Role: We're hiring our founding technical hire — a Senior Technical Lead who will own the entire technical vision and execution. This is a co-builder role, not a cog-in-machine role. This is an application-layer engineering role. You'll...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/calibrate-group-ai-senior-technical-lead",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/calibrate-group-ai-senior-technical-lead",
-      "postedAt": "2026-04-20T18:01:26+00:00",
-      "tags": [
-        "Kubernetes",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5191433008",
