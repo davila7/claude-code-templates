@@ -4,6 +4,18 @@ Universal technical specification for adding a blog to a Next.js + Sanity websit
 
 **How to use this document.** Walk §0 with the user first. The answers populate §1 (Project Profile). §2–§20 are the universal spec — they read from §1 and never need editing per project. §21 is the pass/fail checklist. Appendices A and B record deferred decisions and deliberate non-features.
 
+**Treat library specifics as guidance, not gospel.** This spec was audited against a fixed point in time. Next.js, Sanity, next-intl, `@sanity/image-url`, `@portabletext/react`, and the Gemini image API all ship breaking changes faster than this file is updated. Before implementing each section that touches one of those libraries, pull the latest docs (via `context7` if available, otherwise `WebFetch` on the official docs site) and let upstream win on conflicts. Specifically re-verify:
+
+- §3, §6 — Sanity schema syntax, `defineType`/`defineField`/`defineQuery`, `next-sanity` client options, draft mode + `stega` rules
+- §7 — `generateMetadata`, dynamic `params` shape in current Next.js major (sync vs `Promise`), `alternates.languages` format
+- §7, §9 — Google's [Article structured data](https://developers.google.com/search/docs/appearance/structured-data/article) and [FAQPage](https://developers.google.com/search/docs/appearance/structured-data/faqpage) required fields
+- §9 — `@portabletext/react` component override API and plugin packages
+- §14 — `web.dev` CWV thresholds for current LCP/INP/CLS "good" cutoffs
+- §17 — current GA4 / Plausible / Fathom snippet and consent integration
+- §20 — Gemini image model name, endpoint, supported sizes/aspect ratios, response schema
+
+If something in §2–§20 contradicts the docs you just read, the docs win. Record the contradiction in §1 under "Approved overrides".
+
 ---
 
 ## §0. Intake Questionnaire
@@ -880,7 +892,7 @@ The style guide lives in `blog-image-style-guide.md`. Walk its intake questions 
 
 ### 20.3 Generator script
 
-Place this at `scripts/generate-hero-images.ts`. Before running: populate the `TOPICS` array with one entry per article (one slug per locale + crafted prompt + localized alt). Assumes the post document `_id` pattern `post.<locale>.<slug>` (adjust if §1 uses a different document ID scheme). Idempotent: re-runs skip posts already carrying `heroImage.asset` unless `--force` is passed. Saves a local copy under `public/images/blog/<primary-locale-slug>.<ext>` for git asset history as well as uploading to Sanity (skip the local copy if §1.J3 = sanity-only).
+Place this at `scripts/generate-hero-images.ts`. Before running: populate the `TOPICS` array with one entry per article (one slug per locale + crafted prompt + localized alt). Assumes the post document `_id` pattern `post.<locale>.<slug>` (adjust if §1 uses a different document ID scheme). Idempotent: re-runs skip posts already carrying `heroImage.asset` unless `--force` is passed. Set the `ASSET_MODE` constant at the top of the file to `repo-copy` (default) to also save a local copy under `public/images/blog/<primary-locale-slug>.<ext>` for git asset history, or `sanity-only` to skip the local copy and upload only to Sanity (§1.J3). The patch loop checks each locale's post document exists before patching, so topics that only have posts in a subset of locales (§1.B4 = independent) are handled safely.
 
 ```typescript
 /**
@@ -909,6 +921,10 @@ import { createClient } from "next-sanity";
 
 const GEMINI_MODEL = "gemini-3-pro-image-preview";
 const ASPECT_RATIO = "16:9";
+
+// §1.J3 — `repo-copy` also writes the image under public/images/blog/<primary-slug>.<ext>
+// for git asset history; `sanity-only` skips the local copy and relies on Sanity CDN.
+const ASSET_MODE: "repo-copy" | "sanity-only" = "repo-copy";
 
 // Locales list — match the order in §1.B1. The first entry is the primary locale.
 const LOCALES = ["en"] as const; // e.g. ["en", "fr", "de"]
@@ -994,6 +1010,14 @@ async function postHasHeroImage(id: string): Promise<boolean> {
   return Boolean(doc?.heroImage?.asset);
 }
 
+async function postExists(id: string): Promise<boolean> {
+  const doc = await client.fetch<{ _id: string } | null>(
+    `*[_id == $id][0]{ _id }`,
+    { id },
+  );
+  return Boolean(doc);
+}
+
 async function processTopic(topic: Topic, force: boolean): Promise<"skipped" | "done"> {
   const ids = LOCALES.map((loc) => ({ loc, id: `post.${loc}.${topic.slugs[loc]}` }));
 
@@ -1009,9 +1033,14 @@ async function processTopic(topic: Topic, force: boolean): Promise<"skipped" | "
   const { buffer, mime } = await generateImage(topic.prompt);
   const ext = mime === "image/png" ? "png" : "jpg";
   const primarySlug = topic.slugs[LOCALES[0]];
-  const localPath = resolve(BLOG_IMAGES_DIR, `${primarySlug}.${ext}`);
-  await writeFile(localPath, buffer);
-  console.log(`  • wrote ${localPath} (${(buffer.length / 1024).toFixed(0)} KB, ${mime})`);
+
+  if (ASSET_MODE === "repo-copy") {
+    const localPath = resolve(BLOG_IMAGES_DIR, `${primarySlug}.${ext}`);
+    await writeFile(localPath, buffer);
+    console.log(`  • wrote ${localPath} (${(buffer.length / 1024).toFixed(0)} KB, ${mime})`);
+  } else {
+    console.log(`  • skipping local copy (ASSET_MODE = sanity-only)`);
+  }
 
   console.log(`  • uploading to Sanity…`);
   const asset = await client.assets.upload("image", buffer, {
@@ -1020,7 +1049,16 @@ async function processTopic(topic: Topic, force: boolean): Promise<"skipped" | "
   });
   console.log(`  • asset ${asset._id}`);
 
-  for (const { loc, id } of ids) {
+  // §B4 default = independent: posts can exist in any subset of locales.
+  // Check each locale doc and skip the ones that don't have a post for this topic.
+  const existence = await Promise.all(ids.map(({ id }) => postExists(id)));
+  const present = ids.filter((_, i) => existence[i]);
+  const missing = ids.filter((_, i) => !existence[i]);
+  for (const { loc, id } of missing) {
+    console.log(`  ↷ no post for ${loc} (${id}) — skipping that locale`);
+  }
+
+  for (const { loc, id } of present) {
     await client
       .patch(id)
       .set({
