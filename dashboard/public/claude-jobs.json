@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-21T04:36:37.420775+00:00",
-  "totalJobs": 87,
+  "lastUpdated": "2026-05-22T04:31:01.106788+00:00",
+  "totalJobs": 86,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -1783,27 +1783,6 @@
       "postedAt": "2025-11-12T22:30:23-05:00",
       "tags": [
         "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-4964610008",
-      "company": "Anthropic",
-      "position": "Manager of Solutions Architecture, Applied AI (Industries)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As the manager of the Industries Solutions Architect team within Applied AI at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Industries customers include Fortune 500 companies within verticals like financial services,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4964610008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4964610008",
-      "postedAt": "2025-11-04T08:19:19-05:00",
-      "tags": [
-        "Rust",
-        "Go",
         "AWS",
         "Claude Code",
         "Anthropic"
