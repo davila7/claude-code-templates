@@ -104,9 +104,10 @@ def get_current_branch(project_path: str) -> str | None:
 def get_changed_files_since(timestamp: datetime, project_path: str) -> list[str]:
     """Get files that changed since timestamp.
 
-    Combines two sources:
+    Combines three sources:
     1. Working-tree changes (unstaged + staged) via ``git diff --name-only HEAD``
-    2. Committed changes since *timestamp* via ``git log --since``
+    2. Untracked new files via ``git ls-files --others --exclude-standard``
+    3. Committed changes since *timestamp* via ``git log --since``
 
     Note: ``git diff`` does not support ``--since``; the time filter only
     applies to the commit log query.
@@ -116,7 +117,7 @@ def get_changed_files_since(timestamp: datetime, project_path: str) -> list[str]
 
     files: set[str] = set()
 
-    # 1. Working-tree changes (uncommitted edits since last commit)
+    # 1. Working-tree changes (uncommitted edits to tracked files)
     success, output = run_cmd(
         ["git", "diff", "--name-only", "HEAD"],
         cwd=project_path
@@ -124,7 +125,15 @@ def get_changed_files_since(timestamp: datetime, project_path: str) -> list[str]
     if success and output:
         files.update(f.strip() for f in output.split("\n") if f.strip())
 
-    # 2. Committed changes since the handoff timestamp
+    # 2. Untracked new files (not yet added to git)
+    success, output = run_cmd(
+        ["git", "ls-files", "--others", "--exclude-standard"],
+        cwd=project_path
+    )
+    if success and output:
+        files.update(f.strip() for f in output.split("\n") if f.strip())
+
+    # 3. Committed changes since the handoff timestamp
     iso_time = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
     success, output = run_cmd(
         ["git", "log", f"--since={iso_time}", "--name-only", "--pretty=format:"],
