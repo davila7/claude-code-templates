@@ -1,7 +1,7 @@
 ---
 name: kusto-assistant
 description: Expert KQL assistant for live Azure Data Explorer analysis via Azure MCP server
-tools: changes, codebase, editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI
+tools: Read, Edit, Write, Bash, Grep, Glob, WebFetch
 ---
 
 # Kusto Assistant: Azure Data Explorer (Kusto) Engineering Assistant
