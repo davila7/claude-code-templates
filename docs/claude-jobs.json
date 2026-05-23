@@ -1,12 +1,34 @@
 {
-  "lastUpdated": "2026-05-22T04:31:01.106788+00:00",
-  "totalJobs": 86,
+  "lastUpdated": "2026-05-23T04:19:14.574559+00:00",
+  "totalJobs": 81,
   "sources": [
     "Anthropic",
-    "HackerNews",
-    "RemoteOK"
+    "HackerNews"
   ],
   "jobs": [
+    {
+      "id": "anth-5228463008",
+      "company": "Anthropic",
+      "position": "Support Engineer",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "We are hiring Support Engineers to serve as the named, dedicated Product Support point of contact for Anthropic's most strategic enterprise customers. As a Support Engineer, you'll be providing high-touch, deeply contextual support to a defined book of accounts — embedded in your customers' shared...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5228463008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5228463008",
+      "postedAt": "2026-05-22T18:19:40-04:00",
+      "tags": [
+        "JavaScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "GCP",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5222289008",
       "company": "Anthropic",
@@ -27,74 +49,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-senior-database-reliability-engineer-cloudlinux-1131613",
-      "company": "Cloudlinux",
-      "position": "Senior Database Reliability Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "CloudLinux / TuxCare is a remote-first infrastructure and security company. More than 300 engineers build and operate products used by hosting providers, enterprises, and internal service teams worldwide. Our Infrastructure Department runs the platforms behind CloudLinux OS, Imunify, KernelCare,...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-database-reliability-engineer-cloudlinux-1131613",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-database-reliability-engineer-cloudlinux-1131613",
-      "postedAt": "2026-05-16T16:00:03+00:00",
-      "tags": [
-        "PostgreSQL",
-        "Redis",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-operations-manager-a379-pearl-1131609",
-      "company": "Pearl",
-      "position": "Operations Manager A379",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Industry E-commerce | Health & Wellness | Consumer Goods | Supply Chain Operations Work Arrangement Fully Remote Job Type Full-time Work Schedule No fixed timezone overlap required Locations Philippines | LATAM | South Africa | EMEA | Anywhere Remote About Pearl Talent Pearl works with the top 1%...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-operations-manager-a379-pearl-1131609",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-operations-manager-a379-pearl-1131609",
-      "postedAt": "2026-05-16T00:00:08+00:00",
-      "tags": [],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-capture-analyst-altarum-1131585",
-      "company": "Altarum",
-      "position": "Capture Analyst",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "At Altarum , we work at the intersection of strategy, health impact, and innovation. We help public sector and health-focused organizations solve complex challenges that improve lives and strengthen communities. We’re looking for a highly organized, analytical, and proactive Capture Analyst to help...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-capture-analyst-altarum-1131585",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-capture-analyst-altarum-1131585",
-      "postedAt": "2026-05-14T00:01:18+00:00",
-      "tags": [
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-revenue-cycle-specialist-osmind-1131580",
-      "company": "Osmind",
-      "position": "Revenue Cycle Specialist",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About Us Osmind is a technology, services, and data company focused exclusively on psychiatry. Mental health disorders are one of the leading causes of death worldwide and are tied to shortening lifespans. Yet, we have cause for hope: there have been developments in new psychiatric medications and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-revenue-cycle-specialist-osmind-1131580",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-revenue-cycle-specialist-osmind-1131580",
-      "postedAt": "2026-05-13T16:02:43+00:00",
-      "tags": [
-        "Rust"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5218395008",
@@ -1251,26 +1205,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5153773008",
-      "company": "Anthropic",
-      "position": "Product Manager, Monetization",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Product Manager for Monetization, you’ll drive revenue growth across our product suite spanning Claude.ai , Claude Code, Claude Cowork, and Claude Platform. You’ll work closely with other growth teams that are focused on driving growth for specific audiences. You’ll also partner with a...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153773008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5153773008",
-      "postedAt": "2026-03-17T14:25:05-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "hn-47360403",
       "company": "Breezy",
       "position": "Product Engineer",
@@ -1641,30 +1575,9 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5123769008",
-      "company": "Anthropic",
-      "position": "Technical Program Manager, Security (Coordinated Vulnerability Disclosure)",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Technical Program Manager for Security, Coordinated Vulnerability Disclosure (CVD), you will build and lead the programs that govern how Anthropic responsibly discloses software vulnerabilities discovered by our AI-powered tools, including Claude, Patchy, and Claude Code. These tools have...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5123769008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5123769008",
-      "postedAt": "2026-02-18T03:40:49-05:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5098025008",
       "company": "Anthropic",
-      "position": "Model Quality Software Engineer, Claude Code",
+      "position": "Model Performance Software Engineer, Claude Code",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
