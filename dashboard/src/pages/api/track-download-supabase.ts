@@ -70,26 +70,6 @@ export const POST: APIRoute = async ({ request }) => {
       throw new Error(`Database insert failed: ${insertError.message}`);
     }
 
-    const { error: upsertError } = await supabase
-      .from('download_stats')
-      .upsert(
-        {
-          component_type: type,
-          component_name: name,
-          total_downloads: 1,
-          last_download: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: 'component_type,component_name',
-          ignoreDuplicates: false,
-        }
-      );
-
-    if (upsertError) {
-      console.error('Supabase upsert error:', upsertError);
-    }
-
     return jsonResponse({
       success: true,
       message: 'Download tracked successfully',
