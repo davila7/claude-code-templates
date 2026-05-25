@@ -1,11 +1,29 @@
 {
-  "lastUpdated": "2026-05-24T04:29:30.601363+00:00",
-  "totalJobs": 81,
+  "lastUpdated": "2026-05-25T04:34:04.088373+00:00",
+  "totalJobs": 82,
   "sources": [
     "Anthropic",
-    "HackerNews"
+    "HackerNews",
+    "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-graphic-designer-milk-honey-1131978",
+      "company": "milk + honey",
+      "position": "Graphic Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Apply Job Type Part-time, Contract Description We're looking for a graphic designer to join the milk + honey marketing team on a contract basis. You work across email, social, and print — and you care equally about the concept and the craft. You'll work directly with the senior designer and...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-graphic-designer-milk-honey-1131978",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-graphic-designer-milk-honey-1131978",
+      "postedAt": "2026-05-23T06:14:00+00:00",
+      "tags": [
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5228463008",
       "company": "Anthropic",
