@@ -12644,5 +12644,41 @@
         "pinion"
       ]
     }
+  },
+  {
+    "slug": "airtable",
+    "name": "Airtable Skills",
+    "author": "Airtable",
+    "description": "Official Airtable plugins for AI agents.",
+    "github": "https://github.com/Airtable/skills",
+    "stars": 20,
+    "type": "marketplace",
+    "tags": [
+      "skills",
+      "mcps"
+    ],
+    "contains": {
+      "plugins": 1,
+      "components": {
+        "skills": 3,
+        "mcps": 1
+      }
+    },
+    "highlights": [
+      "Official Airtable release",
+      "1 plugin in marketplace"
+    ],
+    "plugins_list": [
+      {
+        "name": "airtable",
+        "description": "Airtable is the database and operations layer for your agents — whether running product, marketing, sales, ops, HR, or a custom business app. It combines structured data with multiplayer visual surfaces (grid, kanban, calendar, gallery, timeline) humans and agents share — plus sync integrations to Jira, Salesforce, Zendesk, Google Drive, and Databricks. Makes Claude fluent in Airtable: bases and schema, records, and collaboration UI. Bundles the official Airtable MCP server.",
+        "source": "./plugins/airtable",
+        "author": "Airtable",
+        "components": {
+          "skills": 3,
+          "mcps": 1
+        }
+      }
+    ]
   }
 ]

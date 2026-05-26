@@ -58,6 +58,7 @@ REPOS = [
     ("777genius/claude-notifications-go", None),
     ("Piebald-AI/claude-code-lsps", None),
     ("chu2bard/pinion-os", None),
+    ("Airtable/skills", None),
 ]
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
