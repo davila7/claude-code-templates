@@ -1,5 +1,36 @@
 [
   {
+    "slug": "armoriq-armorclaude",
+    "name": "ArmorClaude",
+    "author": "ArmorIQ",
+    "description": "Intent-based security enforcement for Claude Code. Registers the LLM's plan via MCP before any tool fires, mints a signed intent JWT, then blocks tool calls that drift from the plan. Policies managed in natural language via the policy_update MCP tool. Optional CSRG cryptographic proofs. Central audit at platform.armoriq.ai. Same enforcement model also ships for OpenAI Codex (ArmorCodex) and GitHub Copilot CLI (ArmorCopilot).",
+    "github": "https://github.com/armoriq/armorClaude",
+    "stars": 3,
+    "type": "plugin",
+    "tags": [
+      "security",
+      "policy",
+      "audit",
+      "intent",
+      "hooks",
+      "mcp"
+    ],
+    "contains": {
+      "agents": 0,
+      "commands": 0,
+      "skills": 0,
+      "hooks": 5,
+      "mcp_servers": 1
+    },
+    "highlights": [
+      "Intent-aware: registers the plan first, then blocks tool calls that drift from it",
+      "Natural-language policy updates ('block any webfetch') via MCP tool",
+      "Optional CSRG cryptographic proofs (Merkle-tree-bound policy)",
+      "Cross-product: same model also ships on OpenAI Codex + GitHub Copilot CLI"
+    ],
+    "website": "https://armoriq.ai"
+  },
+  {
     "slug": "mercadopago-claude-marketplace",
     "name": "Mercado Pago",
     "author": "mercadopago",
