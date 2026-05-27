@@ -1,5 +1,29 @@
 [
   {
+    "slug": "ml-plugins",
+    "name": "ml-research",
+    "author": "krasserm",
+    "description": "Native Claude Code port of Hugging Face's ml-intern: research-first autonomous ML engineering and fine-tuning (SFT/DPO/GRPO/LoRA) on HF Jobs, with dataset/repo/paper tooling and an optional budget-bounded autonomous experiment loop.",
+    "github": "https://github.com/krasserm/ml-plugins",
+    "stars": 1,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 2,
+      "agents": 2,
+      "hooks": 1
+    },
+    "highlights": [
+      "No LLM API key: every model call runs on your Claude Code subscription",
+      "Research-first fine-tuning (SFT/DPO/GRPO/LoRA) on Hugging Face Jobs",
+      "Optional budget-bounded autonomous experiment sweep"
+    ]
+  },
+  {
     "slug": "mercadopago-claude-marketplace",
     "name": "Mercado Pago",
     "author": "mercadopago",
