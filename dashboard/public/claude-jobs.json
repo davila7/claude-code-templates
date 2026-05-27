@@ -1,29 +1,11 @@
 {
-  "lastUpdated": "2026-05-26T04:27:56.266803+00:00",
-  "totalJobs": 82,
+  "lastUpdated": "2026-05-27T04:33:07.029558+00:00",
+  "totalJobs": 80,
   "sources": [
     "Anthropic",
-    "HackerNews",
-    "RemoteOK"
+    "HackerNews"
   ],
   "jobs": [
-    {
-      "id": "rok-remote-graphic-designer-milk-honey-1131978",
-      "company": "milk + honey",
-      "position": "Graphic Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Apply Job Type Part-time, Contract Description We're looking for a graphic designer to join the milk + honey marketing team on a contract basis. You work across email, social, and print — and you care equally about the concept and the craft. You'll work directly with the senior designer and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-graphic-designer-milk-honey-1131978",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-graphic-designer-milk-honey-1131978",
-      "postedAt": "2026-05-23T06:14:00+00:00",
-      "tags": [
-        "Rust"
-      ],
-      "companyIcon": ""
-    },
     {
       "id": "anth-5228463008",
       "company": "Anthropic",
@@ -1195,28 +1177,6 @@
       "tags": [
         "Rust",
         "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5160757008",
-      "company": "Anthropic",
-      "position": "Security Risk & Compliance, HIPAA",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA; Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5160757008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5160757008",
-      "postedAt": "2026-03-20T17:36:54-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "GCP",
-        "Azure",
         "Claude Code",
         "Anthropic"
       ],
