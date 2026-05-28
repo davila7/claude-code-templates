@@ -1,11 +1,54 @@
 {
-  "lastUpdated": "2026-05-27T04:33:07.029558+00:00",
+  "lastUpdated": "2026-05-28T04:33:30.820002+00:00",
   "totalJobs": 80,
   "sources": [
     "Anthropic",
-    "HackerNews"
+    "HackerNews",
+    "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5229345008",
+      "company": "Anthropic",
+      "position": "Software Engineer, Claude Design",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Claude...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
+      "postedAt": "2026-05-27T20:20:38-04:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
+      "company": "Radicle Science",
+      "position": "Associate Chief of Staff the Co Founders",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Radicle Science is seeking an exceptional, AI-native Associate Chief of Staff to serve as a force multiplier to Co-Founders Pelin Thorogood and Dr. Jeff Chen. This is a high-leverage, founder-facing role designed for a high-ceiling operator ready to grow into strategic leadership as Radicle scales....",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
+      "postedAt": "2026-05-27T01:18:13+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5228463008",
       "company": "Anthropic",
@@ -439,31 +482,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-47975598",
-      "company": "INDATA",
-      "position": "Software Engineer",
-      "location": "REMOTE (US) or San Diego",
-      "remote": true,
-      "salary": "$95,000–$115,000",
-      "description": "We're hiring a junior dev who is genuinely AI-native — your primary tool is Claude Code or Cursor, not your own typing. You'll extend our agentic AI copilot embedded in Architect AI, our portfolio-management web app: text-to-SQL over financial schemas (holdings, transactions, performance), RAG over...",
-      "applyUrl": "https://news.ycombinator.com/item?id=47975598",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=47975598",
-      "postedAt": "2026-05-01T15:01:34+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Go",
-        "Azure",
-        "Docker",
-        "Claude Code",
-        "Cursor",
-        "Copilot",
-        "Redis"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5197538008",
       "company": "Anthropic",
       "position": "Manager of Applied AI Architecture, Enterprise Tech (Cyber)",
@@ -676,26 +694,6 @@
         "Claude Code"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5182430008",
-      "company": "Anthropic",
-      "position": "Insider Risk Investigator - Technical & Human Intelligence",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "We are seeking an exceptional Insider Risk Investigator with expertise in both human and technical investigations to support and protect Anthropic's mission. The Insider Risk Team works cross-functionally to deter, identify, investigate and mitigate risks to Anthropic's most critical assets—our...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182430008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5182430008",
-      "postedAt": "2026-04-10T02:42:06-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-47712573",
