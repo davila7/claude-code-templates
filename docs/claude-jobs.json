@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-28T04:33:30.820002+00:00",
-  "totalJobs": 80,
+  "lastUpdated": "2026-05-29T04:32:56.447754+00:00",
+  "totalJobs": 83,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -32,6 +32,39 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "rok-remote-product-designer-south-geeks-1132403",
+      "company": "South Geeks",
+      "position": "Product Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Hi there :) Thanks for checking in to find out about our open position. WeÂ´ll provide as much information as possible, but please feel free to reach us if you have further questions. WeÂ´ll be happy to see your application, even if there are skills you don't quite master! About us We partner with...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-designer-south-geeks-1132403",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-designer-south-geeks-1132403",
+      "postedAt": "2026-05-27T16:00:10+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-speculative-senior-ams-consultant-applications-the-config-team-1132402",
+      "company": "The Config Team",
+      "position": "Speculative Senior AMS Consultant Applications",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Welcome to The Config Team, where we have created a friendly, safe and supportive culture with a community of people who feel valued, are rewarded and work together to deliver exceptional results. Are you an experienced SAP EWM professional who enjoys working across different systems and a...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-speculative-senior-ams-consultant-applications-the-config-team-1132402",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-speculative-senior-ams-consultant-applications-the-config-team-1132402",
+      "postedAt": "2026-05-27T16:00:03+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "rok-remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
       "company": "Radicle Science",
       "position": "Associate Chief of Staff the Co Founders",
@@ -46,6 +79,24 @@
       "tags": [
         "Rust",
         "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-product-designer-heidi-1132448",
+      "company": "Heidi",
+      "position": "Product Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "The Role We're looking for a product designer who designs, prototypes, and ships. Someone who knows the difference between software that works and software that makes someone smile. Clinicians use Heidi to get away from keyboards and back to patients. We want the product to feel as considered as...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-designer-heidi-1132448",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-designer-heidi-1132448",
+      "postedAt": "2026-05-26T14:03:57+00:00",
+      "tags": [
+        "Rust",
+        "Claude Code"
       ],
       "companyIcon": ""
     },
