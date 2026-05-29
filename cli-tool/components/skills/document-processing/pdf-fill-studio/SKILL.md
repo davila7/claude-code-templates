@@ -17,9 +17,10 @@ From source instead: `python3 -m venv .venv && .venv/bin/pip install -e .`, then
 `.venv/bin/pdf-fill-studio`.
 
 ## Flow
-1. Start: `pdf-fill-studio <input.pdf> -o out/<name>_filled.pdf`. It detects the form type.
+(Replace `form.pdf` and `profile.json` with the user's actual file paths.)
+1. Start: `pdf-fill-studio form.pdf -o out/form_filled.pdf`. It detects the form type.
 2. **AcroForm (native fields):** re-run with a profile of known facts:
-   `pdf-fill-studio <input.pdf> -o out/<name>_filled.pdf --profile <profile.json>`.
+   `pdf-fill-studio form.pdf -o out/form_filled.pdf --profile profile.json`.
    Matched fields fill automatically; it prints "Needs manual input: [...]" for the rest. Ask the
    user for each listed field, add them to the profile, re-run, then render to verify.
 3. **Flat (no fields):** a local browser editor opens. Tell the user to type values, drag boxes
@@ -29,7 +30,7 @@ From source instead: `python3 -m venv .venv && .venv/bin/pip install -e .`, then
 5. The filled PDF is written to `out/`. The user signs it themselves.
 
 ## Self-check (before declaring done)
-Render and look: `python -m pdf_fill_studio.render_page out/<name>_filled.pdf out/preview`.
+Render and look: `python -m pdf_fill_studio.render_page out/form_filled.pdf out/preview`.
 Check each value sits on its line / inside its cell, not too low or spilling outside. Apply
 minimal coordinate corrections and re-bake if needed.
 
