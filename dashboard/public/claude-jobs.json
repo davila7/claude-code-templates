@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-29T04:32:56.447754+00:00",
-  "totalJobs": 83,
+  "lastUpdated": "2026-05-30T04:26:16.357543+00:00",
+  "totalJobs": 81,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -61,42 +61,6 @@
       "tags": [
         "Rust",
         "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
-      "company": "Radicle Science",
-      "position": "Associate Chief of Staff the Co Founders",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Radicle Science is seeking an exceptional, AI-native Associate Chief of Staff to serve as a force multiplier to Co-Founders Pelin Thorogood and Dr. Jeff Chen. This is a high-leverage, founder-facing role designed for a high-ceiling operator ready to grow into strategic leadership as Radicle scales....",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-associate-chief-of-staff-the-co-founders-radicle-science-1132352",
-      "postedAt": "2026-05-27T01:18:13+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-product-designer-heidi-1132448",
-      "company": "Heidi",
-      "position": "Product Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "The Role We're looking for a product designer who designs, prototypes, and ships. Someone who knows the difference between software that works and software that makes someone smile. Clinicians use Heidi to get away from keyboards and back to patients. We want the product to feel as considered as...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-designer-heidi-1132448",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-designer-heidi-1132448",
-      "postedAt": "2026-05-26T14:03:57+00:00",
-      "tags": [
-        "Rust",
-        "Claude Code"
       ],
       "companyIcon": ""
     },
