@@ -1,5 +1,25 @@
 [
   {
+    "slug": "claude-code-plugins",
+    "name": "status-line",
+    "author": "PremPrakashCodes",
+    "description": "Configurable status-line HUD for Claude Code: model, project, git branch/dirty state, a context-usage bar, and 5h/7d rate-limit windows. Pure-Python (stdlib only, no dependencies), with selectable bar styles, themes, and custom labels.",
+    "github": "https://github.com/PremPrakashCodes/claude-code-plugins",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "commands"
+    ],
+    "contains": {
+      "commands": 2
+    },
+    "highlights": [
+      "One-line or expanded multi-line HUD with model, project, git, and context usage",
+      "5-hour and 7-day rate-limit windows with reset countdowns",
+      "Themes, custom colors, labels, and selectable progress-bar styles; fail-silent rendering"
+    ]
+  },
+  {
     "slug": "ml-plugins",
     "name": "ml-research",
     "author": "krasserm",
