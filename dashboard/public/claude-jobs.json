@@ -1,12 +1,107 @@
 {
-  "lastUpdated": "2026-05-30T04:26:16.357543+00:00",
-  "totalJobs": 81,
+  "lastUpdated": "2026-05-31T04:32:21.336096+00:00",
+  "totalJobs": 84,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-executive-assistant-rithum-1132586",
+      "company": "Rithum",
+      "position": "Executive Assistant",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Rithumâ¢ is the world’s most trusted commerce network, accelerating how brands, suppliers, and retailers work together to deliver seamless e-commerce experiences. We provide an unmatched platform for brands and retailers, enabling them to accelerate growth, optimize operations across channels,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-executive-assistant-rithum-1132586",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-executive-assistant-rithum-1132586",
+      "postedAt": "2026-05-30T00:45:19+00:00",
+      "tags": [
+        "Rust",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-executive-assistant-rithum-1132587",
+      "company": "Rithum",
+      "position": "Executive Assistant",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Rithumâ¢ is the world’s most trusted commerce network, accelerating how brands, suppliers, and retailers work together to deliver seamless e-commerce experiences. We provide an unmatched platform for brands and retailers, enabling them to accelerate growth, optimize operations across channels,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-executive-assistant-rithum-1132587",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-executive-assistant-rithum-1132587",
+      "postedAt": "2026-05-30T00:45:19+00:00",
+      "tags": [
+        "Rust",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-executive-assistant-rithum-1132589",
+      "company": "Rithum",
+      "position": "Executive Assistant",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Rithumâ¢ is the world’s most trusted commerce network, accelerating how brands, suppliers, and retailers work together to deliver seamless e-commerce experiences. We provide an unmatched platform for brands and retailers, enabling them to accelerate growth, optimize operations across channels,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-executive-assistant-rithum-1132589",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-executive-assistant-rithum-1132589",
+      "postedAt": "2026-05-30T00:45:19+00:00",
+      "tags": [
+        "Rust",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-executive-assistant-rithum-1132590",
+      "company": "Rithum",
+      "position": "Executive Assistant",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Rithumâ¢ is the world’s most trusted commerce network, accelerating how brands, suppliers, and retailers work together to deliver seamless e-commerce experiences. We provide an unmatched platform for brands and retailers, enabling them to accelerate growth, optimize operations across channels,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-executive-assistant-rithum-1132590",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-executive-assistant-rithum-1132590",
+      "postedAt": "2026-05-30T00:45:19+00:00",
+      "tags": [
+        "Rust",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-senior-backend-engineer-gameplay-galaxy-1132512",
+      "company": "Gameplay Galaxy",
+      "position": "Senior Backend Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About the role You'll own the backend for a live mobile F2P game and the AI agentic platform that powers how we operate it. Feature releases, live ops, monetization, analytics pipeline, reliability. Senior IC with real ownership from day one and a path to platform / tech lead as we scale. You work...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-backend-engineer-gameplay-galaxy-1132512",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-backend-engineer-gameplay-galaxy-1132512",
+      "postedAt": "2026-05-29T08:00:12+00:00",
+      "tags": [
+        "TypeScript",
+        "Go",
+        "Node.js",
+        "GCP",
+        "Kubernetes",
+        "Redis",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5229345008",
       "company": "Anthropic",
@@ -30,39 +125,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-product-designer-south-geeks-1132403",
-      "company": "South Geeks",
-      "position": "Product Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Hi there :) Thanks for checking in to find out about our open position. WeÂ´ll provide as much information as possible, but please feel free to reach us if you have further questions. WeÂ´ll be happy to see your application, even if there are skills you don't quite master! About us We partner with...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-designer-south-geeks-1132403",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-designer-south-geeks-1132403",
-      "postedAt": "2026-05-27T16:00:10+00:00",
-      "tags": [],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-speculative-senior-ams-consultant-applications-the-config-team-1132402",
-      "company": "The Config Team",
-      "position": "Speculative Senior AMS Consultant Applications",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Welcome to The Config Team, where we have created a friendly, safe and supportive culture with a community of people who feel valued, are rewarded and work together to deliver exceptional results. Are you an experienced SAP EWM professional who enjoys working across different systems and a...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-speculative-senior-ams-consultant-applications-the-config-team-1132402",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-speculative-senior-ams-consultant-applications-the-config-team-1132402",
-      "postedAt": "2026-05-27T16:00:03+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5228463008",
