@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-05-31T04:32:21.336096+00:00",
-  "totalJobs": 84,
+  "lastUpdated": "2026-06-01T04:35:59.946030+00:00",
+  "totalJobs": 83,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -1728,26 +1728,6 @@
       "tags": [
         "TypeScript",
         "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-4985920008",
-      "company": "Anthropic",
-      "position": "Product Manager, Claude Code",
-      "location": "San Francisco, CA | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Product Manager for Claude Code, you will drive the evolution of the Claude Code product suite and help shape how developers work with AI. You will work closely with internal users and customers to prioritize their requirements and ship improvements to Claude Code. You will work closely with...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4985920008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4985920008",
-      "postedAt": "2025-11-12T22:30:23-05:00",
-      "tags": [
         "Rust",
         "AWS",
         "Claude Code",
