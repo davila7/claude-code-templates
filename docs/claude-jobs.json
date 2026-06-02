@@ -1,12 +1,145 @@
 {
-  "lastUpdated": "2026-06-01T04:35:59.946030+00:00",
-  "totalJobs": 83,
+  "lastUpdated": "2026-06-02T04:32:38.012161+00:00",
+  "totalJobs": 89,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK"
+    "RemoteOK",
+    "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-48365092",
+      "company": "Opaxa",
+      "position": "Full-Stack Engineer",
+      "location": "San Francisco",
+      "remote": false,
+      "salary": "$200K–$300K",
+      "description": "Opaxa is the AI agent platform that runs restaurant back-office operations. Not another dashboard — agents that take the work off the operator's plate and act: build the schedule and push it to action, place the order with distributors, audit the invoice for overcharges, draft the review reply. The...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48365092",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48365092",
+      "postedAt": "2026-06-02T02:07:53+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48361997",
+      "company": "Veedma",
+      "position": "Product Engineer",
+      "location": "Remote (US)",
+      "remote": true,
+      "salary": "",
+      "description": "Veedma is a telehealth practice for men's hormonal and sexual health. We treat low testosterone, ED, and vitamin D deficiency in men 18 and up, fully online. Cash-pay subscription covers consultations, lab panels twice yearly, prescribed medications, and unlimited messaging. Clinically...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48361997",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48361997",
+      "postedAt": "2026-06-01T20:12:35+00:00",
+      "tags": [
+        "Python",
+        "PostgreSQL",
+        "Claude Code",
+        "Flask"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48359608",
+      "company": "JustPark",
+      "position": "Lead Full Stack Engineer",
+      "location": "London (Hybrid) & Dallas (Hybrid)",
+      "remote": false,
+      "salary": "",
+      "description": "JustPark is a parking platform serving millions of drivers and operators across the UK and US. We're hiring two lead engineers. Lead Full Stack Engineer – London, UK React/TypeScript + PHP/Laravel/Go. Lead engineers across our consumer platform, contribute to architecture, and help us scale...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48359608",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48359608",
+      "postedAt": "2026-06-01T17:07:04+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "AWS",
+        "GCP",
+        "Claude Code",
+        "React Native",
+        "Django"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48358775",
+      "company": "Emergences Labs (emergences.ai)",
+      "position": "Software Engineer",
+      "location": "REMOTE (US)",
+      "remote": true,
+      "salary": "$120K-$150K",
+      "description": "We're a small, research-driven, VC-backed team building NeoHuman: a desktop-first system that observes how people actually use AI tools, files, and workflows during real tasks, and turns those sessions into reliable evaluation evidence. We care about the process, not just the final answer — what...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48358775",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48358775",
+      "postedAt": "2026-06-01T16:10:18+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "Supabase",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48358702",
+      "company": "Authorium",
+      "position": "Senior Full-Stack Engineer",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "$148k-230k",
+      "description": "We're building the operating system for the digital infrastructure of government. Authorium is a GovTech SaaS platform that unifies the messy, high-stakes workflows (procurement, grants, budgeting) that keep state and local governments running. We replace fragmented docs, spreadsheets and...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48358702",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48358702",
+      "postedAt": "2026-06-01T16:05:17+00:00",
+      "tags": [
+        "Next.js",
+        "Claude Code",
+        "Ruby",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48358657",
+      "company": "*Scribd",
+      "position": "Lead Product Manager",
+      "location": "REMOTE*",
+      "remote": true,
+      "salary": "",
+      "description": "Scribd, Inc. is on a mission to advance human understanding. Our four products — Scribd®, Slideshare®, Everand™, and Fable — help billions of people across the globe move beyond access and into insight, application, and expertise. We're a YC '06 company — one of the oldest still around — running...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48358657",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48358657",
+      "postedAt": "2026-06-01T16:01:15+00:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "AWS",
+        "Claude Code",
+        "Ruby",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-executive-assistant-rithum-1132586",
       "company": "Rithum",
@@ -169,6 +302,28 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-sprypoint-devops-engineer-iii-transformation-focus",
+      "company": "Sprypoint",
+      "position": "DevOps Engineer III - Transformation Focus",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Prince Edward Island/HQ / Halifax, Nova Scotia / Newfoundland & Labrador / Nova Scotia / Ontario The Company 2025 Deloitte Technology Fast 50 Canada Recipient & Fast 500 North America Recipient SpryPoint is modernizing how utilities serve their communities. As a high-growth software...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/sprypoint-devops-engineer-iii-transformation-focus",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/sprypoint-devops-engineer-iii-transformation-focus",
+      "postedAt": "2026-05-16T20:32:11+00:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5218395008",
@@ -1645,28 +1800,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5075093008",
-      "company": "Anthropic",
-      "position": "Strategic Account Executive, Digital Native Business & Cybersecurity",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As a Strategic Account Executive focused on cybersecurity, you'll own some of Anthropic's most strategic cybersecurity relationships—companies building the next generation of AI-powered security products. These aren't typical enterprise accounts; they're partners shaping how AI transforms the...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "postedAt": "2026-01-27T23:00:33-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Copilot",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
