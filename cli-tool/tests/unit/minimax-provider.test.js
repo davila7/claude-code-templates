@@ -54,12 +54,12 @@ describe('MiniMax Provider Settings', () => {
       expect(authToken).toMatch(/YOUR[-_]/i);
     });
 
-    it('should configure MiniMax-M2.7 as the sonnet (default) model', () => {
-      expect(settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('MiniMax-M2.7');
+    it('should configure MiniMax-M3 as the sonnet (default) model', () => {
+      expect(settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('MiniMax-M3');
     });
 
-    it('should configure MiniMax-M2.7 as the opus (most capable) model', () => {
-      expect(settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('MiniMax-M2.7');
+    it('should configure MiniMax-M3 as the opus (most capable) model', () => {
+      expect(settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('MiniMax-M3');
     });
 
     it('should configure MiniMax-M2.7-highspeed as the haiku (fast) model', () => {
