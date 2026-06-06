@@ -1,0 +1,103 @@
+name: Skill Security Scan
+
+# Runs SkillSpector (NVIDIA, Apache-2.0) static analysis on skill components
+# changed in a PR. Posts a report comment and blocks the PR if any changed
+# skill scores HIGH/CRITICAL (risk score > 50).
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/skills/**'
+      - 'scripts/skillspector_scan.py'
+      - '.github/workflows/skill-security-scan.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  skill-scan:
+    name: SkillSpector (changed skills)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # full history so git diff against the base ref works
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install SkillSpector
+        run: pip install "git+https://github.com/NVIDIA/skillspector.git@main"
+
+      - name: Run SkillSpector on changed skills
+        id: scan
+        continue-on-error: true
+        run: |
+          python scripts/skillspector_scan.py \
+            --changed \
+            --base-ref "origin/${{ github.base_ref }}" \
+            --fail-on-risk \
+            --threshold 50 \
+            --output-md skillspector-report.md \
+            --output-sarif skillspector.sarif
+
+      - name: Upload report artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: skillspector-report
+          path: |
+            skillspector-report.md
+            skillspector.sarif
+          retention-days: 30
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: skillspector.sarif
+          category: skillspector
+
+      - name: Comment PR with results
+        if: always()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'skillspector-report.md';
+            if (!fs.existsSync(reportPath)) {
+              console.log('No SkillSpector report found.');
+              return;
+            }
+            const body = fs.readFileSync(reportPath, 'utf8');
+            const marker = '<!-- skillspector-report:v1 -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            const existing = await github.paginate(
+              github.rest.issues.listComments,
+              { owner, repo, issue_number, per_page: 100 }
+            );
+            const prev = existing.find(c => c.body && c.body.includes(marker));
+            if (prev) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: prev.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body,
+              });
+            }
+
+      - name: Enforce gate
+        if: steps.scan.outputs.failed == 'true'
+        run: |
+          echo "::error::SkillSpector found HIGH/CRITICAL findings in changed skills (${{ steps.scan.outputs.high_critical_count }})."
+          exit 1
