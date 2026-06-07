@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-06T04:26:06.574713+00:00",
-  "totalJobs": 88,
+  "lastUpdated": "2026-06-07T04:37:37.656569+00:00",
+  "totalJobs": 89,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -9,24 +9,63 @@
   ],
   "jobs": [
     {
-      "id": "hn-48416066",
-      "company": "vvd",
-      "position": "Design Engineer",
-      "location": "Remote (work from anywhere)",
+      "id": "rok-remote-data-analyst-stior-1132903",
+      "company": "StioÂ®",
+      "position": "Data Analyst",
+      "location": "Remote",
       "remote": true,
       "salary": "",
-      "description": "We’re building tools for storytellers, worldbuilders, writers, and creators. We’re looking for a Design Engineer who can design and build polished product experiences end-to-end. You should care deeply about taste, interaction, motion, and frontend craft, but also understand enough about APIs,...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48416066",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48416066",
-      "postedAt": "2026-06-05T18:04:31+00:00",
+      "description": "About Us StioÂ® is an omni-channel mountain brand that designs, develops and sells beautiful, functional, and innovative apparel, footwear and other accessories infused with the soul of the mountain lifestyle. With headquarters in Jackson, Wyoming, Stio draws inspiration from the surrounding Teton...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-data-analyst-stior-1132903",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-data-analyst-stior-1132903",
+      "postedAt": "2026-06-05T20:36:46+00:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-builder-chief-consultran-1132898",
+      "company": "Consultran",
+      "position": "Builder Chief",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "The Mission We are a trucking compliance business started in 1973. In the last 4 years we’ve successfully transitioned from DOS systems and dot matrix printers to streamlined processes and web-based systems using contract developers and our own technical abilities. About 18 months ago, the owner...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-builder-chief-consultran-1132898",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-builder-chief-consultran-1132898",
+      "postedAt": "2026-06-05T20:03:15+00:00",
       "tags": [
         "React",
-        "Next.js",
-        "TypeScript",
+        "Python",
         "Go",
+        "PostgreSQL",
         "Claude Code",
-        "Cursor"
+        "Cursor",
+        "Ruby",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-support-engineer-level-1132895",
+      "company": "Level",
+      "position": "Support Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "We're building the future of RMM, and the people who deploy it for our customers are mission critical. This is not a traditional support role. You'll close hard tickets, onboard customers running thousands of endpoints, build automations that ship to everyone, and be the IT professional MSP owners...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-support-engineer-level-1132895",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-support-engineer-level-1132895",
+      "postedAt": "2026-06-05T18:33:48+00:00",
+      "tags": [
+        "Rust"
       ],
       "companyIcon": ""
     },
@@ -146,24 +185,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-product-designer-nevis-1132791",
-      "company": "Nevis",
-      "position": "Product Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About Nevis Wealth management is about people and relationships. But the industry is so complex and regulated that advisors spend less than 30% of their time actually serving clients. The rest goes to paperwork and admin overhead. Nevis exists to change that. We are building the world's first AI...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-designer-nevis-1132791",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-designer-nevis-1132791",
-      "postedAt": "2026-06-03T19:54:13+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5227643008",
       "company": "Anthropic",
       "position": "Applied AI Architect (Public Sector) ",
@@ -238,7 +259,7 @@
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
-      "description": "As the manager of the Industries Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers include tech forward companies within verticals like...",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
