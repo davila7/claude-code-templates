@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-09T04:27:15.848479+00:00",
-  "totalJobs": 84,
+  "lastUpdated": "2026-06-10T04:33:48.873566+00:00",
+  "totalJobs": 83,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -9,63 +9,42 @@
   ],
   "jobs": [
     {
-      "id": "rok-remote-data-analyst-stior-1132903",
-      "company": "StioÂ®",
+      "id": "anth-5251609008",
+      "company": "Anthropic",
+      "position": "Technical Program Manager, Apps Platform",
+      "location": "San Francisco, CA | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is investing in shared platform capabilities that power Claude across our consumer and developer products: the common foundation that Claude, Cowork, Claude Code, and future surfaces are built on. We're hiring a Technical Program Manager to be the connective tissue for this effort,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5251609008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5251609008",
+      "postedAt": "2026-06-09T04:24:59-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-data-analyst-stio-1133036",
+      "company": "Stio",
       "position": "Data Analyst",
       "location": "Remote",
       "remote": true,
       "salary": "",
-      "description": "About Us StioÂ® is an omni-channel mountain brand that designs, develops and sells beautiful, functional, and innovative apparel, footwear and other accessories infused with the soul of the mountain lifestyle. With headquarters in Jackson, Wyoming, Stio draws inspiration from the surrounding Teton...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-data-analyst-stior-1132903",
+      "description": "ABOUT US StioÂ® is an omni-channel mountain brand that designs, develops and sells beautiful, functional, and innovative apparel, footwear and other accessories infused with the soul of the mountain lifestyle. With headquarters in Jackson, Wyoming, Stio draws inspiration from the surrounding Teton...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-data-analyst-stio-1133036",
       "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-data-analyst-stior-1132903",
-      "postedAt": "2026-06-05T20:36:46+00:00",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-data-analyst-stio-1133036",
+      "postedAt": "2026-06-09T00:00:05+00:00",
       "tags": [
         "Python",
         "Rust",
         "AWS",
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-builder-chief-consultran-1132898",
-      "company": "Consultran",
-      "position": "Builder Chief",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "The Mission We are a trucking compliance business started in 1973. In the last 4 years we’ve successfully transitioned from DOS systems and dot matrix printers to streamlined processes and web-based systems using contract developers and our own technical abilities. About 18 months ago, the owner...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-builder-chief-consultran-1132898",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-builder-chief-consultran-1132898",
-      "postedAt": "2026-06-05T20:03:15+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Go",
-        "PostgreSQL",
-        "Claude Code",
-        "Cursor",
-        "Ruby",
-        "Rails"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-support-engineer-level-1132895",
-      "company": "Level",
-      "position": "Support Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "We're building the future of RMM, and the people who deploy it for our customers are mission critical. This is not a traditional support role. You'll close hard tickets, onboard customers running thousands of endpoints, build automations that ship to everyone, and be the IT professional MSP owners...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-support-engineer-level-1132895",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-support-engineer-level-1132895",
-      "postedAt": "2026-06-05T18:33:48+00:00",
-      "tags": [
-        "Rust"
       ],
       "companyIcon": ""
     },
@@ -615,7 +594,7 @@
       "location": "New York City, NY; San Francisco, CA | New York City, NY; Seattle, WA",
       "remote": false,
       "salary": "",
-      "description": "As the manager of the Applied AI Architect, Enterprise Tech (Cyber) team at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across Enterprise Tech companies and digital-first organizations. You'll...",
+      "description": "As the manager of the Applied AI Architect, Enterprise Tech (Cyber) team at Anthropic, you will drive the adoption of frontier AI across the cybersecurity industry — enabling leading security companies to build Claude into their detection, response, and security operations products via Anthropic's...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
