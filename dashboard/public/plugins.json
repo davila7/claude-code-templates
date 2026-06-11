@@ -12704,5 +12704,86 @@
         }
       }
     ]
+  },
+  {
+    "slug": "best-claude-skills",
+    "name": "AugmentClaude Best Claude Skills",
+    "author": "Nyanbalaji28",
+    "description": "Hand-picked best Claude Code skills curated by AugmentClaude — every skill credited and linked to its original author. Full catalog of 500+ skills, bundles, and MCP servers at augmentclaude.com",
+    "github": "https://github.com/Nyanbalaji28/best-claude-skills",
+    "stars": 0,
+    "type": "marketplace",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "plugins": 14,
+      "components": {
+        "skills": 14
+      }
+    },
+    "highlights": [
+      "14 hand-picked skills",
+      "Web UI: https://augmentclaude.com"
+    ],
+    "website": "https://augmentclaude.com/",
+    "plugins_list": [
+      {
+        "name": "superpowers",
+        "description": "Jesse Vincent's complete development methodology: TDD, brainstorming-before-coding, and git worktrees — all auto-triggering."
+      },
+      {
+        "name": "gstack",
+        "description": "Garry Tan's 23-role Claude Code stack — CEO, designer, eng, QA, security, release, all as slash commands."
+      },
+      {
+        "name": "mcp-builder",
+        "description": "Anthropic's official skill for building MCP servers that connect language models to external APIs and services."
+      },
+      {
+        "name": "webapp-testing",
+        "description": "Playwright-driven browser testing: verify UI behavior, debug, and capture screenshots of local web apps."
+      },
+      {
+        "name": "frontend-design",
+        "description": "Anthropic's official frontend-design skill — production-grade interfaces with distinctive, polished design."
+      },
+      {
+        "name": "impeccable",
+        "description": "Paul Bakaus's design framework — kills generic AI design, forces deliberate taste, motion, and polish."
+      },
+      {
+        "name": "emil-design-engineering",
+        "description": "Emil Kowalski's design engineering review — when to animate, what easing, how fast, with Before/After reviews."
+      },
+      {
+        "name": "design-taste",
+        "description": "Three sliders (variance, motion, density) that tune Claude's UI output. Stops the generic AI look."
+      },
+      {
+        "name": "xlsx",
+        "description": "Open, edit, and create Excel and CSV files with formulas, formatting, and data cleaning."
+      },
+      {
+        "name": "docx",
+        "description": "Create, edit, and format Word documents with tables, images, and tracked changes."
+      },
+      {
+        "name": "pptx",
+        "description": "Create, edit, read, and extract content from PowerPoint presentations."
+      },
+      {
+        "name": "pdf",
+        "description": "Read, merge, split, rotate, watermark, encrypt, and extract text from PDF files."
+      },
+      {
+        "name": "find-skills",
+        "description": "Vercel Labs' meta-skill — Claude searches the open skill ecosystem for existing solutions before improvising."
+      },
+      {
+        "name": "skill-creator",
+        "description": "Anthropic's official tool for creating, editing, and benchmarking your own Claude skills."
+      }
+    ]
   }
 ]
