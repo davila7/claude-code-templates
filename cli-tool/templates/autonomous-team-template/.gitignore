@@ -1,0 +1,53 @@
+# Autonomous Team Generated Files
+
+# Context files
+.*.context.json
+*-context.json
+
+# Output reports
+*-report.md
+*-report.json
+*-report.html
+
+# Cache
+.cache/
+*.cache
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node modules (if using npm/yarn)
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# Metrics and monitoring
+metrics/
+*.metrics.json
+
+# User-specific config
+config.local.yaml
+.env.local
