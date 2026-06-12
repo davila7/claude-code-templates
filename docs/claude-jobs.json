@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-11T04:35:42.144805+00:00",
-  "totalJobs": 95,
+  "lastUpdated": "2026-06-12T04:37:30.674953+00:00",
+  "totalJobs": 94,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -44,26 +44,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-data-analyst-stio-1133036",
-      "company": "Stio",
-      "position": "Data Analyst",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "ABOUT US StioÂ® is an omni-channel mountain brand that designs, develops and sells beautiful, functional, and innovative apparel, footwear and other accessories infused with the soul of the mountain lifestyle. With headquarters in Jackson, Wyoming, Stio draws inspiration from the surrounding Teton...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-data-analyst-stio-1133036",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-data-analyst-stio-1133036",
-      "postedAt": "2026-06-09T00:00:05+00:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "hn-48426455",
@@ -660,6 +640,30 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
+      "company": "ShiftForce LLC",
+      "position": "Full-Stack Developer — .NET + React + Azure — Remote (US)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Kansas City URL: https://www.shiftforce.com **About us** ShiftForce is scheduling and operations software for restaurants. We've been around a while, we're profitable, and we ship real features to real users every week. Small team — there are no layers of management between you and...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
+      "postedAt": "2026-05-20T14:08:40+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "PostgreSQL",
+        "Azure",
+        "Cursor",
+        "Copilot",
+        "React Native"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5222289008",
@@ -1914,27 +1918,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079511008",
       "postedAt": "2026-01-22T17:33:12-05:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5079540008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Federal Civilian",
-      "location": "Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping federal civilian agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology stack....",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079540008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079540008",
-      "postedAt": "2026-01-22T17:32:33-05:00",
       "tags": [
         "Python",
         "Rust",
