@@ -37,6 +37,11 @@ fi
 dos commit-audit --workspace "$PROJECT_ROOT" HEAD >/dev/null 2>&1
 RC=$?
 
+if [ "$RC" = "0" ]; then
+  # Clean: the subject's claim is witnessed by its own diff. Stay silent.
+  exit 0
+fi
+
 if [ "$RC" = "1" ]; then
   echo "⚠️  dos-verify-gate: HEAD's commit subject is NOT backed by its diff (CLAIM_UNWITNESSED)." >&2
   echo "    The 'done' claim is unproven — review the commit before treating the work as complete." >&2
@@ -48,5 +53,11 @@ if [ "$RC" = "1" ]; then
   exit 0
 fi
 
-# 0 (clean) / 2 (unreadable ref) / anything else → advisory pass.
+# RC=2 (unreadable ref) or any other nonzero: the audit could NOT run, so the
+# claim is UNVERIFIED — not proven clean. Silently passing here would let a
+# could-not-verify masquerade as a clean pass, which is exactly the failure this
+# hook exists to catch. Surface it (always to stderr) but stay advisory: a
+# can't-adjudicate is not an unwitnessed claim, so it never blocks the stop.
+echo "⚠️  dos-verify-gate: could NOT audit HEAD (dos commit-audit exited $RC) — the 'done' claim is UNVERIFIED, not proven clean." >&2
+echo "    Re-run to see why: dos commit-audit --workspace \"$PROJECT_ROOT\" HEAD" >&2
 exit 0
