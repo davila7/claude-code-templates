@@ -1,27 +1,46 @@
 {
-  "lastUpdated": "2026-06-12T04:37:30.674953+00:00",
-  "totalJobs": 94,
+  "lastUpdated": "2026-06-13T04:37:14.782595+00:00",
+  "totalJobs": 95,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
     {
-      "id": "rok-remote-events-coordinator-busplanner-1133113",
-      "company": "BusPlanner",
-      "position": "Events Coordinator",
-      "location": "Remote",
+      "id": "anth-5255912008",
+      "company": "Anthropic",
+      "position": "Engineering Manager, Enterprise",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Enterprise is central to Anthropic's mission. The organizations that could benefit most from Claude are often the most demanding buyers, with rigorous requirements around security, compliance, and control. We believe earning their trust is essential to ensuring AI benefits the world broadly. We're...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5255912008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5255912008",
+      "postedAt": "2026-06-12T23:46:11-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-48505744",
+      "company": "Wrenly",
+      "position": "Software Engineer",
+      "location": "REMOTE (Brazil-based only)",
       "remote": true,
       "salary": "",
-      "description": "BusPlanner is hiring an Events Coordinator to support our Events team with the logistics, planning, and marketing behind our presence at conferences, trade shows, webinars, and user events across North America. This is a fully remote role based in Pakistan, ideal for someone who is exceptionally...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-events-coordinator-busplanner-1133113",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-events-coordinator-busplanner-1133113",
-      "postedAt": "2026-06-10T00:00:10+00:00",
+      "description": "Wrenly is a bootstrapped, profitable HR / people-analytics SaaS. We collect performance and engagement data where teams already work (Slack, MS Teams), and our AI turns it into plans managers actually act on. We go up against Lattice and Culture Amp with a fraction of their headcount. We're hiring...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48505744",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48505744",
+      "postedAt": "2026-06-12T15:55:36+00:00",
       "tags": [
-        "Rust"
+        "Go"
       ],
       "companyIcon": ""
     },
