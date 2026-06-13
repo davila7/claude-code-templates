@@ -843,10 +843,10 @@ html.light .stat-today-active {
 .ascii-art {
   color: var(--color-accent);
   font-family: var(--font-mono);
-  font-size: clamp(0.35rem, 0.75vw, 0.65rem);
+  font-size: clamp(0.32rem, 0.65vw, 0.6rem);
   line-height: 1.1;
   white-space: pre;
-  overflow-x: auto;
+  overflow: hidden;
   margin: 0;
   text-align: left;
   display: block;

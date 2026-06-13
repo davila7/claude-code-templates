@@ -466,8 +466,8 @@ export default function ComponentGrid({ initialType }: Props) {
       </div>
 
       {/* Grid or List View */}
-      <div className={viewMode === 'grid' 
-        ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 px-6 pb-6" 
+      <div className={viewMode === 'grid'
+        ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 px-6 pb-6"
         : "flex flex-col gap-4 px-6 pb-6"
       }>
         {paged.map((component, idx) => {
