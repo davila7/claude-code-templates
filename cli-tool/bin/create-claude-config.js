@@ -2,44 +2,10 @@
 
 const { program } = require('commander');
 const chalk = require('chalk');
-const boxen = require('boxen');
 const { createClaudeConfig } = require('../src/index');
+const { showBanner } = require('../src/tui');
 
 const pkg = require('../package.json');
-
-const title = 'Claude Code Templates';
-const subtitle = 'Your starting point for Claude Code projects';
-
-const colorGradient = ['#EA580C', '#F97316', '#FB923C', '#FDBA74', '#FED7AA', '#FFEBD6'];
-
-function colorizeTitle(text) {
-  const chars = text.split('');
-  const steps = colorGradient.length;
-  return chars
-    .map((char, i) => {
-      const color = colorGradient[i % steps];
-      return chalk.hex(color)(char);
-    })
-    .join('');
-}
-
-function showBanner() {
-  console.clear();
-  console.log(chalk.hex('#F97316')('════════════════════════════════════════════════════════════════'));
-  console.log('\n');
-  console.log('       🔮 ' + colorizeTitle(title));
-  console.log('\n');
-  console.log('       ' + chalk.hex('#FDBA74')(subtitle));
-  console.log('\n');
-  console.log(chalk.hex('#F97316')('════════════════════════════════════════════════════════════════\n'));
-
-  console.log(
-    chalk.hex('#D97706')('🚀 Setup Claude Code for any project language 🚀') +
-    chalk.gray(`\n                             v${pkg.version}\n\n`) +
-    chalk.blue('🌐 Templates: ') + chalk.underline('https://aitmpl.com') + '\n' +
-    chalk.blue('📖 Documentation: ') + chalk.underline('https://docs.aitmpl.com') + '\n'
-  );
-}
 
 program
   .name('create-claude-config')
@@ -90,7 +56,7 @@ program
                             options.updateAgent;
       
       if (!isQuietCommand) {
-        showBanner();
+        showBanner(pkg.version);
       }
       
       await createClaudeConfig(options);

@@ -1,0 +1,25 @@
+{
+  "name": "analytics-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "echarts": "^5.6.0",
+    "geist": "^1.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "astro": "^5.17.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.8.3"
+  }
+}

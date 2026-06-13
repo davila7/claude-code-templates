@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const { select, isCancel, cancel } = require('@clack/prompts');
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
@@ -60,86 +61,54 @@ function replacePythonCommands(config) {
 }
 
 async function showMainMenu() {
-  console.log('');
-  
-  const initialChoice = await inquirer.prompt([{
-    type: 'list',
-    name: 'action',
+  const action = await select({
     message: 'What would you like to do?',
-    choices: [
-      {
-        name: '📊 Analytics Dashboard - Monitor your Claude Code usage and sessions',
-        value: 'analytics',
-        short: 'Analytics Dashboard'
-      },
-      {
-        name: '💬 Chats Mobile - AI-first mobile interface for conversations',
-        value: 'chats',
-        short: 'Chats Mobile'
-      },
-      {
-        name: '🤖 Agents Dashboard - View and analyze Claude conversations with agent tools',
-        value: 'agents',
-        short: 'Agents Dashboard'
-      },
-      {
-        name: '⚙️ Project Setup - Configure Claude Code for your project',
-        value: 'setup',
-        short: 'Project Setup'
-      },
-      {
-        name: '🔍 Health Check - Verify your Claude Code setup and configuration',
-        value: 'health',
-        short: 'Health Check'
-      }
+    options: [
+      { value: 'analytics', label: '📊 Analytics Dashboard', hint: 'Monitor Claude Code usage and sessions' },
+      { value: 'setup',     label: '⚙️  Project Setup',      hint: 'Configure Claude Code for your project' },
+      { value: 'agents',   label: '🤖 Agents Dashboard',    hint: 'View multi-agent collaboration sessions' },
+      { value: 'chats',    label: '💬 Chats Mobile',         hint: 'AI-first mobile interface for conversations' },
+      { value: 'health',   label: '🔍 Health Check',         hint: 'Verify your Claude Code setup' },
     ],
-    default: 'analytics'
-  }]);
-  
-  if (initialChoice.action === 'analytics') {
-    console.log(chalk.blue('📊 Launching Claude Code Analytics Dashboard...'));
+  });
+
+  if (isCancel(action)) {
+    cancel('Cancelled.');
+    process.exit(0);
+  }
+
+  if (action === 'analytics') {
     trackingService.trackAnalyticsDashboard({ page: 'dashboard', source: 'interactive_menu' });
     await runAnalytics({});
     return;
   }
-  
-  if (initialChoice.action === 'chats') {
-    console.log(chalk.blue('💬 Launching Claude Code Mobile Chats...'));
+
+  if (action === 'chats') {
     trackingService.trackAnalyticsDashboard({ page: 'chats-mobile', source: 'interactive_menu' });
     await startChatsMobile({});
     return;
   }
-  
-  if (initialChoice.action === 'agents') {
-    console.log(chalk.blue('🤖 Launching Claude Code Agents Dashboard...'));
+
+  if (action === 'agents') {
     trackingService.trackAnalyticsDashboard({ page: 'agents', source: 'interactive_menu' });
     await runAnalytics({ openTo: 'agents' });
     return;
   }
-  
-  
-  if (initialChoice.action === 'health') {
-    console.log(chalk.blue('🔍 Running Health Check...'));
+
+  if (action === 'health') {
     const healthResult = await runHealthCheck();
-    
-    // Track health check usage
     trackingService.trackHealthCheck({
       setup_recommended: healthResult.runSetup,
       issues_found: healthResult.issues || 0
     });
-    
     if (healthResult.runSetup) {
-      console.log(chalk.blue('⚙️  Starting Project Setup...'));
-      // Continue with setup flow
       return await createClaudeConfig({});
     } else {
-      console.log(chalk.green('👍 Health check completed. Returning to main menu...'));
       return await showMainMenu();
     }
   }
-  
-  // Continue with setup if user chose 'setup'
-  console.log(chalk.blue('⚙️  Setting up Claude Code configuration...'));
+
+  // 'setup'
   return await createClaudeConfig({ setupFromMenu: true });
 }
 
