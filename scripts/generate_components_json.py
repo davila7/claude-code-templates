@@ -800,30 +800,28 @@ def generate_components_json():
     # ---------------------------------------------------------------------------
     # Performance optimization: separate content from the lightweight index.
     #
-    # components.json  → index without 'content' (~85% smaller, ~1-2 MB vs 15 MB)
-    # component-content/{type}/{slug}.json → per-component raw content, loaded
-    #   on demand only when the user visits a component detail page.
+    # docs/components.json           → index without 'content' (~87% smaller)
+    # dashboard/public/components.json → same, served by Cloudflare Pages
+    # dashboard/public/component-content/{type}/{slug}.json → per-component
+    #   raw content, loaded on demand only on detail pages.
     # ---------------------------------------------------------------------------
-    content_output_dir = 'docs/component-content'
     dashboard_public_dir = 'dashboard/public'
     dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
 
     # Component types that carry a 'content' field
     content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills']
 
-    # 1. Write per-component content files (before stripping from index data)
-    os.makedirs(content_output_dir, exist_ok=True)
+    # 1. Write per-component content files directly to dashboard/public/component-content/
+    os.makedirs(dashboard_content_dir, exist_ok=True)
     written_content_count = 0
     for ctype in content_bearing_types:
         for component in components_data.get(ctype, []):
             raw_content = component.get('content', '')
             if not raw_content:
                 continue
-            # Slug: path with extension stripped (matches detail-page lookup)
+            # Slug: path with extension stripped (matches detail-page URL lookup)
             slug = component['path'].replace('.md', '').replace('.json', '')
-            # slug may include a subdirectory (e.g. "code-quality/linter")
-            type_dir = os.path.join(content_output_dir, ctype)
-            content_file_path = os.path.join(type_dir, slug + '.json')
+            content_file_path = os.path.join(dashboard_content_dir, ctype, slug + '.json')
             os.makedirs(os.path.dirname(content_file_path), exist_ok=True)
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
@@ -832,7 +830,7 @@ def generate_components_json():
             except IOError as e:
                 print(f"Warning: Could not write content file {content_file_path}: {e}")
 
-    print(f"Generated {written_content_count} component content files in {content_output_dir}/")
+    print(f"Generated {written_content_count} component content files in {dashboard_content_dir}/")
 
     # 2. Build index: strip 'content' from all component types
     index_data = {}
@@ -842,7 +840,7 @@ def generate_components_json():
         else:
             index_data[k] = v
 
-    # 3. Write lightweight index to docs/components.json
+    # 3. Write lightweight index to docs/components.json and dashboard/public/components.json
     try:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(index_data, f, indent=2, ensure_ascii=False)
@@ -850,17 +848,11 @@ def generate_components_json():
     except IOError as e:
         print(f"Error writing to {output_path}: {e}")
 
-    # 4. Copy index + content directory to dashboard/public/
     try:
         os.makedirs(dashboard_public_dir, exist_ok=True)
         dashboard_index_path = os.path.join(dashboard_public_dir, 'components.json')
         shutil.copy2(output_path, dashboard_index_path)
         print(f"Copied index to {dashboard_index_path}")
-
-        if os.path.isdir(dashboard_content_dir):
-            shutil.rmtree(dashboard_content_dir)
-        shutil.copytree(content_output_dir, dashboard_content_dir)
-        print(f"Copied component content to {dashboard_content_dir}/")
     except Exception as e:
         print(f"Warning: Could not copy files to dashboard/public/: {e}")
 
