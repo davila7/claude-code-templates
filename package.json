@@ -48,5 +48,11 @@
     "analytics"
   ],
   "author": "Claude Code Templates",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "cli-tool/bin/",
+    "cli-tool/src/",
+    "cli-tool/components/sandbox/",
+    "README.md"
+  ]
 }
