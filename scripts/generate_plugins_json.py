@@ -36,6 +36,7 @@ REPOS = [
     ("EveryInc/compound-engineering-plugin", None),
     ("alirezarezvani/claude-skills", None),
     ("davepoon/buildwithclaude", "https://buildwithclaude.com/"),
+    ("Nyanbalaji28/best-claude-skills", "https://augmentclaude.com/"),
     ("lackeyjb/playwright-skill", None),
     ("nyldn/claude-octopus", None),
     ("jeremylongshore/claude-code-plugins-plus-skills", None),
