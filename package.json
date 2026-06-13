@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.29.1",
+  "version": "1.29.2",
   "description": "Component templates and tracking system for Claude Code",
   "main": "cli-tool/src/index.js",
   "bin": {
@@ -55,6 +55,7 @@
     "cli-tool/bin/",
     "cli-tool/src/",
     "cli-tool/components/sandbox/",
+    "cli-tool/package.json",
     "README.md"
   ]
 }
