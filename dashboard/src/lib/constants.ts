@@ -77,7 +77,7 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
   {
     name: 'BrainGrid',
     description: 'Plan. Build. Verify. Repeat.',
-    logo: '/braingrid-logo.png',
+    logo: '/braingrid-logo.webp',
     url: '/featured/braingrid',
     tag: 'Planning',
     tagColor: '#c5e063',
