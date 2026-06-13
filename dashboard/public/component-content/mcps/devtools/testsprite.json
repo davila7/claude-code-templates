@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"TestSprite\": {\n      \"description\": \"TestSprite’s MCP reads your intent, tests your code, and tells you what to fix.\",\n      \"command\": \"npx\",\n      \"args\": [\n        \"@testsprite/testsprite-mcp@latest\"\n      ],\n      \"env\": {\n        \"API_KEY\": \"your-api-key\"\n      }\n    }\n  }\n}"}

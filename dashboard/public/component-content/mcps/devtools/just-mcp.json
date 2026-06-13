@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"just-mcp\": {\n      \"description\": \"Execute Just commands and task runners seamlessly from Claude Code. Manage project tasks, run build scripts, and automate development workflows with Just integration.\",\n      \"command\": \"/path/to/just-mcp\",\n      \"args\": [\"--stdio\"]\n    }\n  }\n}"}

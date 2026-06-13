@@ -7,7 +7,7 @@ import MarkdownViewer from '../../../components/MarkdownViewer.tsx';
 import JsonViewer from '../../../components/JsonViewer.tsx';
 import SkillExplorer from '../../../components/SkillExplorer.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
-import { fetchComponents, getInstallCommand } from '../../../lib/data';
+import { fetchComponents, fetchComponentContent, getInstallCommand } from '../../../lib/data';
 import type { Component } from '../../../lib/types';
 
 export const prerender = false;
@@ -27,6 +27,14 @@ try {
       const cleanPath = c.path?.replace(/\.(md|json)$/, '') ?? '';
       return cleanPath === slug || c.name === slug;
     }) ?? null;
+  }
+
+  // Load full content on demand — the index (components.json) no longer
+  // embeds 'content' to keep the payload small (~85% reduction).
+  if (component) {
+    const cleanSlug = component.path?.replace(/\.(md|json)$/, '') ?? component.name;
+    const contentStr = await fetchComponentContent(component.type, cleanSlug);
+    component = { ...component, content: contentStr };
   }
 } catch (e: any) {
   error = e.message;
@@ -360,7 +368,7 @@ const componentSchema = component
         {/* Action buttons */}
         <div class="mt-8 flex items-center gap-3">
           <SaveToCollectionButton
-            client:load
+            client:visible
             componentType={component.type}
             componentPath={component.path}
             componentName={component.name}

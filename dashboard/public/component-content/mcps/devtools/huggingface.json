@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"huggingface\": {\n        \"description\":\"Access Hugging Face models, datasets, Spaces, papers, collections via MCP.\",\n        \"url\": \"https://huggingface.co/mcp\",\n        \"headers\": {\n            \"Authorization\": \"Bearer <YOUR_HF_TOKEN>\"\n            }\n        }\n    }\n}"}

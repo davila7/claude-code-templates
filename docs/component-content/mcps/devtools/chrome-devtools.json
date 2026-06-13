@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"chrome-devtools\": {\n      \"description\": \"A Model Context Protocol server for interacting with Chrome DevTools, enabling browser automation, debugging, and performance analysis capabilities.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"chrome-devtools-mcp@latest\"]\n    }\n  }\n}\n"}

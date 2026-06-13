@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"trace-mcp\": {\n      \"description\": \"Framework-aware code intelligence — semantic navigation, impact analysis, and refactoring across 60 framework integrations and 81 languages with up to 99% token reduction.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"trace-mcp@latest\"]\n    }\n  }\n}\n"}

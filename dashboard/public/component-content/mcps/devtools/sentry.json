@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"sentry\": {\n      \"description\":\"This service implements the Model Context Protocol (MCP) for interacting with Sentry, focused on human-in-the-loop coding agents and developer workflows rather than general-purpose API access.\",\n      \"url\": \"https://mcp.sentry.dev/mcp\"\n    }\n  }\n}"}

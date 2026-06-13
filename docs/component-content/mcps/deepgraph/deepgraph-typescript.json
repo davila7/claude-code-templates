@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"DeepGraph TypeScript MCP\": {\n      \"description\": \"Comprehensive TypeScript code analysis with type mapping, interface relationships, and module dependency tracking.\",\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"mcp-code-graph@latest\",\n        \"microsoft/TypeScript\"\n      ]\n    }\n  }\n}"}

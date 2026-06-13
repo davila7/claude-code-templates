@@ -245,7 +245,7 @@ const schemaData = JSON.stringify({
       document.addEventListener('astro:page-load', initSidebarCollapse);
     </script>
 
-    <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
-    <ClerkIsland client:load />
+    <!-- Single Clerk island for auth — idle so it doesn't block first paint -->
+    <ClerkIsland client:idle />
   </body>
 </html>

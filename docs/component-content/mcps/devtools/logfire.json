@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"logfire\": {\n      \"description\":\"Provides access to OpenTelemetry traces and metrics through Logfire.\",\n      \"command\": \"uvx\",\n      \"args\": [\"logfire-mcp@latest\", \"--read-token=YOUR-TOKEN\"]\n    }\n  }\n}"}

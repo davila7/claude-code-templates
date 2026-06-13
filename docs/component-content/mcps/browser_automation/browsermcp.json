@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"browsermcp\": {\n      \"description\": \"With Browser MCP, you can use MCP to automate your browser so that AI applications can navigate the web, fill out forms, and more.\",\n      \"command\": \"npx\",\n      \"args\": [\"@browsermcp/mcp@latest\"]\n    }\n  }\n}"}

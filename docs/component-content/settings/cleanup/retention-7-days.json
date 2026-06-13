@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Set chat transcript retention to 7 days for privacy.\",\n  \"cleanupPeriodDays\": 7\n}"}

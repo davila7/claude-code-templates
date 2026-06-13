@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"DeepGraph React MCP\": {\n      \"description\": \"Analyze React component hierarchies, state flows, and dependencies. Visualize your React application architecture.\",\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"mcp-code-graph@latest\",\n        \"facebook/react\"\n      ]\n    }\n  }\n}"}

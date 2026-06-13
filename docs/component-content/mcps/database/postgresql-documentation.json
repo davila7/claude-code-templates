@@ -1,0 +1,1 @@
+{"content": "{\n    \"mcpServers\": {\n        \"postgres-documentation\": {\n            \"description\": \"PostgreSQL documentation and skills for writing better Postgres code\",\n            \"url\": \"https://mcp.tigerdata.com/docs\"\n        }\n    }\n}"}
