@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-13T04:37:14.782595+00:00",
-  "totalJobs": 95,
+  "lastUpdated": "2026-06-14T04:35:55.828875+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -659,6 +659,32 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
+      "company": "Luxury Presence",
+      "position": "Staff Software Engineer - AI Website Builder - US (Remote)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$200,000 - $250,000",
+      "description": "Headquarters: United States URL: http://luxurypresence.com Luxury Presence is building the AI growth platform for real estate. Backed by Bessemer Venture Partners and other top investors, we're a Series C company on track to hit $100M in annual recurring revenue in the next six months. More than...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
+      "postedAt": "2026-05-21T20:03:04+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Kubernetes",
+        "Claude Code"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "wwr-shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
