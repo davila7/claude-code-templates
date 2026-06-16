@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-15T04:33:53.427260+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-06-16T04:34:56.377196+00:00",
+  "totalJobs": 95,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -616,7 +616,7 @@
     {
       "id": "anth-5229345008",
       "company": "Anthropic",
-      "position": "Software Engineer, Claude Design",
+      "position": "Staff Software Engineer, Claude Design",
       "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
@@ -730,28 +730,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-sprypoint-devops-engineer-iii-transformation-focus",
-      "company": "Sprypoint",
-      "position": "DevOps Engineer III - Transformation Focus",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Prince Edward Island/HQ / Halifax, Nova Scotia / Newfoundland & Labrador / Nova Scotia / Ontario The Company 2025 Deloitte Technology Fast 50 Canada Recipient & Fast 500 North America Recipient SpryPoint is modernizing how utilities serve their communities. As a high-growth software...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/sprypoint-devops-engineer-iii-transformation-focus",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/sprypoint-devops-engineer-iii-transformation-focus",
-      "postedAt": "2026-05-16T20:32:11+00:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "PostgreSQL",
-        "AWS",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5218395008",
@@ -1911,11 +1889,11 @@
     {
       "id": "anth-5125387008",
       "company": "Anthropic",
-      "position": "Analytics Data Engineering Manager, Product",
+      "position": "Data Engineering Manager, Product",
       "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
       "salary": "",
-      "description": "As an Analytics Data Engineering Manager focused on Product, you will build and lead the analytics engineering team responsible for creating the data foundations that enable data-driven decision making across Anthropic’s Product organization. You will oversee the development of scalable data...",
+      "description": "As a Data Engineering Manager focused on Product, you will build and lead the analytics engineering team responsible for creating the data foundations that enable data-driven decision making across Anthropic’s Product organization. You will oversee the development of scalable data solutions for...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
