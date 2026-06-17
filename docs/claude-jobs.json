@@ -1,12 +1,48 @@
 {
-  "lastUpdated": "2026-06-16T04:34:56.377196+00:00",
-  "totalJobs": 95,
+  "lastUpdated": "2026-06-17T04:35:25.306836+00:00",
+  "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-senior-product-manager-distru-1133455",
+      "company": "Distru",
+      "position": "Senior Product Manager",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Powering Trade For The Emerging Cannabis Industry Distru is the #1 ERP in the Cannabis Industry with $3B in annual sales processed through our platform! We are a fully remote and global team building a software platform to streamline the supply chain for the cannabis industry. Most of the top...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-product-manager-distru-1133455",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-product-manager-distru-1133455",
+      "postedAt": "2026-06-16T00:00:04+00:00",
+      "tags": [
+        "Rust",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-junior-business-amp-data-analyst-upgrade-inc-1133488",
+      "company": "Upgrade, Inc.",
+      "position": "Junior Business &amp; Data Analyst",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Upgrade helps customers move in the right direction with affordable and responsible financial products. Since 2017, we’ve helped over 7.5 million customers access over $42 billion in consumer credit. With a relentless focus on improving our customers' financial well-being, we build products that...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-junior-business-amp-data-analyst-upgrade-inc-1133488",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-junior-business-amp-data-analyst-upgrade-inc-1133488",
+      "postedAt": "2026-06-15T22:43:02+00:00",
+      "tags": [
+        "Go"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5255912008",
       "company": "Anthropic",
