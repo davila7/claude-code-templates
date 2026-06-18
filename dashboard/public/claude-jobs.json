@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-17T04:35:25.306836+00:00",
+  "lastUpdated": "2026-06-18T04:38:10.218315+00:00",
   "totalJobs": 97,
   "sources": [
     "Anthropic",
@@ -8,6 +8,21 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-",
+      "company": "æ ªå¼ä¼ç¤¾BALLAS",
+      "position": "çç£æ¨é²_å»ºè¨­æ¥­åè¨­è¨",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "ãæ½å·¥ç®¡ççµé¨è æ­è¿ãä¸ã¤ã®ç¾å ´ããã1000ç¾å ´ã§ä½¿ããä»çµã¿ãã¤ãããçç£æ¨é²ã¡ã³ãã¼ Description # æ½å·¥ç®¡ççµé¨è ã¸ã > ããããããããã®ã¥ããã«é¢ããç¶ããããã§ããç¾å...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/",
+      "postedAt": "2026-06-16T07:28:59+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-senior-product-manager-distru-1133455",
       "company": "Distru",
@@ -1829,27 +1844,6 @@
         "AWS",
         "Claude Code",
         "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5146999008",
-      "company": "Anthropic",
-      "position": "Head of International Applied AI Architecture, Partnerships",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "As the Manager of the International Partnerships, Applied AI, Solutions Architect team at Anthropic, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) through our Global and Regional System Integrators...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146999008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5146999008",
-      "postedAt": "2026-03-10T10:07:49-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "GCP",
-        "Claude Code",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
