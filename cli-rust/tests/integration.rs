@@ -81,7 +81,16 @@ fn installs_mcp_with_two_space_json_and_no_description() {
     let mcp = dir.path().join(".mcp.json");
     let text = std::fs::read_to_string(&mcp).unwrap();
     assert!(text.contains("\"mcpServers\""));
-    assert!(text.contains("  "), "expected 2-space indentation");
+    // A pretty-printed 2-space top-level key looks like `\n  "key"`.
+    assert!(
+        text.contains("\n  \""),
+        "expected a line indented with exactly two spaces"
+    );
+    // And NOT 4-space indentation at the top level.
+    assert!(
+        !text.contains("\n    \"mcpServers\""),
+        "did not expect 4-space indentation"
+    );
     assert!(text.ends_with('\n'), "expected trailing newline");
     // description is stripped from each server before merge.
     let v: serde_json::Value = serde_json::from_str(&text).unwrap();

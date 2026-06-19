@@ -4,16 +4,41 @@
 // Usage:
 //   node build-packages.mjs <version> <dist-dir>
 //
-// <dist-dir> must contain one binary per target named `cct-<target>` (or
-// `cct-<target>.exe` for Windows), e.g. `cct-aarch64-apple-darwin`. Produces
+// <dist-dir> may contain EITHER the release tarballs `cct-<target>.tgz` (what
+// build-rust-cli.yml uploads — each holds a single `cct`/`cct.exe`) OR the
+// already-unpacked binaries `cct-<target>` / `cct-<target>.exe`. Produces
 // `cli-rust/npm/platforms/<pkg>/` directories ready to `npm publish`, and
 // rewrites the version in the main wrapper package + its optionalDependencies.
 
-import { mkdirSync, copyFileSync, writeFileSync, readFileSync, chmodSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  copyFileSync,
+  writeFileSync,
+  readFileSync,
+  chmodSync,
+  existsSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Resolve the source binary for a target: prefer the release tarball
+// (`cct-<target>.tgz`), extracting it to a temp dir; otherwise fall back to an
+// unpacked `cct-<target>` binary in the dist dir.
+function resolveSourceBinary(distDir, rustTarget, binName) {
+  const tgz = join(distDir, `cct-${rustTarget}.tgz`);
+  if (existsSync(tgz)) {
+    const tmp = mkdtempSync(join(tmpdir(), 'cct-pkg-'));
+    execFileSync('tar', ['-xzf', tgz, '-C', tmp]);
+    return join(tmp, binName);
+  }
+  const isWin = binName.endsWith('.exe');
+  return join(distDir, `cct-${rustTarget}${isWin ? '.exe' : ''}`);
+}
 
 // Rust target triple -> { pkg, os, cpu, rustTarget }
 const TARGETS = [
@@ -36,7 +61,7 @@ const platformsRoot = join(__dirname, 'platforms');
 for (const t of TARGETS) {
   const isWin = t.os === 'win32';
   const binName = isWin ? 'cct.exe' : 'cct';
-  const srcBin = join(distDir, `cct-${t.rustTarget}${isWin ? '.exe' : ''}`);
+  const srcBin = resolveSourceBinary(distDir, t.rustTarget, binName);
   const pkgDir = join(platformsRoot, t.pkg.replace('/', '__'));
   const binDir = join(pkgDir, 'bin');
   mkdirSync(binDir, { recursive: true });

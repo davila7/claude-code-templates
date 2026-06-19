@@ -17,7 +17,20 @@ pub fn delegate_to_node(forwarded_args: &[String]) -> Result<i32> {
     let status = command
         .status()
         .map_err(|e| anyhow!("failed to launch Node CLI: {e}. Is Node.js installed?"))?;
-    Ok(status.code().unwrap_or(1))
+    // Preserve the child's termination semantics: a normal exit code, or for a
+    // signal-killed child on Unix, the shell convention 128 + signal.
+    let code = status.code().unwrap_or_else(|| {
+        #[cfg(unix)]
+        {
+            use std::os::unix::process::ExitStatusExt;
+            status.signal().map(|s| 128 + s).unwrap_or(1)
+        }
+        #[cfg(not(unix))]
+        {
+            1
+        }
+    });
+    Ok(code)
 }
 
 fn build_command(forwarded_args: &[String]) -> Result<Command> {

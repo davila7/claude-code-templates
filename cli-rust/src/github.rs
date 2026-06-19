@@ -105,15 +105,23 @@ fn walk(
         };
 
         if item_type == "file" {
-            if let Some(download_url) = item.get("download_url").and_then(|v| v.as_str()) {
-                if let Some(content) = fetch_raw_optional(download_url) {
-                    let executable = name.ends_with(".py") || name.ends_with(".sh");
-                    out.push(DownloadedFile {
-                        target_rel_path: format!(".claude/skills/{skill_base_name}/{item_path}"),
-                        content,
-                        executable,
-                    });
-                }
+            match item.get("download_url").and_then(|v| v.as_str()) {
+                Some(download_url) => match fetch_raw_optional(download_url) {
+                    Some(content) => {
+                        let executable = name.ends_with(".py") || name.ends_with(".sh");
+                        out.push(DownloadedFile {
+                            target_rel_path: format!(
+                                ".claude/skills/{skill_base_name}/{item_path}"
+                            ),
+                            content,
+                            executable,
+                        });
+                    }
+                    // Surface the skipped file (mirrors Node's "Could not
+                    // download" log). SKILL.md absence is caught by the caller.
+                    None => eprintln!("⚠️  Could not download skill file: {item_path}"),
+                },
+                None => eprintln!("⚠️  Missing download_url for skill file: {item_path}"),
             }
         } else if item_type == "dir" {
             if let Some(dir_url) = item.get("url").and_then(|v| v.as_str()) {

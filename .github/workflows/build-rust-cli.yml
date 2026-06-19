@@ -14,6 +14,10 @@ on:
       - 'cli-rust-v*'
   workflow_dispatch:
 
+# Needed for softprops/action-gh-release to create/update the Release on tags.
+permissions:
+  contents: write
+
 defaults:
   run:
     working-directory: cli-rust
@@ -38,6 +42,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli-rust
+          key: ${{ matrix.target }}
 
       - name: Install cross-linker (aarch64 linux)
         if: matrix.target == 'aarch64-unknown-linux-gnu'

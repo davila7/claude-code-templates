@@ -62,6 +62,12 @@ fn run_install(cli: &Cli) -> i32 {
         yes: cli.yes,
     };
 
+    // --dry-run: report the planned installation and write nothing.
+    if cli.dry_run {
+        print_dry_run(&spec, &target_dir);
+        return 0;
+    }
+
     if let Err(e) = install::install_multiple(&spec, &target_dir) {
         eprintln!("{} {e}", "Error:".red());
         return 1;
@@ -70,16 +76,43 @@ fn run_install(cli: &Cli) -> i32 {
     // Post-install prompt execution (skipped in sandbox mode, like Node).
     if let Some(prompt) = &cli.prompt {
         if cli.sandbox.is_none() {
-            run_prompt(prompt, &target_dir);
+            return run_prompt(prompt, &target_dir);
         }
     }
 
     0
 }
 
+/// Print what `run_install` would do without touching the filesystem.
+fn print_dry_run(spec: &MultiSpec, target_dir: &std::path::Path) {
+    println!(
+        "{}",
+        "🔍 Dry run — the following would be installed (no files written):".blue()
+    );
+    println!("📁 Target: {}", target_dir.display());
+    let groups: [(&str, &Vec<String>); 6] = [
+        ("agent", &spec.agents),
+        ("command", &spec.commands),
+        ("mcp", &spec.mcps),
+        ("setting", &spec.settings),
+        ("hook", &spec.hooks),
+        ("skill", &spec.skills),
+    ];
+    for (label, items) in groups {
+        for item in items {
+            println!("  • {label}: {item}");
+        }
+    }
+    if spec.workflow_yaml.is_some() {
+        println!("  • workflow: .claude/workflows/<name>.yaml");
+    }
+}
+
 /// Run `claude -p "<prompt>"` in the target directory, inheriting stdio.
-/// Best-effort: prints a hint if the `claude` CLI is not installed.
-fn run_prompt(prompt: &str, target_dir: &std::path::Path) {
+/// Returns the exit code to propagate: a non-zero `claude` exit is surfaced so
+/// the overall run reflects the prompt failure; a missing `claude` binary is a
+/// soft warning (the install itself already succeeded) and returns 0.
+fn run_prompt(prompt: &str, target_dir: &std::path::Path) -> i32 {
     println!("{}", "🚀 Executing prompt in Claude Code...".blue());
     match Command::new("claude")
         .arg("-p")
@@ -87,13 +120,22 @@ fn run_prompt(prompt: &str, target_dir: &std::path::Path) {
         .current_dir(target_dir)
         .status()
     {
-        Ok(_) => {}
+        Ok(status) if status.success() => 0,
+        Ok(status) => {
+            let code = status.code().unwrap_or(1);
+            println!(
+                "{}",
+                format!("⚠️  Prompt execution failed (claude exited with {code}).").yellow()
+            );
+            code
+        }
         Err(_) => {
             println!(
                 "{}",
                 "⚠️  Could not run `claude`. Is the Claude Code CLI installed and on PATH?"
                     .yellow()
             );
+            0
         }
     }
 }

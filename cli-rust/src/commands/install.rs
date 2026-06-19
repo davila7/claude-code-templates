@@ -176,7 +176,23 @@ pub fn install_mcp(name: &str, target_dir: &Path, opts: &InstallOptions) -> bool
 
     let target_file = target_dir.join(".mcp.json");
     let existing = if target_file.exists() {
-        fs_ext::read_json(&target_file).unwrap_or_else(|_| Value::Object(Default::default()))
+        // Fail safe on a corrupt/unreadable existing file rather than silently
+        // overwriting it with just the new server (matches Node, which throws).
+        match fs_ext::read_json(&target_file) {
+            Ok(v) => v,
+            Err(e) => {
+                println!(
+                    "{}",
+                    format!(
+                        "❌ Error installing MCP: cannot read existing {}: {e}",
+                        target_file.display()
+                    )
+                    .red()
+                );
+                track_fail("mcp", name, "read_error", Some(e.to_string()), start, opts);
+                return false;
+            }
+        }
     } else {
         Value::Object(Default::default())
     };
@@ -282,7 +298,22 @@ pub fn install_setting(name: &str, target_dir: &Path, opts: &InstallOptions) -> 
         let target_file = &resolved.settings_file;
 
         let existing = if target_file.exists() {
-            fs_ext::read_json(target_file).unwrap_or_else(|_| Value::Object(Default::default()))
+            // Skip this location on a corrupt/unreadable file instead of
+            // overwriting it (fail safe).
+            match fs_ext::read_json(target_file) {
+                Ok(v) => v,
+                Err(e) => {
+                    println!(
+                        "{}",
+                        format!(
+                            "❌ Skipping {}: cannot read existing config: {e}",
+                            target_file.display()
+                        )
+                        .red()
+                    );
+                    continue;
+                }
+            }
         } else {
             Value::Object(Default::default())
         };
@@ -407,7 +438,22 @@ pub fn install_hook(name: &str, target_dir: &Path, opts: &InstallOptions) -> usi
         let target_file = &resolved.settings_file;
 
         let existing = if target_file.exists() {
-            fs_ext::read_json(target_file).unwrap_or_else(|_| Value::Object(Default::default()))
+            // Skip this location on a corrupt/unreadable file instead of
+            // overwriting it (fail safe).
+            match fs_ext::read_json(target_file) {
+                Ok(v) => v,
+                Err(e) => {
+                    println!(
+                        "{}",
+                        format!(
+                            "❌ Skipping {}: cannot read existing config: {e}",
+                            target_file.display()
+                        )
+                        .red()
+                    );
+                    continue;
+                }
+            }
         } else {
             Value::Object(Default::default())
         };

@@ -16,6 +16,15 @@
   "engines": {
     "node": ">=14.0.0"
   },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/davila7/claude-code-templates.git"

@@ -9,9 +9,11 @@ use crate::constants;
 use serde_json::{json, Value};
 use std::time::Duration;
 
-/// Whether tracking is enabled (respects the same env opt-outs as Node).
+/// Whether tracking is enabled. Honors both `true` and `1` as opt-out values
+/// (the README documents `=1`); Node only checks `=== 'true'`, so this is
+/// intentionally more privacy-protective.
 pub fn enabled() -> bool {
-    let off = |k: &str| std::env::var(k).map(|v| v == "true").unwrap_or(false);
+    let off = |k: &str| matches!(std::env::var(k).ok().as_deref(), Some("true") | Some("1"));
     !(off("CCT_NO_TRACKING") || off("CCT_NO_ANALYTICS") || off("CI"))
 }
 
@@ -175,6 +177,8 @@ mod tests {
     fn enabled_respects_opt_out_env() {
         // Serialized via a single test to avoid env races across threads.
         std::env::set_var("CCT_NO_TRACKING", "true");
+        assert!(!enabled());
+        std::env::set_var("CCT_NO_TRACKING", "1"); // documented `=1` value
         assert!(!enabled());
         std::env::remove_var("CCT_NO_TRACKING");
         std::env::set_var("CI", "true");
