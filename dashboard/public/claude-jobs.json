@@ -1,62 +1,58 @@
 {
-  "lastUpdated": "2026-06-18T04:38:10.218315+00:00",
+  "lastUpdated": "2026-06-19T04:36:12.908115+00:00",
   "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
     {
-      "id": "rok-",
-      "company": "æ ªå¼ä¼ç¤¾BALLAS",
-      "position": "çç£æ¨é²_å»ºè¨­æ¥­åè¨­è¨",
-      "location": "Remote",
-      "remote": true,
+      "id": "anth-5271428008",
+      "company": "Anthropic",
+      "position": "Staff Software Engineer, Developer Productivity (CI/CD) - Claude Code",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
       "salary": "",
-      "description": "ãæ½å·¥ç®¡ççµé¨è æ­è¿ãä¸ã¤ã®ç¾å ´ããã1000ç¾å ´ã§ä½¿ããä»çµã¿ãã¤ãããçç£æ¨é²ã¡ã³ãã¼ Description # æ½å·¥ç®¡ççµé¨è ã¸ã > ããããããããã®ã¥ããã«é¢ããç¶ããããã§ããç¾å...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/",
-      "postedAt": "2026-06-16T07:28:59+00:00",
-      "tags": [],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-senior-product-manager-distru-1133455",
-      "company": "Distru",
-      "position": "Senior Product Manager",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Powering Trade For The Emerging Cannabis Industry Distru is the #1 ERP in the Cannabis Industry with $3B in annual sales processed through our platform! We are a fully remote and global team building a software platform to streamline the supply chain for the cannabis industry. Most of the top...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-product-manager-distru-1133455",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-product-manager-distru-1133455",
-      "postedAt": "2026-06-16T00:00:04+00:00",
+      "description": "Every engineer at Anthropic depends on the path from pull request to production. The Developer Productivity team owns that path end to end — review automation, CI, the merge queue, the deploy pipeline, and the policy that gates each step. These pieces exist today; the opportunity is to integrate...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271428008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271428008",
+      "postedAt": "2026-06-18T23:28:56-04:00",
       "tags": [
+        "Python",
         "Rust",
-        "Claude Code"
+        "Go",
+        "AWS",
+        "Kubernetes",
+        "Claude Code",
+        "Anthropic"
       ],
-      "companyIcon": ""
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "rok-remote-junior-business-amp-data-analyst-upgrade-inc-1133488",
-      "company": "Upgrade, Inc.",
-      "position": "Junior Business &amp; Data Analyst",
-      "location": "Remote",
-      "remote": true,
+      "id": "anth-5271426008",
+      "company": "Anthropic",
+      "position": "Staff Software Engineer, Developer Productivity (Dev Environments) - Claude Code",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
       "salary": "",
-      "description": "Upgrade helps customers move in the right direction with affordable and responsible financial products. Since 2017, we’ve helped over 7.5 million customers access over $42 billion in consumer credit. With a relentless focus on improving our customers' financial well-being, we build products that...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-junior-business-amp-data-analyst-upgrade-inc-1133488",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-junior-business-amp-data-analyst-upgrade-inc-1133488",
-      "postedAt": "2026-06-15T22:43:02+00:00",
+      "description": "Every minute an Anthropic engineer or researcher spends waiting on a container to boot, a dependency to resolve, or CI to surface a failure that could have been caught locally is a minute not spent on frontier AI safety. The Developer Productivity team owns the inner development loop for the people...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
+      "postedAt": "2026-06-18T23:28:54-04:00",
       "tags": [
-        "Go"
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Claude Code",
+        "Anthropic"
       ],
-      "companyIcon": ""
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5255912008",
@@ -333,6 +329,32 @@
         "Cursor",
         "Copilot",
         "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-lemon-io-senior-ai-engineer-architect",
+      "company": "Lemon.io",
+      "position": "Senior AI Engineer / Architect",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: New York, NY URL: https://lemon.io Are you a talented Senior AI Engineer/Architect looking for a remote job that lets you show your skills and get decent compensation? Look no further than Lemon.io — the marketplace that connects you with hand-picked startups in the US and Europe....",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-architect",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-architect",
+      "postedAt": "2026-06-02T16:36:48+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Rust",
+        "Go",
+        "Node.js",
+        "Azure",
+        "React Native"
       ],
       "companyIcon": ""
     },
