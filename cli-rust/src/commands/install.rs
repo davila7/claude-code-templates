@@ -228,6 +228,7 @@ pub fn install_mcp(name: &str, target_dir: &Path, opts: &InstallOptions) -> bool
 /// Returns the number of locations successfully installed into.
 pub fn install_setting(name: &str, target_dir: &Path, opts: &InstallOptions) -> usize {
     println!("{}", format!("⚙️  Installing setting: {name}").blue());
+    let component_type = "setting";
     let start = Instant::now();
     let url = format!("{}/settings/{name}.json", raw_components_base());
 
@@ -298,20 +299,30 @@ pub fn install_setting(name: &str, target_dir: &Path, opts: &InstallOptions) -> 
         let target_file = &resolved.settings_file;
 
         let existing = if target_file.exists() {
-            // Skip this location on a corrupt/unreadable file instead of
-            // overwriting it (fail safe).
+            // Abort the whole install on a corrupt/unreadable existing file
+            // (matches Node: readJson throws out of the loop and fails the
+            // component) rather than skipping the location and possibly
+            // reporting overall success.
             match fs_ext::read_json(target_file) {
                 Ok(v) => v,
                 Err(e) => {
                     println!(
                         "{}",
                         format!(
-                            "❌ Skipping {}: cannot read existing config: {e}",
+                            "❌ Error installing {component_type}: cannot read existing {}: {e}",
                             target_file.display()
                         )
                         .red()
                     );
-                    continue;
+                    track_fail(
+                        component_type,
+                        name,
+                        "read_error",
+                        Some(e.to_string()),
+                        start,
+                        opts,
+                    );
+                    return 0;
                 }
             }
         } else {
@@ -384,6 +395,7 @@ fn has_setting_conflicts(existing: &Value, incoming: &Value) -> bool {
 /// Returns the number of locations successfully installed into.
 pub fn install_hook(name: &str, target_dir: &Path, opts: &InstallOptions) -> usize {
     println!("{}", format!("🪝 Installing hook: {name}").blue());
+    let component_type = "hook";
     let start = Instant::now();
     let url = format!("{}/hooks/{name}.json", raw_components_base());
 
@@ -438,20 +450,30 @@ pub fn install_hook(name: &str, target_dir: &Path, opts: &InstallOptions) -> usi
         let target_file = &resolved.settings_file;
 
         let existing = if target_file.exists() {
-            // Skip this location on a corrupt/unreadable file instead of
-            // overwriting it (fail safe).
+            // Abort the whole install on a corrupt/unreadable existing file
+            // (matches Node: readJson throws out of the loop and fails the
+            // component) rather than skipping the location and possibly
+            // reporting overall success.
             match fs_ext::read_json(target_file) {
                 Ok(v) => v,
                 Err(e) => {
                     println!(
                         "{}",
                         format!(
-                            "❌ Skipping {}: cannot read existing config: {e}",
+                            "❌ Error installing {component_type}: cannot read existing {}: {e}",
                             target_file.display()
                         )
                         .red()
                     );
-                    continue;
+                    track_fail(
+                        component_type,
+                        name,
+                        "read_error",
+                        Some(e.to_string()),
+                        start,
+                        opts,
+                    );
+                    return 0;
                 }
             }
         } else {
