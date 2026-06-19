@@ -1,0 +1,6 @@
+/target
+/dist/cct
+/dist/*.tgz
+/npm/platforms
+/npm/**/node_modules
+# Cargo.lock IS committed (this is a binary crate) — do not ignore it.
