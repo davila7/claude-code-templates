@@ -10,19 +10,34 @@ interactive setup) is **delegated** to the existing Node CLI for now — see
 
 ## Install
 
+Released as a standalone binary from GitHub Releases (tagged `cli-rust-v*`),
+**separate from** the existing `claude-code-templates` npm package so nothing
+about the current `npx` experience changes.
+
+**Available now (v0.1.0 preview):**
+
 | Channel | Command |
 |---|---|
-| npm (keeps `npx`) | `npx claude-code-templates@latest --agent <name>` |
-| npm global | `npm install -g claude-code-templates` |
-| Homebrew | `brew install davila7/tap/cct` |
-| cargo-binstall | `cargo binstall claude-code-templates` |
 | Shell script | `curl -fsSL https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-rust/dist/install.sh \| sh` |
+| cargo-binstall | `cargo binstall --git https://github.com/davila7/claude-code-templates claude-code-templates` |
 | From source | `cargo install --path cli-rust` |
 
-The npm package ships a tiny JS shim (`npm/cct/bin/cct.js`) that execs the
-prebuilt binary for the current platform, pulled in as an `optionalDependency`
-(`@davila7/cct-<os>-<arch>`). Users keep running `npx claude-code-templates`
-unchanged.
+> The `--git` form reads the prebuilt-binary metadata straight from this repo,
+> so no crates.io publish is required. (A plain `cargo binstall
+> claude-code-templates` / `cargo install claude-code-templates` would need the
+> crate published to crates.io — optional, later.)
+
+**Planned (not wired up yet):**
+
+| Channel | Command |
+|---|---|
+| Homebrew tap | `brew install davila7/tap/cct` |
+| npm (new name) | `npx @davila7/cct` |
+
+The npm path (when enabled) ships a tiny JS shim (`npm/cct/bin/cct.js`) that
+execs the prebuilt binary for the current platform, pulled in as an
+`optionalDependency` (`@davila7/cct-<os>-<arch>`). The existing
+`claude-code-templates` npm package stays on Node until the binary is proven.
 
 ## Usage
 
@@ -92,8 +107,24 @@ diff -r "$RDIR" "$NDIR" && echo "IDENTICAL"
 
 ## Release
 
-1. Tag `cli-rust-v<version>` → `.github/workflows/build-rust-cli.yml` builds all
-   5 targets and uploads `cct-<target>.tgz` to the GitHub Release.
-2. Assemble npm packages: `node npm/build-packages.mjs <version> <dist-dir>`.
-3. Publish each `npm/platforms/*` package, then `npm/cct`.
-4. Update the Homebrew formula (`dist/homebrew/cct.rb`) sha256/version.
+### v0.1.0 preview (GitHub Releases + curl + cargo-binstall)
+
+1. Merge this branch to `main` (so the workflow and `install.sh` exist there).
+2. Tag and push: `git tag cli-rust-v0.1.0 && git push origin cli-rust-v0.1.0`.
+   `.github/workflows/build-rust-cli.yml` builds all 5 targets and uploads
+   `cct-<target>.tgz` to the GitHub Release (`contents: write` is granted).
+3. Verify the channels:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-rust/dist/install.sh | sh
+   cargo binstall --git https://github.com/davila7/claude-code-templates claude-code-templates
+   ```
+   The tag must keep the `cli-rust-v` prefix — both the binstall metadata
+   (`Cargo.toml`) and `install.sh`'s tag filter depend on it.
+
+### Later channels (when enabled)
+
+- **Homebrew tap**: create `davila7/homebrew-tap`, drop in `dist/homebrew/cct.rb`,
+  fill the `sha256` per asset (`shasum -a 256 cct-<target>.tgz`).
+- **npm (new name)**: `node npm/build-packages.mjs <version> <dist-dir>` (accepts
+  the release `.tgz`s), then publish each `npm/platforms/*` and `npm/cct` under a
+  new name (e.g. `@davila7/cct`) — leaves `claude-code-templates` untouched.

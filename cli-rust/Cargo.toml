@@ -40,7 +40,9 @@ strip = true
 panic = "abort"
 
 # cargo-binstall metadata: resolve prebuilt binaries from GitHub Releases.
+# Tags are `cli-rust-v<version>` (kept separate from the Node CLI's `vX.Y.Z`
+# tags), and each release asset is `cct-<target>.tgz` containing `cct`.
 [package.metadata.binstall]
-pkg-url = "{ repo }/releases/download/v{ version }/cct-{ target }{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/cli-rust-v{ version }/cct-{ target }{ archive-suffix }"
 bin-dir = "cct{ binary-ext }"
 pkg-fmt = "tgz"
