@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-19T04:36:12.908115+00:00",
-  "totalJobs": 97,
+  "lastUpdated": "2026-06-20T04:31:29.067920+00:00",
+  "totalJobs": 95,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -760,30 +760,6 @@
       "companyIcon": ""
     },
     {
-      "id": "wwr-shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
-      "company": "ShiftForce LLC",
-      "position": "Full-Stack Developer — .NET + React + Azure — Remote (US)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Kansas City URL: https://www.shiftforce.com **About us** ShiftForce is scheduling and operations software for restaurants. We've been around a while, we're profitable, and we ship real features to real users every week. Small team — there are no layers of management between you and...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
-      "postedAt": "2026-05-20T14:08:40+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "PostgreSQL",
-        "Azure",
-        "Cursor",
-        "Copilot",
-        "React Native"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5222289008",
       "company": "Anthropic",
       "position": "Manager of Solutions Architecture, Applied AI (Enterprise Tech)",
@@ -798,27 +774,6 @@
       "tags": [
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5218395008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Systems - Claude Code",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "We're looking for a systems-oriented Software Engineer to push the performance and reliability of Claude Code and the JavaScript runtime that powers it. Claude Code is our terminal-first, agentic coding tool, and a huge part of what makes it fast—and what lets us ship quickly—is Bun. This role sits...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5218395008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5218395008",
-      "postedAt": "2026-05-13T12:13:33-04:00",
-      "tags": [
-        "JavaScript",
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
