@@ -143,7 +143,7 @@ async function createClaudeConfig(options = {}) {
   }
   
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -1653,6 +1653,126 @@ async function installIndividualSkill(skillName, targetDir, options) {
 }
 
 /**
+ * Parse the `components:` frontmatter field of a loop into {type, path} refs.
+ * The field is a flat bracketed list of `type:path` tokens, e.g.
+ *   components: [agent:documentation/docs-architect, skill:git/create-pr]
+ */
+function parseLoopReferencedComponents(loopContent) {
+  const refs = [];
+  if (!loopContent || !loopContent.startsWith('---')) return refs;
+  const fmEnd = loopContent.indexOf('---', 3);
+  if (fmEnd === -1) return refs;
+  const frontmatter = loopContent.slice(3, fmEnd);
+  for (const line of frontmatter.split('\n')) {
+    if (!line.startsWith('components:')) continue;
+    let value = line.split('components:', 1).length > 1
+      ? line.slice(line.indexOf(':') + 1).trim()
+      : '';
+    value = value.replace(/^\[|\]$/g, '');
+    for (const token of value.split(',')) {
+      const trimmed = token.trim().replace(/^["']|["']$/g, '');
+      if (!trimmed) continue;
+      const sep = trimmed.indexOf(':');
+      if (sep === -1) continue;
+      const type = trimmed.slice(0, sep).trim();
+      const compPath = trimmed.slice(sep + 1).trim().replace(/\.(md|json)$/, '');
+      if (type && compPath) refs.push({ type, path: compPath });
+    }
+    break;
+  }
+  return refs;
+}
+
+/**
+ * Install a loop component (markdown) into .claude/loops/, then auto-install
+ * every component it references (agents, skills, hooks, commands, settings, mcps).
+ */
+async function installIndividualLoop(loopName, targetDir, options = {}) {
+  console.log(chalk.blue(`🔁 Installing loop: ${loopName}`));
+  const startTime = Date.now();
+
+  try {
+    const githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/loops/${loopName}.md`;
+    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+
+    const response = await fetch(githubUrl);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(chalk.red(`❌ Loop "${loopName}" not found`));
+        trackingService.trackInstallationOutcome('loop', loopName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+        return false;
+      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const loopContent = await response.text();
+
+    // Write the loop file to .claude/loops/ (flat, like agents)
+    const loopsDir = path.join(targetDir, '.claude', 'loops');
+    await fs.ensureDir(loopsDir);
+    const fileName = loopName.includes('/') ? loopName.split('/').pop() : loopName;
+    const targetFile = path.join(loopsDir, `${fileName}.md`);
+    await fs.writeFile(targetFile, loopContent, 'utf8');
+
+    if (!options.silent) {
+      console.log(chalk.green(`✅ Loop "${loopName}" installed successfully!`));
+      console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, targetFile)}`));
+    }
+
+    trackingService.trackDownload('loop', loopName, {
+      installation_type: 'individual_loop',
+      target_directory: path.relative(process.cwd(), targetDir),
+      source: 'github_main'
+    });
+
+    // Auto-install referenced components
+    const refs = parseLoopReferencedComponents(loopContent);
+    if (refs.length > 0) {
+      console.log(chalk.blue(`\n🧩 Installing ${refs.length} referenced component(s) for this loop...`));
+      const refOptions = { ...options, silent: true };
+      for (const ref of refs) {
+        try {
+          switch (ref.type) {
+            case 'agent':
+              await installIndividualAgent(ref.path, targetDir, refOptions);
+              break;
+            case 'command':
+              await installIndividualCommand(ref.path, targetDir, refOptions);
+              break;
+            case 'skill':
+              await installIndividualSkill(ref.path, targetDir, refOptions);
+              break;
+            case 'hook':
+              await installIndividualHook(ref.path, targetDir, refOptions);
+              break;
+            case 'setting':
+              await installIndividualSetting(ref.path, targetDir, refOptions);
+              break;
+            case 'mcp':
+              await installIndividualMCP(ref.path, targetDir, refOptions);
+              break;
+            default:
+              console.log(chalk.yellow(`   ⚠️  Unknown referenced component type: ${ref.type}:${ref.path}`));
+              continue;
+          }
+          console.log(chalk.green(`   ✓ ${ref.type}: ${ref.path}`));
+        } catch (refError) {
+          console.log(chalk.yellow(`   ⚠️  Could not install ${ref.type}:${ref.path} (${refError.message})`));
+        }
+      }
+    }
+
+    trackingService.trackInstallationOutcome('loop', loopName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+    return true;
+
+  } catch (error) {
+    console.log(chalk.red(`❌ Error installing loop: ${error.message}`));
+    trackingService.trackInstallationOutcome('loop', loopName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+}
+
+/**
  * Install multiple components with optional YAML workflow
  */
 async function installMultipleComponents(options, targetDir) {
@@ -1666,7 +1786,8 @@ async function installMultipleComponents(options, targetDir) {
       mcps: [],
       settings: [],
       hooks: [],
-      skills: []
+      skills: [],
+      loops: []
     };
     
     // Parse comma-separated values for each component type
@@ -1700,7 +1821,12 @@ async function installMultipleComponents(options, targetDir) {
       components.skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length;
+    if (options.loop) {
+      const loopsInput = Array.isArray(options.loop) ? options.loop.join(',') : options.loop;
+      components.loops = loopsInput.split(',').map(l => l.trim()).filter(l => l);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
@@ -1714,13 +1840,15 @@ async function installMultipleComponents(options, targetDir) {
     console.log(chalk.gray(`   Settings: ${components.settings.length}`));
     console.log(chalk.gray(`   Hooks: ${components.hooks.length}`));
     console.log(chalk.gray(`   Skills: ${components.skills.length}`));
-    
+    console.log(chalk.gray(`   Loops: ${components.loops.length}`));
+
     // Counter for successfully installed components
     let successfullyInstalled = 0;
     
     // Ask for installation locations once for configuration components (if any exist and not in silent mode)
     let sharedInstallLocations = ['local']; // default
-    const hasSettingsOrHooks = components.settings.length > 0 || components.hooks.length > 0;
+    // Loops can pull in settings/hooks via their referenced components, so prompt for a location when loops are present too.
+    const hasSettingsOrHooks = components.settings.length > 0 || components.hooks.length > 0 || components.loops.length > 0;
     
     if (hasSettingsOrHooks && !options.yes) {
       console.log(chalk.blue('\n📍 Choose installation locations for configuration components:'));
@@ -1810,6 +1938,18 @@ async function installMultipleComponents(options, targetDir) {
       console.log(chalk.gray(`   Installing skill: ${skill}`));
       const skillSuccess = await installIndividualSkill(skill, targetDir, { ...options, silent: true, batchId });
       if (skillSuccess) successfullyInstalled++;
+    }
+
+    // Install loops (auto-installs their referenced components)
+    for (const loop of components.loops) {
+      console.log(chalk.gray(`   Installing loop: ${loop}`));
+      const loopSuccess = await installIndividualLoop(loop, targetDir, {
+        ...options,
+        silent: true,
+        sharedInstallLocations: sharedInstallLocations,
+        batchId
+      });
+      if (loopSuccess) successfullyInstalled++;
     }
 
     // Handle YAML workflow if provided

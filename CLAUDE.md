@@ -58,6 +58,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **MCPs** (55+) - External service integrations
 **Settings** (60+) - Claude Code configuration files
 **Hooks** (39+) - Automation triggers
+**Loops** (10+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
 **Templates** (14+) - Complete project configurations
 
 ### Installation Patterns
@@ -67,6 +68,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 npx claude-code-templates@latest --agent frontend-developer
 npx claude-code-templates@latest --command setup-testing
 npx claude-code-templates@latest --hook automation/simple-notifications
+npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the loop's referenced components
 
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode

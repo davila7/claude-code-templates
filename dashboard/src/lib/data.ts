@@ -155,6 +155,7 @@ export function getComponentCounts(data: ComponentsData): Record<ComponentType, 
     settings: data.settings?.length ?? 0,
     hooks: data.hooks?.length ?? 0,
     mcps: data.mcps?.length ?? 0,
+    loops: data.loops?.length ?? 0,
     templates: data.templates?.length ?? 0,
   };
 }
@@ -167,6 +168,7 @@ export function getInstallCommand(component: Component): string {
     setting: '--setting',
     hook: '--hook',
     skill: '--skill',
+    loop: '--loop',
     template: '--template',
   };
   const flag = typeFlag[component.type] ?? '--agent';

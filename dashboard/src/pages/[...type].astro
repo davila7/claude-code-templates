@@ -40,6 +40,11 @@ const TYPE_META: Record<string, { title: string; description: string; tagline: s
     description: '55+ Model Context Protocol integrations for Claude Code. Connect to databases, APIs, and external services. Install with a single npx command.',
     tagline: 'Connect to databases, APIs, and external services'
   },
+  loops: {
+    title: 'Claude Code Loops: Autonomous Agentic Workflows (Loop Engineering)',
+    description: 'Ready-to-run agentic loops for Claude Code. Each loop defines a goal, an interval, and a stop condition, and composes agents, skills and hooks. Install with a single npx command.',
+    tagline: 'Autonomous agentic workflows that run until the job is done'
+  },
 };
 
 const { type } = Astro.params;
@@ -55,6 +60,7 @@ export function getStaticPaths() {
     { params: { type: 'settings' } },
     { params: { type: 'hooks' } },
     { params: { type: 'mcps' } },
+    { params: { type: 'loops' } },
   ];
 }
 ---
