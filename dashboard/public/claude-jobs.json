@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-20T04:31:29.067920+00:00",
+  "lastUpdated": "2026-06-21T04:39:33.476167+00:00",
   "totalJobs": 95,
   "sources": [
     "Anthropic",
@@ -251,6 +251,32 @@
         "Python",
         "Supabase",
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-pos-full-stack-javascript-engineer-remote-latam-or-europe",
+      "company": "POS+",
+      "position": "Full-Stack JavaScript Engineer (Remote - LATAM or Europe)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote / USA URL: https://www.posplus.org/ Summary Senior Full-Stack JavaScript Engineer (Remote - LATAM or Europe) Company: POS+ (posplus.org) Location: Fully Remote (Targeting LATAM or Europe time zones for team overlap) Type: Full-Time Independent Contractor Tech Stack: Node.js,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/pos-full-stack-javascript-engineer-remote-latam-or-europe",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/pos-full-stack-javascript-engineer-remote-latam-or-europe",
+      "postedAt": "2026-06-03T17:06:51+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Copilot",
+        "MongoDB"
       ],
       "companyIcon": ""
     },
@@ -732,32 +758,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
-      "company": "Luxury Presence",
-      "position": "Staff Software Engineer - AI Website Builder - US (Remote)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$200,000 - $250,000",
-      "description": "Headquarters: United States URL: http://luxurypresence.com Luxury Presence is building the AI growth platform for real estate. Backed by Bessemer Venture Partners and other top investors, we're a Series C company on track to hit $100M in annual recurring revenue in the next six months. More than...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
-      "postedAt": "2026-05-21T20:03:04+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Kubernetes",
-        "Claude Code"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5222289008",
