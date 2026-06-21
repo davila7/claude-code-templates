@@ -58,7 +58,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **MCPs** (55+) - External service integrations
 **Settings** (60+) - Claude Code configuration files
 **Hooks** (39+) - Automation triggers
-**Loops** (10+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
+**Loops** (18+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
 **Templates** (14+) - Complete project configurations
 
 ### Installation Patterns
