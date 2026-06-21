@@ -185,7 +185,7 @@ To use Xquik as an MCP server in Claude Code, add to `.mcp.json` in the project 
 
 > **Security note:** The `${XQUIK_API_KEY}` syntax requires your MCP client to support environment variable substitution. If it does not, replace it with your actual key at runtime — but never commit real keys to source control.
 
-The MCP server exposes 22 tools covering all API capabilities.
+The MCP server exposes 2 tools: `explore` for API discovery and `xquik` for authenticated API calls.
 
 ## Common Workflow Patterns
 
