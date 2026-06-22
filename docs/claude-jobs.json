@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-19T04:36:12.908115+00:00",
-  "totalJobs": 97,
+  "lastUpdated": "2026-06-21T04:39:33.476167+00:00",
+  "totalJobs": 95,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -251,6 +251,32 @@
         "Python",
         "Supabase",
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-pos-full-stack-javascript-engineer-remote-latam-or-europe",
+      "company": "POS+",
+      "position": "Full-Stack JavaScript Engineer (Remote - LATAM or Europe)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote / USA URL: https://www.posplus.org/ Summary Senior Full-Stack JavaScript Engineer (Remote - LATAM or Europe) Company: POS+ (posplus.org) Location: Fully Remote (Targeting LATAM or Europe time zones for team overlap) Type: Full-Time Independent Contractor Tech Stack: Node.js,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/pos-full-stack-javascript-engineer-remote-latam-or-europe",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/pos-full-stack-javascript-engineer-remote-latam-or-europe",
+      "postedAt": "2026-06-03T17:06:51+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Copilot",
+        "MongoDB"
       ],
       "companyIcon": ""
     },
@@ -734,56 +760,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "wwr-luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
-      "company": "Luxury Presence",
-      "position": "Staff Software Engineer - AI Website Builder - US (Remote)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$200,000 - $250,000",
-      "description": "Headquarters: United States URL: http://luxurypresence.com Luxury Presence is building the AI growth platform for real estate. Backed by Bessemer Venture Partners and other top investors, we're a Series C company on track to hit $100M in annual recurring revenue in the next six months. More than...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/luxury-presence-staff-software-engineer-ai-website-builder-us-remote",
-      "postedAt": "2026-05-21T20:03:04+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Kubernetes",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
-      "company": "ShiftForce LLC",
-      "position": "Full-Stack Developer — .NET + React + Azure — Remote (US)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Kansas City URL: https://www.shiftforce.com **About us** ShiftForce is scheduling and operations software for restaurants. We've been around a while, we're profitable, and we ship real features to real users every week. Small team — there are no layers of management between you and...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/shiftforce-llc-full-stack-developer-net-react-azure-remote-us",
-      "postedAt": "2026-05-20T14:08:40+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "PostgreSQL",
-        "Azure",
-        "Cursor",
-        "Copilot",
-        "React Native"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5222289008",
       "company": "Anthropic",
       "position": "Manager of Solutions Architecture, Applied AI (Enterprise Tech)",
@@ -798,27 +774,6 @@
       "tags": [
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5218395008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Systems - Claude Code",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "We're looking for a systems-oriented Software Engineer to push the performance and reliability of Claude Code and the JavaScript runtime that powers it. Claude Code is our terminal-first, agentic coding tool, and a huge part of what makes it fast—and what lets us ship quickly—is Bun. This role sits...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5218395008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5218395008",
-      "postedAt": "2026-05-13T12:13:33-04:00",
-      "tags": [
-        "JavaScript",
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"

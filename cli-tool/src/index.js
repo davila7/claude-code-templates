@@ -1665,10 +1665,7 @@ function parseLoopReferencedComponents(loopContent) {
   const frontmatter = loopContent.slice(3, fmEnd);
   for (const line of frontmatter.split('\n')) {
     if (!line.startsWith('components:')) continue;
-    let value = line.split('components:', 1).length > 1
-      ? line.slice(line.indexOf(':') + 1).trim()
-      : '';
-    value = value.replace(/^\[|\]$/g, '');
+    const value = line.slice(line.indexOf(':') + 1).trim().replace(/^\[|\]$/g, '');
     for (const token of value.split(',')) {
       const trimmed = token.trim().replace(/^["']|["']$/g, '');
       if (!trimmed) continue;
