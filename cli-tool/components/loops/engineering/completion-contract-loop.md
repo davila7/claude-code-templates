@@ -1,0 +1,45 @@
+---
+name: completion-contract-loop
+description: Writes a contract of what "done" means and what evidence proves each requirement before any work starts, then refuses to claim success without that evidence.
+category: engineering
+interval: on-demand
+stop-condition: Every requirement in the completion contract is satisfied with verifiable evidence (tests, output, diffs).
+components: [agent:expert-advisors/critical-thinking, command:testing/test-coverage, command:git-workflow/create-pr]
+tags: [goal, verification, definition-of-done, loop]
+---
+
+# Completion-Contract Loop
+
+> **Loop Engineering** — the `/goal` verb runs until a verifiable condition is true. This loop fixes the most common failure: an agent that says "done" when it isn't. It defines "complete" and the evidence for each requirement *upfront*, then can't declare victory without it.
+
+## 🎯 Goal
+Before doing any work, write a **completion contract**: each requirement plus the concrete evidence that proves it. Then execute until every requirement is backed by evidence.
+
+## ⏱️ Schedule
+Trigger: `on-demand` (a goal that runs to a condition, not a timer).
+
+## ▶️ Run it
+```
+/goal First write a completion contract: list each requirement and the exact evidence that proves it (a passing test, a command output, a diff). Confirm the contract, then implement. Do not claim success for any requirement without its evidence. Done only when every requirement has evidence. Stop after N turns if blocked.
+```
+
+## 🔁 Iteration steps
+1. **Contract** — `critical-thinking` drafts requirements + the evidence each needs.
+2. **Plan** — order the work by requirement.
+3. **Act** — implement one requirement at a time.
+4. **Prove** — attach evidence (coverage via `/test-coverage`, command output, diff); no evidence, not done.
+5. **Observe** — when all requirements have evidence, open a PR with `/create-pr` linking the contract.
+
+## 🛑 Stopping condition
+Every contract requirement is satisfied with verifiable evidence — or the turn/budget cap is hit and the loop reports what's still unproven.
+
+## 💰 Budget & guardrails
+A separate check confirms each piece of evidence rather than trusting the worker's self-report. Hard turn cap so an unprovable requirement can't spin.
+
+## 🧩 Referenced components
+- `agent:expert-advisors/critical-thinking` — authors and enforces the contract.
+- `command:testing/test-coverage` — supplies measurable evidence.
+- `command:git-workflow/create-pr` — ships the result with the contract attached.
+
+## 💡 Example
+Asked to "add rate limiting", the loop first writes a contract (limit enforced, 429 returned, headers set, tested) and only reports done once each line has a passing test as evidence.

@@ -99,6 +99,8 @@ const CARD_FIELDS: { key: string; label: string; icon: string }[] = [
   { key: 'allowed-tools', label: 'Allowed Tools', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.3-5.3a1.5 1.5 0 010-2.12l.88-.88a1.5 1.5 0 012.12 0l.88.88a1.5 1.5 0 002.12 0l3.18-3.18a1.5 1.5 0 012.12 0l1.77 1.77a1.5 1.5 0 010 2.12L15.66 12" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.07 4.93a1.5 1.5 0 010 2.12L15.66 12" /></svg>' },
   { key: 'model', label: 'Model', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>' },
   { key: 'argument-hint', label: 'Arguments', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>' },
+  { key: 'interval', label: 'Interval', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2" /></svg>' },
+  { key: 'stop-condition', label: 'Stop Condition', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>' },
   { key: 'version', label: 'Version', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>' },
   { key: 'author', label: 'Author', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg>' },
   { key: 'tags', label: 'Tags', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>' },
@@ -116,6 +118,46 @@ const infoCards = CARD_FIELDS.filter((f) => {
   const v = frontmatter[f.key];
   return v && v !== '[]' && v !== '""' && v !== "''";
 });
+
+// Loops reference other components via the frontmatter `components` field,
+// encoded as a flat list of `type:path` tokens, e.g.
+//   components: [agent:documentation/docs-architect, skill:git/create-pr]
+// Parse them into clickable cards shown on the loop detail page.
+interface ReferencedComponent {
+  type: string;        // singular, e.g. "agent"
+  typePlural: string;  // e.g. "agents"
+  path: string;        // e.g. "documentation/docs-architect"
+  name: string;        // last path segment
+  label: string;       // TYPE_CONFIG label
+  color: string;
+  icon: string;
+  href: string;
+}
+const referencedComponents: ReferencedComponent[] = [];
+if (typePlural === 'loops' && frontmatter.components) {
+  const raw = frontmatter.components.replace(/^\[|\]$/g, '');
+  for (const token of raw.split(',')) {
+    const trimmed = token.trim().replace(/^["']|["']$/g, '');
+    if (!trimmed) continue;
+    const sep = trimmed.indexOf(':');
+    if (sep === -1) continue;
+    const refType = trimmed.slice(0, sep).trim();
+    const refPath = trimmed.slice(sep + 1).trim().replace(/\.(md|json)$/, '');
+    if (!refType || !refPath) continue;
+    const refTypePlural = refType.endsWith('s') ? refType : refType + 's';
+    const cfg = TYPE_CONFIG[refTypePlural];
+    referencedComponents.push({
+      type: refType,
+      typePlural: refTypePlural,
+      path: refPath,
+      name: refPath.split('/').pop() ?? refPath,
+      label: cfg?.label ?? refType,
+      color: cfg?.color ?? '#5e6ad2',
+      icon: ICONS[refTypePlural] ?? '',
+      href: `/component/${refTypePlural}/${refPath}`,
+    });
+  }
+}
 
 // JSON-based types use JsonViewer instead of MarkdownViewer
 const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps';
@@ -342,6 +384,45 @@ const componentSchema = component
             return { label: card.label, icon: card.icon, value, isChipList };
           })
         )} />
+
+        {/* Referenced components (loops only) */}
+        {referencedComponents.length > 0 && (
+          <div class="mb-10">
+            <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">
+              Referenced Components ({referencedComponents.length})
+            </h3>
+            <p class="text-[13px] text-[var(--color-text-secondary)] mb-5 leading-relaxed">
+              This loop composes the components below. Installing the loop with the command above also installs each of them.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {referencedComponents.map((ref) => (
+                <a
+                  href={ref.href}
+                  class="group flex items-center gap-3 p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-md transition-all duration-150 active:scale-[0.98]"
+                >
+                  <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 [&>svg]:w-5 [&>svg]:h-5"
+                    style={`background: ${ref.color}1a; color: ${ref.color}; border: 1px solid ${ref.color}33;`}
+                    set:html={ref.icon}
+                  />
+                  <div class="min-w-0">
+                    <div class="text-[13px] font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-primary-400)] transition-colors">
+                      {ref.name}
+                    </div>
+                    <div class="text-[11px] text-[var(--color-text-tertiary)] truncate">
+                      <span class="font-medium" style={`color: ${ref.color};`}>{ref.label}</span>
+                      <span class="mx-1.5">·</span>
+                      <span class="font-mono">{ref.path}</span>
+                    </div>
+                  </div>
+                  <svg class="w-4 h-4 text-[var(--color-text-tertiary)] ml-auto shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Content area with optional file tree sidebar */}
         {/* Content viewer */}

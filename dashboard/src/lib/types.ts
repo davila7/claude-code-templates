@@ -17,6 +17,7 @@ export interface ComponentsData {
   settings: Component[];
   hooks: Component[];
   skills: Component[];
+  loops: Component[];
   templates: Component[];
 }
 
@@ -37,6 +38,7 @@ export interface Cart {
   hooks: CartItem[];
   mcps: CartItem[];
   skills: CartItem[];
+  loops: CartItem[];
   templates: CartItem[];
 }
 

@@ -381,14 +381,14 @@ def generate_components_json():
     templates_base_path = 'cli-tool/templates'
     plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
-    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'templates': [], 'plugins': []}
+    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'templates': [], 'plugins': []}
 
     # Run security validation
     security_metadata = run_security_validation()
 
     # Fetch download statistics
     download_stats = fetch_download_stats()
-    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills']
+    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops']
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -809,7 +809,7 @@ def generate_components_json():
     dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
 
     # Component types that carry a 'content' field
-    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills']
+    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops']
 
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
