@@ -1,0 +1,27 @@
+{
+  "description": "Fun, customizable desktop notifications for Claude Code with random messages, auto editor detection, and message packs. Sends cheerful notifications when tasks complete or approval is needed. Supports VS Code, Cursor, Antigravity, Windsurf, Zed, iTerm2, Ghostty, Warp, and more. Works on macOS and Linux. Customize messages, sounds, and name prefix via ~/.claude-yap/config.json. By abdulrohman (github.com/zehnlyai-main/claude-yap)",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ ! -d \"$HOME/.claude-yap\" ]; then echo 'Installing claude-yap...' && git clone --depth 1 https://github.com/zehnlyai-main/claude-yap.git \"$HOME/.claude-yap\" 2>/dev/null && chmod +x \"$HOME/.claude-yap/claude-yap.sh\"; fi; \"$HOME/.claude-yap/claude-yap.sh\" stop 2>/dev/null; true"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ ! -d \"$HOME/.claude-yap\" ]; then echo 'Installing claude-yap...' && git clone --depth 1 https://github.com/zehnlyai-main/claude-yap.git \"$HOME/.claude-yap\" 2>/dev/null && chmod +x \"$HOME/.claude-yap/claude-yap.sh\"; fi; \"$HOME/.claude-yap/claude-yap.sh\" notification 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  }
+}
