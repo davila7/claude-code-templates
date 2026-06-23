@@ -13,7 +13,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^14.0.0",
     "@astrojs/react": "^6.0.0",
-    "@clerk/backend": "^3.0.1",
+    "@clerk/backend": "^3.2.14",
     "@clerk/clerk-react": "^5.60.1",
     "@neondatabase/serverless": "^1.0.2",
     "@supabase/supabase-js": "^2.100.1",
