@@ -90,10 +90,15 @@ export const GET: APIRoute = async () => {
   try {
     const results = await Promise.all(ENDPOINTS_TO_CHECK.map(checkEndpoint));
 
-    const sql = getNeonClient();
+    const failures = results.filter(
+      (r) => r.statusCode === 0 || r.statusCode >= 500 || r.responseTimeMs >= TIMEOUT_MS,
+    );
 
-    for (const result of results) {
-      await sql`
+    // Only log to Neon when there are failures. Healthy runs are the common
+    // case (~99%) and don't need a row each — avoids ~2K useless writes/month.
+    if (failures.length > 0) {
+      const sql = getNeonClient();
+      const statements = failures.map((result) => sql`
         INSERT INTO api_health_logs (
           endpoint, method, status_code, response_time_ms, error_message
         ) VALUES (
@@ -103,14 +108,8 @@ export const GET: APIRoute = async () => {
           ${result.responseTimeMs},
           ${result.errorMessage}
         )
-      `;
-    }
-
-    const failures = results.filter(
-      (r) => r.statusCode === 0 || r.statusCode >= 500 || r.responseTimeMs >= TIMEOUT_MS,
-    );
-
-    if (failures.length > 0) {
+      `);
+      await sql.transaction(statements);
       await sendDiscordAlert(failures);
     }
 
