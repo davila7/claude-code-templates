@@ -4,22 +4,49 @@ updates:
     directory: "/cli-tool"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
+      - "cli"
+    # Groups minor and patch updates into a single PR to reduce noise
+    groups:
+      cli-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     directory: "/dashboard"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
+      - "dashboard"
+    groups:
+      dashboard-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
     open-pull-requests-limit: 5
     labels:
       - "ci"
+      - "actions"
