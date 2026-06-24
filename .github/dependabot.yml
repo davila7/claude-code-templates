@@ -1,43 +1,421 @@
 version: 2
+
 updates:
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  NPM — Core packages (Mon/Tue, staggered)              ║
+  # ╚══════════════════════════════════════════════════════════╝
+
   - package-ecosystem: "npm"
-    directory: "/cli-tool"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
       timezone: "UTC"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "cli"
-    # Groups minor and patch updates into a single PR to reduce noise
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "root"]
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      root-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "api"]
+    commit-message:
+      prefix: "chore(deps/api)"
+    groups:
+      api-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "cli"]
+    commit-message:
+      prefix: "chore(deps/cli)"
     groups:
       cli-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: "npm"
     directory: "/dashboard"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "12:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "dashboard"]
+    commit-message:
+      prefix: "chore(deps/dashboard)"
+    groups:
+      dashboard-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/analytics-ui"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
       time: "09:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "dashboard"
+    labels: ["dependencies", "cli", "frontend"]
+    commit-message:
+      prefix: "chore(deps/analytics-ui)"
     groups:
-      dashboard-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+      analytics-ui-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  NPM — Cloudflare / Sandbox (Tue)                      ║
+  # ╚══════════════════════════════════════════════════════════╝
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/.claude/sandbox/cloudflare"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "sandbox", "cloudflare"]
+    commit-message:
+      prefix: "chore(deps/sandbox-cf)"
+    groups:
+      sandbox-cf-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/sandbox/cloudflare"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "sandbox", "cloudflare"]
+    commit-message:
+      prefix: "chore(deps/components-cf)"
+    groups:
+      components-cf-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/sandbox/docker"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "12:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "sandbox", "docker"]
+    commit-message:
+      prefix: "chore(deps/components-docker)"
+    groups:
+      components-docker-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cloudflare-workers/docs-monitor"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "13:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "cloudflare"]
+    commit-message:
+      prefix: "chore(deps/cf-docs-monitor)"
+    groups:
+      cf-docs-monitor-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cloudflare-workers/pulse"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "14:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "cloudflare"]
+    commit-message:
+      prefix: "chore(deps/cf-pulse)"
+    groups:
+      cf-pulse-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  NPM — Skills / Templates (Wed)                        ║
+  # ╚══════════════════════════════════════════════════════════╝
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/skills/ai-research/loki-mode/examples/todo-app-generated/backend"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "skill"]
+    commit-message:
+      prefix: "chore(deps/loki-backend)"
+    groups:
+      loki-backend-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/skills/ai-research/loki-mode/examples/todo-app-generated/frontend"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "skill"]
+    commit-message:
+      prefix: "chore(deps/loki-frontend)"
+    groups:
+      loki-frontend-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/skills/design-to-code/scripts"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "skill"]
+    commit-message:
+      prefix: "chore(deps/design-to-code)"
+    groups:
+      design-to-code-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/skills/utilities/playwright-skill"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "12:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "skill"]
+    commit-message:
+      prefix: "chore(deps/playwright-skill)"
+    groups:
+      playwright-skill-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/cli-tool/components/skills/web-development/roier-seo/scripts"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "13:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "skill"]
+    commit-message:
+      prefix: "chore(deps/roier-seo)"
+    groups:
+      roier-seo-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  NPM — Rust CLI npm wrapper (Thu)                      ║
+  # ╚══════════════════════════════════════════════════════════╝
+
+  - package-ecosystem: "npm"
+    directory: "/cli-rust/npm/cct"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "rust-cli"]
+    commit-message:
+      prefix: "chore(deps/cli-rust-npm)"
+    ignore:
+      # Platform-specific optional deps are self-published — skip them
+      - dependency-name: "@davila7/*"
+    groups:
+      cli-rust-npm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  CARGO — Rust (Thu)                                    ║
+  # ╚══════════════════════════════════════════════════════════╝
+
+  - package-ecosystem: "cargo"
+    directory: "/cli-rust"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "rust"]
+    commit-message:
+      prefix: "chore(deps/cargo)"
+    groups:
+      cargo-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  PIP — Python skills (Fri)                             ║
+  # ╚══════════════════════════════════════════════════════════╝
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/sandbox/e2b"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "sandbox"]
+    commit-message:
+      prefix: "chore(deps/e2b)"
+    groups:
+      e2b-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/skills/productivity/notebooklm"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "skill"]
+    commit-message:
+      prefix: "chore(deps/notebooklm)"
+    groups:
+      notebooklm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/skills/development/mcp-builder/scripts"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "skill"]
+    commit-message:
+      prefix: "chore(deps/mcp-builder)"
+    groups:
+      mcp-builder-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/skills/enterprise-communication/slack-gif-creator"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "skill"]
+    commit-message:
+      prefix: "chore(deps/slack-gif-enterprise)"
+    groups:
+      slack-gif-enterprise-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/skills/creative-design/slack-gif-creator"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "skill"]
+    commit-message:
+      prefix: "chore(deps/slack-gif-creative)"
+    groups:
+      slack-gif-creative-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/skills/web-development/shopify-development/scripts"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "12:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "skill"]
+    commit-message:
+      prefix: "chore(deps/shopify-scripts)"
+    groups:
+      shopify-scripts-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/cli-tool/components/skills/analytics/google-analytics"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "12:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "python", "skill"]
+    commit-message:
+      prefix: "chore(deps/google-analytics)"
+    groups:
+      google-analytics-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ╔══════════════════════════════════════════════════════════╗
+  # ║  GITHUB ACTIONS (Mon)                                  ║
+  # ╚══════════════════════════════════════════════════════════╝
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -46,7 +424,28 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels: ["ci", "actions"]
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/cli-tool/components/skills/ai-research/loki-mode"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "UTC"
     open-pull-requests-limit: 5
-    labels:
-      - "ci"
-      - "actions"
+    labels: ["ci", "actions", "skill"]
+    commit-message:
+      prefix: "chore(ci/loki-mode)"
+    groups:
+      loki-mode-actions-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+        
