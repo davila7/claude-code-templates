@@ -1,12 +1,28 @@
 {
-  "lastUpdated": "2026-06-23T04:27:40.059681+00:00",
-  "totalJobs": 95,
+  "lastUpdated": "2026-06-24T04:28:50.142312+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-digital-marketing-designer-format-1133916",
+      "company": "Format",
+      "position": "Digital Marketing Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Title: Digital Marketing Designer Reports to: Head of Design Location: Remote (CA) About Zenfolio Inc. Zenfolio Inc. offers multiple e-commerce solutions for photographers to showcase their work, manage their business, and build their brand. For almost two decades, Zenfolio Inc. has proudly served...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-digital-marketing-designer-format-1133916",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-digital-marketing-designer-format-1133916",
+      "postedAt": "2026-06-22T00:00:00+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5271428008",
       "company": "Anthropic",
