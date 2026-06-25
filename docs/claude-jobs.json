@@ -1,27 +1,31 @@
 {
-  "lastUpdated": "2026-06-24T04:28:50.142312+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-06-25T04:26:45.643205+00:00",
+  "totalJobs": 95,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
     {
-      "id": "rok-remote-digital-marketing-designer-format-1133916",
-      "company": "Format",
-      "position": "Digital Marketing Designer",
-      "location": "Remote",
-      "remote": true,
+      "id": "anth-5277834008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Engineering,  Life Sciences (Beneficial Deployments)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
       "salary": "",
-      "description": "Title: Digital Marketing Designer Reports to: Head of Design Location: Remote (CA) About Zenfolio Inc. Zenfolio Inc. offers multiple e-commerce solutions for photographers to showcase their work, manage their business, and build their brand. For almost two decades, Zenfolio Inc. has proudly served...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-digital-marketing-designer-format-1133916",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-digital-marketing-designer-format-1133916",
-      "postedAt": "2026-06-22T00:00:00+00:00",
-      "tags": [],
-      "companyIcon": ""
+      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "postedAt": "2026-06-24T13:51:42-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5271428008",
@@ -727,30 +731,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5229345008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Claude Design",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Claude...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
-      "postedAt": "2026-05-27T20:20:38-04:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Node.js",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5228463008",
