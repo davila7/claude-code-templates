@@ -1,0 +1,10 @@
+{
+  "description": "MiniMax AI Provider - Configure Claude Code to use MiniMax's Anthropic-compatible API. MiniMax-M3 is the latest flagship model with a 512K context window, up to 128K output, and image input support; MiniMax-M2.7 and MiniMax-M2.7-highspeed remain available as alternatives. Requires a MiniMax API key from https://platform.minimax.io",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR-MINIMAX-API-KEY",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M3",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M3"
+  }
+}
