@@ -30,8 +30,8 @@ Verify `$BRANCH` matches `NNN-feature-name`. Confirm:
    Count all tasks — extract complete `[x]` and incomplete `[ ]` tasks.
    
    ```bash
-   grep -c "^\s*- \[x\]" specs/$BRANCH/tasks.md  # Count complete
-   grep -c "^\s*- \[ \]" specs/$BRANCH/tasks.md  # Count incomplete
+   grep -c "^[[:space:]]*- \[x\]" specs/$BRANCH/tasks.md  # Count complete
+   grep -c "^[[:space:]]*- \[ \]" specs/$BRANCH/tasks.md  # Count incomplete
    ```
 
    If ANY incomplete tasks remain:
@@ -699,7 +699,7 @@ Write `.sdd/feature-manifest.json` (create `.sdd/` if needed):
 
 **Blindness note (Seam 2→3):** IDT-QA splits this manifest — `surface` + `acceptanceCriteria` go to the BLIND qa-observe; `specPath` + branch go only to qa-judge. Keep each `acceptanceCriteria.gherkin` free of implementation detail so qa-observe stays blind to HOW.
 
-This command cannot run the IDT validator (a different process/phase). The **authoritative** schema check is IDT's `parse-manifest` in Phase 3, which rejects a malformed handoff. Here, emit valid JSON best-effort — well-formed, every required field present, no `<...>` placeholders — then hand off.
+This command cannot run the IDT validator (a different process/phase). The **authoritative** schema check is IDT's `parse-manifest` in Phase 3, which rejects a malformed handoff — missing/empty fields AND unfilled `<...>` placeholders. Still emit valid JSON best-effort here — well-formed, every required field present, no `<...>` placeholders — then hand off.
 
 ### Step 8: Handle Quick Mode
 
