@@ -248,6 +248,19 @@ Wait for test engineer to provide expanded strategy, then re-validate with QA ex
 Proceeding to test file generation.
 ```
 
+## QA Paradigms — mandatory (P1 / P2 / P4 / P5)
+
+Every test written here is **Paradigm 2 (static, deterministic)** and must obey these rules so the feature is structurally ready for Phase 3 (IDT's blind adversarial validation, `plan-000-unified-lifecycle.md`). The same paradigms IDT's qa-author/qa-judge enforce — keeping both sides speaking one assertion language.
+
+| Rule | Detail |
+|------|--------|
+| **P1 — Stable selectors** | testid > role/label > accessibility attribute > structural. A broken selector **fails**; it never self-heals (self-healing masks regressions — ~25% false positives). |
+| **P2 — Deterministic** | The test is a static spec. No LLM calls or runtime agents at test time. Same input → same result on every replay. Regression suites run in CI with no LLM. |
+| **P4 — Contract-anchored assertions** | Every assertion traces to an explicit acceptance criterion (a Gherkin scenario / expected value / code) from `spec.md` — never the agent's paraphrase. Anchored assertions raise pass-rate ~42% → ~93%. |
+| **P5 — Complete state + cleanup** | Each scenario starts from a clean, known state and restores it on exit (including on failure) — a `finally` cleanup is mandatory. No run-order dependence, no leaked artifacts. |
+
+These are the assertion-level implementation of the 6 Test Categories above; apply both.
+
 ### Step 5: Write Test Files
 
 Using the test engineer's exhaustive list:

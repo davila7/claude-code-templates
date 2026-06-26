@@ -1,7 +1,7 @@
 ---
-description: "Create a feature specification from a natural language description — creates git branch and spec.md"
-argument-hint: "[feature description: what you want to build and why]"
-allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(date:*), Bash(printf:*), Bash(ls:*), Bash(grep:*), Bash(sort:*), Bash(tail:*), Bash(echo:*), Read, Write
+description: "Create a feature specification from a natural language description OR an IDT-produced issue (--from-issue) — creates git branch and spec.md"
+argument-hint: "[feature description] | --from-issue <number>"
+allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(date:*), Bash(printf:*), Bash(ls:*), Bash(grep:*), Bash(sort:*), Bash(tail:*), Bash(echo:*), Bash(gh:*), Read, Write
 ---
 
 # SDD Specify
@@ -11,6 +11,26 @@ Create a feature specification for: $ARGUMENTS
 ## Instructions
 
 Transform the feature description into a structured specification and create the git branch. Focus exclusively on WHAT and WHY — never HOW.
+
+### Step 0: Determine input mode (free-text vs IDT issue)
+
+This command is **Phase 2** of the unified lifecycle (`plan-000-unified-lifecycle.md`). It accepts two input modes:
+
+**A. Free-text** (default): `$ARGUMENTS` is a natural-language feature description. Proceed normally — you draft the user story and acceptance criteria from the description.
+
+**B. From an IDT issue** (`--from-issue <number>` in `$ARGUMENTS`): the issue was produced by IDT intake (Phase 1) and **its decisions are already human-ratified**. Do NOT re-litigate the user story or invent new acceptance criteria — consume the issue verbatim as the spec seed.
+
+```bash
+gh issue view <number> --json number,title,body
+```
+
+The issue body conforms to the **Issue Contract** (Seam 1→2). Parse it and do a presence check — it MUST contain:
+- a story-ID marker `[XX-NN]` in the title,
+- a `## User story` ("As a … I want … so that …"),
+- `## Acceptance criteria (Gherkin)` with at least one Scenario (Given/When/Then),
+- a `## Scope` with In scope / Out of scope lists.
+
+If any of these is missing or malformed, **STOP** and tell the operator to fix the issue in IDT intake (`/integrated-dev-team:intake`) — do not guess the missing decisions. When valid, carry the **story ID** through to the spec frontmatter and branch (D1), map the issue's acceptance criteria into User Scenarios verbatim, and map its Out of scope into the spec's Out of Scope.
 
 ### Step 1: Validate Prerequisites
 
@@ -59,6 +79,7 @@ Analyze `$ARGUMENTS` and write `specs/NNN-feature-name/spec.md`:
 # Feature Specification: [FEATURE NAME]
 
 **Branch**: `NNN-feature-name`
+**Story ID**: [XX-NN] (from IDT issue #N — Seam 1→2; use `—` for free-text mode)
 **Created**: YYYY-MM-DD
 **Status**: Draft
 

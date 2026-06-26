@@ -1,7 +1,7 @@
 ---
 description: "Mandatory multi-agent review gate — runs 6 expert agents and creates the PR gate marker"
 argument-hint: "[optional: 'quick' for CRITICAL-only scan, default: full review]"
-allowed-tools: Bash(git:*), Bash(touch:*), Read, Grep
+allowed-tools: Bash(git:*), Bash(touch:*), Bash(mkdir:*), Read, Grep, Write
 ---
 
 # SDD Review
@@ -651,6 +651,39 @@ chmod 644 ~/.claude/.review-gate
 This marker signals that `/sdd-review` passed and PR creation is allowed.
 
 If CRÍTICO or ALTO exist, do NOT create this marker.
+
+### Step 7.5: Emit Feature Manifest (Seam 2→3)
+
+Run ONLY if the gate passed (no CRÍTICO or ALTO — the same condition as Step 7). This is the handoff to **Phase 3** (IDT validation, `plan-000-unified-lifecycle.md`, Seam 2→3). It hands IDT-QA exactly what it needs to validate the feature **without** reading this spec's design narrative.
+
+Gather:
+- `STORY_ID` — the `**Story ID**` from `specs/$BRANCH/spec.md` frontmatter (the `[XX-NN]` marker; `—` if specified free-text).
+- `BRANCH` — from Step 1.
+- `SPEC_PATH` — `specs/$BRANCH/spec.md`.
+- `SURFACE` — the product surface SDD built: `type` (web|api|cli), `entryPoint`, and the isolated `adapter` to drive it.
+- `ACCEPTANCE_CRITERIA` — every acceptance scenario from the spec, each as `{ "id": "AC1", "gherkin": "Scenario: …", "reachable": true }`. Per **D3**, set `reachable: true` for ALL — IDT-QA descopes unreachable ones empirically in Phase 3; do NOT do speculative reachability analysis here.
+- `TEST_COMMANDS` — `run` (required), and optionally `coldReplay` / `stability`, from the project's test setup.
+
+Write `.sdd/feature-manifest.json` (create `.sdd/` if needed):
+
+```json
+{
+  "issueId": "EM-04",
+  "branch": "004-email-toggle",
+  "specPath": "specs/004-email-toggle/spec.md",
+  "surface": { "type": "web", "entryPoint": "<url-or-command>", "adapter": "<playwright|http|pty>" },
+  "acceptanceCriteria": [
+    { "id": "AC1", "gherkin": "Scenario: …\n  Given …\n  When …\n  Then …", "reachable": true }
+  ],
+  "testCommands": { "run": "<cmd>", "coldReplay": "<cmd>", "stability": "<cmd>" }
+}
+```
+
+**Blindness note (Seam 2→3):** IDT-QA splits this manifest — `surface` + `acceptanceCriteria` go to the BLIND qa-observe; `specPath` + branch go only to qa-judge. Keep each `acceptanceCriteria.gherkin` free of implementation detail (it is the contract, not the design) so qa-observe stays blind to HOW.
+
+Validate the JSON is well-formed before finishing. IDT consumes it via `node dist/cli/idt.js parse-manifest`, which rejects a malformed handoff.
+
+If the gate did NOT pass (CRÍTICO/ALTO present), do NOT write the manifest — there is no validated feature to hand off.
 
 ### Step 8: Handle Quick Mode
 
