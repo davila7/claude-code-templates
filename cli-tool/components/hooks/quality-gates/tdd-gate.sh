@@ -51,7 +51,7 @@ case "$FILE_PATH" in
   */spec/*|*/specs/*|*/Spec/*|*/Specs/*) exit 0 ;;
   */fixtures/*|*/mocks/*|*/stubs/*|*/fakes/*) exit 0 ;;
   */migrations/*|*/Migrations/*|*/seeds/*) exit 0 ;;
-  */config/*|*/Config/*|*/scripts/*) exit 0 ;;
+  */.config/*|*/config/*|*/Config/*|*/scripts/*) exit 0 ;;
 esac
 
 # Search for corresponding test file in the same directory first, then nearby
