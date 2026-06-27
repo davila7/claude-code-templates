@@ -1,0 +1,295 @@
+.TH SKILL-CODE-REVIEWER 1 "January 2026" "Claude Code Templates" "Skills Manual"
+.SH NAME
+skill-code-reviewer \- Comprehensive code review skill for TypeScript, JavaScript, Python, Swift, Kotlin, Go. Includes automated code analysis, best practice checking, security scanning, and review checklist generation. Use when reviewing pull requests, providing code feedback, identifying issues, or ensuring code quality standards.
+.SH CODE REVIEWER
+
+Complete toolkit for code reviewer with modern tools and best practices.
+
+.SS Quick Start
+
+.SS Main Capabilities
+
+This skill provides three core capabilities through automated scripts:
+
+.EX
+.SH SCRIPT 1: Pr Analyzer
+python scripts/pr\fIanalyzer.py [options]
+
+.SH SCRIPT 2: Code Quality Checker
+python scripts/code\fRquality\fIchecker.py [options]
+
+.SH SCRIPT 3: Review Report Generator
+python scripts/review\fRreport\fIgenerator.py [options]
+.EE
+
+.SS Core Capabilities
+
+.SS 1. Pr Analyzer
+
+Automated tool for pr analyzer tasks.
+
+\fBFeatures:\fR
+.RS
+.IP \(bu 2
+Automated scaffolding
+.IP \(bu 2
+Best practices built-in
+.IP \(bu 2
+Configurable templates
+.IP \(bu 2
+Quality checks
+
+.RE
+\fBUsage:\fR
+.EX
+python scripts/pr\fRanalyzer.py <project-path> [options]
+.EE
+
+.SS 2. Code Quality Checker
+
+Comprehensive analysis and optimization tool.
+
+\fBFeatures:\fR
+.RS
+.IP \(bu 2
+Deep analysis
+.IP \(bu 2
+Performance metrics
+.IP \(bu 2
+Recommendations
+.IP \(bu 2
+Automated fixes
+
+.RE
+\fBUsage:\fR
+.EX
+python scripts/code\fIquality\fRchecker.py <target-path> [--verbose]
+.EE
+
+.SS 3. Review Report Generator
+
+Advanced tooling for specialized tasks.
+
+\fBFeatures:\fR
+.RS
+.IP \(bu 2
+Expert-level automation
+.IP \(bu 2
+Custom configurations
+.IP \(bu 2
+Integration ready
+.IP \(bu 2
+Production-grade output
+
+.RE
+\fBUsage:\fR
+.EX
+python scripts/review\fIreport\fRgenerator.py [arguments] [options]
+.EE
+
+.SS Reference Documentation
+
+.SS Code Review Checklist
+
+Comprehensive guide available in \fBreferences/code\fIreview\fRchecklist.md\fR:
+
+.RS
+.IP \(bu 2
+Detailed patterns and practices
+.IP \(bu 2
+Code examples
+.IP \(bu 2
+Best practices
+.IP \(bu 2
+Anti-patterns to avoid
+.IP \(bu 2
+Real-world scenarios
+
+.RE
+.SS Coding Standards
+
+Complete workflow documentation in \fBreferences/coding\fIstandards.md\fR:
+
+.RS
+.IP \(bu 2
+Step-by-step processes
+.IP \(bu 2
+Optimization strategies
+.IP \(bu 2
+Tool integrations
+.IP \(bu 2
+Performance tuning
+.IP \(bu 2
+Troubleshooting guide
+
+.RE
+.SS Common Antipatterns
+
+Technical reference guide in \fBreferences/common\fRantipatterns.md\fR:
+
+.RS
+.IP \(bu 2
+Technology stack details
+.IP \(bu 2
+Configuration examples
+.IP \(bu 2
+Integration patterns
+.IP \(bu 2
+Security considerations
+.IP \(bu 2
+Scalability guidelines
+
+.RE
+.SS Tech Stack
+
+\fBLanguages:\fR TypeScript, JavaScript, Python, Go, Swift, Kotlin
+\fBFrontend:\fR React, Next.js, React Native, Flutter
+\fBBackend:\fR Node.js, Express, GraphQL, REST APIs
+\fBDatabase:\fR PostgreSQL, Prisma, NeonDB, Supabase
+\fBDevOps:\fR Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
+\fBCloud:\fR AWS, GCP, Azure
+
+.SS Development Workflow
+
+.SS 1. Setup and Configuration
+
+.EX
+.SH INSTALL DEPENDENCIES
+npm install
+.SH OR
+pip install -r requirements.txt
+
+.SH CONFIGURE ENVIRONMENT
+cp .env.example .env
+.EE
+
+.SS 2. Run Quality Checks
+
+.EX
+.SH USE THE ANALYZER SCRIPT
+python scripts/code\fIquality\fRchecker.py .
+
+.SH REVIEW RECOMMENDATIONS
+.SH APPLY FIXES
+.EE
+
+.SS 3. Implement Best Practices
+
+Follow the patterns and practices documented in:
+.RS
+.IP \(bu 2
+\fBreferences/code\fIreview\fRchecklist.md\fR
+.IP \(bu 2
+\fBreferences/coding\fIstandards.md\fR
+.IP \(bu 2
+\fBreferences/common\fRantipatterns.md\fR
+
+.RE
+.SS Best Practices Summary
+
+.SS Code Quality
+.RS
+.IP \(bu 2
+Follow established patterns
+.IP \(bu 2
+Write comprehensive tests
+.IP \(bu 2
+Document decisions
+.IP \(bu 2
+Review regularly
+
+.RE
+.SS Performance
+.RS
+.IP \(bu 2
+Measure before optimizing
+.IP \(bu 2
+Use appropriate caching
+.IP \(bu 2
+Optimize critical paths
+.IP \(bu 2
+Monitor in production
+
+.RE
+.SS Security
+.RS
+.IP \(bu 2
+Validate all inputs
+.IP \(bu 2
+Use parameterized queries
+.IP \(bu 2
+Implement proper authentication
+.IP \(bu 2
+Keep dependencies updated
+
+.RE
+.SS Maintainability
+.RS
+.IP \(bu 2
+Write clear code
+.IP \(bu 2
+Use consistent naming
+.IP \(bu 2
+Add helpful comments
+.IP \(bu 2
+Keep it simple
+
+.RE
+.SS Common Commands
+
+.EX
+.SH DEVELOPMENT
+npm run dev
+npm run build
+npm run test
+npm run lint
+
+.SH ANALYSIS
+python scripts/code\fIquality\fRchecker.py .
+python scripts/review\fIreport\fRgenerator.py --analyze
+
+.SH DEPLOYMENT
+docker build -t app:latest .
+docker-compose up -d
+kubectl apply -f k8s/
+.EE
+
+.SS Troubleshooting
+
+.SS Common Issues
+
+Check the comprehensive troubleshooting section in \fBreferences/common\fIantipatterns.md\fR.
+
+.SS Getting Help
+
+.RS
+.IP \(bu 2
+Review reference documentation
+.IP \(bu 2
+Check script output messages
+.IP \(bu 2
+Consult tech stack documentation
+.IP \(bu 2
+Review error logs
+
+.RE
+.SS Resources
+
+.RS
+.IP \(bu 2
+Pattern Reference: \fBreferences/code\fRreview\fIchecklist.md\fR
+.IP \(bu 2
+Workflow Guide: \fBreferences/coding\fRstandards.md\fR
+.IP \(bu 2
+Technical Guide: \fBreferences/common_antipatterns.md\fR
+.IP \(bu 2
+Tool Scripts: \fBscripts/\fR directory
+.RE
+.SH AUTHOR
+Claude Code Templates contributors
+.SH REPORTING BUGS
+Report bugs at: https://github.com/davila7/claude-code-templates/issues
+.SH COPYRIGHT
+Copyright © 2024 Claude Code Templates. License MIT.
+.SH SEE ALSO
+Full documentation at: https://docs.aitmpl.com/
