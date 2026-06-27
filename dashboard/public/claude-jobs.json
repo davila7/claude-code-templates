@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-26T06:59:04.542473+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-06-27T06:32:49.537054+00:00",
+  "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -1375,6 +1375,26 @@
         "Python"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5179882008",
+      "company": "Anthropic",
+      "position": "Product Operations Manager, Feedback Loops",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "We're hiring a Product Operations Manager — Feedback Loops to own and continuously improve how customer signal flows into product and research decisions at Anthropic. This is a horizontal, org-wide role — you won't be embedded in a single product team, you'll build the shared operating system for...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
+      "postedAt": "2026-04-11T22:14:11-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-47727983",
