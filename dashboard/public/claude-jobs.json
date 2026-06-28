@@ -1,10 +1,9 @@
 {
-  "lastUpdated": "2026-06-27T06:32:49.537054+00:00",
+  "lastUpdated": "2026-06-28T07:06:03.281861+00:00",
   "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
@@ -47,25 +46,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-mid-senior-ai-cinematic-video-editor-everai-1134014",
-      "company": "EverAI",
-      "position": "Mid Senior AI Cinematic Video Editor",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Our Vision & Products ð EverAI — Building the Future of AI Companionship One of the Top 15 Largest & Fastest-Growing AI Companies in the World 50 Million Users in 2 years — Help Us Reach 100M first, 500M next At EverAI , we’re shaping what it means to connect with AI. With 50 million users and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1134014",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1134014",
-      "postedAt": "2026-06-24T09:04:44+00:00",
-      "tags": [
-        "AWS",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5271428008",
@@ -189,6 +169,31 @@
         "Go",
         "AWS",
         "Django"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-memora-aps-founding-engineer",
+      "company": "Memora ApS",
+      "position": "Founding Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Copenhagen, Denmark URL: https://memora.dk/ About Us At Memora, we're digitizing one of the oldest and most overlooked categories on earth: the cemetery. Most still run on paper maps, spreadsheets, and institutional memory. We are replacing this with an ecosystem for everyone who...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/memora-aps-founding-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/memora-aps-founding-engineer",
+      "postedAt": "2026-06-06T13:32:54+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "React Native",
+        "Rails"
       ],
       "companyIcon": ""
     },
