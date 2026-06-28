@@ -10,7 +10,7 @@ Independent worker projects, deployed separately from Vercel.
 ## Projects
 
 - **docs-monitor**: Monitors code.claude.com/docs changes hourly, sends Telegram notifications
-- **pulse**: Weekly KPI report (GitHub, Discord, Supabase, Vercel, GA) every Sunday 14:00 UTC via Telegram
+- **pulse**: Weekly KPI report (GitHub, Discord, Supabase, npm, Cloudflare Pages, GA) every Sunday 14:00 UTC via Telegram
 
 ## Architecture
 
