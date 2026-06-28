@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import json
 import shutil
 import requests
@@ -228,64 +230,59 @@ def fetch_download_stats():
         # We need to handle pagination since there can be many records
         api_url = f"{supabase_url}/rest/v1/component_downloads"
         
-        all_downloads = []
-        offset = 0
-        limit = 1000
+        # Aggregate counts per component by streaming ALL rows via KEYSET pagination.
+        #
+        # We deliberately avoid OFFSET/Range-based pagination. On a large, actively
+        # written table (>1M rows) offset pagination has two fatal problems:
+        #   1. No stable ordering across requests, so pages overlap and skip rows
+        #      (observed ~13% duplicated ids plus omissions) -> wrong counts.
+        #   2. O(offset) cost: deep pages keep getting slower until the query trips
+        #      the statement timeout and returns HTTP 500. The previous code treated
+        #      that 500 as "stop" and silently wrote drastically undercounted numbers.
+        # Keyset pagination (id > last_id, ordered by id) is stable and stays fast
+        # regardless of table size.
+        component_totals = defaultdict(int)
+        total_rows = 0
+        last_id = 0
+        page_size = 1000
+        max_retries = 5
 
-        # Fetch all records with pagination
-        max_pages = 1000  # Safety limit (1000 pages * 1000 records = 1,000,000 max)
-        for page in range(max_pages):
-            paginated_headers = headers.copy()
-            paginated_headers['Range'] = f'{offset}-{offset + limit - 1}'
-            
-            response = requests.get(api_url, headers=paginated_headers)
-            
-            if response.status_code not in [200, 206]:
-                print(f"  Page {page+1}: Got status {response.status_code}, stopping")
-                break
-                
-            batch = response.json()
+        while True:
+            params = {
+                'select': 'id,component_type,component_name',
+                'order': 'id.asc',
+                'id': f'gt.{last_id}',
+                'limit': str(page_size),
+            }
+
+            batch = None
+            for attempt in range(max_retries):
+                try:
+                    response = requests.get(api_url, headers=headers, params=params, timeout=60)
+                    if response.status_code in (200, 206):
+                        batch = response.json()
+                        break
+                    reason = f"HTTP {response.status_code}"
+                except requests.RequestException as e:
+                    reason = str(e)
+
+                wait = 2 ** attempt
+                print(f"  ⚠️ {reason} after id={last_id} (attempt {attempt + 1}/{max_retries}); retrying in {wait}s")
+                time.sleep(wait)
+
+            if batch is None:
+                # Could not fetch this page after all retries. Abort the whole run:
+                # returning partial data would overwrite good committed download
+                # counts with undercounted ones. sys.exit raises SystemExit, which is
+                # NOT caught by the broad `except Exception` below, so generation stops.
+                print(f"❌ Failed to fetch download stats page after id={last_id} ({max_retries} attempts).")
+                print("   Aborting to avoid writing undercounted download numbers.")
+                sys.exit(1)
+
             if not batch:
-                break
-                
-            all_downloads.extend(batch)
-            
-            # Check if we have more records to fetch
-            content_range = response.headers.get('content-range', '')
-            
-            # If we get a range like "45000-45977/*", check if we got less than limit records
-            if len(batch) < limit:
-                break  # We've reached the end
-            
-            # Also check for explicit total if provided
-            if content_range and '/' in content_range:
-                parts = content_range.split('/')
-                if parts[1] != '*':
-                    try:
-                        total = int(parts[1])
-                        if offset + limit >= total:
-                            break
-                    except ValueError:
-                        pass
-            
-            offset += limit
-            
-            # Progress indicator every 10 pages
-            if (page + 1) % 10 == 0:
-                print(f"  Fetched {len(all_downloads)} records so far...")
-        
-        print(f"📊 Total records fetched: {len(all_downloads)}")
-        
-        # If we fetched records, use them
-        if len(all_downloads) > 0:
-            # Process component_downloads data
-            downloads = all_downloads
-            
-            # Aggregate downloads by component
-            download_counts = {}
-            component_totals = defaultdict(int)
-            
-            for download in downloads:
+                break  # Reached the end of the table.
+
+            for download in batch:
                 component_type = download.get('component_type', '')
                 component_name = download.get('component_name', '')
 
@@ -302,7 +299,22 @@ def fetch_download_stats():
                     key = f"{component_type}|{category}|{actual_name}"
                     component_totals[key] += 1
 
-            # Convert to the format we need using the TYPE_MAPPING constant
+            total_rows += len(batch)
+            last_id = batch[-1]['id']
+
+            # Progress indicator roughly every 100k rows
+            if total_rows % 100000 < page_size:
+                print(f"  Fetched {total_rows} records so far (last id={last_id})...")
+
+            if len(batch) < page_size:
+                break  # Final, short page.
+
+        print(f"📊 Total records fetched: {total_rows}")
+
+        # If we fetched records, use them
+        if total_rows > 0:
+            # Convert aggregated totals to the format we need using TYPE_MAPPING
+            download_counts = {}
             for key, count in component_totals.items():
                 parts = key.split('|')
                 if len(parts) == 3:
@@ -310,7 +322,7 @@ def fetch_download_stats():
                     mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
                     final_key = f"{mapped_type}/{category}/{component_name}"
                     download_counts[final_key] = count
-            
+
             print(f"✅ Fetched and aggregated {len(download_counts)} component download stats")
             return download_counts
         else:
