@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-27T04:24:39.085532+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-06-28T04:36:19.549133+00:00",
+  "totalJobs": 98,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -189,6 +189,31 @@
         "Go",
         "AWS",
         "Django"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-memora-aps-founding-engineer",
+      "company": "Memora ApS",
+      "position": "Founding Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Copenhagen, Denmark URL: https://memora.dk/ About Us At Memora, we're digitizing one of the oldest and most overlooked categories on earth: the cemetery. Most still run on paper maps, spreadsheets, and institutional memory. We are replacing this with an ecosystem for everyone who...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/memora-aps-founding-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/memora-aps-founding-engineer",
+      "postedAt": "2026-06-06T13:32:54+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "React Native",
+        "Rails"
       ],
       "companyIcon": ""
     },
@@ -1375,6 +1400,26 @@
         "Python"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5179882008",
+      "company": "Anthropic",
+      "position": "Product Operations Manager, Feedback Loops",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "We're hiring a Product Operations Manager — Feedback Loops to own and continuously improve how customer signal flows into product and research decisions at Anthropic. This is a horizontal, org-wide role — you won't be embedded in a single product team, you'll build the shared operating system for...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
+      "postedAt": "2026-04-11T22:14:11-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-47727983",
