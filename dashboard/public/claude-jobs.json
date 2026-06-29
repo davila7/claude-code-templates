@@ -1,10 +1,9 @@
 {
-  "lastUpdated": "2026-06-28T04:36:19.549133+00:00",
-  "totalJobs": 98,
+  "lastUpdated": "2026-06-29T04:30:52.006267+00:00",
+  "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
@@ -47,25 +46,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-mid-senior-ai-cinematic-video-editor-everai-1134014",
-      "company": "EverAI",
-      "position": "Mid Senior AI Cinematic Video Editor",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Our Vision & Products ð EverAI — Building the Future of AI Companionship One of the Top 15 Largest & Fastest-Growing AI Companies in the World 50 Million Users in 2 years — Help Us Reach 100M first, 500M next At EverAI , we’re shaping what it means to connect with AI. With 50 million users and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1134014",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-mid-senior-ai-cinematic-video-editor-everai-1134014",
-      "postedAt": "2026-06-24T09:04:44+00:00",
-      "tags": [
-        "AWS",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5271428008",
