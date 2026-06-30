@@ -44540,6 +44540,35 @@
       }
     },
     {
+      "name": "skill-improvement-loop",
+      "path": "engineering/skill-improvement-loop.md",
+      "category": "engineering",
+      "type": "loop",
+      "description": "Continuously grades the quality of your skills against a rubric and opens a focused pull request to improve the weakest one on every pass.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [
+        "skills",
+        "quality",
+        "automation",
+        "ci",
+        "evaluation",
+        "loop",
+        "self-improvement"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "test-coverage-loop",
       "path": "engineering/test-coverage-loop.md",
       "category": "engineering",

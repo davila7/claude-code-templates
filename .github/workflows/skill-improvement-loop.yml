@@ -1,0 +1,166 @@
+name: Skill Improvement Loop
+
+# Outer optimization loop for marketplace skills, inspired by the "observer
+# skill" pattern (run the inner skill, grade it, open a diff, repeat).
+#
+# How it works:
+#   1. (Cheap, deterministic, token-free) A heuristic rubric + SkillSpector
+#      triage every skill and pick the N most in need of work. This runs in CI
+#      and needs no API key.
+#   2. (Smart, LLM) The shortlist is handed to a Claude managed agent via a
+#      GitHub issue. The agent runs the existing `component-researcher` ->
+#      `component-improver` agents to apply the full rubric and open a focused
+#      DRAFT pull request per skill.
+#   3. The existing `skill-security-scan.yml` PR gate then validates each draft
+#      PR with SkillSpector, closing the loop.
+#
+# Manual trigger only (PoC). Tune inputs, inspect the triage report artifact,
+# and only let it open the issue once the shortlist looks right.
+
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Limit to one skill category (e.g. git, development). Blank = all skills.'
+        required: false
+        default: ''
+      top:
+        description: 'How many skills to shortlist for improvement.'
+        required: false
+        default: '5'
+      max_quality:
+        description: 'Only shortlist skills scoring at or below this quality (0-100).'
+        required: false
+        default: '75'
+      run_skillspector:
+        description: 'Run SkillSpector and fold its security findings into the triage.'
+        type: boolean
+        required: false
+        default: true
+      create_issue:
+        description: 'Open a GitHub issue for the Claude managed agent. Off = dry-run (report only).'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+  security-events: read
+
+jobs:
+  triage:
+    name: Triage skills and dispatch improvement
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run SkillSpector (security signal)
+        id: skillspector
+        if: ${{ inputs.run_skillspector }}
+        continue-on-error: true
+        run: |
+          pip install "git+https://github.com/NVIDIA/skillspector.git@main"
+          # SkillSpector scans the whole catalog; the rubric grader narrows the
+          # scope to the requested category afterwards.
+          python scripts/skillspector_scan.py --all \
+            --output-md skillspector-report.md \
+            --output-sarif skillspector.sarif || true
+
+      - name: Grade skills (heuristic rubric triage)
+        id: grade
+        env:
+          # Pass untrusted workflow_dispatch inputs through the environment so
+          # they are never interpolated into the shell command itself.
+          INPUT_CATEGORY: ${{ inputs.category }}
+          INPUT_TOP: ${{ inputs.top }}
+          INPUT_MAX_QUALITY: ${{ inputs.max_quality }}
+        run: |
+          args=(--top "$INPUT_TOP" --max-quality "$INPUT_MAX_QUALITY")
+          if [ -n "$INPUT_CATEGORY" ]; then
+            args+=(--category "$INPUT_CATEGORY")
+          else
+            args+=(--all)
+          fi
+          if [ -f skillspector.sarif ]; then
+            args+=(--skillspector-sarif skillspector.sarif)
+          fi
+          python scripts/skill_rubric_grade.py "${args[@]}" \
+            --output-json skill-shortlist.json \
+            --output-md skill-rubric-report.md
+
+      - name: Publish triage report to run summary
+        if: always()
+        run: |
+          if [ -f skill-rubric-report.md ]; then
+            cat skill-rubric-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload triage artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: skill-improvement-triage
+          path: |
+            skill-rubric-report.md
+            skill-shortlist.json
+            skillspector-report.md
+            skillspector.sarif
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Open improvement issue for Claude managed agent
+        if: ${{ inputs.create_issue && steps.grade.outputs.candidate_count != '0' }}
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.existsSync('skill-rubric-report.md')
+              ? fs.readFileSync('skill-rubric-report.md', 'utf8')
+              : '_No triage report produced._';
+            const shortlist = JSON.parse(
+              fs.readFileSync('skill-shortlist.json', 'utf8')
+            );
+
+            const tasks = shortlist
+              .map((s, i) => `- [ ] ${i + 1}. \`${s.path}\` — quality ${s.quality_score}/100 (${s.reasons[0]})`)
+              .join('\n');
+
+            const body = [
+              '@claude please run the **skill improvement loop** on the skills below.',
+              '',
+              'For **each** skill in the shortlist, working one skill per draft PR:',
+              '1. Run the `component-researcher` agent on the skill to produce a prioritized improvement report (this is the real LLM rubric grade).',
+              '2. Run the `component-improver` agent to apply the improvements, validate with `component-reviewer`, and open a **draft** PR titled `improve: <skill-name>`.',
+              '3. Do not over-engineer — preserve each skill\'s existing value; apply only the researched improvements.',
+              '',
+              '**Exit criteria:** stop once a skill\'s issues are resolved or the remaining diff would be cosmetic. One focused PR per skill.',
+              '',
+              '### Shortlist',
+              tasks,
+              '',
+              '<details><summary>Full triage report</summary>',
+              '',
+              report,
+              '',
+              '</details>',
+              '',
+              '---',
+              '_Opened automatically by the Skill Improvement Loop workflow._',
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `Skill improvement loop — ${shortlist.length} skill(s) to improve`,
+              body,
+              labels: ['skill-improvement', 'automation'],
+            });
