@@ -1,31 +1,31 @@
 {
-  "lastUpdated": "2026-06-29T04:30:52.006267+00:00",
-  "totalJobs": 97,
+  "lastUpdated": "2026-06-30T04:25:09.903974+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
     {
-      "id": "anth-5198999008",
-      "company": "Anthropic",
-      "position": "Technical Specialist, Claude Code",
-      "location": "London, UK",
-      "remote": false,
+      "id": "rok-remote-ux-ui-designer-siroko-1134233",
+      "company": "Siroko",
+      "position": "UX UI Designer",
+      "location": "Remote",
+      "remote": true,
       "salary": "",
-      "description": "Anthropic launches products at lightning speed and many of them grow at an unprecedented pace, too. For no product is this more true than Claude Code, the fastest-growing software product in history. That said, speed of adoption is not the same as depth of adoption. We’re building a team of...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
-      "postedAt": "2026-06-25T03:30:52-04:00",
+      "description": "ð«µÂ¡Ãnete al #TeamSiroko! En Siroko seguimos creciendo y buscamos un/a UX/UI Designer para reforzar nuestras lÃ­neas de negocio digitales, trabajando codo con codo con desarrollo, producto, marketing, contenido y data. El objetivo es claro: diseÃ±ar experiencias cuidadas, coherentes con la marca...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ux-ui-designer-siroko-1134233",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ux-ui-designer-siroko-1134233",
+      "postedAt": "2026-06-26T09:03:43+00:00",
       "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
+        "Python",
+        "Go",
+        "Claude Code"
       ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
+      "companyIcon": ""
     },
     {
       "id": "anth-5277834008",
@@ -803,7 +803,7 @@
     {
       "id": "anth-5222289008",
       "company": "Anthropic",
-      "position": "Manager of Solutions Architecture, Applied AI (Enterprise Tech)",
+      "position": "Manager of Applied AI Architecture, Enterprise Tech",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -1339,26 +1339,6 @@
         "AWS",
         "Claude Code",
         "Java",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5185501008",
-      "company": "Anthropic",
-      "position": "Technical Enablement Lead, Claude Code",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA; Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is looking for a Technical Enablement Lead to curate & deliver the technical curriculum that lets our go-to-market teams, partner, and customers demonstrate and support Claude Code with confidence. You'll own Claude Code enablement—building demos, labs, and content that help sellers...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5185501008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5185501008",
-      "postedAt": "2026-04-13T12:44:46-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
