@@ -266,9 +266,14 @@ def fetch_download_stats():
                 except requests.RequestException as e:
                     reason = str(e)
 
-                wait = 2 ** attempt
-                print(f"  ⚠️ {reason} after id={last_id} (attempt {attempt + 1}/{max_retries}); retrying in {wait}s")
-                time.sleep(wait)
+                # Only back off and retry if there are attempts left; on the final
+                # failed attempt fall through immediately to the abort below.
+                if attempt < max_retries - 1:
+                    wait = 2 ** attempt
+                    print(f"  ⚠️ {reason} after id={last_id} (attempt {attempt + 1}/{max_retries}); retrying in {wait}s")
+                    time.sleep(wait)
+                else:
+                    print(f"  ⚠️ {reason} after id={last_id} (attempt {attempt + 1}/{max_retries}); retries exhausted")
 
             if batch is None:
                 # Could not fetch this page after all retries. Abort the whole run:
