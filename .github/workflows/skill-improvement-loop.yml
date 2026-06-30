@@ -76,20 +76,23 @@ jobs:
 
       - name: Grade skills (heuristic rubric triage)
         id: grade
+        env:
+          # Pass untrusted workflow_dispatch inputs through the environment so
+          # they are never interpolated into the shell command itself.
+          INPUT_CATEGORY: ${{ inputs.category }}
+          INPUT_TOP: ${{ inputs.top }}
+          INPUT_MAX_QUALITY: ${{ inputs.max_quality }}
         run: |
-          SARIF_ARG=""
-          if [ -f skillspector.sarif ]; then
-            SARIF_ARG="--skillspector-sarif skillspector.sarif"
-          fi
-          if [ -n "${{ inputs.category }}" ]; then
-            SCOPE="--category ${{ inputs.category }}"
+          args=(--top "$INPUT_TOP" --max-quality "$INPUT_MAX_QUALITY")
+          if [ -n "$INPUT_CATEGORY" ]; then
+            args+=(--category "$INPUT_CATEGORY")
           else
-            SCOPE="--all"
+            args+=(--all)
           fi
-          python scripts/skill_rubric_grade.py $SCOPE \
-            --top "${{ inputs.top }}" \
-            --max-quality "${{ inputs.max_quality }}" \
-            $SARIF_ARG \
+          if [ -f skillspector.sarif ]; then
+            args+=(--skillspector-sarif skillspector.sarif)
+          fi
+          python scripts/skill_rubric_grade.py "${args[@]}" \
             --output-json skill-shortlist.json \
             --output-md skill-rubric-report.md
 
