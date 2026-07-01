@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-30T04:25:09.903974+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-07-01T04:31:26.548755+00:00",
+  "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,24 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-graduate-business-operations-associate-bezos-ai-1134231",
+      "company": "Bezos.AI",
+      "position": "Graduate Business Operations Associate",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About Us Bezos.ai is a Fulfilment-as-a-Service (FaaS) platform. Online sellers connect their sales channels (Amazon, eBay, Shopify) and we orchestrate the rest: routing orders to a global network of warehouse and carrier partners, tracking every parcel to the customer's door, and giving sellers one...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-graduate-business-operations-associate-bezos-ai-1134231",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-graduate-business-operations-associate-bezos-ai-1134231",
+      "postedAt": "2026-06-29T08:20:25+00:00",
+      "tags": [
+        "Python",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-ux-ui-designer-siroko-1134233",
       "company": "Siroko",
@@ -26,6 +44,27 @@
         "Claude Code"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5198999008",
+      "company": "Anthropic",
+      "position": "Technical Specialist, Claude Code",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is hiring Technical Architects: hands-on builders and live technical communicators who help our customers go from \"we bought Claude\" to \"our people use it every day.\" You'll be the technical partner our CSMs pull into the room whenever the work gets technical — and at our customers,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
+      "postedAt": "2026-06-25T03:30:52-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5277834008",
@@ -812,27 +851,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
       "postedAt": "2026-05-18T17:11:30-04:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5204401008",
-      "company": "Anthropic",
-      "position": "Senior Staff Software Engineer",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic’s Consumer Products team is hiring a Senior Staff Software Engineer to serve as the technical lead for Claude’s core chat experience on mobile — the surface where most people meet Claude for the first time. You’ll own the technical direction for our iOS and Android apps and shape how the...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5204401008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5204401008",
-      "postedAt": "2026-05-12T15:15:01-04:00",
       "tags": [
         "Rust",
         "Go",
