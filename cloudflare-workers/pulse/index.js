@@ -1,7 +1,7 @@
 /**
  * Cloudflare Worker: Pulse — Weekly KPI Report
  *
- * Collects metrics from GitHub, Discord, Supabase, npm, Vercel, and Google Analytics,
+ * Collects metrics from GitHub, Discord, Supabase, npm, Cloudflare Pages, and Google Analytics,
  * then sends a consolidated report via Telegram every Sunday at 14:00 UTC.
  *
  * All source collectors are in this single file (no npm dependencies).
@@ -11,7 +11,7 @@ const REPO = 'davila7/claude-code-templates';
 const NPM_PACKAGE = 'claude-code-templates';
 const GITHUB_API = 'https://api.github.com';
 const DISCORD_API = 'https://discord.com/api/v10';
-const VERCEL_API = 'https://api.vercel.com';
+const CLOUDFLARE_API = 'https://api.cloudflare.com/client/v4';
 const NPM_API = 'https://api.npmjs.org';
 const GA4_API = 'https://analyticsdata.googleapis.com/v1beta';
 const TELEGRAM_API = 'https://api.telegram.org';
@@ -48,7 +48,7 @@ export default {
         status: 'running',
         worker: 'pulse-weekly-report',
         schedule: 'Sundays 14:00 UTC',
-        sources: ['github', 'discord', 'downloads', 'npm', 'vercel', 'analytics']
+        sources: ['github', 'discord', 'downloads', 'npm', 'cloudflare', 'analytics']
       });
     }
 
@@ -72,7 +72,7 @@ async function runReport(env, opts = {}) {
       discord: collectDiscord,
       downloads: collectDownloads,
       npm: collectNpm,
-      vercel: collectVercel,
+      cloudflare: collectCloudflare,
       analytics: collectAnalytics
     };
     const collector = collectors[onlySource];
@@ -81,14 +81,14 @@ async function runReport(env, opts = {}) {
     }
     results[onlySource] = await collector(env);
   } else {
-    const [github, discord, downloads, npm, vercel] = await Promise.all([
+    const [github, discord, downloads, npm, cloudflare] = await Promise.all([
       collectGitHub(env),
       collectDiscord(env),
       collectDownloads(env),
       collectNpm(env),
-      collectVercel(env)
+      collectCloudflare(env)
     ]);
-    results = { github, discord, downloads, npm, vercel };
+    results = { github, discord, downloads, npm, cloudflare };
   }
 
   const reportText = formatReport(results);
@@ -354,63 +354,60 @@ async function collectDownloads(env) {
   }
 }
 
-// ─── Source: Vercel ──────────────────────────────────────────────────────────
+// ─── Source: Cloudflare Pages ────────────────────────────────────────────────
 
-async function collectVercel(env) {
+async function collectCloudflare(env) {
   try {
-    if (!env.VERCEL_TOKEN || !env.VERCEL_PROJECT_ID) {
-      return { error: 'VERCEL_TOKEN or VERCEL_PROJECT_ID not configured' };
+    if (!env.CLOUDFLARE_API_TOKEN || !env.CLOUDFLARE_ACCOUNT_ID || !env.CLOUDFLARE_PAGES_PROJECT) {
+      return { error: 'CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_PAGES_PROJECT not configured' };
     }
 
-    const headers = { Authorization: `Bearer ${env.VERCEL_TOKEN}` };
+    const headers = { Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}` };
     const since = weekAgo();
 
+    // Production deployments, newest first
     const data = await fetchJSON(
-      `${VERCEL_API}/v6/deployments?projectId=${env.VERCEL_PROJECT_ID}&since=${since.getTime()}&limit=100`,
+      `${CLOUDFLARE_API}/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/pages/projects/${env.CLOUDFLARE_PAGES_PROJECT}/deployments?env=production&per_page=100`,
       { headers }
     );
 
-    const deployments = data.deployments || [];
-    const successCount = deployments.filter(d => d.state === 'READY').length;
-    const errorCount = deployments.filter(d => d.state === 'ERROR').length;
+    const all = data.result || [];
+    const weekDeployments = all.filter(d => new Date(d.created_on) >= since);
+
+    // latest_stage.status: 'success' | 'failure' | 'active' | 'canceled' | 'skipped'
+    const successCount = weekDeployments.filter(d => d.latest_stage?.status === 'success').length;
+    const errorCount = weekDeployments.filter(d => d.latest_stage?.status === 'failure').length;
 
     let latestStatus = null;
     let latestAge = null;
-    if (deployments.length > 0) {
-      const latest = deployments[0];
-      latestStatus = latest.state;
+    let lastCommit = null;
+    if (all.length > 0) {
+      const latest = all[0];
+      latestStatus = latest.latest_stage?.status || 'unknown';
+      latestAge = formatAge(Date.now() - new Date(latest.created_on).getTime());
 
-      const age = Date.now() - latest.created;
-      const hours = Math.floor(age / (1000 * 60 * 60));
-      const days = Math.floor(hours / 24);
-      if (days > 0) {
-        latestAge = `${days}d ago`;
-      } else if (hours > 0) {
-        latestAge = `${hours}h ago`;
-      } else {
-        latestAge = `${Math.floor(age / (1000 * 60))}m ago`;
+      const msg = latest.deployment_trigger?.metadata?.commit_message;
+      if (msg) {
+        lastCommit = msg.length > 60 ? msg.substring(0, 57) + '...' : msg;
       }
     }
 
-    // Average build time
+    // Average build-stage duration (seconds)
     let avgBuildTime = null;
-    const buildTimes = deployments
-      .filter(d => d.ready && d.buildingAt)
-      .map(d => (d.ready - d.buildingAt) / 1000);
+    const buildTimes = [];
+    for (const d of weekDeployments) {
+      const build = (d.stages || []).find(s => s.name === 'build');
+      if (build?.started_on && build?.ended_on) {
+        buildTimes.push((new Date(build.ended_on) - new Date(build.started_on)) / 1000);
+      }
+    }
     if (buildTimes.length > 0) {
       avgBuildTime = Math.round(buildTimes.reduce((a, b) => a + b, 0) / buildTimes.length);
     }
 
-    // Last commit message
-    let lastCommit = null;
-    if (deployments.length > 0 && deployments[0].meta?.githubCommitMessage) {
-      lastCommit = deployments[0].meta.githubCommitMessage;
-      if (lastCommit.length > 60) lastCommit = lastCommit.substring(0, 57) + '...';
-    }
-
-    return { totalWeek: deployments.length, successCount, errorCount, latestStatus, latestAge, avgBuildTime, lastCommit };
+    return { totalWeek: weekDeployments.length, successCount, errorCount, latestStatus, latestAge, avgBuildTime, lastCommit };
   } catch (error) {
-    console.error('Vercel source error:', error.message);
+    console.error('Cloudflare source error:', error.message);
     return { error: error.message };
   }
 }
@@ -678,19 +675,19 @@ function formatReport(results) {
     ].join('\n'));
   }
 
-  // Vercel
-  if (results.vercel?.error) {
-    sections.push(`VERCEL\n└ Unavailable: ${results.vercel.error}`);
-  } else if (results.vercel) {
-    const v = results.vercel;
-    const status = v.latestStatus === 'READY' ? 'OK' : 'ERROR';
+  // Cloudflare Pages
+  if (results.cloudflare?.error) {
+    sections.push(`CLOUDFLARE (Pages)\n└ Unavailable: ${results.cloudflare.error}`);
+  } else if (results.cloudflare) {
+    const c = results.cloudflare;
+    const status = c.latestStatus === 'success' ? 'OK' : String(c.latestStatus || 'unknown').toUpperCase();
     const lines = [
-      `VERCEL`,
-      `├ Deploys: ${fmt(v.totalWeek)} (${fmt(v.successCount)} ok, ${fmt(v.errorCount)} failed)`,
-      `├ Latest: ${v.latestAge} [${status}]`
+      `CLOUDFLARE (Pages)`,
+      `├ Deploys: ${fmt(c.totalWeek)} (${fmt(c.successCount)} ok, ${fmt(c.errorCount)} failed)`,
+      `├ Latest: ${c.latestAge} [${status}]`
     ];
-    if (v.avgBuildTime != null) {
-      lines.push(`└ Avg build: ${v.avgBuildTime}s`);
+    if (c.avgBuildTime != null) {
+      lines.push(`└ Avg build: ${c.avgBuildTime}s`);
     } else {
       lines[lines.length - 1] = lines[lines.length - 1].replace('├', '└');
     }
@@ -720,7 +717,6 @@ async function sendToTelegram(env, text) {
       body: JSON.stringify({
         chat_id: chatId,
         text: msg,
-        parse_mode: 'HTML',
         disable_web_page_preview: true
       })
     });
@@ -788,6 +784,14 @@ function getWeekRange() {
   const start = weekAgo();
   const opts = { month: 'short', day: 'numeric', year: 'numeric' };
   return `${start.toLocaleDateString('en-US', opts)} - ${end.toLocaleDateString('en-US', opts)}`;
+}
+
+function formatAge(ms) {
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const days = Math.floor(hours / 24);
+  if (days > 0) return `${days}d ago`;
+  if (hours > 0) return `${hours}h ago`;
+  return `${Math.floor(ms / (1000 * 60))}m ago`;
 }
 
 function fmt(n) {

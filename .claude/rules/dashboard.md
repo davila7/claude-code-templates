@@ -5,7 +5,7 @@ paths:
 
 # Dashboard — www.aitmpl.com & app.aitmpl.com
 
-Astro 5 + React islands + Tailwind v4 application. Single Vercel project serving both domains.
+Astro 5 + React islands + Tailwind v4 application. Single Cloudflare Pages project serving both domains.
 
 ## Stack
 
@@ -41,4 +41,4 @@ cd dashboard && npm install && npx astro dev --port 4321
 
 ## Deployment
 
-Always use the `deployer` agent. Never deploy manually. Node pinned to 22.x (v24 breaks Vercel builds).
+Always use the `deployer` agent. Never deploy manually. Node pinned to 22.x in CI (v24 breaks the build). Deploys to Cloudflare Pages via `wrangler` (see `.github/workflows/deploy.yml`).

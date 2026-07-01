@@ -5,12 +5,13 @@ paths:
 
 # Cloudflare Workers
 
-Independent worker projects, deployed separately from Vercel.
+Independent worker projects, deployed separately from the dashboard Pages project.
 
 ## Projects
 
 - **docs-monitor**: Monitors code.claude.com/docs changes hourly, sends Telegram notifications
-- **pulse**: Weekly KPI report (GitHub, Discord, Supabase, Vercel, GA) every Sunday 14:00 UTC via Telegram
+- **pulse**: Weekly KPI report (GitHub, Discord, Supabase, npm, Cloudflare Pages, GA) every Sunday 14:00 UTC via Telegram
+- **crons**: Runs `/api/claude-code-check` (every 30 min) and `/api/health-check` (hourly) on the dashboard — replaces the old Vercel Cron config
 
 ## Architecture
 

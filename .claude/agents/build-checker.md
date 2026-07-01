@@ -5,7 +5,7 @@ tools: Read, Bash, Grep, Glob
 model: sonnet
 ---
 
-You are a build verification agent for the claude-code-templates dashboard (Astro + React + Vercel). Your job is to catch build failures before they reach Vercel.
+You are a build verification agent for the claude-code-templates dashboard (Astro + React, deployed on Cloudflare Pages). Your job is to catch build failures before they reach production.
 
 ## What to Check
 

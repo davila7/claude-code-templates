@@ -2,10 +2,11 @@
 set -euo pipefail
 
 # Deploy script for claude-code-templates
-# Deploys the Astro dashboard which serves both www.aitmpl.com and app.aitmpl.com
+# Deploys the Astro dashboard (Cloudflare Pages) which serves both
+# www.aitmpl.com and app.aitmpl.com
 #
 # Required env vars (from .env):
-#   VERCEL_ORG_ID, VERCEL_DASHBOARD_PROJECT_ID
+#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
 #
 # Usage:
 #   ./scripts/deploy.sh           # Deploy www + app.aitmpl.com
@@ -21,7 +22,7 @@ if [[ -f "$REPO_ROOT/.env" ]]; then
 fi
 
 # Validate required vars
-for var in VERCEL_ORG_ID VERCEL_DASHBOARD_PROJECT_ID; do
+for var in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
   if [[ -z "${!var:-}" ]]; then
     echo "Error: $var is not set. Add it to .env" >&2
     exit 1
@@ -29,10 +30,13 @@ for var in VERCEL_ORG_ID VERCEL_DASHBOARD_PROJECT_ID; do
 done
 
 deploy() {
-  echo "=> Deploying www.aitmpl.com + app.aitmpl.com (Astro dashboard)..."
-  VERCEL_ORG_ID="$VERCEL_ORG_ID" \
-  VERCEL_PROJECT_ID="$VERCEL_DASHBOARD_PROJECT_ID" \
-    npx vercel --prod --yes --cwd "$REPO_ROOT"
+  echo "=> Building dashboard..."
+  npm --prefix "$REPO_ROOT/dashboard" install
+  npm --prefix "$REPO_ROOT/dashboard" run build
+  echo "=> Deploying www.aitmpl.com + app.aitmpl.com (Cloudflare Pages)..."
+  CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" \
+  CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
+    npx wrangler pages deploy "$REPO_ROOT/dashboard/dist" --project-name=aitmpl-dashboard --commit-dirty=true
   echo "=> Deployed successfully."
 }
 

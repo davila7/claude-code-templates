@@ -31,9 +31,10 @@ wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 wrangler secret put DISCORD_BOT_TOKEN
 wrangler secret put DISCORD_GUILD_ID
 
-# Vercel
-wrangler secret put VERCEL_TOKEN          # Personal access token
-wrangler secret put VERCEL_PROJECT_ID     # aitmpl project ID
+# Cloudflare Pages (dashboard deploy metrics)
+wrangler secret put CLOUDFLARE_API_TOKEN      # API token with Account > Pages > Read
+wrangler secret put CLOUDFLARE_ACCOUNT_ID     # Cloudflare account ID
+wrangler secret put CLOUDFLARE_PAGES_PROJECT  # Pages project name (aitmpl-dashboard)
 
 # Manual trigger auth
 wrangler secret put TRIGGER_SECRET
@@ -107,9 +108,9 @@ npm run test             # Test cron trigger locally
 ├ By type: agents 65% | commands 20% | settings 15%
 └ Countries: US 40% | DE 15% | BR 10% | UK 8% | CL 5%
 
-🚀 VERCEL
-├ Deploys: 12 (11 ✅ 1 ❌)
-└ Latest: 2h ago ✅
+🚀 CLOUDFLARE (Pages)
+├ Deploys: 12 (11 ok, 1 failed)
+└ Latest: 2h ago [OK]
 
 📈 ANALYTICS
 ├ Visitors: 3,456
