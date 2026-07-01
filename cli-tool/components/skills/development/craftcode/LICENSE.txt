@@ -1,0 +1,21 @@
+CraftCode Skill License
+Copyright (c) 2026 otonit (Ilhan Berk Duran)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this skill and its associated documentation files (the "Skill"), to use, copy,
+modify, and distribute the Skill, including for commercial purposes, subject to
+the following conditions:
+
+1. Attribution. This copyright notice and a link to the original project
+   (https://getotonit.com) must be retained in all copies or substantial
+   portions of the Skill, including in any redistributed or modified version.
+
+2. No misrepresentation. You may not claim the Skill as your own original work,
+   nor remove the attribution above.
+
+THE SKILL IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SKILL OR THE USE OR OTHER DEALINGS IN THE SKILL.
