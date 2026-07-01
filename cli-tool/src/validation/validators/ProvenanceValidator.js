@@ -145,55 +145,81 @@ class ProvenanceValidator extends BaseValidator {
   }
 
   /**
+   * Lazily build (once per process) a map of relative-path -> last-commit
+   * metadata by walking the whole `git log` history in a single subprocess,
+   * instead of spawning `git log -1 -- <file>` per component. On a repo with
+   * a few thousand commits, doing this per-file (x3 processes each, plus a
+   * repeated `git config` call) is what makes a full catalog regen slow -
+   * every call re-walks history from scratch for a single path.
+   * @returns {Map<string, {commitSha: string, author: string, date: string}>}
+   */
+  static _getGitLogCache() {
+    if (!ProvenanceValidator._gitLogCache) {
+      const cache = new Map();
+      try {
+        const output = execSync(
+          'git log --format="%x00%H|%an|%ai" --name-only --relative -- components',
+          { encoding: 'utf8', maxBuffer: 1024 * 1024 * 200, stdio: ['pipe', 'pipe', 'ignore'] }
+        );
+
+        for (const block of output.split('\x00')) {
+          const lines = block.split('\n').filter(Boolean);
+          if (lines.length === 0) continue;
+
+          const [commitSha, author, date] = lines[0].split('|');
+          for (let i = 1; i < lines.length; i++) {
+            const filePath = lines[i];
+            // git log walks newest-first, so the first hit per path is the latest commit
+            if (!cache.has(filePath)) {
+              cache.set(filePath, { commitSha, author, date });
+            }
+          }
+        }
+      } catch (error) {
+        // Not a git repository, or the log command failed - leave cache empty
+      }
+      ProvenanceValidator._gitLogCache = cache;
+    }
+    return ProvenanceValidator._gitLogCache;
+  }
+
+  /**
+   * Lazily fetch (once per process) the origin remote URL.
+   * @returns {string}
+   */
+  static _getRemoteUrl() {
+    if (ProvenanceValidator._remoteUrlCache === undefined) {
+      try {
+        ProvenanceValidator._remoteUrlCache = execSync(
+          'git config --get remote.origin.url',
+          { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }
+        ).trim();
+      } catch (error) {
+        ProvenanceValidator._remoteUrlCache = '';
+      }
+    }
+    return ProvenanceValidator._remoteUrlCache;
+  }
+
+  /**
    * Extract Git metadata for a file
    * @param {string} filePath - Path to file
    * @returns {Promise<object|null>} Git metadata or null
    */
   async extractGitMetadata(filePath) {
-    try {
-      // Get last commit SHA for this file
-      const commitSha = execSync(
-        `git log -1 --format=%H -- "${filePath}"`,
-        { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }
-      ).trim();
+    const normalizedPath = filePath.split(path.sep).join('/').replace(/^\.\//, '');
+    const entry = ProvenanceValidator._getGitLogCache().get(normalizedPath);
 
-      if (!commitSha) {
-        return null;
-      }
-
-      // Get commit author
-      const author = execSync(
-        `git log -1 --format=%an -- "${filePath}"`,
-        { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }
-      ).trim();
-
-      // Get commit date
-      const date = execSync(
-        `git log -1 --format=%ai -- "${filePath}"`,
-        { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }
-      ).trim();
-
-      // Get remote URL
-      let remoteUrl = '';
-      try {
-        remoteUrl = execSync(
-          'git config --get remote.origin.url',
-          { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }
-        ).trim();
-      } catch (e) {
-        // No remote configured
-      }
-
-      return {
-        commitSha,
-        author,
-        date,
-        remoteUrl
-      };
-    } catch (error) {
-      // Not a git repository or file not tracked
+    if (!entry) {
       return null;
     }
+
+    return {
+      commitSha: entry.commitSha,
+      author: entry.author,
+      date: entry.date,
+      remoteUrl: ProvenanceValidator._getRemoteUrl()
+    };
   }
 
   /**
