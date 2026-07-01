@@ -16,8 +16,9 @@
     "secret:supabase-key": "wrangler secret put SUPABASE_SERVICE_ROLE_KEY",
     "secret:discord-bot": "wrangler secret put DISCORD_BOT_TOKEN",
     "secret:discord-guild": "wrangler secret put DISCORD_GUILD_ID",
-    "secret:vercel-token": "wrangler secret put VERCEL_TOKEN",
-    "secret:vercel-project": "wrangler secret put VERCEL_PROJECT_ID",
+    "secret:cloudflare-token": "wrangler secret put CLOUDFLARE_API_TOKEN",
+    "secret:cloudflare-account": "wrangler secret put CLOUDFLARE_ACCOUNT_ID",
+    "secret:cloudflare-project": "wrangler secret put CLOUDFLARE_PAGES_PROJECT",
     "secret:trigger": "wrangler secret put TRIGGER_SECRET"
   },
   "keywords": [

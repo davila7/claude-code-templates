@@ -18,8 +18,9 @@ crons = ["0 14 * * SUN"]
 # - SUPABASE_SERVICE_ROLE_KEY: Supabase service role key
 # - DISCORD_BOT_TOKEN: Discord bot token
 # - DISCORD_GUILD_ID: Discord server ID
-# - VERCEL_TOKEN: Vercel personal access token
-# - VERCEL_PROJECT_ID: Vercel project ID
+# - CLOUDFLARE_API_TOKEN: Cloudflare API token (Account > Pages > Read)
+# - CLOUDFLARE_ACCOUNT_ID: Cloudflare account ID
+# - CLOUDFLARE_PAGES_PROJECT: Cloudflare Pages project name (aitmpl-dashboard)
 # - TRIGGER_SECRET: Secret for manual /trigger endpoint
 #
 # Optional (add later):
