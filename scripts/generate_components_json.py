@@ -19,7 +19,7 @@ def run_security_validation():
 
     try:
         # Change to cli-tool directory to run npm command
-        cli_tool_dir = Path(__file__).parent / 'cli-tool'
+        cli_tool_dir = Path(__file__).parent.parent / 'cli-tool'
 
         # Run security audit and generate JSON report
         result = subprocess.run(
