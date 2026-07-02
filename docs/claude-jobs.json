@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-01T07:16:16.941542+00:00",
-  "totalJobs": 97,
+  "lastUpdated": "2026-07-02T06:45:19.625562+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,57 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-48756639",
+      "company": "Dashdoc",
+      "position": "Software Engineer",
+      "location": "REMOTE / EU",
+      "remote": true,
+      "salary": "€50k–€80k",
+      "description": "Dashdoc is a SaaS Transport Management System for road freight. We help carriers and shippers run transport operations on one shared platform. We’re hiring a product-minded engineer to help us expand in Belgium and the Netherlands. Local specifics: e-CMR mandates, digital waste regulations,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48756639",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48756639",
+      "postedAt": "2026-07-02T04:41:27+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Go",
+        "PostgreSQL",
+        "GCP",
+        "Claude Code",
+        "Cursor",
+        "React Native",
+        "Django"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5288742008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Enterprise",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Enterprise is central to Anthropic's mission. The organizations that could benefit most from Claude often have the most demanding needs, with rigorous requirements around end-user experience, procurement, security, and permissions. We believe earning their trust is essential to ensuring AI benefits...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5288742008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5288742008",
+      "postedAt": "2026-07-01T15:52:07-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "rok-remote-graduate-business-operations-associate-bezos-ai-1134231",
       "company": "Bezos.AI",
@@ -23,25 +74,6 @@
       "tags": [
         "Python",
         "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-ux-ui-designer-siroko-1134233",
-      "company": "Siroko",
-      "position": "UX UI Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "ð«µÂ¡Ãnete al #TeamSiroko! En Siroko seguimos creciendo y buscamos un/a UX/UI Designer para reforzar nuestras lÃ­neas de negocio digitales, trabajando codo con codo con desarrollo, producto, marketing, contenido y data. El objetivo es claro: diseÃ±ar experiencias cuidadas, coherentes con la marca...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ux-ui-designer-siroko-1134233",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ux-ui-designer-siroko-1134233",
-      "postedAt": "2026-06-26T09:03:43+00:00",
-      "tags": [
-        "Python",
-        "Go",
-        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -69,7 +101,7 @@
     {
       "id": "anth-5277834008",
       "company": "Anthropic",
-      "position": "Manager, Applied AI Engineering,  Life Sciences (Beneficial Deployments)",
+      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -103,30 +135,6 @@
         "Rust",
         "Go",
         "AWS",
-        "Kubernetes",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5271426008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Developer Productivity (Dev Environments) - Claude Code",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "Every minute an Anthropic engineer or researcher spends waiting on a container to boot, a dependency to resolve, or CI to surface a failure that could have been caught locally is a minute not spent on frontier AI safety. The Developer Productivity team owns the inner development loop for the people...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
-      "postedAt": "2026-06-18T23:28:54-04:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "Docker",
         "Kubernetes",
         "Claude Code",
         "Anthropic"
@@ -1383,7 +1391,7 @@
       "id": "anth-5179882008",
       "company": "Anthropic",
       "position": "Product Operations Manager, Feedback Loops",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "New York City, NY; San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
       "description": "We're hiring a Product Operations Manager — Feedback Loops to own and continuously improve how customer signal flows into product and research decisions at Anthropic. This is a horizontal, org-wide role — you won't be embedded in a single product team, you'll build the shared operating system for...",
@@ -1478,26 +1486,6 @@
       "tags": [
         "React",
         "TypeScript",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5174755008",
-      "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Backend",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is looking for experienced, product-minded engineers to own the backend systems that power user experiences across our API, Claude Code, and Claude.ai. You'll independently scope complex, multi-month projects through ambiguous problem spaces and lead peers through technical and product...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
-      "postedAt": "2026-04-08T14:57:22-04:00",
-      "tags": [
         "Rust",
         "AWS",
         "Claude Code",
