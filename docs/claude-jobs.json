@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-01T04:31:26.548755+00:00",
-  "totalJobs": 97,
+  "lastUpdated": "2026-07-02T04:27:52.697888+00:00",
+  "totalJobs": 98,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,50 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-48750836",
+      "company": "Grafana Labs",
+      "position": "Staff Software Engineer",
+      "location": "100% Remote (US + Canada)",
+      "remote": true,
+      "salary": "",
+      "description": "Im the hiring manager - some of the product highlights under the team's scope: - Grafana Assistant: the actually useful AI assistant that helps you do everything in Grafana; it works everywhere - even in OSS! - Investigations: background agents for investigating issues - Grafana Cloud CLI (GCX):...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48750836",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48750836",
+      "postedAt": "2026-07-01T18:02:19+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5288742008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Enterprise",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Enterprise is central to Anthropic's mission. The organizations that could benefit most from Claude often have the most demanding needs, with rigorous requirements around end-user experience, procurement, security, and permissions. We believe earning their trust is essential to ensuring AI benefits...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5288742008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5288742008",
+      "postedAt": "2026-07-01T15:52:07-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "rok-remote-graduate-business-operations-associate-bezos-ai-1134231",
       "company": "Bezos.AI",
@@ -23,25 +67,6 @@
       "tags": [
         "Python",
         "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-ux-ui-designer-siroko-1134233",
-      "company": "Siroko",
-      "position": "UX UI Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "ð«µÂ¡Ãnete al #TeamSiroko! En Siroko seguimos creciendo y buscamos un/a UX/UI Designer para reforzar nuestras lÃ­neas de negocio digitales, trabajando codo con codo con desarrollo, producto, marketing, contenido y data. El objetivo es claro: diseÃ±ar experiencias cuidadas, coherentes con la marca...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ux-ui-designer-siroko-1134233",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ux-ui-designer-siroko-1134233",
-      "postedAt": "2026-06-26T09:03:43+00:00",
-      "tags": [
-        "Python",
-        "Go",
-        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -69,7 +94,7 @@
     {
       "id": "anth-5277834008",
       "company": "Anthropic",
-      "position": "Manager, Applied AI Engineering,  Life Sciences (Beneficial Deployments)",
+      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -1383,7 +1408,7 @@
       "id": "anth-5179882008",
       "company": "Anthropic",
       "position": "Product Operations Manager, Feedback Loops",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "New York City, NY; San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
       "description": "We're hiring a Product Operations Manager — Feedback Loops to own and continuously improve how customer signal flows into product and research decisions at Anthropic. This is a horizontal, org-wide role — you won't be embedded in a single product team, you'll build the shared operating system for...",
