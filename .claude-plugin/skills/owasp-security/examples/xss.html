@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Comment</h1>
+  <div id="comment"></div>
+  <script>
+    // Reflected XSS example
+    // For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
+    //
+    // This example demonstrates a reflected XSS vulnerability (A07).
+    // User input from the 'msg' URL parameter is directly inserted
+    // into the DOM using innerHTML without sanitization, allowing
+    // attackers to execute arbitrary JavaScript.
+    
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('comment').innerHTML = params.get('msg');
+  </script>
+</body>
+</html>

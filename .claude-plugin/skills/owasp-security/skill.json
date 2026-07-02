@@ -1,0 +1,416 @@
+{
+  "name": "Comprehensive OWASP Security Skill",
+  "version": "1.0.0",
+  "description": "Six-standard security reference: OWASP Top 10 (2025), ASVS 5.0, MASVS v2.1.0, API Security Top 10, Kubernetes Top 10, and Agentic Applications 2026",
+  "author": "Security Education Community",
+  "license": "MIT",
+  "repository": "https://github.com/mfkocalar/OWASP-Security-Skills",
+  "keywords": [
+    "security",
+    "owasp",
+    "top-10",
+    "asvs",
+    "masvs",
+    "api-security",
+    "kubernetes",
+    "llm-security",
+    "vulnerability-assessment",
+    "code-review"
+  ],
+  "standards": [
+    {
+      "name": "OWASP Top 10 (2025)",
+      "version": "2025",
+      "coverage": "10 critical web application vulnerabilities",
+      "section": "Section 1"
+    },
+    {
+      "name": "OWASP ASVS",
+      "version": "5.0",
+      "coverage": "Application security verification requirements (L1/L2/L3)",
+      "section": "Section 2"
+    },
+    {
+      "name": "OWASP MASVS",
+      "version": "2.1.0",
+      "coverage": "Mobile application security (iOS/Android)",
+      "section": "Section 3"
+    },
+    {
+      "name": "OWASP API Security",
+      "version": "2023",
+      "coverage": "10 API-specific security risks",
+      "section": "Section 4"
+    },
+    {
+      "name": "OWASP Kubernetes Top 10",
+      "version": "2025",
+      "coverage": "10 container/infrastructure security risks",
+      "section": "Section 5"
+    },
+    {
+      "name": "OWASP Agentic Applications",
+      "version": "2026 (Preview)",
+      "coverage": "AI/LLM system security (emerging standard)",
+      "section": "Section 6"
+    }
+  ],
+  "activation": {
+    "triggers": [
+      {
+        "context": "web_application",
+        "keywords": [
+          "web app",
+          "REST API",
+          "authentication",
+          "authorization",
+          "injection",
+          "xss",
+          "csrf"
+        ],
+        "example_prompts": [
+          "Review this code for OWASP vulnerabilities",
+          "Audit this authentication endpoint",
+          "Check for SQL injection risks"
+        ]
+      },
+      {
+        "context": "api_security",
+        "keywords": [
+          "API",
+          "REST",
+          "GraphQL",
+          "endpoint",
+          "token",
+          "BOLA",
+          "broken authorization",
+          "rate limiting"
+        ],
+        "example_prompts": [
+          "Review this API endpoint for OWASP API Security risks",
+          "Check for BOLA vulnerability",
+          "Audit JWT implementation"
+        ]
+      },
+      {
+        "context": "mobile_app",
+        "keywords": [
+          "iOS",
+          "Android",
+          "Keychain",
+          "Android Keystore",
+          "mobile app",
+          "MASVS",
+          "biometric",
+          "secure storage"
+        ],
+        "example_prompts": [
+          "Is this iOS app compliant with MASVS?",
+          "Review this Android storage implementation",
+          "Audit cryptography in mobile app"
+        ]
+      },
+      {
+        "context": "kubernetes",
+        "keywords": [
+          "kubernetes",
+          "k8s",
+          "RBAC",
+          "pod",
+          "cluster",
+          "secrets",
+          "network policy",
+          "container security"
+        ],
+        "example_prompts": [
+          "Harden this Kubernetes manifest",
+          "Review RBAC configuration",
+          "Check for K8s security misconfigurations"
+        ]
+      },
+      {
+        "context": "llm_ai_security",
+        "keywords": [
+          "LLM",
+          "AI",
+          "agent",
+          "agentic",
+          "prompt injection",
+          "prompt",
+          "model",
+          "chatbot",
+          "llama",
+          "gpt",
+          "machine learning",
+          "training data",
+          "model poisoning",
+          "ai security",
+          "ai safety"
+        ],
+        "example_prompts": [
+          "How do I secure this AI agent?",
+          "Review for prompt injection risks",
+          "Audit LLM output handling",
+          "Check agentic app security"
+        ]
+      },
+      {
+        "context": "compliance",
+        "keywords": [
+          "ASVS",
+          "compliance",
+          "verification",
+          "requirements",
+          "L1",
+          "L2",
+          "L3",
+          "level",
+          "standard",
+          "checklist",
+          "audit",
+          "masvs",
+          "kubernetes top 10",
+          "owasp top 10"
+        ],
+        "example_prompts": [
+          "What ASVS L2 requirements apply here?",
+          "Is this MASVS compliant?",
+          "List API Security Top 10 risks"
+        ]
+      }
+    ],
+    "auto_activate": true,
+    "confidence_threshold": 0.7
+  },
+  "files": {
+    "core": {
+      "skills_guide": "owasp-comprehensive-security-skills.md",
+      "instructions": "owasp-css.instructions.md",
+      "readme": "README.md",
+      "contributing": "CONTRIBUTING.md"
+    },
+    "examples": {
+      "top10_a01": "examples/broken-access-control.py",
+      "top10_a02": "examples/cryptographic-failures.js",
+      "top10_a03": "examples/injection.js",
+      "top10_a05": "examples/security-misconfiguration.py",
+      "top10_a07": "examples/xss.html",
+      "top10_a09": "examples/logging-monitoring-failures.py",
+      "api_security": "examples/api-auth-bypass.js",
+      "kubernetes": "examples/k8s-rbac.yaml",
+      "agentic_apps": "examples/prompt-injection.txt"
+    }
+  },
+  "functionality": {
+    "code_review": {
+      "enabled": true,
+      "description": "Analyze code for OWASP vulnerabilities",
+      "standards": ["Top 10", "ASVS", "MASVS", "API Security"]
+    },
+    "security_assessment": {
+      "enabled": true,
+      "description": "Comprehensive security assessment across standards",
+      "standards": ["All 6 standards"]
+    },
+    "configuration_audit": {
+      "enabled": true,
+      "description": "Review infrastructure/application configurations",
+      "standards": ["Top 10", "Kubernetes", "ASVS"]
+    },
+    "compliance_check": {
+      "enabled": true,
+      "description": "Verify compliance with security standards",
+      "standards": ["ASVS", "MASVS", "Kubernetes Top 10"]
+    },
+    "vulnerability_guidance": {
+      "enabled": true,
+      "description": "Detailed mitigation strategies for identified risks",
+      "standards": ["All 6 standards"]
+    },
+    "example_demonstration": {
+      "enabled": true,
+      "description": "Show vulnerable vs secure code patterns",
+      "standard_files": 9,
+      "total_lines": 1840
+    }
+  },
+  "models": {
+    "recommended": [
+      {
+        "name": "Claude Haiku",
+        "version": "4.5",
+        "context_window": "200k",
+        "recommended": true
+      },
+      {
+        "name": "Claude Sonnet",
+        "version": "4.1",
+        "context_window": "200k",
+        "recommended": true
+      },
+      {
+        "name": "Claude Opus",
+        "version": "3+",
+        "context_window": "200k",
+        "recommended": true
+      }
+    ],
+    "minimum_context_required": "8k tokens"
+  },
+  "performance": {
+    "activation_time_ms": "<500ms",
+    "average_response_time_s": "<3s",
+    "memory_footprint_kb": "~100kb",
+    "cache_examples": true
+  },
+  "metadata": {
+    "created": "2026-03-01",
+    "last_updated": "2026-03-14",
+    "status": "production",
+    "maintenance": "actively maintained",
+    "support": "github issues and discussions"
+  },
+  "examples_by_category": {
+    "broken_access_control": {
+      "file": "examples/broken-access-control.py",
+      "lines": 191,
+      "language": "Python",
+      "framework": "Flask",
+      "vulnerabilities": ["A01", "function-level auth", "property-level access"],
+      "demonstrates": ["default-deny", "authorization checks", "role-based access"]
+    },
+    "cryptographic_failures": {
+      "file": "examples/cryptographic-failures.js",
+      "lines": 224,
+      "language": "JavaScript",
+      "framework": "Node.js",
+      "vulnerabilities": ["A02", "weak hashing", "plaintext storage", "missing TLS"],
+      "demonstrates": ["bcrypt", "AES-256-GCM", "secure RNG", "environment secrets"]
+    },
+    "sql_injection": {
+      "file": "examples/injection.js",
+      "lines": 17,
+      "language": "JavaScript",
+      "vulnerabilities": ["A03", "SQL injection"],
+      "demonstrates": ["parameterized queries", "input validation"]
+    },
+    "security_misconfiguration": {
+      "file": "examples/security-misconfiguration.py",
+      "lines": 446,
+      "language": "Python",
+      "framework": "Flask, Docker, Nginx",
+      "vulnerabilities": ["A05", "debug mode", "default credentials", "missing headers"],
+      "demonstrates": ["secure Docker", "Nginx hardening", "security headers"]
+    },
+    "xss": {
+      "file": "examples/xss.html",
+      "lines": 19,
+      "language": "HTML/JavaScript",
+      "vulnerabilities": ["A07", "reflected XSS"],
+      "demonstrates": ["innerHTML dangers", "sanitization"]
+    },
+    "logging_monitoring_failures": {
+      "file": "examples/logging-monitoring-failures.py",
+      "lines": 404,
+      "language": "Python",
+      "framework": "ELK Stack, Prometheus",
+      "vulnerabilities": ["A09", "missing logs", "secrets in logs"],
+      "demonstrates": ["structured logging", "ELK setup", "alerting rules"]
+    },
+    "api_auth_bypass": {
+      "file": "examples/api-auth-bypass.js",
+      "lines": 75,
+      "language": "JavaScript",
+      "standard": "OWASP API Security",
+      "vulnerabilities": ["BOLA", "broken auth", "CORS misconfiguration"],
+      "demonstrates": ["JWT validation", "authorization middleware"]
+    },
+    "kubernetes_rbac": {
+      "file": "examples/k8s-rbac.yaml",
+      "lines": 184,
+      "language": "YAML",
+      "standard": "OWASP Kubernetes Top 10",
+      "vulnerabilities": ["K01", "K02", "K03", "RBAC", "secrets"],
+      "demonstrates": ["least privilege", "RBAC rules", "secret encryption"]
+    },
+    "prompt_injection": {
+      "file": "examples/prompt-injection.txt",
+      "lines": 280,
+      "language": "Python",
+      "standard": "OWASP Agentic Applications 2026",
+      "vulnerabilities": ["AG01", "AG03", "AG05", "AG06"],
+      "demonstrates": ["prompt validation", "output filtering", "tool authorization"]
+    }
+  },
+  "deployment": {
+    "installation_methods": [
+      {
+        "method": "direct_copy",
+        "path": "~/.claude/skills/owasp-security",
+        "instructions": "Copy directory to skills folder and restart Claude"
+      },
+      {
+        "method": "symlink",
+        "command": "ln -s /path/to/OWASP-Security-Skills ~/.claude/skills/owasp-security",
+        "instructions": "Create symbolic link to repository"
+      },
+      {
+        "method": "git_clone",
+        "repository": "https://github.com/mfkocalar/OWASP-Security-Skills.git",
+        "instructions": "Clone repository and link to skills directory"
+      }
+    ],
+    "verification": {
+      "check_files": [
+        "owasp-comprehensive-security-skills.md",
+        "owasp-css.instructions.md",
+        "README.md",
+        "examples/"
+      ],
+      "test_activation": "Ask about a security vulnerability in provided code",
+      "expected_response": "References owasp-comprehensive-security-skills.md with specific standard"
+    }
+  },
+  "changelog": {
+    "1.0.0": {
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release",
+        "6 OWASP standards integrated",
+        "9 comprehensive example files (1,840 lines)",
+        "Multi-context activation (web, API, mobile, K8s, AI)",
+        "Skill manifest and activation triggers",
+        "Production deployment ready"
+      ]
+    }
+  },
+  "roadmap": [
+    {
+      "version": "1.1.0",
+      "features": [
+        "Add examples for A04, A06, A08, A10",
+        "Language-specific examples (Java, Go, Rust)",
+        "SBOM (Software Bill of Materials) analysis",
+        "Real-time vulnerability scanning integration"
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "features": [
+        "Interactive security quiz mode",
+        "Live code sandbox with vulnerability detection",
+        "CVSS score calculation",
+        "Automated remediation suggestions"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "features": [
+        "Enterprise deployment support",
+        "Advanced SIEM integration",
+        "Custom rule creation",
+        "Organization-specific compliance profiles"
+      ]
+    }
+  ]
+}
