@@ -138,7 +138,7 @@ This collection includes components from multiple sources:
 - **move-code-quality-skill** - MIT License
 - **cocoindex-claude** - Apache 2.0
 
-Each of these resources retains its **original license and attribution**, as defined by their respective authors.
+Each of these resources retains its **original license and attribution**, as defined by its respective author.
 We respect and credit all original creators for their work and contributions to the Claude ecosystem.
 
 ## 📄 License
