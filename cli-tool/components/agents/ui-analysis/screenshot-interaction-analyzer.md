@@ -2,7 +2,6 @@
 name: screenshot-interaction-analyzer
 description: Analyzes user interaction flows, clickable elements, and state transitions from UI screenshots
 tools: Read, TodoWrite
-model: sonnet
 color: green
 ---
 

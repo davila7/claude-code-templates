@@ -1,8 +1,8 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
-import PartnerBanner from '../components/PartnerBanner.astro';
 import FeaturedSection from '../components/FeaturedSection.astro';
+import JobsPreview from '../components/JobsPreview.tsx';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
@@ -30,9 +30,41 @@ export const prerender = true;
     "license": "https://opensource.org/licenses/MIT"
   })} />
   <TopBar />
-  <PartnerBanner />
-  <FeaturedSection />
-  <ComponentGrid client:load initialType="skills" />
+
+  <!-- Two-column layout: main content + jobs sidebar -->
+  <div class="flex min-h-0">
+    <!-- Left: main content -->
+    <div class="flex-1 min-w-0">
+      <!-- ASCII hero banner -->
+      <div class="px-6 pt-5 pb-1">
+        <div class="hidden md:flex items-center justify-center gap-4 overflow-hidden">
+          <pre class="ascii-art shrink-0">
+ █████╗ ██╗    ████████╗███████╗███╗   ███╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗
+██╔══██╗██║    ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
+███████║██║       ██║   █████╗  ██╔████╔██║██████╔╝██║     ███████║   ██║   █████╗  ███████╗
+██╔══██║██║       ██║   ██╔══╝  ██║╚██╔╝██║██╔═══╝ ██║     ██╔══██║   ██║   ██╔══╝  ╚════██║
+██║  ██║██║       ██║   ███████╗██║ ╚═╝ ██║██║     ███████╗██║  ██║   ██║   ███████╗███████║
+╚═╝  ╚═╝╚═╝       ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝</pre>
+          <picture>
+            <source srcset="/claude-code-logo.webp" type="image/webp" />
+            <img src="/claude-code-logo.png" alt="Claude Code" class="w-20 h-20 shrink-0 object-contain" fetchpriority="high" />
+          </picture>
+        </div>
+        <div class="flex items-center justify-center gap-2 mt-2 mb-1">
+          <span class="status-dot"></span>
+          <span class="font-ui-mono text-[12px] text-[var(--color-text-secondary)]">Ready-to-use configurations for your Claude Code projects</span>
+        </div>
+      </div>
+
+      <FeaturedSection />
+      <ComponentGrid client:load initialType="skills" />
+    </div>
+
+    <!-- Right: jobs sidebar (sticky, scrolls independently) -->
+    <aside class="hidden xl:flex flex-col w-[260px] shrink-0 border-l border-[var(--color-border)] sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto bg-[var(--color-surface-0)]">
+      <JobsPreview client:idle variant="sidebar" />
+    </aside>
+  </div>
   <SearchModal client:idle />
   <CartSidebar client:idle />
 </DashboardLayout>

@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"arxiv-mcp-server\": {\n      \"description\": \"Search, download, and analyze academic papers from arXiv. Supports full-text search, paper retrieval, and local storage for research workflows.\",\n      \"command\": \"uvx\",\n      \"args\": [\n        \"arxiv-mcp-server\"\n      ]\n    }\n  }\n}\n"}

@@ -1,0 +1,23 @@
+{
+  "description": "Detects destructive commands hidden inside shell wrappers (sh -c, bash -c, python3 -c, node -e, perl -e, ruby -e). Complements dangerous-command-blocker by catching bypass vectors like 'sh -c \"rm -rf /\"' that evade direct command checks. Covers 8 bypass patterns: interpreter one-liners, nested wrappers, pipe-to-shell, here-strings, and env-based wrappers.",
+  "supportingFiles": [
+    {
+      "source": "shell-wrapper-guard.sh",
+      "destination": ".claude/hooks/shell-wrapper-guard.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/shell-wrapper-guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

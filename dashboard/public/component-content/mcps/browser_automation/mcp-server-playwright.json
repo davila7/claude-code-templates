@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"automatalabs-playwright-server\": {\n      \"description\": \"A Model Context Protocol server that provides browser automation capabilities using Playwright\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@automatalabs/mcp-server-playwright\"]\n    }\n  }\n}"}

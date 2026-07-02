@@ -1,0 +1,22 @@
+{
+  "description": "Block git force push commands using the if condition for efficient filtering. Prevents accidental force pushes that can overwrite remote history. Covers --force, --force-with-lease, and the -f shorthand.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push *--force*)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Force push is blocked by hook\"}}'"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git push *-f*)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Force push (-f) is blocked by hook\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}

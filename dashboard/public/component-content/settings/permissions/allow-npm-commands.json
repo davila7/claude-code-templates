@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Allow common npm development commands (lint, test, build, start).\",\n  \"permissions\": {\n    \"allow\": [\n      \"Bash(npm run lint)\",\n      \"Bash(npm run test:*)\",\n      \"Bash(npm run build)\",\n      \"Bash(npm start)\"\n    ]\n  }\n}"}

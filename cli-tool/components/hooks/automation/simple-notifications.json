@@ -1,13 +1,22 @@
 {
-  "description": "Send simple desktop notifications when Claude Code operations complete. Works on macOS and Linux systems.",
+  "description": "Send desktop notifications when Claude Code finishes working or needs user input. Works on macOS and Linux systems.",
   "hooks": {
-    "PostToolUse": [
+    "Stop": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Tool: $CLAUDE_TOOL_NAME completed\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' \"Tool: $CLAUDE_TOOL_NAME completed\"; fi"
+            "command": "if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Claude has finished working\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' \"Claude has finished working\"; fi"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Claude needs your input\" with title \"Claude Code\" sound name \"Ping\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send -u critical 'Claude Code' \"Claude needs your input\"; fi"
           }
         ]
       }

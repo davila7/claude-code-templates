@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.28.16",
+  "version": "1.29.2",
   "description": "Component templates and tracking system for Claude Code",
   "main": "cli-tool/src/index.js",
   "bin": {
@@ -18,6 +18,7 @@
     "discord:register": "node api/discord/register-commands.cjs"
   },
   "dependencies": {
+    "@clack/prompts": "^1.5.1",
     "@supabase/supabase-js": "^2.39.0",
     "@vercel/postgres": "^0.10.0",
     "axios": "^1.6.2",
@@ -29,6 +30,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "fs-extra": "^11.1.1",
+    "gradient-string": "^2.0.2",
     "inquirer": "^8.2.6",
     "js-yaml": "^4.1.1",
     "open": "^8.4.2",
@@ -48,5 +50,12 @@
     "analytics"
   ],
   "author": "Claude Code Templates",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "cli-tool/bin/",
+    "cli-tool/src/",
+    "cli-tool/components/sandbox/",
+    "cli-tool/package.json",
+    "README.md"
+  ]
 }

@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   notify-discord:
     name: Send Discord Notification
@@ -12,83 +15,67 @@ jobs:
     steps:
       - name: Send Discord Webhook
         env:
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_AUTHOR: ${{ github.event.release.author.login }}
+          RELEASE_AVATAR: ${{ github.event.release.author.avatar_url }}
+          RELEASE_DATE: ${{ github.event.release.published_at }}
           RELEASE_BODY: ${{ github.event.release.body }}
+          REPO_NAME: ${{ github.repository }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          # Prepare the Discord embed
-          RELEASE_NAME="${{ github.event.release.name }}"
-          RELEASE_TAG="${{ github.event.release.tag_name }}"
-          RELEASE_URL="${{ github.event.release.html_url }}"
-          RELEASE_AUTHOR="${{ github.event.release.author.login }}"
-          RELEASE_AVATAR="${{ github.event.release.author.avatar_url }}"
-          RELEASE_DATE="${{ github.event.release.published_at }}"
-          REPO_NAME="${{ github.repository }}"
-
           # Truncate body if too long (Discord limit is 4096 characters for description)
-          # Read from environment variable to prevent command execution
           TRUNCATED_BODY=$(printf '%s' "$RELEASE_BODY" | head -c 2000)
           BODY_LENGTH=$(printf '%s' "$RELEASE_BODY" | wc -c | tr -d ' ')
           if [ "$BODY_LENGTH" -gt 2000 ]; then
-            TRUNCATED_BODY="${TRUNCATED_BODY}...\n\n[Read more]($RELEASE_URL)"
+            TRUNCATED_BODY="${TRUNCATED_BODY}...\n\n[Read more](${RELEASE_URL})"
           fi
 
-          # Escape special characters for JSON using jq
-          TRUNCATED_BODY=$(printf '%s' "$TRUNCATED_BODY" | jq -Rs .)
-          RELEASE_NAME=$(printf '%s' "$RELEASE_NAME" | jq -Rs .)
-
-          # Create Discord webhook payload
-          PAYLOAD=$(cat <<EOF
-          {
-            "username": "GitHub Release Bot",
-            "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-            "embeds": [
-              {
-                "title": "🚀 New Release: $RELEASE_TAG",
-                "description": $TRUNCATED_BODY,
-                "url": "$RELEASE_URL",
-                "color": 5814783,
-                "fields": [
-                  {
-                    "name": "📦 Version",
-                    "value": "$RELEASE_TAG",
-                    "inline": true
+          # Build payload safely with jq (no shell interpolation in JSON)
+          PAYLOAD=$(jq -n \
+            --arg tag "$RELEASE_TAG" \
+            --arg body "$TRUNCATED_BODY" \
+            --arg url "$RELEASE_URL" \
+            --arg author "$RELEASE_AUTHOR" \
+            --arg repo "$REPO_NAME" \
+            --arg date "$RELEASE_DATE" \
+            --arg avatar "$RELEASE_AVATAR" \
+            '{
+              username: "GitHub Release Bot",
+              avatar_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              embeds: [
+                {
+                  title: ("🚀 New Release: " + $tag),
+                  description: $body,
+                  url: $url,
+                  color: 5814783,
+                  fields: [
+                    { name: "📦 Version", value: $tag, inline: true },
+                    { name: "👤 Author", value: $author, inline: true },
+                    { name: "📚 Repository", value: ("[\($repo)](https://github.com/\($repo))"), inline: false },
+                    { name: "📥 Installation", value: "```bash\nnpm install -g claude-code-templates\n# or with npx\nnpx claude-code-templates@latest --help\n```", inline: false }
+                  ],
+                  footer: {
+                    text: "GitHub Release Notification",
+                    icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
                   },
-                  {
-                    "name": "👤 Author",
-                    "value": "$RELEASE_AUTHOR",
-                    "inline": true
-                  },
-                  {
-                    "name": "📚 Repository",
-                    "value": "[$REPO_NAME](https://github.com/$REPO_NAME)",
-                    "inline": false
-                  },
-                  {
-                    "name": "📥 Installation",
-                    "value": "\`\`\`bash\nnpm install -g claude-code-templates\n# or with npx\nnpx claude-code-templates@latest --help\n\`\`\`",
-                    "inline": false
-                  }
-                ],
-                "footer": {
-                  "text": "GitHub Release Notification",
-                  "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                },
-                "timestamp": "$RELEASE_DATE",
-                "thumbnail": {
-                  "url": "$RELEASE_AVATAR"
+                  timestamp: $date,
+                  thumbnail: { url: $avatar }
                 }
-              }
-            ]
-          }
-          EOF
-          )
+              ]
+            }')
 
           # Send webhook
-          curl -H "Content-Type: application/json" \
+          curl -sf -H "Content-Type: application/json" \
                -d "$PAYLOAD" \
-               "${{ secrets.DISCORD_WEBHOOK_URL }}"
+               "$DISCORD_WEBHOOK_URL"
 
       - name: Verify notification
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
         run: |
           echo "✅ Discord notification sent successfully!"
-          echo "Release: ${{ github.event.release.tag_name }}"
-          echo "URL: ${{ github.event.release.html_url }}"
+          echo "Release: $RELEASE_TAG"
+          echo "URL: $RELEASE_URL"

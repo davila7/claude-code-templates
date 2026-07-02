@@ -1,0 +1,114 @@
+name: Rust CI
+
+# Runs ONLY when the Rust implementation changes. Checks formatting, lints, and
+# tests, then posts (and updates) a single sticky comment on the PR with the
+# results. The job status (the required check) reflects fmt + clippy + the
+# offline test suite; the network integration tests are informational only.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-rust/**'
+      - '.github/workflows/rust-ci.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: rust-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: fmt + clippy + test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli-rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli-rust
+
+      - name: Format check
+        id: fmt
+        continue-on-error: true
+        run: cargo fmt --check
+
+      - name: Clippy
+        id: clippy
+        continue-on-error: true
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Test (offline)
+        id: test
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --no-fail-fast 2>&1 | tee "$GITHUB_WORKSPACE/rust-test-output.txt"
+
+      - name: Test (network integration)
+        id: test_net
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --no-fail-fast -- --ignored 2>&1 | tee "$GITHUB_WORKSPACE/rust-test-net-output.txt"
+
+      - name: Build PR comment
+        if: always()
+        shell: bash
+        run: |
+          icon() { [ "$1" = "success" ] && echo "✅ Passed" || echo "❌ Failed"; }
+          {
+            echo "## 🦀 Rust CI"
+            echo ""
+            echo "| Check | Result |"
+            echo "|---|---|"
+            echo "| \`cargo fmt --check\` | $(icon '${{ steps.fmt.outcome }}') |"
+            echo "| \`cargo clippy -D warnings\` | $(icon '${{ steps.clippy.outcome }}') |"
+            echo "| \`cargo test\` (offline) | $(icon '${{ steps.test.outcome }}') |"
+            echo "| \`cargo test -- --ignored\` (network) | $(icon '${{ steps.test_net.outcome }}') |"
+            echo ""
+            echo "<details><summary>Test summary</summary>"
+            echo ""
+            echo '```'
+            grep -E "running [0-9]+ test|test result:" "$GITHUB_WORKSPACE/rust-test-output.txt" 2>/dev/null || echo "no offline output"
+            echo "--- network ---"
+            grep -E "running [0-9]+ test|test result:" "$GITHUB_WORKSPACE/rust-test-net-output.txt" 2>/dev/null || echo "no network output"
+            echo '```'
+            echo "</details>"
+            echo ""
+            echo "_Commit \`${GITHUB_SHA:0:7}\` • workflow run [#${GITHUB_RUN_ID}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})_"
+          } > "$GITHUB_WORKSPACE/rust-ci-comment.md"
+
+      - name: Post sticky PR comment
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: rust-ci
+          path: rust-ci-comment.md
+
+      - name: Enforce check status
+        if: always()
+        shell: bash
+        run: |
+          fmt='${{ steps.fmt.outcome }}'
+          clippy='${{ steps.clippy.outcome }}'
+          test='${{ steps.test.outcome }}'
+          echo "fmt=$fmt clippy=$clippy test=$test (network is informational)"
+          if [ "$fmt" != "success" ] || [ "$clippy" != "success" ] || [ "$test" != "success" ]; then
+            echo "::error::One or more required Rust checks failed."
+            exit 1
+          fi
+          echo "All required Rust checks passed."

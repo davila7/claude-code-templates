@@ -13,6 +13,12 @@ const toolColors: Record<string, string> = {
   Agent: '#ec4899',
 };
 
+function sanitizePaths(s: string): string {
+  return s
+    .replace(/\/Users\/[^/]+\/[^"' ]*(Proyectos|Projects|github|repos)\/[^/]+\//gi, '')
+    .replace(/\/Users\/[^/]+\//g, '~/');
+}
+
 function relativeTime(baseTime: string, eventTime: string): string {
   const diff = new Date(eventTime).getTime() - new Date(baseTime).getTime();
   const totalSecs = Math.floor(diff / 1000);
@@ -145,7 +151,7 @@ export default function ToolTimeline({ tools, cycleStartTime }: Props) {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                 }}>
-                  {tool.tool_args_summary || ''}
+                  {sanitizePaths(tool.tool_args_summary || '')}
                 </span>
               </div>
 

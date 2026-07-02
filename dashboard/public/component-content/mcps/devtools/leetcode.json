@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"leetcode\": {\n        \"description\": \"A Model Context Protocol (MCP) server for LeetCode that enables AI assistants to access LeetCode problems, user information, and contest data.\",\n        \"command\": \"mcp-server-leetcode\"\n    }\n  }\n}"}

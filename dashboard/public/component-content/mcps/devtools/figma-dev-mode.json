@@ -1,0 +1,1 @@
+{"content": "{\n    \"mcpServers\": {\n        \"Figma Dev Mode MCP\": {\n            \"description\":\"The Dev Mode MCP server brings Figma directly into your workflow by providing important design information and context to AI agents generating code from Figma design files.\",\n            \"url\": \"http://127.0.0.1:3845/mcp\"\n        }\n    }\n}"}

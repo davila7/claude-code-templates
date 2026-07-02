@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "explorium": {
+      "description": "Explorium MCP — live B2B company and contact data (150M+ businesses, 800M+ professionals, 4,000+ signals, 50+ data sources) for lead-list building, prospect enrichment, executive discovery, firmographics, technographics, funding signals, and multi-step GTM workflows. Supports two auth modes: (1) API key — set it in the api_key header below (get one at https://developers.explorium.ai/reference/setup/getting_your_api_key), or (2) OAuth — remove the headers block and the MCP client will trigger a browser sign-in on first use.",
+      "url": "https://mcp.explorium.ai/mcp",
+      "headers": {
+        "api_key": "<YOUR_EXPLORIUM_API_KEY>"
+      }
+    }
+  }
+}

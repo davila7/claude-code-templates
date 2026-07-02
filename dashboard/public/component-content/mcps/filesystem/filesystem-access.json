@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"filesystem\": {\n      \"description\": \"Secure filesystem access for Claude Code with configurable directory permissions and file operations.\",\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"@modelcontextprotocol/server-filesystem\",\n        \"/path/to/allowed/files\"\n      ]\n    }\n  }\n}"}

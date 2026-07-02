@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"trello\": {\n      \"command\": \"pnpx\",\n      \"args\": [\"@delorenj/mcp-server-trello\"],\n      \"env\": {\n        \"TRELLO_API_KEY\": \"your-api-key\",\n        \"TRELLO_TOKEN\": \"your-token\"\n      }\n    }\n  }\n}"}

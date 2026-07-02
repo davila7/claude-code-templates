@@ -603,7 +603,7 @@ class ChatsMobile {
           if (messageRole === 'assistant' && messageContent && Array.isArray(messageContent)) {
             messageContent.forEach(content => {
               // Detect Task tool with subagent_type (agents)
-              if (content.type === 'tool_use' && content.name === 'Task' && content.input?.subagent_type) {
+              if (content.type === 'tool_use' && (content.name === 'Task' || content.name === 'Agent') && content.input?.subagent_type) {
                 const agentType = content.input.subagent_type;
                 if (!componentsUsed.agents.find(a => a.type === agentType)) {
                   componentsUsed.agents.push({

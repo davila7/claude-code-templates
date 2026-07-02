@@ -1,0 +1,18 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import JobsView from '../components/JobsView.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Jobs Requiring Claude Code | Claude Code Templates"
+  description="Discover job openings that require Claude Code in their tech stack. Updated daily from HackerNews, RemoteOK, and more."
+>
+  <TopBar />
+  <JobsView client:load />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

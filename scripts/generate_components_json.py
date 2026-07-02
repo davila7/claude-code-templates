@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import requests
 import subprocess
 from collections import defaultdict
@@ -380,14 +381,14 @@ def generate_components_json():
     templates_base_path = 'cli-tool/templates'
     plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
-    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'templates': [], 'plugins': []}
+    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'templates': [], 'plugins': []}
 
     # Run security validation
     security_metadata = run_security_validation()
 
     # Fetch download statistics
     download_stats = fetch_download_stats()
-    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills']
+    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops']
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -796,40 +797,91 @@ def generate_components_json():
         components_data['componentsMarketplace'] = components_marketplace
         print("✅ Added components marketplace metadata to components.json")
 
+    # ---------------------------------------------------------------------------
+    # Performance optimization: separate content from the lightweight index.
+    #
+    # docs/components.json           → index without 'content' (~87% smaller)
+    # dashboard/public/components.json → same, served by Cloudflare Pages
+    # dashboard/public/component-content/{type}/{slug}.json → per-component
+    #   raw content, loaded on demand only on detail pages.
+    # ---------------------------------------------------------------------------
+    dashboard_public_dir = 'dashboard/public'
+    dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
+
+    # Component types that carry a 'content' field
+    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops']
+
+    # 1. Write per-component content files directly to dashboard/public/component-content/
+    os.makedirs(dashboard_content_dir, exist_ok=True)
+    written_content_count = 0
+    for ctype in content_bearing_types:
+        for component in components_data.get(ctype, []):
+            raw_content = component.get('content', '')
+            if not raw_content:
+                continue
+            # Slug: path with extension stripped (matches detail-page URL lookup)
+            slug = component['path'].replace('.md', '').replace('.json', '')
+            content_file_path = os.path.join(dashboard_content_dir, ctype, slug + '.json')
+            os.makedirs(os.path.dirname(content_file_path), exist_ok=True)
+            try:
+                with open(content_file_path, 'w', encoding='utf-8') as f:
+                    json.dump({'content': raw_content}, f, ensure_ascii=False)
+                written_content_count += 1
+            except IOError as e:
+                print(f"Warning: Could not write content file {content_file_path}: {e}")
+
+    print(f"Generated {written_content_count} component content files in {dashboard_content_dir}/")
+
+    # 2. Build index: strip 'content' from all component types
+    index_data = {}
+    for k, v in components_data.items():
+        if k in content_bearing_types:
+            index_data[k] = [{key: val for key, val in c.items() if key != 'content'} for c in v]
+        else:
+            index_data[k] = v
+
+    # 3. Write lightweight index to docs/components.json and dashboard/public/components.json
     try:
         with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(components_data, f, indent=2, ensure_ascii=False)
-        print(f"Successfully generated {output_path} with file content.")
-        
-        # Log summary
-        print("\n--- Generation Summary ---")
-        for component_type, components in components_data.items():
-            # Skip marketplace metadata in summary (it's not a component type)
-            if component_type in ['marketplace', 'componentsMarketplace']:
-                continue
-
-            print(f"  - Found and processed {len(components)} {component_type}")
-            if component_type == 'templates':
-                languages = len([t for t in components if t.get('subtype') == 'language'])
-                frameworks = len([t for t in components if t.get('subtype') == 'framework'])
-                print(f"    • {languages} languages, {frameworks} frameworks")
-            elif component_type == 'plugins':
-                total_commands = sum(p.get('commands', 0) for p in components)
-                total_agents = sum(p.get('agents', 0) for p in components)
-                total_mcps = sum(p.get('mcpServers', 0) for p in components)
-                print(f"    • {total_commands} commands, {total_agents} agents, {total_mcps} MCPs")
-
-            # Security statistics for components with security metadata
-            if component_type not in ['templates', 'plugins']:
-                validated = len([c for c in components if c.get('security', {}).get('validated', False)])
-                valid_components = len([c for c in components if c.get('security', {}).get('valid', False)])
-                avg_score = sum(c.get('security', {}).get('score', 0) for c in components if c.get('security', {}).get('validated', False)) / validated if validated > 0 else 0
-                print(f"    • Security: {validated} validated, {valid_components} passed, avg score: {avg_score:.1f}")
-
-        print("--------------------------")
-
+            json.dump(index_data, f, indent=2, ensure_ascii=False)
+        print(f"Successfully generated {output_path} (index without content).")
     except IOError as e:
         print(f"Error writing to {output_path}: {e}")
+
+    try:
+        os.makedirs(dashboard_public_dir, exist_ok=True)
+        dashboard_index_path = os.path.join(dashboard_public_dir, 'components.json')
+        shutil.copy2(output_path, dashboard_index_path)
+        print(f"Copied index to {dashboard_index_path}")
+    except Exception as e:
+        print(f"Warning: Could not copy files to dashboard/public/: {e}")
+
+    # Log summary (uses original components_data which still has content for accurate counts)
+    print("\n--- Generation Summary ---")
+    for component_type, components in components_data.items():
+        # Skip marketplace metadata in summary (it's not a component type)
+        if component_type in ['marketplace', 'componentsMarketplace']:
+            continue
+
+        print(f"  - Found and processed {len(components)} {component_type}")
+        if component_type == 'templates':
+            languages = len([t for t in components if t.get('subtype') == 'language'])
+            frameworks = len([t for t in components if t.get('subtype') == 'framework'])
+            print(f"    • {languages} languages, {frameworks} frameworks")
+        elif component_type == 'plugins':
+            total_commands = sum(p.get('commands', 0) for p in components)
+            total_agents = sum(p.get('agents', 0) for p in components)
+            total_mcps = sum(p.get('mcpServers', 0) for p in components)
+            print(f"    • {total_commands} commands, {total_agents} agents, {total_mcps} MCPs")
+
+        # Security statistics for components with security metadata
+        if component_type not in ['templates', 'plugins']:
+            validated = len([c for c in components if c.get('security', {}).get('validated', False)])
+            valid_components = len([c for c in components if c.get('security', {}).get('valid', False)])
+            avg_score = sum(c.get('security', {}).get('score', 0) for c in components if c.get('security', {}).get('validated', False)) / validated if validated > 0 else 0
+            print(f"    • Security: {validated} validated, {valid_components} passed, avg score: {avg_score:.1f}")
+
+    print("--------------------------")
 
 if __name__ == '__main__':
     generate_components_json()

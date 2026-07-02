@@ -18,9 +18,9 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     ctaUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
     websiteUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
     installCommand:
-      'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices --mcp web-data/brightdata --yes',
+      'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices,development/brightdata-local-search --mcp web-data/brightdata --yes',
     metadata: {
-      Components: '7',
+      Components: '8',
       Tools: '60+',
       Integration: 'MCP, Skills, CLI',
     },
@@ -29,28 +29,6 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
       { label: 'MCP Server', url: 'https://github.com/brightdata/brightdata-mcp' },
       { label: 'API Documentation', url: 'https://docs.brightdata.com' },
       { label: 'brightdata.com', url: 'https://get.brightdata.com/lcqorc6nzp9w' },
-    ],
-  },
-  {
-    name: 'Neon',
-    description: 'Complete Postgres Template',
-    logo: 'https://neon.tech/brand/neon-logo-dark-color.svg',
-    url: '/featured/neon-instagres',
-    tag: 'Database',
-    tagColor: '#059669',
-    category: 'Infrastructure',
-    ctaLabel: 'Try Neon Free',
-    ctaUrl: 'https://get.neon.com/4eCjZDz',
-    websiteUrl: 'https://neon.tech',
-    installCommand: 'npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon --yes',
-    metadata: {
-      Components: '10',
-      Integration: 'MCP, CLI',
-    },
-    links: [
-      { label: 'Instagres Docs', url: 'https://neon.tech/docs/guides/instagres' },
-      { label: 'Platform Overview', url: 'https://neon.tech/docs/introduction' },
-      { label: 'neon.tech', url: 'https://neon.tech' },
     ],
   },
   {
@@ -71,6 +49,25 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     links: [
       { label: 'Documentation', url: 'https://docs.claudekit.cc' },
       { label: 'claudekit.cc', url: 'https://claudekit.cc' },
+    ],
+  },
+  {
+    name: 'BrainGrid',
+    description: 'Plan. Build. Verify. Repeat.',
+    logo: '/braingrid-logo.webp',
+    url: '/featured/braingrid',
+    tag: 'Planning',
+    tagColor: '#c5e063',
+    category: 'Product Planning',
+    ctaLabel: 'Try BrainGrid',
+    ctaUrl: 'https://www.braingrid.ai?utm_source=aitmpl&utm_medium=featured&utm_campaign=partner',
+    websiteUrl: 'https://www.braingrid.ai',
+    metadata: {
+      Integration: 'MCP, CLI',
+      Stage: 'Battle-tested',
+    },
+    links: [
+      { label: 'braingrid.ai', url: 'https://www.braingrid.ai' },
     ],
   },
 ];

@@ -1,0 +1,64 @@
+name: Skill Security Scan (Full)
+
+# Scans EVERY skill component with SkillSpector (NVIDIA, Apache-2.0) static
+# analysis. Runs weekly and on demand. Reports only — never blocks. Uploads
+# an aggregated SARIF to code scanning and a Markdown summary to the run.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # Mondays 06:00 UTC
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  skill-scan-all:
+    name: SkillSpector (all skills)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install SkillSpector
+        run: pip install "git+https://github.com/NVIDIA/skillspector.git@main"
+
+      - name: Run SkillSpector on all skills
+        id: scan
+        continue-on-error: true
+        run: |
+          python scripts/skillspector_scan.py \
+            --all \
+            --threshold 50 \
+            --output-md skillspector-report.md \
+            --output-sarif skillspector.sarif
+
+      - name: Publish summary
+        if: always()
+        run: cat skillspector-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: skillspector-full-report
+          path: |
+            skillspector-report.md
+            skillspector.sarif
+          retention-days: 90
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: skillspector.sarif
+          category: skillspector-full

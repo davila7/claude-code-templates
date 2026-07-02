@@ -1,0 +1,147 @@
+# Golden Path Autopilot Configuration (cluster-level policy settings only)
+# Condensed from `gcloud container clusters describe` export.
+# Full export: resources/recommended-ap.yaml
+#
+# Autopilot manages all node pools, node config, and provisioning defaults
+# automatically. Only cluster-level policy decisions are shown here.
+
+# --- Addons ---
+addonsConfig:
+  dnsCacheConfig:
+    enabled: true
+  gcePersistentDiskCsiDriverConfig:
+    enabled: true
+  gcpFilestoreCsiDriverConfig:
+    enabled: true
+  gcsFuseCsiDriverConfig:
+    enabled: true
+  gkeBackupAgentConfig: {}
+  httpLoadBalancing: {}
+  kubernetesDashboard:
+    disabled: true
+  networkPolicyConfig:
+    disabled: true
+  parallelstoreCsiDriverConfig:
+    enabled: true
+  rayOperatorConfig: {}
+  statefulHaConfig:
+    enabled: true
+
+# --- Cluster Mode ---
+autopilot:
+  enabled: true
+
+# --- Autoscaling ---
+autoscaling:
+  autoscalingProfile: OPTIMIZE_UTILIZATION
+  enableNodeAutoprovisioning: true
+  resourceLimits:
+  - maximum: '1000000000'
+    resourceType: cpu
+  - maximum: '1000000000'
+    resourceType: memory
+  - maximum: '1000000000'
+    resourceType: nvidia-tesla-t4
+  - maximum: '1000000000'
+    resourceType: nvidia-tesla-a100
+
+# --- Security ---
+binaryAuthorization:
+  evaluationMode: DISABLED
+controlPlaneEndpointsConfig:
+  dnsEndpointConfig:
+    allowExternalTraffic: true          # Customer-configurable
+  ipEndpointsConfig:
+    authorizedNetworksConfig:
+      privateEndpointEnforcementEnabled: true
+masterAuthorizedNetworksConfig:
+  privateEndpointEnforcementEnabled: true
+privateClusterConfig:
+  enablePrivateNodes: true
+rbacBindingConfig:
+  enableInsecureBindingSystemAuthenticated: false
+  enableInsecureBindingSystemUnauthenticated: false
+secretManagerConfig:
+  enabled: true
+  rotationConfig:
+    enabled: true
+    rotationInterval: 120s
+shieldedNodes:
+  enabled: true
+workloadIdentityConfig:
+  workloadPool: <PROJECT_ID>.svc.id.goog
+
+# --- Networking ---
+networkConfig:
+  datapathProvider: ADVANCED_DATAPATH
+  defaultEnablePrivateNodes: true
+  dnsConfig:
+    clusterDns: CLOUD_DNS
+    clusterDnsDomain: cluster.local
+    clusterDnsScope: CLUSTER_SCOPE
+  enableIntraNodeVisibility: true
+  gatewayApiConfig:
+    channel: CHANNEL_STANDARD
+
+# --- IP Allocation ---
+ipAllocationPolicy:
+  autoIpamConfig:
+    enabled: true                       # Customer-configurable
+  createSubnetwork: true                # Customer-configurable
+  stackType: IPV4
+  useIpAliases: true
+defaultMaxPodsConstraint:
+  maxPodsPerNode: '48'                  # Customer-configurable (48 or 110)
+
+# --- Logging ---
+loggingConfig:
+  componentConfig:
+    enableComponents:
+    - SYSTEM_COMPONENTS
+    - WORKLOADS
+
+# --- Monitoring ---
+monitoringConfig:
+  advancedDatapathObservabilityConfig:
+    enableMetrics: true
+  componentConfig:
+    enableComponents:
+    - SYSTEM_COMPONENTS
+    - STORAGE
+    - POD
+    - DEPLOYMENT
+    - STATEFULSET
+    - DAEMONSET
+    - HPA
+    - JOBSET
+    - CADVISOR
+    - KUBELET
+    - DCGM
+    - APISERVER
+    - SCHEDULER
+    - CONTROLLER_MANAGER
+  managedPrometheusConfig:
+    enabled: true
+
+# --- Maintenance ---
+maintenancePolicy:
+  window:
+    maintenanceExclusions:
+      blackout-1:
+        maintenanceExclusionOptions:
+          scope: NO_MINOR_UPGRADES
+        # 1-year exclusion window (customer-configurable dates)
+
+# --- Upgrades ---
+releaseChannel:
+  channel: REGULAR
+
+# --- Scaling ---
+verticalPodAutoscaling:
+  enabled: true
+
+# --- Node Config & Pools ---
+# Autopilot manages all node pools, node config (disk, machine type, shielded
+# instances, gvnic, gcfs, workload metadata mode), and upgrade strategy
+# automatically. These are not user-configurable in Autopilot mode.
+# See resources/recommended-ap.yaml for the full describe output.

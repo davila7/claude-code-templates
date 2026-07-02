@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Configure Claude Code to use Claude 3.5 Haiku model for faster responses.\",\n  \"model\": \"claude-3-5-haiku-20241022\"\n}"}

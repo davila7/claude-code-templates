@@ -1,10 +1,13 @@
-name: Deploy to Vercel
+name: Deploy to Cloudflare Pages
 
 on:
   push:
     branches: [main]
     paths:
       - 'dashboard/**'
+
+permissions:
+  contents: read
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -16,11 +19,22 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - name: Deploy www + app.aitmpl.com
-        run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Install dependencies
+        run: npm install
+        working-directory: dashboard
+      - name: Build
+        run: npm run build
+        working-directory: dashboard
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DASHBOARD_PROJECT_ID }}
+          PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuYWl0bXBsLmNvbSQ"
+          PUBLIC_GITHUB_CLIENT_ID: "Ov23li3KjfA4cuLi5c0k"
+          PUBLIC_COMPONENTS_JSON_URL: "/components.json"
+      - name: Deploy www + app.aitmpl.com
+        run: npx wrangler pages deploy dist --project-name=aitmpl-dashboard --commit-dirty=true
+        working-directory: dashboard
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

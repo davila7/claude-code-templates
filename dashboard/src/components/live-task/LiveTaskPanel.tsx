@@ -5,6 +5,17 @@ import ToolTimeline from './ToolTimeline';
 
 const POLL_INTERVAL = 5000;
 
+type FilterMode = 'open' | 'all' | 'done';
+
+const FILTER_LABELS: Record<FilterMode, string> = {
+  open: 'Open',
+  all: 'All',
+  done: 'Done',
+};
+
+const OPEN_STATUSES = new Set(['active', 'completed']);
+const DONE_STATUSES = new Set(['merged', 'failed']);
+
 export default function LiveTaskPanel() {
   const [cycles, setCycles] = useState<ReviewCycle[]>([]);
   const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
@@ -12,6 +23,7 @@ export default function LiveTaskPanel() {
   const [control, setControl] = useState<CycleControl | null>(null);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
+  const [filter, setFilter] = useState<FilterMode>('open');
 
   const fetchCycles = useCallback(async () => {
     try {
@@ -123,6 +135,18 @@ export default function LiveTaskPanel() {
   const selectedCycle = cycles.find(c => c.id === selectedCycleId) || null;
   const activeCycles = cycles.filter(c => c.status === 'active').length;
 
+  const filteredCycles = cycles.filter(c => {
+    if (filter === 'open') return OPEN_STATUSES.has(c.status);
+    if (filter === 'done') return DONE_STATUSES.has(c.status);
+    return true;
+  });
+
+  const filterCounts: Record<FilterMode, number> = {
+    open: cycles.filter(c => OPEN_STATUSES.has(c.status)).length,
+    all: cycles.length,
+    done: cycles.filter(c => DONE_STATUSES.has(c.status)).length,
+  };
+
   return (
     <div style={{
       maxWidth: 1200,
@@ -149,6 +173,9 @@ export default function LiveTaskPanel() {
           </h1>
           <p style={{ color: '#6b7280', fontSize: 13, margin: '4px 0 0' }}>
             {loading ? 'Loading...' : `${cycles.length} cycles total | ${activeCycles} active`}
+          </p>
+          <p style={{ color: '#4b5563', fontSize: 11, margin: '2px 0 0', fontFamily: 'monospace' }}>
+            {loading ? '' : `showing ${filteredCycles.length} of ${cycles.length}`}
           </p>
         </div>
 
@@ -200,18 +227,56 @@ export default function LiveTaskPanel() {
         overflow: 'hidden',
       }}>
         <div style={{
-          padding: '10px 16px',
+          padding: '8px 16px',
           borderBottom: '1px solid #1a1a1a',
-          fontSize: 12,
-          color: '#6b7280',
-          fontFamily: "'Geist Mono', monospace",
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}>
-          Review Cycles
+          <span style={{
+            fontSize: 12,
+            color: '#6b7280',
+            fontFamily: "'Geist Mono', monospace",
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}>
+            Review Cycles
+          </span>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {(['open', 'all', 'done'] as FilterMode[]).map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  padding: '3px 10px',
+                  borderRadius: 4,
+                  border: '1px solid',
+                  borderColor: filter === f ? '#3b82f6' : '#2a2a2a',
+                  background: filter === f ? '#1e3a5f' : 'transparent',
+                  color: filter === f ? '#60a5fa' : '#6b7280',
+                  fontSize: 11,
+                  fontFamily: "'Geist Mono', monospace",
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {FILTER_LABELS[f]}
+                <span style={{
+                  marginLeft: 5,
+                  padding: '0 4px',
+                  borderRadius: 3,
+                  background: filter === f ? '#2563eb33' : '#ffffff0d',
+                  color: filter === f ? '#93c5fd' : '#4b5563',
+                  fontSize: 10,
+                }}>
+                  {filterCounts[f]}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
         <CycleTable
-          cycles={cycles}
+          cycles={filteredCycles}
           selectedId={selectedCycleId}
           onSelect={setSelectedCycleId}
         />

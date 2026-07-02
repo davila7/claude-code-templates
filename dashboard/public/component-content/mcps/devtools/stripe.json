@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"stripe\": {\n      \"description\": \"Let your AI agents interact with the Stripe API by using our MCP server.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@stripe/mcp\", \"--tools=all\"],\n      \"env\": {\n        \"STRIPE_SECRET_KEY\": \"your_stripe_secret_key_here\"\n      }\n    }\n  }\n}"}

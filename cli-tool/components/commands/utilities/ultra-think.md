@@ -1,5 +1,5 @@
 ---
-description: Deep analysis and problem solving with multi-dimensional thinking
+description: Multi-framework structured analysis: surfaces hidden assumptions, generates competing solutions, stress-tests each with adversarial reasoning, and delivers confidence-calibrated recommendations
 argument-hint: [problem or question to analyze]
 ---
 
@@ -9,120 +9,67 @@ Deep analysis and problem solving mode
 
 ## Instructions
 
-1. **Initialize Ultra Think Mode**
-   - Acknowledge the request for enhanced analytical thinking
-   - Set context for deep, systematic reasoning
-   - Prepare to explore the problem space comprehensively
+Analyze the problem or question provided: **$ARGUMENTS**
 
-2. **Parse the Problem or Question**
-   - Extract the core challenge from: $ARGUMENTS
-   - Identify all stakeholders and constraints
-   - Recognize implicit requirements and hidden complexities
-   - Question assumptions and surface unknowns
+Before proceeding, identify: the core challenge, key constraints, implicit assumptions, and who is affected by the outcome.
 
-3. **Multi-Dimensional Analysis**
-   Approach the problem from multiple angles:
-   
-   ### Technical Perspective
-   - Analyze technical feasibility and constraints
-   - Consider scalability, performance, and maintainability
-   - Evaluate security implications
-   - Assess technical debt and future-proofing
-   
-   ### Business Perspective
-   - Understand business value and ROI
-   - Consider time-to-market pressures
-   - Evaluate competitive advantages
-   - Assess risk vs. reward trade-offs
-   
-   ### User Perspective
-   - Analyze user needs and pain points
-   - Consider usability and accessibility
-   - Evaluate user experience implications
-   - Think about edge cases and user journeys
-   
-   ### System Perspective
-   - Consider system-wide impacts
-   - Analyze integration points
-   - Evaluate dependencies and coupling
-   - Think about emergent behaviors
+**Before beginning analysis**, check whether $ARGUMENTS provides enough context:
+- If the problem is specific and the domain is clear, proceed immediately to analysis.
+- If critical context is missing (e.g., the domain, the constraints, or the decision-maker's goals), ask up to three targeted questions before proceeding. Do not ask unnecessary questions.
 
-4. **Generate Multiple Solutions**
-   - Brainstorm at least 3-5 different approaches
-   - For each approach, consider:
-     - Pros and cons
-     - Implementation complexity
-     - Resource requirements
-     - Potential risks
-     - Long-term implications
-   - Include both conventional and creative solutions
-   - Consider hybrid approaches
+## Required Analysis Elements
 
-5. **Deep Dive Analysis**
-   For the most promising solutions:
-   - Create detailed implementation plans
-   - Identify potential pitfalls and mitigation strategies
-   - Consider phased approaches and MVPs
-   - Analyze second and third-order effects
-   - Think through failure modes and recovery
+Your analysis must address all of the following. Order and depth are yours to determine based on the problem:
 
-6. **Cross-Domain Thinking**
-   - Draw parallels from other industries or domains
-   - Apply design patterns from different contexts
-   - Consider biological or natural system analogies
-   - Look for innovative combinations of existing solutions
+- **Problem framing**: What is actually being asked? What assumptions are embedded in the question?
+- **Competing solutions**: At least 3 meaningfully different approaches, not variations of the same idea.
+- **Multi-lens evaluation**: Assess each solution across the lenses most relevant to this problem (technical, economic, human, systemic, temporal — select and justify which apply).
+- **Adversarial testing**: For each leading solution, argue against it. What would have to be true for it to fail badly? Use inversion — ask what you would do to guarantee failure, then ensure the recommendation avoids those paths.
+- **Cross-domain insight**: Draw at least one non-obvious parallel from a different field or discipline.
+- **Second-order effects**: What does each approach make more or less likely to happen in 6 months, 2 years, 10 years?
+- **Synthesis**: Which approach or combination is recommended? Why, given the specific trade-offs?
+- **Confidence calibration**: For each key claim, note where uncertainty is high and what would change the recommendation.
 
-7. **Challenge and Refine**
-   - Play devil's advocate with each solution
-   - Identify weaknesses and blind spots
-   - Consider "what if" scenarios
-   - Stress-test assumptions
-   - Look for unintended consequences
+## Structured Output Template
 
-8. **Synthesize Insights**
-   - Combine insights from all perspectives
-   - Identify key decision factors
-   - Highlight critical trade-offs
-   - Summarize innovative discoveries
-   - Present a nuanced view of the problem space
+Present findings using this structure:
 
-9. **Provide Structured Recommendations**
-   Present findings in a clear structure:
-   ```
-   ## Problem Analysis
-   - Core challenge
-   - Key constraints
-   - Critical success factors
-   
-   ## Solution Options
-   ### Option 1: [Name]
-   - Description
-   - Pros/Cons
-   - Implementation approach
-   - Risk assessment
-   
-   ### Option 2: [Name]
-   [Similar structure]
-   
-   ## Recommendation
-   - Recommended approach
-   - Rationale
-   - Implementation roadmap
-   - Success metrics
-   - Risk mitigation plan
-   
-   ## Alternative Perspectives
-   - Contrarian view
-   - Future considerations
-   - Areas for further research
-   ```
+```
+## Problem Analysis
+- Core challenge
+- Key constraints
+- Critical success factors
 
-10. **Meta-Analysis**
-    - Reflect on the thinking process itself
-    - Identify areas of uncertainty
-    - Acknowledge biases or limitations
-    - Suggest additional expertise needed
-    - Provide confidence levels for recommendations
+## Solution Options
+### Option 1: [Name]
+- Description
+- Pros/Cons
+- Implementation approach
+- Risk assessment
+
+### Option 2: [Name]
+[Similar structure]
+
+## Recommendation
+- Recommended approach
+- Rationale
+- Implementation roadmap
+- Success metrics
+- Risk mitigation plan
+
+## Alternative Perspectives
+- Contrarian view
+- Future considerations
+- Areas for further research
+```
+
+## Output Expectations
+
+- Every solution option is evaluated on its own merits, not just compared relatively.
+- Reasoning chains are explicit — conclusions reference the evidence or logic that produced them.
+- Uncertainty is surfaced, not hidden. If data is insufficient, say so and specify what would resolve it.
+- The recommendation section is actionable: next steps are specific enough to begin on immediately.
+- Length matches problem complexity. Avoid padding.
 
 ## Usage Examples
 
@@ -140,19 +87,4 @@ Deep analysis and problem solving mode
 /ultra-think How can we improve our API to be more developer-friendly while maintaining backward compatibility?
 ```
 
-## Key Principles
-
-- **First Principles Thinking**: Break down to fundamental truths
-- **Systems Thinking**: Consider interconnections and feedback loops
-- **Probabilistic Thinking**: Work with uncertainties and ranges
-- **Inversion**: Consider what to avoid, not just what to do
-- **Second-Order Thinking**: Consider consequences of consequences
-
-## Output Expectations
-
-- Comprehensive analysis (typically 2-4 pages of insights)
-- Multiple viable solutions with trade-offs
-- Clear reasoning chains
-- Acknowledgment of uncertainties
-- Actionable recommendations
-- Novel insights or perspectives
+> **Tip**: For the hardest decisions, enable extended thinking in your Claude Code settings. This command's structured analysis pairs with Claude's native reasoning capabilities for deeper results.

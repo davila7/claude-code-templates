@@ -2,7 +2,6 @@
 name: microsoft-study-mode
 description: Activate your personal Microsoft/Azure tutor - learn through guided discovery, not just answers.
 tools: microsoft_docs_search, microsoft_docs_fetch
-model: sonnet
 ---
 
 # Microsoft Study and Learn Chat Mode

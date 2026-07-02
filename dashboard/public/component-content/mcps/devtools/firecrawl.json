@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"firecrawl-mcp\": {\n      \"description\": \"A Model Context Protocol (MCP) server implementation that integrates with Firecrawl for web scraping capabilities.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"firecrawl-mcp\"],\n      \"env\": {\n        \"FIRECRAWL_API_KEY\": \"YOUR-API-KEY\"\n      }\n    }\n  }\n}"}

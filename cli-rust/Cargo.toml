@@ -1,0 +1,48 @@
+[package]
+name = "claude-code-templates"
+version = "0.1.0"
+edition = "2021"
+description = "Setup Claude Code configurations and install components (Rust port of the claude-code-templates CLI core)"
+license = "MIT"
+repository = "https://github.com/davila7/claude-code-templates"
+rust-version = "1.74"
+
+# The binary is named `cct` to match the primary alias of the Node CLI.
+[[bin]]
+name = "cct"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+serde_yaml = "0.9"
+dialoguer = "0.11"
+indicatif = "0.17"
+owo-colors = "4"
+directories = "5"
+anyhow = "1"
+thiserror = "1"
+uuid = { version = "1", features = ["v4"] }
+open = "5"
+base64 = "0.22"
+pathdiff = "0.2"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
+# cargo-binstall metadata: resolve prebuilt binaries from GitHub Releases.
+# Tags are `cli-rust-v<version>` (kept separate from the Node CLI's `vX.Y.Z`
+# tags), and each release asset is `cct-<target>.tgz` containing `cct`.
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/cli-rust-v{ version }/cct-{ target }{ archive-suffix }"
+bin-dir = "cct{ binary-ext }"
+pkg-fmt = "tgz"

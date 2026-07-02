@@ -67,7 +67,7 @@ function groupByType(items: CollectionItem[]): { type: string; label: string; co
     .map((t) => ({
       type: t,
       label: TYPE_CONFIG[t]?.label ?? t,
-      color: TYPE_CONFIG[t]?.color ?? '#888',
+      color: TYPE_CONFIG[t]?.color ?? 'var(--color-text-tertiary)',
       items: map[t],
     }));
 }
@@ -250,14 +250,14 @@ function ProjectTreeNode({
 
   // File icon (document)
   const fileIcon = (
-    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ color: node.color ?? '#666' }}>
+    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ color: node.color ?? 'var(--color-text-tertiary)' }}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
     </svg>
   );
 
   // Folder icon
   const folderIcon = (color?: string) => (
-    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ color: color ?? '#888' }}>
+    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ color: color ?? 'var(--color-text-tertiary)' }}>
       {isExpanded ? (
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 1.85L5 19z" />
       ) : (
@@ -270,7 +270,7 @@ function ProjectTreeNode({
     // Leaf file with link to component
     return (
       <div
-        className="group/treeitem flex items-center gap-1.5 py-[4px] rounded-md text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2] transition-colors"
+        className="group/treeitem flex items-center gap-1.5 py-[4px] rounded-md text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors"
         style={{ paddingLeft: pl }}
       >
         {fileIcon}
@@ -283,7 +283,7 @@ function ProjectTreeNode({
         </a>
         <button
           onClick={(e) => { e.stopPropagation(); onRemoveItem(node.item!, collectionId); }}
-          className="p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeitem:opacity-100 shrink-0 mr-1"
+          className="p-0.5 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-colors opacity-0 group-hover/treeitem:opacity-100 shrink-0 mr-1"
           title="Remove"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -300,14 +300,14 @@ function ProjectTreeNode({
         onClick={() => { if (isClickable) togglePath(fullPath); }}
         role={isClickable ? 'button' : undefined}
         className={`flex items-center gap-1.5 py-[4px] rounded-md text-[12px] transition-colors ${
-          isClickable ? 'cursor-pointer hover:bg-[--color-surface-2]' : ''
-        } ${node.name === '.claude' ? 'text-[--color-text-primary] font-medium' : 'text-[--color-text-secondary]'}`}
+          isClickable ? 'cursor-pointer hover:bg-[var(--color-surface-2]' : ''
+        } ${node.name === '.claude' ? 'text-[var(--color-text-primary)] font-medium' : 'text-[var(--color-text-secondary)]'}`}
         style={{ paddingLeft: pl }}
       >
         {/* Chevron for expandable nodes */}
         {hasChildren ? (
           <svg
-            className={`w-3 h-3 shrink-0 text-[--color-text-tertiary] transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
+            className={`w-3 h-3 shrink-0 text-[var(--color-text-tertiary)] transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
             fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -323,7 +323,7 @@ function ProjectTreeNode({
         </span>
         {/* Count badge for type folders */}
         {node.componentType && hasChildren && (
-          <span className="text-[10px] text-[--color-text-tertiary] ml-auto mr-1">
+          <span className="text-[10px] text-[var(--color-text-tertiary)] ml-auto mr-1">
             {node.children!.length}
           </span>
         )}
@@ -389,24 +389,24 @@ function MainContentTree({
     <div>
       {depth > 0 && (
         <div className="group/treeline flex items-center whitespace-pre leading-6">
-          <span className="text-[--color-text-tertiary] select-none">{prefix}{connector}</span>
+          <span className="text-[var(--color-text-tertiary)] select-none">{prefix}{connector}</span>
           {node.item ? (
             <a
               href={`/component/${node.item.component_type}/${cleanPath(node.item.component_path)}`}
               className="hover:underline"
-              style={{ color: node.color ?? '#ccc' }}
+              style={{ color: node.color ?? 'var(--color-text-secondary)' }}
             >
               {displayName}
             </a>
           ) : (
-            <span style={{ color: node.color ?? (node.name === '.claude' ? '#e5e5e5' : '#999') }} className={node.name === '.claude' ? 'font-semibold' : ''}>
+            <span style={{ color: node.color ?? (node.name === '.claude' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)') }} className={node.name === '.claude' ? 'font-semibold' : ''}>
               {displayName}
             </span>
           )}
           {node.item && (
             <button
               onClick={() => onRemoveItem(node.item!, collectionId)}
-              className="ml-2 p-0.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/treeline:opacity-100 shrink-0"
+              className="ml-2 p-0.5 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-colors opacity-0 group-hover/treeline:opacity-100 shrink-0"
               title="Remove"
             >
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -448,12 +448,12 @@ function CollectionContextMenu({
   }, [onClose]);
 
   return (
-    <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-50 py-1">
-      <button onClick={onRename} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-white/[0.06]">
+    <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 py-1">
+      <button onClick={onRename} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06]">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
         Rename
       </button>
-      <button onClick={onDelete} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-red-400 hover:text-red-300 hover:bg-white/[0.06]">
+      <button onClick={onDelete} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-red-400 hover:text-red-300 hover:bg-white/[0.06] transition-colors">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
         Delete
       </button>
@@ -477,6 +477,10 @@ export default function MyComponentsView() {
   const [renameValue, setRenameValue] = useState('');
   const [copied, setCopied] = useState(false);
   const [showSendToRepo, setShowSendToRepo] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   useEffect(() => {
     if (isSignedIn) loadCollections();
@@ -572,11 +576,53 @@ export default function MyComponentsView() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  function openShareModal(url: string) {
+    setShareUrl(url);
+    setShowShareModal(true);
+  }
+
+  async function handleShare() {
+    if (!selectedCollection) return;
+    const isCurrentlyPublic = !!(selectedCollection as any).is_public;
+
+    // If already shared, open modal with existing link
+    if (isCurrentlyPublic && (selectedCollection as any).share_slug) {
+      openShareModal(`${window.location.origin}/c/${(selectedCollection as any).share_slug}`);
+      return;
+    }
+
+    setShareLoading(true);
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const res = await fetch('/api/collections/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ collectionId: selectedCollection.id, enable: true }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCollections(prev => prev.map(c =>
+          c.id === selectedCollection.id
+            ? { ...c, share_slug: data.share_slug, is_public: data.is_public } as any
+            : c
+        ));
+        if (data.is_public && data.share_slug) {
+          openShareModal(`${window.location.origin}/c/${data.share_slug}`);
+        }
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+    } finally {
+      setShareLoading(false);
+    }
+  }
+
   // ── Not loaded ──
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-5 h-5 border-2 border-[--color-text-tertiary] border-t-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -585,13 +631,13 @@ export default function MyComponentsView() {
   if (!isSignedIn) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <div className="w-16 h-16 rounded-2xl bg-[--color-surface-3] flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 text-[--color-text-tertiary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+        <div className="w-16 h-16 rounded-2xl bg-[var(--color-surface-3)] flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
         </div>
-        <h2 className="text-lg font-semibold text-[--color-text-primary] mb-2">Save your favorite components</h2>
-        <p className="text-sm text-[--color-text-tertiary] mb-6 max-w-sm">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Save your favorite components</h2>
+        <p className="text-sm text-[var(--color-text-tertiary)] mb-6 max-w-sm">
           Sign in to create collections and organize the components you use most.
         </p>
         <button
@@ -608,7 +654,7 @@ export default function MyComponentsView() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-5 h-5 border-2 border-[--color-text-tertiary] border-t-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -628,26 +674,26 @@ export default function MyComponentsView() {
   return (
     <div className="flex h-full">
       {/* ── Sidebar ── */}
-      <div className="w-60 border-r border-[--color-border] flex flex-col shrink-0">
-        <div className="px-4 py-3 border-b border-[--color-border]">
-          <h2 className="text-sm font-semibold text-[--color-text-primary]">My Components</h2>
+      <div className="w-60 border-r border-[var(--color-border)] flex flex-col shrink-0">
+        <div className="px-4 py-3 border-b border-[var(--color-border)]">
+          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">My Components</h2>
         </div>
 
         {/* Create new — top */}
-        <div className="px-2 py-2 border-b border-[--color-border]">
+        <div className="px-2 py-2 border-b border-[var(--color-border)]">
           <div className="flex items-center gap-1">
             <input
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
               placeholder="New collection..."
-              className="flex-1 bg-transparent border-none text-[12px] text-[--color-text-primary] placeholder:text-[--color-text-tertiary] px-2 py-1.5 outline-none"
+              className="flex-1 bg-transparent border-none text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] px-2 py-1.5 outline-none"
               maxLength={100}
             />
             <button
               onClick={handleCreate}
               disabled={!newName.trim() || creating}
-              className="p-1.5 rounded hover:bg-[--color-surface-3] text-[--color-text-tertiary] hover:text-[--color-text-primary] disabled:opacity-30 transition-colors"
+              className="p-1.5 rounded hover:bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] disabled:opacity-30 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -676,7 +722,7 @@ export default function MyComponentsView() {
                         if (e.key === 'Escape') setRenaming(null);
                       }}
                       onBlur={() => handleRename(col.id)}
-                      className="w-full bg-[--color-surface-3] border-none rounded text-[12px] text-[--color-text-primary] px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full bg-[var(--color-surface-3)] border-none rounded text-[12px] text-[var(--color-text-primary)] px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500"
                       maxLength={100}
                     />
                   </div>
@@ -694,23 +740,23 @@ export default function MyComponentsView() {
                     role="button"
                     className={`flex items-center gap-1.5 w-full px-2 py-[6px] rounded-md text-[13px] transition-colors group cursor-pointer ${
                       isSelected
-                        ? 'bg-[--color-surface-3] text-[--color-text-primary] font-medium'
-                        : 'text-[--color-text-secondary] hover:text-[--color-text-primary] hover:bg-[--color-surface-2]'
+                        ? 'bg-[var(--color-surface-3] text-[var(--color-text-primary)] font-medium'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2]'
                     }`}
                   >
                     {/* Chevron */}
                     <svg
-                      className={`w-3 h-3 shrink-0 text-[--color-text-tertiary] transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
+                      className={`w-3 h-3 shrink-0 text-[var(--color-text-tertiary)] transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                     {/* Folder icon */}
-                    <svg className="w-4 h-4 shrink-0 text-[--color-text-tertiary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <svg className="w-4 h-4 shrink-0 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2 17V7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
                     </svg>
                     <span className="truncate flex-1 text-left">{col.name}</span>
-                    <span className="text-[10px] text-[--color-text-tertiary]">
+                    <span className="text-[10px] text-[var(--color-text-tertiary)]">
                       {items.length}
                     </span>
                     <button
@@ -762,24 +808,24 @@ export default function MyComponentsView() {
       <div className="flex-1 overflow-y-auto">
         {!selectedCollection ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6">
-            <p className="text-sm text-[--color-text-tertiary]">Select a collection</p>
+            <p className="text-sm text-[var(--color-text-tertiary)]">Select a collection</p>
           </div>
         ) : selectedItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6">
-            <div className="w-14 h-14 rounded-2xl bg-[--color-surface-3] flex items-center justify-center mb-4">
-              <svg className="w-7 h-7 text-[--color-text-tertiary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <div className="w-20 h-20 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center mb-6">
+              <svg className="w-10 h-10 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
             </div>
-            <p className="text-sm text-[--color-text-secondary]">
-              "{selectedCollection.name}" is empty
-            </p>
-            <p className="text-xs text-[--color-text-tertiary] mt-1">
-              Browse components and click the bookmark icon to save them here.
+            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)] mb-2">
+              Collection is empty
+            </h3>
+            <p className="text-[13px] text-[var(--color-text-secondary)] max-w-md leading-relaxed mb-6">
+              "{selectedCollection.name}" doesn't have any components yet. Browse the marketplace and click the bookmark icon to save components here.
             </p>
             <a
               href="/agents"
-              className="mt-4 px-4 py-2 bg-[--color-surface-3] hover:bg-[--color-surface-4] rounded-lg text-sm text-[--color-text-secondary] hover:text-[--color-text-primary] transition-colors"
+              className="px-4 py-2 bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] rounded-lg text-[13px] font-medium text-white transition-all"
             >
               Browse Components
             </a>
@@ -789,16 +835,35 @@ export default function MyComponentsView() {
             {/* Header + install command */}
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-semibold text-[--color-text-primary]">{selectedCollection.name}</h3>
-                <span className="text-[12px] text-[--color-text-tertiary]">
+                <h3 className="text-base font-semibold text-[var(--color-text-primary)]">{selectedCollection.name}</h3>
+                <span className="text-[12px] text-[var(--color-text-tertiary)]">
                   {selectedItems.length} component{selectedItems.length !== 1 ? 's' : ''}
                 </span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={handleShare}
+                  disabled={shareLoading}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-[13px] font-medium transition-colors ${
+                    (selectedCollection as any)?.is_public
+                      ? 'bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20'
+                      : 'bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] border-[var(--color-border)]'
+                  }`}
+                  title={(selectedCollection as any)?.is_public ? 'Click to copy link or disable sharing' : 'Share this collection publicly'}
+                >
+                  {shareLoading ? (
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  ) : shareCopied ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                  )}
+                  {shareCopied ? 'Link Copied!' : (selectedCollection as any)?.is_public ? 'Shared' : 'Share'}
+                </button>
                 {canSendToRepo && (
                   <button
                     onClick={() => setShowSendToRepo(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#2a2a2a] text-white border border-[#333] rounded-lg text-[13px] font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] border border-[var(--color-border)] rounded-lg text-[13px] font-medium transition-colors"
                     title="Create a Pull Request with these components"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -827,9 +892,9 @@ export default function MyComponentsView() {
             </div>
 
             {/* Install command */}
-            <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-3 mb-6">
-              <code className="text-[12px] text-[--color-text-secondary] font-mono break-all leading-relaxed">
-                <span className="text-[--color-text-tertiary] select-none">$ </span>
+            <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 mb-6">
+              <code className="text-[12px] text-[var(--color-text-secondary)] font-mono break-all leading-relaxed">
+                <span className="text-[var(--color-text-tertiary)] select-none">$ </span>
                 {generateCommand(selectedItems)}
               </code>
             </div>
@@ -837,13 +902,13 @@ export default function MyComponentsView() {
             {/* Project structure view */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <svg className="w-4 h-4 text-[--color-text-tertiary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-4 h-4 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2 17V7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
                 </svg>
-                <h4 className="text-[13px] font-medium text-[--color-text-secondary]">Project Structure</h4>
-                <span className="text-[10px] text-[--color-text-tertiary]">How components will be installed</span>
+                <h4 className="text-[13px] font-medium text-[var(--color-text-secondary)]">Project Structure</h4>
+                <span className="text-[10px] text-[var(--color-text-tertiary)]">How components will be installed</span>
               </div>
-              <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-4 font-mono text-[12px]">
+              <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4 font-mono text-[12px]">
                 {(() => {
                   const tree = buildProjectTree(selectedItems);
                   return (
@@ -875,7 +940,7 @@ export default function MyComponentsView() {
                     <h4 className="text-[13px] font-semibold" style={{ color: group.color }}>
                       {group.label}
                     </h4>
-                    <span className="text-[11px] text-[--color-text-tertiary]">
+                    <span className="text-[11px] text-[var(--color-text-tertiary)]">
                       ({group.items.length})
                     </span>
                   </div>
@@ -886,24 +951,24 @@ export default function MyComponentsView() {
                       return (
                         <div
                           key={item.id}
-                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[#111111] border border-[#1a1a1a] hover:border-[#2a2a2a] hover:bg-[#151515] transition-all duration-200"
+                          className="group/card flex items-start gap-3 p-3.5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-card-hover)] transition-all duration-200"
                         >
                           <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: config ? `${config.color}12` : '#ffffff08', color: config?.color ?? '#888' }}
+                            style={{ backgroundColor: config ? `${config.color}12` : 'rgba(255, 255, 255, 0.03)', color: config?.color ?? 'var(--color-text-tertiary)' }}
                           >
                             <TypeIcon type={group.type} />
                           </div>
                           <div className="min-w-0 flex-1">
                             <a
                               href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
-                              className="text-[13px] font-medium text-[--color-text-primary] hover:text-white transition-colors line-clamp-1"
+                              className="text-[13px] font-medium text-[var(--color-text-primary)] hover:text-white transition-colors line-clamp-1"
                             >
                               {formatName(item.component_name)}
                             </a>
                             {item.component_category && (
                               <div className="flex items-center gap-1.5 mt-1">
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[--color-text-tertiary]">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[var(--color-text-tertiary)]">
                                   {item.component_category}
                                 </span>
                               </div>
@@ -911,7 +976,7 @@ export default function MyComponentsView() {
                           </div>
                           <button
                             onClick={() => handleRemoveItem(item, selectedCollection!.id)}
-                            className="p-1.5 rounded hover:bg-white/10 text-[--color-text-tertiary] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
+                            className="p-1.5 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
                             title="Remove"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -935,6 +1000,96 @@ export default function MyComponentsView() {
           collectionName={selectedCollection.name}
           onClose={() => setShowSendToRepo(false)}
         />
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowShareModal(false)}
+        >
+          <div
+            className="relative w-full max-w-md mx-4 p-6 rounded-2xl border"
+            style={{ background: 'var(--color-surface-1)', borderColor: 'var(--color-border)', boxShadow: '0 25px 50px rgba(0,0,0,0.4)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="absolute top-4 right-4 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                <svg className="w-5 h-5" style={{ color: '#60a5fa' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+              </div>
+              <div>
+                <h3 className="text-[15px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Share Collection</h3>
+                <p className="text-[12px]" style={{ color: 'var(--color-text-tertiary)' }}>{selectedCollection?.name}</p>
+              </div>
+            </div>
+
+            {/* Link */}
+            <div className="mb-4">
+              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Public link</label>
+              <div className="flex items-center gap-2">
+                <input
+                  readOnly
+                  value={shareUrl}
+                  className="flex-1 px-3 py-2.5 rounded-lg text-[13px] font-mono outline-none"
+                  style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}
+                  onFocus={(e) => e.target.select()}
+                />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareUrl);
+                    setShareCopied(true);
+                    setTimeout(() => setShareCopied(false), 2000);
+                  }}
+                  className="px-4 py-2.5 rounded-lg text-[13px] font-semibold transition-all shrink-0"
+                  style={{
+                    background: shareCopied ? 'rgba(34,197,94,0.15)' : 'var(--color-surface-3)',
+                    color: shareCopied ? '#22c55e' : 'var(--color-text-primary)',
+                    border: `1px solid ${shareCopied ? 'rgba(34,197,94,0.3)' : 'var(--color-border)'}`,
+                  }}
+                >
+                  {shareCopied ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Share on socials */}
+            <div>
+              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Share on</label>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Check out my "${selectedCollection?.name}" Claude Code collection!`)}&url=${encodeURIComponent(shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all hover:scale-[1.02] no-underline"
+                  style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Post on X
+                </a>
+                <a
+                  href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Check out my "${selectedCollection?.name}" Claude Code collection! ${shareUrl}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all hover:scale-[1.02] no-underline"
+                  style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.59 12c.025 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.96-.065-1.187.408-2.26 1.33-3.02.86-.706 2.035-1.107 3.402-1.162 1.163-.047 2.21.1 3.127.436-.055-.79-.271-1.418-.644-1.88-.478-.593-1.223-.896-2.216-.902h-.04c-.78.003-1.81.27-2.2.992l-1.76-.978C8.737 6.074 10.17 5.47 11.87 5.46h.06c1.49.009 2.686.505 3.535 1.46.745.836 1.2 1.964 1.352 3.353.58.226 1.1.507 1.553.84 1.118.82 1.927 1.907 2.372 3.166.775 2.19.592 4.9-1.346 6.797-1.83 1.793-4.093 2.588-7.218 2.612l.012.012zm-1.677-7.87c-.746.04-1.5.186-1.91.476-.38.27-.533.642-.51 1.065.04.703.57 1.39 1.88 1.39h.14c1.44-.072 2.406-1.16 2.72-3.076-.73-.263-1.535-.396-2.32-.355z"/></svg>
+                  Post on Threads
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

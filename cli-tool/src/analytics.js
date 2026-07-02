@@ -644,16 +644,17 @@ class ClaudeAnalytics {
         // Calculate detailed token usage
         const detailedTokenUsage = this.calculateDetailedTokenUsage();
         
-        // Memory cleanup: limit conversation history to prevent memory buildup
-        if (this.data.conversations && this.data.conversations.length > 150) {
-            this.data.conversations = this.data.conversations
-            .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
-            .slice(0, 150);
-        }
-        
-        // Add timestamp to verify data freshness
+        // Slice for response only — do not mutate this.data.conversations
+        const responseConversations = this.data.conversations
+          ? this.data.conversations
+              .slice()
+              .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+              .slice(0, 150)
+          : [];
+
         const dataWithTimestamp = {
           ...this.data,
+          conversations: responseConversations,
           detailedTokenUsage,
           timestamp: new Date().toISOString(),
           lastUpdate: new Date().toLocaleString(),
@@ -1047,20 +1048,21 @@ class ClaudeAnalytics {
           
         }
         
-        // Memory cleanup: limit conversation history to prevent memory buildup
-        if (this.data.conversations.length > 100) {
-          this.data.conversations = this.data.conversations
-            .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
-            .slice(0, 100);
-        }
-        
         // Force garbage collection hint
         if (global.gc) {
           global.gc();
         }
-        
+
+        // Slice for response only — do not mutate this.data.conversations
+        const responseConversations = this.data.conversations
+          ? this.data.conversations
+              .slice()
+              .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+              .slice(0, 150)
+          : [];
+
         const dataWithTimestamp = {
-          conversations: this.data.conversations,
+          conversations: responseConversations,
           summary: this.data.summary,
           timestamp: new Date().toISOString(),
           lastUpdate: new Date().toLocaleString(),
@@ -1182,17 +1184,6 @@ class ClaudeAnalytics {
       }
     });
 
-    // Agents API endpoint
-    this.app.get('/api/agents', async (req, res) => {
-      try {
-        const agents = await this.loadAgents();
-        res.json({ agents });
-      } catch (error) {
-        console.error('Error loading agents:', error);
-        res.status(500).json({ error: 'Failed to load agents data' });
-      }
-    });
-
     // Clear cache endpoint
     this.app.post('/api/clear-cache', async (req, res) => {
       try {
@@ -1226,17 +1217,12 @@ class ClaudeAnalytics {
       }
     });
 
-    // Activity heatmap data endpoint - needs full conversation history
+    // Activity heatmap data endpoint — uses in-memory cached conversations
     this.app.get('/api/activity', async (req, res) => {
       try {
-        console.log(`🔥 /api/activity called - loading all conversations...`);
-        const allConversations = await this.conversationAnalyzer.loadConversations(this.stateCalculator);
-        console.log(`🔥 Loaded ${allConversations.length} conversations from server`);
-
-        // Generate activity data using complete dataset
-        const activityData = this.generateActivityDataFromConversations(allConversations);
+        const conversations = this.data.conversations ?? [];
+        const activityData = this.generateActivityDataFromConversations(conversations);
         res.json({
-          conversations: allConversations, // Also include conversations for the heatmap component
           ...activityData,
           timestamp: new Date().toISOString()
         });

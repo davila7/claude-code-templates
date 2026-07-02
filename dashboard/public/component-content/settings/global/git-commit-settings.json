@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Configure git commit behavior including the co-authored-by signature. Disable the Claude co-authorship line if you prefer clean commit history or have organizational policies against AI attribution.\",\n  \"includeCoAuthoredBy\": false\n}"}

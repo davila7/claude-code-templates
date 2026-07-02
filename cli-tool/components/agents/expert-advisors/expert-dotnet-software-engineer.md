@@ -2,7 +2,6 @@
 name: expert-dotnet-software-engineer
 description: Provide expert .NET software engineering guidance using modern software design patterns.
 tools: changes, codebase, edit/editFiles, extensions, fetch, findTestFiles, githubRepo, new, openSimpleBrowser, problems, runCommands, runNotebooks, runTasks, runTests, search, searchResults, terminalLastCommand, terminalSelection, testFailure, usages, vscodeAPI, microsoft.docs.mcp
-model: sonnet
 ---
 
 # Expert .NET software engineer mode instructions

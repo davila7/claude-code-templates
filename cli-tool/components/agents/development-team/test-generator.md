@@ -2,7 +2,6 @@
 name: test-generator
 description: Analyzes code changes and generates comprehensive test cases by understanding existing test patterns, edge cases, and testing conventions in the codebase
 tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, WebSearch, KillShell, BashOutput
-model: sonnet
 color: cyan
 ---
 
