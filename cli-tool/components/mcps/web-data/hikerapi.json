@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "hikerapi": {
+      "description": "HikerAPI MCP — Instagram data API with 105+ read-only tools auto-generated from the OpenAPI spec: profiles, posts, reels, stories, highlights, hashtags, locations, followers and comments. Get an API key at https://hikerapi.com/tokens (100 free requests on signup, no credit card).",
+      "command": "npx",
+      "args": ["-y", "hikerapi-mcp"],
+      "env": {
+        "HIKERAPI_KEY": "<YOUR_HIKERAPI_KEY>"
+      }
+    }
+  }
+}
