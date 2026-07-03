@@ -173,7 +173,10 @@ const app = express();
 // SECURE: Redirect HTTP to HTTPS using a configured canonical host.
 // NEVER build the redirect target from the client-controlled Host header -
 // that enables host-header injection / open redirect to an attacker domain.
-const CANONICAL_HOST = process.env.CANONICAL_HOST; // e.g. "myapp.com"
+const CANONICAL_HOST = process.env.CANONICAL_HOST;
+if (!CANONICAL_HOST) {
+    throw new Error("CANONICAL_HOST not set in environment");
+}
 app.use((req, res, next) => {
     if (req.header('x-forwarded-proto') !== 'https') {
         return res.redirect(`https://${CANONICAL_HOST}${req.url}`);
