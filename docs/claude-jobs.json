@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-02T06:45:19.625562+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-07-03T06:36:35.998769+00:00",
+  "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,31 +8,6 @@
     "WeWorkRemotely"
   ],
   "jobs": [
-    {
-      "id": "hn-48756639",
-      "company": "Dashdoc",
-      "position": "Software Engineer",
-      "location": "REMOTE / EU",
-      "remote": true,
-      "salary": "€50k–€80k",
-      "description": "Dashdoc is a SaaS Transport Management System for road freight. We help carriers and shippers run transport operations on one shared platform. We’re hiring a product-minded engineer to help us expand in Belgium and the Netherlands. Local specifics: e-CMR mandates, digital waste regulations,...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48756639",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48756639",
-      "postedAt": "2026-07-02T04:41:27+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Go",
-        "PostgreSQL",
-        "GCP",
-        "Claude Code",
-        "Cursor",
-        "React Native",
-        "Django"
-      ],
-      "companyIcon": ""
-    },
     {
       "id": "anth-5288742008",
       "company": "Anthropic",
@@ -135,6 +110,30 @@
         "Rust",
         "Go",
         "AWS",
+        "Kubernetes",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5271426008",
+      "company": "Anthropic",
+      "position": "Staff Software Engineer, Developer Productivity (Dev Environments) - Claude Code",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Every minute an Anthropic engineer or researcher spends waiting on a container to boot, a dependency to resolve, or CI to surface a failure that could have been caught locally is a minute not spent on frontier AI safety. The Developer Productivity team owns the inner development loop for the people...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
+      "postedAt": "2026-06-18T23:28:54-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Docker",
         "Kubernetes",
         "Claude Code",
         "Anthropic"
@@ -467,32 +466,6 @@
         "Cursor",
         "Copilot",
         "Kotlin"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-lemon-io-senior-ai-engineer-architect",
-      "company": "Lemon.io",
-      "position": "Senior AI Engineer / Architect",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: New York, NY URL: https://lemon.io Are you a talented Senior AI Engineer/Architect looking for a remote job that lets you show your skills and get decent compensation? Look no further than Lemon.io — the marketplace that connects you with hand-picked startups in the US and Europe....",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-architect",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-architect",
-      "postedAt": "2026-06-02T16:36:48+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Go",
-        "Node.js",
-        "Azure",
-        "React Native"
       ],
       "companyIcon": ""
     },
@@ -1325,7 +1298,7 @@
     {
       "id": "anth-5192104008",
       "company": "Anthropic",
-      "position": "Global Applied AI Architecture Lead, Beneficial Deployments",
+      "position": "Head of Applied AI Architecture, Beneficial Deployments",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -1486,6 +1459,26 @@
       "tags": [
         "React",
         "TypeScript",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5174755008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Backend",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is looking for experienced, product-minded engineers to own the backend systems that power user experiences across our API, Claude Code, and Claude.ai. You'll independently scope complex, multi-month projects through ambiguous problem spaces and lead peers through technical and product...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "postedAt": "2026-04-08T14:57:22-04:00",
+      "tags": [
         "Rust",
         "AWS",
         "Claude Code",
@@ -1995,6 +1988,28 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5074908008",
       "postedAt": "2026-01-21T12:42:00-05:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-4502508008",
+      "company": "Anthropic",
+      "position": "Staff+ Application Security Engineer",
+      "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA | New York C",
+      "remote": true,
+      "salary": "",
+      "description": "Anthropic's Application Security team secures the systems that build, serve, and increasingly are Claude. The attack surface is unlike most AppSec work: multi-agent orchestration, sandboxed code execution, agents holding delegated credentials, untrusted tool output crossing trust boundaries —...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4502508008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4502508008",
+      "postedAt": "2025-01-22T16:55:47-05:00",
       "tags": [
         "TypeScript",
         "Python",
