@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-02T04:27:52.697888+00:00",
-  "totalJobs": 98,
+  "lastUpdated": "2026-07-03T04:19:26.522474+00:00",
+  "totalJobs": 97,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,24 +8,6 @@
     "WeWorkRemotely"
   ],
   "jobs": [
-    {
-      "id": "hn-48750836",
-      "company": "Grafana Labs",
-      "position": "Staff Software Engineer",
-      "location": "100% Remote (US + Canada)",
-      "remote": true,
-      "salary": "",
-      "description": "Im the hiring manager - some of the product highlights under the team's scope: - Grafana Assistant: the actually useful AI assistant that helps you do everything in Grafana; it works everywhere - even in OSS! - Investigations: background agents for investigating issues - Grafana Cloud CLI (GCX):...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48750836",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48750836",
-      "postedAt": "2026-07-01T18:02:19+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
     {
       "id": "anth-5288742008",
       "company": "Anthropic",
@@ -484,32 +466,6 @@
         "Cursor",
         "Copilot",
         "Kotlin"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-lemon-io-senior-ai-engineer-architect",
-      "company": "Lemon.io",
-      "position": "Senior AI Engineer / Architect",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: New York, NY URL: https://lemon.io Are you a talented Senior AI Engineer/Architect looking for a remote job that lets you show your skills and get decent compensation? Look no further than Lemon.io — the marketplace that connects you with hand-picked startups in the US and Europe....",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-architect",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-architect",
-      "postedAt": "2026-06-02T16:36:48+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Go",
-        "Node.js",
-        "Azure",
-        "React Native"
       ],
       "companyIcon": ""
     },
@@ -1342,7 +1298,7 @@
     {
       "id": "anth-5192104008",
       "company": "Anthropic",
-      "position": "Global Applied AI Architecture Lead, Beneficial Deployments",
+      "position": "Head of Applied AI Architecture, Beneficial Deployments",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -2032,6 +1988,28 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5074908008",
       "postedAt": "2026-01-21T12:42:00-05:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-4502508008",
+      "company": "Anthropic",
+      "position": "Staff+ Application Security Engineer",
+      "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA | New York C",
+      "remote": true,
+      "salary": "",
+      "description": "Anthropic's Application Security team secures the systems that build, serve, and increasingly are Claude. The attack surface is unlike most AppSec work: multi-agent orchestration, sandboxed code execution, agents holding delegated credentials, untrusted tool output crossing trust boundaries —...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4502508008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4502508008",
+      "postedAt": "2025-01-22T16:55:47-05:00",
       "tags": [
         "TypeScript",
         "Python",
