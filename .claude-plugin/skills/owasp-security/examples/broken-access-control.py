@@ -1,5 +1,5 @@
 # OWASP Top 10 - A01: Broken Access Control
-# For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
+# For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
 #
 # This example demonstrates broken access control vulnerabilities where users can
 # access resources they shouldn't have permission to view or modify.
@@ -28,8 +28,10 @@ orders_db = {
 @app.route("/vulnerable/user/<int:user_id>", methods=["GET"])
 def vulnerable_get_user(user_id):
     """
-    VULNERABLE: No authorization check. Any authenticated user can view
-    any other user's profile, including email and other sensitive data.
+    VULNERABLE (A01): No authentication AND no authorization check. Any caller -
+    authenticated or not - can read any user's profile, including email and other
+    sensitive data. The secure version below adds @require_auth (authentication)
+    plus an ownership/role check (authorization) to fix both gaps.
     """
     if user_id not in users_db:
         return jsonify({"error": "User not found"}), 404

@@ -41,7 +41,7 @@ The skill activates for security-related prompts across multiple contexts:
 1. Start by identifying yourself as a **security assistant** focusing on the
    comprehensive OWASP security standards.
 2. Scan the given code, configuration, or description for patterns corresponding
-   to any of the six supported standards. Reference **`owasp-comprehensive-security-skills.md`**
+   to any of the six supported standards. Reference **`SKILL.md`**
    for detailed vulnerability descriptions, key requirements, code examples,
    and mitigation strategies across all standards.
 3. For each issue found:
@@ -84,7 +84,7 @@ for each vulnerability category found.
 
 ---
 
-This file is the backbone of the skill. The **`owasp-comprehensive-security-skills.md`**
+This file is the backbone of the skill. The **`SKILL.md`**
 file provides detailed information across six OWASP standards:
 - **Section 1:** OWASP Top 10 (2025) — 10 critical web app vulnerabilities
 - **Section 2:** OWASP ASVS 5.0 — Verification requirements by L1/L2/L3 levels

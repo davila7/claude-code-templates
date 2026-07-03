@@ -21,17 +21,21 @@ This skill doesn't just flag problems; it teaches and guides across multiple sec
 
 Getting started is fast:
 
-1. Clone the repo:
+1. Clone the repo and enter the skill directory (the folder that contains
+   `SKILL.md` and `skill.json`):
    ```bash
    git clone https://github.com/mfkocalar/OWASP-Security-Skills.git
    cd OWASP-Security-Skills
+   # If installing from the claude-code-templates monorepo instead, use:
+   #   cd claude-code-templates/.claude-plugin/skills/owasp-security
    ```
-2. Link or copy it into your assistant's skill folder:
+2. Link or copy that directory into your assistant's skill folder:
    - **Claude:** `~/.claude/skills/owasp-security`
    - **GitHub Copilot:** `~/.copilot/skills/owasp-security` or `.github/skills`
    - **Other agents:** similar directories under `~/.agents`
 
    ```bash
+   # Run from the directory containing SKILL.md so $PWD points at the skill root
    ln -s "$PWD" ~/.claude/skills/owasp-security
    ```
 
@@ -166,7 +170,7 @@ The skill identifies vulnerabilities, explains risks, and shows how to apply the
 
 ## 📖 Comprehensive Reference
 
-The core reference is **`owasp-comprehensive-security-skills.md`** — a unified guide combining all six OWASP standards with:
+The core reference is **`SKILL.md`** — a unified guide combining all six OWASP standards with:
 - Key vulnerability descriptions
 - Detection clues
 - Mitigation strategies & code examples

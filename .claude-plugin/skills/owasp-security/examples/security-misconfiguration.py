@@ -1,5 +1,5 @@
 # OWASP Top 10 - A05: Security Misconfiguration
-# For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
+# For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
 #
 # This example demonstrates security misconfiguration issues including:
 # - Debug mode enabled in production
@@ -191,11 +191,12 @@ def add_security_headers(response):
     # NO Access-Control-Allow-Origin: * (CORS restricted)
     return response
 
-# SECURE: Run with production server
-if __name__ == '__main__':
-    # Never use debug=True in production
-    # Use gunicorn/uwsgi with proper user
-    app.run(debug=False, host='127.0.0.1', port=5000)
+# SECURE: Run with a production WSGI server, NOT Flask's built-in dev server.
+# Do not call app.run() in production. Serve the app with gunicorn/uwsgi:
+#
+#   gunicorn --bind 127.0.0.1:5000 --workers 4 app:app
+#
+# Keep debug OFF everywhere; app.run(debug=True) exposes the Werkzeug debugger (RCE).
 """
 
 
@@ -203,11 +204,12 @@ if __name__ == '__main__':
 DOCKERFILE_SECURE = """
 FROM python:3.10-slim as builder
 
-# Build stage
+# Build stage: install deps into an isolated virtualenv so they can be
+# copied whole into the final image (system site-packages would be left behind).
 WORKDIR /build
 COPY requirements.txt .
-
-# SECURE: Hash verification (if available)
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
 
 
@@ -218,8 +220,9 @@ RUN useradd -m -u 1000 appuser
 
 WORKDIR /app
 
-# SECURE: Copy only necessary files from builder
-COPY --from=builder /build /app
+# SECURE: Carry the installed dependencies over from the builder venv
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # SECURE: Application files with proper ownership
 COPY --chown=appuser:appuser app.py .

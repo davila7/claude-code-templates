@@ -184,10 +184,9 @@
   },
   "files": {
     "core": {
-      "skills_guide": "owasp-comprehensive-security-skills.md",
-      "instructions": "owasp-css.instructions.md",
-      "readme": "README.md",
-      "contributing": "CONTRIBUTING.md"
+      "skills_guide": "SKILL.md",
+      "instructions": "owasp-css-instructions.md",
+      "readme": "README.md"
     },
     "examples": {
       "top10_a01": "examples/broken-access-control.py",
@@ -336,7 +335,7 @@
     "prompt_injection": {
       "file": "examples/prompt-injection.txt",
       "lines": 280,
-      "language": "Python",
+      "language": "Text",
       "standard": "OWASP Agentic Applications 2026",
       "vulnerabilities": ["AG01", "AG03", "AG05", "AG06"],
       "demonstrates": ["prompt validation", "output filtering", "tool authorization"]
@@ -362,13 +361,13 @@
     ],
     "verification": {
       "check_files": [
-        "owasp-comprehensive-security-skills.md",
-        "owasp-css.instructions.md",
+        "SKILL.md",
+        "owasp-css-instructions.md",
         "README.md",
         "examples/"
       ],
       "test_activation": "Ask about a security vulnerability in provided code",
-      "expected_response": "References owasp-comprehensive-security-skills.md with specific standard"
+      "expected_response": "References SKILL.md with specific standard"
     }
   },
   "changelog": {

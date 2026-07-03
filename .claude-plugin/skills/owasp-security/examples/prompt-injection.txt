@@ -1,5 +1,5 @@
 # OWASP Agentic Applications: LLM Prompt Injection Examples
-# For detailed guidance, see: owasp-comprehensive-security-skills.md#section-6-owasp-agentic-applications-2026-preview
+# For detailed guidance, see: SKILL.md#section-6-owasp-agentic-applications-2026-preview
 #
 # This file demonstrates LLM/AI security vulnerabilities in agentic applications
 # Status: Preview/Draft - content based on evolving standards

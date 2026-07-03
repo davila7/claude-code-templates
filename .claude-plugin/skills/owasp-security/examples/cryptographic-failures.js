@@ -1,5 +1,5 @@
 // OWASP Top 10 - A02: Cryptographic Failures
-// For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
+// For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
 //
 // This example demonstrates cryptographic failures including:
 // - Weak encryption algorithms
@@ -166,18 +166,19 @@ function secure_generate_token() {
 }
 
 // ===== SECURE: HTTPS Enforced =====
-const https = require('https');
 const express = require('express');
 
 const app = express();
 
-// SECURE: Redirect HTTP to HTTPS
+// SECURE: Redirect HTTP to HTTPS using a configured canonical host.
+// NEVER build the redirect target from the client-controlled Host header -
+// that enables host-header injection / open redirect to an attacker domain.
+const CANONICAL_HOST = process.env.CANONICAL_HOST; // e.g. "myapp.com"
 app.use((req, res, next) => {
     if (req.header('x-forwarded-proto') !== 'https') {
-        res.redirect(`https://${req.header('host')}${req.url}`);
-    } else {
-        next();
+        return res.redirect(`https://${CANONICAL_HOST}${req.url}`);
     }
+    next();
 });
 
 // SECURE: HSTS header (force HTTPS for future requests)
@@ -205,12 +206,14 @@ app.use((req, res, next) => {
 // ===== ENVIRONMENT SETUP =====
 /*
 # .env file (NOT in git)
-DATABASE_ENCRYPTION_KEY=your-32-byte-hex-key-here-64-chars
+# Names must match what the code reads: process.env.ENCRYPTION_KEY, API_KEY, CANONICAL_HOST
+ENCRYPTION_KEY=your-32-byte-hex-key-here-64-chars
 API_KEY=sk-your-api-key-here
 JWT_SECRET=your-jwt-secret-here
+CANONICAL_HOST=myapp.com
 
 # Docker/Deploy
-ENV DATABASE_ENCRYPTION_KEY ${DATABASE_ENCRYPTION_KEY}
+ENV ENCRYPTION_KEY ${ENCRYPTION_KEY}
 ENV API_KEY ${API_KEY}
 */
 

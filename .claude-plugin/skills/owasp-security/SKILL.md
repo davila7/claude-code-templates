@@ -1,3 +1,8 @@
+---
+name: owasp-security
+description: Comprehensive OWASP-aligned security guidance across six standards - Top 10 (2025) for web apps, ASVS 5.0, MASVS v2.1.0 for mobile, API Security Top 10 (2023), Kubernetes Top 10 (2025), and Agentic Applications/LLM Top 10 (2026 preview). Use for security reviews, vulnerability audits, secure auth/crypto/access-control implementation, Kubernetes manifest hardening, and LLM/agent prompt-injection defense - including indirect requests like "is this login flow secure?", "review this endpoint", or "audit my pod spec".
+---
+
 # Comprehensive OWASP Security Skills
 
 A developer-focused security reference covering six OWASP standards for securing web applications, APIs, mobile apps, containers, and AI/LLM systems. Each section provides concise detection guidance, key requirements, and mitigation strategies.
@@ -273,7 +278,7 @@ func authenticateWithBiometric() {
 
 **L1 Requirements:** Validate deep links, secure IPC, WebView hardening
 **L2 Requirements:** Intent filter verification (Android), Universal Links (iOS)
-**L3 Requirements:** Sensitive intent filters protected, WebView without JavaScript disabled
+**L3 Requirements:** Sensitive intent filters protected, WebView with JavaScript disabled unless functionally required
 
 #### **CODE** — Vulnerable Dependencies & Version Management
 
@@ -609,19 +614,32 @@ resources:
 
 ```yaml
 # Image signature verification and registry restriction
+# The Policy defines the rule; the Binding scopes it and sets enforcement.
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: image-signature-verify
 spec:
   failurePolicy: Fail
-  validationActions: [deny]
-  matchResources:
+  matchConstraints:
     resourceRules:
     - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
       resources: ["pods"]
-  rules:
+  validations:
   - expression: "object.spec.containers.all(c, c.image.startsWith('gcr.io/my-registry/'))"
+    message: "All container images must come from gcr.io/my-registry/"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: image-signature-verify-binding
+spec:
+  policyName: image-signature-verify
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector: {}
 ```
 
 #### **K05: Network Segmentation**
@@ -697,7 +715,12 @@ import re
 from enum import Enum
 
 def sanitize_input(text):
-    # Validate input length and format
+    # NOTE: This is basic input hygiene only, NOT a prompt-injection defense.
+    # Instruction-level attacks (e.g. "Ignore previous instructions") use ordinary
+    # printable characters and pass through unchanged. Per the OWASP LLM Top 10,
+    # there is no foolproof prevention for prompt injection - combine this with
+    # defense-in-depth: least-privilege tool/plugin scopes, output filtering,
+    # human-in-the-loop for sensitive actions, and adversarial testing.
     if len(text) > 5000:
         raise ValueError("Input too long")
     # Remove control characters

@@ -1,6 +1,6 @@
 """
 OWASP Top 10 - A09: Logging & Monitoring Failures
-For detailed guidance, see: owasp-comprehensive-security-skills.md#section-1-owasp-top-10-2025
+For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
 
 This example demonstrates logging and monitoring failures including:
 - Missing security event logging
@@ -124,10 +124,10 @@ class SecureLogger:
         # SECURE: Log to dedicated security log
         handler = logging.FileHandler('/var/log/security.log')
         
-        # Use JSON formatter for structured logging
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
+        # SECURE: Emit the pure JSON payload only. The event dict already carries
+        # 'timestamp' and 'severity', so prefixing asctime/name/levelname would
+        # break the Logstash JSON filter (which anchors on /^{.*}$/).
+        formatter = logging.Formatter('%(message)s')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
     
@@ -323,17 +323,20 @@ def secure_audit_log(event_type, severity='INFO'):
             logger = SecureLogger()
             
             # Extract relevant audit information
-            # Safely extract user_id from function arguments
+            # Safely extract user_id for caller attribution: prefer an explicit
+            # user_id/username kwarg, else fall back to 'system' for unattributed
+            # background calls. Never dereference positional args blindly.
+            user_id = kwargs.get('user_id') or kwargs.get('username') or 'system'
             details = {
                 'function': func.__name__,
                 'timestamp': datetime.utcnow().isoformat()
             }
-            
+
             try:
                 result = func(*args, **kwargs)
                 logger.log_security_event(
                     event_type=event_type,
-                    user_id='system',
+                    user_id=user_id,
                     details=details,
                     severity=severity
                 )
@@ -343,7 +346,7 @@ def secure_audit_log(event_type, severity='INFO'):
                 details['error'] = type(e).__name__
                 logger.log_security_event(
                     event_type=f'{event_type}_FAILED',
-                    user_id='system',
+                    user_id=user_id,
                     details=details,
                     severity='CRITICAL'
                 )

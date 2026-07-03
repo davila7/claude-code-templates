@@ -1,5 +1,5 @@
 # Kubernetes RBAC Misconfiguration Example
-# For detailed guidance, see: owasp-comprehensive-security-skills.md#section-5-owasp-kubernetes-top-10
+# For detailed guidance, see: SKILL.md#section-5-owasp-kubernetes-top-10-2025-draft
 #
 # This YAML demonstrates Kubernetes security misconfigurations:
 # - K02: Overly Permissive RBAC (wildcard permissions)
@@ -45,7 +45,7 @@ spec:
     image: myapp:latest  # VULNERABLE: No tag (always pulls latest)
     securityContext:
       privileged: true  # DANGEROUS: Full host access!
-      runAsRoot: true   # DANGEROUS: Runs as root
+      runAsUser: 0      # DANGEROUS: Runs as root (UID 0)
     # MISSING: No resource limits - can exhaust node resources
     # MISSING: No readinessProbe/livenessProbe
     volumeMounts:

@@ -1,5 +1,5 @@
 // API Security Example: OAuth/JWT Token Vulnerability
-// For detailed guidance, see: owasp-comprehensive-security-skills.md#section-4-owasp-api-security-top-10
+// For detailed guidance, see: SKILL.md#section-4-owasp-api-security-top-10-2023
 //
 // This example demonstrates API authentication vulnerabilities including:
 // - Broken JWT validation (no signature verification)
@@ -10,11 +10,17 @@
 const express = require('express');
 const app = express();
 
+// NOTE: The /vulnerable/* and /secure/* routes below live in one file only for
+// side-by-side comparison. Express matches routes in registration order, so the
+// paths are kept distinct to keep both sets reachable. In a real app the
+// vulnerable versions would not exist. (CORS here is illustrative; app-level
+// middleware applies globally, so a real deployment would pick one policy.)
+
 // VULNERABLE: CORS allows any origin
-app.use(require('cors')({ origin: '*' }));
+const cors = require('cors');
 
 // VULNERABLE: JWT parsed without verification
-app.get('/api/orders', (req, res) => {
+app.get('/vulnerable/api/orders', cors({ origin: '*' }), (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'No token' });
   
@@ -27,7 +33,7 @@ app.get('/api/orders', (req, res) => {
 });
 
 // VULNERABLE: Admin endpoint accessible to any authenticated user (no function-level auth)
-app.delete('/api/admin/users/:id', (req, res) => {
+app.delete('/vulnerable/api/admin/users/:id', cors({ origin: '*' }), (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Auth required' });
   
@@ -40,7 +46,8 @@ app.delete('/api/admin/users/:id', (req, res) => {
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET;
 
-app.use(require('cors')({ origin: 'https://myapp.com', credentials: true }));
+// SECURE: CORS restricted to a known origin, applied per-route below
+const secureCors = cors({ origin: 'https://myapp.com', credentials: true });
 
 const verifyAuth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -62,12 +69,12 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-app.get('/api/orders', verifyAuth, (req, res) => {
+app.get('/secure/api/orders', secureCors, verifyAuth, (req, res) => {
   const orders = db.query('SELECT * FROM orders WHERE user_id = ?', req.user.id);
   res.json(orders);
 });
 
-app.delete('/api/admin/users/:id', verifyAuth, requireAdmin, (req, res) => {
+app.delete('/secure/api/admin/users/:id', secureCors, verifyAuth, requireAdmin, (req, res) => {
   db.query('DELETE FROM users WHERE id = ?', req.params.id);
   res.json({ status: 'deleted' });
 });
