@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "datalikers": {
+      "description": "DataLikers hosted MCP — 50+ Instagram & TikTok data tools: user search by demographics (gender, age, country, city), engagement analytics, posts, comments, hashtags, stories, highlights and trending tracks. Get an API key at https://datalikers.com/tokens (100 free requests on signup, no credit card). Prefer a local server? Run `npx -y datalikers-mcp` with DATALIKERS_API_KEY instead.",
+      "url": "https://mcp.datalikers.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer <YOUR_DATALIKERS_API_KEY>"
+      }
+    }
+  }
+}
