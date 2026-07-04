@@ -28,6 +28,14 @@ Parse `$ARGUMENTS` for:
 
 If `$ARGUMENTS` is empty: perform an interactive review of the current constitution and ask if any principles need updating.
 
+### Step 2b: Derive from Existing Project Documentation
+
+If the project has research/decision documents (`docs/`, ADRs, design docs), READ them and derive
+principles from decisions already made — cite the source doc next to each derived principle
+(e.g., "*(from docs/06-multi-tenancy.md)*"). A constitution invented from scratch when decisions
+already exist WILL contradict them. Present derived principles to the user for confirmation
+before writing.
+
 ### Step 3: Draft Updated Constitution
 
 Follow this structure:
@@ -50,11 +58,23 @@ Follow this structure:
 
 [Language/framework choices, forbidden patterns, required tools]
 
+## Security & Privacy (Non-Negotiables)
+
+<!-- REQUIRED section. These become review criteria for every implementation. Examples:
+     data isolation model (multi-tenant), authn/authz invariants, secrets handling,
+     webhook signature validation, PII in logs, LLM excluded from access control,
+     compliance rules (GDPR/HIPAA), what may NEVER be sent to third-party APIs. -->
+
+- **SEC-1**: [MUST statement, testable]
+- **SEC-2**: ...
+
 ## Quality Gates
 
 - **Before /sdd-plan**: [what must be true]
 - **Before /sdd-implement**: [what must be true]
-- **Definition of Done**: [acceptance criteria for all features]
+- **Definition of Done**: [acceptance criteria for all features] — MUST include a security
+  checklist derived from Security & Privacy above (each SEC-N verified on the diff), passing
+  tests, and passing behavioral evals where the feature defines them
 
 ## Governance
 

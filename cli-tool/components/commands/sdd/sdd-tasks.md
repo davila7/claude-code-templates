@@ -193,7 +193,17 @@ Write `specs/$BRANCH/tasks.md` following this exact structure:
 **Story mapping**:
 - Map each FR-NNN and entity to the user story (P1, P2...) that needs it
 - If entity serves multiple stories, put in Foundation (Phase 2) or earliest story
-- Each story phase must be completable and independently testable
+- Each story phase must be completable and independently testable — the checkpoint means
+  **demoable end-to-end by a human** (vertical slice), not "code merged"
+
+**Eval tasks** (if spec.md has a Behavioral Evals section):
+- Each EV-NNN gets tasks in its story phase: create golden scenario fixture + wire it into the
+  automated eval runner — BEFORE the story checkpoint (the checkpoint requires evals green)
+
+**Security tasks** (from CONSTITUTION Security & Privacy section):
+- Map each applicable SEC-N to a verification task inside the phase that touches it (e.g.,
+  webhook endpoint phase → "add signature-validation test"; multi-tenant data phase → "add
+  cross-tenant isolation test"). Do NOT defer all security to the Polish phase.
 
 ### Step 5: Update SDD Context
 

@@ -54,7 +54,29 @@ From `tasks.md`, extract:
 - For each phase: tasks with IDs, [P] markers, [USN] labels, file paths
 - Dependency relationships (sequential vs parallel)
 
-### Step 4: Execute Phase by Phase
+### Step 4: Choose Execution Mode
+
+**Mode B — Subagent-Driven (DEFAULT for features with >3 tasks or any security-sensitive work):**
+
+Dispatch a **fresh implementer subagent per task** and run a **two-stage review** after each:
+
+1. **Implementer subagent**: receives the FULL task text + relevant spec/plan excerpts + applicable
+   CONSTITUTION principles (do NOT make it re-read files it doesn't need). It implements, tests,
+   self-reviews, and reports.
+2. **Spec-compliance reviewer subagent**: verifies the diff against spec.md acceptance criteria —
+   nothing missing, nothing extra (over-building is a failure too). Issues → implementer fixes →
+   re-review. Never proceed with open issues.
+3. **Code-quality reviewer subagent**: only AFTER spec compliance passes. Reviews correctness,
+   error handling, security (constitution checklist), maintainability. Issues → fix → re-review.
+
+Rules: never run two implementer subagents on overlapping files; never skip a re-review after a
+fix; never let self-review substitute for the reviewer stages. (Prompt templates, if installed:
+`~/.claude/skills/subagent-driven-development/*.md`.)
+
+**Mode A — Direct (small features ≤3 tasks, trivial scope):** execute tasks in the current
+context, but the two-stage review still applies at phase checkpoints (dispatch reviewer subagents).
+
+### Step 5: Execute Phase by Phase
 
 For each phase (in order):
 
@@ -87,7 +109,12 @@ For each phase (in order):
 
    For User Story phases, explicitly validate the story works independently.
 
-### Step 5: Implementation Rules
+5. **Behavioral evals at checkpoints** (AI/LLM-driven features):
+   If the spec has a "Behavioral Evals" section (or `specs/$BRANCH/evals/` exists), run the eval
+   scenarios at every User Story checkpoint. An eval regression BLOCKS progression exactly like
+   a failing test — probabilistic behavior that "mostly works" is not done.
+
+### Step 6: Implementation Rules
 
 **File creation:**
 - Use exact paths from tasks.md
@@ -113,7 +140,7 @@ For each phase (in order):
 - [ ] T003 [P] Configure linting  ← still pending
 ```
 
-### Step 6: Error Handling
+### Step 7: Error Handling
 
 If a task fails:
 1. Report clearly: "❌ T0XX failed: [error message]"
@@ -125,7 +152,7 @@ If a task fails:
 
 For `[P]`-marked tasks: if one parallel task fails, continue others, collect all failures, report together.
 
-### Step 7: Completion Validation
+### Step 8: Completion Validation
 
 After all selected phases/tasks complete:
 
@@ -133,6 +160,9 @@ After all selected phases/tasks complete:
 2. Verify all tasks in selected scope are marked `[x]`
 3. Run any test suite if available
 4. Check that plan.md technical targets are met (performance, structure)
+5. **Run the CONSTITUTION Definition of Done checklist** (including its Security & Privacy items)
+   against the diff — a DoD violation is a CRITICAL blocker, not a suggestion
+6. Run the full behavioral eval suite if the feature has one (see Step 5, "Behavioral evals")
 
 Report:
 ```
