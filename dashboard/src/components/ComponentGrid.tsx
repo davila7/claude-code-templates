@@ -299,10 +299,10 @@ export default function ComponentGrid({ initialType }: Props) {
           {/* Advanced Filters Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-3.5 py-2.5 text-[13px] font-semibold rounded-lg border transition-all active:scale-95 ${
+            className={`flex items-center gap-2 px-3 py-2 text-[13px] font-mono font-semibold rounded border transition-all ${
               showFilters || hasActiveFilters
-                ? 'bg-[var(--color-primary-500)] text-white border-[var(--color-primary-500)] shadow-lg'
-                : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-primary)]'
+                ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]'
+                : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)]'
             }`}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -350,7 +350,7 @@ export default function ComponentGrid({ initialType }: Props) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'downloads' | 'name')}
-              className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-secondary)] font-medium px-3.5 py-2.5 pr-9 outline-none focus:bg-[var(--color-surface-3)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 cursor-pointer transition-all appearance-none hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23737373%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+              className="font-mono bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] font-medium px-3 py-2 pr-9 outline-none focus:border-[var(--color-accent)] cursor-pointer transition-all appearance-none hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%237d8590%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
               <option value="downloads">Most Popular</option>
               <option value="name">Alphabetical</option>
@@ -372,10 +372,10 @@ export default function ComponentGrid({ initialType }: Props) {
                     <button
                       key={cat}
                       onClick={() => toggleCategoryFilter(cat)}
-                      className={`px-3 py-1.5 text-[12px] font-semibold rounded-lg border transition-all active:scale-95 ${
+                      className={`px-3 py-1 text-[11px] font-mono font-semibold rounded border transition-all ${
                         selectedCategories.includes(cat)
-                          ? 'bg-[var(--color-primary-500)] text-white border-[var(--color-primary-500)] shadow-md'
-                          : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-surface-3)]'
+                          ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]'
+                          : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)]'
                       }`}
                     >
                       {cat}
@@ -466,8 +466,8 @@ export default function ComponentGrid({ initialType }: Props) {
       </div>
 
       {/* Grid or List View */}
-      <div className={viewMode === 'grid' 
-        ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 px-6 pb-6" 
+      <div className={viewMode === 'grid'
+        ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 px-6 pb-6"
         : "flex flex-col gap-4 px-6 pb-6"
       }>
         {paged.map((component, idx) => {
@@ -479,19 +479,10 @@ export default function ComponentGrid({ initialType }: Props) {
             return (
               <div
                 key={component.path ?? component.name}
-                className="group relative flex items-center gap-5 p-5 rounded-xl bg-[var(--color-card-bg)] hover:bg-[var(--color-card-hover)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-300 cursor-pointer hover:scale-[1.005] hover:-translate-y-0.5 animate-fade-in-up"
-                style={{ 
-                  boxShadow: 'var(--shadow-card)',
+                className="group relative flex items-center gap-5 p-4 rounded-md bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:bg-[var(--color-card-hover)] hover:border-[var(--color-accent)] transition-all duration-150 cursor-pointer animate-fade-in-up"
+                style={{
                   animationDelay: `${idx * 30}ms`,
                   animationFillMode: 'both'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
-                  e.currentTarget.style.borderColor = `${config?.color ?? '#a1a1a1'}40`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'var(--shadow-card)';
-                  e.currentTarget.style.borderColor = '';
                 }}
                 onClick={() => {
                   window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
@@ -499,23 +490,22 @@ export default function ComponentGrid({ initialType }: Props) {
               >
                 {/* Icon */}
                 <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:rotate-3"
-                  style={{ 
-                    backgroundColor: `${config?.color ?? '#a1a1a1'}18`, 
+                  className="w-11 h-11 rounded flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: `${config?.color ?? '#a1a1a1'}15`,
                     color: config?.color ?? '#a1a1a1',
-                    border: `1.5px solid ${config?.color ?? '#a1a1a1'}30`,
-                    boxShadow: `0 4px 12px ${config?.color ?? '#a1a1a1'}20`
+                    border: `1px solid ${config?.color ?? '#a1a1a1'}30`,
                   }}
                 >
-                  <TypeIcon type={activeType} size={28} className="[&>svg]:w-[28px] [&>svg]:h-[28px]" />
+                  <TypeIcon type={activeType} size={22} className="[&>svg]:w-[22px] [&>svg]:h-[22px]" />
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] font-bold text-[var(--color-text-primary)] mb-1.5">
+                  <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors mb-1">
                     {formatName(component.name)}
                   </h3>
-                  <p className="text-[13px] text-[var(--color-text-secondary)] line-clamp-1 leading-relaxed">
+                  <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-1 leading-relaxed">
                     {component.description || component.content?.slice(0, 150) || 'No description'}
                   </p>
                 </div>
@@ -523,13 +513,13 @@ export default function ComponentGrid({ initialType }: Props) {
                 {/* Badges */}
                 <div className="flex items-center gap-2 shrink-0">
                   {component.category && (
-                    <span className="text-[11px] font-semibold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
+                    <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)]">
                       {component.category}
                     </span>
                   )}
                   {(component.downloads ?? 0) > 0 && (
-                    <span className="text-[11px] font-semibold px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/15 text-emerald-400 flex items-center gap-1.5 border border-emerald-500/25">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <span className="badge-download text-[10px]">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
                       {component.downloads?.toLocaleString()}
@@ -547,10 +537,10 @@ export default function ComponentGrid({ initialType }: Props) {
                   />
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                    className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                       inCart
-                        ? 'bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-primary-600)] text-white shadow-lg hover:shadow-xl scale-100 hover:scale-105'
-                        : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] hover:scale-110'
+                        ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
+                        : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]'
                     }`}
                     title={inCart ? 'Remove from stack' : 'Add to stack'}
                   >
@@ -569,65 +559,47 @@ export default function ComponentGrid({ initialType }: Props) {
             );
           }
 
-          // Grid View (existing code)
+          // Grid View — terminal style
           return (
             <div
               key={component.path ?? component.name}
-              className="group relative flex items-start gap-4 p-6 rounded-2xl bg-[var(--color-card-bg)] hover:bg-[var(--color-card-hover)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:-translate-y-1 animate-fade-in-up"
-              style={{ 
-                boxShadow: 'var(--shadow-card)',
+              className="group relative flex items-start gap-4 p-5 rounded-md bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:bg-[var(--color-card-hover)] hover:border-[var(--color-accent)] transition-all duration-150 cursor-pointer animate-fade-in-up"
+              style={{
                 animationDelay: `${idx * 50}ms`,
                 animationFillMode: 'both'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
-                e.currentTarget.style.borderColor = `${config?.color ?? '#a1a1a1'}40`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--shadow-card)';
-                e.currentTarget.style.borderColor = '';
               }}
               onClick={() => {
                 window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
               }}
             >
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--color-primary-500)]/0 to-[var(--color-accent-400)]/0 group-hover:from-[var(--color-primary-500)]/5 group-hover:to-[var(--color-accent-400)]/5 transition-all duration-300 pointer-events-none" />
-              
-              {/* Icon with background */}
+              {/* Icon — flat, no glow */}
               <div
-                className="relative w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 z-10"
-                style={{ 
-                  backgroundColor: `${config?.color ?? '#a1a1a1'}18`, 
+                className="w-10 h-10 rounded flex items-center justify-center shrink-0"
+                style={{
+                  backgroundColor: `${config?.color ?? '#a1a1a1'}15`,
                   color: config?.color ?? '#a1a1a1',
-                  border: `1.5px solid ${config?.color ?? '#a1a1a1'}30`,
-                  boxShadow: `0 4px 12px ${config?.color ?? '#a1a1a1'}20`
+                  border: `1px solid ${config?.color ?? '#a1a1a1'}30`,
                 }}
               >
-                <TypeIcon type={activeType} size={24} className="[&>svg]:w-[24px] [&>svg]:h-[24px]" />
-                {/* Glow effect */}
-                <div 
-                  className="absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300"
-                  style={{ backgroundColor: config?.color ?? '#a1a1a1' }}
-                />
+                <TypeIcon type={activeType} size={20} className="[&>svg]:w-[20px] [&>svg]:h-[20px]" />
               </div>
 
               {/* Info */}
-              <div className="min-w-0 flex-1 relative z-10">
-                <h3 className="text-[15px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-text-primary)] transition-colors leading-tight mb-2">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors leading-tight mb-1.5">
                   {formatName(component.name)}
                 </h3>
-                <p className="text-[13px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6] transition-colors">
+                <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6]">
                   {component.description || component.content?.slice(0, 120) || 'No description'}
                 </p>
-                <div className="flex items-center gap-2 mt-4">
+                <div className="flex items-center gap-2 mt-3">
                   {component.category && (
-                    <span className="text-[10px] font-semibold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)] transition-all group-hover:border-[var(--color-border-hover)] group-hover:bg-[var(--color-surface-4)]">
+                    <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)]">
                       {component.category}
                     </span>
                   )}
                   {(component.downloads ?? 0) > 0 && (
-                    <span className="text-[10px] font-semibold px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/15 text-emerald-400 flex items-center gap-1.5 border border-emerald-500/25 transition-all group-hover:from-emerald-500/20 group-hover:to-emerald-400/20 group-hover:border-emerald-500/35 group-hover:shadow-lg group-hover:shadow-emerald-500/10">
+                    <span className="badge-download text-[10px]">
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
@@ -638,7 +610,7 @@ export default function ComponentGrid({ initialType }: Props) {
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center gap-1.5 shrink-0 relative z-10">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <SaveToCollectionButton
                   componentType={component.type}
                   componentPath={component.path}
@@ -647,20 +619,20 @@ export default function ComponentGrid({ initialType }: Props) {
                 />
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                  className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                     inCart
-                      ? 'bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-primary-600)] text-white shadow-lg hover:shadow-xl hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] scale-100 hover:scale-105'
-                      : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] hover:scale-110 hover:shadow-md'
+                      ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
+                      : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]'
                   }`}
                   title={inCart ? 'Remove from stack' : 'Add to stack'}
                   aria-label={inCart ? 'Remove from stack' : 'Add to stack'}
                 >
                   {inCart ? (
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   ) : (
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
                   )}

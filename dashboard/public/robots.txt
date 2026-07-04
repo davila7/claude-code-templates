@@ -20,4 +20,4 @@ Allow: /
 User-agent: CCBot
 Disallow: /
 
-Sitemap: https://www.aitmpl.com/sitemap-index.xml
+Sitemap: https://www.aitmpl.com/sitemap.xml

@@ -1,0 +1,25 @@
+{
+  "description": "Audit trail for subagent invocations using SubagentStart and SubagentStop lifecycle hooks. Every time Claude spawns or finishes a subagent, a timestamped JSON entry is appended to .claude/agent-log.jsonl — recording the agent name, event type, and ISO timestamp. Provides an offline, zero-dependency log for debugging multi-agent workflows, tracking which agents ran and in what order, and estimating AI usage per session.",
+  "hooks": {
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p .claude && printf '{\"event\":\"SubagentStart\",\"agent\":\"%s\",\"ts\":\"%s\"}\\n' \"${CLAUDE_AGENT_NAME:-unknown}\" \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" >> .claude/agent-log.jsonl"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p .claude && printf '{\"event\":\"SubagentStop\",\"agent\":\"%s\",\"ts\":\"%s\"}\\n' \"${CLAUDE_AGENT_NAME:-unknown}\" \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" >> .claude/agent-log.jsonl"
+          }
+        ]
+      }
+    ]
+  }
+}

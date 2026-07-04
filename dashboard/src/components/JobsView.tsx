@@ -228,7 +228,10 @@ export default function JobsView() {
       <div className="px-6 pt-5 pb-2">
         <h1 className="text-lg font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
           Jobs Requiring Claude Code
-          <img src="/claude-code-logo.png" alt="Claude Code" className="w-6 h-6 inline-block" />
+          <picture>
+              <source srcSet="/claude-code-logo.webp" type="image/webp" />
+              <img src="/claude-code-logo.png" alt="Claude Code" className="w-6 h-6 inline-block" loading="lazy" />
+            </picture>
         </h1>
         <p className="text-[13px] text-[var(--color-text-tertiary)] mt-1">
           Companies actively hiring developers who use Claude Code in their workflow.

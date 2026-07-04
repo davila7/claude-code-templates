@@ -1,0 +1,1 @@
+{"content": "{  \n  \"mcpServers\": {  \n    \"jfrog\": {  \n      \"description\":\"JFrog MCP Server: providing your agents with direct access to JFrog Platform services.\",\n      \"url\":\"https://<​​JFROG_PLATFORM_URL​​>/mcp\"\n    }  \n  }  \n}"}

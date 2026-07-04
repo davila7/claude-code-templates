@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"@microsoft/clarity-mcp-server\": {\n      \"command\": \"npx\",\n      \"args\": [\n        \"@microsoft/clarity-mcp-server\",\n        \"--clarity_api_token=your-api-token-here\"\n      ]\n    }\n  }\n}"}

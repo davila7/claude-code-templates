@@ -62,6 +62,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **MCPs** (55+) - External service integrations
 **Settings** (60+) - Claude Code configuration files
 **Hooks** (39+) - Automation triggers
+**Loops** (18+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
 **Templates** (14+) - Complete project configurations
 
 ### Installation Patterns
@@ -71,6 +72,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 npx claude-code-templates@latest --agent frontend-developer
 npx claude-code-templates@latest --command setup-testing
 npx claude-code-templates@latest --hook automation/simple-notifications
+npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the loop's referenced components
 
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
@@ -126,6 +128,30 @@ The agent will provide prioritized feedback:
 - **❌ Critical Issues**: Must fix before merge (security, missing fields)
 - **⚠️ Warnings**: Should fix (clarity, best practices)
 - **📋 Suggestions**: Nice to have improvements
+
+#### Skill Security Scanning (SkillSpector)
+
+Skills under `cli-tool/components/skills/**` are scanned for security
+vulnerabilities by [SkillSpector](https://github.com/NVIDIA/skillspector)
+(NVIDIA, Apache-2.0) — a static analyzer with 64 vulnerability patterns
+(prompt injection, data exfiltration, supply chain, dangerous code/AST, taint
+tracking, YARA signatures, etc.). It runs in static-only mode (`--no-llm`), so
+no API key or secret is required.
+
+Two GitHub Actions drive it, both via the batch orchestrator
+`scripts/skillspector_scan.py`:
+
+- **`.github/workflows/skill-security-scan.yml`** (PR) — scans only the skills
+  changed in the PR (`git diff`), posts an idempotent report comment, and
+  **blocks** the check if any changed skill scores HIGH/CRITICAL (risk score
+  > 50). Uploads an aggregated SARIF to the Security tab.
+- **`.github/workflows/skill-security-scan-all.yml`** (weekly + manual) — scans
+  all skills, reports to the run summary and SARIF, and **never blocks**.
+
+SkillSpector requires Python 3.12+ and is installed from NVIDIA's `main`
+branch (`pip install git+https://github.com/NVIDIA/skillspector.git@main`); it
+is not published to PyPI. Risk bands: 0-20 LOW, 21-50 MEDIUM, 51-80 HIGH,
+81-100 CRITICAL.
 
 #### Statuslines with Python Scripts
 

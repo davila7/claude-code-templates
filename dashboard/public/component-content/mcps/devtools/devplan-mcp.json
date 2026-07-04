@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"devplan\": {\n      \"type\": \"sse\",\n      \"url\": \"https://mcp.devplanmcp.store/sse\"\n    }\n  }\n}\n"}
