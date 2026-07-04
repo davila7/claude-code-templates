@@ -25,3 +25,8 @@ crons = ["0 14 * * SUN"]
 # Optional (add later):
 # - GA_PROPERTY_ID: GA4 property ID
 # - GA_SERVICE_ACCOUNT_JSON: Base64-encoded service account JSON
+#
+# Optional (error tracking):
+# - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure a
+#   Cron Monitor in Sentry with slug "pulse-weekly-report" to get alerted if
+#   the weekly report stops running entirely.

@@ -2,12 +2,20 @@
  * aitmpl-crons — Cloudflare Worker
  *
  * Replaces Vercel cron jobs by calling the dashboard API endpoints
- * on a schedule. Cron: */30 * * * * (claude-code-check) and 0 * * * * (health-check).
+ * on a schedule. Cron: every 30 minutes (claude-code-check) and hourly (health-check).
  *
  * Secrets (wrangler secret put):
  *   DASHBOARD_URL    — e.g. https://www.aitmpl.com
  *   TRIGGER_SECRET   — shared secret sent as Authorization header
+ *   SENTRY_DSN       — DSN from the "aitmpl-workers" Sentry project (error tracking)
  */
+
+import { reportError, checkIn } from './sentry.js';
+
+const MONITORS = {
+  '*/30 * * * *': 'claude-code-check',
+  '0 * * * *': 'health-check',
+};
 
 export default {
   async scheduled(event, env, ctx) {
@@ -18,15 +26,37 @@ export default {
     };
 
     const cron = event.cron;
+    const endpoint = cron === '*/30 * * * *' ? '/api/claude-code-check'
+      : cron === '0 * * * *' ? '/api/health-check'
+      : null;
 
-    if (cron === '*/30 * * * *') {
-      // Every 30 minutes: check for new Claude Code releases
-      const res = await fetch(`${base}/api/claude-code-check`, { headers });
-      console.log(`claude-code-check: ${res.status}`);
-    } else if (cron === '0 * * * *') {
-      // Every hour: health check (was every 15 min on Vercel)
-      const res = await fetch(`${base}/api/health-check`, { headers });
-      console.log(`health-check: ${res.status}`);
+    if (!endpoint) {
+      console.log(`Unknown cron schedule: ${cron}`);
+      return;
+    }
+
+    const monitorSlug = MONITORS[cron];
+    const checkInId = await checkIn(env, monitorSlug, 'in_progress');
+
+    try {
+      const res = await fetch(`${base}${endpoint}`, { headers });
+      console.log(`${endpoint}: ${res.status}`);
+
+      if (!res.ok) {
+        await reportError(env, `${endpoint} returned ${res.status}`, {
+          worker: 'aitmpl-crons',
+          cron,
+          endpoint,
+          status: res.status,
+        });
+        await checkIn(env, monitorSlug, 'error', checkInId);
+      } else {
+        await checkIn(env, monitorSlug, 'ok', checkInId);
+      }
+    } catch (error) {
+      console.error(`${endpoint} failed:`, error.message);
+      await reportError(env, error, { worker: 'aitmpl-crons', cron, endpoint });
+      await checkIn(env, monitorSlug, 'error', checkInId);
     }
   },
 

@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getNeonClient } from '../../lib/api/neon';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
+import { captureApiError } from '../../lib/api/error-tracking';
 
 const ENDPOINTS_TO_CHECK = [
   { url: 'https://www.aitmpl.com/api/track-download-supabase', method: 'OPTIONS' },
@@ -112,6 +113,12 @@ export const GET: APIRoute = async () => {
 
     if (failures.length > 0) {
       await sendDiscordAlert(failures);
+      for (const failure of failures) {
+        await captureApiError(
+          new Error(failure.errorMessage || `HTTP ${failure.statusCode}`),
+          { route: '/api/health-check', checkedEndpoint: failure.endpoint }
+        );
+      }
     }
 
     const allHealthy = failures.length === 0;
@@ -130,6 +137,7 @@ export const GET: APIRoute = async () => {
   } catch (error: unknown) {
     const err = error as Error;
     console.error('Health check error:', err);
+    await captureApiError(err, { route: '/api/health-check' });
     return jsonResponse(
       {
         error: 'Internal server error',

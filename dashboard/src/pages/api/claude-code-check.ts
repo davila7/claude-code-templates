@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getNeonClient } from '../../lib/api/neon';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { parseVersionChangelog, formatForDiscord, generateSummary } from '../../lib/api/changelog-parser';
+import { captureApiError } from '../../lib/api/error-tracking';
 
 const NPM_PACKAGE = '@anthropic-ai/claude-code';
 const CHANGELOG_URL = 'https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md';
@@ -237,6 +238,8 @@ async function handleCheck() {
   } catch (error: unknown) {
     const err = error as Error;
     console.error('Error:', err);
+
+    await captureApiError(err, { route: '/api/claude-code-check' });
 
     try {
       const sql = getNeonClient();

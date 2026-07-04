@@ -30,6 +30,16 @@ This is the npm package `claude-code-templates`. A Node.js CLI for installing Cl
 2. Copy `docs/components.json` to `dashboard/public/components.json`
 3. Deploy dashboard
 
+## Error Reporting (opt-in)
+
+- `cli-tool/src/error-reporting.js` — crash reporting to Sentry, **off by
+  default**. Requires explicit `CCT_ERROR_REPORTING=true` from the end user;
+  always respects the existing opt-out flags (`CCT_NO_TRACKING`,
+  `CCT_NO_ANALYTICS`, `CI`), which win over the opt-in.
+- Distinct from `tracking-service.js` (anonymous usage analytics, on by
+  default) — never conflate the two or default error reporting to on.
+- Wired into the top-level catch in `cli-tool/bin/create-claude-config.js`.
+
 ## Testing
 
 ```bash
