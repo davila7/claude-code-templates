@@ -4,6 +4,24 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+# Tiny per-type counts (sidebars, plugins pages) — same 24h cache
+/counts.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Per-type index slices (grid loads only the active type)
+/components/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Flat search index for the global (Cmd+K) search
+/search-index.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
 /component-content/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *

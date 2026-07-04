@@ -246,14 +246,10 @@ function isActive(path: string): boolean {
     });
   }
 
-  // Fetch counts on load
-  fetch('/components.json')
+  // Fetch counts on load (tiny counts.json, not the full index)
+  fetch('/counts.json')
     .then((r) => r.json())
-    .then((data: Record<string, unknown>) => {
-      const counts: Record<string, number> = {};
-      for (const type of Object.keys(data)) {
-        if (Array.isArray(data[type])) counts[type] = (data[type] as unknown[]).length;
-      }
+    .then((counts: Record<string, number>) => {
       applyCounts(counts);
     })
     .catch(() => {});

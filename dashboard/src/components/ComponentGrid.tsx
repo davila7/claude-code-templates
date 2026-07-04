@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Component, ComponentsData, ComponentType } from '../lib/types';
+import type { Component } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
-import { ITEMS_PER_PAGE, COMPONENTS_JSON_URL } from '../lib/constants';
+import { ITEMS_PER_PAGE } from '../lib/constants';
+import { fetchComponentsByType } from '../lib/data';
 import SaveToCollectionButton from './SaveToCollectionButton';
 
 interface Props {
@@ -29,7 +30,9 @@ function formatName(name: string): string {
 import TypeIcon from './TypeIcon';
 
 export default function ComponentGrid({ initialType }: Props) {
-  const [data, setData] = useState<ComponentsData | null>(null);
+  // Only the active type's components are loaded, from /components/{type}.json,
+  // instead of downloading the whole ~1.9MB index up front.
+  const [typeComponents, setTypeComponents] = useState<Component[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<string>(initialType);
@@ -52,23 +55,21 @@ export default function ComponentGrid({ initialType }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    const controller = new AbortController();
 
     async function load() {
       try {
         setLoading(true);
-        const res = await fetch(COMPONENTS_JSON_URL, { signal: controller.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (!cancelled) { setData(json); setLoading(false); }
-      } catch (err: any) {
-        if (!cancelled && err.name !== 'AbortError') { setError('Failed to load components'); setLoading(false); }
+        setError(null);
+        const components = await fetchComponentsByType(activeType);
+        if (!cancelled) { setTypeComponents(components); setLoading(false); }
+      } catch {
+        if (!cancelled) { setError('Failed to load components'); setLoading(false); }
       }
     }
 
     load();
-    return () => { cancelled = true; controller.abort(); };
-  }, []);
+    return () => { cancelled = true; };
+  }, [activeType]);
 
   useEffect(() => {
     try {
@@ -77,11 +78,6 @@ export default function ComponentGrid({ initialType }: Props) {
     } catch {}
   }, []);
 
-
-  const typeComponents = useMemo(() => {
-    if (!data) return [];
-    return (data[activeType as ComponentType] as Component[]) ?? [];
-  }, [data, activeType]);
 
   const categories = useMemo(() => {
     const cats = new Set<string>();
@@ -130,19 +126,8 @@ export default function ComponentGrid({ initialType }: Props) {
 
   useEffect(() => { setPage(1); }, [category, search, activeType, selectedCategories, minDownloads]);
 
-  const counts = useMemo(() => {
-    if (!data) return {};
-    const result: Record<string, number> = {};
-    for (const type of Object.keys(TYPE_CONFIG)) result[type] = ((data as any)[type] as Component[])?.length ?? 0;
-    return result;
-  }, [data]);
-
-  // Emit counts to sidebar
-  useEffect(() => {
-    if (Object.keys(counts).length > 0) {
-      window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
-    }
-  }, [counts]);
+  // Sidebar counts come from /counts.json (see Sidebar.astro); the grid no
+  // longer loads every type, so it can't (and doesn't need to) emit them.
 
   const toggleCategoryFilter = useCallback((cat: string) => {
     setSelectedCategories(prev => 

@@ -60,6 +60,121 @@ export async function fetchComponents(): Promise<ComponentsData> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Per-type index slices and search index (Cloudflare Pages static artifacts,
+// emitted by scripts/generate_components_json.py). These keep the browser from
+// downloading the whole ~1.9MB index when it only needs one type or a search.
+// ---------------------------------------------------------------------------
+
+const COMPONENTS_BASE = '/components';
+const SEARCH_INDEX_URL = '/search-index.json';
+
+const typeCache = new Map<string, { data: Component[]; ts: number }>();
+let searchIndexCache: { data: SearchIndexEntry[]; ts: number } | null = null;
+
+export interface SearchIndexEntry {
+  type: string;
+  name: string;
+  path: string;
+  description: string;
+  category: string;
+}
+
+/** Resolve a same-origin path to an absolute URL when running server-side. */
+function toAbsolute(pathUrl: string): string {
+  if (typeof window === 'undefined' && pathUrl.startsWith('/')) {
+    const base = import.meta.env.SITE || 'https://www.aitmpl.com';
+    return `${base}${pathUrl}`;
+  }
+  return pathUrl;
+}
+
+/**
+ * Fetch a single component type's array from /components/{type}.json.
+ * Falls back to an empty array on error. Uses a 5-min in-memory cache per type.
+ */
+export async function fetchComponentsByType(type: string): Promise<Component[]> {
+  const now = Date.now();
+  const cached = typeCache.get(type);
+  if (cached && now - cached.ts < CACHE_TTL) {
+    return cached.data;
+  }
+
+  const urlPath = `${COMPONENTS_BASE}/${type}.json`;
+
+  // Dev SSR: read from disk to avoid stale production data.
+  if (typeof window === 'undefined' && import.meta.env.DEV) {
+    try {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const filePath = path.resolve(`public/components/${type}.json`);
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const data: Component[] = JSON.parse(raw);
+      typeCache.set(type, { data, ts: now });
+      return data;
+    } catch {
+      // fall through to fetch
+    }
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(toAbsolute(urlPath), { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data: Component[] = await res.json();
+    typeCache.set(type, { data, ts: now });
+    return data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (cached) return cached.data;
+    return [];
+  }
+}
+
+/**
+ * Fetch the flat search index (name/description/category/type/path only).
+ * Used by the global Cmd+K search, which needs every type at once but not the
+ * heavier per-component metadata. 5-min in-memory cache.
+ */
+export async function fetchSearchIndex(): Promise<SearchIndexEntry[]> {
+  const now = Date.now();
+  if (searchIndexCache && now - searchIndexCache.ts < CACHE_TTL) {
+    return searchIndexCache.data;
+  }
+
+  // Dev SSR: read from disk.
+  if (typeof window === 'undefined' && import.meta.env.DEV) {
+    try {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const filePath = path.resolve('public/search-index.json');
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const data: SearchIndexEntry[] = JSON.parse(raw);
+      searchIndexCache = { data, ts: now };
+      return data;
+    } catch {
+      // fall through to fetch
+    }
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(toAbsolute(SEARCH_INDEX_URL), { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data: SearchIndexEntry[] = await res.json();
+    searchIndexCache = { data, ts: now };
+    return data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (searchIndexCache) return searchIndexCache.data;
+    return [];
+  }
+}
+
 export function getCategories(components: Component[]): string[] {
   const cats = new Set<string>();
   for (const c of components) {
