@@ -117,7 +117,7 @@ Orchestration:
 - Step Functions
 - Cloud Composer
 - Azure Data Factory
-- Legacy: Luigi (maintenance mode — avoid for new pipelines)
+- Luigi (existing workflows)
 
 Data modeling:
 - Dimensional modeling
