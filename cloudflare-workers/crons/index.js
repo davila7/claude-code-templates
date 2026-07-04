@@ -64,6 +64,17 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.pathname === '/status') {
+      return new Response(JSON.stringify({
+        status: 'running',
+        worker: 'aitmpl-crons',
+        schedules: {
+          '*/30 * * * *': '/api/claude-code-check',
+          '0 * * * *': '/api/health-check',
+        },
+      }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
     if (url.pathname !== '/trigger') {
       return new Response('aitmpl-crons worker', { status: 200 });
     }

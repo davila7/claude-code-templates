@@ -1,0 +1,30 @@
+# Cloudflare Worker Configuration
+# Daily Health Report — sends a daily monitoring digest to Telegram
+
+name = "daily-health-report"
+main = "index.js"
+compatibility_date = "2024-09-23"
+
+# Cron Trigger - Daily at 14:00 UTC (10:00 AM EDT / 9:00 AM EST)
+# Fixed to EDT (UTC-4); adjust by 1 hour twice a year to track daylight saving
+# if exact 10:00 AM Michigan time matters. See README.md.
+[triggers]
+crons = ["0 14 * * *"]
+
+# Secrets (set via: wrangler secret put <KEY>)
+# Required:
+# - TELEGRAM_BOT_TOKEN: Telegram bot token (same as docs-monitor/pulse)
+# - TELEGRAM_CHAT_ID: Telegram chat ID (same as docs-monitor/pulse)
+# - SENTRY_AUTH_TOKEN: Sentry API auth token (Settings > Auth Tokens),
+#   scopes: project:read, org:read
+# - SENTRY_ORG_SLUG: Sentry organization slug (e.g. "daniel-avila")
+#
+# Optional:
+# - TRIGGER_SECRET: Secret for manual /trigger endpoint
+# - DASHBOARD_URL: e.g. https://www.aitmpl.com (defaults to that if unset)
+#
+# Note: this worker does NOT check the other 3 Cloudflare Workers directly —
+# Cloudflare blocks Worker-to-Worker fetches over the public *.workers.dev
+# hostname within the same account (error 1042). Their health is covered by
+# their own Sentry Cron Monitor check-ins instead, surfaced in the Sentry
+# summary section below.
