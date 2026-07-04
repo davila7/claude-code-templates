@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import type { Component, ComponentsData } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
-import { COMPONENTS_JSON_URL } from '../lib/constants';
+import { fetchSearchIndex, type SearchIndexEntry } from '../lib/data';
 
 function cleanPath(path: string): string {
   return path?.replace(/\.(md|json)$/, '') ?? '';
@@ -21,20 +20,19 @@ function formatName(name: string): string {
 export default function SearchModal() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [data, setData] = useState<ComponentsData | null>(null);
+  const [data, setData] = useState<SearchIndexEntry[] | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<number | null>(null);
 
-  // Load data lazily on first open
+  // Load the lightweight search index lazily on first open
   useEffect(() => {
     if (!open || data) return;
 
-    fetch(COMPONENTS_JSON_URL)
-      .then((r) => r.json())
-      .then((json) => setData(json))
+    fetchSearchIndex()
+      .then((entries) => setData(entries))
       .catch(() => {});
   }, [open, data]);
 
@@ -134,14 +132,8 @@ export default function SearchModal() {
     if (!data || !query.trim()) return [];
 
     const q = query.toLowerCase();
-    const all: Component[] = [];
 
-    for (const type of Object.keys(TYPE_CONFIG)) {
-      const items = (data as any)[type] as Component[] | undefined;
-      if (items) all.push(...items);
-    }
-
-    return all
+    return data
       .filter(
         (c) =>
           c.name.toLowerCase().includes(q) ||
@@ -169,7 +161,7 @@ export default function SearchModal() {
     }
   }
 
-  function navigate(component: Component) {
+  function navigate(component: SearchIndexEntry) {
     closeModal();
     window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
   }
