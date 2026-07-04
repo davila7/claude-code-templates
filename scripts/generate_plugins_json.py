@@ -36,6 +36,7 @@ REPOS = [
     ("EveryInc/compound-engineering-plugin", None),
     ("alirezarezvani/claude-skills", None),
     ("davepoon/buildwithclaude", "https://buildwithclaude.com/"),
+    ("Nyanbalaji28/best-claude-skills", "https://augmentclaude.com/"),
     ("lackeyjb/playwright-skill", None),
     ("nyldn/claude-octopus", None),
     ("jeremylongshore/claude-code-plugins-plus-skills", None),
@@ -58,6 +59,7 @@ REPOS = [
     ("777genius/claude-notifications-go", None),
     ("Piebald-AI/claude-code-lsps", None),
     ("chu2bard/pinion-os", None),
+    ("Airtable/skills", None),
 ]
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")

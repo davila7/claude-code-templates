@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"mermaid\": {\n      \"description\": \"Generate Mermaid diagrams and charts dynamically with AI. Create flowcharts, sequence diagrams, class diagrams, and more via MCP.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"mcp-mermaid\"]\n    }\n  }\n}\n"}

@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Deadline day statusline with git branch, changed files count, and countdown timer to a configurable deadline. Color-coded urgency. Set DEADLINE_TIME env var (HH:MM, default 15:30) to customize.\",\n  \"statusLine\": {\n    \"type\": \"command\",\n    \"command\": \"python3 .claude/scripts/deadline-countdown.py\"\n  }\n}\n"}

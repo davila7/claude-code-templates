@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
-import { encode } from 'gpt-tokenizer';
+
+// Lightweight token-count approximation: ~4 characters per token for English prose.
+// Avoids shipping the heavy gpt-tokenizer BPE table to the browser.
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
+}
 
 interface Slide {
   type: 'title' | 'content';
@@ -144,9 +149,9 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
   const slides = useMemo(() => buildSlides(content, skillName), [content, skillName]);
   const totalSlides = slides.length;
 
-  // Token counting
-  const totalTokens = useMemo(() => encode(content).length, [content]);
-  const slideTokens = useMemo(() => slides.map((s) => encode(s.body).length), [slides]);
+  // Token counting (approximation: ~4 chars per token)
+  const totalTokens = useMemo(() => estimateTokens(content), [content]);
+  const slideTokens = useMemo(() => slides.map((s) => estimateTokens(s.body)), [slides]);
 
   const goTo = useCallback((idx: number) => {
     setCurrentSlide(Math.max(0, Math.min(idx, totalSlides - 1)));

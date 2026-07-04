@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"android-mcp\": {\n      \"description\": \"MCP Server for interacting with Android devices. Control, inspect, and automate Android devices via ADB through Claude.\",\n      \"command\": \"uvx\",\n      \"args\": [\"--python\", \"3.13\", \"android-mcp\"]\n    }\n  }\n}\n"}

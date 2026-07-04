@@ -1,0 +1,82 @@
+name: Build Rust CLI
+
+# Builds the Rust `cct` binary for all supported targets and (on a tag) uploads
+# per-target tarballs to the GitHub Release. Those tarballs are the source of
+# truth for npm platform packages, Homebrew, cargo-binstall and the install.sh
+# script.
+#
+# Tarball naming matches the cargo-binstall metadata in cli-rust/Cargo.toml:
+#   cct-<rust-target>.tgz   (contains a single `cct` / `cct.exe`)
+
+on:
+  push:
+    tags:
+      - 'cli-rust-v*'
+  workflow_dispatch:
+
+# Needed for softprops/action-gh-release to create/update the Release on tags.
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: cli-rust
+
+jobs:
+  build:
+    name: build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-latest,   target: aarch64-apple-darwin }
+          - { os: macos-latest,   target: x86_64-apple-darwin }
+          - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest,  target: aarch64-unknown-linux-gnu }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli-rust
+          key: ${{ matrix.target }}
+
+      - name: Install cross-linker (aarch64 linux)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          mkdir -p .cargo
+          printf '[target.aarch64-unknown-linux-gnu]\nlinker = "aarch64-linux-gnu-gcc"\n' >> .cargo/config.toml
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package tarball
+        shell: bash
+        run: |
+          BIN=cct
+          [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ] && BIN=cct.exe
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/$BIN" "dist/$BIN"
+          tar -czf "dist/cct-${{ matrix.target }}.tgz" -C dist "$BIN"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cct-${{ matrix.target }}
+          path: cli-rust/dist/cct-${{ matrix.target }}.tgz
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: cli-rust/dist/cct-${{ matrix.target }}.tgz

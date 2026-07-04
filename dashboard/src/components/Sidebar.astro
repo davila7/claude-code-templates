@@ -16,7 +16,10 @@ function isActive(path: string): boolean {
   <!-- Logo -->
   <div class="px-4 py-4 border-b border-[var(--color-border)] flex items-center justify-between min-h-[65px] transition-all duration-300 bg-[var(--color-surface-0)]">
     <a href="/" class="flex items-center gap-2.5 group min-w-0 overflow-hidden transition-all duration-300">
-      <img src="/logo.png" alt="AI Templates" class="w-8 h-8 shrink-0 transition-all duration-200 group-hover:scale-110" />
+      <picture>
+        <source srcset="/logo.webp" type="image/webp" />
+        <img src="/logo.png" alt="AI Templates" class="w-8 h-8 shrink-0 transition-all duration-200 group-hover:scale-110" fetchpriority="high" />
+      </picture>
       <span class="sidebar-text text-[14px] font-bold text-[var(--color-text-primary)] tracking-tight whitespace-nowrap transition-all duration-300">AI Templates</span>
     </a>
     <button
@@ -35,7 +38,7 @@ function isActive(path: string): boolean {
   <nav class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 space-y-1 scrollbar-thin scrollbar-thumb-[var(--color-surface-3)] scrollbar-track-transparent transition-all duration-300">
     <!-- Workplace section -->
     <div class="px-2 pt-1 pb-2 overflow-hidden">
-      <span class="sidebar-text text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] select-none transition-all duration-300 block">Workplace</span>
+      <span class="sidebar-text font-ui-mono text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.1em] select-none transition-all duration-300 block">Workplace</span>
     </div>
 
     <!-- My Components (React island) -->
@@ -46,7 +49,7 @@ function isActive(path: string): boolean {
 
     <!-- Browse section -->
     <div class="px-2 pt-1 pb-2 overflow-hidden">
-      <span class="sidebar-text text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] select-none transition-all duration-300 block">Browse</span>
+      <span class="sidebar-text font-ui-mono text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.1em] select-none transition-all duration-300 block">Browse</span>
     </div>
 
     {Object.entries(TYPE_CONFIG).map(([type, config]) => (
@@ -55,14 +58,14 @@ function isActive(path: string): boolean {
         data-nav-type={type}
         data-tooltip={config.label}
         class:list={[
-          'sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
+          'sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded text-[13px] transition-all duration-150 group relative overflow-hidden font-ui-mono',
           isActive(`/${type}`)
-            ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-semibold shadow-sm border border-[var(--color-border)]'
-            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] hover:shadow-sm',
+            ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] font-semibold border border-[var(--color-accent)]/40'
+            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]',
         ]}
       >
         {isActive(`/${type}`) && (
-          <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+          <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-accent)] rounded-r-full"></span>
         )}
         <span
           class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center"
@@ -71,14 +74,14 @@ function isActive(path: string): boolean {
             class:list={[
               'w-full h-full inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:flex-shrink-0 [&>svg]:block [&>svg]:m-auto transition-all duration-200',
               isActive(`/${type}`)
-                ? 'text-[var(--color-primary-500)] scale-110'
+                ? 'text-[var(--color-accent)] scale-110'
                 : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] group-hover:scale-105',
             ]}
             set:html={ICONS[type]}
           />
         </span>
         <span class="sidebar-text truncate transition-all duration-300">{config.label}</span>
-        <span class="sidebar-nav-count ml-auto text-[11px] font-semibold tabular-nums text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)] px-2 py-0.5 rounded-md min-w-[24px] text-center transition-all duration-300 group-hover:bg-[var(--color-surface-3)]" data-count-type={type}></span>
+        <span class="sidebar-nav-count font-ui-mono ml-auto text-[11px] font-semibold tabular-nums text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)] border border-[var(--color-border)] px-2 py-0.5 rounded min-w-[24px] text-center transition-all duration-300 group-hover:bg-[var(--color-surface-3)]" data-count-type={type}></span>
       </a>
     ))}
 
@@ -87,21 +90,21 @@ function isActive(path: string): boolean {
       href="/plugins"
       data-tooltip="Plugins"
       class:list={[
-        'sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 group relative overflow-hidden',
+        'sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded text-[13px] transition-all duration-150 group relative overflow-hidden font-ui-mono',
         isActive('/plugins')
-          ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-semibold shadow-sm border border-[var(--color-border)]'
-          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] hover:shadow-sm',
+          ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] font-semibold border border-[var(--color-accent)]/40'
+          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]',
       ]}
     >
       {isActive('/plugins') && (
-        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary-500)] rounded-r-full"></span>
+        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-accent)] rounded-r-full"></span>
       )}
       <span class="sidebar-nav-icon w-[18px] h-[18px] shrink-0 inline-flex items-center justify-center">
         <span
           class:list={[
             'w-full h-full inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:flex-shrink-0 [&>svg]:block [&>svg]:m-auto transition-all duration-200',
             isActive('/plugins')
-              ? 'text-[var(--color-primary-500)] scale-110'
+              ? 'text-[var(--color-accent)] scale-110'
               : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] group-hover:scale-105',
           ]}
         >
@@ -118,7 +121,7 @@ function isActive(path: string): boolean {
 
     <!-- Resources -->
     <div class="px-2 pt-1 pb-2 overflow-hidden">
-      <span class="sidebar-text text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] select-none transition-all duration-300 block">Resources</span>
+      <span class="sidebar-text font-ui-mono text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.1em] select-none transition-all duration-300 block">Resources</span>
     </div>
 
     <a href="/trending"
@@ -199,7 +202,7 @@ function isActive(path: string): boolean {
 
   <!-- Bottom -->
   <div class="px-3 py-3 border-t border-[var(--color-border)] space-y-2.5 bg-[var(--color-surface-0)] overflow-hidden">
-    <AuthButton client:load />
+    <AuthButton client:idle />
   </div>
 </div>
 
@@ -214,11 +217,11 @@ function isActive(path: string): boolean {
         link.classList.remove('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
         link.classList.add('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
         iconSpan?.classList.remove('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
-        iconSpan?.classList.add('text-[var(--color-primary-500)]', 'scale-110');
+        iconSpan?.classList.add('text-[var(--color-accent)]', 'scale-110');
       } else {
         link.classList.remove('bg-[var(--color-surface-3)]', 'text-[var(--color-text-primary)]', 'font-medium', 'shadow-sm');
         link.classList.add('text-[var(--color-text-secondary)]', 'hover:text-[var(--color-text-primary)]', 'hover:bg-[var(--color-surface-2)]', 'hover:shadow-sm');
-        iconSpan?.classList.remove('text-[var(--color-primary-500)]', 'scale-110');
+        iconSpan?.classList.remove('text-[var(--color-accent)]', 'scale-110');
         iconSpan?.classList.add('text-[var(--color-text-tertiary)]', 'group-hover:text-[var(--color-text-secondary)]', 'group-hover:scale-105');
       }
     });

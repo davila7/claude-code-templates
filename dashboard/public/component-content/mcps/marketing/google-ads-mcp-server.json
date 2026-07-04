@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"google-ads\": {\n      \"description\": \"A FastMCP-powered Model Context Protocol server for Google Ads API integration with automatic OAuth 2.0 authentication\",\n      \"command\": \"/full/path/to/your/project/.venv/bin/python\",\n      \"args\": [\n        \"/full/path/to/your/project/server.py\"\n      ]\n    }\n  }\n}"}

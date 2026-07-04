@@ -1,5 +1,55 @@
 [
   {
+    "slug": "ml-plugins",
+    "name": "ml-research",
+    "author": "krasserm",
+    "description": "Native Claude Code port of Hugging Face's ml-intern: research-first autonomous ML engineering and fine-tuning (SFT/DPO/GRPO/LoRA) on HF Jobs, with dataset/repo/paper tooling and an optional budget-bounded autonomous experiment loop.",
+    "github": "https://github.com/krasserm/ml-plugins",
+    "stars": 1,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 2,
+      "agents": 2,
+      "hooks": 1
+    },
+    "highlights": [
+      "No LLM API key: every model call runs on your Claude Code subscription",
+      "Research-first fine-tuning (SFT/DPO/GRPO/LoRA) on Hugging Face Jobs",
+      "Optional budget-bounded autonomous experiment sweep"
+    ]
+  },
+  {
+    "slug": "mercadopago-claude-marketplace",
+    "name": "Mercado Pago",
+    "author": "mercadopago",
+    "description": "Official Claude Code plugin from the Mercado Pago Developer Experience team. Scaffold, review, and maintain payment integrations across 7 countries and 13 products — Checkout Pro, Bricks, Subscriptions, QR, Marketplace, and more.",
+    "github": "https://github.com/mercadopago/mercadopago-claude-marketplace",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "agents",
+      "commands",
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "agents": 1,
+      "commands": 3,
+      "skills": 13,
+      "hooks": 1
+    },
+    "highlights": [
+      "7 countries: AR, BR, MX, CL, CO, PE, UY",
+      "13 products: Checkout Pro, Bricks, QR, Subscriptions, Marketplace, and more"
+    ],
+    "website": "https://www.mercadopago.com/developers"
+  },
+  {
     "slug": "everything-claude-code",
     "name": "Everything Claude Code",
     "author": "affaan-m",
@@ -12618,5 +12668,122 @@
         "pinion"
       ]
     }
+  },
+  {
+    "slug": "airtable",
+    "name": "Airtable Skills",
+    "author": "Airtable",
+    "description": "Official Airtable plugins for AI agents.",
+    "github": "https://github.com/Airtable/skills",
+    "stars": 20,
+    "type": "marketplace",
+    "tags": [
+      "skills",
+      "mcps"
+    ],
+    "contains": {
+      "plugins": 1,
+      "components": {
+        "skills": 3,
+        "mcps": 1
+      }
+    },
+    "highlights": [
+      "Official Airtable release",
+      "1 plugin in marketplace"
+    ],
+    "plugins_list": [
+      {
+        "name": "airtable",
+        "description": "Airtable is the database and operations layer for your agents — whether running product, marketing, sales, ops, HR, or a custom business app. It combines structured data with multiplayer visual surfaces (grid, kanban, calendar, gallery, timeline) humans and agents share — plus sync integrations to Jira, Salesforce, Zendesk, Google Drive, and Databricks. Makes Claude fluent in Airtable: bases and schema, records, and collaboration UI. Bundles the official Airtable MCP server.",
+        "source": "./plugins/airtable",
+        "author": "Airtable",
+        "components": {
+          "skills": 3,
+          "mcps": 1
+        }
+      }
+    ]
+  },
+  {
+    "slug": "best-claude-skills",
+    "name": "AugmentClaude Best Claude Skills",
+    "author": "Nyanbalaji28",
+    "description": "Hand-picked best Claude Code skills curated by AugmentClaude — every skill credited and linked to its original author. Full catalog of 500+ skills, bundles, and MCP servers at augmentclaude.com",
+    "github": "https://github.com/Nyanbalaji28/best-claude-skills",
+    "stars": 0,
+    "type": "marketplace",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "plugins": 14,
+      "components": {
+        "skills": 14
+      }
+    },
+    "highlights": [
+      "14 hand-picked skills",
+      "Web UI: https://augmentclaude.com"
+    ],
+    "website": "https://augmentclaude.com/",
+    "plugins_list": [
+      {
+        "name": "superpowers",
+        "description": "Jesse Vincent's complete development methodology: TDD, brainstorming-before-coding, and git worktrees — all auto-triggering."
+      },
+      {
+        "name": "gstack",
+        "description": "Garry Tan's 23-role Claude Code stack — CEO, designer, eng, QA, security, release, all as slash commands."
+      },
+      {
+        "name": "mcp-builder",
+        "description": "Anthropic's official skill for building MCP servers that connect language models to external APIs and services."
+      },
+      {
+        "name": "webapp-testing",
+        "description": "Playwright-driven browser testing: verify UI behavior, debug, and capture screenshots of local web apps."
+      },
+      {
+        "name": "frontend-design",
+        "description": "Anthropic's official frontend-design skill — production-grade interfaces with distinctive, polished design."
+      },
+      {
+        "name": "impeccable",
+        "description": "Paul Bakaus's design framework — kills generic AI design, forces deliberate taste, motion, and polish."
+      },
+      {
+        "name": "emil-design-engineering",
+        "description": "Emil Kowalski's design engineering review — when to animate, what easing, how fast, with Before/After reviews."
+      },
+      {
+        "name": "design-taste",
+        "description": "Three sliders (variance, motion, density) that tune Claude's UI output. Stops the generic AI look."
+      },
+      {
+        "name": "xlsx",
+        "description": "Open, edit, and create Excel and CSV files with formulas, formatting, and data cleaning."
+      },
+      {
+        "name": "docx",
+        "description": "Create, edit, and format Word documents with tables, images, and tracked changes."
+      },
+      {
+        "name": "pptx",
+        "description": "Create, edit, read, and extract content from PowerPoint presentations."
+      },
+      {
+        "name": "pdf",
+        "description": "Read, merge, split, rotate, watermark, encrypt, and extract text from PDF files."
+      },
+      {
+        "name": "find-skills",
+        "description": "Vercel Labs' meta-skill — Claude searches the open skill ecosystem for existing solutions before improvising."
+      },
+      {
+        "name": "skill-creator",
+        "description": "Anthropic's official tool for creating, editing, and benchmarking your own Claude skills."
+      }
+    ]
   }
 ]

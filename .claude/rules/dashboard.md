@@ -3,17 +3,18 @@ paths:
   - "dashboard/**"
 ---
 
-# Dashboard — www.aitmpl.com & app.aitmpl.com
+# Dashboard — www.aitmpl.com
 
-Astro 5 + React islands + Tailwind v4 application. Single Vercel project serving both domains.
+Astro 5 + React islands + Tailwind v4 application. Hosted natively on **Cloudflare Pages** (adapter: `@astrojs/cloudflare`, config: `dashboard/wrangler.toml`). Cron jobs run separately in `cloudflare-workers/crons/`.
 
 ## Stack
 
-- **Framework**: Astro 5, `output: 'server'`
+- **Framework**: Astro 5, `output: 'server'`, Cloudflare Pages adapter
 - **UI**: React islands for interactivity, Tailwind v4
 - **Auth**: Clerk (via `window.Clerk` global, no ClerkProvider per island)
-- **Data**: `components.json` and `trending-data.json` from `dashboard/public/`
+- **Data**: `components.json` (lightweight index, no `content`) + `component-content/{type}/{slug}.json` (per-component content loaded on demand) from `dashboard/public/`
 - **APIs**: Astro API routes in `dashboard/src/pages/api/`
+- **CDN headers**: `dashboard/public/_headers` (Cloudflare Pages `_headers` file — cache + security)
 
 ## API Routes
 
@@ -41,4 +42,4 @@ cd dashboard && npm install && npx astro dev --port 4321
 
 ## Deployment
 
-Always use the `deployer` agent. Never deploy manually. Node pinned to 22.x (v24 breaks Vercel builds).
+Always use the `deployer` agent. Never deploy manually. Hosted on Cloudflare Pages — `vercel.json` was removed after migration, do not recreate it.

@@ -26,6 +26,10 @@ export default {
           bg: 'var(--color-card-bg)',
           hover: 'var(--color-card-hover)',
         },
+        success: {
+          DEFAULT: 'var(--color-success)',
+          bg: 'var(--color-success-bg)',
+        },
       },
     },
   },

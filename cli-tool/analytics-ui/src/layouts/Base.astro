@@ -1,0 +1,34 @@
+---
+interface Props {
+  title?: string;
+}
+const { title = 'Claude Code Analytics' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>" />
+  <style>
+    /* Prevent FOUC before theme script runs */
+    html { visibility: hidden; }
+    html.ready { visibility: visible; }
+  </style>
+</head>
+<body>
+  <slot />
+  <!-- Apply theme before paint to avoid flash of wrong theme -->
+  <script is:inline>
+    (function() {
+      var stored = localStorage.getItem('theme');
+      var preferred = stored
+        ? stored
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', preferred);
+      document.documentElement.classList.add('ready');
+    })();
+  </script>
+</body>
+</html>

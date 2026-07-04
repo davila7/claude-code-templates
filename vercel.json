@@ -17,16 +17,6 @@
       ]
     }
   ],
-  "crons": [
-    {
-      "path": "/api/claude-code-check",
-      "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/health-check",
-      "schedule": "*/15 * * * *"
-    }
-  ],
   "rewrites": [
     {
       "source": "/",
