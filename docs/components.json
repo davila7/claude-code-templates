@@ -27856,31 +27856,6 @@
       "references": []
     },
     {
-      "name": "postgres-schema-design",
-      "path": "database/postgres-schema-design",
-      "category": "database",
-      "type": "skill",
-      "description": "Comprehensive PostgreSQL-specific table design reference covering data types, indexing, constraints, performance patterns, and advanced features",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      },
-      "references": [
-        "LICENSE.txt",
-        "SKILL.MD"
-      ]
-    },
-    {
       "name": "postgresql",
       "path": "database/postgresql",
       "category": "database",
@@ -45063,10 +45038,10 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".mcp.json",
-        ".claude/commands/git-workflow.md",
-        ".claude/commands/project-setup.md",
         "README.md",
+        ".mcp.json",
+        ".claude/commands/project-setup.md",
+        ".claude/commands/git-workflow.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
@@ -45120,8 +45095,8 @@
         ".claude/commands/flask-route.md",
         ".claude/commands/testing.md",
         ".claude/commands/deployment.md",
-        ".claude/commands/app-factory.md",
         ".claude/commands/blueprint.md",
+        ".claude/commands/app-factory.md",
         ".claude/commands/database.md",
         "CLAUDE.md"
       ],
@@ -45136,8 +45111,8 @@
       "category": "languages",
       "description": "Go project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=go --yes",
       "downloads": 0
@@ -45150,16 +45125,16 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
+        "README.md",
         ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/debug.md",
         ".claude/commands/api-endpoint.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/lint.md",
-        ".claude/commands/npm-scripts.md",
+        ".claude/commands/debug.md",
         ".claude/commands/refactor.md",
         ".claude/commands/test.md",
-        "README.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/lint.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
@@ -45193,8 +45168,8 @@
       "files": [
         ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/lint.md",
         ".claude/commands/test.md",
+        ".claude/commands/lint.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
@@ -45242,8 +45217,8 @@
       "files": [
         ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/model.md",
         ".claude/commands/test.md",
+        ".claude/commands/model.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
@@ -45257,8 +45232,8 @@
       "category": "languages",
       "description": "Rust project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rust --yes",
       "downloads": 0
