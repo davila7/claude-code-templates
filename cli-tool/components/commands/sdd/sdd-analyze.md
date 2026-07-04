@@ -70,6 +70,13 @@ Internally construct (do not output):
 - Spec says X, plan implements Y (contradictions)
 - Task ordering issues (integration before foundation)
 
+#### G. Eval & Security Coverage
+- Stories with AI/LLM-driven behavior but no Behavioral Evals section → HIGH
+- EV-NNN scenarios with no corresponding eval task before the story checkpoint → HIGH
+- Constitution Security & Privacy rules (SEC-N) with no verification task in the phases that
+  touch them → CRITICAL if the rule is a MUST
+- All security work deferred to the Polish phase → HIGH (security is per-phase, not an afterthought)
+
 **Focus if `$ARGUMENTS` provided**: prioritize that specific area in analysis.
 
 ### Step 4: Assign Severity

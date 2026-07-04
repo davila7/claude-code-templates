@@ -116,6 +116,16 @@ Analyze `$ARGUMENTS` and write `specs/NNN-feature-name/spec.md`:
 - **SC-002**: [Measurable business metric]
 - **SC-003**: [Quality metric, e.g., "95% task completion rate on first attempt"]
 
+## Behavioral Evals *(include if any behavior is AI/LLM-driven or probabilistic)*
+
+<!-- Given/When/Then cannot capture probabilistic behavior ("responds naturally", "picks the
+     right tool"). Define golden scenarios that will run as an automated eval suite. -->
+
+- **EV-001 — [Scenario name]**: [Multi-turn golden scenario in plain language]
+  - **Pass criteria** (each mechanically checkable): [e.g., "captures name + phone", "offers ≤3
+    slots", "confirms before writing", "stays in user's language"]
+- **EV-002 — ...**
+
 ## Assumptions
 
 - [Reasonable assumption made where the description was ambiguous]
@@ -132,6 +142,8 @@ Analyze `$ARGUMENTS` and write `specs/NNN-feature-name/spec.md`:
 - Mark genuine ambiguities with `[NEEDS CLARIFICATION: specific question]` (max 3)
 - Make reasonable defaults for minor gaps — document in Assumptions
 - Success criteria must be technology-agnostic and measurable
+- If any story involves AI/LLM-driven behavior, the Behavioral Evals section is REQUIRED — each
+  eval scenario needs mechanically checkable pass criteria (they become the automated eval suite)
 
 ### Step 5: Quality Validation
 

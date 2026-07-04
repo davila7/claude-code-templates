@@ -98,6 +98,12 @@ Before recommending the next step, validate the current artifact:
 **Gate: tasks.md → implement**
 - BLOCK if tasks.md has incomplete task IDs or missing file paths
 - WARN if no test tasks present
+- BLOCK if spec.md has Behavioral Evals (EV-NNN) but tasks.md has no eval tasks before the
+  story checkpoints
+- BLOCK if CONSTITUTION Security & Privacy MUST rules have no verification tasks in the phases
+  that touch them
+- RECOMMEND subagent-driven execution mode (fresh implementer per task + two-stage review:
+  spec compliance, then code quality) for any feature with >3 tasks or security-sensitive scope
 
 ### Step 4: Report Status and Recommend Next Action
 

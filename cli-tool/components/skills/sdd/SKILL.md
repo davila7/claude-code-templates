@@ -182,6 +182,15 @@ Use SDD for any feature that is:
 4. **Context engineering** — Specs compress context for the AI agent
 5. **Testable by default** — If it's not testable, it's not a requirement
 6. **Fail fast on specs** — Catch gaps in spec, not in code review
+7. **Constitution carries security** — the Security & Privacy section (SEC-N rules) is derived
+   from real project decisions (docs/, ADRs) and becomes per-phase verification tasks and DoD
+   checklist items — never a Polish-phase afterthought
+8. **Evals for probabilistic behavior** — AI/LLM-driven stories define Behavioral Evals (EV-NNN
+   golden scenarios with mechanically checkable pass criteria); an eval regression blocks a
+   checkpoint exactly like a failing test
+9. **Subagent-driven implementation** — default for >3 tasks: fresh implementer subagent per
+   task, then two-stage review (spec compliance → code quality) with re-review loops; vertical
+   slices — every story checkpoint is demoable end-to-end by a human
 
 ---
 
