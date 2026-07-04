@@ -1,5 +1,5 @@
 // OWASP Top 10 - A02: Cryptographic Failures
-// For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
+// For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2021
 //
 // This example demonstrates cryptographic failures including:
 // - Weak encryption algorithms

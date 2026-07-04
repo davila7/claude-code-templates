@@ -1,6 +1,6 @@
 ---
 name: owasp-security
-description: Comprehensive OWASP-aligned security guidance across six standards - Top 10 (2025) for web apps, ASVS 5.0, MASVS v2.1.0 for mobile, API Security Top 10 (2023), Kubernetes Top 10 (2025), and Agentic Applications/LLM Top 10 (2026 preview). Use for security reviews, vulnerability audits, secure auth/crypto/access-control implementation, Kubernetes manifest hardening, and LLM/agent prompt-injection defense - including indirect requests like "is this login flow secure?", "review this endpoint", or "audit my pod spec".
+description: Comprehensive OWASP-aligned security guidance across six standards - Top 10 (2021) for web apps, ASVS 5.0, MASVS v2.1.0 for mobile, API Security Top 10 (2023), Kubernetes Top 10 (2022), and the Agentic Applications 2026 edition for AI/LLM. Use for security reviews, vulnerability audits, secure auth/crypto/access-control implementation, Kubernetes manifest hardening, and LLM/agent prompt-injection defense - including indirect requests like "is this login flow secure?", "review this endpoint", or "audit my pod spec".
 ---
 
 # Comprehensive OWASP Security Skills
@@ -9,16 +9,16 @@ A developer-focused security reference covering six OWASP standards for securing
 
 ## Quick Navigation
 
-1. [OWASP Top 10 (2025)](#section-1-owasp-top-10-2025)
+1. [OWASP Top 10 (2021)](#section-1-owasp-top-10-2021)
 2. [OWASP ASVS 5.0](#section-2-owasp-asvs-50-application-security-verification-standard)
 3. [OWASP MASVS v2.1.0](#section-3-owasp-masvs-v210-mobile-security)
 4. [OWASP API Security Top 10](#section-4-owasp-api-security-top-10-2023)
-5. [OWASP Kubernetes Top 10](#section-5-owasp-kubernetes-top-10-2025-draft)
-6. [OWASP Agentic Applications 2026](#section-6-owasp-agentic-applications-2026-preview)
+5. [OWASP Kubernetes Top 10](#section-5-owasp-kubernetes-top-10-2022)
+6. [OWASP Agentic Applications 2026](#section-6-owasp-agentic-applications-2026)
 
 ---
 
-## Section 1: OWASP Top 10 (2025)
+## Section 1: OWASP Top 10 (2021)
 
 The OWASP Top 10 represents the most critical security risks in web applications.
 
@@ -158,7 +158,7 @@ ASVS defines security requirements across three verification levels (L1: Basic, 
 
 | Level | Key Requirements |
 |-------|-----------------|
-| **L1** | AES-256 at rest; TLS 1.2+; authenticated encryption mode (e.g., GCM/CCM; if CBC is required, pair with Encrypt-then-MAC); secure key storage |
+| **L1** | AES-256 at rest; TLS 1.2+; authenticated encryption mode (GCM/CBC); secure key storage |
 | **L2** | Key rotation schedule; industry-standard crypto libraries; cryptographically secure RNG; proper KDF |
 | **L3** | HSM integration; cryptographic agility; perfect forward secrecy; key escrow/recovery |
 
@@ -461,7 +461,7 @@ app.delete('/api/users/:id', requireRole('admin'), (req, res) => {
 
 ---
 
-## Section 5: OWASP Kubernetes Top 10 (2025) — Container & Infrastructure Security
+## Section 5: OWASP Kubernetes Top 10 (2022) — Container & Infrastructure Security
 
 Kubernetes deployments introduce unique security vectors: RBAC misconfiguration, exposed etcd, insecure network policies.
 
@@ -684,9 +684,9 @@ spec:
 
 ---
 
-## Section 6: OWASP Agentic Applications 2026 (Preview)
+## Section 6: OWASP Agentic Applications 2026
 
-> **Status:** This is a new, evolving standard in preview. Content reflects current best practices and is subject to updates as AI security matures.
+> **Status:** Released by the OWASP GenAI Security Project in December 2025 as the 2026 edition. Note: the `AG01`–`AG10` codes below are this guide's own shorthand and are **not** official OWASP identifiers — the published taxonomy uses `LLM01`–`LLM10` (LLM Applications) and `ASI01`–`ASI10` (Agentic Applications). Cross-check against the official lists before citing.
 
 AI and LLM-powered agents introduce novel security risks: prompt injection, data leakage through model outputs, unauthorized tool access, and training data poisoning.
 
@@ -762,7 +762,7 @@ def get_file_content(filename, allowed_dir="/app/docs"):
     requested_path = (Path(allowed_dir) / filename).resolve()
     allowed_path = Path(allowed_dir).resolve()
     
-    if allowed_path != requested_path and allowed_path not in requested_path.parents:
+    if not str(requested_path).startswith(str(allowed_path)):
         raise ValueError("Path traversal attempt")
     
     if not requested_path.exists():
@@ -862,7 +862,7 @@ def agent_query(user_input, user_id):
         logger.info(json.dumps({
             'timestamp': datetime.utcnow().isoformat(),
             'user_id': user_id,
-            'input_length': len(user_input),  # Avoid logging raw prompt content
+            'input': user_input[:500],  # Truncate to avoid log spam
             'event': 'agent_query_start'
         }))
         

@@ -46,7 +46,7 @@ Now the skill is live for any security-related prompt.
 
 ## 🎯 Coverage: Six OWASP Standards
 
-### **OWASP Top 10 (2025)** — Web Application Security
+### **OWASP Top 10 (2021)** — Web Application Security
 Critical risks: Broken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration, Vulnerable Components, Authentication Failures, Software Integrity, Logging Failures, SSRF.
 
 ### **OWASP ASVS 5.0** — Application Security Verification
@@ -58,10 +58,10 @@ Detailed requirements across L1 (Basic), L2 (Standard), L3 (Advanced) for: Authe
 ### **OWASP API Security Top 10 (2023)** — API-Specific Risks
 10 risks: BOLA, Broken Auth, Property-Level Auth, Resource Consumption, Function Auth, Sensitive Flow Abuse, SSRF, Misconfiguration, Inventory Management, Unsafe Third-Party APIs.
 
-### **OWASP Kubernetes Top 10 (2025)** — Container & Infrastructure Security
+### **OWASP Kubernetes Top 10 (2022)** — Container & Infrastructure Security
 10 risks in containerized environments: Insecure Workload Config, RBAC, Secrets Management, Policy Enforcement, Network Segmentation, Exposed Components, Vulnerable Components, Cluster Lateral Movement, Authentication, Logging.
 
-### **OWASP Agentic Applications 2026 (Preview)** — AI/LLM Security
+### **OWASP Agentic Applications 2026** — AI/LLM Security
 10 emerging risks: Prompt Injection, Insufficient Input Validation, Insecure Output Handling, Model Poisoning, Denial of Service, Unauthorized Tool Access, Training Data Leakage, Excessive Autonomy, Inadequate Logging, Supply Chain Risks.
 
 
@@ -146,7 +146,7 @@ Each example shows **VULNERABLE patterns** alongside **SECURE implementations** 
 - **[examples/cryptographic-failures.js](examples/cryptographic-failures.js)** — Weak hashing, plaintext storage, hardcoded keys, missing TLS (A02)  
 - **[examples/injection.js](examples/injection.js)** – SQL injection via string concatenation (A03)
 - **[examples/security-misconfiguration.py](examples/security-misconfiguration.py)** — Debug mode, default credentials, missing security headers (A05)
-- **[examples/xss.html](examples/xss.html)** – Reflected XSS with `innerHTML` (A07)
+- **[examples/xss.html](examples/xss.html)** – Reflected XSS with `innerHTML` (A03: Injection)
 - **[examples/logging-monitoring-failures.py](examples/logging-monitoring-failures.py)** — Missing security logs, secrets in logs, no alerting (A09)
 
 ### Multi-Standard Examples:
@@ -198,4 +198,4 @@ Found an issue or have an improvement? Contributions welcome. See [CONTRIBUTING.
 
 ---
 
-**Status:** Actively maintained. Covers OWASP standards as of March 2026. Agentic Applications section based on preview materials; will be updated when fully released.
+**Status:** Actively maintained. Covers the published OWASP editions (Top 10 2021, ASVS 5.0, MASVS 2.1.0, API Security 2023, Kubernetes 2022, Agentic Applications 2026).

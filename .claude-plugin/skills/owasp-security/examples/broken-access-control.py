@@ -1,5 +1,5 @@
 # OWASP Top 10 - A01: Broken Access Control
-# For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
+# For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2021
 #
 # This example demonstrates broken access control vulnerabilities where users can
 # access resources they shouldn't have permission to view or modify.
@@ -121,7 +121,11 @@ def secure_get_user(user_id):
     """
     current_user_id = session.get("user_id")
     current_user = users_db.get(current_user_id)
-    
+
+    # Validate the session's user still exists before checking roles
+    if current_user is None:
+        return jsonify({"error": "User not found"}), 404
+
     # Authorization logic:
     # 1. User can view their own profile
     # 2. Admin can view any profile
@@ -144,7 +148,11 @@ def secure_refund_order(order_id):
     """
     current_user_id = session.get("user_id")
     current_user = users_db.get(current_user_id)
-    
+
+    # Validate the session's user still exists before checking roles
+    if current_user is None:
+        return jsonify({"error": "User not found"}), 404
+
     if order_id not in orders_db:
         return jsonify({"error": "Order not found"}), 404
     

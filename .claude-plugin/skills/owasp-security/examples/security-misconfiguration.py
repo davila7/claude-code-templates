@@ -1,5 +1,5 @@
 # OWASP Top 10 - A05: Security Misconfiguration
-# For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
+# For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2021
 #
 # This example demonstrates security misconfiguration issues including:
 # - Debug mode enabled in production
@@ -90,7 +90,7 @@ services:
     environment:
       # VULNERABLE: Hardcoded sensitive data in compose file
       DATABASE_URL: "postgresql://admin:password123@db:5432/mydb"
-      API_KEY: "sk-abc123xyz789"
+      API_KEY: "FAKE_API_KEY_DO_NOT_USE"
       DEBUG: "true"
     ports:
       # VULNERABLE: Unnecessary ports exposed

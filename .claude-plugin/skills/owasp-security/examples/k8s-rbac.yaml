@@ -1,5 +1,5 @@
 # Kubernetes RBAC Misconfiguration Example
-# For detailed guidance, see: SKILL.md#section-5-owasp-kubernetes-top-10-2025-draft
+# For detailed guidance, see: SKILL.md#section-5-owasp-kubernetes-top-10-2022
 #
 # This YAML demonstrates Kubernetes security misconfigurations:
 # - K02: Overly Permissive RBAC (wildcard permissions)

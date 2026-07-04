@@ -1,6 +1,6 @@
 """
 OWASP Top 10 - A09: Logging & Monitoring Failures
-For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2025
+For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2021
 
 This example demonstrates logging and monitoring failures including:
 - Missing security event logging
@@ -46,10 +46,11 @@ class VulnerableLogger:
     def __init__(self):
         # VULNERABLE: Basic logging without filters
         self.logger = logging.getLogger('app')
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(message)s')
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter('%(message)s')
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
     
     def login_attempt(self, username, password):
         # VULNERABLE: Password logged in plaintext!
@@ -78,8 +79,9 @@ class VulnerableDistributedLogs:
         # VULNERABLE: No centralized search/analysis
         # VULNERABLE: Easy to delete logs on compromise
         self.logger = logging.getLogger('local_service')
-        handler = logging.FileHandler('/var/log/app.log')
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.FileHandler('/var/log/app.log')
+            self.logger.addHandler(handler)
     
     def process_request(self, request_id, user_id, action):
         # VULNERABLE: Log entry doesn't correlate requests across services
@@ -95,8 +97,9 @@ class VulnerableMonitoring:
     
     def __init__(self):
         self.logger = logging.getLogger('app')
-        handler = logging.FileHandler('/var/log/app.log')
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.FileHandler('/var/log/app.log')
+            self.logger.addHandler(handler)
         # VULNERABLE: No alerting configured
         # Logs exist but no one checks them
     
@@ -122,14 +125,15 @@ class SecureLogger:
         self.logger = logging.getLogger('security')
         
         # SECURE: Log to dedicated security log
-        handler = logging.FileHandler('/var/log/security.log')
-        
-        # SECURE: Emit the pure JSON payload only. The event dict already carries
-        # 'timestamp' and 'severity', so prefixing asctime/name/levelname would
-        # break the Logstash JSON filter (which anchors on /^{.*}$/).
-        formatter = logging.Formatter('%(message)s')
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+        if not self.logger.handlers:
+            handler = logging.FileHandler('/var/log/security.log')
+            
+            # SECURE: Emit the pure JSON payload only. The event dict already carries
+            # 'timestamp' and 'severity', so prefixing asctime/name/levelname would
+            # break the Logstash JSON filter (which anchors on /^{.*}$/).
+            formatter = logging.Formatter('%(message)s')
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
     
     def log_security_event(self, event_type, user_id, details, severity='INFO'):
         """
@@ -322,11 +326,14 @@ def secure_audit_log(event_type, severity='INFO'):
         def wrapper(*args, **kwargs):
             logger = SecureLogger()
             
-            # Extract relevant audit information
-            # Safely extract user_id for caller attribution: prefer an explicit
-            # user_id/username kwarg, else fall back to 'system' for unattributed
-            # background calls. Never dereference positional args blindly.
-            user_id = kwargs.get('user_id') or kwargs.get('username') or 'system'
+            # Safely extract user_id for caller attribution. Prefer an explicit
+            # user_id/username kwarg; otherwise fall back to the first non-self
+            # positional argument if it is a string; finally default to 'system'
+            # for unattributed background calls.
+            user_id = kwargs.get('user_id') or kwargs.get('username')
+            if not user_id and len(args) > 1 and isinstance(args[1], str):
+                user_id = args[1]
+            user_id = user_id or 'system'
             details = {
                 'function': func.__name__,
                 'timestamp': datetime.utcnow().isoformat()
