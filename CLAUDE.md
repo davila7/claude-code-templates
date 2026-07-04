@@ -321,29 +321,30 @@ every surface has its own tiny dependency-free client that posts directly to
 the Sentry envelope API via `fetch()`, matching this repo's zero-dependency
 worker style and avoiding Cloudflare Pages SSR friction with `@sentry/astro`.
 
-**Status as of 2026-07-04:**
-- ✅ **Cloudflare Workers** — deployed to production. `SENTRY_DSN` secret is
-  set on all 3 workers (`aitmpl-crons`, `pulse-weekly-report`,
-  `claude-docs-monitor`), pointing at the `aitmpl-workers` Sentry project.
-  Verified end-to-end: a manual test event returned HTTP 200 from Sentry and
-  appeared in the Issues dashboard.
-- ⏳ **Dashboard** — code is live in `dashboard/src/lib/api/error-tracking.ts`
-  and wired into `claude-code-check`, `health-check`, and the three
-  `track-*` endpoints, but **no Sentry project exists yet** for it. Without a
-  `SENTRY_DSN` env var configured in Cloudflare Pages, `captureApiError()`
-  no-ops (just `console.error`s) — safe, but not actually reporting anywhere.
-  To finish: create an `aitmpl-dashboard` project in Sentry, then set
-  `SENTRY_DSN` as a Cloudflare Pages secret (`wrangler pages secret put
-  SENTRY_DSN` or via the dashboard).
-- ⏳ **CLI** — code is live in `cli-tool/src/error-reporting.js`, wired into
-  the top-level catch in `bin/create-claude-config.js`. **Opt-in only**:
-  requires the end user to set `CCT_ERROR_REPORTING=true`, and always
-  defers to the existing `CCT_NO_TRACKING`/`CCT_NO_ANALYTICS`/`CI` opt-outs.
-  No `aitmpl-cli` Sentry project exists yet either — create one and set
-  `CCT_SENTRY_DSN` to finish wiring it up.
-- Not yet configured (any surface): Sentry alert rules to Discord/Telegram,
-  and Cron Monitors for the workers' scheduled checks. Do this once the
-  dashboard/CLI projects exist too, so it's one pass instead of three.
+**Status as of 2026-07-04: all 3 projects live and verified end-to-end** (each
+confirmed with a manual test event returning HTTP 200 from Sentry and
+appearing in its Issues dashboard).
+
+- ✅ **Cloudflare Workers** (Sentry project `aitmpl-workers`) — `SENTRY_DSN`
+  secret set on all 3 workers (`aitmpl-crons`, `pulse-weekly-report`,
+  `claude-docs-monitor`) via `wrangler secret put SENTRY_DSN`.
+- ✅ **Dashboard** (Sentry project `aitmpl-dashboard`) — `SENTRY_DSN` set as a
+  Cloudflare Pages secret (`wrangler pages secret put SENTRY_DSN
+  --project-name=aitmpl-dashboard`). Wired into `captureApiError()` calls in
+  `claude-code-check`, `health-check`, and the three `track-*` endpoints.
+- ✅ **CLI** (Sentry project `aitmpl-cli`) — the DSN is public by design
+  (send-only, not a secret) and ships **hardcoded as the default** in
+  `cli-tool/src/error-reporting.js` (`DEFAULT_SENTRY_DSN`, overridable via
+  `CCT_SENTRY_DSN` for testing against a different project). Reporting
+  itself stays **opt-in**: requires the end user to set
+  `CCT_ERROR_REPORTING=true`, and always defers to the existing
+  `CCT_NO_TRACKING`/`CCT_NO_ANALYTICS`/`CI` opt-outs.
+
+**Not yet configured (any surface):** Sentry alert rules to Discord/Telegram,
+and Cron Monitors dashboards for the workers' scheduled check-ins (the
+`checkIn()` calls already send `in_progress`/`ok`/`error` events — a Monitor
+just needs to be created in the Sentry UI with matching slugs:
+`claude-code-check`, `health-check`, `pulse-weekly-report`, `docs-monitor`).
 
 **Files:** `cloudflare-workers/{crons,pulse,docs-monitor}/sentry.js` (workers),
 `dashboard/src/lib/api/error-tracking.ts` (dashboard), `cli-tool/src/error-reporting.js` (CLI).

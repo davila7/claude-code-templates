@@ -11,7 +11,12 @@
  * (cloudflare-workers/*\/sentry.js, dashboard/src/lib/api/error-tracking.ts).
  */
 
-const SENTRY_DSN = process.env.CCT_SENTRY_DSN || '';
+// Public DSN for the "aitmpl-cli" Sentry project. Sentry DSNs are not
+// secrets (they only allow sending events, not reading them) — this is the
+// same pattern most public telemetry SDKs use. Override with
+// CCT_SENTRY_DSN for local testing against a different project.
+const DEFAULT_SENTRY_DSN = 'https://1c1637a93ea6fb81e3edae3d039bdae0@o42738.ingest.us.sentry.io/4511679145312256';
+const SENTRY_DSN = process.env.CCT_SENTRY_DSN || DEFAULT_SENTRY_DSN;
 
 /**
  * Whether error reporting is allowed to run at all.
