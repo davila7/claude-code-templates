@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-Node.js CLI tool for managing Claude Code components (agents, commands, MCPs, hooks, settings) with a static website for browsing and installing components. The project includes Vercel API endpoints for download tracking and Discord integration.
+Node.js CLI tool for managing Claude Code components (agents, commands, MCPs, hooks, settings) with a static website for browsing and installing components. The dashboard and its API routes are deployed on Cloudflare Pages, with supporting cron and monitoring tasks running as Cloudflare Workers.
 
 ## Essential Commands
 
@@ -18,16 +18,19 @@ npm publish                    # Publish to npm
 # Component catalog
 python scripts/generate_components_json.py  # Update docs/components.json
 
-# API testing
-cd api && npm test             # Test API endpoints before deploy
-vercel --prod                  # Deploy to production
+# Dashboard + API (Astro on Cloudflare Pages)
+cd dashboard && npm run build  # Build before deploy
+npm run deploy                 # Deploy www + app.aitmpl.com via wrangler
 ```
+
+> Deploys to production happen automatically via GitHub Actions on push to `main`
+> (changes in `dashboard/**`). Manual deploy uses `wrangler pages deploy`, not Vercel.
 
 ## Security Guidelines
 
 ### ⛔ CRITICAL: NEVER Hardcode Secrets or IDs
 
-**NEVER write API keys, tokens, passwords, project IDs, org IDs, or any identifier in code.** This includes Vercel project/org IDs, Supabase URLs, Discord IDs, database connection strings, and any other infrastructure identifier. ALL must go in `.env`.
+**NEVER write API keys, tokens, passwords, project IDs, org IDs, or any identifier in code.** This includes Cloudflare account/project IDs, Supabase URLs, Discord IDs, database connection strings, and any other infrastructure identifier. ALL must go in `.env` (or Cloudflare secrets via `wrangler secret put`).
 
 ```javascript
 // ❌ WRONG
@@ -190,8 +193,8 @@ npm config delete //registry.npmjs.org/:_authToken  # always clean up after
 # 6. Tag the release
 git tag vX.Y.Z && git push origin vX.Y.Z
 
-# 7. Deploy website
-vercel --prod
+# 7. Deploy website (dashboard on Cloudflare Pages)
+# Automatic on push to main (GitHub Actions). Manual: from dashboard/ run `npm run deploy`
 ```
 
 **npm Publishing Notes:**
@@ -218,7 +221,7 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 
 **`/api/claude-code-check`**
 - Monitors Claude Code releases
-- Vercel Cron: every 30 minutes
+- Triggered every 30 minutes by the `cloudflare-workers/crons` Worker (not a Vercel cron)
 - Database: Neon (claude_code_versions, claude_code_changes, discord_notifications_log, monitoring_metadata tables)
 
 ### Shared API Libraries
@@ -231,17 +234,36 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 ### Emergency Rollback
 
 ```bash
-vercel ls                              # List deployments
-vercel promote <previous-deployment>   # Rollback
+# List recent Pages deployments
+npx wrangler pages deployment list --project-name=aitmpl-dashboard
+# Roll back to a previous deployment
+npx wrangler pages deployment rollback <deployment-id> --project-name=aitmpl-dashboard
 ```
 
 ## Cloudflare Workers
 
-The `cloudflare-workers/` directory contains Cloudflare Worker projects that run independently from Vercel.
+The `cloudflare-workers/` directory contains Cloudflare Worker projects that run independently from the dashboard Pages project.
+
+### crons
+
+Replaces the old Vercel cron jobs. On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
+
+- `*/30 * * * *` → `/api/claude-code-check` (monitors Claude Code npm releases)
+- `0 * * * *` → `/api/health-check` (hourly; was every 15 min on Vercel, reduced to save invocations)
+
+Errors and cron check-ins are reported to Sentry (`sentry.js`, DSN from the `aitmpl-workers` project — see Error Tracking below).
+
+```bash
+cd cloudflare-workers/crons
+npm run dev          # Local dev
+npx wrangler deploy  # Deploy
+```
+
+**Secrets (Cloudflare):** `DASHBOARD_URL` (e.g. `https://www.aitmpl.com`), `TRIGGER_SECRET`, `SENTRY_DSN` (optional).
 
 ### docs-monitor
 
-Monitors https://code.claude.com/docs for changes every hour and sends Telegram notifications.
+Monitors https://code.claude.com/docs for changes every hour and sends Telegram notifications. Also reports errors to Sentry via `sentry.js` (complements, doesn't replace, the Telegram error alert).
 
 ```bash
 cd cloudflare-workers/docs-monitor
@@ -251,7 +273,7 @@ npx wrangler deploy  # Deploy
 
 ### pulse (Weekly KPI Report)
 
-Collects metrics from GitHub, Discord, Supabase, Vercel, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
 
 **Architecture:** Single `index.js` file (no npm dependencies at runtime). All source collectors, formatter, and Telegram sender in one file.
 
@@ -284,14 +306,47 @@ SUPABASE_URL                # Supabase project URL
 SUPABASE_SERVICE_ROLE_KEY   # Supabase service role key
 DISCORD_BOT_TOKEN           # Discord bot token
 DISCORD_GUILD_ID            # Discord server ID
-VERCEL_TOKEN                # Vercel personal access token (optional)
-VERCEL_PROJECT_ID           # Vercel project ID (optional)
 TRIGGER_SECRET              # For manual /trigger endpoint
 GA_PROPERTY_ID              # GA4 property ID (optional)
 GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 ```
 
-**Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report.
+**Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below). The Vercel collector was removed (2026-07) since the dashboard no longer deploys to Vercel.
+
+## Error Tracking (Sentry)
+
+Free-tier Sentry, added to close the gap where automated cron/worker failures
+were previously invisible. No official `@sentry/*` SDK is used anywhere —
+every surface has its own tiny dependency-free client that posts directly to
+the Sentry envelope API via `fetch()`, matching this repo's zero-dependency
+worker style and avoiding Cloudflare Pages SSR friction with `@sentry/astro`.
+
+**Status as of 2026-07-04:**
+- ✅ **Cloudflare Workers** — deployed to production. `SENTRY_DSN` secret is
+  set on all 3 workers (`aitmpl-crons`, `pulse-weekly-report`,
+  `claude-docs-monitor`), pointing at the `aitmpl-workers` Sentry project.
+  Verified end-to-end: a manual test event returned HTTP 200 from Sentry and
+  appeared in the Issues dashboard.
+- ⏳ **Dashboard** — code is live in `dashboard/src/lib/api/error-tracking.ts`
+  and wired into `claude-code-check`, `health-check`, and the three
+  `track-*` endpoints, but **no Sentry project exists yet** for it. Without a
+  `SENTRY_DSN` env var configured in Cloudflare Pages, `captureApiError()`
+  no-ops (just `console.error`s) — safe, but not actually reporting anywhere.
+  To finish: create an `aitmpl-dashboard` project in Sentry, then set
+  `SENTRY_DSN` as a Cloudflare Pages secret (`wrangler pages secret put
+  SENTRY_DSN` or via the dashboard).
+- ⏳ **CLI** — code is live in `cli-tool/src/error-reporting.js`, wired into
+  the top-level catch in `bin/create-claude-config.js`. **Opt-in only**:
+  requires the end user to set `CCT_ERROR_REPORTING=true`, and always
+  defers to the existing `CCT_NO_TRACKING`/`CCT_NO_ANALYTICS`/`CI` opt-outs.
+  No `aitmpl-cli` Sentry project exists yet either — create one and set
+  `CCT_SENTRY_DSN` to finish wiring it up.
+- Not yet configured (any surface): Sentry alert rules to Discord/Telegram,
+  and Cron Monitors for the workers' scheduled checks. Do this once the
+  dashboard/CLI projects exist too, so it's one pass instead of three.
+
+**Files:** `cloudflare-workers/{crons,pulse,docs-monitor}/sentry.js` (workers),
+`dashboard/src/lib/api/error-tracking.ts` (dashboard), `cli-tool/src/error-reporting.js` (CLI).
 
 ## Dashboard (www.aitmpl.com)
 
@@ -299,7 +354,8 @@ Astro + React + Tailwind dashboard serving both `www.aitmpl.com` and `app.aitmpl
 
 ### Architecture
 
-- **Framework**: Astro 5 with React islands, Tailwind v4, `output: 'server'`
+- **Framework**: Astro 5 with React islands, Tailwind v4, `output: 'server'`, `@astrojs/cloudflare` adapter (`mode: 'directory'`)
+- **Hosting**: Cloudflare Pages (project `aitmpl-dashboard`), SSR on Workers runtime
 - **Auth**: Clerk (`window.Clerk` global, no ClerkProvider per island)
 - **Data**: `components.json` and `trending-data.json` served from `dashboard/public/` (same-origin)
 - **APIs**: All endpoints in `dashboard/src/pages/api/` (Astro API routes, no separate serverless project)
@@ -324,69 +380,69 @@ Featured partner integrations shown on the dashboard homepage. Two files to edit
 
 Current featured slugs: `brightdata`, `neon-instagres`, `claudekit`, `braingrid`
 
-### Vercel Project Setup
+### Cloudflare Pages Project Setup
 
-Single Vercel project serves all domains:
+A single Cloudflare Pages project (`aitmpl-dashboard`) serves all domains. Config lives in `dashboard/wrangler.toml`:
 
-| Project | Domains | Root Directory |
-|---------|---------|----------------|
-| `aitmpl-dashboard` | `www.aitmpl.com`, `aitmpl.com` (redirect), `app.aitmpl.com` | `dashboard` |
+| Project | Domains | Root Directory | Build output |
+|---------|---------|----------------|--------------|
+| `aitmpl-dashboard` | `www.aitmpl.com`, `aitmpl.com` (redirect), `app.aitmpl.com` | `dashboard` | `dist` |
 
-The legacy root project (`aitmpl`) is archived — only its `.vercel.app` subdomain remains.
+`wrangler.toml` sets `pages_build_output_dir = "./dist"`, `compatibility_flags = ["nodejs_compat"]`, and the `PUBLIC_*` build-time vars in `[vars]`. Secrets are set via the Cloudflare Dashboard or `wrangler pages secret put`.
 
 ### Deployment
 
-**ALWAYS use the deployer agent (`.claude/agents/deployer.md`) for all deployments.** It runs pre-deploy checks (auth, git status, API tests) and handles the full pipeline safely. Never deploy manually.
+**ALWAYS use the deployer agent (`.claude/agents/deployer.md`) for all deployments.** It runs pre-deploy checks (auth, git status, build) and handles the full pipeline safely. Never deploy manually.
 
 ```bash
-npm run deploy             # Deploy www + app.aitmpl.com
+npm run deploy             # Build + `wrangler pages deploy dist` for www + app.aitmpl.com
 npm run deploy:dashboard   # Same as above
 ```
 
 **CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
-- Changes in `dashboard/**` trigger deploy
+- Changes in `dashboard/**` trigger a build and `wrangler pages deploy dist --project-name=aitmpl-dashboard`
 
 **Required GitHub Secrets** (Settings > Secrets > Actions):
-- `VERCEL_TOKEN` — Vercel personal access token
-- `VERCEL_ORG_ID` — Vercel org/team ID
-- `VERCEL_DASHBOARD_PROJECT_ID` — Project ID for aitmpl-dashboard
+- `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Pages edit permission
+- `CLOUDFLARE_ACCOUNT_ID` — Cloudflare account ID
 
-### Environment Variables (Vercel)
+### Environment Variables (Cloudflare)
+
+`PUBLIC_*` vars are build-time and live in `dashboard/wrangler.toml` `[vars]` (and are also passed to the GitHub Actions build step). Everything else is a Cloudflare secret (`wrangler pages secret put <NAME>` or the Pages dashboard):
 
 ```bash
 # Clerk
-PUBLIC_CLERK_PUBLISHABLE_KEY=xxx
-CLERK_SECRET_KEY=xxx
+PUBLIC_CLERK_PUBLISHABLE_KEY=xxx   # [vars] — build-time
+CLERK_SECRET_KEY=xxx               # secret
 
 # Data
-PUBLIC_COMPONENTS_JSON_URL=/components.json
+PUBLIC_COMPONENTS_JSON_URL=/components.json   # [vars] — build-time
 
 # GitHub OAuth
-PUBLIC_GITHUB_CLIENT_ID=xxx
-GITHUB_CLIENT_SECRET=xxx
+PUBLIC_GITHUB_CLIENT_ID=xxx        # [vars] — build-time
+GITHUB_CLIENT_SECRET=xxx           # secret
 
 # Supabase (download tracking)
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=xxx
+SUPABASE_URL=https://xxx.supabase.co        # secret
+SUPABASE_SERVICE_ROLE_KEY=xxx               # secret
 
 # Neon Database
-NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require   # secret
 
 # Discord
-DISCORD_APP_ID=xxx
-DISCORD_BOT_TOKEN=xxx
-DISCORD_PUBLIC_KEY=xxx
-DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx
+DISCORD_APP_ID=xxx                 # secret
+DISCORD_BOT_TOKEN=xxx              # secret
+DISCORD_PUBLIC_KEY=xxx             # secret
+DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx   # secret
 ```
 
 ### Known Issues & Solutions
 
-**Node v24 breaks `fs.writeFileSync` on Vercel**
-- Node v24 has a bug with `writeFileSync` in Vercel's build environment
-- Solution: Dashboard project is pinned to Node 22.x (set via Vercel API/dashboard)
+**Node built-ins in SSR**
+- The Cloudflare Workers runtime does not expose Node's `fs`/`path`/etc. by default. `astro.config.mjs` enables `nodejs_compat` (via `wrangler.toml`) and externalizes `node:fs`, `node:path`, `node:url`, `node:stream` in SSR. Avoid adding new hard dependencies on Node-only APIs in server code.
 
-**Vercel CLI ignores local `.vercel/project.json`**
-- The CLI often resolves to the parent directory's project. Use `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` env vars to force the correct project.
+**`react-dom/server` on Cloudflare**
+- `astro.config.mjs` aliases `react-dom/server` to `react-dom/server.node` and marks `react-dom` as `noExternal` at build time so React SSR works on the Workers runtime. Don't remove this alias.
 
 ### Local Development
 
@@ -400,17 +456,24 @@ npx astro dev --port 4321   # Dashboard + APIs at http://localhost:4321
 
 ### Component Catalog
 
-- `docs/components.json` — Generated catalog (source of truth)
-- `dashboard/public/components.json` — Copy served by the dashboard
+- `docs/components.json` — Full generated catalog (source of truth), keeps `content` and `security` fields (needed by the legacy static site)
+- `dashboard/public/components.json` — Dashboard copy, **without** `content`/`security` (lighter payload; dashboard doesn't need them)
+- `dashboard/public/counts.json` — Per-type counts only (e.g. `{"agents": 421, ...}`), used by the sidebar/plugins pages instead of loading the full catalog
+- `dashboard/public/components/{type}.json` — One file per component type (agents.json, commands.json, etc.), loaded on demand by `ComponentGrid.tsx` for the active tab
+- `dashboard/public/search-index.json` — Flat array for `SearchModal.tsx`
+- `dashboard/public/component-content/{type}/{slug}.json` — Full per-component content (incl. markdown body), fetched on demand when a component's detail view or PR flow needs it
 - `dashboard/public/trending-data.json` — Trending/download stats
+
+All of the above are served as static Cloudflare Pages assets with
+`cache-control: public, max-age=86400, stale-while-revalidate=3600` (see
+`dashboard/public/_headers`).
 
 ### Data Flow
 
 1. `scripts/generate_components_json.py` scans `cli-tool/components/`
-2. Generates `docs/components.json` with embedded content
-3. Copy to `dashboard/public/components.json` for the dashboard to serve
-4. Dashboard loads JSON and renders component cards
-5. Download tracking via `/api/track-download-supabase`
+2. Generates `docs/components.json` (full, with `content`/`security`) and the split dashboard artifacts (`dashboard/public/components.json`, `counts.json`, `components/{type}.json`, `search-index.json`, `component-content/{type}/{slug}.json`) — these two writes are decoupled, so the dashboard payload stays lean without touching the legacy catalog
+3. Dashboard islands (`ComponentGrid.tsx`, `SearchModal.tsx`, `Sidebar.astro`, `SendToRepoModal.tsx`) load the split artifacts instead of the full catalog
+4. Download tracking via `/api/track-download-supabase`
 
 ### Legacy Static Site (docs/)
 
@@ -465,14 +528,13 @@ Aim for 70%+ test coverage. Test critical paths and error handling.
 - Export named HTTP methods: `export const POST: APIRoute`, `export const GET: APIRoute`
 
 **Download tracking not working**
-- Check Vercel logs: `vercel logs aitmpl.com --follow`
-- Verify environment variables in Vercel dashboard
+- Check Cloudflare Pages logs: `npx wrangler pages deployment tail --project-name=aitmpl-dashboard`
+- Verify environment variables / secrets in the Cloudflare Pages dashboard
 - Test endpoint manually with curl
 
 **Components not updating on website**
-- Run `python scripts/generate_components_json.py`
-- Copy `docs/components.json` to `dashboard/public/components.json`
-- Deploy and clear browser cache
+- Run `python scripts/generate_components_json.py` (writes both `docs/components.json` and the split `dashboard/public/` artifacts directly — no manual copy step)
+- Deploy and clear browser cache (artifacts are cached 24h at the edge, see `dashboard/public/_headers`)
 
 ## Important Notes
 
