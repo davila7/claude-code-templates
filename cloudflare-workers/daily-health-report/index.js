@@ -3,7 +3,17 @@
  *
  * Sends a single daily Telegram digest covering:
  *  1. Dashboard site health (reuses GET /api/health-check)
- *  2. Sentry error summary (last 24h) across the 3 Sentry projects
+ *  2. Sentry error summary (last 24h) across the 3 Sentry projects,
+ *     auto-resolving known test/verification noise first (see
+ *     NOISE_TITLE_PATTERNS below) so only real errors are reported.
+ *
+ * Auto-resolve policy (deliberately conservative): an issue is ONLY
+ * auto-resolved if its title matches one of NOISE_TITLE_PATTERNS below —
+ * literal substrings identifying our own manual verification events, never
+ * a catch-all. Everything else (any real production error) is left
+ * untouched and always listed in the Telegram digest for a human to review.
+ * Never widen this to "resolve everything" — that would silently hide real
+ * bugs instead of surfacing them, defeating the point of error tracking.
  *
  * Note: this worker does NOT poll the other 3 Cloudflare Workers' /status
  * endpoints. Cloudflare blocks Worker-to-Worker fetches over the public
@@ -26,6 +36,14 @@ const TELEGRAM_API = 'https://api.telegram.org';
 const SENTRY_API = 'https://sentry.io/api/0';
 
 const SENTRY_PROJECTS = ['aitmpl-workers', 'aitmpl-dashboard', 'aitmpl-cli'];
+
+// Case-insensitive substrings identifying known noise (our own manual
+// verification test events). An issue is auto-resolved ONLY if its title
+// contains one of these — see the policy note above before adding more.
+const NOISE_TITLE_PATTERNS = [
+  'manual verification test',
+  'manual verification',
+];
 
 export default {
   async scheduled(event, env, ctx) {
@@ -102,6 +120,28 @@ async function checkSiteHealth(env) {
 
 // ─── Section 2: Sentry error summary (last 24h) ──────────────────────────────
 
+function isKnownNoise(title) {
+  const lower = (title || '').toLowerCase();
+  return NOISE_TITLE_PATTERNS.some(pattern => lower.includes(pattern));
+}
+
+async function resolveIssue(env, issueId) {
+  const headers = {
+    Authorization: `Bearer ${env.SENTRY_AUTH_TOKEN}`,
+    'Content-Type': 'application/json',
+  };
+  try {
+    const res = await fetch(`${SENTRY_API}/issues/${issueId}/`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ status: 'resolved' }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function checkSentryErrors(env) {
   if (!env.SENTRY_AUTH_TOKEN || !env.SENTRY_ORG_SLUG) {
     return { error: 'SENTRY_AUTH_TOKEN or SENTRY_ORG_SLUG not configured', projects: [] };
@@ -118,10 +158,23 @@ async function checkSentryErrors(env) {
         return { slug, error: `HTTP ${res.status}` };
       }
       const issues = await res.json();
+      const allIssues = Array.isArray(issues) ? issues : [];
+
+      const noiseIssues = allIssues.filter(i => isKnownNoise(i.title));
+      const realIssues = allIssues.filter(i => !isKnownNoise(i.title));
+
+      const autoResolved = [];
+      for (const issue of noiseIssues) {
+        const ok = await resolveIssue(env, issue.id);
+        if (ok) autoResolved.push(issue.title);
+      }
+
       return {
         slug,
-        newIssueCount: Array.isArray(issues) ? issues.length : 0,
-        topIssues: (issues || []).slice(0, 3).map(i => ({
+        newIssueCount: realIssues.length,
+        autoResolvedCount: autoResolved.length,
+        autoResolvedTitles: autoResolved,
+        topIssues: realIssues.slice(0, 3).map(i => ({
           title: i.title,
           count: i.count,
           permalink: i.permalink,
@@ -166,10 +219,11 @@ function formatReport({ siteHealth, sentry }) {
         lines.push(`⚠️ ${p.slug}: ${p.error}`);
         continue;
       }
+      const noiseNote = p.autoResolvedCount > 0 ? ` (auto-resolved ${p.autoResolvedCount} test event(s))` : '';
       if (p.newIssueCount === 0) {
-        lines.push(`✅ ${p.slug}: no new issues`);
+        lines.push(`✅ ${p.slug}: no new issues${noiseNote}`);
       } else {
-        lines.push(`🔴 ${p.slug}: ${p.newIssueCount} unresolved issue(s)`);
+        lines.push(`🔴 ${p.slug}: ${p.newIssueCount} unresolved issue(s)${noiseNote} — needs review`);
         for (const issue of p.topIssues) {
           lines.push(`  • ${issue.title} (${issue.count}x)`);
         }

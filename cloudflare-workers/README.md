@@ -81,6 +81,7 @@ Daily monitoring digest sent via Telegram, every day at 14:00 UTC (10:00 AM EDT)
 **Functionality:**
 - Checks dashboard site health (reuses `/api/health-check`)
 - Summarizes unresolved Sentry issues from the last 24h across all 3 Sentry projects (`aitmpl-workers`, `aitmpl-dashboard`, `aitmpl-cli`)
+- Auto-resolves known test/verification noise (title match only, conservative by design — see `index.js`); real errors are always left open and listed for human review
 - Complements (doesn't replace) docs-monitor's change/error alerts and pulse's weekly KPI report — this is the "everything's fine" / "here's what's broken" heartbeat
 - Does NOT poll the other 3 workers directly (Cloudflare blocks Worker-to-Worker fetches over `*.workers.dev` within the same account — error 1042); their health is covered by Sentry Cron Monitor check-ins instead
 

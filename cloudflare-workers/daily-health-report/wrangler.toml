@@ -16,8 +16,16 @@ crons = ["0 14 * * *"]
 # - TELEGRAM_BOT_TOKEN: Telegram bot token (same as docs-monitor/pulse)
 # - TELEGRAM_CHAT_ID: Telegram chat ID (same as docs-monitor/pulse)
 # - SENTRY_AUTH_TOKEN: Sentry API auth token (Settings > Auth Tokens),
-#   scopes: project:read, org:read
+#   scopes: Project=Read, Organization=Read, Issue & Event=WRITE (write is
+#   required to auto-resolve issues, not just list them)
 # - SENTRY_ORG_SLUG: Sentry organization slug (e.g. "daniel-avila")
+#
+# Auto-resolve policy: on every run, issues whose title matches
+# NOISE_TITLE_PATTERNS in index.js (our own manual verification test
+# events) are automatically marked resolved in Sentry. Everything else is
+# left untouched and listed in the Telegram digest for human review — this
+# is deliberately conservative, see the comment at the top of index.js
+# before changing it.
 #
 # Optional:
 # - TRIGGER_SECRET: Secret for manual /trigger endpoint
