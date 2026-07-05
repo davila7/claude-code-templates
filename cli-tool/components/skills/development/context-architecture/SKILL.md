@@ -1,13 +1,15 @@
 ---
 name: context-architecture
 description: >-
-  Audit and incrementally retrofit an existing codebase so its intent and behavior are equally
-  legible to people and AI agents. Applies Context Architecture's eight principles: place AGENTS.md
-  at boundaries, bind every context claim to a mechanism (lint, types, tests, review), name
-  boundaries, and find context that has rotted. Use when an agent reimplements code that already
-  exists, invents structure, follows stale or deleted docs, propagates a deprecated pattern, or
-  resolves ambiguity at random, or when asked to make a repository "agent-ready", "AI-legible", or
-  to add or fix AGENTS.md / CLAUDE.md files.
+  Audit a codebase and bind every claim it makes about itself to a mechanism that fails when the claim
+  stops being true, so it is legible to people and AI agents. Applies Context Architecture's nine principles: make structure say what
+  the system does, place AGENTS.md at boundaries, codify conventions, and bind every claim the repo
+  makes about itself to a mechanism (compiler, linter, automated tests, review) that fails when the
+  claim stops being true. Works greenfield (a repo born legible) and brownfield (a repo restructured
+  in steps). Use when an agent reimplements code that already exists, invents structure, follows
+  stale or deleted docs, propagates a deprecated pattern, or resolves ambiguity at random, or when
+  asked to make a repository "agent-ready", "AI-legible", or to add or fix AGENTS.md / CLAUDE.md
+  files.
 license: CC BY 4.0
 metadata:
   source: https://context-architecture.dev
@@ -15,113 +17,203 @@ metadata:
   term-introduced: 2025-10
 ---
 
-# Context Architecture: retrofit an existing codebase
+# Context Architecture: bind a repository's claims to mechanisms
 
-This skill applies **Context Architecture** to a repository that already exists and has grown
-disordered. It does not scaffold a new project. A new project inherits a framework's structure, and
-the legibility problem this solves only appears once a codebase grows. The job here is to take a
-repo as it is and make it legible, to a person and to an agent, without a big-bang rewrite.
+This skill applies **Context Architecture** to a repository: it makes the repo's intent and behavior
+equally legible to people and AI agents, and binds every claim the repo makes about itself to a
+mechanism that fails when that claim stops being true. It works from the first commit (a repo can be
+born legible) and on a repo that grew without design (restructured in steps, never all at once). The
+job is to take the repo as it is and make it legible and self-verifying, without a big-bang rewrite.
 
-Context Architecture is the practice of structuring a codebase so that its intent and behavior are
-equally legible to people and AI agents. It treats the repository itself (its file tree, boundaries,
-conventions, and embedded context) as a designed artifact, not an accident of growth. Introduced by
-Sergio Azócar in October 2025. Canonical specification: https://context-architecture.dev
+Context Architecture treats the repository itself (its file tree, boundaries, conventions, and
+embedded context) as a designed artifact, not an accident of growth. Introduced by Sergio Azócar in
+October 2025. Canonical specification: https://context-architecture.dev
 
 ## The one assumption
 
-Design for a reader who **retains nothing between sessions and knows only what the repository makes
-explicit.** An AI agent satisfies this exactly; a new human contributor approximates it. Everything
-below serves one quality attribute: **the time to the first correct change by a reader with no prior
-context.**
+Design for a reader who **retains nothing between sessions and knows only what the repository says
+out loud.** An AI agent meets this exactly; a new human contributor approximates it.
 
-## The rule (the test you run, line by line)
+## The rule (the test you run, claim by claim)
 
 > Every claim a repository makes about itself must be bound to a mechanism that fails when that
 > claim stops being true.
->
-> If a piece of context can rot silently, it is not architecture, it is documentation.
 
-For each thing the repo asserts about itself (where the source of truth lives, which pattern is
-correct, what must not be touched), ask: **is there a compiler, linter, test, or review step that
-breaks when that assertion becomes false?** If not, it is prose, and prose rots. A context claim
-with no mechanism behind it _is_ the violation.
+That is the whole architecture. Everything else is how you apply it.
+
+A claim is anything the repository holds about itself, not just the shape of its folders. "Prices
+are computed in this module and nowhere else" is a claim. "This operation responds within a certain
+time" is a claim. "This data format does not break for the people already using it" is a claim. For
+each one, ask: **is there a compiler, a linter rule, an automated test, or a review step (by a
+person or an agent) that breaks when that stops being true?** If not, it is prose, and prose goes
+stale without anything noticing. A claim with no mechanism behind it _is_ the violation.
+
+The mechanism has to actually fail, not just exist. A performance test that never exercises the slow
+path does not satisfy the rule, it violates it. The rule applies to itself: the set of tests and
+rules that verify the repository is itself a set of claims, so it too is bound to a mechanism that
+fails if it is weakened.
+
+## The loop (write a claim, verify it, repeat on every change)
+
+Working with an agent is a continuous flow of code changes. The rule lives inside that flow, not off
+to the side:
+
+1. **Write the claim.** A change introduces or modifies something the repository holds about itself:
+   a new source of truth, an invariant, a convention.
+2. **Verify it.** Bind that claim to a mechanism that fails when it stops being true, in the **same
+   change**. A change that touches existing code also meets the mechanisms already there: if it
+   violates a claim, something goes red before it reaches production.
+3. **Repeat on every change.** This is not a setup you do once. It is a property maintained change by
+   change, which is why the repository's context grows with the system instead of falling behind.
+
+When a change adds a new claim and leaves it loose, review (by a person or an agent) catches it and
+requires it to be bound before the change is accepted.
+
+## Works with or without a person in the loop
+
+Context Architecture serves the whole autonomy spectrum. What changes across it is **who consumes
+the verification, not the verification.** The same `AGENTS.md` and the same mechanisms work at every
+level:
+
+| Level | Who reviews | What breaks without repository discipline |
+| --- | --- | --- |
+| Inline | a person approves each edit | the agent reimplements things that already exist; the person burns time on what the tools could have caught |
+| Async | a person reviews the change before integrating it | review does not scale; the integration gate exists but enforces nothing, one click lets a change through |
+| Autonomous | a person sets the rules, does not look at each change | if the mechanisms are missing, "done" is empty: the agent calls a change finished when it passes but is wrong |
+| Orchestrated | nobody in the middle | the error multiplies at machine speed; the only arbiters are the repository's mechanisms |
+
+When there is a person, the mechanisms absorb the routine checks, so the person spends attention on
+what needs judgment. When there is no person, the mechanisms are the reviewer.
+
+## The kinds of mechanism (not tools)
+
+Binding a claim is connecting it to something that fails when it stops being true. Context
+Architecture names the kinds of mechanism; the repository picks the product (`oxlint` or `eslint`,
+it makes no difference), and the infrastructure runs it on each change.
+
+- **The compiler** catches what can be expressed in types: reintroducing a forbidden import breaks
+  the build.
+- **The linter** catches problems of structure and convention: a file in the wrong folder fails the
+  lint and cites the rule it breaks.
+- **Automated tests** catch documentation that lies and behavior that strays: an `AGENTS.md` that
+  mentions a deleted file turns the tests red.
+- **Review**, by a person or an agent, catches the meaning the others do not see: on each change it
+  asks whether any document now says something false, and requires the fix in the same change.
+
+The split is clean: Context Architecture decides **what** gets verified and guarantees the mechanism
+exists and fails. The infrastructure runs it.
 
 ## When this applies, and when it does not
 
-Apply it to: codebases that absorb agent or multi-person work, refactors at scale, mechanical
-migrations, features with a clear spec, contributions where the context already exists.
+Apply it to: repositories that absorb agent or multi-person work, refactors at scale, mechanical
+migrations, features with a clear spec. It applies from the first commit (a repository can be born
+legible) and to one that grew without design, restructured in steps.
 
-Do **not** force it onto: throwaway projects, ill-defined problems, product decisions, debugging
-with no context, the first prototype of something not yet understood. The structuring work is an
-investment that pays back in proportion to how much agent or multi-person work the repo absorbs. On
-a throwaway, the toll beats the return. Say so when you see it.
+Do **not** force it onto: throwaway projects, ill-defined problems, the first prototype of something
+not yet understood. The structuring work is an investment that pays back in proportion to how much
+agent or multi-person work the repo absorbs. On a throwaway, the cost outweighs the return. Say so
+when you see it.
+
+## The nine principles
+
+Each principle is a property you can check, not an aspiration. Either it is true of the repository
+and bound to a mechanism, or it is not. If it cannot be bound to something that fails, it is not a
+principle.
+
+### Let the repository say what it is
+
+**01 · Structure Screams Intent.** The file tree says what the system does, not what framework built
+it. A `billing/` folder names a business responsibility; a `controllers/` folder names a technical
+detail that could belong to any system. The framework lives one level down, inside the domain it
+serves.
+_Mechanism: a linter rule that errors when a file lands in a folder that does not match its domain._
+
+**02 · Context Lives With Code.** Context lives next to the code it describes, at every important
+boundary, not in a separate wiki that goes stale. It holds only what the code cannot say on its own:
+where the source of truth is, what invariants must be respected, what tech debt was accepted on
+purpose, what behavioral limits apply.
+_Mechanism: a test that fails if an `AGENTS.md` mentions a file that no longer exists._
+
+**03 · Boundaries Are Explicit and Named.** Each module and package is named for the responsibility
+it owns. Folders like `utils/`, `common/`, or `helpers/` collect anything, because the name rules
+nothing out. Genuinely shared, domain-free code goes in a small `shared/` with no dependencies
+toward any domain. If you cannot name a boundary precisely, the boundary is usually drawn wrong.
+_Mechanism: a rule that forbids a module from importing across another boundary through paths that
+are not allowed, and breaks the build when it happens._
+
+**04 · The Repo Is Legible at Every Zoom Level.** Legibility works at every level. A clean tree with
+functions named `doStuff` or `data2` is legible at one level and illegible at the next. The same
+discipline that names folders names functions, types, and variables.
+_Mechanism: linter rules on names and complexity limits._
+
+**05 · Capabilities Are Discoverable.** The project's tools, scripts, and commands live in
+predictable places with names that say what they do (`package.json` scripts, a `scripts/` folder, a
+skills folder). A capability an agent cannot find does not exist for that agent: it reimplements it.
+The list of capabilities is generated from those predictable places, not written by hand.
+_Mechanism: the list generated from the conventional paths, and a test that fails if a real
+capability does not appear in it._
+
+### Bind every claim to a mechanism
+
+**06 · Intent Becomes Mechanism.** Intent is written as a spec before the code, then turned into the
+code and into the tests and rules that enforce it, and the spec is removed once its content already
+lives there. What stays is the intent and its verification, not the code that satisfies it: as long
+as the tests pin down the behavior, that code can be regenerated.
+_Mechanism: the tests, the types, and the rules the spec was turned into._
+
+**07 · Conventions Are Codified, Not Implicit.** A convention that lives only in people's heads is
+invisible to an agent, and the agent will break it. Take it out of the culture and put it in the
+tools that review the code: linter rules, type constraints, automated validations in CI that state
+the rule and enforce it in the same place.
+_Mechanism: the linter rules and the type constraints._
+
+**08 · Behavior Is Verifiable, Not Asserted.** Every claim about how the system behaves (how long an
+operation may take, what data must not cross a boundary, what format must not break for the people
+already using it) is bound to an automated test that lives in the repository and goes red when the
+behavior strays. A time limit in a document goes stale; the same limit bound to a test that fails
+when it is exceeded is architecture.
+_Mechanism: an automated behavior test (performance, data contract, security) that lives in the
+repository and fails when the behavior deviates._
+
+**09 · The Verification Surface Is Itself Bound.** The set of tests and rules that verify the
+repository is, in turn, a set of claims, so it too is bound. An agent can rewrite the code freely,
+but it cannot weaken or delete a test, a rule, or a validation to get a change through. Without a
+person reviewing, this is the principle that matters most: the cheapest way to make a validation
+pass is to remove it.
+_Mechanism: a validation that goes red if the set of tests and rules changes without the
+authorization the repository defined._
 
 ## The procedure
 
 Run four phases in order. Phases 1 and 2 are read-only; do not edit until you have the audit and a
-prioritized plan. The retrofit (phase 3) is **incremental**: one bounded change at a time, each
-landing with the mechanism that keeps it true.
+prioritized plan. The work in phase 3 is **incremental**: one bounded change at a time, each landing
+with the mechanism that keeps it true.
 
 ### Phase 1: Audit (read-only)
 
-Walk the repository and judge it against the eight principles and the five failure modes. Read the
-top-level tree first, then the boundaries, then a sample of leaf files. Produce a written audit
-(template below). For each principle, look for the concrete signals:
+Walk the repository and judge it against the nine principles. Read the top-level tree first, then
+the boundaries, then a sample of leaf files. For each principle, record a verdict (holds / partial /
+violated), the evidence (paths), and the mechanism that is (or should be) bound to it.
 
-1. **Structure Screams Intent.** A reader, person or agent, must infer what the system does from the
-   file tree alone, never from the framework it happens to use.
-   - Smell: the top level is `controllers/ services/ models/ utils/` (framework-shaped), not
-     `billing/ onboarding/ payments/` (domain-shaped). The framework should live one level _down_,
-     inside the domain it serves.
-
-2. **Context Lives With Code.** Embedded context belongs at every meaningful boundary, colocated
-   with what it describes, not exiled to a wiki that drifts.
-   - Smell: no `AGENTS.md`/`CLAUDE.md` at boundaries; the real knowledge lives in a wiki, a Notion,
-     or a senior engineer's head.
-
-3. **Intent Becomes Mechanism.** Intent is written as a spec before code, then becomes the code and
-   the checks that enforce it; the spec is scaffolding, removed once its content lives in tests,
-   types, lint, and the nearest `AGENTS.md`.
-   - Smell: prose specs/design docs that describe code that already exists (a second source that can
-     drift), or no record of intent at all.
-
-4. **Boundaries Are Explicit and Named.** Every module, package, and ownership line is named so its
-   responsibility is inferable. Ambiguous names are architectural debt.
-   - Smell: `utils/`, `common/`, `helpers/`, `core/`, `lib/` junk drawers that accrete unrelated
-     code.
-
-5. **Conventions Are Codified, Not Implicit.** Encode conventions in linting and types so the
-   toolchain can check them. This is the first instance of the mechanism.
-   - Smell: "we always do it this way" that lives only in review comments and tribal memory, with no
-     lint rule or type constraint behind it.
-
-6. **Capabilities Are Discoverable.** Tools, skills, and commands live at predictable paths, named
-   for what they do, bound to an index that cannot silently omit them.
-   - Smell: useful scripts filed under a personal folder; a deploy command buried in a forgotten
-     README; a capability that exists but an agent cannot find, so it gets re-implemented.
-
-7. **Legible at Every Zoom Level.** From the file tree to the function body, each level of zoom
-   communicates purpose. Legibility is fractal.
-   - Smell: a clean tree with opaque functions inside (`doStuff`, `handle`, `data2`), or vice versa.
-
-8. **Optimize for the Newcomer, and the Newcomer Is Now an Agent.** The clearest test of
-   architecture is how fast a stranger becomes productive, and the agent is the most demanding
-   stranger there is.
-   - Test: could an agent invoked cold, with no memory, make a correct change here? Where would it
-     guess?
-
-For each principle, record: a verdict (holds / partial / violated), the evidence (paths), and which
-of the five failure modes it exposes:
+Use the **five failure modes** as diagnostic signals: each is what a cold reader does when a claim
+is not bound, and each points back at the principle that is loose. A better model lowers their
+frequency, it does not remove them, because the missing mechanism is in the repository, not the
+reader. When you see one of these in the repo's history (or imagine a cold agent producing it), name
+the unbound claim behind it:
 
 - **Reimplementation.** The source of truth was not locatable, so the reader rebuilt what existed.
-- **Invented structure.** None was imposed, so the reader imposed its own.
-- **Obedience to false documentation.** Cites deleted files or contradicts the current code.
+  (Points at 01, 03, 05.)
+- **Invented structure.** None was imposed, so the reader imposed its own. (Points at 01, 03.)
+- **Obedience to false documentation.** Cites deleted files or contradicts the current code. (Points
+  at 02, 06.)
 - **Deprecated-pattern propagation.** Copies the most visible pattern even when it is obsolete.
-- **Random ambiguity resolution.** Two conventions coexist; it uses whichever it read first.
+  (Points at 04, 07.)
+- **Random ambiguity resolution.** Two conventions coexist; it uses whichever it read first. (Points
+  at 07.)
 
 ### Phase 2: Prioritize (incremental, by leverage)
 
-Never propose a big-bang restructuring. Order the retrofit by leverage and reversibility:
+Never propose a big-bang restructuring. Order the work by leverage and reversibility:
 
 1. **Context-rot first** (cheap, high trust). Find and fix docs that lie; they actively mislead the
    reader. See phase 3.
@@ -137,7 +229,7 @@ Never propose a big-bang restructuring. Order the retrofit by leverage and rever
 
 Output a backlog: each item is one PR-sized change, with the mechanism it lands with.
 
-### Phase 3: Retrofit moves (the concrete edits)
+### Phase 3: The moves (the concrete edits)
 
 Each move pairs a claim with the mechanism that fails when the claim stops being true. A move
 without its mechanism is just documentation; do not land it that way.
@@ -160,25 +252,24 @@ in it only what cannot be learned by reading the code:
 <What looks wrong but is intentional, and why.>
 
 ## The why a spec left behind
-<Rationale the code cannot hold, moved here from a removed spec (principle 03).>
+<Rationale the code cannot hold, moved here from a removed spec (principle 06).>
 ```
 
 Bind each invariant to a mechanism, and **add the mechanism in the same change**, or the AGENTS.md
-is a new claim that can rot.
+is a new claim that can go stale.
 
-**Bind claims to mechanisms.** The four layers, each catching a kind of drift:
+**Bind claims to mechanisms.** The four kinds, each catching a kind of drift:
 
-- _Compiler._ A forbidden import alias breaks the typecheck (e.g. a banned path mapping, a nominal
-  type).
+- _Compiler._ A forbidden import alias breaks the typecheck (a banned path mapping, a nominal type).
 - _Linter._ A file in the wrong folder is an immediate error citing the rule (custom lint rule /
   import-boundary rule). Reach for the linter to enforce structure and conventions.
 - _Tests._ A doc that cites a deleted file turns the suite red (a test that asserts every path
   referenced in `AGENTS.md`/`README` still exists); a generated capability index that drops a real
   capability turns it red.
-- _Review (human or AI)._ Guards semantic truth: on every change, ask whether it leaves any doc
-  lying, and require fixing it in the same PR.
+- _Review (person or agent)._ Guards semantic truth: on every change, ask whether it leaves any doc
+  lying, and require fixing it in the same change.
 
-**Detect and fix context-rot.** Find documentation that lies. Concretely:
+**Detect and fix context-rot.** Find documentation that lies:
 
 - Extract every file path, command, symbol, and URL referenced in `README`, `AGENTS.md`/`CLAUDE.md`,
   and design docs; verify each still exists / still runs. Dead references are the highest-priority
@@ -195,15 +286,15 @@ is a signal the boundary is wrong, not an excuse to call it `shared`. Keep a gen
 **Make capabilities discoverable.** Move scripts/generators/commands to conventional, named
 locations (`package.json` scripts, a `scripts/` or `skills/` directory). Where possible,
 **generate** the capability index from the conventional paths rather than hand-keeping it, and test
-that the index is complete. A hand-kept list is itself a claim that rots.
+that the index is complete. A hand-kept list is itself a claim that goes stale.
 
-### Phase 4: The metabolism (so it does not rot again)
+### Phase 4: Keep the loop running
 
-An architecture that only validates itself cannot rot silently; one that **feeds** itself absorbs
-new knowledge the moment it is created. Install the review-loop instruction: when a PR introduces a
-source of truth or an invariant, the loop asks to document it right there, in the same PR, bound to
-a mechanism. Context then grows with the system, not behind it. Add this instruction to the root
-`AGENTS.md` and to the review checklist.
+Context grows with the system only if write-and-verify runs on every change. Install the review-loop
+instruction: when a change introduces a source of truth or an invariant, the loop asks to document
+it right there, in the same change, bound to a mechanism. Add this instruction to the root
+`AGENTS.md` and to the review checklist, so a new claim cannot land loose. Bind the verification
+surface itself (principle 09) so the mechanisms cannot be weakened to get a change through.
 
 ## Output: the audit report
 
@@ -216,34 +307,42 @@ Produce this before any edit:
 <2-3 sentences: where would a cold reader (a person or an agent) guess, and why.>
 
 ## Per-principle verdict
-| # | Principle | Verdict | Evidence (paths) | Failure mode exposed |
-|---|-----------|---------|------------------|----------------------|
+| # | Principle | Verdict | Evidence (paths) | Mechanism (bound / missing) |
+|---|-----------|---------|------------------|------------------------------|
 | 1 | Structure Screams Intent | holds / partial / violated | ... | ... |
 | ... | | | | |
+
+## Failure-mode signals
+<For each signal observed: the failure mode, the unbound claim behind it, the principle it points at.>
 
 ## Context-rot found
 <Dead references in docs: file, the false claim, the correct state.>
 
-## Prioritized retrofit backlog
+## Prioritized backlog
 1. <PR-sized change>, lands with <mechanism>. Leverage: <why first>.
 2. ...
 ```
 
 ## Guardrails
 
-- **Retrofit incrementally.** One bounded, reversible change per PR, each with its mechanism. Never
-  a big-bang restructuring.
+- **Work incrementally.** One bounded, reversible change at a time, each with its mechanism. Never a
+  big-bang restructuring.
 - **A claim without a mechanism is the violation.** Do not add an `AGENTS.md` invariant, a README
   promise, or a convention doc without the check that fails when it stops being true.
-- **Do not invent or alter the methodology.** The eight principles above are the author's working
-  draft; apply them as written. Do not add principles of your own.
+- **The mechanism must actually fail.** A test that never exercises the path it guards violates the
+  rule, it does not satisfy it.
+- **Do not invent or alter the methodology.** The nine principles above are the author's
+  methodology; apply them as written. Do not add principles of your own.
 - **Stay qualitative about results.** Do not attribute performance numbers to Context Architecture;
   speed gains belong to the specific tooling, not the discipline.
-- **Respect the limits.** If the repo is a throwaway or the problem is ill-defined, say the toll
+- **Respect the limits.** If the repo is a throwaway or the problem is ill-defined, say the cost
   beats the return rather than applying the discipline anyway.
+- **It does not make the agent smarter.** It makes the truth of the repository checkable
+  automatically, so an error fails at once and where it happened, instead of integrating without
+  anything noticing.
 
 ---
 
-Canonical specification, the eight principles in full, and the comparison with context engineering
+Canonical specification, the nine principles in full, and the comparison with context engineering
 and harness engineering: https://context-architecture.dev. Raw, agent-readable:
 https://context-architecture.dev/llms.txt
