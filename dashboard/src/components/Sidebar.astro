@@ -24,12 +24,22 @@ function isActive(path: string): boolean {
     </a>
     <button
       id="sidebar-toggle"
-      class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] transition-all duration-200 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] active:scale-95 hover:rotate-180"
+      class="hidden md:flex shrink-0 w-8 h-8 items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] transition-all duration-200 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] active:scale-95 hover:rotate-180"
       aria-label="Toggle sidebar"
       title="Collapse sidebar"
     >
       <svg class="w-4 h-4 transition-transform duration-300 ease-in-out" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+      </svg>
+    </button>
+    <button
+      id="mobile-sidebar-close"
+      class="md:hidden shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] transition-all duration-200 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] active:scale-95"
+      onclick="window.toggleSidebar && window.toggleSidebar()"
+      aria-label="Close menu"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
   </div>
@@ -88,6 +98,7 @@ function isActive(path: string): boolean {
     <!-- Plugins (external marketplaces) -->
     <a
       href="/plugins"
+      data-nav-type="plugins"
       data-tooltip="Plugins"
       class:list={[
         'sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded text-[13px] transition-all duration-150 group relative overflow-hidden font-ui-mono',
@@ -114,6 +125,7 @@ function isActive(path: string): boolean {
         </span>
       </span>
       <span class="sidebar-text truncate transition-all duration-300">Plugins</span>
+      <span class="sidebar-nav-count font-ui-mono ml-auto text-[11px] font-semibold tabular-nums text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)] border border-[var(--color-border)] px-2 py-0.5 rounded min-w-[24px] text-center transition-all duration-300 group-hover:bg-[var(--color-surface-3)]" data-count-type="plugins"></span>
     </a>
 
     <!-- Divider -->
@@ -251,6 +263,15 @@ function isActive(path: string): boolean {
     .then((r) => r.json())
     .then((counts: Record<string, number>) => {
       applyCounts(counts);
+    })
+    .catch(() => {});
+
+  // Plugins isn't part of the component catalog (counts.json), it's a
+  // curated list of external marketplaces — count comes from plugins.json.
+  fetch('/plugins.json')
+    .then((r) => r.json())
+    .then((plugins: unknown[]) => {
+      applyCounts({ plugins: plugins.length });
     })
     .catch(() => {});
 

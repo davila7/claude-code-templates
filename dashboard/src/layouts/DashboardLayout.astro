@@ -81,7 +81,7 @@ const schemaData = JSON.stringify({
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
-  <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200">
+  <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200 overflow-x-hidden">
     <script is:inline>
       // Initialize theme on page load (prevent flash)
       (function() {
@@ -94,17 +94,25 @@ const schemaData = JSON.stringify({
       })();
     </script>
     <div class="flex h-screen overflow-hidden">
-      <!-- Sidebar -->
+      <!-- Mobile sidebar overlay -->
+      <div
+        id="sidebar-overlay"
+        class="hidden md:hidden fixed inset-0 bg-black/50 z-30"
+      ></div>
+
+      <!-- Sidebar (fixed and out of flow — width/position must not affect
+           the flex layout below, or it pushes main content off-screen) -->
       <aside
         id="sidebar"
-        class="hidden md:flex w-[220px] flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-0)] fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out"
+        class="w-[220px] flex flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-0)] fixed inset-y-0 left-0 z-40 -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out"
         data-collapsed="false"
+        data-mobile-open="false"
       >
         <Sidebar />
       </aside>
 
       <!-- Main content -->
-      <main id="main-content" class="flex-1 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
+      <main id="main-content" class="flex-1 min-w-0 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
         <slot />
         <footer class="border-t border-[var(--color-border)] mt-12 py-6 px-6 text-center text-sm text-[var(--color-text-secondary)]">
           <p class="mb-3">Supported by the open source programs of</p>
@@ -244,9 +252,63 @@ const schemaData = JSON.stringify({
 
       // Initialize on load
       initSidebarCollapse();
-      
+
       // Re-initialize on navigation (for SPA-like behavior)
       document.addEventListener('astro:page-load', initSidebarCollapse);
+
+      // Mobile sidebar drawer (separate from the desktop collapse above —
+      // on mobile the sidebar is hidden off-screen via -translate-x-full
+      // and slides in as an overlay instead of shrinking to icons).
+      function openMobileSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (!sidebar || !overlay) return;
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.dataset.mobileOpen = 'true';
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMobileSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (!sidebar || !overlay) return;
+        sidebar.classList.add('-translate-x-full');
+        sidebar.dataset.mobileOpen = 'false';
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      // @ts-ignore — called from the inline onclick in TopBar.astro
+      window.toggleSidebar = function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+        if (sidebar.dataset.mobileOpen === 'true') {
+          closeMobileSidebar();
+        } else {
+          openMobileSidebar();
+        }
+      };
+
+      function initMobileSidebar() {
+        const overlay = document.getElementById('sidebar-overlay');
+        overlay?.addEventListener('click', closeMobileSidebar);
+
+        // Close the drawer after navigating to a page (mobile only)
+        document.getElementById('sidebar')?.addEventListener('click', (e) => {
+          const link = (e.target as HTMLElement).closest('a');
+          if (link && window.innerWidth < 768) {
+            closeMobileSidebar();
+          }
+        });
+
+        // Close if resizing up to desktop width while open
+        window.addEventListener('resize', () => {
+          if (window.innerWidth >= 768) closeMobileSidebar();
+        });
+      }
+
+      initMobileSidebar();
     </script>
 
     <!-- Single Clerk island for auth — idle so it doesn't block first paint -->
