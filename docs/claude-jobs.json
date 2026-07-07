@@ -1,13 +1,52 @@
 {
-  "lastUpdated": "2026-07-06T04:30:39.546339+00:00",
-  "totalJobs": 87,
+  "lastUpdated": "2026-07-07T04:25:02.049742+00:00",
+  "totalJobs": 88,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-48811937",
+      "company": "Cora AI",
+      "position": "AI Engineer",
+      "location": "REMOTE (US ONLY, LA/SF preferred)",
+      "remote": true,
+      "salary": "",
+      "description": "We build customer success agents and account intelligence that do the actual manual work — so CS teams can focus on the relationship-driven work that drives growth. What we're looking for: - You build with AI IDEs (Cursor, Claude Code) as a force multiplier — not occasionally, as your default -...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48811937",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48811937",
+      "postedAt": "2026-07-06T23:41:34+00:00",
+      "tags": [
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48801745",
+      "company": "Electric Twin",
+      "position": "Product Engineer",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "Electric Twin builds science-based synthetic populations — LLM-driven AI agents that simulate human behaviour, so companies and governments can test ideas and explore uncertainty before they commit. We've just entered a major growth phase: new funding, a growing customer base, and a platform still...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48801745",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48801745",
+      "postedAt": "2026-07-06T07:43:32+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "Python",
+        "GCP",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-founder-ghostwriter-for-a-u-s-based-google-ads-agency-paired-1134487",
       "company": "Paired",
@@ -496,31 +535,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-memora-aps-founding-engineer",
-      "company": "Memora ApS",
-      "position": "Founding Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Copenhagen, Denmark URL: https://memora.dk/ About Us At Memora, we're digitizing one of the oldest and most overlooked categories on earth: the cemetery. Most still run on paper maps, spreadsheets, and institutional memory. We are replacing this with an ecosystem for everyone who...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/memora-aps-founding-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/memora-aps-founding-engineer",
-      "postedAt": "2026-06-06T13:32:54+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "Cursor",
-        "React Native",
-        "Rails"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5201715008",
