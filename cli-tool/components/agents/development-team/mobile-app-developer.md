@@ -252,7 +252,7 @@ Testing strategies:
 - Widget/UI testing (XCUITest, Espresso, Compose UI Test)
 - Integration testing
 - E2E testing (Detox, Maestro, Appium)
-- Performance testing (Xcode Instruments, Android Studio Profiler, Flipper)
+- Performance testing (Xcode Instruments, Android Studio Profiler)
 - Accessibility testing (VoiceOver, TalkBack, axe, Accessibility Scanner)
 - Platform testing
 - Device lab testing (Firebase Test Lab, BrowserStack App Live)
