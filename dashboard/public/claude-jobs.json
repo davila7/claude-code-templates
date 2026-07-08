@@ -1,12 +1,53 @@
 {
-  "lastUpdated": "2026-07-07T04:25:02.049742+00:00",
-  "totalJobs": 88,
+  "lastUpdated": "2026-07-08T04:08:30.940525+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-48823535",
+      "company": "Youth Inc.",
+      "position": "Senior Software Engineer",
+      "location": "On-site",
+      "remote": false,
+      "salary": "$120k–$190k",
+      "description": "We’re a venture-backed e-commerce marketplace and media network for youth and high school sports. We’ve moved from zero to one with real revenue and are now looking for a Senior Engineer to help us scale to serve the 65M American families in this space. Our Stack: Elixir/Phoenix (LiveView),...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48823535",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48823535",
+      "postedAt": "2026-07-07T20:48:44+00:00",
+      "tags": [
+        "Next.js",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-48819370",
+      "company": "Rabbet (YC S17)",
+      "position": "Software Engineer",
+      "location": "REMOTE (TX, NC, CO)",
+      "remote": true,
+      "salary": "",
+      "description": "Rabbet is hiring Sr. Software Engineers to help us streamline construction finances. We offer cloud-based software for commercial lenders and real estate developers to centralize construction finances, automate administrative tasks, and reduce the time spent managing draws. Backend is in Elixir...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48819370",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48819370",
+      "postedAt": "2026-07-07T15:42:29+00:00",
+      "tags": [
+        "React",
+        "PostgreSQL",
+        "AWS",
+        "GCP"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-48811937",
       "company": "Cora AI",
@@ -411,11 +452,11 @@
     {
       "id": "anth-5198999008",
       "company": "Anthropic",
-      "position": "Technical Specialist, Claude Code",
+      "position": "Technical Architect",
       "location": "London, UK",
       "remote": false,
       "salary": "",
-      "description": "Anthropic is hiring Technical Architects: hands-on builders and live technical communicators who help our customers go from \"we bought Claude\" to \"our people use it every day.\" You'll be the technical partner our CSMs pull into the room whenever the work gets technical — and at our customers,...",
+      "description": "Anthropic is hiring Technical Architects: hands-on builders and live technical communicators who help our customers go from \"we bought Claude\" to \"our people use it every day.\" You'll be the technical partner our CSMs pull into the room whenever the work gets technical. For our customers, that's...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
