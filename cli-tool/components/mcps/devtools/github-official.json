@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "github-official": {
+      "description": "GitHub's official MCP Server. Interact with GitHub repositories, issues, pull requests, and more directly from Claude.",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<your-github-token>"
+      }
+    }
+  }
+}

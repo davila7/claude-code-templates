@@ -95,7 +95,7 @@ Before recommending the next step, validate the current artifact:
 - WARN if no "Out of Scope" section
 
 **Gate: plan.md → tasks.md**
-- BLOCK if `/sdd-analyze` has not been run (check for analyze output or ask user to confirm)
+- `/sdd-analyze` is REQUIRED for any feature with more than 3 tasks or any security-sensitive scope, optional otherwise. BLOCK if it is required but has not been run (check for analyze output or ask user to confirm); for small, low-risk features, WARN only
 - BLOCK if any CRITICAL issues remain from `/sdd-analyze`
 - WARN if constitution compliance not verified
 
@@ -103,11 +103,17 @@ Before recommending the next step, validate the current artifact:
 - BLOCK if any TDD tasks are missing (every user story phase must have test tasks)
 - BLOCK if no testing framework configured in plan.md
 - BLOCK if tasks.md has incomplete task IDs or missing file paths
+- BLOCK if spec.md has Behavioral Evals (EV-NNN) but tasks.md has no eval tasks before the
+  story checkpoints
+- BLOCK if CONSTITUTION Security & Privacy MUST rules have no verification tasks in the phases
+  that touch them
 
 **Gate: sdd-tdd → sdd-implement**
 - BLOCK if `.tdd-gate` file doesn't exist in `specs/NNN-feature-name/`
 - BLOCK if `.tdd-gate` content doesn't show RED state (tests failing before implementation)
 - BLOCK if test suite execution was not attempted
+- RECOMMEND subagent-driven execution mode (domain-expert implementer per task + two-stage review:
+  spec compliance, then code quality) for any feature with >3 tasks or security-sensitive scope
 
 **Gate: sdd-implement → sdd-review**
 - BLOCK if any `[ ]` tasks remain in tasks.md
@@ -117,7 +123,8 @@ Before recommending the next step, validate the current artifact:
 **Gate: sdd-review → PR**
 - BLOCK if `~/.claude/.review-gate` doesn't exist or is older than 2 hours
 - BLOCK if review-gate was created before the last commit (stale review — must re-review after new code)
-- BLOCK if any review agent returned "FAILED" status in review-gate
+- Parse the structured marker and BLOCK unless its `branch` equals the current branch AND its `head` SHA equals `git rev-parse HEAD` — a marker bound to a different branch or commit is stale/forged and must be rejected
+- BLOCK if any of the 6 review agents recorded a FAIL line in review-gate (functionality-completeness-reviewer's INCOMPLETE counts as FAIL)
 
 ### Step 4: Report Status and Recommend Next Action
 
@@ -159,7 +166,7 @@ Each SDD step leverages specific expert agents with exigent prompts. Inform the 
 | sdd-tasks | task-decomposition-expert, qa-expert | Task ordering, dependency analysis, test coverage planning |
 | sdd-tdd | test-engineer, qa-expert | RED test generation, test quality validation, edge case coverage |
 | sdd-implement | backend-developer / frontend-developer, debugger (on failure) | Code generation, build management, error resolution |
-| sdd-review | security-engineer, code-reviewer, architect-reviewer, qa-expert, se-security-reviewer | Security audit, code quality, architecture review, test coverage, security hardening |
+| sdd-review | security-engineer, code-reviewer, architect-reviewer, qa-expert, se-security-reviewer, functionality-completeness-reviewer (via general-purpose) | Security audit, code quality, architecture review, test coverage, security hardening, functionality completeness |
 
 ## Quality Gate Rules
 

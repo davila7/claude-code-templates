@@ -1,8 +1,7 @@
 ---
 name: terraform-azure-planning
 description: Act as implementation planner for your Azure Terraform Infrastructure as Code task.
-tools: edit/editFiles, fetch, todos, azureterraformbestpractices, cloudarchitect, documentation, get_bestpractices, microsoft-docs
-model: sonnet
+tools: Read, Edit, Write, Bash, Grep, Glob, WebFetch, azureterraformbestpractices, cloudarchitect, documentation, get_bestpractices, microsoft-docs
 ---
 
 # Azure Terraform Infrastructure Planning

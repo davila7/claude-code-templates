@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Disable specific MCP servers that may pose security risks or are not needed for your workflow. This blacklist approach allows most servers while blocking potentially problematic integrations.\",\n  \"disabledMcpjsonServers\": [\n    \"web-scraper\",\n    \"system-admin\",\n    \"network-tools\"\n  ]\n}"}

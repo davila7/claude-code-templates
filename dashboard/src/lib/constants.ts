@@ -7,44 +7,28 @@ export const ITEMS_PER_PAGE = 24;
 
 export const FEATURED_ITEMS: FeaturedItem[] = [
   {
-    name: 'BrainGrid',
-    description: 'Product Management Agent',
-    logo: 'https://www.braingrid.ai/brand/full-logo-lime-on-transparent.png',
-    url: '/featured/braingrid',
-    tag: 'Partner',
-    tagColor: '#6366f1',
-    category: 'Product Management',
-    ctaLabel: 'Try BrainGrid Free',
-    ctaUrl: 'https://braingrid.link/hsn8pFE',
-    websiteUrl: 'https://braingrid.ai',
-    metadata: {
-      Integration: 'MCP, CLI',
-    },
-    links: [
-      { label: 'Integration Docs', url: 'https://docs.braingrid.ai/claude-code' },
-      { label: 'braingrid.ai', url: 'https://braingrid.ai' },
-    ],
-  },
-  {
-    name: 'Neon',
-    description: 'Complete Postgres Template',
-    logo: 'https://neon.tech/brand/neon-logo-dark-color.svg',
-    url: '/featured/neon-instagres',
-    tag: 'Database',
-    tagColor: '#059669',
+    name: 'Bright Data',
+    description: 'Complete Web Data Template',
+    logo: 'https://avatars.githubusercontent.com/u/213028976?v=4',
+    url: '/featured/brightdata',
+    tag: 'Web Data',
+    tagColor: '#2563eb',
     category: 'Infrastructure',
-    ctaLabel: 'Try Neon Free',
-    ctaUrl: 'https://get.neon.com/4eCjZDz',
-    websiteUrl: 'https://neon.tech',
-    installCommand: 'npx claude-code-templates@latest --skill database/neon-instagres,database/using-neon --yes',
+    ctaLabel: 'Try Bright Data Free',
+    ctaUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
+    websiteUrl: 'https://get.brightdata.com/lcqorc6nzp9w',
+    installCommand:
+      'npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices,development/brightdata-local-search --mcp web-data/brightdata --yes',
     metadata: {
-      Components: '10',
-      Integration: 'MCP, CLI',
+      Components: '8',
+      Tools: '60+',
+      Integration: 'MCP, Skills, CLI',
     },
     links: [
-      { label: 'Instagres Docs', url: 'https://neon.tech/docs/guides/instagres' },
-      { label: 'Platform Overview', url: 'https://neon.tech/docs/introduction' },
-      { label: 'neon.tech', url: 'https://neon.tech' },
+      { label: 'Skills Repository', url: 'https://github.com/brightdata/skills' },
+      { label: 'MCP Server', url: 'https://github.com/brightdata/brightdata-mcp' },
+      { label: 'API Documentation', url: 'https://docs.brightdata.com' },
+      { label: 'brightdata.com', url: 'https://get.brightdata.com/lcqorc6nzp9w' },
     ],
   },
   {
@@ -65,6 +49,25 @@ export const FEATURED_ITEMS: FeaturedItem[] = [
     links: [
       { label: 'Documentation', url: 'https://docs.claudekit.cc' },
       { label: 'claudekit.cc', url: 'https://claudekit.cc' },
+    ],
+  },
+  {
+    name: 'BrainGrid',
+    description: 'Plan. Build. Verify. Repeat.',
+    logo: '/braingrid-logo.webp',
+    url: '/featured/braingrid',
+    tag: 'Planning',
+    tagColor: '#c5e063',
+    category: 'Product Planning',
+    ctaLabel: 'Try BrainGrid',
+    ctaUrl: 'https://www.braingrid.ai?utm_source=aitmpl&utm_medium=featured&utm_campaign=partner',
+    websiteUrl: 'https://www.braingrid.ai',
+    metadata: {
+      Integration: 'MCP, CLI',
+      Stage: 'Battle-tested',
+    },
+    links: [
+      { label: 'braingrid.ai', url: 'https://www.braingrid.ai' },
     ],
   },
 ];

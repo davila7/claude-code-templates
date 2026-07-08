@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Disable Claude Code telemetry for privacy.\",\n  \"env\": {\n    \"DISABLE_TELEMETRY\": \"1\"\n  }\n}"}

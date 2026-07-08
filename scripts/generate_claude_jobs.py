@@ -1,985 +1,769 @@
-import os
+"""
+Generate claude-jobs.json by scraping free job sources for Claude Code positions.
+
+Sources (all free, no API keys required):
+1. HN Firebase API - "Who is Hiring" thread comments
+2. HN Algolia API - Search across multiple months
+3. RemoteOK API - JSON job feed
+4. WeWorkRemotely RSS - Programming jobs feed
+5. Anthropic Careers - Greenhouse API (jobs mentioning Claude Code)
+
+Output: docs/claude-jobs.json
+"""
+
 import json
-import requests
-from datetime import datetime
-from dotenv import load_dotenv
-import time
 import re
+import time
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
+from html import unescape
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.request import Request, urlopen
+from urllib.parse import quote_plus
+from urllib.error import URLError
 
-# Load environment variables
-load_dotenv()
+# ---------------------------------------------------------------------------
+# Utilities
+# ---------------------------------------------------------------------------
 
-def scrape_with_rapidapi_jobs():
-    """
-    Use RapidAPI Jobs Search to find Claude-related positions
-    """
-    jobs = []
+def fetch_json(url, timeout=15):
+    """Fetch JSON from a URL."""
+    req = Request(url, headers={"User-Agent": "claude-code-templates/1.0"})
     try:
-        print("🔍 Searching with RapidAPI Jobs API for Claude positions...")
-        
-        rapidapi_key = os.getenv("RAPIDAPI_KEY")
-        if not rapidapi_key:
-            print("⚠️ Warning: No RapidAPI key found, skipping")
-            return jobs
-        
-        url = "https://jobs-search-realtime-data-api.p.rapidapi.com/jobs/search"
-        
-        # Search for Claude-specific terms
-        search_queries = [
-            "Claude Code",
-            "Anthropic Claude", 
-            "Claude AI developer",
-            "Claude assistant engineer"
-        ]
-        
-        headers = {
-            "x-rapidapi-key": rapidapi_key,
-            "x-rapidapi-host": "jobs-search-realtime-data-api.p.rapidapi.com"
-        }
-        
-        for query in search_queries:
-            querystring = {
-                "query": query,
-                "location": "Remote",
-                "num_results": "20"
-            }
-            
-            response = requests.get(url, headers=headers, params=querystring)
-            
-            if response.status_code == 200:
-                data = response.json()
-                job_results = data.get('jobs', [])
-                
-                for job_data in job_results:
-                    # Extract job information
-                    job = {
-                        'company': job_data.get('company_name', 'Unknown'),
-                        'company_icon': job_data.get('company_logo', get_company_icon(job_data.get('company_name', ''))),
-                        'location': job_data.get('location', 'Remote'),
-                        'description': truncate_description(job_data.get('description', job_data.get('title', ''))),
-                        'job_link': job_data.get('url', ''),
-                        'source': 'RapidAPI Jobs',
-                        'date_posted': job_data.get('date_posted', ''),
-                        'salary': extract_salary_from_text(job_data.get('description', ''))
-                    }
-                    
-                    # Validate it actually mentions Claude
-                    full_text = f"{job_data.get('title', '')} {job_data.get('description', '')}"
-                    if is_claude_code_related(full_text):
-                        jobs.append(job)
-            
-            time.sleep(1)  # Rate limiting
-        
-        print(f"✅ Found {len(jobs)} jobs from RapidAPI")
-        
+        with urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
     except Exception as e:
-        print(f"⚠️ Error with RapidAPI: {e}")
-    
-    return jobs
-
-def scrape_with_serper_jobs():
-    """
-    Use Google Serper API to find Claude positions
-    """
-    jobs = []
-    try:
-        print("🔍 Searching with Google Serper API for Claude positions...")
-        
-        serper_key = os.getenv("SERPER_API_KEY")
-        if not serper_key:
-            print("⚠️ Warning: No Serper API key found, skipping")
-            return jobs
-        
-        print(f"  🔑 Using Serper key: {serper_key[:8]}...{serper_key[-4:]}")
-        
-        import http.client
-        
-        search_queries = [
-            "Claude Code developer jobs",
-            "Anthropic Claude engineer hiring", 
-            "Claude AI programming job",
-            "Claude assistant developer position",
-            "Anthropic engineer jobs",
-            "Claude developer careers"
-        ]
-        
-        conn = http.client.HTTPSConnection("google.serper.dev")
-        
-        for query in search_queries:
-            print(f"  🔍 Searching: '{query}'")
-            
-            payload = json.dumps({
-                "q": f"{query} site:linkedin.com OR site:indeed.com OR site:glassdoor.com OR site:jobs.anthropic.com",
-                "type": "search",
-                "num": 20
-            })
-            
-            headers = {
-                'X-API-KEY': serper_key,
-                'Content-Type': 'application/json'
-            }
-            
-            conn.request("POST", "/search", payload, headers)
-            res = conn.getresponse()
-            data_raw = res.read()
-            
-            if res.status == 200:
-                try:
-                    data = json.loads(data_raw.decode("utf-8"))
-                    search_results = data.get('organic', [])
-                    print(f"    Found {len(search_results)} search results")
-                    
-                    for result in search_results:
-                        title = result.get('title', '')
-                        snippet = result.get('snippet', '')
-                        link = result.get('link', '')
-                        
-                        # Check if this looks like a job posting
-                        full_text = f"{title} {snippet}"
-                        if is_claude_code_related(full_text) and is_job_posting(full_text):
-                            
-                            # Extract better job information
-                            job_info = extract_job_info_from_serper(title, snippet, link)
-                            
-                            if job_info:  # Only add if we could extract meaningful info
-                                jobs.append(job_info)
-                            
-                except json.JSONDecodeError as e:
-                    print(f"    ❌ JSON decode error: {e}")
-            else:
-                print(f"    ❌ Error {res.status}: {data_raw.decode('utf-8')[:200]}...")
-            
-            time.sleep(1)  # Rate limiting
-        
-        conn.close()
-        print(f"✅ Found {len(jobs)} jobs from Google Serper")
-        
-    except Exception as e:
-        print(f"⚠️ Error with Google Serper API: {e}")
-    
-    return jobs
-
-def is_job_posting(text):
-    """Check if text looks like a job posting"""
-    job_indicators = [
-        'hiring', 'job', 'position', 'career', 'apply', 'join',
-        'engineer', 'developer', 'programmer', 'architect',
-        'we are looking', 'seeking', 'opportunity', 'role'
-    ]
-    text_lower = text.lower()
-    return any(indicator in text_lower for indicator in job_indicators)
-
-def extract_job_info_from_serper(title, snippet, link):
-    """Extract clean job information from Serper search result"""
-    
-    # Skip generic search results
-    if any(skip in title.lower() for skip in ['jobs, employment', 'jobs available', 'browse', 'discover']):
+        print(f"  [warn] fetch_json failed for {url[:80]}: {e}")
         return None
-    
-    # Extract company name
-    company = extract_company_name_improved(title, snippet, link)
-    
-    # Extract job title
-    job_title = extract_job_title(title, snippet)
-    
-    # Extract location
-    location = extract_location_improved(title, snippet)
-    
-    # Only return if we have meaningful data
-    if not job_title or len(job_title) < 5:
+
+
+def fetch_text(url, timeout=15):
+    """Fetch raw text/XML from a URL."""
+    req = Request(url, headers={"User-Agent": "claude-code-templates/1.0"})
+    try:
+        with urlopen(req, timeout=timeout) as resp:
+            return resp.read().decode("utf-8")
+    except Exception as e:
+        print(f"  [warn] fetch_text failed for {url[:80]}: {e}")
         return None
-    
-    return {
-        'company': company,
-        'company_icon': get_company_icon(company),
-        'job_title': job_title,
-        'location': location,
-        'description': truncate_description(snippet),
-        'job_link': link,
-        'source': 'Google Serper',
-        'date_posted': '',
-        'salary': extract_salary_from_text(snippet)
+
+
+def strip_html(html_text):
+    """Remove HTML tags, decode entities, and fix mojibake."""
+    if not html_text:
+        return ""
+    text = re.sub(r"<[^>]+>", " ", html_text)
+    text = unescape(text)
+    # Fix common UTF-8 mojibake (double-decoded characters)
+    mojibake_map = {
+        "\u00e2\u0080\u0099": "\u2019",  # right single quote '
+        "\u00e2\u0080\u009c": "\u201c",  # left double quote "
+        "\u00e2\u0080\u009d": "\u201d",  # right double quote "
+        "\u00e2\u0080\u0094": "\u2014",  # em dash —
+        "\u00e2\u0080\u0093": "\u2013",  # en dash –
+        "\u00e2\u0080\u00a6": "\u2026",  # ellipsis …
+        "\u00c2\u00a0": " ",             # non-breaking space
     }
+    for bad, good in mojibake_map.items():
+        text = text.replace(bad, good)
+    # Catch remaining mojibake patterns: â€™ â€" â€" etc.
+    text = re.sub(r"\u00e2\u0080.", lambda m: "'", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
-def extract_company_name_improved(title, snippet, link):
-    """Improved company name extraction"""
-    
-    # Priority: Check for Anthropic first (most common)
-    if 'anthropic' in (title + snippet + link).lower():
-        return 'Anthropic'
-    
-    # LinkedIn specific extraction
-    if 'linkedin.com/jobs/view/' in link:
-        # Extract from URL - LinkedIn URLs often contain company info
-        # Format: linkedin.com/jobs/view/job-title-at-company-name-jobid
-        url_parts = link.split('-at-')
-        if len(url_parts) > 1:
-            company_part = url_parts[1].split('-')[0]  # Get first part after -at-
-            if company_part and len(company_part) > 2:
-                return company_part.replace('-', ' ').title()
-        
-        # Extract from title patterns like "Job Title at Company Name"
-        at_match = re.search(r'\s+at\s+([^-\d]+)', title)
-        if at_match:
-            company = at_match.group(1).strip()
-            # Clean up common LinkedIn patterns
-            company = re.sub(r'\s*\d+$', '', company)  # Remove trailing numbers
-            company = re.sub(r'\s+\d+$', '', company)  # Remove numbers at end
-            if len(company) > 2 and company.lower() not in ['view', 'join', 'apply']:
-                return company
-    
-    # Extract from title patterns
-    hiring_patterns = [
-        r'([A-Z][a-zA-Z\s&.]+)\s+hiring\s+',
-        r'^([A-Z][a-zA-Z\s&.]+):\s+',
-        r'Join\s+([A-Z][a-zA-Z\s&.]+)',
-        r'([A-Z][a-zA-Z\s&.]+)\s+is\s+looking',
-        r'([A-Z][a-zA-Z\s&.]+)\s+seeks?',
-    ]
-    
-    for pattern in hiring_patterns:
-        match = re.search(pattern, title)
-        if match:
-            company = match.group(1).strip()
-            if len(company) > 2 and company not in ['View', 'Join', 'Apply', 'Software', 'Senior']:
-                return company
-    
-    # Extract from snippet
-    snippet_patterns = [
-        r'Jobs at ([A-Z][a-zA-Z\s&.]+)',
-        r'([A-Z][a-zA-Z\s&.]+) is hiring',
-        r'Work at ([A-Z][a-zA-Z\s&.]+)',
-        r'Join ([A-Z][a-zA-Z\s&.]+)',
-    ]
-    
-    for pattern in snippet_patterns:
-        match = re.search(pattern, snippet)
-        if match:
-            company = match.group(1).strip()
-            if len(company) > 2:
-                return company
-    
-    # Check if it's a well-known company based on domain or context
-    known_companies = {
-        'google': 'Google',
-        'microsoft': 'Microsoft', 
-        'meta': 'Meta',
-        'apple': 'Apple',
-        'amazon': 'Amazon',
-        'openai': 'OpenAI',
-        'github': 'GitHub',
-        'stripe': 'Stripe',
-        'shopify': 'Shopify'
-    }
-    
-    text_lower = (title + snippet + link).lower()
-    for keyword, company_name in known_companies.items():
-        if keyword in text_lower:
-            return company_name
-    
-    return 'Unknown Company'
 
-def extract_job_title(title, snippet):
-    """Extract job title from search result"""
-    
-    # LinkedIn format: "Job Title at Company"
-    at_match = re.search(r'^(.+?)\s+at\s+', title)
-    if at_match:
-        return at_match.group(1).strip()
-    
-    # Anthropic hiring format: "Anthropic hiring Job Title in Location"
-    hiring_match = re.search(r'hiring\s+(.+?)\s+in\s+', title)
-    if hiring_match:
-        return hiring_match.group(1).strip()
-    
-    # Company: Job Title format
-    colon_match = re.search(r':\s+(.+?)\s+-', title)
-    if colon_match:
-        return colon_match.group(1).strip()
-    
-    # Extract from title before dash
-    dash_match = re.search(r'^(.+?)\s+-\s+', title)
-    if dash_match:
-        job_title = dash_match.group(1).strip()
-        # Clean up common patterns
-        job_title = re.sub(r'^(View|Apply to|Join)\s+', '', job_title)
-        if len(job_title) > 5:
-            return job_title
-    
-    # Fallback: use full title if it looks like a job title
-    if any(keyword in title.lower() for keyword in ['engineer', 'developer', 'manager', 'analyst', 'scientist', 'architect']):
-        return title.strip()
-    
-    return None
-
-def extract_location_improved(title, snippet):
-    """Improved location extraction"""
-    text = f"{title} {snippet}"
-    
-    # Remote indicators
-    if any(keyword in text.lower() for keyword in ['remote', 'anywhere', 'distributed', 'work from home']):
-        return 'Remote'
-    
-    # City, State patterns
-    city_state_patterns = [
-        r'in\s+([A-Z][a-z]+,\s*[A-Z]{2})',  # "in Seattle, WA"
-        r'([A-Z][a-z]+,\s*[A-Z]{2})\s+',    # "Seattle, WA "
-        r'([San Francisco|New York|Los Angeles|Chicago|Boston|Austin|Denver],\s*[A-Z]{2})',
-    ]
-    
-    for pattern in city_state_patterns:
-        match = re.search(pattern, text)
-        if match:
-            return match.group(1)
-    
-    # Major cities without state
-    major_cities = ['Seattle', 'Francisco', 'Chicago', 'Boston', 'Austin', 'Denver', 'Portland', 'Miami']
-    for city in major_cities:
-        if city in text:
-            return f"{city}"
-    
-    return 'On-site'
-
-def extract_salary_from_text(text):
-    """Extract salary information from job description text"""
-    if not text:
-        return 0
-    
-    # Look for common salary patterns
-    salary_patterns = [
-        r'\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(?:k|thousand)',
-        r'\$(\d{1,3}(?:,\d{3})*)',
-        r'(\d{1,3})k',
-    ]
-    
-    for pattern in salary_patterns:
-        matches = re.findall(pattern, text.lower())
-        if matches:
-            try:
-                salary = int(matches[0].replace(',', '').replace('.', ''))
-                if 'k' in text.lower() or 'thousand' in text.lower():
-                    salary *= 1000
-                return salary
-            except:
-                continue
-    
-    return 0
-
-def extract_salary_from_google_job(job_data):
-    """Extract salary from Google Jobs specific structure"""
-    salary_info = job_data.get('detected_extensions', {})
-    
-    # Look for salary in extensions
-    if 'salary' in salary_info:
-        salary_text = salary_info['salary']
-        return extract_salary_from_text(salary_text)
-    
-    return 0
-
-def scrape_github_jobs():
-    """
-    Scrape GitHub Jobs for Claude Code positions
-    """
-    jobs = []
-    try:
-        # GitHub Jobs API is deprecated, but we can search GitHub Issues/Discussions
-        # or use GitHub's search API for job repositories
-        print("🔍 Searching GitHub for Claude Code job postings...")
-        
-        # Search in common job posting repositories
-        job_repos = [
-            "remoteintech/remote-jobs",
-            "lukasz-madon/awesome-remote-job", 
-            "yanirs/established-remote"
-        ]
-        
-        headers = {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'claude-code-templates-job-scraper'
-        }
-        
-        github_token = os.getenv("GITHUB_TOKEN")
-        if github_token:
-            headers['Authorization'] = f'token {github_token}'
-        
-        # Search ONLY for Claude-specific job postings
-        search_url = "https://api.github.com/search/issues"
-        search_params = {
-            'q': '("claude code" OR "anthropic claude" OR "claude ai" OR "claude") AND (hiring OR job OR position OR engineer OR developer) NOT pull NOT merge NOT bug NOT feature',
-            'sort': 'updated',
-            'order': 'desc',
-            'per_page': 50
-        }
-        
-        response = requests.get(search_url, headers=headers, params=search_params)
-        if response.status_code == 200:
-            results = response.json()
-            for item in results.get('items', []):
-                job = extract_job_from_github_issue(item)
-                if job:
-                    jobs.append(job)
-        
-        print(f"✅ Found {len(jobs)} potential jobs from GitHub")
-        
-    except Exception as e:
-        print(f"⚠️ Error scraping GitHub jobs: {e}")
-    
-    return jobs
-
-def scrape_ycombinator_jobs():
-    """
-    Scrape YCombinator Who's Hiring threads for Claude Code mentions
-    """
-    jobs = []
-    try:
-        print("🔍 Searching YC Who's Hiring for Claude Code positions...")
-        
-        # Search HackerNews API for recent "Who is hiring" threads
-        hn_search_url = "https://hn.algolia.com/api/v1/search"
-        search_params = {
-            'query': 'who is hiring',
-            'tags': 'story',
-            'hitsPerPage': 5,
-            'numericFilters': f'created_at_i>{int(time.time()) - 86400*60}'  # Last 60 days
-        }
-        
-        response = requests.get(hn_search_url, params=search_params)
-        if response.status_code == 200:
-            threads = response.json().get('hits', [])
-            
-            for thread in threads:
-                story_id = thread.get('objectID')
-                if story_id:
-                    # Get comments from this hiring thread
-                    comments_url = f"https://hn.algolia.com/api/v1/search"
-                    comment_params = {
-                        'query': 'claude code OR anthropic claude OR claude ai OR claude',
-                        'tags': f'comment,story_{story_id}',
-                        'hitsPerPage': 50
-                    }
-                    
-                    comment_response = requests.get(comments_url, params=comment_params)
-                    if comment_response.status_code == 200:
-                        comments = comment_response.json().get('hits', [])
-                        
-                        for comment in comments:
-                            job = extract_job_from_hn_comment(comment, thread.get('title', ''))
-                            if job:
-                                jobs.append(job)
-                    
-                    time.sleep(0.5)  # Rate limiting
-        
-        print(f"✅ Found {len(jobs)} jobs from YC Who's Hiring")
-        
-    except Exception as e:
-        print(f"⚠️ Error scraping YC jobs: {e}")
-    
-    return jobs
-
-def extract_job_from_hn_comment(comment, thread_title):
-    """
-    Extract job information from HackerNews comment
-    """
-    text = comment.get('comment_text', '') or ''
-    
-    if not is_claude_code_related(text):
-        return None
-    
-    # Extract basic info from comment
-    company = extract_company_from_hn_comment(text)
-    location = extract_location_from_hn_comment(text)
-    
-    return {
-        'company': company,
-        'company_icon': get_company_icon(company),
-        'location': location,
-        'description': truncate_description(text.replace('<p>', ' ').replace('</p>', ' ')),
-        'job_link': f"https://news.ycombinator.com/item?id={comment.get('objectID', '')}",
-        'source': 'YCombinator',
-        'date_posted': comment.get('created_at', ''),
-        'salary': 0
-    }
-
-def extract_company_from_hn_comment(text):
-    """Extract company name from HN comment"""
-    patterns = [
-        r'([A-Z][a-zA-Z]+)\s+is\s+hiring',
-        r'We\s+are\s+([A-Z][a-zA-Z]+)',
-        r'Join\s+([A-Z][a-zA-Z]+)',
-        r'([A-Z][a-zA-Z]+)\s+\-\s+',
-        r'Company:\s+([A-Z][a-zA-Z]+)',
-    ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, text)
-        if match:
-            return match.group(1)
-    
-    return 'Startup'
-
-def extract_location_from_hn_comment(text):
-    """Extract location from HN comment"""
-    if any(keyword in text.lower() for keyword in ['remote', 'anywhere', 'distributed']):
-        return 'Remote'
-    
-    # Look for city patterns
-    location_patterns = [
-        r'Location:\s*([^.\n]+)',
-        r'Based in ([^,\n]+)',
-        r'([A-Z][a-z]+,\s*[A-Z]{2,3})',  # City, State/Country
-    ]
-    
-    for pattern in location_patterns:
-        match = re.search(pattern, text)
-        if match:
-            return match.group(1).strip()
-    
-    return 'On-site'
-
-def scrape_remote_ok():
-    """
-    Scrape Remote OK for Claude Code positions
-    """
-    jobs = []
-    try:
-        print("🔍 Searching Remote OK for Claude Code positions...")
-        
-        # Remote OK has an API but might be rate limited
-        url = "https://remoteok.io/api"
-        headers = {
-            'User-Agent': 'claude-code-templates-job-scraper'
-        }
-        
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            for job_data in data[1:]:  # First item is metadata
-                description = job_data.get('description', '')
-                tags = job_data.get('tags', [])
-                tags_str = ' '.join(tags) if isinstance(tags, list) else str(tags)
-                
-                if is_claude_code_related(description + ' ' + tags_str):
-                    job = {
-                        'company': job_data.get('company', 'Unknown'),
-                        'company_icon': job_data.get('company_logo', ''),
-                        'location': 'Remote' if job_data.get('location') == 'Worldwide' else job_data.get('location', 'Remote'),
-                        'description': truncate_description(job_data.get('description', '')),
-                        'job_link': f"https://remoteok.io/remote-jobs/{job_data.get('id', '')}",
-                        'source': 'RemoteOK',
-                        'date_posted': job_data.get('date', ''),
-                        'salary': job_data.get('salary_min', 0)
-                    }
-                    jobs.append(job)
-        
-        print(f"✅ Found {len(jobs)} jobs from Remote OK")
-        
-    except Exception as e:
-        print(f"⚠️ Error scraping Remote OK: {e}")
-    
-    return jobs
-
-def scrape_weworkremotely():
-    """
-    Scrape We Work Remotely for Claude Code positions
-    """
-    jobs = []
-    try:
-        print("🔍 Searching We Work Remotely for Claude Code positions...")
-        
-        # We Work Remotely RSS feed approach
-        import xml.etree.ElementTree as ET
-        
-        rss_url = "https://weworkremotely.com/categories/remote-programming-jobs.rss"
-        headers = {
-            'User-Agent': 'claude-code-templates-job-scraper'
-        }
-        
-        response = requests.get(rss_url, headers=headers)
-        if response.status_code == 200:
-            root = ET.fromstring(response.content)
-            
-            for item in root.findall('.//item'):
-                title = item.find('title').text if item.find('title') is not None else ''
-                description = item.find('description').text if item.find('description') is not None else ''
-                link = item.find('link').text if item.find('link') is not None else ''
-                pub_date = item.find('pubDate').text if item.find('pubDate') is not None else ''
-                
-                full_text = title + ' ' + description
-                
-                if is_claude_code_related(full_text):
-                    # Extract company from title (usually format: "Company: Job Title")
-                    company_match = re.match(r'^([^:]+):', title)
-                    company = company_match.group(1).strip() if company_match else 'Remote Company'
-                    
-                    job = {
-                        'company': company,
-                        'company_icon': get_company_icon(company),
-                        'location': 'Remote',  # WWR is all remote
-                        'description': truncate_description(title),
-                        'job_link': link,
-                        'source': 'WeWorkRemotely',
-                        'date_posted': pub_date,
-                        'salary': 0
-                    }
-                    jobs.append(job)
-        
-        print(f"✅ Found {len(jobs)} jobs from We Work Remotely")
-        
-    except Exception as e:
-        print(f"⚠️ Error scraping WWR: {e}")
-    
-    return jobs
-
-def scrape_indie_hackers():
-    """
-    Scrape Indie Hackers for Claude Code positions
-    """
-    jobs = []
-    try:
-        print("🔍 Searching Indie Hackers for Claude Code positions...")
-        
-        # Use general web search for Indie Hackers job posts mentioning Claude Code
-        search_terms = [
-            'site:indiehackers.com "claude code" hiring',
-            'site:indiehackers.com "anthropic claude" job',
-            'site:indiehackers.com "claude ai" developer'
-        ]
-        
-        # This would require a web search API like Google Custom Search
-        # For now, placeholder but structure is ready
-        
-        print(f"✅ Indie Hackers scraping structure ready")
-        
-    except Exception as e:
-        print(f"⚠️ Error scraping Indie Hackers: {e}")
-    
-    return jobs
-
-def extract_job_from_github_issue(item):
-    """
-    Extract job information from a GitHub issue/discussion
-    """
-    title = item.get('title', '') or ''
-    body = item.get('body', '') or ''
-    
-    # Check if it's actually a job posting mentioning Claude Code
-    if not is_claude_code_related(title + ' ' + body):
-        return None
-    
-    # Extract company name from repository or issue title
-    repo_name = item.get('repository_url', '').split('/')[-1] if item.get('repository_url') else 'Unknown'
-    
-    return {
-        'company': extract_company_name(title, body, repo_name),
-        'company_icon': get_company_icon(extract_company_name(title, body, repo_name)),
-        'location': extract_location(title, body),
-        'description': truncate_description(title),
-        'job_link': item.get('html_url', ''),
-        'source': 'GitHub',
-        'date_posted': item.get('updated_at', ''),
-        'salary': 0
-    }
-
-def is_claude_code_related(text):
-    """
-    Check if text specifically mentions Claude (very strict filtering)
-    """
+def is_claude_related(text):
+    """Check if text mentions Claude Code or related tools."""
     if not text:
         return False
-        
-    text_lower = str(text).lower()
-    
-    # ONLY Claude-specific keywords - must contain "claude"
-    claude_keywords = [
-        'claude code', 'claude-code', 'anthropic claude', 'claude ai', 
-        'claude coder', 'claude assistant', 'claude developer', 'claude engineer',
-        'work with claude', 'using claude', 'claude experience', 'claude integration'
+    t = text.lower()
+    keywords = [
+        "claude code", "claude-code", "anthropic claude", "claude ai",
+        "claude coder", "using claude", "claude experience",
     ]
-    
-    # Must explicitly mention Claude in some form
-    has_claude_mention = any(keyword in text_lower for keyword in claude_keywords)
-    
-    # Additional check: just "claude" + job context
-    has_claude_word = 'claude' in text_lower
-    job_words = ['hiring', 'position', 'engineer', 'developer', 'role', 'job', 'career', 'experience', 'skills']
-    has_job_context = any(word in text_lower for word in job_words)
-    
-    # Return True only if Claude is mentioned AND it's in a job context
-    return has_claude_mention or (has_claude_word and has_job_context)
+    if any(kw in t for kw in keywords):
+        return True
+    # "claude" alone needs job context to avoid false positives
+    if "claude" in t:
+        job_words = ["hiring", "position", "engineer", "developer", "role",
+                     "stack", "workflow", "tool", "cursor"]
+        return any(w in t for w in job_words)
+    return False
 
-def extract_company_name(title, body, fallback):
+
+def truncate(text, length=200):
+    """Truncate text at word boundary."""
+    if not text or len(text) <= length:
+        return text or ""
+    return text[:length].rsplit(" ", 1)[0] + "..."
+
+
+def extract_salary(text):
+    """Extract salary string from text.
+
+    Only matches compensation-like amounts (≥$10k or with k/K suffix).
+    Skips funding/revenue figures like '$37M raised' or '$300M+ revenue'.
     """
-    Extract company name from job posting
-    """
-    # Common patterns in job titles
+    if not text:
+        return ""
+    # First, remove sentences about funding/revenue to avoid false positives
+    cleaned = re.sub(r"\$[\d,.]+\s*[MBmb](?:illion)?[^.]*(?:\.|$)", "", text)
+    cleaned = re.sub(r"(?:raised|revenue|funding|valuation|ARR)[^.]*\$[\d,.]+[^.]*(?:\.|$)", "", cleaned, flags=re.IGNORECASE)
     patterns = [
-        r'(\w+)\s+is\s+hiring',
-        r'(\w+)\s+hiring',
-        r'join\s+(\w+)',
-        r'(\w+)\s+looking\s+for',
-        r'(\w+)\s+seeks?',
+        r"\$[\d,]+[kK]\s*[-\u2013]\s*\$?[\d,]+[kK]",     # $120k-$150k, $120k-150k
+        r"\$[\d,]+[kK](?:\+|\s*\/\s*(?:yr|year))?",       # $150k+, $150k/yr
+        r"\$[\d,]{3,}\s*[-\u2013]\s*\$?[\d,]{3,}",        # $120,000-$150,000
+        r"\$[\d,]+[kK]?\s*\/\s*(?:yr|year)",               # $120,000/yr
+        r"[\d,]+[kK]\s*[-\u2013]\s*[\d,]+[kK]",           # 120k-150k
+        r"\u20ac[\d,]+[kK]?\s*[-\u2013]\s*\u20ac?[\d,]+[kK]?",  # EUR
     ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, title + ' ' + body, re.IGNORECASE)
-        if match:
-            return match.group(1).title()
-    
-    return fallback.title()
+    for pat in patterns:
+        m = re.search(pat, cleaned)
+        if m:
+            val = m.group(0)
+            # Validate: must represent a realistic salary
+            nums = re.findall(r"[\d,]+", val)
+            has_k = "k" in val.lower()
+            if nums:
+                first_num = int(nums[0].replace(",", ""))
+                # With 'k' suffix: must be >= 30 (i.e. $30k+)
+                if has_k and first_num < 30:
+                    continue
+                # Without 'k': must be >= 30,000 (raw dollar amounts)
+                # Values like $100-140 or $150-300 are ambiguous/truncated
+                if not has_k and first_num < 1000:
+                    continue
+            return val
+    return ""
 
-def extract_location(title, body):
-    """
-    Extract location from job posting
-    """
-    remote_keywords = ['remote', 'anywhere', 'distributed', 'work from home']
-    location_patterns = [
-        r'location[:\s]+([^,\n]+)',
-        r'based in ([^,\n]+)',
-        r'(\w+,\s*\w+)',  # City, State/Country
-    ]
-    
-    text = (title + ' ' + body).lower()
-    
-    # Check for remote first
-    if any(keyword in text for keyword in remote_keywords):
-        return 'Remote'
-    
-    # Look for specific locations
-    for pattern in location_patterns:
-        match = re.search(pattern, text, re.IGNORECASE)
-        if match:
-            return match.group(1).strip().title()
-    
-    return 'On-site'
 
-def get_company_icon(company_name):
-    """
-    Get company icon URL with comprehensive company icon dictionary
-    """
-    # Comprehensive company icons dictionary
-    company_icons = {
-        # AI/Tech Companies
-        'anthropic': 'https://www.anthropic.com/favicon.ico',
-        'openai': 'https://openai.com/favicon.ico',
-        'claude code': 'https://www.anthropic.com/favicon.ico',
-        
-        # Major Tech Companies
-        'google': 'https://www.google.com/favicon.ico',
-        'microsoft': 'https://www.microsoft.com/favicon.ico',
-        'meta': 'https://www.facebook.com/favicon.ico',
-        'apple': 'https://www.apple.com/favicon.ico',
-        'amazon': 'https://www.amazon.com/favicon.ico',
-        'netflix': 'https://www.netflix.com/favicon.ico',
-        'tesla': 'https://www.tesla.com/favicon.ico',
-        'nvidia': 'https://www.nvidia.com/favicon.ico',
-        
-        # Startups/Scale-ups
-        'stripe': 'https://stripe.com/favicon.ico',
-        'airbnb': 'https://airbnb.com/favicon.ico',
-        'uber': 'https://uber.com/favicon.ico',
-        'shopify': 'https://shopify.com/favicon.ico',
-        'twilio': 'https://twilio.com/favicon.ico',
-        'github': 'https://github.com/favicon.ico',
-        'gitlab': 'https://gitlab.com/favicon.ico',
-        'atlassian': 'https://atlassian.com/favicon.ico',
-        'slack': 'https://slack.com/favicon.ico',
-        'discord': 'https://discord.com/favicon.ico',
-        'notion': 'https://notion.so/favicon.ico',
-        'figma': 'https://figma.com/favicon.ico',
-        'vercel': 'https://vercel.com/favicon.ico',
-        'supabase': 'https://supabase.com/favicon.ico',
-        
-        # Consulting/Services
-        'accenture': 'https://accenture.com/favicon.ico',
-        'deloitte': 'https://deloitte.com/favicon.ico',
-        'mckinsey': 'https://mckinsey.com/favicon.ico',
-        
-        # Finance/Fintech
-        'goldman sachs': 'https://goldmansachs.com/favicon.ico',
-        'jpmorgan': 'https://jpmorgan.com/favicon.ico',
-        'coinbase': 'https://coinbase.com/favicon.ico',
-        'robinhood': 'https://robinhood.com/favicon.ico',
-        
-        # Generic/Fallback companies
-        'unknown company': 'https://www.aitmpl.com/static/img/logo.png',
-        'company': 'https://www.aitmpl.com/static/img/logo.png',
+def extract_urls(text):
+    """Extract URLs from text."""
+    return re.findall(r"https?://[^\s<>\"']+", text or "")
+
+
+def company_icon(name):
+    """Best-effort favicon URL for a company."""
+    known = {
+        "anthropic": "https://www.anthropic.com/favicon.ico",
+        "google": "https://www.google.com/favicon.ico",
+        "microsoft": "https://www.microsoft.com/favicon.ico",
+        "meta": "https://www.facebook.com/favicon.ico",
+        "stripe": "https://stripe.com/favicon.ico",
+        "github": "https://github.com/favicon.ico",
+        "vercel": "https://vercel.com/favicon.ico",
+        "supabase": "https://supabase.com/favicon.ico",
+        "openai": "https://openai.com/favicon.ico",
+        "shopify": "https://shopify.com/favicon.ico",
+        "notion": "https://notion.so/favicon.ico",
+        "figma": "https://figma.com/favicon.ico",
     }
-    
-    company_lower = company_name.lower().strip()
-    
-    # Direct match first
-    if company_lower in company_icons:
-        return company_icons[company_lower]
-    
-    # Partial match for company names containing key terms
-    for key, icon in company_icons.items():
-        if key in company_lower or company_lower in key:
+    lower = name.lower().strip()
+    for key, icon in known.items():
+        if key in lower:
             return icon
-    
-    # Default fallback to our custom icon
-    return 'https://www.aitmpl.com/static/img/logo.png'
+    return ""
 
-def truncate_description(description, max_length=100):
+
+# ---------------------------------------------------------------------------
+# HN Comment Parser
+# ---------------------------------------------------------------------------
+
+def parse_hn_comment(comment_data):
+    """Parse a HN 'Who is Hiring' comment into a structured job dict.
+
+    HN hiring comments typically follow:
+      CompanyName | Location | Remote | Salary | URL
+      Description paragraph(s)...
     """
-    Truncate description to specified length
-    """
+    text = comment_data.get("text", "")
+    if not text:
+        return None
+
+    clean = strip_html(text)
+    if not is_claude_related(clean):
+        return None
+
+    comment_id = comment_data.get("id", "")
+    posted_ts = comment_data.get("time", 0)
+    posted_at = datetime.fromtimestamp(posted_ts, tz=timezone.utc).isoformat() if posted_ts else ""
+
+    # --- Parse first line (pipe-delimited header) ---
+    # Split on <p> to get paragraphs
+    paragraphs = re.split(r"<p>", text)
+    header_html = paragraphs[0] if paragraphs else ""
+    header = strip_html(header_html)
+
+    # Try pipe-delimited: "Company | Location | Remote | ..."
+    parts = [p.strip() for p in header.split("|")]
+
+    company = parts[0] if parts else "Unknown"
+    # Clean company name (remove trailing URLs, etc.)
+    company = re.sub(r"https?://\S+", "", company).strip()
+    company = re.sub(r"\s*[-\u2013(].*", "", company).strip() if len(company) > 60 else company
+
+    # Location
+    location = ""
+    remote = False
+    # Words that indicate a part is a role title, not a location
+    role_words = {"engineer", "developer", "lead", "manager", "architect",
+                  "designer", "scientist", "analyst", "operations", "head",
+                  "director", "founder", "cto", "ceo", "vp ", "senior",
+                  "staff", "principal", "junior", "intern", "product",
+                  "technical", "native"}
+    for part in parts[1:]:
+        lower = part.lower().strip()
+        # Skip parts that look like role titles
+        if any(w in lower for w in role_words):
+            continue
+        if any(w in lower for w in ["remote", "anywhere", "distributed"]):
+            remote = True
+            if "only" in lower or "(" in lower or len(lower) > 6:
+                location = part.strip()
+        elif re.search(r"[A-Z][a-z]+", part) and not re.match(r"^\$", part.strip()):
+            if not location and any(w in lower for w in [",", "city", "francisco", "york", "london",
+                                                          "berlin", "seattle", "austin", "chicago",
+                                                          "boston", "denver", "miami", "toronto",
+                                                          "europe", "us ", "u.s.", "worldwide"]):
+                location = part.strip()
+            elif not location and len(part.strip()) < 40:
+                location = part.strip()
+
+    # Also check full text for remote indicators if not found in header
+    if not remote:
+        remote_in_body = any(w in clean.lower() for w in ["remote", "anywhere", "distributed", "work from home"])
+        if remote_in_body:
+            remote = True
+
+    if not location:
+        location = "Remote" if remote else "On-site"
+    elif remote and "remote" not in location.lower():
+        location = f"{location} (Remote)"
+
+    # Salary
+    salary = extract_salary(header)
+    if not salary:
+        salary = extract_salary(clean)
+
+    # Apply URL — first URL found in comment
+    urls = extract_urls(text)
+    apply_url = urls[0] if urls else f"https://news.ycombinator.com/item?id={comment_id}"
+
+    # Description — everything after header, truncated
+    body_parts = paragraphs[1:] if len(paragraphs) > 1 else []
+    description_html = " ".join(body_parts)
+    description = truncate(strip_html(description_html), 300)
     if not description:
-        return ''
-    
-    # Clean HTML tags and extra whitespace
-    clean_desc = re.sub(r'<[^>]+>', '', description)
-    clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()
-    
-    if len(clean_desc) <= max_length:
-        return clean_desc
-    
-    # Truncate at word boundary
-    truncated = clean_desc[:max_length].rsplit(' ', 1)[0]
-    return truncated + '...'
+        description = truncate(clean, 300)
 
-def generate_sample_jobs():
-    """
-    Generate sample jobs for demonstration purposes
-    """
-    sample_jobs = [
-        {
-            'company': 'Anthropic',
-            'company_icon': 'https://anthropic.com/favicon.ico',
-            'location': 'Remote',
-            'description': 'Senior AI Developer to enhance Claude Code capabilities and integrations...',
-            'job_link': 'https://anthropic.com/careers/claude-code-developer',
-            'source': 'Company Website',
-            'date_posted': '2025-09-10T10:00:00Z',
-            'salary': 150000
-        },
-        {
-            'company': 'OpenAI',
-            'company_icon': 'https://openai.com/favicon.ico', 
-            'location': 'San Francisco, CA',
-            'description': 'Looking for engineers experienced with Claude Code and AI development tools...',
-            'job_link': 'https://openai.com/careers/claude-integration-engineer',
-            'source': 'LinkedIn',
-            'date_posted': '2025-09-09T14:30:00Z',
-            'salary': 140000
-        },
-        {
-            'company': 'StartupTech',
-            'company_icon': 'https://logo.clearbit.com/startuptech.com',
-            'location': 'Remote',
-            'description': 'Full-stack developer with Claude Code experience for AI-powered development team...',
-            'job_link': 'https://jobs.startuptech.com/claude-developer-2025',
-            'source': 'AngelList',
-            'date_posted': '2025-09-08T09:15:00Z',
-            'salary': 90000
-        },
-        {
-            'company': 'TechCorp',
-            'company_icon': 'https://logo.clearbit.com/techcorp.com',
-            'location': 'New York, NY',
-            'description': 'Senior Software Engineer - AI Tools (Claude Code, GitHub Copilot, etc.)...',
-            'job_link': 'https://careers.techcorp.com/positions/senior-ai-tools-engineer',
-            'source': 'Indeed',
-            'date_posted': '2025-09-07T16:45:00Z',
-            'salary': 120000
-        }
-    ]
-    
-    return sample_jobs
+    # Tags — extract tech keywords
+    tags = extract_tech_tags(clean)
 
-def generate_claude_jobs_json():
-    """
-    Main function to scrape and generate Claude Code jobs JSON
-    """
-    print("🚀 Starting Claude Code jobs scraping...")
-    
-    all_jobs = []
-    
-    # Skip sample jobs - looking for real results only
-    
-    # Use professional job APIs (more reliable than scraping)
-    api_scrapers = [
-        scrape_with_rapidapi_jobs,
-        scrape_with_serper_jobs,
-    ]
-    
-    # Fallback to traditional scraping if APIs are not available
-    scraping_sources = [
-        scrape_github_jobs,
-        scrape_ycombinator_jobs,
-        scrape_weworkremotely,
-    ]
-    
-    # Try API sources first
-    for scraper in api_scrapers:
-        try:
-            jobs = scraper()
-            all_jobs.extend(jobs)
-            time.sleep(1)
-        except Exception as e:
-            print(f"⚠️ Error with API scraper {scraper.__name__}: {e}")
-    
-    # If no jobs from APIs, try traditional scraping
-    if len(all_jobs) == 0:
-        print("📡 No results from APIs, trying traditional scraping...")
-        print("💡 Tip: Add valid API keys to .env for better results")
-        scrapers = scraping_sources
-    else:
-        print(f"🎯 Got {len(all_jobs)} jobs from APIs, skipping traditional scraping")
-        scrapers = []
-    
-    for scraper in scrapers:
-        try:
-            jobs = scraper()
-            all_jobs.extend(jobs)
-            time.sleep(1)  # Rate limiting
-        except Exception as e:
-            print(f"⚠️ Error with scraper {scraper.__name__}: {e}")
-    
-    # Remove duplicates based on job_link
-    seen_links = set()
-    unique_jobs = []
-    for job in all_jobs:
-        if job['job_link'] not in seen_links:
-            seen_links.add(job['job_link'])
-            unique_jobs.append(job)
-    
-    # Sort by date_posted (most recent first)
-    unique_jobs.sort(key=lambda x: x.get('date_posted', ''), reverse=True)
-    
-    # Structure the final data
-    jobs_data = {
-        'jobs': unique_jobs,
-        'generated_at': datetime.now().isoformat(),
-        'total_count': len(unique_jobs),
-        'sources': list(set([job['source'] for job in unique_jobs]))
+    return {
+        "id": f"hn-{comment_id}",
+        "company": company[:80],
+        "position": extract_position(clean, company),
+        "location": location[:80],
+        "remote": remote or "remote" in location.lower(),
+        "salary": salary,
+        "description": description,
+        "applyUrl": apply_url,
+        "source": "HackerNews",
+        "sourceUrl": f"https://news.ycombinator.com/item?id={comment_id}",
+        "postedAt": posted_at,
+        "tags": tags,
+        "companyIcon": company_icon(company),
     }
-    
-    # Save to docs directory
-    output_path = 'docs/claude-jobs.json'
-    try:
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(jobs_data, f, indent=2, ensure_ascii=False)
-        print(f"✅ Successfully generated {output_path}")
-        
-        # Log summary
-        print("\n--- Scraping Summary ---")
-        print(f"Total unique jobs found: {len(unique_jobs)}")
-        
-        sources_count = {}
-        for job in unique_jobs:
-            source = job['source']
-            sources_count[source] = sources_count.get(source, 0) + 1
-        
-        for source, count in sources_count.items():
-            print(f"  - {source}: {count} jobs")
-        
-        remote_jobs = len([job for job in unique_jobs if 'remote' in job['location'].lower()])
-        onsite_jobs = len(unique_jobs) - remote_jobs
-        print(f"  - Remote: {remote_jobs}, On-site: {onsite_jobs}")
-        print("-----------------------")
-        
-    except IOError as e:
-        print(f"❌ Error writing to {output_path}: {e}")
 
-if __name__ == '__main__':
-    generate_claude_jobs_json()
+
+def extract_position(text, company):
+    """Try to extract a job title from the text."""
+    # Common patterns in HN posts
+    patterns = [
+        r"(?:hiring|looking for|seeking)\s+(?:a\s+)?([A-Z][A-Za-z\s/\-&]+(?:Engineer|Developer|Architect|Designer|Manager|Lead|Scientist|Analyst|Programmer))",
+        r"((?:Senior|Staff|Principal|Lead|Junior|Mid[- ]?Level|Head of)\s+[A-Za-z\s/\-&]+(?:Engineer|Developer|Architect|Designer|Manager|Scientist))",
+        r"((?:Full[- ]?Stack|Front[- ]?end|Back[- ]?end|DevOps|ML|AI|Platform|Infrastructure|Software|Product)\s+(?:Engineer|Developer|Architect|Manager))",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text)
+        if m:
+            title = m.group(1).strip()
+            # Don't return the company name as position
+            if title.lower() != company.lower() and len(title) < 80:
+                return title
+    return "Software Engineer"
+
+
+def extract_tech_tags(text):
+    """Extract technology tags from text."""
+    tech_keywords = {
+        "react": "React", "next.js": "Next.js", "nextjs": "Next.js",
+        "typescript": "TypeScript", "javascript": "JavaScript",
+        "python": "Python", "rust": "Rust", "go ": "Go", "golang": "Go",
+        "node.js": "Node.js", "nodejs": "Node.js",
+        "postgresql": "PostgreSQL", "postgres": "PostgreSQL",
+        "supabase": "Supabase", "firebase": "Firebase",
+        "aws": "AWS", "gcp": "GCP", "azure": "Azure",
+        "docker": "Docker", "kubernetes": "Kubernetes",
+        "claude code": "Claude Code", "claude-code": "Claude Code",
+        "cursor": "Cursor", "copilot": "Copilot",
+        "react native": "React Native", "swift": "Swift",
+        "kotlin": "Kotlin", "java ": "Java",
+        "ruby": "Ruby", "rails": "Rails",
+        "django": "Django", "flask": "Flask",
+        "vue": "Vue.js", "angular": "Angular", "svelte": "Svelte",
+        "tailwind": "Tailwind", "graphql": "GraphQL",
+        "redis": "Redis", "mongodb": "MongoDB", "mysql": "MySQL",
+    }
+    found = []
+    t = text.lower()
+    for keyword, label in tech_keywords.items():
+        if keyword in t and label not in found:
+            found.append(label)
+    return found[:10]  # Cap at 10 tags
+
+
+# ---------------------------------------------------------------------------
+# Source 1: HN Firebase API
+# ---------------------------------------------------------------------------
+
+def find_latest_hiring_threads():
+    """Find the latest 'Who is Hiring' thread IDs via Algolia."""
+    print("[1/5] Finding latest HN 'Who is Hiring' threads...")
+    url = (
+        "https://hn.algolia.com/api/v1/search?"
+        "query=%22who%20is%20hiring%22&tags=story&hitsPerPage=6"
+        f"&numericFilters=created_at_i>{int(time.time()) - 86400 * 100}"
+    )
+    data = fetch_json(url)
+    if not data:
+        return []
+    threads = []
+    for hit in data.get("hits", []):
+        title = (hit.get("title") or "").lower()
+        if "who is hiring" in title and "freelancer" not in title and "wants to be hired" not in title:
+            threads.append({
+                "id": int(hit["objectID"]),
+                "title": hit.get("title", ""),
+                "date": hit.get("created_at", ""),
+            })
+    print(f"  Found {len(threads)} hiring threads")
+    return threads[:3]  # Last 3 months
+
+
+def fetch_hn_thread_jobs(thread_id):
+    """Fetch all top-level comments from a HN thread and filter for Claude jobs."""
+    print(f"  Fetching thread {thread_id}...")
+    thread_data = fetch_json(f"https://hacker-news.firebaseio.com/v0/item/{thread_id}.json")
+    if not thread_data:
+        return []
+
+    kid_ids = thread_data.get("kids", [])
+    print(f"  Thread has {len(kid_ids)} top-level comments, fetching...")
+
+    jobs = []
+
+    # Batch fetch comments with thread pool
+    def fetch_comment(cid):
+        return fetch_json(f"https://hacker-news.firebaseio.com/v0/item/{cid}.json", timeout=10)
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        futures = {executor.submit(fetch_comment, cid): cid for cid in kid_ids}
+        for future in as_completed(futures):
+            comment = future.result()
+            if comment and not comment.get("deleted") and not comment.get("dead"):
+                job = parse_hn_comment(comment)
+                if job:
+                    jobs.append(job)
+
+    print(f"  Found {len(jobs)} Claude-related jobs in thread {thread_id}")
+    return jobs
+
+
+def collect_hn_firebase():
+    """Collect jobs from HN Firebase API."""
+    threads = find_latest_hiring_threads()
+    all_jobs = []
+    for thread in threads:
+        jobs = fetch_hn_thread_jobs(thread["id"])
+        # Tag jobs with the thread month
+        for job in jobs:
+            if not job.get("postedAt") and thread.get("date"):
+                job["postedAt"] = thread["date"]
+        all_jobs.extend(jobs)
+        time.sleep(0.5)
+    return all_jobs
+
+
+# ---------------------------------------------------------------------------
+# Source 2: HN Algolia API (supplementary search)
+# ---------------------------------------------------------------------------
+
+def collect_hn_algolia(existing_ids):
+    """Search HN Algolia for Claude Code mentions in hiring threads."""
+    print("[2/5] Searching HN Algolia for additional Claude Code mentions...")
+    jobs = []
+
+    search_terms = ["claude code", "claude-code"]
+    for term in search_terms:
+        url = (
+            f"https://hn.algolia.com/api/v1/search?"
+            f"query={quote_plus(term)}&tags=comment&hitsPerPage=50"
+            f"&numericFilters=created_at_i>{int(time.time()) - 86400 * 100}"
+        )
+        data = fetch_json(url)
+        if not data:
+            continue
+
+        for hit in data.get("hits", []):
+            hn_id = f"hn-{hit.get('objectID', '')}"
+            if hn_id in existing_ids:
+                continue
+
+            # Only include comments from hiring threads
+            story_title = (hit.get("story_title") or "").lower()
+            if "who is hiring" not in story_title:
+                continue
+
+            comment_text = hit.get("comment_text", "")
+            if not is_claude_related(strip_html(comment_text)):
+                continue
+
+            # Build a minimal comment structure for the parser
+            fake_comment = {
+                "id": hit.get("objectID", ""),
+                "text": comment_text,
+                "time": hit.get("created_at_i", 0),
+            }
+            job = parse_hn_comment(fake_comment)
+            if job:
+                jobs.append(job)
+                existing_ids.add(hn_id)
+
+        time.sleep(0.5)
+
+    print(f"  Found {len(jobs)} additional jobs via Algolia")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# Source 3: RemoteOK API
+# ---------------------------------------------------------------------------
+
+def collect_remoteok():
+    """Collect jobs from RemoteOK API."""
+    print("[3/5] Searching RemoteOK API...")
+    data = fetch_json("https://remoteok.com/api")
+    if not data:
+        return []
+
+    jobs = []
+    for item in data[1:]:  # First element is metadata
+        desc = item.get("description", "")
+        tags_list = item.get("tags", [])
+        tags_str = " ".join(tags_list) if isinstance(tags_list, list) else str(tags_list)
+        full_text = f"{item.get('position', '')} {desc} {tags_str} {item.get('company', '')}"
+
+        if not is_claude_related(full_text):
+            continue
+
+        slug = item.get("slug", item.get("id", ""))
+        jobs.append({
+            "id": f"rok-{slug}",
+            "company": item.get("company", "Unknown"),
+            "position": item.get("position", "Software Engineer"),
+            "location": "Remote",
+            "remote": True,
+            "salary": extract_salary(f"{item.get('salary_min', '')} {item.get('salary_max', '')}"),
+            "description": truncate(strip_html(desc), 300),
+            "applyUrl": item.get("apply_url", "") or f"https://remoteok.com/remote-jobs/{slug}",
+            "source": "RemoteOK",
+            "sourceUrl": f"https://remoteok.com/remote-jobs/{slug}",
+            "postedAt": item.get("date", ""),
+            "tags": extract_tech_tags(full_text),
+            "companyIcon": item.get("company_logo", "") or company_icon(item.get("company", "")),
+        })
+
+    print(f"  Found {len(jobs)} jobs from RemoteOK")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# Source 4: WeWorkRemotely RSS
+# ---------------------------------------------------------------------------
+
+def collect_weworkremotely():
+    """Collect jobs from WeWorkRemotely RSS feed."""
+    print("[4/5] Searching WeWorkRemotely RSS...")
+    xml_text = fetch_text("https://weworkremotely.com/categories/remote-programming-jobs.rss")
+    if not xml_text:
+        return []
+
+    jobs = []
+    try:
+        root = ET.fromstring(xml_text)
+        for item in root.findall(".//item"):
+            title = item.findtext("title", "")
+            desc = item.findtext("description", "")
+            link = item.findtext("link", "")
+            pub_date = item.findtext("pubDate", "")
+
+            full_text = f"{title} {strip_html(desc)}"
+            if not is_claude_related(full_text):
+                continue
+
+            # WWR title format: "Company: Job Title"
+            company_match = re.match(r"^([^:]+):\s*(.+)", title)
+            company = company_match.group(1).strip() if company_match else "Remote Company"
+            position = company_match.group(2).strip() if company_match else title
+
+            # Convert RFC-2822 date to ISO 8601 for consistent sorting
+            iso_date = pub_date
+            if pub_date:
+                try:
+                    from email.utils import parsedate_to_datetime
+                    dt = parsedate_to_datetime(pub_date)
+                    iso_date = dt.isoformat()
+                except Exception:
+                    pass  # Keep original if parsing fails
+
+            jobs.append({
+                "id": f"wwr-{link.rstrip('/').split('/')[-1] if link else 'unknown'}",
+                "company": company[:80],
+                "position": position[:120],
+                "location": "Remote",
+                "remote": True,
+                "salary": extract_salary(full_text),
+                "description": truncate(strip_html(desc), 300),
+                "applyUrl": link,
+                "source": "WeWorkRemotely",
+                "sourceUrl": link,
+                "postedAt": iso_date,
+                "tags": extract_tech_tags(full_text),
+                "companyIcon": company_icon(company),
+            })
+    except ET.ParseError as e:
+        print(f"  [warn] XML parse error: {e}")
+
+    print(f"  Found {len(jobs)} jobs from WeWorkRemotely")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# Source 5: Anthropic Careers (Greenhouse API)
+# ---------------------------------------------------------------------------
+
+def collect_anthropic_careers():
+    """Collect jobs from Anthropic's careers page via Greenhouse public API.
+
+    Strategy:
+    1. Fetch all jobs (no content) — lightweight list of ~500+ positions
+    2. Pre-filter by title keywords to find candidates (~50 max)
+    3. Fetch full content for candidates individually
+    4. Final filter for "Claude Code" mentions in description
+    """
+    print("[5/5] Searching Anthropic Careers (Greenhouse API)...")
+    data = fetch_json("https://boards-api.greenhouse.io/v1/boards/anthropic/jobs")
+    if not data or "jobs" not in data:
+        print("  [warn] Could not fetch Anthropic job listings")
+        return []
+
+    all_listings = data["jobs"]
+    print(f"  Total Anthropic listings: {len(all_listings)}")
+
+    # Pre-filter: titles likely to mention Claude Code
+    # Include broad engineering/product titles + anything with "claude" in title
+    title_keywords = [
+        "claude", "engineer", "developer", "architect", "platform",
+        "infrastructure", "product", "design", "research", "ml ",
+        "machine learning", "ai ", "applied", "full stack", "fullstack",
+        "front end", "frontend", "back end", "backend", "devops", "sre",
+        "security", "data", "sdk", "api", "tools", "dx", "evangelist",
+        "communications", "technical", "software",
+    ]
+    candidates = []
+    for job in all_listings:
+        title_lower = (job.get("title") or "").lower()
+        if any(kw in title_lower for kw in title_keywords):
+            candidates.append(job)
+
+    # No hard cap — title pre-filter already narrows the list sufficiently
+    print(f"  Pre-filtered to {len(candidates)} candidate roles, fetching content...")
+
+    jobs = []
+
+    def fetch_job_content(job_meta):
+        """Fetch full job details and check for Claude Code mentions."""
+        job_id = job_meta.get("id")
+        detail = fetch_json(
+            f"https://boards-api.greenhouse.io/v1/boards/anthropic/jobs/{job_id}",
+            timeout=15,
+        )
+        if not detail:
+            return None
+
+        content_html = unescape(detail.get("content", ""))  # Greenhouse double-escapes HTML
+        title = detail.get("title", "")
+        full_text = f"{title} {strip_html(content_html)}"
+
+        # Must specifically mention "Claude Code" (not just "Claude" — all Anthropic jobs mention Claude)
+        claude_code_keywords = [
+            "claude code", "claude-code", "claude coder",
+        ]
+        if not any(kw in full_text.lower() for kw in claude_code_keywords):
+            return None
+
+        # Parse location
+        location_name = ""
+        loc = detail.get("location", {})
+        if isinstance(loc, dict):
+            location_name = loc.get("name", "")
+
+        # Check remote from metadata
+        remote = False
+        for meta in detail.get("metadata", []):
+            if meta.get("name", "").lower() in ("location type", "location_type"):
+                val = (str(meta.get("value", "")) or "").lower()
+                if "remote" in val:
+                    remote = True
+        if not location_name:
+            location_name = "Remote" if remote else "San Francisco, CA"
+        elif remote and "remote" not in location_name.lower():
+            location_name = f"{location_name} (Remote)"
+
+        # Salary from content
+        salary = extract_salary(full_text)
+
+        # Department
+        departments = detail.get("departments", [])
+        dept_names = [d.get("name", "") for d in departments if d.get("name")]
+
+        # Tags
+        tags = extract_tech_tags(full_text)
+        if "Claude Code" not in tags:
+            tags.insert(0, "Claude Code")
+        if "Anthropic" not in tags:
+            tags.append("Anthropic")
+
+        # Description — clean, skip boilerplate "About Anthropic" intro, and truncate
+        clean_desc = strip_html(content_html)
+        # Skip the generic "About Anthropic" intro paragraph — find the role-specific section
+        for marker in ["The role", "The Role", "About the role", "About the Role",
+                        "What you'll do", "What You'll Do", "The position", "The Position",
+                        "We're looking", "We are looking", "This role", "In this role",
+                        "As a ", "As an ", "Join ", "You will ", "You'll "]:
+            idx = clean_desc.find(marker)
+            if idx > 0 and idx < 800:
+                clean_desc = clean_desc[idx:]
+                break
+        # Strip "About the role" prefix itself if present
+        clean_desc = re.sub(r"^About the [Rr]ole:?\s*", "", clean_desc)
+        description = truncate(clean_desc, 300)
+
+        return {
+            "id": f"anth-{job_id}",
+            "company": "Anthropic",
+            "position": title[:120],
+            "location": location_name[:80],
+            "remote": remote or "remote" in location_name.lower(),
+            "salary": salary,
+            "description": description,
+            "applyUrl": detail.get("absolute_url", f"https://www.anthropic.com/careers/jobs"),
+            "source": "Anthropic",
+            "sourceUrl": detail.get("absolute_url", f"https://www.anthropic.com/careers/jobs"),
+            "postedAt": detail.get("first_published", detail.get("updated_at", "")),
+            "tags": tags,
+            "companyIcon": "https://www.anthropic.com/favicon.ico",
+        }
+
+    # Batch fetch with thread pool
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(fetch_job_content, c): c for c in candidates}
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                jobs.append(result)
+
+    print(f"  Found {len(jobs)} Claude Code jobs at Anthropic")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def generate():
+    print("=" * 60)
+    print("Claude Code Jobs Scraper (free sources only)")
+    print("=" * 60)
+
+    all_jobs = []
+
+    # 1. HN Firebase (primary)
+    hn_jobs = collect_hn_firebase()
+    all_jobs.extend(hn_jobs)
+
+    # 2. HN Algolia (supplementary)
+    existing_ids = {j["id"] for j in all_jobs}
+    algolia_jobs = collect_hn_algolia(existing_ids)
+    all_jobs.extend(algolia_jobs)
+
+    # 3. RemoteOK
+    rok_jobs = collect_remoteok()
+    all_jobs.extend(rok_jobs)
+
+    # 4. WeWorkRemotely
+    wwr_jobs = collect_weworkremotely()
+    all_jobs.extend(wwr_jobs)
+
+    # 5. Anthropic Careers
+    anth_jobs = collect_anthropic_careers()
+    all_jobs.extend(anth_jobs)
+
+    # Deduplicate by ID
+    seen = set()
+    unique = []
+    for job in all_jobs:
+        if job["id"] not in seen:
+            seen.add(job["id"])
+            unique.append(job)
+
+    # Sort by postedAt descending
+    unique.sort(key=lambda j: j.get("postedAt", ""), reverse=True)
+
+    # Build output
+    sources = sorted(set(j["source"] for j in unique))
+    output = {
+        "lastUpdated": datetime.now(timezone.utc).isoformat(),
+        "totalJobs": len(unique),
+        "sources": sources,
+        "jobs": unique,
+    }
+
+    # Write to docs/
+    output_path = "docs/claude-jobs.json"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2, ensure_ascii=False)
+
+    # Also copy to dashboard/public/ if it exists
+    import os
+    dashboard_path = "dashboard/public/claude-jobs.json"
+    if os.path.isdir("dashboard/public"):
+        with open(dashboard_path, "w", encoding="utf-8") as f:
+            json.dump(output, f, indent=2, ensure_ascii=False)
+        print(f"\nCopied to {dashboard_path}")
+
+    # Summary
+    print("\n" + "=" * 60)
+    print(f"Total unique jobs: {len(unique)}")
+    for src in sources:
+        count = sum(1 for j in unique if j["source"] == src)
+        print(f"  {src}: {count}")
+    remote_count = sum(1 for j in unique if j.get("remote"))
+    print(f"  Remote: {remote_count} / On-site: {len(unique) - remote_count}")
+    print(f"\nSaved to {output_path}")
+    print("=" * 60)
+
+
+if __name__ == "__main__":
+    generate()

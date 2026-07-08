@@ -1,9 +1,12 @@
 {
   "mcpServers": {
     "context7": {
-      "description": "Context7 MCP pulls up-to-date, version-specific documentation and code examples straight from the source — and places them directly into your prompt.",
+      "description": "Context7 by Upstash pulls up-to-date, version-specific documentation and code examples straight from the source and injects them into your prompt. Add 'use context7' to any prompt to activate.",
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "env": {
+        "CONTEXT7_API_KEY": "<your-context7-api-key>"
+      }
     }
   }
 }

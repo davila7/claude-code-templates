@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"markitdown\": {\n      \"description\": \"Convert various file formats (PDF, Word, Excel, images, audio) to Markdown.\",\n      \"command\": \"docker\",\n      \"args\": [\n        \"run\",\n        \"--rm\",\n        \"-i\",\n        \"markitdown-mcp:latest\"\n      ]\n    }\n  }\n}"}

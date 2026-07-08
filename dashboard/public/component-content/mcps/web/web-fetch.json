@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"fetch\": {\n      \"description\": \"Web content fetching and data extraction capabilities. Access external APIs, scrape web content, and integrate external data sources.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@modelcontextprotocol/server-fetch\"]\n    }\n  }\n}"}

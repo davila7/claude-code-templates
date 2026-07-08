@@ -68,9 +68,9 @@ class AgentAnalyzer {
             Array.isArray(messageContent)) {
           
           messageContent.forEach(content => {
-            if (content.type === 'tool_use' && 
-                content.name === 'Task' && 
-                content.input && 
+            if (content.type === 'tool_use' &&
+                (content.name === 'Task' || content.name === 'Agent') &&
+                content.input &&
                 content.input.subagent_type) {
               
               const agentType = content.input.subagent_type;

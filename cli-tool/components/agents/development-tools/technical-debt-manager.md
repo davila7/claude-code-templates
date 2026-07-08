@@ -2,7 +2,6 @@
 name: technical-debt-manager
 description: Expert technical debt analyst for code health, maintainability, and strategic refactoring planning. Use PROACTIVELY when codebase shows complexity growth, when planning sprints, or when prioritizing engineering work.
 tools: Read, Grep, Bash, TodoWrite, WebFetch
-model: sonnet
 ---
 
 # Technical Debt Manager

@@ -1,7 +1,7 @@
 ---
 description: "Generate failing tests from spec and contracts — RED state must be proven before /sdd-implement"
 argument-hint: "[optional: 'unit' | 'integration' | 'e2e' | 'all' (default: all)]"
-allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(npm:*), Bash(pip:*), Bash(python:*), Bash(node:*), Bash(dotnet:*), Bash(go:*), Bash(cargo:*), Read, Write, Edit
+allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(npm:*), Bash(pip:*), Bash(python:*), Bash(node:*), Bash(dotnet:*), Bash(go:*), Bash(cargo:*), Task, Read, Write, Edit
 ---
 
 # SDD TDD
@@ -345,11 +345,14 @@ go test ./... -v 2>&1
 dotnet test 2>&1
 ```
 
-Capture output. Count:
-- Total tests: [N]
-- Tests failed: [N] ← must be equal to total
-- Tests passed: [N] ← must be 0
-- Tests skipped: [N] ← must be 0
+Capture output and record the actual run results into variables — Step 7 derives the gate marker from these EXACT values (no hardcoded state):
+- `TOTAL` — total tests: [N]
+- `FAILED` — tests failed: [N] ← must be equal to `TOTAL`
+- `PASSED` — tests passed: [N] ← must be 0
+- `SKIPPED` — tests skipped: [N] ← must be 0
+- `RED_FILES` — the list of test files proven RED (one path per line, e.g. `tests/unit/test_x.py`)
+
+Keep these values in hand; do NOT re-derive or assume them in Step 7 — the marker MUST embed the counts and file list produced by THIS run.
 
 **Red state verification:**
 
@@ -376,15 +379,46 @@ Show test output excerpt (first 50 lines of failure stack traces, to prove they'
 
 ### Step 7: Create TDD Gate Marker
 
-Mark that TDD phase was completed and RED state was proven:
+Mark that TDD phase was completed and RED state was proven. The marker content MUST be derived from Step 6's captured results — never a hardcoded `RED` literal with no data dependency on the actual run.
+
+**Precondition — do NOT write the marker unless ALL of these hold:**
+- Step 6 was actually executed (the suite ran and output was captured)
+- `PASSED == 0`
+- `SKIPPED == 0`
+- `FAILED == TOTAL`
+
+If Step 6 was not executed, or `PASSED > 0`, or `SKIPPED > 0` (or `FAILED != TOTAL`), the marker MUST NOT be written and the command STOPS:
+
+```
+⛔ STOP — RED state not proven; TDD gate marker NOT written.
+
+Step 6 must run the full suite with PASSED=0, SKIPPED=0, FAILED=TOTAL.
+Fix the tests (see Step 6 diagnostics) and re-run before /sdd-implement.
+```
+
+When the precondition holds, embed the timestamp, commit, the total/failed/passed/skipped counts from the actual run, and the list of test files proven RED:
 
 ```bash
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 COMMIT=$(git rev-parse --short HEAD)
-echo "$TIMESTAMP RED $COMMIT" > specs/$BRANCH/.tdd-gate
+# TOTAL / FAILED / PASSED / SKIPPED / RED_FILES come from Step 6's captured run
+{
+  echo "TIMESTAMP=$TIMESTAMP COMMIT=$COMMIT STATE=RED TOTAL=$TOTAL FAILED=$FAILED PASSED=$PASSED SKIPPED=$SKIPPED"
+  echo "FILES:"
+  printf '%s\n' "$RED_FILES"
+} > specs/$BRANCH/.tdd-gate
 ```
 
-This marker is required before `/sdd-implement` can proceed.
+Resulting marker format:
+
+```
+TIMESTAMP=<utc> COMMIT=<sha> STATE=RED TOTAL=<n> FAILED=<n> PASSED=0 SKIPPED=0
+FILES:
+tests/unit/test_x.py
+...
+```
+
+This marker is required before `/sdd-implement` can proceed; `/sdd-implement` parses these fields to re-verify the gate.
 
 ### Step 8: Update tasks.md
 
@@ -417,13 +451,12 @@ Output comprehensive summary:
 ```
 ✅ TDD Phase Complete — RED State Proven
 
-Test Files Generated:
-  specs/$BRANCH/
-  ├── tests/
-  │   ├── unit/          [N] files
-  │   ├── integration/   [N] files
-  │   ├── e2e/          [N] files (if applicable)
-  │   └── contract/     [N] files (if applicable)
+Test Files Generated (repo-root tests/):
+  tests/
+  ├── unit/          [N] files
+  ├── integration/   [N] files
+  ├── e2e/           [N] files (if applicable)
+  └── contract/      [N] files (if applicable)
 
 Test Coverage by Category:
   Unit tests:           [N]

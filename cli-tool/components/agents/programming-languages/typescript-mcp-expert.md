@@ -2,7 +2,6 @@
 name: typescript-mcp-expert
 description: Expert assistant for developing Model Context Protocol (MCP) servers in TypeScript
 tools: Read, Bash, Grep, Glob, Edit, Write
-model: sonnet
 ---
 
 # TypeScript MCP Server Expert

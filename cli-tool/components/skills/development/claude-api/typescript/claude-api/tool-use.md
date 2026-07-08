@@ -30,8 +30,8 @@ const getWeather = betaZodTool({
 
 // The tool runner handles the agentic loop and returns the final message
 const finalMessage = await client.beta.messages.toolRunner({
-  model: "claude-opus-4-6",
-  max_tokens: 4096,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   tools: [getWeather],
   messages: [{ role: "user", content: "What's the weather in Paris?" }],
 });
@@ -61,20 +61,17 @@ let messages: Anthropic.MessageParam[] = [{ role: "user", content: userInput }];
 
 while (true) {
   const response = await client.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 4096,
+    model: "claude-opus-4-7",
+    max_tokens: 16000,
     tools: tools,
     messages: messages,
   });
 
   if (response.stop_reason === "end_turn") break;
 
-  // Server-side tool hit iteration limit; re-send to continue
+  // Server-side tool hit iteration limit; append assistant turn and re-send to continue
   if (response.stop_reason === "pause_turn") {
-    messages = [
-      { role: "user", content: userInput },
-      { role: "assistant", content: response.content },
-    ];
+    messages.push({ role: "assistant", content: response.content });
     continue;
   }
 
@@ -111,8 +108,8 @@ let messages: Anthropic.MessageParam[] = [{ role: "user", content: userInput }];
 
 while (true) {
   const stream = client.messages.stream({
-    model: "claude-opus-4-6",
-    max_tokens: 4096,
+    model: "claude-opus-4-7",
+    max_tokens: 64000,
     tools,
     messages,
   });
@@ -128,12 +125,9 @@ while (true) {
 
   if (message.stop_reason === "end_turn") break;
 
-  // Server-side tool hit iteration limit; re-send to continue
+  // Server-side tool hit iteration limit; append assistant turn and re-send to continue
   if (message.stop_reason === "pause_turn") {
-    messages = [
-      { role: "user", content: userInput },
-      { role: "assistant", content: message.content },
-    ];
+    messages.push({ role: "assistant", content: message.content });
     continue;
   }
 
@@ -169,8 +163,8 @@ while (true) {
 
 ```typescript
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
-  max_tokens: 1024,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   tools: tools,
   messages: [{ role: "user", content: "What's the weather in Paris?" }],
 });
@@ -180,8 +174,8 @@ for (const block of response.content) {
     const result = await executeTool(block.name, block.input);
 
     const followup = await client.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 1024,
+      model: "claude-opus-4-7",
+      max_tokens: 16000,
       tools: tools,
       messages: [
         { role: "user", content: "What's the weather in Paris?" },
@@ -204,8 +198,8 @@ for (const block of response.content) {
 
 ```typescript
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
-  max_tokens: 1024,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   tools: tools,
   tool_choice: { type: "tool", name: "get_weather" },
   messages: [{ role: "user", content: "What's the weather in Paris?" }],
@@ -213,6 +207,45 @@ const response = await client.messages.create({
 ```
 
 ---
+
+## Server-Side Tools
+
+Version-suffixed `type` literals; `name` is fixed per interface. Pass plain object literals — the `ToolUnion` type is satisfied structurally. **The `name`/`type` pair must match the interface**: mixing `str_replace_based_edit_tool` (20250728 name) with `text_editor_20250124` (which expects `str_replace_editor`) is a TS2322.
+
+**Don't type-annotate as `Tool[]`** — `Tool` is just the custom-tool variant. Let structural typing infer from the `tools` param, or annotate as `Anthropic.Messages.ToolUnion[]` if you must:
+
+```typescript
+// ✓ let inference work — no annotation
+const response = await client.messages.create({
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
+  tools: [
+    { type: "text_editor_20250728", name: "str_replace_based_edit_tool" },
+    { type: "bash_20250124", name: "bash" },
+    { type: "web_search_20260209", name: "web_search" },
+    { type: "code_execution_20260120", name: "code_execution" },
+  ],
+  messages: [{ role: "user", content: "..." }],
+});
+
+// ✗ this is a TS2352 — Tool is the CUSTOM tool variant only
+// const tools: Anthropic.Tool[] = [{ type: "text_editor_20250728", ... }]
+```
+
+| Interface | `name` | `type` |
+|---|---|---|
+| `ToolTextEditor20250124` | `str_replace_editor` | `text_editor_20250124` |
+| `ToolTextEditor20250429` | `str_replace_based_edit_tool` | `text_editor_20250429` |
+| `ToolTextEditor20250728` | `str_replace_based_edit_tool` | `text_editor_20250728` |
+| `ToolBash20250124` | `bash` | `bash_20250124` |
+| `WebSearchTool20260209` | `web_search` | `web_search_20260209` |
+| `WebFetchTool20260209` | `web_fetch` | `web_fetch_20260209` |
+| `CodeExecutionTool20260120` | `code_execution` | `code_execution_20260120` |
+
+**Don't mix beta and non-beta types**: if you call `client.beta.messages.create()`, the response `content` is `BetaContentBlock[]` — you cannot pass that to a non-beta `ContentBlockParam[]` without narrowing each element.
+
+---
+
 
 ## Code Execution
 
@@ -224,8 +257,8 @@ import Anthropic from "@anthropic-ai/sdk";
 const client = new Anthropic();
 
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
-  max_tokens: 4096,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -236,6 +269,21 @@ const response = await client.messages.create({
   tools: [{ type: "code_execution_20260120", name: "code_execution" }],
 });
 ```
+
+### Reading Local Files (ESM note)
+
+`__dirname` doesn't exist in ES modules. For script-relative paths use `import.meta.url`:
+
+```typescript
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pdfBytes = readFileSync(join(__dirname, "sample.pdf"));
+```
+
+Or use a CWD-relative path if the script runs from a known directory: `readFileSync("./sample.pdf")`.
 
 ### Upload Files for Analysis
 
@@ -257,8 +305,8 @@ const uploaded = await client.beta.files.upload({
 // Code execution is GA; Files API is still beta (pass via RequestOptions)
 const response = await client.messages.create(
   {
-    model: "claude-opus-4-6",
-    max_tokens: 4096,
+    model: "claude-opus-4-7",
+    max_tokens: 16000,
     messages: [
       {
         role: "user",
@@ -295,8 +343,8 @@ for (const block of response.content) {
           const metadata = await client.beta.files.retrieveMetadata(
             fileRef.file_id,
           );
-          const response = await client.beta.files.download(fileRef.file_id);
-          const fileBytes = Buffer.from(await response.arrayBuffer());
+          const downloadResponse = await client.beta.files.download(fileRef.file_id);
+          const fileBytes = Buffer.from(await downloadResponse.arrayBuffer());
           const safeName = path.basename(metadata.filename);
           if (!safeName || safeName === "." || safeName === "..") {
             console.warn(`Skipping invalid filename: ${metadata.filename}`);
@@ -317,8 +365,8 @@ for (const block of response.content) {
 ```typescript
 // First request: set up environment
 const response1 = await client.messages.create({
-  model: "claude-opus-4-6",
-  max_tokens: 4096,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -329,12 +377,13 @@ const response1 = await client.messages.create({
 });
 
 // Reuse container
-const containerId = response1.container.id;
+// container is nullable — set only when using server-side code execution
+const containerId = response1.container!.id;
 
 const response2 = await client.messages.create({
   container: containerId,
-  model: "claude-opus-4-6",
-  max_tokens: 4096,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -353,8 +402,8 @@ const response2 = await client.messages.create({
 
 ```typescript
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
-  max_tokens: 2048,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -387,8 +436,8 @@ const handlers: MemoryToolHandlers = {
 const memory = betaMemoryTool(handlers);
 
 const runner = client.beta.messages.toolRunner({
-  model: "claude-opus-4-6",
-  max_tokens: 2048,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   tools: [memory],
   messages: [{ role: "user", content: "Remember my preferences" }],
 });
@@ -424,8 +473,8 @@ const ContactInfoSchema = z.object({
 const client = new Anthropic();
 
 const response = await client.messages.parse({
-  model: "claude-opus-4-6",
-  max_tokens: 1024,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -438,15 +487,16 @@ const response = await client.messages.parse({
   },
 });
 
-console.log(response.parsed_output.name); // "Jane Doe"
+// parsed_output is null if parsing failed — assert or guard
+console.log(response.parsed_output!.name); // "Jane Doe"
 ```
 
 ### Strict Tool Use
 
 ```typescript
 const response = await client.messages.create({
-  model: "claude-opus-4-6",
-  max_tokens: 1024,
+  model: "claude-opus-4-7",
+  max_tokens: 16000,
   messages: [
     {
       role: "user",

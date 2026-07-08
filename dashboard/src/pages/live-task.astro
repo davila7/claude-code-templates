@@ -1,0 +1,18 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+import LiveTaskPanel from '../components/live-task/LiveTaskPanel.tsx';
+export const prerender = false;
+---
+
+<DashboardLayout
+  title="Component Review Loop | Claude Code Templates"
+  description="Monitor the automated component improvement cycle. Track review progress, tool executions, and PR status in real-time."
+>
+  <TopBar />
+  <LiveTaskPanel client:load />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

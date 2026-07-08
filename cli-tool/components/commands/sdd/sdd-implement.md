@@ -1,7 +1,7 @@
 ---
 description: "Execute implementation from tasks.md — phase by phase, marking tasks complete as they finish"
 argument-hint: "[optional: 'phase 1' to run specific phase, or 'resume' to continue from last checkpoint]"
-allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(npm:*), Bash(pip:*), Bash(python:*), Bash(node:*), Bash(dotnet:*), Bash(go:*), Bash(cargo:*), Bash(mvn:*), Read, Write, Edit
+allowed-tools: Bash(git:*), Bash(mkdir:*), Bash(npm:*), Bash(pip:*), Bash(python:*), Bash(node:*), Bash(dotnet:*), Bash(go:*), Bash(cargo:*), Bash(mvn:*), Task, Read, Write, Edit
 ---
 
 # SDD Implement
@@ -51,12 +51,45 @@ If `spec.md` is missing, STOP: "Run `/sdd-specify` first — spec.md is the sour
    TDD is not optional — it drives implementation RED→GREEN.
    ```
    
-   If `.tdd-gate` exists, parse it:
+   If `.tdd-gate` exists, parse and VALIDATE it (existence alone is NOT sufficient):
    ```bash
    cat specs/$BRANCH/.tdd-gate
-   # Expected format: 2025-05-14T10:30:45Z RED abc1234
+   # Expected first line:
+   #   TIMESTAMP=<utc> COMMIT=<sha> STATE=RED TOTAL=<n> FAILED=<n> PASSED=0 SKIPPED=0
+   # Followed by:
+   #   FILES:
+   #   tests/unit/test_x.py
+   #   ...
    ```
-   Report: "✅ TDD gate found — tests proven RED at [timestamp], commit [hash]"
+   Extract `STATE`, `TOTAL`, `FAILED`, `PASSED`, `SKIPPED`, and `COMMIT` from the first line.
+
+   **All of the following MUST hold — STOP on ANY mismatch:**
+   - `STATE == RED`
+   - `FAILED == TOTAL`
+   - `PASSED == 0`
+   - `SKIPPED == 0`
+   - `COMMIT` is an ancestor of HEAD:
+     ```bash
+     git merge-base --is-ancestor "$COMMIT" HEAD || STOP
+     ```
+   - Tests unchanged since the gate — no file under `tests/` changed since `COMMIT`:
+     ```bash
+     git diff --name-only "$COMMIT" HEAD -- tests/    # must be empty
+     ```
+
+   If any assertion fails:
+   ```
+   ⛔ STOP — TDD gate invalid or stale.
+
+   [state the failed assertion, e.g. "PASSED=2 (must be 0)" /
+    "tests/unit/test_x.py changed since gate commit abc1234"]
+
+   The gate no longer proves RED for the current tests.
+   Re-run /sdd-tdd to regenerate the gate before implementing.
+   ```
+
+   Only when EVERY assertion passes:
+   Report: "✅ TDD gate valid — [TOTAL] tests proven RED at [timestamp], commit [hash]; tests unchanged since gate"
 
 3. **Check for previous progress:**
    If any tasks already marked complete, inform user:
@@ -81,7 +114,32 @@ From `tasks.md`, extract:
 - For each phase: tasks with IDs, [P] markers, [USN] labels, file paths
 - Dependency relationships (sequential vs parallel)
 
-### Step 4: Execute Phase by Phase
+### Step 4: Choose Execution Mode
+
+**Mode B — Subagent-Driven (DEFAULT for features with >3 tasks or any security-sensitive work):**
+
+Dispatch a **fresh implementer subagent per task** and run a **two-stage review** after each:
+
+1. **Implementer subagent**: use the **domain-expert agent matching the task type** as the
+   implementer identity (`backend-developer` for API/service tasks, `frontend-developer` /
+   `react-specialist` for UI tasks, `devops-engineer` for infra tasks, etc. — fall back to a
+   general implementer only when no domain expert fits). It receives the FULL task text +
+   relevant spec/plan excerpts + applicable CONSTITUTION principles (do NOT make it re-read
+   files it doesn't need). It implements, tests, self-reviews, and reports.
+2. **Spec-compliance reviewer subagent**: verifies the diff against spec.md acceptance criteria —
+   nothing missing, nothing extra (over-building is a failure too). Issues → implementer fixes →
+   re-review. Never proceed with open issues.
+3. **Code-quality reviewer subagent**: only AFTER spec compliance passes. Reviews correctness,
+   error handling, security (constitution checklist), maintainability. Issues → fix → re-review.
+
+Rules: never run two implementer subagents on overlapping files; never skip a re-review after a
+fix; never let self-review substitute for the reviewer stages. (Prompt templates, if installed:
+`~/.claude/skills/subagent-driven-development/*.md`.)
+
+**Mode A — Direct (small features ≤3 tasks, trivial scope):** execute tasks in the current
+context, but the two-stage review still applies at phase checkpoints (dispatch reviewer subagents).
+
+### Step 5: Execute Phase by Phase
 
 For each phase (in order):
 
@@ -102,7 +160,7 @@ For each phase (in order):
 3. **For TDD phases (Xa: User Story Tests):**
    - Skip execution — already done by `/sdd-tdd`
    - These tasks should already be marked `[x]` from TDD phase output
-   - If any TDD task is still `[ ]`, report: "Phase Xa not executed by /sdd-tdd — mark tasks [x] manually or re-run /sdd-tdd"
+   - If any TDD task is still `[ ]`, STOP: "Phase Xa not executed by /sdd-tdd — re-run /sdd-tdd to generate the tests and prove RED. Do NOT mark these tasks [x] by hand; manual completion bypasses the TDD gate and is forbidden."
 
 4. **For implementation phases (Xb: User Story Implementation):**
    
@@ -120,7 +178,10 @@ For each phase (in order):
       - Spawn appropriate expert agent (backend-developer, frontend-developer per tech stack)
       - Agent reads: complete task description, complete spec.md, complete plan.md, relevant FR sections
       - Agent implements the exact task in the exact file path
-      - On completion: mark task `[x]` in tasks.md
+      - **In Mode B**: after the domain-expert implementer completes each task, run the two-stage
+        review from Step 4 (spec-compliance reviewer → then code-quality reviewer) and resolve all
+        issues before marking the task `[x]` — never mark a task complete on self-review alone.
+      - On completion (Mode B: after both review stages pass): mark task `[x]` in tasks.md
       - If task fails: spawn debugger agent with full error + context, do NOT mark complete until fixed
    
    d) **After implementation task: RED→GREEN verification** (for TDD tasks):
@@ -149,7 +210,23 @@ For each phase (in order):
    - Story works independently (run focused test suite for this story only)
    - Acceptance scenarios from spec.md are validated
 
-### Step 5: Implementation Rules
+6. **Behavioral evals at checkpoints** (AI/LLM-driven features):
+   If the spec has a "Behavioral Evals" section (or `specs/$BRANCH/evals/` exists), run the eval
+   scenarios at every User Story checkpoint. An eval regression BLOCKS progression exactly like
+   a failing test — probabilistic behavior that "mostly works" is not done.
+
+   Operational rules for EV-NNN evals (non-negotiable):
+   - **Deterministic pass criteria only**: each EV-NNN passes on a deterministic predicate — exact
+     value, regex, or count — NEVER an LLM-judged verdict for gate purposes. LLM grading may inform
+     exploration, but the gate predicate must be reproducible without a model.
+   - **3/3 rule**: run each EV-NNN N=3 times at a checkpoint; it must pass 3/3. Any flake (2/3, 1/3)
+     is a regression and BLOCKS, same as a failing test.
+   - **Frozen golden scenarios**: golden scenario files live in `specs/$BRANCH/evals/`. Once a story
+     checkpoint passes, those files are frozen. Weakening a golden scenario (loosening a predicate,
+     deleting a case) is flagged against the trusted baseline exactly like a `CONSTITUTION.md`
+     change — a branch must never lower its own eval bar.
+
+### Step 6: Implementation Rules
 
 **File creation:**
 - Use exact paths from tasks.md
@@ -194,7 +271,7 @@ Phase Xb: Implementation
 - [ ] T014 [P] [US1] Implement /users POST endpoint ← still pending
 ```
 
-### Step 6: Error Handling
+### Step 7: Error Handling
 
 If a task fails:
 1. Report clearly: "❌ T0XX failed: [error message]"
@@ -206,7 +283,7 @@ If a task fails:
 
 For `[P]`-marked tasks: if one parallel task fails, continue others, collect all failures, report together.
 
-### Step 7: Completion Validation
+### Step 8: Completion Validation
 
 After all selected phases/tasks complete:
 
@@ -225,13 +302,46 @@ After all selected phases/tasks complete:
    go test ./...         # Go
    dotnet test          # .NET
    ```
+   Capture the run into `TOTAL`, `PASSED`, `FAILED`.
    Report: `[N] tests passing, [N] tests failing`
+
+   **Persist GREEN state — write the gate marker ONLY when `FAILED == 0`:**
+   ```bash
+   if [ "$FAILED" -eq 0 ]; then
+     TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+     COMMIT=$(git rev-parse --short HEAD)
+     echo "TIMESTAMP=$TIMESTAMP COMMIT=$COMMIT STATE=GREEN TOTAL=$TOTAL PASSED=$PASSED FAILED=$FAILED" \
+       > specs/$BRANCH/.green-gate
+   fi
+   ```
+
+   If `FAILED > 0`: do NOT write `.green-gate`, do NOT print the success banner below, STOP and report:
+   ```
+   ⛔ STOP — [FAILED] tests still failing; GREEN state not proven.
+
+   .green-gate NOT written. Diagnose and fix the failing tests (do NOT skip them),
+   then re-run completion validation.
+   ```
+
+   The `specs/$BRANCH/.green-gate` marker is required by `/sdd-review` — the review gate will not
+   run until GREEN state has been persisted here.
 
 4. **Check that plan.md technical targets are met:**
    - Performance targets achieved
    - Project structure matches plan.md
    - All layers implemented (models, services, handlers, etc.)
    - All tech stack components integrated
+
+5. **Run the CONSTITUTION Definition of Done checklist** (including its Security & Privacy items)
+   against the diff — a DoD violation is a CRITICAL blocker, not a suggestion
+
+6. **Run the full behavioral eval suite** if the feature has one (see spec.md `## Behavioral Evals`) —
+   an eval regression blocks completion exactly like a failing test. Apply the same operational rules
+   as at checkpoints (Step 5.6): deterministic pass predicates only (never LLM-judged for the gate),
+   each EV-NNN must pass 3/3, and the golden scenarios in `specs/$BRANCH/evals/` are frozen — a
+   weakened eval is flagged against the trusted baseline like `CONSTITUTION.md`.
+
+Only print the banner below when `specs/$BRANCH/.green-gate` was written in step 3 (i.e. `FAILED == 0`).
 
 Report:
 ```
@@ -267,8 +377,9 @@ Next steps:
 
 ## Key Rules
 
-- **TDD is mandatory** — never skip `/sdd-tdd` or the .tdd-gate check
+- **TDD is mandatory** — never skip `/sdd-tdd`; parse and validate the .tdd-gate marker (STATE=RED, FAILED==TOTAL, PASSED==0, SKIPPED==0, commit is an ancestor of HEAD, tests unchanged since gate)
 - **RED→GREEN transition required** — implementation is not complete until tests pass
+- **GREEN state must be persisted** — write `specs/$BRANCH/.green-gate` only when 0 tests fail; `/sdd-review` requires it
 - **CONSTITUTION compliance checked per phase** — before phase execution
 - **NEVER skip a failed task** without user approval
 - **ALWAYS mark tasks complete** in tasks.md after finishing

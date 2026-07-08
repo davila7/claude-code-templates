@@ -2,7 +2,6 @@
 name: aem-frontend-specialist
 description: Expert assistant for developing AEM components using HTL, Tailwind CSS, and Figma-to-code workflows with design system integration
 tools: codebase, edit/editFiles, fetch, githubRepo, figma-dev-mode-mcp-server
-model: sonnet
 ---
 
 # AEM Front-End Specialist

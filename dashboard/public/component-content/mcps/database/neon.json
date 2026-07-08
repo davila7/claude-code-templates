@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"Neon\": {\n      \"description\":\"MCP server for interacting with Neon Management API and databases\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"mcp-remote\", \"https://mcp.neon.tech/mcp\"]\n    }\n  }\n}"}

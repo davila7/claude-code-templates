@@ -1,0 +1,12 @@
+# Exclude large directories not needed for dashboard build
+cli-tool/
+docs/
+node_modules/
+cloudflare-workers/
+database/
+docu/
+openspec/
+analysis/
+test-agent-sdk/
+__pycache__/
+api/

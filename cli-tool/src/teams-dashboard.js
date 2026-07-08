@@ -303,7 +303,7 @@ class TeamsDashboard {
         const agentStart = agentEvents.length > 0 ? new Date(agentEvents[0].timestamp).getTime() : 0;
         for (const event of events.filter(e => e.agentId === 'lead')) {
           for (const tool of event.toolUse || []) {
-            if (tool.name === 'Task' && !tool.input?.name) {
+            if ((tool.name === 'Task' || tool.name === 'Agent') && !tool.input?.name) {
               const spawnTs = new Date(event.timestamp).getTime();
               if (Math.abs(agentStart - spawnTs) < 5000) {
                 spawnedBy = 'Lead';
@@ -357,7 +357,7 @@ class TeamsDashboard {
     const spawns = [];
     for (const event of allEvents) {
       for (const tool of event.toolUse || []) {
-        if (tool.name === 'Task' && tool.input?.name) {
+        if ((tool.name === 'Task' || tool.name === 'Agent') && tool.input?.name) {
           spawns.push({ name: tool.input.name, timestamp: new Date(event.timestamp).getTime() });
         }
       }
@@ -464,7 +464,7 @@ class TeamsDashboard {
           // recipient is a name
         }
       }
-      if (tool.name === 'Task' && tool.input?.name) {
+      if ((tool.name === 'Task' || tool.name === 'Agent') && tool.input?.name) {
         // Task tool spawning a named teammate
         const agentName = tool.input.name;
         // We'd need to correlate with agentId later

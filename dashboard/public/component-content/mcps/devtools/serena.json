@@ -1,0 +1,1 @@
+{"content": "{\n    \"mcpServers\": {\n        \"serena\": {\n            \"description\": \"Semantic code retrieval & editing tools for coding agents.\",\n            \"command\": \"/abs/path/to/uv\",\n            \"args\": [\"run\", \"--directory\", \"/abs/path/to/serena\", \"serena\", \"start-mcp-server\"]\n        }\n    }\n}"}

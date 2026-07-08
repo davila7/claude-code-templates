@@ -1,0 +1,82 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import SearchModal from '../../components/SearchModal.tsx';
+import PluginsGrid from '../../components/PluginsGrid.tsx';
+
+export const prerender = true;
+
+import fs from 'node:fs';
+import nodePath from 'node:path';
+
+// Load plugins data at build time from filesystem
+const filePath = nodePath.join(process.cwd(), 'public', 'plugins.json');
+let plugins: any[] = [];
+try {
+  plugins = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+} catch { plugins = []; }
+---
+
+<DashboardLayout
+  title="Claude Code Plugins & Marketplaces — Discover the Best Collections"
+  description="Discover the most popular Claude Code plugin marketplaces, skill collections, and component registries on GitHub. Browse 20+ curated repositories."
+>
+  <TopBar />
+
+  <!-- Page Header -->
+  <div class="relative overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-0)] to-[var(--color-surface-1)]">
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-purple-500/10" style="animation: gradient-shimmer 8s ease infinite; background-size: 200% 200%;"></div>
+    </div>
+    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-yellow-500/5 to-transparent rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-500/5 to-transparent rounded-full blur-3xl"></div>
+
+    <div class="relative px-6 py-12 max-w-7xl mx-auto">
+      <div class="flex items-center gap-6">
+        <div
+          class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float"
+          style="background: linear-gradient(135deg, #ffd93d20 0%, #ffd93d10 100%); border: 2px solid #ffd93d30;"
+        >
+          <svg class="w-10 h-10" style="color: #ffd93d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </div>
+
+        <div class="flex-1">
+          <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-2 tracking-tight">
+            Plugins & Marketplaces
+          </h1>
+          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
+            Discover the most popular Claude Code plugin collections, skill registries, and component marketplaces on GitHub
+          </p>
+        </div>
+
+        <div class="hidden md:flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)]">
+          <span class="px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] border border-[var(--color-border)]">
+            {plugins.length} collections
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <PluginsGrid client:load plugins={plugins} />
+
+  <SearchModal client:idle />
+
+  <!-- Emit sidebar counts (ComponentGrid not present on this page) -->
+  <script is:inline>
+    fetch('/components.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var counts = {};
+        Object.keys(data).forEach(function(type) {
+          if (Array.isArray(data[type])) {
+            counts[type] = data[type].length;
+          }
+        });
+        window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
+      })
+      .catch(function() {});
+  </script>
+</DashboardLayout>

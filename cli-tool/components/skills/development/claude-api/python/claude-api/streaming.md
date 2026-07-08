@@ -4,8 +4,8 @@
 
 ```python
 with client.messages.stream(
-    model="claude-opus-4-6",
-    max_tokens=1024,
+    model="claude-opus-4-7",
+    max_tokens=64000,
     messages=[{"role": "user", "content": "Write a story"}]
 ) as stream:
     for text in stream.text_stream:
@@ -16,8 +16,8 @@ with client.messages.stream(
 
 ```python
 async with async_client.messages.stream(
-    model="claude-opus-4-6",
-    max_tokens=1024,
+    model="claude-opus-4-7",
+    max_tokens=64000,
     messages=[{"role": "user", "content": "Write a story"}]
 ) as stream:
     async for text in stream.text_stream:
@@ -30,12 +30,12 @@ async with async_client.messages.stream(
 
 Claude may return text, thinking blocks, or tool use. Handle each appropriately:
 
-> **Opus 4.6:** Use `thinking: {type: "adaptive"}`. On older models, use `thinking: {type: "enabled", budget_tokens: N}` instead.
+> **Opus 4.7 / Opus 4.6:** Use `thinking: {type: "adaptive"}`. On older models, use `thinking: {type: "enabled", budget_tokens: N}` instead.
 
 ```python
 with client.messages.stream(
-    model="claude-opus-4-6",
-    max_tokens=16000,
+    model="claude-opus-4-7",
+    max_tokens=64000,
     thinking={"type": "adaptive"},
     messages=[{"role": "user", "content": "Analyze this problem"}]
 ) as stream:
@@ -61,8 +61,8 @@ The Python tool runner currently returns complete messages. Use streaming for in
 
 ```python
 with client.messages.stream(
-    model="claude-opus-4-6",
-    max_tokens=4096,
+    model="claude-opus-4-7",
+    max_tokens=64000,
     tools=tools,
     messages=messages
 ) as stream:
@@ -79,8 +79,8 @@ with client.messages.stream(
 
 ```python
 with client.messages.stream(
-    model="claude-opus-4-6",
-    max_tokens=1024,
+    model="claude-opus-4-7",
+    max_tokens=64000,
     messages=[{"role": "user", "content": "Hello"}]
 ) as stream:
     for text in stream.text_stream:
@@ -126,8 +126,8 @@ def stream_with_progress(client, **kwargs):
 ```python
 try:
     with client.messages.stream(
-        model="claude-opus-4-6",
-        max_tokens=1024,
+        model="claude-opus-4-7",
+        max_tokens=64000,
         messages=[{"role": "user", "content": "Write a story"}]
     ) as stream:
         for text in stream.text_stream:

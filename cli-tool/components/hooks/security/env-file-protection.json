@@ -1,0 +1,17 @@
+{
+  "description": "Prevent writing to .env files using the if condition for lightweight filtering. Blocks any Write tool call targeting .env* files, protecting secrets from accidental overwrites. Uses the if field to avoid spawning a process unless the file pattern matches.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Write(.env*)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Writing to .env files is blocked by hook\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Configure timeout settings for MCP server operations. Adjust startup and tool execution timeouts to accommodate slower systems or complex MCP server operations while preventing indefinite hangs.\",\n  \"env\": {\n    \"MCP_TIMEOUT\": \"30000\",\n    \"MCP_TOOL_TIMEOUT\": \"60000\",\n    \"MAX_MCP_OUTPUT_TOKENS\": \"50000\"\n  }\n}"}

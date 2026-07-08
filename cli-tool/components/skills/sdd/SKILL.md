@@ -18,7 +18,7 @@ SDD is a development paradigm where **well-crafted specifications serve as the p
 2. **How** (plan.md) — tech stack, architecture, data model, contracts
 3. **Execution** (tasks.md) — dependency-ordered tasks with parallel markers
 4. **Testing** (TDD phase) — RED failing tests before implementation
-5. **Review** (review phase) — mandatory 5-agent review before PR
+5. **Review** (review phase) — mandatory 6-agent review before PR
 
 This is NOT a return to waterfall. It provides **shorter, more effective feedback loops** than vibe coding by putting structured thinking before implementation — and the AI does the heavy lifting of translating specs into plans and plans into code, with built-in quality gates.
 
@@ -34,7 +34,7 @@ This is NOT a return to waterfall. It provides **shorter, more effective feedbac
 | Rework when requirements were wrong | Clarify phase catches gaps before a line is written |
 | No traceability | Every task maps to a requirement |
 | Tests written after (if at all) | Tests written first (RED), then implementation (GREEN) |
-| No formal review | 5-agent mandatory review before PR |
+| No formal review | 6-agent mandatory review before PR |
 
 ---
 
@@ -53,7 +53,7 @@ This is NOT a return to waterfall. It provides **shorter, more effective feedbac
                                                                                            ↓
                                                                                     [tests GREEN]
                                                                                            ↓
-                                                                                    [5-agent review]
+                                                                                    [6-agent review]
 ```
 
 ### Step 0: Initialize (once per project)
@@ -90,11 +90,12 @@ Generates `plan.md`, `research.md`, `data-model.md`, `contracts/`.
 **Focus: HOW — tech stack, architecture, file structure, contracts.**
 Includes mandatory expert architecture review.
 
-### Step 5: Analyze (optional but recommended)
+### Step 5: Analyze (required for >3 tasks or security-sensitive scope, optional otherwise)
 ```
 /sdd-analyze
 ```
 Read-only cross-artifact check. Finds inconsistencies between spec ↔ plan ↔ tasks.
+REQUIRED for any feature with more than 3 tasks or any security-sensitive scope; optional for small, low-risk features.
 CRITICAL issues must be fixed before implementing.
 
 ### Step 6: Tasks
@@ -134,14 +135,15 @@ Marks tasks `[x]` as they complete. Stops at checkpoints for validation.
 ```
 /sdd-review
 ```
-Mandatory 5-agent review of completed implementation:
+Mandatory 6-agent review of completed implementation:
 - `security-engineer` — Security audit, authentication, authorization, injection handling
 - `code-reviewer` — Code quality, naming, structure, maintainability
 - `architect-reviewer` — Architecture compliance, design patterns, system integrity
 - `qa-expert` — Test coverage, edge cases, integration testing
 - `se-security-reviewer` — Security hardening, data protection, compliance
+- `functionality-completeness-reviewer` (spawned via `general-purpose`) — Every described behavior implemented and covered by a regression-catching test
 
-Creates `~/.claude/.review-gate` marker (2-hour TTL) only if all agents PASS.
+Creates `~/.claude/.review-gate` marker (2-hour TTL) only if all 6 agents PASS.
 
 **Pipeline cannot move to PR without valid `.review-gate` marker.**
 
@@ -231,8 +233,8 @@ CONSTITUTION.md              ← /sdd-constitution output (project root)
 ```
 
 **File Purposes:**
-- `.tdd-gate` — Created by `/sdd-tdd` when RED state is proven. Contains timestamp and test execution summary. Blocks `/sdd-implement` start.
-- `~/.claude/.review-gate` — Created by `/sdd-review` when all 5 agents PASS. Contains agent signatures and completion timestamp. 2-hour validity window. Blocks PR without valid marker.
+- `.tdd-gate` — Created by `/sdd-tdd` when RED state is proven. Contains the timestamp, RED test counts (total / failing), and the list of test files proven RED. Blocks `/sdd-implement` start.
+- `~/.claude/.review-gate` — Created by `/sdd-review` when all 6 agents PASS. Contains the reviewed branch, HEAD SHA, diff hash, review timestamp, and a per-agent PASS/FAIL line. Consumers MUST verify the recorded branch + SHA match the push target before trusting it. 2-hour validity window. Blocks PR without valid marker.
 
 ---
 
@@ -297,7 +299,7 @@ Each SDD step spawns specific expert agents with exigent requirements:
 | `/sdd-tasks` | task-decomposition-expert, qa-expert | Task ordering, dependency analysis, test coverage planning | Sequential after `/sdd-analyze` |
 | `/sdd-tdd` | test-engineer, qa-expert | RED test generation, RED state verification, edge case coverage | Primary role, with verification |
 | `/sdd-implement` | backend-developer / frontend-developer, debugger (on failure) | Code generation, build management, error resolution | Sequential phase execution |
-| `/sdd-review` | security-engineer, code-reviewer, architect-reviewer, qa-expert, se-security-reviewer | Security audit, code quality, architecture review, test coverage, security hardening | Parallel review, all must PASS |
+| `/sdd-review` | security-engineer, code-reviewer, architect-reviewer, qa-expert, se-security-reviewer, functionality-completeness-reviewer (via general-purpose) | Security audit, code quality, architecture review, test coverage, security hardening, functionality completeness | Parallel review, all 6 must PASS |
 
 ---
 
@@ -329,8 +331,17 @@ Use SDD for any feature that is:
 4. **Context engineering** — Specs compress context for the AI agent
 5. **Testable by default** — If it's not testable, it's not a requirement
 6. **RED before GREEN** — Tests must fail before implementation starts (mandatory gate)
-7. **Review before PR** — 5-agent review must pass before PR is created (mandatory gate)
+7. **Review before PR** — 6-agent review must pass before PR is created (mandatory gate)
 8. **Fail fast on specs** — Catch gaps in spec, not in code review
+9. **Constitution carries security** — the Security & Privacy section (SEC-N rules) is derived
+   from real project decisions (docs/, ADRs) and becomes per-phase verification tasks and DoD
+   checklist items — never a Polish-phase afterthought
+10. **Evals for probabilistic behavior** — AI/LLM-driven stories define Behavioral Evals (EV-NNN
+    golden scenarios with mechanically checkable pass criteria); an eval regression blocks a
+    checkpoint exactly like a failing test
+11. **Subagent-driven implementation** — default for >3 tasks: domain-expert implementer subagent
+    per task, then two-stage review (spec compliance → code quality) with re-review loops; vertical
+    slices — every story checkpoint is demoable end-to-end by a human
 
 ---
 
@@ -359,8 +370,8 @@ The SDD pipeline enforces three critical quality gates:
 ### Gate 4: Review → PR
 **BLOCKING**: Cannot merge without:
 - ✅ `~/.claude/.review-gate` exists and is newer than 2 hours
-- ✅ `.review-gate` was created AFTER the last commit (not stale)
-- ✅ All 5 review agents returned PASS status
+- ✅ `.review-gate` was created AFTER the last commit (not stale) — its recorded `branch` and `head` SHA match the push target
+- ✅ All 6 review agents returned PASS (functionality-completeness-reviewer emits VERDICT COMPLETE/INCOMPLETE — count COMPLETE as its PASS)
 
 ---
 
@@ -404,7 +415,7 @@ The SDD pipeline enforces three critical quality gates:
 /sdd-tasks
 /sdd-tdd                  ← RED tests generated
 /sdd-implement            ← Code written, tests GREEN
-/sdd-review               ← 5-agent review
+/sdd-review               ← 6-agent review
 [Create PR]               ← After review-gate passes
 
 # Update constitution
