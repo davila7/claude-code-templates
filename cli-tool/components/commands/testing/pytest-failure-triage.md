@@ -30,10 +30,12 @@ This command helps diagnose failing pytest runs efficiently by:
 
 Review the available pytest failure output and repository context, then produce a triage report that includes:
 
-1. **Failure Summary**
-   - number of failing tests
-   - number of distinct failure clusters
-   - likely severity and likely first blocker
+1. ## Failure summary
+- Failing tests:
+- Distinct clusters:
+- Likely severity:
+- Likely first blocker:
+- Overall confidence:
 
 2. **Failure Clusters**
    For each cluster:
