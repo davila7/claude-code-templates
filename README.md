@@ -160,3 +160,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **⭐ Found this useful? Give us a star to support the project!**
 
 [![Buy Me A Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&slug=daniavila&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://buymeacoffee.com/daniavila)
+
+- [Septim Agents Pack](https://septimlabs.com/agents?utm_source=awesome-list&utm_campaign=davila7) - 15 templated Claude Code sub-agent files for the full exec layer (Atlas, Luca, Canon, Ember, Tally, Nova, Ward, Mira, Juno, Pip, Hart, Halo, Beacon, Loom, Lynx). Drops into `~/.claude/agents/`. Open-source sample: [github.com/septimlabs-code/septim-agents-pack-sample](https://github.com/septimlabs-code/septim-agents-pack-sample). $49 lifetime.
