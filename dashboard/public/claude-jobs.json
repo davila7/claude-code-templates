@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-08T04:08:30.940525+00:00",
+  "lastUpdated": "2026-07-09T04:26:58.597380+00:00",
   "totalJobs": 90,
   "sources": [
     "Anthropic",
@@ -7,6 +7,46 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "hn-48833943",
+      "company": "Catalyst·Wayfare AI",
+      "position": "Lead AI Engineer",
+      "location": "Remote (US)",
+      "remote": true,
+      "salary": "",
+      "description": "We build and ship production AI systems for mid-market enterprises in regulated and technical domains — finance, energy, industrials, healthcare. We do not stop at PowerPoint AI strategy. We ship working systems alongside our clients' engineering teams. Small teams, deep expertise, real autonomy on...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48833943",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48833943",
+      "postedAt": "2026-07-08T16:24:22+00:00",
+      "tags": [
+        "Python",
+        "AWS",
+        "GCP",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5304425008",
+      "company": "Anthropic",
+      "position": "Staff Software Engineer, Labs: Applied AI",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Applied AI...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5304425008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5304425008",
+      "postedAt": "2026-07-08T15:55:29-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-48823535",
       "company": "Youth Inc.",
@@ -139,21 +179,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-asset-management-analyst-multifamily-real-estate-bluecore-residential-1134402",
-      "company": "Bluecore Residential",
-      "position": "Asset Management Analyst Multifamily Real Estate",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "100% REMOTE Bluecore Residential is a privately owned real estate investment company headquartered in Newport Beach, CA. Bluecore principals have owned and operated a multifamily portfolio totaling more than 16,000 units located in high-growth secondary markets. Bluecore's competitive advantage...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-asset-management-analyst-multifamily-real-estate-bluecore-residential-1134402",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-asset-management-analyst-multifamily-real-estate-bluecore-residential-1134402",
-      "postedAt": "2026-07-02T16:00:55+00:00",
-      "tags": [],
-      "companyIcon": ""
-    },
-    {
       "id": "hn-48761457",
       "company": "Runway",
       "position": "Trust & Safety Engineer",
@@ -171,32 +196,6 @@
         "Rust",
         "AWS",
         "GCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-senior-ai-engineer-architect-lemon-io-1134396",
-      "company": "Lemon.io",
-      "position": "Senior AI Engineer Architect",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Are you a talented Senior AI Engineer/Architect looking for a remote job that lets you show your skills and get decent compensation? Look no further than Lemon.io — the marketplace that connects you with hand-picked startups in the US and Europe. What we offer: The rate depends on your skills and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-ai-engineer-architect-lemon-io-1134396",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-ai-engineer-architect-lemon-io-1134396",
-      "postedAt": "2026-07-02T12:25:12+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Go",
-        "Node.js",
-        "React Native",
-        "Swift"
       ],
       "companyIcon": ""
     },
