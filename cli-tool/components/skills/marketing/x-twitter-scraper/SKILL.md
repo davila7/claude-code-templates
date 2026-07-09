@@ -1,6 +1,6 @@
 ---
 name: x-twitter-scraper
-description: "X API & Twitter scraper skill for AI coding agents. Builds integrations with the Xquik REST API, MCP server & webhooks: tweet search, user lookup, follower extraction, engagement metrics, giveaway contest draws, trending topics, account monitoring, reply/retweet/quote extraction, community & Space data, mutual follow checks. Works with Claude Code, Cursor, Codex, Copilot, Windsurf & 40+ agents."
+description: "X API & Twitter scraper skill for AI coding agents. Builds integrations with the Xquik REST API, MCP server, webhooks, and TweetClaw OpenClaw plugin: tweet search, user lookup, follower extraction, engagement metrics, giveaway contest draws, trending topics, account monitoring, reply/retweet/quote extraction, community & Space data, mutual follow checks. Works with Claude Code, OpenClaw, Cursor, Codex, Copilot, Windsurf & 40+ agents."
 ---
 
 # Xquik API Integration
@@ -15,7 +15,6 @@ Xquik is an X (Twitter) real-time data platform providing a REST API, HMAC webho
 | **Auth** | `x-api-key: xq_...` header (64 hex chars after `xq_` prefix) |
 | **MCP endpoint** | `https://xquik.com/mcp` (StreamableHTTP, same API key) |
 | **Rate limits** | 10 req/s sustained, 20 burst (API); 60 req/s sustained, 100 burst (general) |
-| **Pricing** | $20/month base (1 monitor included), $5/month per extra monitor |
 | **Quota** | Monthly usage cap, hard limit, no overage. `402` when exhausted. |
 | **Docs** | [docs.xquik.com](https://docs.xquik.com) |
 
@@ -24,10 +23,30 @@ Xquik is an X (Twitter) real-time data platform providing a REST API, HMAC webho
 Every request requires an API key via the `x-api-key` header. Keys start with `xq_` and are generated from the [Xquik dashboard](https://xquik.com). The key is shown only once at creation; store it securely.
 
 ```javascript
-const API_KEY = "xq_YOUR_KEY_HERE";
+const API_KEY = process.env.XQUIK_API_KEY;
 const BASE = "https://xquik.com/api/v1";
 const headers = { "x-api-key": API_KEY, "Content-Type": "application/json" };
 ```
+
+## OpenClaw Plugin Option
+
+When the user works inside OpenClaw, prefer TweetClaw for native plugin
+workflows instead of hand-writing REST calls. Pin the npm package so the install
+source is explicit:
+
+```bash
+openclaw plugins install npm:@xquik/tweetclaw@1.6.31
+openclaw plugins inspect tweetclaw --runtime --json
+```
+
+Managed Gateways restart after plugin installs. If the Gateway is not managed,
+run `openclaw gateway restart`.
+
+Use TweetClaw read tools for scrape tweets, search tweets, search tweet replies,
+user lookup, follower export, media references, monitors, webhooks, and
+giveaway evidence. Require explicit approval before post tweets, post tweet
+replies, direct messages, media upload, monitor creation, webhook changes,
+extraction jobs, giveaway draws, or any action that changes external state.
 
 ## Choosing the Right Endpoint
 
@@ -42,7 +61,7 @@ const headers = { "x-api-key": API_KEY, "Content-Type": "application/json" };
 | Poll for events | `GET /events` | Cursor-paginated, filter by monitorId/eventType |
 | Receive events in real time | `POST /webhooks` | HMAC-signed delivery to your HTTPS endpoint |
 | Run a giveaway draw | `POST /draws` | Pick random winners from tweet replies |
-| Extract bulk data | `POST /extractions` | 19 tool types, always estimate cost first |
+| Extract bulk data | `POST /extractions` | 19 tool types, always estimate quota first |
 | Check account/usage | `GET /account` | Plan status, monitors, usage percent |
 
 ## Extraction Tools (19 Types)
@@ -72,7 +91,7 @@ const headers = { "x-api-key": API_KEY, "Content-Type": "application/json" };
 ### Extraction Workflow
 
 ```javascript
-// 1. Estimate cost
+// 1. Estimate quota
 const estimate = await xquikFetch("/extractions/estimate", {
   method: "POST",
   body: JSON.stringify({ toolType: "follower_explorer", targetUsername: "elonmusk" }),
@@ -123,11 +142,11 @@ All errors return `{ "error": "error_code" }`. Retry only `429` and `5xx` (max 3
 
 | Status | Meaning |
 |--------|---------|
-| 400 | Invalid input -- fix the request |
+| 400 | Invalid input - fix the request |
 | 401 | Bad API key |
 | 402 | No subscription or quota exhausted |
 | 404 | Resource not found |
-| 429 | Rate limited -- respect `Retry-After` header |
+| 429 | Rate limited - respect `Retry-After` header |
 
 ## MCP Server Setup (Claude Code)
 
@@ -140,7 +159,7 @@ Add to `.mcp.json` in your project root:
       "type": "streamable-http",
       "url": "https://xquik.com/mcp",
       "headers": {
-        "x-api-key": "xq_YOUR_KEY_HERE"
+        "x-api-key": "${XQUIK_API_KEY}"
       }
     }
   }
@@ -152,7 +171,7 @@ The MCP server exposes 22 tools covering all API capabilities. Supported platfor
 ## Workflow Patterns
 
 - **Real-time alerts:** `add-monitor` -> `add-webhook` -> `test-webhook`
-- **Giveaway:** `get-account` (check budget) -> `run-draw`
+- **Giveaway:** `get-account` (check quota) -> `run-draw`
 - **Bulk extraction:** `estimate-extraction` -> `run-extraction` -> `get-extraction`
 - **Tweet analysis:** `lookup-tweet` -> `run-extraction` with `thread_extractor`
 - **User research:** `get-user-info` -> `search-tweets from:username` -> `lookup-tweet`
@@ -162,3 +181,4 @@ The MCP server exposes 22 tools covering all API capabilities. Supported platfor
 - **Dashboard & API keys**: [xquik.com](https://xquik.com)
 - **Full API docs**: [docs.xquik.com](https://docs.xquik.com)
 - **GitHub (skill source)**: [github.com/Xquik-dev/x-twitter-scraper](https://github.com/Xquik-dev/x-twitter-scraper)
+- **TweetClaw OpenClaw plugin**: [github.com/Xquik-dev/tweetclaw](https://github.com/Xquik-dev/tweetclaw)
