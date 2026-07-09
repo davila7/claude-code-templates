@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [pytest-output-file] | [failing-test-name] | [path-to-project]
+argument-hint: "[pytest-output-file] | [failing-test-name] | [path-to-project]"
 description: Analyze pytest failures, group related errors, identify likely root causes, and propose the smallest useful fix plan
 ---
 
