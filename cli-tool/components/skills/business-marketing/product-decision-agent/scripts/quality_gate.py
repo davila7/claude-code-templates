@@ -4,6 +4,9 @@
 Usage:
   quality_gate.py output1.md output2.md ...
 
+Each input file must contain one candidate answer. Aggregated reference files,
+such as references/response-examples.md, are intentionally not accepted.
+
 The script catches common regressions:
 - source/theory leakage
 - English-dominant answers in Chinese work scenes
@@ -116,6 +119,8 @@ RISK_HINTS = [
     "不建议",
 ]
 
+AGGREGATE_EXAMPLE_PATTERN = re.compile(r"^##\s+样例\s*\d+", re.MULTILINE)
+
 
 def count_questions(text: str) -> int:
     """Count questions in the "需要确认" section only."""
@@ -155,6 +160,9 @@ def check_file(path: Path) -> tuple[list[str], list[str]]:
     text = path.read_text(encoding="utf-8")
     errors: list[str] = []
     warnings: list[str] = []
+
+    if len(AGGREGATE_EXAMPLE_PATTERN.findall(text)) > 1:
+        return ["input contains multiple answers; pass one candidate answer per file"], []
 
     for pattern in HARD_BANNED:
         if re.search(pattern, text, re.IGNORECASE):
@@ -198,6 +206,7 @@ def check_file(path: Path) -> tuple[list[str], list[str]]:
 def main(argv: list[str]) -> int:
     if not argv:
         print("Usage: quality_gate.py output1.md output2.md ...", file=sys.stderr)
+        print("Each input file must contain exactly one candidate answer.", file=sys.stderr)
         return 2
 
     failed = False

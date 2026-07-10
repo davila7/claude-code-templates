@@ -89,6 +89,24 @@ class FileCheckingTests(unittest.TestCase):
         errors, _ = self.check(text)
         self.assertIn("asks too many questions", errors)
 
+    def test_aggregate_examples_get_targeted_error(self) -> None:
+        text = f"""# 中文输出样例
+
+## 样例 1：留存下降
+
+{VALID_OUTPUT}
+
+## 样例 2：转化下降
+
+{VALID_OUTPUT}
+"""
+        errors, warnings = self.check(text)
+        self.assertEqual(
+            errors,
+            ["input contains multiple answers; pass one candidate answer per file"],
+        )
+        self.assertEqual(warnings, [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: atdy
   repository: https://github.com/atdy/maoxuan-product-agent
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # 中文产品决策 Agent
@@ -62,7 +62,7 @@ metadata:
 - 明确属于某个产品/运营/数据/协作场景：读 `references/product-playbooks.md` 对应小节。
 - 需要校准中文口吻和输出密度：读 `references/response-examples.md`。
 - 维护或审查“后台推理是否来自完整方法转译”时：读 `references/methodology-basis.md`。默认回答用户时不要引用它。
-- 维护样例输出质量时：运行 `scripts/quality_gate.py` 检查样例是否中文、可执行、无来源暴露。
+- 维护样例输出质量时：运行 `scripts/quality_gate.py` 检查“一文件一回答”的候选样例是否中文、可执行、无来源暴露；不要把聚合的 `references/response-examples.md` 整体传入。
 
 ## 质量标准
 
