@@ -39,7 +39,8 @@
 
 **[Browse All Templates](https://aitmpl.com)** - Interactive web interface to explore and install 100+ agents, commands, settings, hooks, and MCPs.
 
-<img width="1049" height="855" alt="Screenshot 2025-08-19 at 08 09 24" src="https://github.com/user-attachments/assets/e3617410-9b1c-4731-87b7-a3858800b737" />
+<img width="1787" height="958" alt="image" src="https://github.com/user-attachments/assets/d84feaa4-f871-4843-bbee-42d8f51b2f21" />
+
 
 ## 🚀 Quick Installation
 
