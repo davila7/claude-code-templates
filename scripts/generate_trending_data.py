@@ -159,8 +159,12 @@ def main():
                 print(f"✅ Fetched final page {page_num} with {len(page_data)} records")
                 break
 
-            if len(all_downloads) >= 1000000:
-                print(f"⚠️  Reached safety limit of 1,000,000 records")
+            # Safety backstop against a runaway loop. Normal termination happens
+            # via the empty-page / short-page checks above. This must stay well
+            # ABOVE the real table size, otherwise the newest rows (highest ids)
+            # get silently dropped and recent-window stats read as zero.
+            if len(all_downloads) >= 10000000:
+                print(f"⚠️  Reached safety limit of 10,000,000 records")
                 break
         
         if not all_downloads:

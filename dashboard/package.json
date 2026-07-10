@@ -11,8 +11,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
     "@astrojs/react": "^4.4.2",
-    "@astrojs/cloudflare": "^12.5.4",
     "@clerk/backend": "^3.0.1",
     "@clerk/clerk-react": "^5.60.1",
     "@neondatabase/serverless": "^1.0.2",
