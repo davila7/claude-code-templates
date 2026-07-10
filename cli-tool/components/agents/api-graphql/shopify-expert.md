@@ -225,7 +225,7 @@ query getProducts($first: Int!, $after: String) {
 
 ### Shopify Functions
 
-Custom discount function in JavaScript:
+Custom discount function (JavaScript):
 ```javascript
 // extensions/custom-discount/src/index.js
 export default (input) => {
