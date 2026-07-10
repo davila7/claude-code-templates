@@ -1,12 +1,34 @@
 {
-  "lastUpdated": "2026-07-09T04:26:58.597380+00:00",
+  "lastUpdated": "2026-07-10T04:23:36.206581+00:00",
   "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK"
+    "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5309805008",
+      "company": "Anthropic",
+      "position": "Engineering Manager, Connectivity - London",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "Our mission on the Connectivity team is to make Claude the most connected AI. As agents take on more real-world work, we're taking a leading role in defining how they get access to external systems — safely, with the right permissions, and in ways enterprises can trust. We ship for claude.ai ,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5309805008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5309805008",
+      "postedAt": "2026-07-09T17:59:48-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-48833943",
       "company": "Catalyst·Wayfare AI",
@@ -126,21 +148,6 @@
         "GCP",
         "Cursor"
       ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-founder-ghostwriter-for-a-u-s-based-google-ads-agency-paired-1134487",
-      "company": "Paired",
-      "position": "Founder Ghostwriter for a U.S. based Google Ads Agency",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Paired is a global staffing and recruiting agency that pairs remote work with top-tier talent. We admire the importance of innovative social media strategies and are committed to connecting talented individuals with great companies that need their unique skills. Our mission is to provide great jobs...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-founder-ghostwriter-for-a-u-s-based-google-ads-agency-paired-1134487",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-founder-ghostwriter-for-a-u-s-based-google-ads-agency-paired-1134487",
-      "postedAt": "2026-07-04T14:24:30+00:00",
-      "tags": [],
       "companyIcon": ""
     },
     {
@@ -535,6 +542,29 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-mrioa-web-developer-remote",
+      "company": "MRIoA",
+      "position": "Web Developer (Remote)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Salt Lake City, Utah, United States URL: http://mrioa.com Who We Are - Motivated by Purpose. Powered by Clinical Expertise. Founded in 1983, we’re a clinically driven, tech-enabled utilization management company offering expert clinical reviews, regulatory guidance, and actionable...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/mrioa-web-developer-remote",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/mrioa-web-developer-remote",
+      "postedAt": "2026-06-18T02:19:12+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Node.js",
+        "Claude Code",
+        "Django"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5255912008",
@@ -1083,32 +1113,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5191433008",
-      "company": "Anthropic",
-      "position": "Software Engineer, Safeguards Foundations (Internal Tooling)",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "The Safeguards team is responsible for the systems that detect, review, and act on misuse of Anthropic's models — work that sits at the very centre of our mission to develop AI safely. Within Safeguards, the Foundations team builds the platforms, infrastructure, and internal tools that the rest of...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5191433008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5191433008",
-      "postedAt": "2026-04-20T11:22:41-04:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Claude Code",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
@@ -1819,7 +1823,7 @@
     {
       "id": "anth-5074908008",
       "company": "Anthropic",
-      "position": "Software Engineer, Safeguards Infrastructure ",
+      "position": "Staff+ Software Engineer, Safeguards Infrastructure ",
       "location": "London, UK",
       "remote": false,
       "salary": "",
