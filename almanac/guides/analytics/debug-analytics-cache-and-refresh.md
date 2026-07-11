@@ -1,7 +1,7 @@
 ---
 title: "Debug Analytics Cache and Refresh"
 summary: "How to diagnose stale analytics data across cache entries, file watcher invalidation, refresh endpoints, and real-time notifications."
-topics: [concepts]
+topics: [guides, analytics]
 sources:
   - id: coverage-entry
     type: file

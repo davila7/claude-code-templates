@@ -1,7 +1,7 @@
 ---
 title: "Validation Error Model"
 summary: "The shared structure for validation errors, warnings, info messages, scores, timestamps, metadata, and aggregate reports."
-topics: [concepts]
+topics: [concepts, validation]
 sources:
   - id: base-validator
     type: file

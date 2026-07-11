@@ -1,7 +1,7 @@
 ---
 title: "Publish NPM Package"
 summary: "How to publish the claude-code-templates npm package after version alignment, tests, token setup, cleanup, tagging, and deployment follow-up."
-topics: [concepts]
+topics: [guides, cli]
 sources:
   - id: coverage-entry
     type: file

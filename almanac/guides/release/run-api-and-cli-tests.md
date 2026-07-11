@@ -1,7 +1,7 @@
 ---
 title: "Run API and CLI Tests"
 summary: "Which API, CLI, validation, and predeploy commands to run before release or deployment, and how to interpret failures."
-topics: [concepts]
+topics: [guides, testing]
 sources:
   - id: coverage-entry
     type: file

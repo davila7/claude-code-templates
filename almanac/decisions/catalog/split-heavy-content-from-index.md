@@ -23,7 +23,7 @@ Accepted. `scripts/generate_components_json.py` writes per-component content fil
 
 The generator first builds rich component records that include raw content, metadata, download counts, and security metadata for content-bearing component types [@catalog-generator]. Without splitting, those records would make every dashboard list, sidebar, and search request carry full Markdown or JSON bodies that most views do not need.
 
-The dashboard data layer is already built around the split. It defines `/component-content` as the content base, loads `/components.json` as the main catalog, loads per-type slices and `/search-index.json` for lighter browsing, and has a separate `getComponentContent()` path for raw component text [@dashboard-data].
+The dashboard data layer is already built around the split. It defines `/component-content` as the content base, loads `/components.json` as the main catalog, loads per-type slices and `/search-index.json` for lighter browsing, and has a separate `fetchComponentContent()` path for raw component text [@dashboard-data].
 
 ## Decision
 

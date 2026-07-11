@@ -1,7 +1,7 @@
 ---
 title: "Template vs Component Installation"
 summary: "Template installation creates a project setup, while component installation adds selected reusable Claude Code assets."
-topics: [concepts]
+topics: [concepts, components, cli]
 sources:
   - id: template-config
     type: file

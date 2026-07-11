@@ -1,7 +1,7 @@
 ---
 title: "Component Catalog Schema"
 summary: "The component catalog schema is the generated JSON shape shared by the CLI, documentation, and dashboard."
-topics: [concepts]
+topics: [concepts, catalog]
 sources:
   - id: catalog-generator
     type: file

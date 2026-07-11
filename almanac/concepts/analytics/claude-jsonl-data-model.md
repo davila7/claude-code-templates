@@ -1,7 +1,7 @@
 ---
 title: "Claude JSONL Data Model"
 summary: "The local JSON Lines message format that the analytics dashboard parses into conversations, tokens, tools, models, projects, and session metrics."
-topics: [concepts]
+topics: [concepts, analytics]
 sources:
   - id: data-structure-doc
     type: file
@@ -9,6 +9,9 @@ sources:
   - id: conversation-analyzer
     type: file
     path: cli-tool/src/analytics/core/ConversationAnalyzer.js
+  - id: session-analyzer
+    type: file
+    path: cli-tool/src/analytics/core/SessionAnalyzer.js
   - id: data-cache
     type: file
     path: cli-tool/src/analytics/data/DataCache.js
@@ -40,7 +43,7 @@ Tool analytics come from assistant content blocks. `extractToolUsage()` counts `
 
 Project identity can come from project `settings.json`, but the analyzer also falls back to early `cwd` fields in the conversation file and finally to `Unknown` [@conversation-analyzer]. This makes the JSONL `cwd` field important even though it is not part of the nested message body.
 
-Session metrics are also derived from JSONL records. The analyzer calculates Claude usage sessions by collecting user-message timestamps across conversations, so sessions are counted from user activity rather than every line in the file [@conversation-analyzer]. The same parsed files therefore support both local conversation display and higher-level usage summaries.
+Session metrics are also derived from JSONL records. `SessionAnalyzer` calculates Claude usage sessions by collecting user-message timestamps across conversations, so sessions are counted from user activity rather than every line in the file [@session-analyzer]. The same parsed files therefore support both local conversation display and higher-level usage summaries.
 
 ## Cache Boundary
 

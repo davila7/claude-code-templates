@@ -1,7 +1,7 @@
 ---
 title: "Publish Blog Article"
 summary: "How to produce a component blog article with a generated cover, copied HTML template, catalog entry, verification, and recovery steps."
-topics: [concepts]
+topics: [guides, catalog]
 sources:
   - id: coverage-entry
     type: file

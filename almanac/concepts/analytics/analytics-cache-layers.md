@@ -1,7 +1,7 @@
 ---
 title: "Analytics Cache Layers"
 summary: "The in-memory cache hierarchy that keeps the Claude analytics dashboard from repeatedly reading, parsing, and recomputing the same conversation data."
-topics: [concepts]
+topics: [concepts, analytics]
 sources:
   - id: data-cache
     type: file

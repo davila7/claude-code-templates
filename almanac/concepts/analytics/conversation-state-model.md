@@ -1,7 +1,7 @@
 ---
 title: "Conversation State Model"
 summary: "How the analytics dashboard turns Claude JSONL messages, file activity, process activity, and tool use into readable conversation state labels."
-topics: [concepts]
+topics: [concepts, analytics]
 sources:
   - id: state-calculator
     type: file

@@ -1,7 +1,7 @@
 ---
 title: "Download Tracking Privacy"
 summary: "Download tracking privacy is the CLI contract that install analytics are anonymous, opt-out, timed, and non-blocking."
-topics: [concepts]
+topics: [concepts, components, security]
 sources:
   - id: tracking-doc
     type: file

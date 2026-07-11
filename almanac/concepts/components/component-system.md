@@ -1,7 +1,7 @@
 ---
 title: "Component System"
 summary: "The component system is the repository's shared model for reusable Claude Code assets and the CLI paths that install them."
-topics: [concepts]
+topics: [concepts, components]
 sources:
   - id: readme-components
     type: file

@@ -1,7 +1,7 @@
 ---
 title: "Add New Validator"
 summary: "How to add a validator to the security validation system without breaking orchestration, scoring, reports, or tests."
-topics: [concepts]
+topics: [guides, validation]
 sources:
   - id: coverage-entry
     type: file

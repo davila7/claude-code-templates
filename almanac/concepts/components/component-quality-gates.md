@@ -1,7 +1,7 @@
 ---
 title: "Component Quality Gates"
 summary: "Component quality gates are the review, naming, security, and scanning checks that must pass before catalog assets are trusted."
-topics: [concepts]
+topics: [concepts, components, validation, security]
 sources:
   - id: claude-quality-rules
     type: file

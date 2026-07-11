@@ -1,7 +1,7 @@
 ---
 title: "Dual Persistence Model"
 summary: "Why this repository uses Supabase for component download tracking and Neon for command usage, release monitoring, collections, health checks, and dashboard APIs."
-topics: [concepts]
+topics: [concepts, persistence]
 sources:
   - id: supabase-downloads
     type: file
