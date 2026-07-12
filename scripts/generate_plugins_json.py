@@ -552,7 +552,7 @@ def process_repo(repo_full, website_override=None):
     # 11. Slug
     slug = name.lower()
     # Avoid collisions by prepending owner for common names
-    if slug in ("claude-skills", "awesome-claude-skills", "awesome-claude-code-plugins"):
+    if slug in ("claude-skills", "awesome-claude-skills", "awesome-claude-code-plugins", "plugins"):
         slug = f"{owner.lower()}-{slug}"
 
     # 12. Website
