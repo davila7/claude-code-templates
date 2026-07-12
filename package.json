@@ -24,7 +24,7 @@
     "axios": "^1.6.2",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
-    "chokidar": "^3.5.3",
+    "chokidar": "^5.0.0",
     "commander": "^11.1.0",
     "discord-interactions": "^3.4.0",
     "dotenv": "^16.3.1",
@@ -36,7 +36,7 @@
     "open": "^8.4.2",
     "ora": "^5.4.1",
     "qrcode": "^1.5.4",
-    "uuid": "^11.1.0",
+    "uuid": "^14.0.0",
     "ws": "^8.18.3"
   },
   "devDependencies": {
