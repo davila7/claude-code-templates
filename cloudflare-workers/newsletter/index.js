@@ -448,8 +448,21 @@ async function sendBroadcast(env, { subject, text, html }, opts = {}) {
     try {
       const peers = await listBroadcastsByName(env, name);
       const someoneSent = peers.some((b) => b.id !== id && b.status !== 'draft');
-      const draftIds = peers.filter((b) => b.status === 'draft').map((b) => b.id).sort();
-      const winner = draftIds[0];
+      // Only drafts created within the overlap window are election candidates.
+      // An older draft belongs to a run that died before cleaning up — yielding
+      // to it would mean nobody sends today (its owner is gone), so it is
+      // ignored. Unparseable timestamps count as fresh (safe: worst case is an
+      // extra yield, and send-failure cleanup below makes stale drafts rare).
+      const now = Date.now();
+      const isFresh = (b) => {
+        const t = Date.parse(String(b.created_at || '').replace(' ', 'T').replace(/\+00$/, 'Z'));
+        return Number.isNaN(t) || now - t < 5 * 60_000;
+      };
+      const candidateIds = peers
+        .filter((b) => b.status === 'draft' && (b.id === id || isFresh(b)))
+        .map((b) => b.id)
+        .sort();
+      const winner = candidateIds[0];
       if (someoneSent || (winner && winner !== id)) {
         console.log(`Newsletter: concurrent duplicate detected, yielding (mine=${id}, winner=${winner || 'already sent'})`);
         await deleteBroadcast(env, id);
@@ -468,7 +481,12 @@ async function sendBroadcast(env, { subject, text, html }, opts = {}) {
   });
   if (!sendRes.ok) {
     const body = await sendRes.text();
-    throw new Error(`Resend broadcast send failed for created broadcast ${id} (${sendRes.status}): ${body}`);
+    // Clean up the draft so it cannot win future elections that nobody sends,
+    // and so a retry starts from a clean slate. If the send actually went
+    // through despite the error response, the broadcast is no longer a draft
+    // and this DELETE fails harmlessly.
+    await deleteBroadcast(env, id);
+    throw new Error(`Resend broadcast send failed for broadcast ${id} (${sendRes.status}), draft cleaned up: ${body}`);
   }
 
   return { sent: true, broadcastId: id };
