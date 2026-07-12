@@ -11,6 +11,8 @@
     "secret:resend": "wrangler secret put RESEND_API_KEY",
     "secret:trigger": "wrangler secret put TRIGGER_SECRET",
     "secret:neon": "wrangler secret put NEON_DATABASE_URL",
+    "secret:clerk": "wrangler secret put CLERK_SECRET_KEY",
+    "secret:webhook": "wrangler secret put RESEND_WEBHOOK_SECRET",
     "secret:reply-to": "wrangler secret put NEWSLETTER_REPLY_TO",
     "secret:sentry": "wrangler secret put SENTRY_DSN"
   },

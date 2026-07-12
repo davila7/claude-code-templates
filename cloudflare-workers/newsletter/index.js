@@ -57,6 +57,16 @@ export default {
       return;
     }
     console.log(`📬 Newsletter: cron firing (ISO week ${week})...`);
+    // Pick up signups since the last campaign before sending. Incremental and
+    // cheap: walks Clerk newest-first and stops at the first fully-known page.
+    try {
+      const synced = await syncNewSubscribers(env);
+      if (synced > 0) console.log(`Newsletter: synced ${synced} new subscribers from Clerk`);
+    } catch (e) {
+      // A sync failure must not block the send — existing subscribers still get it.
+      console.error('Newsletter: Clerk sync failed, sending to existing subscribers:', e.message);
+      await reportError(env, e, { worker: 'aitmpl-newsletter', step: 'clerk-sync' });
+    }
     await runNewsletter(env, { send: true });
   },
 
@@ -73,6 +83,35 @@ export default {
     // credential, so no other auth applies.
     if (url.pathname === '/unsubscribe' && (request.method === 'GET' || request.method === 'POST')) {
       return handleUnsubscribe(env, url.searchParams.get('token'));
+    }
+
+    // Resend engagement webhook (opens, clicks, bounces, complaints).
+    // Authenticated by svix signature, not the bearer token.
+    if (url.pathname === '/webhooks/resend' && request.method === 'POST') {
+      return handleResendWebhook(env, request);
+    }
+
+    // Manual incremental Clerk sync.
+    if (url.pathname === '/sync' && request.method === 'POST') {
+      if (!authorized()) return jsonResponse({ error: 'Unauthorized' }, 401);
+      try {
+        const synced = await syncNewSubscribers(env);
+        return jsonResponse({ success: true, synced });
+      } catch (error) {
+        return jsonResponse({ success: false, error: error.message }, 500);
+      }
+    }
+
+    // Campaign stats aggregated from webhook events.
+    // GET /stats            -> all campaigns
+    // GET /stats?campaign=newsletter-2026-07-12 -> one campaign
+    if (url.pathname === '/stats' && request.method === 'GET') {
+      if (!authorized()) return jsonResponse({ error: 'Unauthorized' }, 401);
+      try {
+        return jsonResponse(await campaignStats(env, url.searchParams.get('campaign')));
+      } catch (error) {
+        return jsonResponse({ success: false, error: error.message }, 500);
+      }
     }
 
     // Manual trigger: processes ONE chunk per call (repeat until remaining=0).
@@ -197,6 +236,158 @@ async function markSent(env, ids) {
   if (ids.length === 0) return;
   const ph = ids.map((_, i) => `$${i + 1}`).join(',');
   await neonSql(env, `UPDATE email_subscribers SET last_sent_at = NOW(), updated_at = NOW() WHERE id IN (${ph})`, ids);
+}
+
+// Incremental Clerk → Neon sync: walks Clerk users newest-first and upserts
+// until it hits a page where every user is already known (then one more page
+// costs nothing and it stops). Cheap enough to run before every send.
+async function syncNewSubscribers(env) {
+  if (!env.CLERK_SECRET_KEY) throw new Error('CLERK_SECRET_KEY is not configured');
+  let inserted = 0;
+  let offset = 0;
+  const MAX_PAGES = 20; // safety bound: 2,000 newest users per run
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const res = await fetch(
+      `https://api.clerk.com/v1/users?limit=100&offset=${offset}&order_by=-created_at`,
+      { headers: { Authorization: `Bearer ${env.CLERK_SECRET_KEY}` } }
+    );
+    if (!res.ok) throw new Error(`Clerk API failed (${res.status})`);
+    const users = await res.json();
+    if (users.length === 0) break;
+
+    const candidates = [];
+    for (const u of users) {
+      const p = u.email_addresses?.find((e) => e.id === u.primary_email_address_id) || u.email_addresses?.[0];
+      const email = p?.email_address?.toLowerCase();
+      if (email && p.verification?.status === 'verified') candidates.push({ id: u.id, email });
+    }
+    if (candidates.length === 0) {
+      offset += 100;
+      continue;
+    }
+
+    // Which of these are genuinely new? (clerk_user_id is the identity; a
+    // known email under a new account is skipped so nobody gets duplicates.)
+    const ids = candidates.map((c) => c.id);
+    const emails = candidates.map((c) => c.email);
+    const known = await neonSql(
+      env,
+      `SELECT clerk_user_id, email FROM email_subscribers
+       WHERE clerk_user_id = ANY($1::text[]) OR email = ANY($2::text[])`,
+      [ids, emails]
+    );
+    const knownIds = new Set(known.map((r) => r.clerk_user_id));
+    const knownEmails = new Set(known.map((r) => r.email));
+    const fresh = candidates.filter((c) => !knownIds.has(c.id) && !knownEmails.has(c.email));
+
+    if (fresh.length > 0) {
+      const values = fresh.map((_, j) => `($${j * 2 + 1}, $${j * 2 + 2})`).join(',');
+      await neonSql(
+        env,
+        `INSERT INTO email_subscribers (clerk_user_id, email) VALUES ${values}
+         ON CONFLICT (clerk_user_id) DO NOTHING`,
+        fresh.flatMap((c) => [c.id, c.email])
+      );
+      inserted += fresh.length;
+    }
+
+    // Entire page already known → everything older is known too.
+    if (fresh.length === 0 && knownIds.size > 0) break;
+    offset += 100;
+  }
+  return inserted;
+}
+
+// Verify a svix-signed Resend webhook (no SDK: HMAC-SHA256 over
+// "<id>.<timestamp>.<body>" with the base64 secret after "whsec_").
+async function verifySvixSignature(env, request, body) {
+  const secret = env.RESEND_WEBHOOK_SECRET;
+  if (!secret) return false;
+  const id = request.headers.get('svix-id');
+  const timestamp = request.headers.get('svix-timestamp');
+  const signatures = request.headers.get('svix-signature');
+  if (!id || !timestamp || !signatures) return false;
+  // Reject stale timestamps (>5 min) to prevent replay.
+  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
+
+  const keyBytes = Uint8Array.from(atob(secret.replace(/^whsec_/, '')), (c) => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${id}.${timestamp}.${body}`));
+  const expected = btoa(String.fromCharCode(...new Uint8Array(sig)));
+  return signatures.split(' ').some((s) => s.split(',')[1] === expected);
+}
+
+const TRACKED_EVENTS = {
+  'email.opened': 'opened',
+  'email.clicked': 'clicked',
+  'email.bounced': 'bounced',
+  'email.complained': 'complained',
+};
+
+async function handleResendWebhook(env, request) {
+  try {
+    const body = await request.text();
+    if (!(await verifySvixSignature(env, request, body))) {
+      return jsonResponse({ error: 'invalid signature' }, 401);
+    }
+
+    const payload = JSON.parse(body);
+    const eventType = TRACKED_EVENTS[payload.type];
+    if (!eventType) return jsonResponse({ ok: true, ignored: payload.type });
+
+    const d = payload.data || {};
+    const campaign = (d.tags && (d.tags.campaign || d.tags.find?.((t) => t.name === 'campaign')?.value)) || null;
+    await neonSql(
+      env,
+      `INSERT INTO email_events (resend_email_id, recipient, event_type, url, campaign, occurred_at)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        d.email_id || null,
+        (Array.isArray(d.to) ? d.to[0] : d.to) || null,
+        eventType,
+        d.click?.link || null,
+        campaign,
+        payload.created_at || new Date().toISOString(),
+      ]
+    );
+    return jsonResponse({ ok: true });
+  } catch (error) {
+    console.error('Webhook handling failed:', error);
+    await reportError(env, error, { worker: 'aitmpl-newsletter', endpoint: '/webhooks/resend' });
+    // 500 so svix retries the delivery.
+    return jsonResponse({ error: 'internal' }, 500);
+  }
+}
+
+async function campaignStats(env, campaign) {
+  const where = campaign ? `WHERE campaign = $1` : '';
+  const params = campaign ? [campaign] : [];
+  const rows = await neonSql(
+    env,
+    `SELECT campaign,
+            COUNT(DISTINCT recipient) FILTER (WHERE event_type = 'opened')::int AS unique_opens,
+            COUNT(*) FILTER (WHERE event_type = 'opened')::int AS total_opens,
+            COUNT(DISTINCT recipient) FILTER (WHERE event_type = 'clicked')::int AS unique_clickers,
+            COUNT(*) FILTER (WHERE event_type = 'clicked')::int AS total_clicks,
+            COUNT(*) FILTER (WHERE event_type = 'bounced')::int AS bounces,
+            COUNT(*) FILTER (WHERE event_type = 'complained')::int AS complaints
+     FROM email_events ${where} GROUP BY campaign ORDER BY campaign DESC`,
+    params
+  );
+  const links = await neonSql(
+    env,
+    `SELECT campaign, url, COUNT(*)::int AS clicks, COUNT(DISTINCT recipient)::int AS unique_clickers
+     FROM email_events ${where ? where + ' AND' : 'WHERE'} event_type = 'clicked' AND url IS NOT NULL
+     GROUP BY campaign, url ORDER BY clicks DESC LIMIT 25`,
+    params
+  );
+  const [subs] = await neonSql(
+    env,
+    `SELECT COUNT(*)::int AS active, COUNT(*) FILTER (WHERE unsubscribed_at IS NOT NULL)::int AS unsubscribed
+     FROM email_subscribers`
+  );
+  return { campaigns: rows, topLinks: links, subscribers: subs };
 }
 
 async function handleUnsubscribe(env, token) {
@@ -475,6 +666,8 @@ async function sendBatches(env, recipients, { subject, text, html }) {
 
   let sent = 0;
   const failedBatches = [];
+  // Campaign tag flows into webhook events so /stats can group by send.
+  const campaign = `newsletter-${new Date().toISOString().slice(0, 10)}`;
 
   for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
     const batch = recipients.slice(i, i + BATCH_SIZE);
@@ -487,6 +680,7 @@ async function sendBatches(env, recipients, { subject, text, html }) {
         subject,
         text: text.replaceAll(UNSUB_PLACEHOLDER, unsubUrl),
         html: html.replaceAll(UNSUB_PLACEHOLDER, unsubUrl),
+        tags: [{ name: 'campaign', value: campaign }],
         headers: {
           'List-Unsubscribe': `<${unsubUrl}>`,
           'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',

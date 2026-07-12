@@ -25,9 +25,11 @@ UNSUBSCRIBE_BASE_URL = "https://aitmpl-newsletter.dan-avila7.workers.dev"
 # Secrets (set via: wrangler secret put <KEY>)
 # Required:
 # - RESEND_API_KEY: Resend API key (transactional /emails/batch)
-# - NEON_DATABASE_URL: Neon Postgres connection string (email_subscribers table)
+# - NEON_DATABASE_URL: Neon Postgres connection string (email_subscribers + email_events)
+# - CLERK_SECRET_KEY: Clerk production sk_live key (incremental subscriber sync)
+# - RESEND_WEBHOOK_SECRET: svix signing secret (whsec_...) for /webhooks/resend
 # - NEWSLETTER_REPLY_TO: reply-to address for the newsletter
-# - TRIGGER_SECRET: Secret for manual /trigger and /preview endpoints
+# - TRIGGER_SECRET: Secret for manual /trigger, /preview, /sync and /stats
 #
 # Optional (error tracking):
 # - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure a

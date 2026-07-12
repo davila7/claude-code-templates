@@ -329,7 +329,9 @@ curl -X POST "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/trigger" \
   -H "Authorization: Bearer $TRIGGER_SECRET"
 ```
 
-**Secrets (Cloudflare):** `RESEND_API_KEY`, `NEON_DATABASE_URL`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`), `UNSUBSCRIBE_BASE_URL`.
+**Sync & tracking:** the worker syncs new Clerk signups incrementally before every scheduled send (walks newest-first, stops at the first fully-known page; `POST /sync` runs it manually). Engagement events (opens, clicks, bounces, complaints) arrive via a svix-verified Resend webhook at `POST /webhooks/resend` and land in Neon `email_events` (migration 004); every email is tagged `campaign=newsletter-YYYY-MM-DD` and `GET /stats` aggregates unique opens, clicks per link and unsubscribe totals per campaign.
+
+**Secrets (Cloudflare):** `RESEND_API_KEY`, `NEON_DATABASE_URL`, `CLERK_SECRET_KEY`, `RESEND_WEBHOOK_SECRET`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`), `UNSUBSCRIBE_BASE_URL`.
 
 ## Error Tracking (Sentry)
 
