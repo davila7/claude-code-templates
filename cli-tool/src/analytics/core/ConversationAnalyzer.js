@@ -103,10 +103,11 @@ class ConversationAnalyzer {
       
 
       for (const filePath of jsonlFiles) {
-        const stats = await this.getFileStats(filePath);
         const filename = path.basename(filePath);
 
         try {
+          const stats = await this.getFileStats(filePath);
+
           // Extract project name from path
           const projectFromPath = await this.extractProjectFromPath(filePath);
 

@@ -93,6 +93,26 @@ describe('Analytics System Integration', () => {
       }
     });
 
+    it('should skip transcripts that disappear after discovery', async () => {
+      const StateCalculator = require('../../src/analytics/core/StateCalculator');
+      const ConversationAnalyzer = require('../../src/analytics/core/ConversationAnalyzer');
+      const analyzer = new ConversationAnalyzer(testDataDir);
+      const originalGetFileStats = analyzer.getFileStats.bind(analyzer);
+
+      jest.spyOn(analyzer, 'getFileStats').mockImplementation(async (filePath) => {
+        if (path.basename(filePath) === 'conversation_1.jsonl') {
+          const error = new Error('file disappeared');
+          error.code = 'ENOENT';
+          throw error;
+        }
+        return originalGetFileStats(filePath);
+      });
+
+      const conversations = await analyzer.loadConversations(new StateCalculator());
+
+      expect(conversations).toHaveLength(2);
+    });
+
     it('should cache data efficiently', async () => {
       const DataCache = require('../../src/analytics/data/DataCache');
       
