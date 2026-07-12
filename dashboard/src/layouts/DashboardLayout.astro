@@ -143,25 +143,29 @@ const schemaData = JSON.stringify({
         
         if (!sidebar || !mainContent || !toggleBtn) return;
 
+        function setCollapsed(collapsed: boolean) {
+          sidebar.dataset.collapsed = String(collapsed);
+          sidebar.classList.toggle('w-[72px]', collapsed);
+          sidebar.classList.toggle('w-[220px]', !collapsed);
+          mainContent.classList.toggle('md:ml-[72px]', collapsed);
+          mainContent.classList.toggle('md:ml-[220px]', !collapsed);
+          const icon = toggleBtn.querySelector('svg');
+          if (icon) icon.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
         // Load saved state
         const savedState = localStorage.getItem('sidebar-collapsed');
         const isCollapsed = savedState === 'true';
-        
+
         if (isCollapsed) {
-          applySidebarState(true);
+          setCollapsed(true);
         }
 
         // Toggle handler
         toggleBtn.addEventListener('click', () => {
           const currentState = sidebar.dataset.collapsed === 'true';
           const newState = !currentState;
-          sidebar.dataset.collapsed = String(newState);
-          sidebar.classList.toggle('w-[72px]', newState);
-          sidebar.classList.toggle('w-[220px]', !newState);
-          mainContent.classList.toggle('md:ml-[72px]', newState);
-          mainContent.classList.toggle('md:ml-[220px]', !newState);
-          const icon = toggleBtn.querySelector('svg');
-          if (icon) icon.style.transform = newState ? 'rotate(180deg)' : 'rotate(0deg)';
+          setCollapsed(newState);
           localStorage.setItem('sidebar-collapsed', String(newState));
         });
 
