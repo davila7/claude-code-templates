@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-const os = require('os');
+const { getClaudeConfigDir } = require('../../claude-paths');
 
 /**
  * Year in Review 2025 Analyzer
@@ -573,7 +573,7 @@ class YearInReview2025 {
     const path = require('path');
 
     try {
-      const claudeDir = path.join(os.homedir(), '.claude');
+      const claudeDir = getClaudeConfigDir();
       const localDir = path.join(claudeDir, 'local');
 
       // Check if local directory exists
@@ -657,7 +657,7 @@ class YearInReview2025 {
     const path = require('path');
 
     try {
-      const historyPath = path.join(os.homedir(), '.claude', 'history.jsonl');
+      const historyPath = path.join(getClaudeConfigDir(), 'history.jsonl');
       if (!await fs.pathExists(historyPath)) {
         return { commands: [], total: 0, events: [] };
       }
@@ -720,7 +720,7 @@ class YearInReview2025 {
     const path = require('path');
 
     try {
-      const skillsPath = path.join(os.homedir(), '.claude', 'skills');
+      const skillsPath = path.join(getClaudeConfigDir(), 'skills');
       if (!await fs.pathExists(skillsPath)) {
         return { skills: [], total: 0, events: [] };
       }
@@ -770,7 +770,7 @@ class YearInReview2025 {
     const path = require('path');
 
     try {
-      const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+      const settingsPath = path.join(getClaudeConfigDir(), 'settings.json');
       if (!await fs.pathExists(settingsPath)) {
         return { mcps: [], total: 0, events: [] };
       }
