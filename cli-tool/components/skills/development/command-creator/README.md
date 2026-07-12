@@ -425,10 +425,11 @@ This skill includes three comprehensive reference files in the `references/` dir
 
 - Use `<angle-brackets>` for **required** arguments
 - Use `[square-brackets]` for **optional** arguments
+- **Always wrap the value in double quotes** — bare `[...]` is a YAML flow sequence (an array), and downstream slash-command loaders (e.g. GitHub Copilot CLI ≥1.0.65) validate `argument-hint` as a string and silently reject the skill otherwise
 - Examples:
-  - `argument-hint: <file-path>` (required)
-  - `argument-hint: [base-branch]` (optional)
-  - `argument-hint: <command> [args...]` (mixed)
+  - `argument-hint: "<file-path>"` (required)
+  - `argument-hint: "[base-branch]"` (optional)
+  - `argument-hint: "<command> [args...]"` (mixed)
 
 ### Agent-Optimized Instructions
 
