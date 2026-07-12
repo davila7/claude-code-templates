@@ -78,7 +78,7 @@ async function reportError(env, error, context = {}) {
   const authHeader = `Sentry sentry_version=7, sentry_client=aitmpl-worker/1.0, sentry_key=${parsed.publicKey}`;
 
   try {
-    await fetch(endpoint, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-sentry-envelope',
@@ -86,6 +86,10 @@ async function reportError(env, error, context = {}) {
       },
       body,
     });
+    if (!res.ok) {
+      // Surface invalid DSNs, auth failures, and rate limiting in worker logs
+      console.error(`[sentry] report rejected (${res.status}):`, await res.text().catch(() => ''));
+    }
   } catch (sendError) {
     // Never let error reporting break the worker itself
     console.error('[sentry] failed to send report:', sendError.message);
@@ -120,7 +124,7 @@ async function checkIn(env, monitorSlug, status, checkInId) {
   const authHeader = `Sentry sentry_version=7, sentry_client=aitmpl-worker/1.0, sentry_key=${parsed.publicKey}`;
 
   try {
-    await fetch(endpoint, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-sentry-envelope',
@@ -128,6 +132,9 @@ async function checkIn(env, monitorSlug, status, checkInId) {
       },
       body,
     });
+    if (!res.ok) {
+      console.error(`[sentry] check-in rejected (${res.status}):`, await res.text().catch(() => ''));
+    }
   } catch (sendError) {
     console.error('[sentry] failed to send check-in:', sendError.message);
   }
