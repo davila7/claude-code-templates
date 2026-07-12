@@ -13,7 +13,7 @@ Well-documented commands are easier to use, maintain, and distribute. Documentat
 ```markdown
 ---
 description: Clear, actionable description under 60 chars
-argument-hint: [arg1] [arg2] [optional-arg]
+argument-hint: "[arg1] [arg2] [optional-arg]"
 allowed-tools: Read, Bash(git:*)
 model: sonnet
 ---
@@ -233,7 +233,7 @@ Create a help subcommand for complex commands:
 ```markdown
 ---
 description: Main command with help
-argument-hint: [subcommand] [args]
+argument-hint: "[subcommand] [args]"
 ---
 
 # Command Processor
@@ -273,7 +273,7 @@ Provide help based on context:
 ```markdown
 ---
 description: Context-aware command
-argument-hint: [operation] [target]
+argument-hint: "[operation] [target]"
 ---
 
 # Context-Aware Operation

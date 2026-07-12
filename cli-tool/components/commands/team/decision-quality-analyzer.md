@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [analysis-type] | --bias-detection | --scenario-testing | --process-optimization | --outcome-tracking
+argument-hint: "[analysis-type] | --bias-detection | --scenario-testing | --process-optimization | --outcome-tracking"
 description: Analyze team decision quality with bias detection, scenario testing, and process improvement recommendations
 ---
 

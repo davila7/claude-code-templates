@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [version] [change-type] [message] | --added | --changed | --fixed
+argument-hint: "[version] [change-type] [message] | --added | --changed | --fixed"
 description: Add entry to project changelog following Keep a Changelog format
 ---
 

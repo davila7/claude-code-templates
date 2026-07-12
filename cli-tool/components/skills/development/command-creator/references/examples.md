@@ -458,7 +458,7 @@ The goal is to create a comprehensive implementation plan that will be saved as 
 ```markdown
 ---
 description: Perform a local code review using repository standards and best practices
-argument-hint: [base-branch]
+argument-hint: "[base-branch]"
 ---
 
 # Codex Review
