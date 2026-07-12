@@ -11,7 +11,7 @@ This document provides complete, real-world examples of slash commands from the 
 ```markdown
 ---
 description: Create git commit and submit stack with Graphite
-argument-hint: <description>
+argument-hint: "<description>"
 ---
 
 # Submit Stack

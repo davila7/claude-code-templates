@@ -61,7 +61,7 @@ Slash commands are markdown files stored in `.claude/commands/` (project-level) 
 ```markdown
 ---
 description: Brief description shown in /help (required)
-argument-hint: <placeholder> (optional, if command takes arguments)
+argument-hint: "<placeholder>"  # optional — include only if command takes arguments
 ---
 
 # Command Title
