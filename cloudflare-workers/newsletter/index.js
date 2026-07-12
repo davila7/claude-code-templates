@@ -114,7 +114,7 @@ async function runNewsletter(env, opts = {}) {
 
     let delivery = { sent: false };
     if (send) {
-      delivery = await sendBroadcast(env, { subject, text, html });
+      delivery = await sendBroadcast(env, { subject, text, html }, { dedupe });
     }
 
     await checkIn(env, MONITOR_SLUG, 'ok', checkInId);
@@ -363,27 +363,56 @@ function composeEmail(picks) {
 
 // ─── Delivery (Resend) ───────────────────────────────────────────────────────
 
+function todayBroadcastName() {
+  return `newsletter ${new Date().toISOString().slice(0, 10)}`;
+}
+
+// All broadcasts (any status) named `name`. Throws on listing errors so
+// callers decide whether to fail open or closed.
+async function listBroadcastsByName(env, name) {
+  const res = await fetch(`${RESEND_API}/broadcasts`, {
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
+  });
+  if (!res.ok) throw new Error(`Resend broadcast list failed (${res.status})`);
+  const { data } = await res.json();
+  return (data || []).filter((b) => b.name === name);
+}
+
 // True if a non-draft broadcast named "newsletter <today>" already exists.
-// Resend accepts duplicate names, so this pre-flight check is what protects
-// the audience from a double-send if the cron fires twice. Fails open: a
-// listing error must not block the legitimate weekly send.
+// Catches sequential cron double-fires cheaply. Fails open: a listing error
+// must not block the legitimate weekly send.
 async function broadcastAlreadySentToday(env) {
   try {
-    const res = await fetch(`${RESEND_API}/broadcasts`, {
-      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
-    });
-    if (!res.ok) return false;
-    const { data } = await res.json();
-    const todayName = `newsletter ${new Date().toISOString().slice(0, 10)}`;
-    return (data || []).some((b) => b.name === todayName && b.status !== 'draft');
+    return (await listBroadcastsByName(env, todayBroadcastName())).some((b) => b.status !== 'draft');
   } catch {
     return false;
   }
 }
 
+async function deleteBroadcast(env, id) {
+  try {
+    await fetch(`${RESEND_API}/broadcasts/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
+    });
+  } catch (e) {
+    console.error(`Newsletter: failed to delete duplicate draft broadcast ${id}:`, e.message);
+  }
+}
+
 // Creates a Broadcast targeting env.RESEND_SEGMENT_ID and sends it. Resend
 // injects the per-recipient unsubscribe link and skips unsubscribed contacts.
-async function sendBroadcast(env, { subject, text, html }) {
+//
+// With opts.dedupe (cron path), the create+send is split into a stateless
+// leader election to close the read-then-create race of two overlapping cron
+// invocations: each run creates its broadcast as a DRAFT, waits a settle
+// period so any concurrent run's draft becomes visible, then lists today's
+// broadcasts — if another run already sent, or a concurrent draft with a
+// smaller id exists, this run deletes its own draft and yields. Only the
+// deterministic winner calls /send, so the audience can never receive the
+// newsletter twice. (Workers KV offers no compare-and-set, so it cannot
+// provide a stronger lock than this without adding Durable Objects.)
+async function sendBroadcast(env, { subject, text, html }, opts = {}) {
   if (!env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured');
   if (!env.RESEND_FROM_EMAIL) throw new Error('RESEND_FROM_EMAIL is not configured');
   if (!env.RESEND_SEGMENT_ID) throw new Error('RESEND_SEGMENT_ID is not configured');
@@ -392,6 +421,7 @@ async function sendBroadcast(env, { subject, text, html }) {
     Authorization: `Bearer ${env.RESEND_API_KEY}`,
     'Content-Type': 'application/json',
   };
+  const name = todayBroadcastName();
 
   const createRes = await fetch(`${RESEND_API}/broadcasts`, {
     method: 'POST',
@@ -403,7 +433,7 @@ async function sendBroadcast(env, { subject, text, html }) {
       subject,
       text,
       html,
-      name: `newsletter ${new Date().toISOString().slice(0, 10)}`,
+      name,
     }),
   });
   if (!createRes.ok) {
@@ -411,6 +441,25 @@ async function sendBroadcast(env, { subject, text, html }) {
     throw new Error(`Resend broadcast create failed (${createRes.status}): ${body}`);
   }
   const { id } = await createRes.json();
+
+  if (opts.dedupe) {
+    // Settle so a concurrent double-fire's draft is visible before electing.
+    await new Promise((r) => setTimeout(r, 10_000));
+    try {
+      const peers = await listBroadcastsByName(env, name);
+      const someoneSent = peers.some((b) => b.id !== id && b.status !== 'draft');
+      const draftIds = peers.filter((b) => b.status === 'draft').map((b) => b.id).sort();
+      const winner = draftIds[0];
+      if (someoneSent || (winner && winner !== id)) {
+        console.log(`Newsletter: concurrent duplicate detected, yielding (mine=${id}, winner=${winner || 'already sent'})`);
+        await deleteBroadcast(env, id);
+        return { sent: false, skipped: 'concurrent duplicate detected', broadcastId: id };
+      }
+    } catch (e) {
+      // Fail open: an election listing error must not block the weekly send.
+      console.error('Newsletter: dedupe election listing failed, proceeding to send:', e.message);
+    }
+  }
 
   const sendRes = await fetch(`${RESEND_API}/broadcasts/${id}/send`, {
     method: 'POST',
