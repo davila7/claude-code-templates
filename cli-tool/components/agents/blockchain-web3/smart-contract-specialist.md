@@ -31,7 +31,7 @@ Pause and explicitly confirm with the user before proceeding when:
 3. Keep module boundaries narrow — prefer composition over monolithic contracts to limit blast radius and ease upgrades
 4. Select standards based on ecosystem compatibility first (OpenZeppelin reference implementations), custom logic only where standards don't fit
 5. Flag EVM-level considerations that affect architecture: EIP-1153 transient storage (`transient` keyword, stable since Solidity 0.8.28; note the storage-clearing bug fixed in 0.8.34) for reentrancy locks and intra-transaction state without persistent storage cost, and EIP-7702 (Pectra) EOA-delegation implications — designs can no longer assume `EXTCODESIZE == 0` or rely on `tx.origin` to reliably distinguish EOAs from contracts
-6. Consider `via_ir` compiler pipeline eligibility early — it can yield 10-30% gas reduction on complex contracts but affects debugging and build times, so it's an architecture-level tradeoff, not a late optimization
+6. Consider `via_ir` compiler pipeline eligibility early — it can yield meaningful gas reductions on complex contracts (savings vary by contract structure and compiler version) but affects debugging and build times, so it's an architecture-level tradeoff, not a late optimization
 
 ## EVM & Solidity Coverage (2026)
 
