@@ -154,7 +154,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **🐛 Issues**: [GitHub Issues](https://github.com/davila7/claude-code-templates/issues)
 
 ## Stargazers over time
-[![Stargazers over time](https://api.star-history.com/svg?repos=davila7/claude-code-templates&type=Date)](https://star-history.com/#davila7/claude-code-templates&Date)
+[![Stargazers over time](docs/star-history.svg)](https://star-history.com/#davila7/claude-code-templates&Date)
 
 ---
 
