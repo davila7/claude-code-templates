@@ -2,6 +2,7 @@
 import DashboardLayout from '../../layouts/DashboardLayout.astro';
 import TopBar from '../../components/TopBar.astro';
 import SearchModal from '../../components/SearchModal.tsx';
+import MarketplacePluginsList from '../../components/MarketplacePluginsList.tsx';
 
 export const prerender = true;
 
@@ -50,17 +51,6 @@ const pluginCount = containsObj.plugins ?? 0;
 const repoPath = plugin.github.replace('https://github.com/', '');
 const addMarketplaceCmd = `/plugin marketplace add ${repoPath}`;
 const marketplaceName = repoPath.replace('/', '-');
-
-// Categorize marketplace plugins by source type
-function getSourceLabel(p: any): string {
-  const src = p.source ?? '';
-  if (typeof src === 'string') {
-    if (src.startsWith('./') || src.startsWith('../')) return 'local';
-    if (src.includes('github.com') || src.includes('.git')) return 'github';
-    if (src.includes('/')) return 'github';
-  }
-  return 'local';
-}
 ---
 
 <DashboardLayout
@@ -256,82 +246,13 @@ function getSourceLabel(p: any): string {
 
     <!-- Marketplace Plugins List -->
     {isMarketplace && pluginsList.length > 0 && (
-      <div>
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-bold text-[var(--color-text-primary)]">
-            Plugins ({pluginsList.length})
-          </h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {pluginsList.map((p: any, idx: number) => {
-            const sourceType = getSourceLabel(p);
-            const hasAuthor = p.author && p.author !== plugin.author;
-            const hasComponents = p.components && Object.keys(p.components).length > 0;
-            return (
-              <div
-                class="flex flex-col p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200"
-                style="box-shadow: var(--shadow-card);"
-              >
-                <div class="flex items-start gap-3 mb-2">
-                  <div
-                    class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-[12px] font-bold select-none"
-                    style="background: linear-gradient(135deg, #ffd93d12 0%, #ffd93d08 100%); border: 1px solid #ffd93d20; color: #ffd93d99;"
-                  >
-                    {(p.name ?? '?').charAt(0).toUpperCase()}
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <h3 class="text-[13px] font-semibold text-[var(--color-text-primary)] truncate">
-                        {p.name}
-                      </h3>
-                      {sourceType === 'github' && (
-                        <span class="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
-                          external
-                        </span>
-                      )}
-                    </div>
-                    {hasAuthor && (
-                      <p class="text-[11px] text-[var(--color-text-tertiary)]">by {p.author}</p>
-                    )}
-                  </div>
-                </div>
-
-                {p.description && (
-                  <p class="text-[12px] text-[var(--color-text-secondary)] leading-[1.5] line-clamp-2 mb-2 flex-1">
-                    {p.description}
-                  </p>
-                )}
-
-                {/* Component tags */}
-                {hasComponents && (
-                  <div class="flex items-center gap-1.5 flex-wrap mt-auto">
-                    {Object.entries(p.components).map(([type, count]) => (
-                      <span
-                        class="text-[9px] font-semibold px-2 py-0.5 rounded-full border"
-                        style={`background: ${TAG_COLORS[type] ?? '#666'}10; color: ${TAG_COLORS[type] ?? '#666'}; border-color: ${TAG_COLORS[type] ?? '#666'}20;`}
-                      >
-                        {count} {type}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Plugin tags from marketplace */}
-                {p.tags && p.tags.length > 0 && !hasComponents && (
-                  <div class="flex items-center gap-1.5 flex-wrap mt-auto">
-                    {p.tags.slice(0, 4).map((tag: string) => (
-                      <span class="text-[9px] font-medium px-2 py-0.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <MarketplacePluginsList
+        client:load
+        pluginsList={pluginsList}
+        marketplaceAuthor={plugin.author}
+        marketplaceName={marketplaceName}
+        tagColors={TAG_COLORS}
+      />
     )}
 
     <!-- Highlights -->

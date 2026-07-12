@@ -476,6 +476,13 @@ All of the above are served as static Cloudflare Pages assets with
 3. Dashboard islands (`ComponentGrid.tsx`, `SearchModal.tsx`, `Sidebar.astro`, `SendToRepoModal.tsx`) load the split artifacts instead of the full catalog
 4. Download tracking via `/api/track-download-supabase`
 
+### Plugins & Marketplaces Catalog
+
+- `scripts/generate_plugins_json.py` — scans the repos listed in `REPOS` via the `gh` CLI (needs `gh auth login`) and writes `dashboard/public/plugins.json`. This is a **manual, offline step** — it does not run during `npm run build` or CI/CD, so re-running it never affects deploy time.
+- For each marketplace it records `plugins_list[].components` (counts per type) and `plugins_list[].components_items` (`{name, description}` per command/agent/skill/hook/mcp/lsp, description parsed from the item's frontmatter). The dashboard's `/plugins/[slug].astro` page renders this through `MarketplacePluginsList.tsx`, which shows a search box and a "view details" modal per plugin.
+- **`max_local_scans = 50`** in `extract_marketplace_plugins_detail()` caps how many *locally-sourced* plugins (i.e. `source: "./plugins/..."` within the marketplace's own repo) get scanned for real component names/descriptions, per marketplace, to bound GitHub API calls. Plugins beyond that cap (or plugins hosted in an external repo, which are never scanned) fall back to showing only tag badges in the modal, with no itemized breakdown — this is a graceful degradation, not an error.
+  - As of 2026-07-11, `anthropics/claude-plugins-official` alone has 51 locally-sourced plugins (out of 255 total), i.e. already at the edge of this cap. Bump `max_local_scans` if more complete coverage is needed — GitHub's rate limit (5000 req/hour authenticated) is not the constraint, wall-clock run time is (each item now costs 1 extra API call to fetch its file content for the description).
+
 ### Legacy Static Site (docs/)
 
 The `docs/` directory contains the old static HTML site (no longer deployed to www). Blog articles in `docs/blog/` are still referenced externally.

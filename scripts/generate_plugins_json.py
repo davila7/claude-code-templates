@@ -235,33 +235,74 @@ def get_local_source_path(plugin_entry):
     return None
 
 
-def scan_plugin_dir_components(repo, dir_path):
+def _strip_component_ext(name):
+    for ext in (".md", ".json", ".js", ".ts", ".py"):
+        if name.endswith(ext):
+            return name[: -len(ext)]
+    return name
+
+
+def extract_frontmatter_description(content):
+    """Pull a `description:` value out of a markdown file's YAML frontmatter."""
+    if not content or not content.startswith("---"):
+        return ""
+    end = content.find("---", 3)
+    if end == -1:
+        return ""
+    frontmatter = content[3:end]
+    for line in frontmatter.split("\n"):
+        line = line.strip()
+        if line.startswith("description:"):
+            desc = line.split("description:", 1)[1].strip()
+            if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in ("'", '"'):
+                desc = desc[1:-1]
+            return desc
+    return ""
+
+
+def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     """Scan a plugin directory for skills/, agents/, commands/, hooks/ subdirs
-    and count the files inside each. Returns component counts dict."""
+    and list the files inside each. Returns (counts, items) where `counts` is
+    a dict of type -> count and `items` is a dict of type -> list of
+    {"name", "description"} dicts, for types where names were resolved."""
     components = {}
+    component_items = {}
     # List the plugin's root directory
     listing = gh_dir_listing(repo, dir_path)
     if not listing:
-        return components
+        return components, component_items
 
     dir_names = {item["name"]: item["type"] for item in listing if isinstance(item, dict)}
     component_dirs = ["skills", "agents", "commands", "hooks"]
 
     for comp_dir in component_dirs:
         if comp_dir in dir_names and dir_names[comp_dir] == "dir":
-            # Count items inside this component directory
+            # List items inside this component directory
             items = gh_dir_listing(repo, f"{dir_path}/{comp_dir}")
             if items:
-                # Count files and dirs (each dir = 1 component, each .md/.json file = 1 component)
-                count = len([
-                    item for item in items
-                    if isinstance(item, dict) and (
-                        item["type"] == "dir" or
-                        item["name"].endswith((".md", ".json", ".js", ".ts", ".py"))
-                    )
-                ])
-                if count > 0:
-                    components[comp_dir] = count
+                entries = []
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    if item["type"] == "dir":
+                        item_name = item["name"]
+                        description = ""
+                        if fetch_descriptions:
+                            md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item_name}/SKILL.md")
+                            if not md:
+                                md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item_name}/{item_name}.md")
+                            description = extract_frontmatter_description(md)
+                        entries.append({"name": item_name, "description": description})
+                    elif item["name"].endswith((".md", ".json", ".js", ".ts", ".py")):
+                        item_name = _strip_component_ext(item["name"])
+                        description = ""
+                        if fetch_descriptions and item["name"].endswith(".md"):
+                            md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item['name']}")
+                            description = extract_frontmatter_description(md)
+                        entries.append({"name": item_name, "description": description})
+                if entries:
+                    components[comp_dir] = len(entries)
+                    component_items[comp_dir] = entries
 
     # Check for mcpServers in plugin.json
     plugin_json_raw = gh_file_content(repo, f"{dir_path}/.claude-plugin/plugin.json")
@@ -271,11 +312,13 @@ def scan_plugin_dir_components(repo, dir_path):
             mcps = pj.get("mcpServers")
             if isinstance(mcps, dict) and len(mcps) > 0:
                 components["mcps"] = len(mcps)
+                component_items["mcps"] = [{"name": k, "description": ""} for k in mcps.keys()]
             lsps = pj.get("lspServers")
             if isinstance(lsps, dict) and len(lsps) > 0:
                 components["lsps"] = len(lsps)
+                component_items["lsps"] = [{"name": k, "description": ""} for k in lsps.keys()]
 
-    return components
+    return components, component_items
 
 
 def extract_marketplace_plugins_detail(marketplace, repo=None, scan_local=True):
@@ -319,26 +362,56 @@ def extract_marketplace_plugins_detail(marketplace, repo=None, scan_local=True):
 
         # Inline components from marketplace.json
         components = {}
+        component_items = {}
+        can_fetch_local_desc = bool(local_path and repo and scan_local and local_scan_count < max_local_scans)
+        used_local_desc_fetch = False
         for key in ("skills", "agents", "commands"):
             val = p.get(key)
             if isinstance(val, list) and len(val) > 0:
                 components[key] = len(val)
+                entries = []
+                for v in val:
+                    if isinstance(v, str):
+                        base = v.rstrip("/").replace("\\", "/").split("/")[-1]
+                        item_name = _strip_component_ext(base)
+                        description = ""
+                        if can_fetch_local_desc and v.endswith(".md"):
+                            rel = v.lstrip("./")
+                            md = gh_file_content(repo, f"{local_path.lstrip('./')}/{rel}")
+                            description = extract_frontmatter_description(md)
+                            used_local_desc_fetch = True
+                        entries.append({"name": item_name, "description": description})
+                    elif isinstance(v, dict):
+                        n = v.get("name") or v.get("path", "")
+                        if n:
+                            item_name = _strip_component_ext(str(n).rstrip("/").split("/")[-1])
+                            entries.append({"name": item_name, "description": v.get("description", "")})
+                if entries:
+                    component_items[key] = entries
         mcps = p.get("mcpServers")
         if isinstance(mcps, dict) and len(mcps) > 0:
             components["mcps"] = len(mcps)
+            component_items["mcps"] = [{"name": k, "description": ""} for k in mcps.keys()]
         lsps = p.get("lspServers")
         if isinstance(lsps, dict) and len(lsps) > 0:
             components["lsps"] = len(lsps)
+            component_items["lsps"] = [{"name": k, "description": ""} for k in lsps.keys()]
+
+        if used_local_desc_fetch:
+            local_scan_count += 1
 
         # If no inline components and this is a local plugin, scan its directory
         if not components and local_path and repo and scan_local and local_scan_count < max_local_scans:
-            scanned = scan_plugin_dir_components(repo, local_path.lstrip("./"))
-            if scanned:
-                components = scanned
+            scanned_counts, scanned_items = scan_plugin_dir_components(repo, local_path.lstrip("./"))
+            if scanned_counts:
+                components = scanned_counts
+                component_items = scanned_items
                 local_scan_count += 1
 
         if components:
             entry["components"] = components
+        if component_items:
+            entry["components_items"] = component_items
 
         details.append(entry)
     return details
