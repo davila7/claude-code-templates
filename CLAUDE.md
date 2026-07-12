@@ -261,15 +261,9 @@ npx wrangler deploy  # Deploy
 
 **Secrets (Cloudflare):** `DASHBOARD_URL` (e.g. `https://www.aitmpl.com`), `TRIGGER_SECRET`, `SENTRY_DSN` (optional).
 
-### docs-monitor
+### docs-monitor (DECOMMISSIONED 2026-07)
 
-Monitors https://code.claude.com/docs for changes every hour and sends Telegram notifications. Also reports errors to Sentry via `sentry.js` (complements, doesn't replace, the Telegram error alert).
-
-```bash
-cd cloudflare-workers/docs-monitor
-npm run dev          # Local dev
-npx wrangler deploy  # Deploy
-```
+Monitored https://code.claude.com/docs hourly with Telegram notifications. **Deleted from Cloudflare** to free a cron-trigger slot for the newsletter worker (the account's free plan allows 5 cron triggers total). The code remains in `cloudflare-workers/docs-monitor/` and can be redeployed if a slot frees up (`npx wrangler deploy`).
 
 ### pulse (Weekly KPI Report)
 
@@ -312,6 +306,28 @@ GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 ```
 
 **Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below). The Vercel collector was removed (2026-07) since the dashboard no longer deploys to Vercel.
+
+### newsletter (Weekly Community Components Email)
+
+Composes and sends a simple weekly email via Resend featuring trending components (one Skill, Agent, MCP, Hook and Setting per send, in that fixed order). Selection is weighted-random by recent downloads and the copy (subject, catalog intro, per-component sentences, stats cited, closer) rotates from pools so no two emails read the same. Body is plain text plus a minimal HTML version (bold + underlined component titles, clickable component links). Data comes from the live `trending-data.json` + `components.json`.
+
+**Delivery:** Resend **Broadcast** targeting the segment in `RESEND_SEGMENT_ID` — Resend injects the per-recipient unsubscribe link (`{{{RESEND_UNSUBSCRIBE_URL}}}` placeholder in the body) and manages the suppression list automatically. Replies go to `NEWSLETTER_REPLY_TO`. The segment is the safety gate: point it at a pilot segment for tests or the full-audience segment for community-wide sends. Open/click tracking is enabled on the `aitmpl.com` domain with tracking subdomain `track.aitmpl.com` (metrics per broadcast at resend.com/broadcasts). Cron: Sundays 16:00 UTC (slot freed by decommissioning docs-monitor). `GET /preview?format=text` composes without sending; `POST /trigger` sends (`?send=false` for dry run).
+
+```bash
+cd cloudflare-workers/newsletter
+npm run dev          # Local dev
+npx wrangler deploy  # Deploy
+
+# Preview content without sending (repeat to see the copy rotate)
+curl "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/preview?format=text" \
+  -H "Authorization: Bearer $TRIGGER_SECRET"
+
+# Real send: creates + sends a Broadcast to the segment in RESEND_SEGMENT_ID
+curl -X POST "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/trigger" \
+  -H "Authorization: Bearer $TRIGGER_SECRET"
+```
+
+**Secrets (Cloudflare):** `RESEND_API_KEY` (full access — broadcasts/segments), `RESEND_SEGMENT_ID`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`).
 
 ## Error Tracking (Sentry)
 
