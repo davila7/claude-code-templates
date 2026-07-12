@@ -1,0 +1,31 @@
+# Cloudflare Worker Configuration
+# Newsletter — Weekly Community Components Email (via Resend Broadcasts)
+
+name = "aitmpl-newsletter"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# Cron Trigger — Sundays 16:00 UTC. The account's 5-cron-trigger limit (free
+# plan) had this slot taken by claude-docs-monitor, which was decommissioned
+# (2026-07) to make room for the newsletter.
+# The broadcast goes to the segment in RESEND_SEGMENT_ID, which acts as the
+# safety gate: keep it pointed at a pilot segment until the full-audience
+# segment is ready.
+[triggers]
+crons = ["0 16 * * SUN"]
+
+[vars]
+# Public deploy-time values (not secrets)
+DASHBOARD_URL = "https://www.aitmpl.com"
+RESEND_FROM_EMAIL = "Daniel Avila <daniel.avila@aitmpl.com>"
+
+# Secrets (set via: wrangler secret put <KEY>)
+# Required:
+# - RESEND_API_KEY: Resend FULL ACCESS API key (broadcasts + segments)
+# - RESEND_SEGMENT_ID: Resend segment the broadcast targets (test or full audience)
+# - NEWSLETTER_REPLY_TO: reply-to address for the newsletter
+# - TRIGGER_SECRET: Secret for manual /trigger and /preview endpoints
+#
+# Optional (error tracking):
+# - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure a
+#   Cron Monitor in Sentry with slug "newsletter-weekly".

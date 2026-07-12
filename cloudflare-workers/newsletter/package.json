@@ -1,0 +1,28 @@
+{
+  "name": "aitmpl-newsletter",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker — Weekly community components email via Resend",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "secret:resend": "wrangler secret put RESEND_API_KEY",
+    "secret:trigger": "wrangler secret put TRIGGER_SECRET",
+    "secret:segment": "wrangler secret put RESEND_SEGMENT_ID",
+    "secret:reply-to": "wrangler secret put NEWSLETTER_REPLY_TO",
+    "secret:sentry": "wrangler secret put SENTRY_DSN"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "resend",
+    "newsletter",
+    "email"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.91.0"
+  }
+}
