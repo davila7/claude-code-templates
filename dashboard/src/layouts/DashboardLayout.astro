@@ -155,7 +155,13 @@ const schemaData = JSON.stringify({
         toggleBtn.addEventListener('click', () => {
           const currentState = sidebar.dataset.collapsed === 'true';
           const newState = !currentState;
-          applySidebarState(newState);
+          sidebar.dataset.collapsed = String(newState);
+          sidebar.classList.toggle('w-[72px]', newState);
+          sidebar.classList.toggle('w-[220px]', !newState);
+          mainContent.classList.toggle('md:ml-[72px]', newState);
+          mainContent.classList.toggle('md:ml-[220px]', !newState);
+          const icon = toggleBtn.querySelector('svg');
+          if (icon) icon.style.transform = newState ? 'rotate(180deg)' : 'rotate(0deg)';
           localStorage.setItem('sidebar-collapsed', String(newState));
         });
 
