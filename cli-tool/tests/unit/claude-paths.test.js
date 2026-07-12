@@ -12,6 +12,11 @@ describe('getClaudeConfigDir', () => {
     })).toBe(path.resolve('/profiles/claude-enterprise'));
   });
 
+  test('resolves a relative CLAUDE_CONFIG_DIR from the working directory', () => {
+    expect(getClaudeConfigDir('/home/tester', { CLAUDE_CONFIG_DIR: 'custom-dir' }))
+      .toBe(path.resolve('custom-dir'));
+  });
+
   test('ignores an empty CLAUDE_CONFIG_DIR', () => {
     expect(getClaudeConfigDir('/home/tester', { CLAUDE_CONFIG_DIR: '  ' }))
       .toBe(path.join('/home/tester', '.claude'));
