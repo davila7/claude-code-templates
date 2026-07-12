@@ -307,11 +307,13 @@ GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 
 **Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below). The Vercel collector was removed (2026-07) since the dashboard no longer deploys to Vercel.
 
-### newsletter (Weekly Community Components Email)
+### newsletter (Biweekly Community Components Email)
 
-Composes and sends a simple weekly email via Resend featuring trending components (one Skill, Agent, MCP, Hook and Setting per send, in that fixed order). Selection is weighted-random by recent downloads and the copy (subject, catalog intro, per-component sentences, stats cited, closer) rotates from pools so no two emails read the same. Body is plain text plus a minimal HTML version (bold + underlined component titles, clickable component links). Data comes from the live `trending-data.json` + `components.json`.
+Composes and sends a simple email featuring trending components (one Skill, Agent, MCP, Hook and Setting per send, in that fixed order) to all subscribers. Selection is weighted-random by recent downloads and the copy (subject, catalog intro, per-component sentences, stats cited, closer) rotates from pools so no two emails read the same. Body is plain text plus a minimal HTML version (bold + underlined component titles, clickable component links). Data comes from the live `trending-data.json` + `components.json`.
 
-**Delivery:** Resend **Broadcast** targeting the segment in `RESEND_SEGMENT_ID` — Resend injects the per-recipient unsubscribe link (`{{{RESEND_UNSUBSCRIBE_URL}}}` placeholder in the body) and manages the suppression list automatically. Replies go to `NEWSLETTER_REPLY_TO`. The segment is the safety gate: point it at a pilot segment for tests or the full-audience segment for community-wide sends. Open/click tracking is enabled on the `aitmpl.com` domain with tracking subdomain `track.aitmpl.com` (metrics per broadcast at resend.com/broadcasts). Cron: Sundays 16:00 UTC (slot freed by decommissioning docs-monitor). `GET /preview?format=text` composes without sending; `POST /trigger` sends (`?send=false` for dry run).
+**Architecture (own subscriber system):** subscribers live in Neon (`email_subscribers`, migration `003_create_email_subscribers.sql`), synced from Clerk (source of truth). Delivery uses Resend's **transactional batch API** (`/emails/batch`, 100/call) — NOT Broadcasts/Audiences, whose marketing-contacts quota costs $180/mo at this audience size vs $20/mo transactional Pro (50K emails/month). The worker owns unsubscribe: every email carries a tokenized link to its public `GET/POST /unsubscribe` endpoint plus RFC 8058 one-click headers; unsubscribed rows are excluded from all sends. Replies go to `NEWSLETTER_REPLY_TO`. Open/click tracking is enabled on the domain with tracking subdomain `track.aitmpl.com`.
+
+**Cadence & chunking:** the cron fires every 10 min on Sundays 16:00–17:50 UTC (`*/10 16-17 * * SUN`, slot freed by decommissioning docs-monitor) but only sends on **even ISO weeks** (biweekly). Each firing drains up to 1,000 pending subscribers (`last_sent_at` tracks the campaign; Workers free plan = 50 subrequests/invocation) — no-op when nothing is pending, which also makes cron double-fires harmless.
 
 ```bash
 cd cloudflare-workers/newsletter
@@ -322,12 +324,12 @@ npx wrangler deploy  # Deploy
 curl "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/preview?format=text" \
   -H "Authorization: Bearer $TRIGGER_SECRET"
 
-# Real send: creates + sends a Broadcast to the segment in RESEND_SEGMENT_ID
+# Real send: ONE chunk of ≤1,000 pending per call — repeat until remaining: 0
 curl -X POST "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/trigger" \
   -H "Authorization: Bearer $TRIGGER_SECRET"
 ```
 
-**Secrets (Cloudflare):** `RESEND_API_KEY` (full access — broadcasts/segments), `RESEND_SEGMENT_ID`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`).
+**Secrets (Cloudflare):** `RESEND_API_KEY`, `NEON_DATABASE_URL`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`), `UNSUBSCRIBE_BASE_URL`.
 
 ## Error Tracking (Sentry)
 

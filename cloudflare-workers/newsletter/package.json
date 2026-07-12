@@ -10,7 +10,7 @@
     "tail": "wrangler tail",
     "secret:resend": "wrangler secret put RESEND_API_KEY",
     "secret:trigger": "wrangler secret put TRIGGER_SECRET",
-    "secret:segment": "wrangler secret put RESEND_SEGMENT_ID",
+    "secret:neon": "wrangler secret put NEON_DATABASE_URL",
     "secret:reply-to": "wrangler secret put NEWSLETTER_REPLY_TO",
     "secret:sentry": "wrangler secret put SENTRY_DSN"
   },

@@ -1,18 +1,27 @@
 /**
- * Cloudflare Worker: Newsletter — Weekly Community Components Email
+ * Cloudflare Worker: Newsletter — Biweekly Community Components Email
  *
  * Picks trending components (Skills, Agents, MCPs, Hooks, Settings) with
  * weighted randomness, composes a simple email whose wording rotates on
- * every send, and delivers it as a Resend Broadcast to the segment in
- * RESEND_SEGMENT_ID. Resend injects the per-recipient unsubscribe link
- * ({{{RESEND_UNSUBSCRIBE_URL}}} in the body) and manages the suppression
- * list automatically. Replies go to NEWSLETTER_REPLY_TO.
+ * every send, and delivers it via Resend's TRANSACTIONAL batch API
+ * (POST /emails/batch) — no Resend marketing-contacts quota involved.
  *
- * The segment is the safety gate: point RESEND_SEGMENT_ID at a test segment
- * (single recipient) while iterating, and at the full-audience segment when
- * going community-wide.
+ * Subscribers live in Neon (`email_subscribers`, migration 003), synced from
+ * Clerk. Unsubscribe is owned here too: every email carries a per-recipient
+ * token link to this worker's public GET/POST /unsubscribe endpoint, plus
+ * RFC 8058 List-Unsubscribe headers for one-click unsubscribe in Gmail etc.
  *
- * Zero npm dependencies, matching the other workers in this directory.
+ * Send cadence and chunking:
+ * - The cron fires every 10 minutes on Sunday 16:00–17:50 UTC, but only
+ *   sends on EVEN ISO weeks (biweekly; Cloudflare cron can't express
+ *   "every 2 weeks").
+ * - Each invocation processes up to CHUNK_SIZE pending subscribers (the
+ *   Workers free plan allows 50 subrequests per invocation), marks them
+ *   `last_sent_at`, and lets the next cron firing pick up the rest. When
+ *   nothing is pending the firing is a cheap no-op. This also makes cron
+ *   double-fires harmless: a duplicate invocation just grabs the next chunk.
+ *
+ * Zero npm dependencies: Neon is queried over its HTTP SQL API with fetch().
  *
  * Error tracking: set SENTRY_DSN (wrangler secret put SENTRY_DSN) to report
  * failures to the "aitmpl-workers" Sentry project. Optional — the worker
@@ -23,8 +32,10 @@ import { reportError, checkIn } from './sentry.js';
 
 const RESEND_API = 'https://api.resend.com';
 const MONITOR_SLUG = 'newsletter-weekly';
+const BATCH_SIZE = 100; // Resend /emails/batch max
+const CHUNK_SIZE = 1000; // subscribers per invocation (10 batches + updates ≈ 25 subrequests)
 
-// Component categories featured in every email (one pick per category).
+// Component categories featured in every email, in this fixed order.
 // urlType matches the dashboard detail route: /component/<urlType>/<cleanPath>
 const CATEGORIES = [
   { key: 'skills', label: 'Skill', flag: '--skill', urlType: 'skill' },
@@ -38,10 +49,15 @@ const CATEGORIES = [
 
 export default {
   async scheduled(event, env, ctx) {
-    console.log('📬 Newsletter: starting weekly send (cron)...');
-    // dedupe guards against Cloudflare's documented occasional cron double-fire;
-    // manual /trigger sends skip it so pilots/tests can send multiple times a day.
-    await runNewsletter(env, { send: true, dedupe: true });
+    // Biweekly cadence: only send on EVEN ISO weeks. Keeps ~10.8K subscribers
+    // × 2 sends/month ≈ 22K emails, within the Resend Pro 50K/month quota.
+    const week = isoWeek(new Date());
+    if (week % 2 !== 0) {
+      console.log(`📬 Newsletter: skipping odd ISO week ${week} (biweekly cadence)`);
+      return;
+    }
+    console.log(`📬 Newsletter: cron firing (ISO week ${week})...`);
+    await runNewsletter(env, { send: true });
   },
 
   async fetch(request, env, ctx) {
@@ -52,7 +68,14 @@ export default {
       return env.TRIGGER_SECRET && authHeader === `Bearer ${env.TRIGGER_SECRET}`;
     };
 
-    // Manual trigger (real send unless ?send=false)
+    // Public unsubscribe: GET for humans clicking the email link, POST for
+    // RFC 8058 one-click unsubscribe from mail clients. The token IS the
+    // credential, so no other auth applies.
+    if (url.pathname === '/unsubscribe' && (request.method === 'GET' || request.method === 'POST')) {
+      return handleUnsubscribe(env, url.searchParams.get('token'));
+    }
+
+    // Manual trigger: processes ONE chunk per call (repeat until remaining=0).
     if (url.pathname === '/trigger' && request.method === 'POST') {
       if (!authorized()) return jsonResponse({ error: 'Unauthorized' }, 401);
       const send = url.searchParams.get('send') !== 'false';
@@ -64,8 +87,7 @@ export default {
       }
     }
 
-    // Content preview — composes the email without ever calling Resend.
-    // Hit it repeatedly to see the wording/selection rotate.
+    // Content preview — composes the email without sending or touching Neon.
     if (url.pathname === '/preview' && request.method === 'GET') {
       if (!authorized()) return jsonResponse({ error: 'Unauthorized' }, 401);
       try {
@@ -85,13 +107,13 @@ export default {
       return jsonResponse({
         status: 'running',
         worker: 'aitmpl-newsletter',
-        schedule: 'Sundays 16:00 UTC (Resend Broadcast to RESEND_SEGMENT_ID)',
+        schedule: 'biweekly (even ISO weeks), Sundays 16:00-17:50 UTC in chunks',
         categories: CATEGORIES.map((c) => c.key),
       });
     }
 
     return new Response(
-      'Newsletter — Weekly Community Components Email\n\nEndpoints:\n- POST /trigger (requires auth, ?send=false for dry run)\n- GET /preview (requires auth, ?format=text for plain text)\n- GET /status',
+      'Newsletter — Biweekly Community Components Email\n\nEndpoints:\n- POST /trigger (requires auth, ?send=false for dry run, one chunk per call)\n- GET /preview (requires auth, ?format=text for plain text)\n- GET/POST /unsubscribe?token=... (public)\n- GET /status',
       { headers: { 'Content-Type': 'text/plain' } }
     );
   },
@@ -100,36 +122,108 @@ export default {
 // ─── Runner ──────────────────────────────────────────────────────────────────
 
 async function runNewsletter(env, opts = {}) {
-  const { send = true, dedupe = false } = opts;
+  const { send = true } = opts;
   const checkInId = await checkIn(env, MONITOR_SLUG, 'in_progress');
 
   try {
-    if (send && dedupe && (await broadcastAlreadySentToday(env))) {
-      console.log('Newsletter: broadcast for today already exists, skipping (cron double-fire guard)');
+    const recipients = await getPendingSubscribers(env, CHUNK_SIZE);
+    if (send && recipients.length === 0) {
+      console.log('Newsletter: no pending subscribers, nothing to do');
       await checkIn(env, MONITOR_SLUG, 'ok', checkInId);
-      return { success: true, skipped: 'broadcast for today already sent' };
+      return { success: true, skipped: 'no pending subscribers' };
     }
 
     const { subject, text, html, picks } = await buildEmail(env);
 
-    let delivery = { sent: false };
+    let delivery = { sent: 0 };
     if (send) {
-      delivery = await sendBroadcast(env, { subject, text, html }, { dedupe });
+      delivery = await sendBatches(env, recipients, { subject, text, html });
     }
 
+    const remaining = send ? await countPendingSubscribers(env) : recipients.length;
     await checkIn(env, MONITOR_SLUG, 'ok', checkInId);
     return {
       success: true,
       subject,
-      text,
       picks: picks.map((p) => `${p.type}: ${p.name}`),
       delivery,
+      remaining,
     };
   } catch (error) {
     console.error('Newsletter failed:', error);
     await reportError(env, error, { worker: 'aitmpl-newsletter' });
     await checkIn(env, MONITOR_SLUG, 'error', checkInId);
     throw error;
+  }
+}
+
+// ─── Neon (HTTP SQL API, no driver) ──────────────────────────────────────────
+
+async function neonSql(env, query, params = []) {
+  if (!env.NEON_DATABASE_URL) throw new Error('NEON_DATABASE_URL is not configured');
+  const host = new URL(env.NEON_DATABASE_URL.replace(/^postgres(ql)?:\/\//, 'https://')).hostname;
+  const res = await fetch(`https://${host}/sql`, {
+    method: 'POST',
+    headers: {
+      'Neon-Connection-String': env.NEON_DATABASE_URL,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, params }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(`Neon query failed (${res.status}): ${JSON.stringify(data).slice(0, 200)}`);
+  return data.rows || [];
+}
+
+// Active subscribers not yet reached by the current campaign. The 7-day
+// window means a send marks a subscriber for the whole biweekly cycle while
+// still allowing the multi-invocation chunking within the same Sunday.
+const PENDING_WHERE = `unsubscribed_at IS NULL AND (last_sent_at IS NULL OR last_sent_at < NOW() - INTERVAL '7 days')`;
+
+async function getPendingSubscribers(env, limit) {
+  return neonSql(
+    env,
+    `SELECT id, email, unsubscribe_token FROM email_subscribers WHERE ${PENDING_WHERE} ORDER BY id LIMIT $1`,
+    [limit]
+  );
+}
+
+async function countPendingSubscribers(env) {
+  const [row] = await neonSql(env, `SELECT COUNT(*)::int AS n FROM email_subscribers WHERE ${PENDING_WHERE}`);
+  return row?.n ?? 0;
+}
+
+async function markSent(env, ids) {
+  if (ids.length === 0) return;
+  const ph = ids.map((_, i) => `$${i + 1}`).join(',');
+  await neonSql(env, `UPDATE email_subscribers SET last_sent_at = NOW(), updated_at = NOW() WHERE id IN (${ph})`, ids);
+}
+
+async function handleUnsubscribe(env, token) {
+  const htmlPage = (title, body) =>
+    new Response(
+      `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title></head><body style="font-family: sans-serif; max-width: 480px; margin: 80px auto; padding: 0 16px;"><h2>${title}</h2><p>${body}</p></body></html>`,
+      { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+    );
+
+  if (!token || !/^[0-9a-f-]{36}$/i.test(token)) {
+    return htmlPage('Invalid link', 'This unsubscribe link is not valid.');
+  }
+  try {
+    const rows = await neonSql(
+      env,
+      `UPDATE email_subscribers SET unsubscribed_at = NOW(), updated_at = NOW()
+       WHERE unsubscribe_token = $1::uuid AND unsubscribed_at IS NULL RETURNING id`,
+      [token]
+    );
+    if (rows.length === 0) {
+      // Unknown token or already unsubscribed — same friendly answer either way.
+      return htmlPage('You are unsubscribed', 'This address will not receive the newsletter anymore.');
+    }
+    return htmlPage('Unsubscribed', 'Done — you will not receive the newsletter anymore. Sorry to see you go!');
+  } catch (error) {
+    await reportError(env, error, { worker: 'aitmpl-newsletter', endpoint: '/unsubscribe' });
+    return htmlPage('Something went wrong', 'Please try again in a few minutes.');
   }
 }
 
@@ -233,6 +327,16 @@ function cleanDescription(desc) {
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+// ISO 8601 week number (weeks start Monday; week 1 contains the first
+// Thursday of the year). Used to gate the biweekly cadence.
+function isoWeek(d) {
+  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
+}
+
 function formatCount(n) {
   if (n >= 1000) {
     const k = n / 1000;
@@ -290,11 +394,14 @@ function statPhrase(p) {
 
 const CLOSERS = [
   "That's it for this week. Try one, break nothing, ship faster.",
-  'See you next week with a fresh batch.',
+  'See you next time with a fresh batch.',
   "That's the roundup. Happy building with Claude Code.",
-  'More next week. Keep building.',
-  "That's all for now. Until next week!",
+  'More in the next one. Keep building.',
+  "That's all for now. Until next time!",
 ];
+
+// Per-recipient unsubscribe URL replaces this placeholder at send time.
+const UNSUB_PLACEHOLDER = '{{{UNSUBSCRIBE_URL}}}';
 
 function escapeHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -315,9 +422,6 @@ function composeEmail(picks) {
   const catalogLine = pick(INTRO_CATALOGS);
   const closer = pick(CLOSERS);
   const footerNote = 'You are receiving this because you have an account on aitmpl.com.';
-  // Resend replaces this placeholder with a per-recipient unsubscribe link
-  // when the email is sent as a Broadcast.
-  const unsubscribe = 'Unsubscribe: {{{RESEND_UNSUBSCRIBE_URL}}}';
 
   const blocks = picks.map((p) => ({
     title: `${p.type}: ${p.name}`,
@@ -338,7 +442,7 @@ function composeEmail(picks) {
     closer,
     '',
     footerNote,
-    unsubscribe,
+    `Unsubscribe: ${UNSUB_PLACEHOLDER}`,
   ].join('\n');
 
   // HTML version: same content, minimal markup — bold + underlined component
@@ -355,141 +459,68 @@ function composeEmail(picks) {
         `<p>Install: <code>${escapeHtml(b.install)}</code></p>`
     ),
     para(closer),
-    `<p>${escapeHtml(footerNote)}<br>\n<a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Unsubscribe</a></p>`,
+    `<p>${escapeHtml(footerNote)}<br>\n<a href="${UNSUB_PLACEHOLDER}">Unsubscribe</a></p>`,
   ].join('\n');
 
   return { subject, text, html };
 }
 
-// ─── Delivery (Resend) ───────────────────────────────────────────────────────
+// ─── Delivery (Resend transactional batch API) ───────────────────────────────
 
-function todayBroadcastName() {
-  return `newsletter ${new Date().toISOString().slice(0, 10)}`;
-}
-
-// All broadcasts (any status) named `name`. Throws on listing errors so
-// callers decide whether to fail open or closed.
-async function listBroadcastsByName(env, name) {
-  const res = await fetch(`${RESEND_API}/broadcasts`, {
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
-  });
-  if (!res.ok) throw new Error(`Resend broadcast list failed (${res.status})`);
-  const { data } = await res.json();
-  return (data || []).filter((b) => b.name === name);
-}
-
-// True if a non-draft broadcast named "newsletter <today>" already exists.
-// Catches sequential cron double-fires cheaply. Fails open: a listing error
-// must not block the legitimate weekly send.
-async function broadcastAlreadySentToday(env) {
-  try {
-    return (await listBroadcastsByName(env, todayBroadcastName())).some((b) => b.status !== 'draft');
-  } catch {
-    return false;
-  }
-}
-
-async function deleteBroadcast(env, id) {
-  try {
-    await fetch(`${RESEND_API}/broadcasts/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
-    });
-  } catch (e) {
-    console.error(`Newsletter: failed to delete duplicate draft broadcast ${id}:`, e.message);
-  }
-}
-
-// Creates a Broadcast targeting env.RESEND_SEGMENT_ID and sends it. Resend
-// injects the per-recipient unsubscribe link and skips unsubscribed contacts.
-//
-// With opts.dedupe (cron path), the create+send is split into a stateless
-// leader election to close the read-then-create race of two overlapping cron
-// invocations: each run creates its broadcast as a DRAFT, waits a settle
-// period so any concurrent run's draft becomes visible, then lists today's
-// broadcasts — if another run already sent, or a concurrent draft with a
-// smaller id exists, this run deletes its own draft and yields. Only the
-// deterministic winner calls /send, so the audience can never receive the
-// newsletter twice. (Workers KV offers no compare-and-set, so it cannot
-// provide a stronger lock than this without adding Durable Objects.)
-async function sendBroadcast(env, { subject, text, html }, opts = {}) {
+async function sendBatches(env, recipients, { subject, text, html }) {
   if (!env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured');
   if (!env.RESEND_FROM_EMAIL) throw new Error('RESEND_FROM_EMAIL is not configured');
-  if (!env.RESEND_SEGMENT_ID) throw new Error('RESEND_SEGMENT_ID is not configured');
+  const unsubBase = (env.UNSUBSCRIBE_BASE_URL || '').replace(/\/$/, '');
+  if (!unsubBase) throw new Error('UNSUBSCRIBE_BASE_URL is not configured');
 
-  const headers = {
-    Authorization: `Bearer ${env.RESEND_API_KEY}`,
-    'Content-Type': 'application/json',
-  };
-  const name = todayBroadcastName();
+  let sent = 0;
+  const failedBatches = [];
 
-  const createRes = await fetch(`${RESEND_API}/broadcasts`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      segment_id: env.RESEND_SEGMENT_ID,
-      from: env.RESEND_FROM_EMAIL,
-      reply_to: env.NEWSLETTER_REPLY_TO || undefined,
-      subject,
-      text,
-      html,
-      name,
-    }),
-  });
-  if (!createRes.ok) {
-    const body = await createRes.text();
-    throw new Error(`Resend broadcast create failed (${createRes.status}): ${body}`);
-  }
-  const { id } = await createRes.json();
-
-  if (opts.dedupe) {
-    // Settle so a concurrent double-fire's draft is visible before electing.
-    await new Promise((r) => setTimeout(r, 10_000));
-    try {
-      const peers = await listBroadcastsByName(env, name);
-      const someoneSent = peers.some((b) => b.id !== id && b.status !== 'draft');
-      // Only drafts created within the overlap window are election candidates.
-      // An older draft belongs to a run that died before cleaning up — yielding
-      // to it would mean nobody sends today (its owner is gone), so it is
-      // ignored. Unparseable timestamps count as fresh (safe: worst case is an
-      // extra yield, and send-failure cleanup below makes stale drafts rare).
-      const now = Date.now();
-      const isFresh = (b) => {
-        const t = Date.parse(String(b.created_at || '').replace(' ', 'T').replace(/\+00$/, 'Z'));
-        return Number.isNaN(t) || now - t < 5 * 60_000;
+  for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
+    const batch = recipients.slice(i, i + BATCH_SIZE);
+    const body = batch.map((r) => {
+      const unsubUrl = `${unsubBase}/unsubscribe?token=${r.unsubscribe_token}`;
+      return {
+        from: env.RESEND_FROM_EMAIL,
+        to: [r.email],
+        reply_to: env.NEWSLETTER_REPLY_TO || undefined,
+        subject,
+        text: text.replaceAll(UNSUB_PLACEHOLDER, unsubUrl),
+        html: html.replaceAll(UNSUB_PLACEHOLDER, unsubUrl),
+        headers: {
+          'List-Unsubscribe': `<${unsubUrl}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        },
       };
-      const candidateIds = peers
-        .filter((b) => b.status === 'draft' && (b.id === id || isFresh(b)))
-        .map((b) => b.id)
-        .sort();
-      const winner = candidateIds[0];
-      if (someoneSent || (winner && winner !== id)) {
-        console.log(`Newsletter: concurrent duplicate detected, yielding (mine=${id}, winner=${winner || 'already sent'})`);
-        await deleteBroadcast(env, id);
-        return { sent: false, skipped: 'concurrent duplicate detected', broadcastId: id };
-      }
-    } catch (e) {
-      // Fail open: an election listing error must not block the weekly send.
-      console.error('Newsletter: dedupe election listing failed, proceeding to send:', e.message);
+    });
+
+    const res = await fetch(`${RESEND_API}/emails/batch`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      failedBatches.push(`batch@${i} (${res.status}): ${errBody.slice(0, 150)}`);
+      // Do NOT mark this batch as sent — a later invocation retries it.
+      continue;
     }
+
+    await markSent(env, batch.map((r) => r.id));
+    sent += batch.length;
   }
 
-  const sendRes = await fetch(`${RESEND_API}/broadcasts/${id}/send`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({}),
-  });
-  if (!sendRes.ok) {
-    const body = await sendRes.text();
-    // Clean up the draft so it cannot win future elections that nobody sends,
-    // and so a retry starts from a clean slate. If the send actually went
-    // through despite the error response, the broadcast is no longer a draft
-    // and this DELETE fails harmlessly.
-    await deleteBroadcast(env, id);
-    throw new Error(`Resend broadcast send failed for broadcast ${id} (${sendRes.status}), draft cleaned up: ${body}`);
+  if (failedBatches.length > 0) {
+    await reportError(env, new Error(`Newsletter: ${failedBatches.length} batch(es) failed: ${failedBatches.join(' | ')}`), {
+      worker: 'aitmpl-newsletter',
+    });
   }
 
-  return { sent: true, broadcastId: id };
+  return { sent, failedBatches: failedBatches.length };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
