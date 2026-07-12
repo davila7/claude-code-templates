@@ -568,7 +568,6 @@ class YearInReview2025 {
    */
   async detectInstalledComponents() {
     const components = [];
-    const os = require('os');
     const fs = require('fs-extra');
     const path = require('path');
 
@@ -653,7 +652,6 @@ class YearInReview2025 {
    */
   async analyzeCommands() {
     const fs = require('fs-extra');
-    const os = require('os');
     const path = require('path');
 
     try {
@@ -716,7 +714,6 @@ class YearInReview2025 {
    */
   async analyzeSkills() {
     const fs = require('fs-extra');
-    const os = require('os');
     const path = require('path');
 
     try {
@@ -766,7 +763,6 @@ class YearInReview2025 {
    */
   async analyzeMCPs() {
     const fs = require('fs-extra');
-    const os = require('os');
     const path = require('path');
 
     try {
