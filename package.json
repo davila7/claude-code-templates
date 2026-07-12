@@ -24,7 +24,7 @@
     "axios": "^1.6.2",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
-    "chokidar": "^3.5.3",
+    "chokidar": "^5.0.0",
     "commander": "^11.1.0",
     "discord-interactions": "^3.4.0",
     "dotenv": "^16.3.1",
