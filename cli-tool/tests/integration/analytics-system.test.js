@@ -66,6 +66,33 @@ describe('Analytics System Integration', () => {
       });
     });
 
+    it('should skip inaccessible entries while discovering conversations', async () => {
+      const StateCalculator = require('../../src/analytics/core/StateCalculator');
+      const ConversationAnalyzer = require('../../src/analytics/core/ConversationAnalyzer');
+      const inaccessiblePath = path.join(testDataDir, 'broken-symlink');
+      await fs.writeFile(inaccessiblePath, 'placeholder');
+
+      const originalStat = fs.stat.bind(fs);
+      const statSpy = jest.spyOn(fs, 'stat').mockImplementation(async (itemPath) => {
+        if (itemPath === inaccessiblePath) {
+          const error = new Error('broken symbolic link');
+          error.code = 'ENOENT';
+          throw error;
+        }
+        return originalStat(itemPath);
+      });
+
+      try {
+        const analyzer = new ConversationAnalyzer(testDataDir);
+        const conversations = await analyzer.loadConversations(new StateCalculator());
+
+        expect(conversations.length).toBeGreaterThan(0);
+      } finally {
+        statSpy.mockRestore();
+        await fs.remove(inaccessiblePath);
+      }
+    });
+
     it('should cache data efficiently', async () => {
       const DataCache = require('../../src/analytics/data/DataCache');
       

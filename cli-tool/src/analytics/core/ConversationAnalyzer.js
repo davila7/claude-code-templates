@@ -78,7 +78,13 @@ class ConversationAnalyzer {
 
         for (const item of items) {
           const itemPath = path.join(dir, item);
-          const stats = await fs.stat(itemPath);
+          let stats;
+          try {
+            stats = await fs.stat(itemPath);
+          } catch (error) {
+            console.warn(chalk.yellow(`Warning: Could not inspect ${itemPath}:`, error.message));
+            continue;
+          }
 
           if (stats.isDirectory()) {
             // Recursively search subdirectories
