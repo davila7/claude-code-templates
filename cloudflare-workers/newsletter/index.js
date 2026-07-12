@@ -39,7 +39,9 @@ const CATEGORIES = [
 export default {
   async scheduled(event, env, ctx) {
     console.log('📬 Newsletter: starting weekly send (cron)...');
-    await runNewsletter(env, { send: true });
+    // dedupe guards against Cloudflare's documented occasional cron double-fire;
+    // manual /trigger sends skip it so pilots/tests can send multiple times a day.
+    await runNewsletter(env, { send: true, dedupe: true });
   },
 
   async fetch(request, env, ctx) {
@@ -98,10 +100,16 @@ export default {
 // ─── Runner ──────────────────────────────────────────────────────────────────
 
 async function runNewsletter(env, opts = {}) {
-  const { send = true } = opts;
+  const { send = true, dedupe = false } = opts;
   const checkInId = await checkIn(env, MONITOR_SLUG, 'in_progress');
 
   try {
+    if (send && dedupe && (await broadcastAlreadySentToday(env))) {
+      console.log('Newsletter: broadcast for today already exists, skipping (cron double-fire guard)');
+      await checkIn(env, MONITOR_SLUG, 'ok', checkInId);
+      return { success: true, skipped: 'broadcast for today already sent' };
+    }
+
     const { subject, text, html, picks } = await buildEmail(env);
 
     let delivery = { sent: false };
@@ -343,7 +351,7 @@ function composeEmail(picks) {
     ...blocks.map(
       (b) =>
         `<p><strong><u>${escapeHtml(b.title)}</u></strong><br>\n${autolink(escapeHtml(b.line))}</p>\n` +
-        `<p>Check it out: <a href="${b.url}">${b.url}</a></p>\n` +
+        `<p>Check it out: <a href="${escapeHtml(b.url)}">${escapeHtml(b.url)}</a></p>\n` +
         `<p>Install: <code>${escapeHtml(b.install)}</code></p>`
     ),
     para(closer),
@@ -354,6 +362,24 @@ function composeEmail(picks) {
 }
 
 // ─── Delivery (Resend) ───────────────────────────────────────────────────────
+
+// True if a non-draft broadcast named "newsletter <today>" already exists.
+// Resend accepts duplicate names, so this pre-flight check is what protects
+// the audience from a double-send if the cron fires twice. Fails open: a
+// listing error must not block the legitimate weekly send.
+async function broadcastAlreadySentToday(env) {
+  try {
+    const res = await fetch(`${RESEND_API}/broadcasts`, {
+      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
+    });
+    if (!res.ok) return false;
+    const { data } = await res.json();
+    const todayName = `newsletter ${new Date().toISOString().slice(0, 10)}`;
+    return (data || []).some((b) => b.name === todayName && b.status !== 'draft');
+  } catch {
+    return false;
+  }
+}
 
 // Creates a Broadcast targeting env.RESEND_SEGMENT_ID and sends it. Resend
 // injects the per-recipient unsubscribe link and skips unsubscribed contacts.
@@ -393,7 +419,7 @@ async function sendBroadcast(env, { subject, text, html }) {
   });
   if (!sendRes.ok) {
     const body = await sendRes.text();
-    throw new Error(`Resend broadcast send failed (${sendRes.status}): ${body}`);
+    throw new Error(`Resend broadcast send failed for created broadcast ${id} (${sendRes.status}): ${body}`);
   }
 
   return { sent: true, broadcastId: id };
