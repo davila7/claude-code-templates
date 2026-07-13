@@ -23400,16 +23400,16 @@
       "hooks"
     ],
     "contains": {
-      "plugins": 5,
+      "plugins": 6,
       "components": {
-        "skills": 15,
+        "skills": 16,
         "agents": 11,
-        "commands": 21,
-        "hooks": 4
+        "commands": 25,
+        "hooks": 5
       }
     },
     "highlights": [
-      "5 plugins in marketplace"
+      "6 plugins in marketplace"
     ],
     "plugins_list": [
       {
@@ -23426,15 +23426,15 @@
           "skills": [
             {
               "name": "brand-voice",
-              "description": "Use when writing, editing, or reviewing any marketing content so it matches the team's brand profile. Explains how to load and apply the brand-voice, messaging, style-guide, and compliance files."
+              "description": "|"
             },
             {
               "name": "channel-formats",
-              "description": "Use when adapting content for a specific marketing channel. Provides format, length, structure, and best-practice specs for LinkedIn, X threads, newsletters, Instagram, YouTube, short-video scripts, and blog posts."
+              "description": "|"
             },
             {
               "name": "transcreation",
-              "description": "Use when adapting marketing content into another language or market. Does transcreation (adapt the message, tone, and cultural references) rather than literal translation, honoring per-locale brand rules and a do-not-translate glossary."
+              "description": "|"
             }
           ],
           "agents": [
@@ -23450,23 +23450,23 @@
           "commands": [
             {
               "name": "brand-setup",
-              "description": "Create or update your brand profile (voice, messaging, style, compliance) that all content generation respects."
+              "description": "Create or update the brand profile that all content generation respects."
             },
             {
               "name": "campaign",
-              "description": "Turn a campaign brief into a coordinated multi-channel content set plus a posting calendar."
+              "description": "Turn a brief into a coordinated multi-channel content set and calendar."
             },
             {
               "name": "localize",
-              "description": "Transcreate existing content into one or more languages/markets, honoring per-locale brand and compliance rules."
+              "description": "Transcreate content into other languages, honoring per-locale brand rules."
             },
             {
               "name": "multiply",
-              "description": "Turn one source into ready-to-paste, on-brand content for every channel (and optionally every market). The hero command."
+              "description": "Turn one source into on-brand, ready-to-paste content for every channel."
             },
             {
               "name": "review",
-              "description": "Audit existing or draft content against the brand voice, style guide, and compliance rules. Returns a scorecard and a redline."
+              "description": "Audit content against brand, style, and compliance; return a redline."
             }
           ],
           "hooks": [
@@ -23663,19 +23663,19 @@
           "skills": [
             {
               "name": "generate-doc-template",
-              "description": "Generate on-brand document and deck templates (letterhead, slide, one-pager) as SVG from the active brand profile, with editable title/subtitle/body zones. Use when the user asks for a letterhead, a slide/deck master, or a branded one-pager."
+              "description": "|"
             },
             {
               "name": "generate-graphic",
-              "description": "Generate an on-brand marketing graphic (hero image, ad creative, background, texture) using an AI image model, optionally stamped with the brand logo and a caption. Opt-in — this is the one feature that needs an API key and network. Use for photographic/illustrative graphics, not text-heavy assets."
+              "description": "|"
             },
             {
               "name": "generate-logo",
-              "description": "Generate on-brand SVG logo variants (wordmark, monogram, favicon) from the active brand profile. Use when the user asks for a logo, wordmark, icon/monogram, or favicon."
+              "description": "|"
             },
             {
               "name": "generate-social",
-              "description": "Generate on-brand social-media templates (platform-sized SVGs with editable headline, subhead, and CTA zones) from the active brand profile. Use when the user asks for an Instagram post/story, an OG/social card, a YouTube thumbnail, or a banner."
+              "description": "|"
             }
           ],
           "agents": [
@@ -23708,6 +23708,48 @@
             {
               "name": "brand-use",
               "description": "List the available brands and switch which one is active for generation."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "cv-forge",
+        "description": "Turn one versioned résumé (JSON Resume) into an ATS-friendly PDF in the template that fits you — no Node, no keys, no network; just your browser.",
+        "source": "./cv-forge",
+        "components": {
+          "skills": 1,
+          "commands": 4,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "generate-resume",
+              "description": "Render a JSON Resume file through an HTML template into a self-contained, ATS-friendly document ready for the browser's Save-as-PDF. Use when the user asks to render, build, generate, or export their résumé/CV."
+            }
+          ],
+          "commands": [
+            {
+              "name": "cv-make",
+              "description": "Render the active résumé through the active template into a self-contained HTML file, ready to open and Save as PDF."
+            },
+            {
+              "name": "cv-new",
+              "description": "Create resume.json — import an existing résumé or answer guided questions — then set the active template and confirm with /cv-status."
+            },
+            {
+              "name": "cv-status",
+              "description": "Print the active résumé/template summary plus section counts, on demand (the same checks the SessionStart hook runs, plus a résumé content summary)."
+            },
+            {
+              "name": "cv-use",
+              "description": "List the available résumé templates and switch which one renders the active résumé."
             }
           ],
           "hooks": [
