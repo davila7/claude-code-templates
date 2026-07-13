@@ -23426,15 +23426,15 @@
           "skills": [
             {
               "name": "brand-voice",
-              "description": "|"
+              "description": "Applies the team's saved brand profile — voice, messaging, style guide, and compliance rules — to marketing copy so every asset reads on-brand instead of generic. Use when drafting, editing, or auditing content and a brand profile may exist. Trigger with \"brand voice\", \"apply the brand\", \"stay on-brand\", or \"/review\"."
             },
             {
               "name": "channel-formats",
-              "description": "|"
+              "description": "Transforms one piece of content into each marketing channel's native format — length, structure, hooks, and conventions — across LinkedIn, X threads, newsletters, Instagram, YouTube, short video, and blogs. Use when reformatting content for a specific channel. Trigger with \"channel format\", \"adapt for LinkedIn\", or \"/multiply\"."
             },
             {
               "name": "transcreation",
-              "description": "|"
+              "description": "Transforms marketing content across languages and markets through transcreation — adapting message, tone, and cultural references instead of translating word for word — while honoring per-locale brand rules and a do-not-translate glossary. Use when localizing content or when a locale is set. Trigger with \"transcreate\", \"localize\", \"adapt for a market\", or \"/localize\"."
             }
           ],
           "agents": [
@@ -23663,19 +23663,19 @@
           "skills": [
             {
               "name": "generate-doc-template",
-              "description": "|"
+              "description": "Generates on-brand document and deck templates — letterhead, slide, and one-pager — as SVG from the active brand profile, with editable title, subtitle, and body zones. Vector output needs no account, key, or network. Use when a user asks for a letterhead, a slide or deck master, or a branded one-pager. Trigger with \"make a letterhead\", \"branded slide\", or \"/brand-make letterhead\"."
             },
             {
               "name": "generate-graphic",
-              "description": "|"
+              "description": "Generates an on-brand marketing graphic — hero image, ad creative, background, or texture — with an image model, optionally stamped with the brand logo and a caption. Opt-in: needs a provider key and network access. Use when a user wants a photographic or illustrative graphic, not a text-heavy asset. Trigger with \"make a hero image\", \"ad background\", or \"/brand-make graphic\"."
             },
             {
               "name": "generate-logo",
-              "description": "|"
+              "description": "Generates on-brand, editable SVG logo assets — wordmark, monogram, and favicon — from the active brand profile, reusing its exact palette and heading font. Vector output needs no account, key, or network. Use when a user asks for a logo, wordmark, icon, monogram, or favicon. Trigger with \"make a logo\", \"generate a wordmark\", or \"/brand-make logo\"."
             },
             {
               "name": "generate-social",
-              "description": "|"
+              "description": "Generates platform-sized, on-brand social templates as SVG from the active brand profile, with editable headline, subhead, and call-to-action zones. Vector output needs no account, key, or network. Use when a user asks for an Instagram post or story, an Open Graph or social card, a YouTube thumbnail, or a banner. Trigger with \"make an Instagram post\", \"social card\", or \"/brand-make social\"."
             }
           ],
           "agents": [
