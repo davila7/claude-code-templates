@@ -81,13 +81,18 @@ describe('Analytics System Integration', () => {
         }
         return originalStat(itemPath);
       });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       try {
         const analyzer = new ConversationAnalyzer(testDataDir);
         const conversations = await analyzer.loadConversations(new StateCalculator());
 
         expect(conversations.length).toBeGreaterThan(0);
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        expect(warnSpy.mock.calls[0][0]).toEqual(expect.stringContaining(inaccessiblePath));
+        expect(warnSpy.mock.calls[0][0]).toEqual(expect.stringContaining('broken symbolic link'));
       } finally {
+        warnSpy.mockRestore();
         statSpy.mockRestore();
         await fs.remove(inaccessiblePath);
       }
