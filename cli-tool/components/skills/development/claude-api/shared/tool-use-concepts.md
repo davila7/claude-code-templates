@@ -35,7 +35,7 @@ Each tool requires a name, description, and JSON Schema for its inputs:
 **Best practices for tool definitions:**
 
 - Use clear, descriptive names (e.g., `get_weather`, `search_database`, `send_email`)
-- Write detailed descriptions — Claude uses these to decide when to use the tool
+- Write detailed descriptions — Claude uses these to decide when to use the tool. Be **prescriptive about *when* to call it**, not just what it does (e.g. "Call this when the user asks about current prices or recent events"). On recent Opus models, which reach for tools more conservatively, trigger conditions in the description give measurable lift in should-call rate.
 - Include descriptions for each property
 - Use `enum` for parameters with a fixed set of values
 - Mark truly required parameters in `required`; make others optional with defaults
@@ -74,7 +74,7 @@ if response.stop_reason == "pause_turn":
     ]
     # Make another API request — server resumes automatically
     response = client.messages.create(
-        model="claude-opus-4-7", messages=messages, tools=tools
+        model="claude-opus-4-8", messages=messages, tools=tools
     )
 ```
 
@@ -171,7 +171,7 @@ Web search and web fetch let Claude search the web and retrieve page content. Th
 ]
 ```
 
-### Dynamic Filtering (Opus 4.7 / Opus 4.6 / Sonnet 4.6)
+### Dynamic Filtering (Fable 5 / Opus 4.8 / Opus 4.7 / Opus 4.6 / Sonnet 4.6)
 
 The `web_search_20260209` and `web_fetch_20260209` versions support **dynamic filtering** — Claude writes and executes code to filter search results before they reach the context window, improving accuracy and token efficiency. Dynamic filtering is built into these tool versions and activates automatically; you do not need to separately declare the `code_execution` tool or pass any beta header.
 
@@ -212,13 +212,56 @@ For full documentation, use WebFetch:
 
 ---
 
-## Skills
+## Agent Skills (Messages API)
 
-Skills package task-specific instructions that Claude loads only when relevant. Each skill is a folder containing a `SKILL.md` file. The skill's short description sits in context by default; Claude reads the full file when the current task calls for it. Use skills to keep specialized instructions out of the base system prompt without losing discoverability.
+Agent Skills package task-specific instructions and files that Claude loads when relevant (e.g., the Anthropic pre-built `pptx`, `xlsx`, `pdf`, `docx` skills). On the **Messages API**, skills are enabled via the `container` parameter alongside the code-execution tool — this is **not** the Managed Agents surface and does **not** use `client.beta.agents` / `sessions` / `environments`. Availability: see `shared/platform-availability.md`.
 
-For full documentation, use WebFetch:
+Required on each request:
 
-- URL: `https://platform.claude.com/docs/en/agents-and-tools/skills`
+1. `client.beta.messages.create(...)` with **both** beta flags: `code-execution-2025-08-25` **and** `skills-2025-10-02`.
+2. `container={"skills": [{"type": "anthropic", "skill_id": "<id>", "version": "latest"}]}` — the skills list selects which skills are available inside the execution container.
+3. `tools=[{"type": "code_execution_20260521", "name": "code_execution"}]` — skills execute via code execution in the container.
+
+```python
+response = client.beta.messages.create(
+    model="claude-opus-4-8", max_tokens=16000,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={"skills": [{"type": "anthropic", "skill_id": "pptx", "version": "latest"}]},
+    tools=[{"type": "code_execution_20260521", "name": "code_execution"}],
+    messages=[{"role": "user", "content": "Create a 3-slide presentation on X"}],
+)
+```
+
+Generated files (`.pptx`, `.xlsx`, …) are written inside the container; the response carries a file ID for each. Download by passing that ID to the Files API (`client.beta.files.download(file_id)` / `GET /v1/files/{id}/content` with `anthropic-beta: files-api-2025-04-14`).
+
+List available skills via `GET /v1/skills` (requires `anthropic-beta: skills-2025-10-02`).
+
+---
+
+## MCP Connector (Beta)
+
+The MCP connector lets Claude call tools hosted on a remote MCP server directly from the Messages API — Anthropic makes the MCP connection server-side. Requires beta flag `mcp-client-2025-11-20` on `client.beta.messages.create(...)`. Availability: see `shared/platform-availability.md`.
+
+**Two parameters are required together:**
+
+- `mcp_servers` — array of server connection definitions: `[{"type": "url", "url": "<server URL>", "name": "<server-name>", "authorization_token": "<optional>"}]`
+- `tools` — must include an `mcp_toolset` entry that references the server by name: `[{"type": "mcp_toolset", "mcp_server_name": "<server-name>"}]`
+
+The `mcp_server_name` in the toolset must match a `name` in `mcp_servers`. Omitting the `mcp_toolset` entry is rejected as a validation error — every server in `mcp_servers` must be referenced by exactly one toolset.
+
+```python
+client.beta.messages.create(
+    model="claude-opus-4-8", max_tokens=1024,
+    betas=["mcp-client-2025-11-20"],
+    mcp_servers=[{"type": "url", "url": "https://example/sse", "name": "example-mcp"}],
+    tools=[{"type": "mcp_toolset", "mcp_server_name": "example-mcp"}],
+    messages=[...],
+)
+```
+
+Go uses the typed constant `anthropic.AnthropicBetaMCPClient2025_11_20`; the older `…2025_04_04` constant is deprecated.
+
+Optional toolset fields: `default_config` (defaults for all tools, e.g. `{"enabled": false}` for allowlist mode) and `configs` (per-tool overrides keyed by tool name).
 
 ---
 
@@ -232,9 +275,9 @@ For full documentation, use WebFetch:
 
 ---
 
-## Server-Side Tools: Computer Use
+## Client-Side Tools: Computer Use
 
-Computer use lets Claude interact with a desktop environment (screenshots, mouse, keyboard). It can be Anthropic-hosted (server-side, like code execution) or self-hosted (you provide the environment and execute actions client-side).
+Computer use lets Claude interact with a desktop environment (screenshots, mouse, keyboard). It is a client-side tool — your application provides the environment and executes the actions Claude requests; Anthropic processes the screenshots and action requests in real time but does not host the environment or retain the data.
 
 For full documentation, use WebFetch:
 
@@ -244,11 +287,38 @@ For full documentation, use WebFetch:
 
 ## Context Editing
 
-Context editing clears stale tool results and thinking blocks from the transcript as a long-running agent accumulates turns. Unlike compaction (which summarizes), context editing prunes — the cleared content is removed, not replaced. Use it when old tool outputs are no longer relevant and you want to keep the transcript lean without losing the conversation structure. Thresholds for what to clear are configurable.
+Context editing clears stale tool results and thinking blocks from the transcript as a long-running agent accumulates turns. Unlike compaction (which summarizes), context editing prunes — the cleared content is removed, not replaced. Use it when old tool outputs are no longer relevant and you want to keep the transcript lean without losing the conversation structure.
+
+**Beta.** Use `client.beta.messages.*` with beta `context-management-2025-06-27`. Configure via `context_management.edits` with a strategy type of `clear_tool_uses_20250919` (clear old tool results; optional `clear_tool_inputs: true` also clears the tool_use params) or `clear_thinking_20251015` (clear thinking blocks). These are **not** the compaction types — `compact_20260112` with beta `compact-2026-01-12` is the separate compaction feature.
 
 For full documentation, use WebFetch:
 
 - URL: `https://platform.claude.com/docs/en/build-with-claude/context-editing`
+
+---
+
+## Server-Side Tools: Advisor (Beta)
+
+The advisor tool pairs a faster, lower-cost **executor** model (the top-level `model` on the request) with a higher-intelligence **advisor** model (the `model` field inside the tool definition) that provides strategic guidance mid-generation. The executor does most of the token generation; the advisor is consulted for planning. Availability: see `shared/platform-availability.md`.
+
+### Tool Definition
+
+```json
+{
+  "type": "advisor_20260301",
+  "name": "advisor",
+  "model": "claude-opus-4-8"
+}
+```
+
+**The advisor model must be at least as capable as the executor.** An invalid pairing returns `400 invalid_request_error`. Valid pairs:
+
+| Executor (request `model`) | Valid advisor (tool `model`) |
+|---|---|
+| `claude-haiku-4-5` / `claude-sonnet-4-6` / `claude-sonnet-5` / `claude-opus-4-6` / `claude-opus-4-7` | `claude-opus-4-8` or `claude-opus-4-7` |
+| `claude-opus-4-8` | `claude-opus-4-8` only |
+
+Call via `client.beta.messages.create(...)` with `betas=["advisor-tool-2026-03-01"]` (or the `anthropic-beta: advisor-tool-2026-03-01` header). In multi-turn conversations, append the full `response.content` — including any `advisor_tool_result` blocks — back to `messages` on the next turn. If you remove the advisor tool from `tools` on a later turn while the history still contains `advisor_tool_result` blocks, the API returns a 400.
 
 ---
 
@@ -271,6 +341,53 @@ For full implementation examples, use WebFetch:
 
 ---
 
+## Client-Side Tools: Bash and Text Editor
+
+The bash and text editor tools are **Anthropic-defined, schema-less** tools. Declare them by `type` and `name` only — the input schema is built into the model and cannot be modified. **Do not pass an `input_schema`**, and do not define a custom tool that happens to be named `"bash"` — that creates a user-defined tool without the built-in behavior.
+
+Both are **client-executed**: Claude returns a `tool_use` block, your code performs the action locally, and you send back a `tool_result`. The API is stateless; your application maintains the shell session or filesystem between turns.
+
+### Bash tool declaration
+
+```json
+{"type": "bash_20250124", "name": "bash"}
+```
+
+| Language | Declaration |
+|---|---|
+| Python / TypeScript / Ruby / cURL | plain object `{"type": "bash_20250124", "name": "bash"}` |
+| Go | `anthropic.ToolUnionParam{OfBashTool20250124: &anthropic.ToolBash20250124Param{}}` |
+| Java | `.addTool(ToolBash20250124.builder().build())` from `com.anthropic.models.messages` |
+| C# | `Tools = [new ToolBash20250124()]` from `Anthropic.Models.Messages` |
+| PHP | `tools: [new \Anthropic\Messages\ToolBash20250124()]` |
+
+Claude's `tool_use.input` contains either `{"command": "<string>"}` or `{"restart": true}`. Check for `restart` first (reset the session, return a confirmation string); otherwise run `command` and return combined stdout + stderr.
+
+> **Security — commands are untrusted model output.** Run in an isolated environment (container, VM, or restricted user); apply an **allowlist** of permitted executables and reject shell operators (`&&`, `|`, `;`, `` ` ``, `$()`); set timeouts and resource limits; log every command. A blocklist is not sufficient.
+
+### Text editor tool declaration
+
+```json
+{"type": "text_editor_20250728", "name": "str_replace_based_edit_tool"}
+```
+
+Optional field: `max_characters` to cap `view` output. Java exposes a typed `ToolTextEditor20250728` builder (`com.anthropic.models.messages`); other statically-typed SDKs follow the same naming pattern — see the Anthropic-Defined Tools section in `{lang}/claude-api/tool-use.md` for the exact class.
+
+> **Security — `path` is untrusted model output. Confine every file operation to a fixed project root.** Before executing any command, resolve the model-supplied `path` to its canonical form and verify it remains within your project root; reject the request if it escapes (`..`, symlinks, absolute paths outside the root, URL-encoded traversal like `%2e%2e%2f`). Use your language's built-in path utilities (e.g., Python `pathlib.Path.resolve()` then check `.is_relative_to(root)`). Never call `open()` / `writeFile` / `unlink` directly on the raw `path` value.
+
+`tool_use.input.command` is one of:
+
+| `command` | Other inputs | Action |
+|---|---|---|
+| `view` | `path`, optional `view_range` | Return file contents or directory listing |
+| `create` | `path`, `file_text` | Create/overwrite file with `file_text`. Create a backup if the file already exists. |
+| `str_replace` | `path`, `old_str`, `new_str` | Replace exactly one occurrence; error if 0 or >1 matches |
+| `insert` | `path`, `insert_line`, `insert_text` | Insert `insert_text` after line `insert_line` (0 = beginning of file) |
+
+For both tools, on error return `{"type": "tool_result", "tool_use_id": "…", "content": "<error text>", "is_error": true}` so Claude can recover.
+
+---
+
 ## Structured Outputs
 
 Structured outputs constrain Claude's responses to follow a specific JSON schema, guaranteeing valid, parseable output. This is not a separate tool — it enhances the Messages API response format and/or tool parameter validation.
@@ -280,7 +397,7 @@ Two features are available:
 - **JSON outputs** (`output_config.format`): Control Claude's response format
 - **Strict tool use** (`strict: true`): Guarantee valid tool parameter schemas
 
-**Supported models:** Claude Opus 4.7, Claude Sonnet 4.6, and Claude Haiku 4.5. Legacy models (Claude Opus 4.5, Claude Opus 4.1) also support structured outputs.
+**Supported models:** Claude Fable 5, Claude Opus 4.8, Claude Sonnet 5, and Claude Haiku 4.5. Legacy models (Claude Opus 4.5, Claude Opus 4.1) also support structured outputs.
 
 > **Recommended:** Use `client.messages.parse()` which automatically validates responses against your schema. When using `messages.create()` directly, use `output_config: {format: {...}}`. The `output_format` convenience parameter is also accepted by some SDK methods (e.g., `.parse()`), but `output_config.format` is the canonical API-level parameter.
 

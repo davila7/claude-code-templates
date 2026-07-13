@@ -28,13 +28,13 @@ var client = AnthropicOkHttpClient.fromEnv();
 
 ```java
 import com.anthropic.models.beta.environments.BetaCloudConfigParams;
+import com.anthropic.models.beta.environments.BetaUnrestrictedNetwork;
 import com.anthropic.models.beta.environments.EnvironmentCreateParams;
-import com.anthropic.models.beta.environments.UnrestrictedNetwork;
 
 var environment = client.beta().environments().create(EnvironmentCreateParams.builder()
     .name("my-dev-env")
     .config(BetaCloudConfigParams.builder()
-        .networking(UnrestrictedNetwork.builder().build())
+        .networking(BetaUnrestrictedNetwork.builder().build())
         .build())
     .build());
 System.out.println("Environment ID: " + environment.id()); // env_...
@@ -57,7 +57,7 @@ import com.anthropic.models.beta.sessions.SessionCreateParams;
 // 1. Create the agent (reusable, versioned)
 var agent = client.beta().agents().create(AgentCreateParams.builder()
     .name("Coding Assistant")
-    .model("claude-opus-4-7")
+    .model("claude-opus-4-8")
     .system("You are a helpful coding assistant.")
     .addTool(BetaManagedAgentsAgentToolset20260401Params.builder()
         .type(BetaManagedAgentsAgentToolset20260401Params.Type.AGENT_TOOLSET_20260401)
@@ -75,6 +75,7 @@ var session = client.beta().sessions().create(SessionCreateParams.builder()
     .title("Quickstart session")
     .build());
 System.out.println("Session ID: " + session.id());
+System.out.println("Trace: https://platform.claude.com/workspaces/default/sessions/" + session.id());
 ```
 
 ### Updating an Agent
@@ -290,14 +291,14 @@ client.beta().sessions().delete(session.id());
 
 ```java
 import com.anthropic.models.beta.agents.BetaManagedAgentsMcpToolsetParams;
-import com.anthropic.models.beta.agents.BetaManagedAgentsUrlmcpServerParams;
+import com.anthropic.models.beta.agents.BetaManagedAgentsUrlMcpServerParams;
 
 // Agent declares MCP server (no auth here — auth goes in a vault)
 var agent = client.beta().agents().create(AgentCreateParams.builder()
     .name("GitHub Assistant")
-    .model("claude-opus-4-7")
-    .addMcpServer(BetaManagedAgentsUrlmcpServerParams.builder()
-        .type(BetaManagedAgentsUrlmcpServerParams.Type.URL)
+    .model("claude-opus-4-8")
+    .addMcpServer(BetaManagedAgentsUrlMcpServerParams.builder()
+        .type(BetaManagedAgentsUrlMcpServerParams.Type.URL)
         .name("github")
         .url("https://api.githubcopilot.com/mcp/")
         .build())
