@@ -23386,6 +23386,26 @@
     "highlights": []
   },
   {
+    "slug": "ml-plugins",
+    "name": "ML Research",
+    "author": "krasserm",
+    "description": "Native Claude Code port of Hugging Face's ml-intern: autonomous ML engineering on the Hugging Face ecosystem, with research-first fine-tuning (SFT/DPO/GRPO/LoRA) on HF Jobs, dataset/repo/paper tooling, and an optional budget-bounded autonomous experiment loop.",
+    "github": "https://github.com/krasserm/ml-plugins",
+    "stars": 2,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 2,
+      "agents": 2,
+      "hooks": 1
+    },
+    "highlights": []
+  },
+  {
     "slug": "best-claude-skills",
     "name": "Best Claude Skills",
     "author": "Nyanbalaji28",

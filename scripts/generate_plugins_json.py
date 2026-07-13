@@ -60,6 +60,7 @@ REPOS = [
     ("Piebald-AI/claude-code-lsps", None),
     ("chu2bard/pinion-os", None),
     ("Airtable/skills", None),
+    ("krasserm/ml-plugins", None),
 ]
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
@@ -507,6 +508,8 @@ def process_repo(repo_full, website_override=None):
             contains["components"] = marketplace_component_totals
     else:
         contains = single_components if single_components else {}
+        if not contains and plugins_detail:
+            contains = dict(plugins_detail[0].get("components", {}))
 
     # 8. Build tags
     all_components = {**marketplace_component_totals, **single_components}
@@ -540,8 +543,11 @@ def process_repo(repo_full, website_override=None):
     repo_display = repo_info.get("name", name)
     mp_name = marketplace.get("name", "")
     plugin_name = plugin_json.get("name", "") if plugin_json else ""
+    plugin_display = plugin_json.get("displayName", "") if plugin_json else ""
     # Use marketplace/plugin name only if it looks human-readable (has spaces or capitals)
-    if mp_name and (mp_name != mp_name.lower().replace(" ", "-") or " " in mp_name):
+    if plugin_display:
+        display_name = plugin_display
+    elif mp_name and (mp_name != mp_name.lower().replace(" ", "-") or " " in mp_name):
         display_name = mp_name
     elif plugin_name and (plugin_name != plugin_name.lower().replace(" ", "-") or " " in plugin_name):
         display_name = plugin_name
