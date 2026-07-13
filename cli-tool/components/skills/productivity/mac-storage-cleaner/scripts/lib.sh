@@ -106,9 +106,14 @@ human_kb () {
 # Every destructive action appends here, so a run is auditable and the user can
 # see exactly what was removed (mirrors what the trustworthy CLIs do).
 LOG_DIR="$HOME/Library/Logs/mac-storage-cleaner"
-log_op () {  # log_op <action> <size> <path>
+log_op () {  # log_op <action> <size> <path> — best-effort; suppresses its own errors
   mkdir -p "$LOG_DIR" 2>/dev/null
-  printf '%s\t%s\t%s\t%s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" "$2" "$3" >> "$LOG_DIR/operations.log"
+  printf '%s\t%s\t%s\t%s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" "$2" "$3" >> "$LOG_DIR/operations.log" 2>/dev/null
+}
+# True only if the audit log can actually be written. Callers warn the user when
+# it can't, so a run is never silently unlogged while we claim to log every deletion.
+log_writable () {
+  mkdir -p "$LOG_DIR" 2>/dev/null && : >> "$LOG_DIR/operations.log" 2>/dev/null
 }
 
 # --- Reversible delete ----------------------------------------------------

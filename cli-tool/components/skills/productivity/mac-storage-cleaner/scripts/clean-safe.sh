@@ -9,6 +9,7 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 
 total_kb=0
 skipped=0
+log_writable || echo "⚠ Cannot write the audit log ($LOG_DIR/operations.log) — cleanup will proceed, but this run will NOT be recorded."
 echo "Clearing safe caches (pure caches only)..."
 collect "${SAFE_PATHS[@]}"
 # bash 3.2 (macOS default) throws "unbound variable" on "${FOUND[@]}" when the

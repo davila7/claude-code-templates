@@ -9,6 +9,7 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 
 [ "$#" -eq 0 ] && { echo "usage: trash-items.sh <path> [<path> ...]"; exit 1; }
 
+log_writable || echo "⚠ Cannot write the audit log ($LOG_DIR/operations.log) — items will still be trashed, but this run will NOT be recorded."
 moved=0
 for p in "$@"; do
   if [ ! -e "$p" ]; then

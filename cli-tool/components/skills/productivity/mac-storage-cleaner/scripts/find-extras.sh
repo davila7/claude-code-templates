@@ -41,9 +41,10 @@ echo "  (if empty: nothing over 5MB looked unmatched)"
 echo
 echo "Review by hand (folder names aren't bundle IDs, so not auto-classified):"
 echo "  - large ~/Library/Application Support entries:"
-du -sh "$HOME/Library/Application Support/"* 2>/dev/null | sort -rh | head -6
+for d in "$HOME/Library/Application Support/"*; do [ -e "$d" ] || continue; du -sh "$d" 2>/dev/null; done | sort -rh | head -6
 echo "  - UUID-named containers (group/anonymous — check what owns them):"
 for d in "$HOME/Library/Containers/"*; do
+  [ -e "$d" ] || continue   # unmatched glob stays literal on an empty dir; skip it
   name=$(basename "$d")
   case "$name" in [0-9A-Fa-f]*-[0-9A-Fa-f]*-[0-9A-Fa-f]*-*) du -sh "$d" 2>/dev/null ;; esac
 done | sort -rh | head -5

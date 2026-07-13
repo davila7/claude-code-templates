@@ -44,7 +44,7 @@ echo "===== App caches — Electron & browsers (safe; quit the app first) ====="
     done
   done
 } | while IFS= read -r d; do du -sh "$d" 2>/dev/null; done | sort -rh | head -15
-[ -z "$(find "$HOME/Library/Application Support" -maxdepth 2 -type d -name Cache 2>/dev/null | head -1)" ] && echo "  (scan found little; some may be TCC-protected)"
+[ -z "$(find "$HOME/Library/Application Support" -maxdepth 2 -type d \( -name Cache -o -name "Code Cache" -o -name GPUCache -o -name DawnWebGPUCache \) 2>/dev/null | head -1)" ] && echo "  (scan found little; some may be TCC-protected)"
 echo
 
 echo "===== ASK first — big, but expensive to restore or not a cache ====="
