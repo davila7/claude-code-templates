@@ -53,8 +53,9 @@ Pause and explicitly confirm with the user before proceeding when:
   const { writeContract, data: hash, status } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-  // status: 'idle' | 'pending' -> submitted (hash) -> isConfirming -> isSuccess | isError
-  // surface each state distinctly in the UI (pending signature, confirming, success, failed)
+  // useWriteContract status: 'idle' -> 'pending' (wallet prompt) -> 'success' (hash obtained) | 'error' (user rejected / pre-flight failure)
+  // useWaitForTransactionReceipt: isConfirming (in mempool) -> isSuccess (confirmed) | isError (reverted)
+  // surface each state distinctly in the UI (pending signature, confirming, confirmed, failed)
   ```
 - NFT display components with metadata resolution
 - Gas estimation and network switching implementations
