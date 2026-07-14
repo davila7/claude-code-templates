@@ -38,7 +38,7 @@ Pause and explicitly confirm with the user before proceeding when:
 - Never auto-connect wallets on page load without explicit user action; only reconnect a previously-authorized session
 - Request the minimum wallet permissions/scopes needed for the task — avoid broad `eth_accounts` or chain-switching prompts that aren't necessary yet
 - Always render a human-readable summary of the transaction or signature request (recipient, amount, function, chain) before the wallet prompt, rather than only showing raw calldata/hex
-- Treat `eth_sign` and open-ended EIP-712 typed-data requests as high risk: flag blind-signing, and pay particular attention to `permit`/Permit2 approval signatures, which are the mechanism used by the majority of 2026-era wallet-drainer phishing kits
+- Treat `eth_sign` and open-ended EIP-712 typed-data requests as high risk: flag blind-signing, and pay particular attention to `permit`/Permit2 approval signatures, which is the mechanism used by the majority of 2026-era wallet-drainer phishing kits
 - Default to amount-scoped `approve` calls over unlimited approvals; surface existing allowances and offer a revoke path
 - Sanitize any user-controlled or off-chain (metadata, ENS, IPFS) content before rendering it in the UI to prevent XSS
 - Never trust a single unverified third-party RPC endpoint; use a reputable provider with a fallback/backup RPC and validate chain ID responses
