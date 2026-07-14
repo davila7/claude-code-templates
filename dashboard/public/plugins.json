@@ -23386,6 +23386,383 @@
     "highlights": []
   },
   {
+    "slug": "localplugins-plugins",
+    "name": "Plugins",
+    "author": "localplugins",
+    "description": "A local community of Claude Code plugins — brand-forge, content-multiplier, green-keeper, money-map, docpin. Most run entirely on your machine; docpin fetches cited version-matched docs and brand-forge's AI imagery is opt-in.",
+    "github": "https://github.com/localplugins/plugins",
+    "stars": 5,
+    "type": "marketplace",
+    "tags": [
+      "skills",
+      "agents",
+      "commands",
+      "hooks"
+    ],
+    "contains": {
+      "plugins": 6,
+      "components": {
+        "skills": 16,
+        "agents": 11,
+        "commands": 25,
+        "hooks": 5
+      }
+    },
+    "highlights": [
+      "6 plugins in marketplace"
+    ],
+    "plugins_list": [
+      {
+        "name": "content-multiplier",
+        "description": "Turn one idea, post, or transcript into a week of on-brand content across every channel and language — no accounts, no API keys, no setup.",
+        "source": "./content-multiplier",
+        "components": {
+          "skills": 3,
+          "agents": 2,
+          "commands": 5,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "brand-voice",
+              "description": "Applies the team's saved brand profile — voice, messaging, style guide, and compliance rules — to marketing copy so every asset reads on-brand instead of generic. Use when drafting, editing, or auditing content and a brand profile may exist. Trigger with \"brand voice\", \"apply the brand\", \"stay on-brand\", or \"/review\"."
+            },
+            {
+              "name": "channel-formats",
+              "description": "Transforms one piece of content into each marketing channel's native format — length, structure, hooks, and conventions — across LinkedIn, X threads, newsletters, Instagram, YouTube, short video, and blogs. Use when reformatting content for a specific channel. Trigger with \"channel format\", \"adapt for LinkedIn\", or \"/multiply\"."
+            },
+            {
+              "name": "transcreation",
+              "description": "Transforms marketing content across languages and markets through transcreation — adapting message, tone, and cultural references instead of translating word for word — while honoring per-locale brand rules and a do-not-translate glossary. Use when localizing content or when a locale is set. Trigger with \"transcreate\", \"localize\", \"adapt for a market\", or \"/localize\"."
+            }
+          ],
+          "agents": [
+            {
+              "name": "brand-guardian",
+              "description": "Brand and compliance reviewer. Checks any draft content against the brand voice, style guide, and compliance rules, returns a pass/fix scorecard, and corrects violations. Use as the final pass before content is delivered."
+            },
+            {
+              "name": "strategist",
+              "description": "Content strategist. Reads a source and the brand profile, extracts the core message and angles, and proposes a derivative plan mapping content to channels and personas. Use before drafting multi-channel content."
+            }
+          ],
+          "commands": [
+            {
+              "name": "brand-setup",
+              "description": "Create or update the brand profile that all content generation respects."
+            },
+            {
+              "name": "campaign",
+              "description": "Turn a brief into a coordinated multi-channel content set and calendar."
+            },
+            {
+              "name": "localize",
+              "description": "Transcreate content into other languages, honoring per-locale brand rules."
+            },
+            {
+              "name": "multiply",
+              "description": "Turn one source into on-brand, ready-to-paste content for every channel."
+            },
+            {
+              "name": "review",
+              "description": "Audit content against brand, style, and compliance; return a redline."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "green-keeper",
+        "description": "Keeps your tests and types green while you code — fixes red with minimal changes, maintains behavioral tests, and won't let you walk away from red. No fake-green.",
+        "source": "./green-keeper",
+        "components": {
+          "skills": 3,
+          "agents": 3,
+          "commands": 3,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "anti-fake-green",
+              "description": "Use whenever fixing a failing test/type error or writing a test, to guarantee the fix is real and not a cheat. Defines what counts as fake-green and how to verify a fix is legitimate."
+            },
+            {
+              "name": "runner-detection",
+              "description": "Use to figure out how to run a repo's tests and type/compile checks, and to write the green-keeper config. Covers common ecosystems and the config schema."
+            },
+            {
+              "name": "test-quality",
+              "description": "Use when writing or evaluating a test. Defines what makes a test good — behavioral, focused, and actually able to catch a regression."
+            }
+          ],
+          "agents": [
+            {
+              "name": "fixer",
+              "description": "Fixes one failing test or type/compile error with the smallest correct change and re-runs to confirm. Applies the anti-fake-green rules. Use to turn a specific red item green."
+            },
+            {
+              "name": "green-guardian",
+              "description": "Verifies that a fix or new test made something genuinely green and did not cheat. Enforces the anti-fake-green rules and runs revert-verification. Use as the final check before green-keeper reports success."
+            },
+            {
+              "name": "test-writer",
+              "description": "Writes or updates a behavioral test for changed code, following test-quality, and verifies the test actually exercises the change. Use to cover new/changed code."
+            }
+          ],
+          "commands": [
+            {
+              "name": "cover",
+              "description": "Write or update behavioral tests for the code you just changed, and verify they actually exercise the change."
+            },
+            {
+              "name": "green-setup",
+              "description": "Detect this repo's test and type/compile commands and cache them to .green-keeper/config.json so green-keeper (and its hooks) know how to run."
+            },
+            {
+              "name": "green",
+              "description": "Make everything green — fix failing tests and type/compile errors with minimal, real changes and re-run until the suite and types pass. No fake-green."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "money-map",
+        "description": "Understand your money: hand it any bank or card CSV export and it categorizes, summarizes cash flow, and flags anomalies — locally, never linked to your accounts.",
+        "source": "./money-map",
+        "components": {
+          "skills": 4,
+          "agents": 2,
+          "commands": 5
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "anomaly-patterns",
+              "description": "Use when flagging anomalies in transaction data. Defines what money-map surfaces — duplicates, outliers, and changes in recurring charges."
+            },
+            {
+              "name": "anti-fabrication",
+              "description": "Use whenever reporting financial figures, to guarantee every number is real. Numbers come from the toolkit's Decimal math and trace to source rows — never estimated or invented."
+            },
+            {
+              "name": "categorization",
+              "description": "Use when categorizing transactions or building the money-map categories & rules. Explains the taxonomy, how rules apply, and how to propose new rules from uncategorized items."
+            },
+            {
+              "name": "statement-parsing",
+              "description": "Use to figure out a CSV export's columns and build the mapping the money-map toolkit needs. Covers signed-amount vs debit/credit layouts, date formats, and currency symbols."
+            }
+          ],
+          "agents": [
+            {
+              "name": "analyst",
+              "description": "Analyzes a financial export by running the money-map toolkit — detects the column mapping, categorizes, aggregates, and finds anomalies — then writes a plain-English summary. Never does the arithmetic itself."
+            },
+            {
+              "name": "figures-guardian",
+              "description": "Verifies that reported financial figures are real, computed by the toolkit, and reconcile. Enforces the anti-fabrication rules. Use as the final check before any money-map output is shown."
+            }
+          ],
+          "commands": [
+            {
+              "name": "clean",
+              "description": "Turn messy or multi-format CSV exports into one clean, categorized, analysis-ready file."
+            },
+            {
+              "name": "money-setup",
+              "description": "Set up money-map for your data — create the categories & rules file and confirm how your export's columns map."
+            },
+            {
+              "name": "reconcile",
+              "description": "Reconcile two sets of records (e.g. bank vs books) and list every mismatch with the source rows."
+            },
+            {
+              "name": "report",
+              "description": "Generate a shareable report (spending report / cash-flow summary) from an analyzed export."
+            },
+            {
+              "name": "understand",
+              "description": "Understand a bank or card export — categorize every transaction, summarize cash flow, and flag anomalies. The hero command."
+            }
+          ]
+        }
+      },
+      {
+        "name": "docpin",
+        "description": "Ground Claude in docs matched to the library versions installed in your project (npm, PyPI, crates.io, Go). Fetches from public registries on demand, always cited.",
+        "source": "./docpin",
+        "components": {
+          "skills": 1,
+          "agents": 2,
+          "commands": 3,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "docpin",
+              "description": "Use when about to write or explain code that imports or calls a third-party library, or when the user asks how to use a named library/framework — resolves the version installed in the project and grounds the answer in version-matched documentation."
+            }
+          ],
+          "agents": [
+            {
+              "name": "citation-guardian",
+              "description": "Verifies that a grounded docpin answer's citations are real — the version matches the lockfile, the URL actually resolves and is version-pinned, and any cited API genuinely appears in that version's docs. Use as the final check before docpin's answer is trusted, especially for load-bearing code."
+            },
+            {
+              "name": "doc-fetcher",
+              "description": "Runs docpin's resolve → fetch → distill loop for ONE library in isolation, keeping the multi-step lookup out of the main session's context. Use when the main session needs version-matched docs for a library and you want the fetch/registry-lookup noise kept out of its context."
+            }
+          ],
+          "commands": [
+            {
+              "name": "docs-scan",
+              "description": "Report which of this project's direct dependencies docpin can resolve version-matched documentation for."
+            },
+            {
+              "name": "docs-setup",
+              "description": "Detect ecosystems in this project and write or update the docpin config at .docpin/config.json."
+            },
+            {
+              "name": "docs",
+              "description": "Fetch version-matched documentation for a library used in this project and ground an answer in it (optionally narrowed to a topic)."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "brand-forge",
+        "description": "Generate on-brand logos, social templates, and marketing graphics — vector assets run locally with no accounts or keys; AI imagery is opt-in.",
+        "source": "./brand-forge",
+        "components": {
+          "skills": 4,
+          "agents": 2,
+          "commands": 5,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "generate-doc-template",
+              "description": "Generates on-brand document and deck templates — letterhead, slide, and one-pager — as SVG from the active brand profile, with editable title, subtitle, and body zones. Vector output needs no account, key, or network. Use when a user asks for a letterhead, a slide or deck master, or a branded one-pager. Trigger with \"make a letterhead\", \"branded slide\", or \"/brand-make letterhead\"."
+            },
+            {
+              "name": "generate-graphic",
+              "description": "Generates an on-brand marketing graphic — hero image, ad creative, background, or texture — with an image model, optionally stamped with the brand logo and a caption. Opt-in: needs a provider key and network access. Use when a user wants a photographic or illustrative graphic, not a text-heavy asset. Trigger with \"make a hero image\", \"ad background\", or \"/brand-make graphic\"."
+            },
+            {
+              "name": "generate-logo",
+              "description": "Generates on-brand, editable SVG logo assets — wordmark, monogram, and favicon — from the active brand profile, reusing its exact palette and heading font. Vector output needs no account, key, or network. Use when a user asks for a logo, wordmark, icon, monogram, or favicon. Trigger with \"make a logo\", \"generate a wordmark\", or \"/brand-make logo\"."
+            },
+            {
+              "name": "generate-social",
+              "description": "Generates platform-sized, on-brand social templates as SVG from the active brand profile, with editable headline, subhead, and call-to-action zones. Vector output needs no account, key, or network. Use when a user asks for an Instagram post or story, an Open Graph or social card, a YouTube thumbnail, or a banner. Trigger with \"make an Instagram post\", \"social card\", or \"/brand-make social\"."
+            }
+          ],
+          "agents": [
+            {
+              "name": "art-director",
+              "description": "Plans the asset set for a brand request — decides which assets to produce, their composition and hierarchy, and which engine (vector vs raster) each needs. Use before generating anything ambiguous or multi-asset."
+            },
+            {
+              "name": "visual-guardian",
+              "description": "Visual brand reviewer. Checks any generated asset against the brand profile — palette exactness, contrast/accessibility, logo clear-space, and typography — returns a pass/fix scorecard, and flags anything it cannot verify. Use as the final pass before an asset is delivered."
+            }
+          ],
+          "commands": [
+            {
+              "name": "brand-export",
+              "description": "Export a generated SVG asset in output/ to PNG, using the optional sharp dependency if installed, or an OS-native tool otherwise."
+            },
+            {
+              "name": "brand-make",
+              "description": "Generate an on-brand asset (logo, social template, doc template, or AI marketing graphic) for the active brand and save it to output/."
+            },
+            {
+              "name": "brand-new",
+              "description": "Create a new visual brand profile via guided Q&A, optionally bootstrapping colors and fonts from an existing website, logo, or brand-guidelines PDF."
+            },
+            {
+              "name": "brand-status",
+              "description": "Print the active brand kit summary plus setup and preflight status, on demand (the same checks the SessionStart hook runs)."
+            },
+            {
+              "name": "brand-use",
+              "description": "List the available brands and switch which one is active for generation."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "cv-forge",
+        "description": "Turn one versioned résumé (JSON Resume) into an ATS-friendly PDF in the template that fits you — no Node, no keys, no network; just your browser.",
+        "source": "./cv-forge",
+        "components": {
+          "skills": 1,
+          "commands": 4,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "generate-resume",
+              "description": "Render a JSON Resume file through an HTML template into a self-contained, ATS-friendly document ready for the browser's Save-as-PDF. Use when the user asks to render, build, generate, or export their résumé/CV."
+            }
+          ],
+          "commands": [
+            {
+              "name": "cv-make",
+              "description": "Render the active résumé through the active template into a self-contained HTML file, ready to open and Save as PDF."
+            },
+            {
+              "name": "cv-new",
+              "description": "Create resume.json — import an existing résumé or answer guided questions — then set the active template and confirm with /cv-status."
+            },
+            {
+              "name": "cv-status",
+              "description": "Print the active résumé/template summary plus section counts, on demand (the same checks the SessionStart hook runs, plus a résumé content summary)."
+            },
+            {
+              "name": "cv-use",
+              "description": "List the available résumé templates and switch which one renders the active résumé."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
     "slug": "best-claude-skills",
     "name": "Best Claude Skills",
     "author": "Nyanbalaji28",

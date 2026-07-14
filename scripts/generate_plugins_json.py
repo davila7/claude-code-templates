@@ -60,6 +60,7 @@ REPOS = [
     ("Piebald-AI/claude-code-lsps", None),
     ("chu2bard/pinion-os", None),
     ("Airtable/skills", None),
+    ("localplugins/plugins", None),
 ]
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
@@ -551,7 +552,7 @@ def process_repo(repo_full, website_override=None):
     # 11. Slug
     slug = name.lower()
     # Avoid collisions by prepending owner for common names
-    if slug in ("claude-skills", "awesome-claude-skills", "awesome-claude-code-plugins"):
+    if slug in ("claude-skills", "awesome-claude-skills", "awesome-claude-code-plugins", "plugins"):
         slug = f"{owner.lower()}-{slug}"
 
     # 12. Website
