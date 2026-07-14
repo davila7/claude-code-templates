@@ -9,6 +9,12 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3444;
 
+// Platform-aware command names. Now that spawns run without `shell: true`,
+// Windows needs the `.cmd` shim to resolve npm-installed executables (bare
+// 'npx'/'claude' would fail with ENOENT on win32).
+const NPX_CMD = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const CLAUDE_CMD = process.platform === 'win32' ? 'claude.cmd' : 'claude';
+
 // Load .env file from current working directory (where user runs the command)
 function loadEnvFile() {
     const envPath = path.join(process.cwd(), '.env');
@@ -47,11 +53,26 @@ function loadEnvFile() {
 // Load environment variables on startup
 const hasApiKeys = loadEnvFile();
 
-// Simple CORS middleware
+// CORS middleware — restrict to the local Studio UI origin only.
+// A wildcard (`*`) origin combined with the command-executing endpoints below
+// lets any web page the developer visits drive requests into this server
+// (drive-by RCE). Only allow the same-origin UI served from localhost:PORT.
+const ALLOWED_ORIGINS = new Set([
+    `http://localhost:${PORT}`,
+    `http://127.0.0.1:${PORT}`,
+]);
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    if (origin && ALLOWED_ORIGINS.has(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+    }
+    res.header('Vary', 'Origin');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    // Reject cross-origin requests outright for the state-changing endpoints.
+    if (origin && !ALLOWED_ORIGINS.has(origin)) {
+        return res.status(403).json({ success: false, error: 'Cross-origin request rejected' });
+    }
     if (req.method === 'OPTIONS') {
         res.sendStatus(200);
     } else {
@@ -199,22 +220,31 @@ app.get('/api/tasks', (req, res) => {
 // API endpoint to install agent
 app.post('/api/install-agent', async (req, res) => {
     const { agentName } = req.body;
-    
+
     if (!agentName) {
         return res.status(400).json({
             success: false,
             error: 'Agent name is required'
         });
     }
-    
+
+    // SECURITY: agent names are `category/name` slugs. Reject anything else so a
+    // value like "x; rm -rf ~" can never reach the child process.
+    if (!/^[A-Za-z0-9._/-]+$/.test(agentName)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid agent name'
+        });
+    }
+
     try {
         console.log(chalk.blue('🔧 Installing agent:'), chalk.cyan(agentName));
-        
-        // Use the CLI tool to install the agent
-        const child = spawn('npx', ['claude-code-templates@latest', '--agent', agentName, '--yes'], {
+
+        // SECURITY: shell:false (default) keeps agentName as a single argv entry —
+        // no shell parses it, so metacharacters cannot inject commands.
+        const child = spawn(NPX_CMD, ['claude-code-templates@latest', '--agent', agentName, '--yes'], {
             cwd: process.cwd(),
-            stdio: ['pipe', 'pipe', 'pipe'],
-            shell: true
+            stdio: ['pipe', 'pipe', 'pipe']
         });
         
         let output = [];
@@ -276,11 +306,17 @@ async function checkAndInstallAgent(agentName, task) {
     
     task.output.push(`🔧 Agent ${agentName} not found locally. Installing...`);
     
+    // SECURITY: reject anything that is not a plain `category/name` slug.
+    if (!/^[A-Za-z0-9._/-]+$/.test(agentName)) {
+        task.output.push(`❌ Invalid agent name: ${agentName}`);
+        return Promise.resolve(false);
+    }
+
     return new Promise((resolve, reject) => {
-        const child = spawn('npx', ['claude-code-templates@latest', '--agent', agentName, '--yes'], {
+        // SECURITY: shell:false (default) — agentName stays a single argv entry.
+        const child = spawn(NPX_CMD, ['claude-code-templates@latest', '--agent', agentName, '--yes'], {
             cwd: process.cwd(),
-            stdio: ['pipe', 'pipe', 'pipe'],
-            shell: true
+            stdio: ['pipe', 'pipe', 'pipe']
         });
         
         child.stdout.on('data', (data) => {
@@ -460,15 +496,18 @@ async function executeLocalTask(task) {
             finalPrompt = `As a ${task.agent.replace('-', ' ')}, ${task.prompt}`;
         }
         
-        // Execute Claude Code locally with just the prompt
-        const child = spawn('claude', [finalPrompt], {
+        // Execute Claude Code locally with just the prompt.
+        // SECURITY: never run through a shell. With shell:true, Node joins argv into
+        // a single `sh -c` string and the attacker-controlled prompt is parsed by the
+        // shell (command injection). shell:false keeps finalPrompt as a single argv[1].
+        // Windows: resolve claude.cmd explicitly (CLAUDE_CMD) instead of re-enabling shell:true.
+        const child = spawn(CLAUDE_CMD, [finalPrompt], {
             cwd: process.cwd(),
             stdio: ['ignore', 'pipe', 'pipe'], // Ignore stdin to prevent hanging
             env: {
                 ...process.env,
                 PATH: process.env.PATH
             },
-            shell: true, // Use shell to find claude command
             timeout: 300000 // 5 minute timeout
         });
         
@@ -558,8 +597,9 @@ async function executeLocalTask(task) {
     }
 }
 
-// Start server
-app.listen(PORT, () => {
+// Start server — bind to loopback only. This is a local developer tool that
+// executes commands; binding to 0.0.0.0 exposes RCE to the whole LAN.
+app.listen(PORT, '127.0.0.1', () => {
     console.log(chalk.blue('\\n🎨 Claude Code Studio Server'));
     console.log(chalk.cyan('═══════════════════════════════════════'));
     console.log(chalk.green(`🚀 Server running on http://localhost:${PORT}`));
