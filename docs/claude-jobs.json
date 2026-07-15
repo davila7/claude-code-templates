@@ -1,12 +1,51 @@
 {
-  "lastUpdated": "2026-07-13T04:28:39.277348+00:00",
-  "totalJobs": 99,
+  "lastUpdated": "2026-07-14T04:05:31.643898+00:00",
+  "totalJobs": 101,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-48900749",
+      "company": "Namecoach/Euphonia",
+      "position": "AI Engineer",
+      "location": "SF or Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Namecoach has spent 10 years building the largest verified pronunciation dataset of its kind: ~2M self-recorded name pronunciations, plus a large corpus of human-verified phonetic spellings. We're now building Euphonia ( https://euphonia.namecoach.ai/ ), a provider-neutral middleware layer that...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48900749",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48900749",
+      "postedAt": "2026-07-14T00:20:28+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5342935008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Safeguards Review Tooling",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "The Safeguards team is responsible for ensuring our models and products are developed and deployed safely. We're looking for engineers for our Review Tooling team, which builds the systems that humans — and increasingly Claude — use to investigate potential harms and take enforcement actions across...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
+      "postedAt": "2026-07-13T12:57:38-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5311465008",
       "company": "Anthropic",
