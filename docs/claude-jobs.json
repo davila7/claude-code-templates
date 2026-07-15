@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-14T04:05:31.643898+00:00",
-  "totalJobs": 101,
+  "lastUpdated": "2026-07-15T04:04:13.640721+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -2005,6 +2005,28 @@
         "Rust",
         "AWS",
         "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5075093008",
+      "company": "Anthropic",
+      "position": "Strategic Account Executive, Cybersecurity",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "As a Strategic Account Executive focused on cybersecurity, you'll own some of Anthropic's most strategic cybersecurity relationships—companies building the next generation of AI-powered security products. These aren't typical enterprise accounts; they're partners shaping how AI transforms the...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
+      "postedAt": "2026-01-27T23:00:33-05:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Copilot",
+        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
