@@ -73,6 +73,31 @@ Power management:
 - Voltage scaling
 - Peripheral control
 
+### Timekeeping and power-loss boundary
+
+Before designing a scheduled action, time-limited credential, data logger, or
+RTC-driven wakeup, establish what time source the hardware actually has.
+
+- A crystal or RC oscillator is only a clock source; it does not retain
+  calendar time by itself.
+- A low-power timer can schedule a wakeup while its power domain is alive; do
+  not describe it as a real-time clock unless it has calendar state and a
+  documented backup-power path.
+- Treat full power loss, brownout, reset, and deep sleep as different states.
+  Verify which state clears the timer and calendar registers for the exact MCU
+  and board.
+- If an action must remain valid across full power loss, require a
+  battery-backed RTC domain or an explicit resynchronization path. Until time
+  is trustworthy again, fail closed for time-based access or safety decisions.
+
+Capture this evidence before implementation:
+
+1. Exact MCU/RTC part number and datasheet section.
+2. Clock source, reset behavior, backup supply, and expected retention window.
+3. The wake source and accuracy budget for the required interval.
+4. A power-cycle test that proves the intended retained state, or a documented
+   fail-closed/resync behavior when retention is unavailable.
+
 Real-time systems:
 - FreeRTOS
 - Zephyr
