@@ -1,4 +1,5 @@
 ---
+name: scrape-url
 allowed-tools: Bash
 argument-hint: "[url] | [url] parsed | [url] country=US"
 description: "Scrape any web page through the ScrapeUnblocker anti-bot API and return its HTML or AI-parsed JSON. Use when a page is blocked (403/429, captcha) or needs a real browser to render."
