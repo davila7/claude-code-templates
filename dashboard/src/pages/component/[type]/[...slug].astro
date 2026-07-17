@@ -211,7 +211,12 @@ const componentSchema = component
               name: config?.label ?? typePlural,
               item: `https://www.aitmpl.com/${typePlural}`,
             },
-            { '@type': 'ListItem', position: 3, name: title },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: title,
+              item: `https://www.aitmpl.com${canonicalPath}`,
+            },
           ],
         },
       ],
