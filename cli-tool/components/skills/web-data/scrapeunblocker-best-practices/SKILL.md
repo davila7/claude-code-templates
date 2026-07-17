@@ -1,6 +1,6 @@
 ---
 name: scrapeunblocker-best-practices
-description: "Build production-ready ScrapeUnblocker integrations. Reference for developers using coding assistants (Claude Code, Cursor, etc.) to scrape any URL with built-in anti-bot bypass (Cloudflare, DataDome, PerimeterX, Akamai, Shape). Covers the getPageSource endpoint (raw HTML / AI-parsed JSON / cookies), serpApi (Google results), getImage, country targeting, render waits, and retries."
+description: "Build production-ready ScrapeUnblocker integrations. Reference for developers using coding assistants (Claude Code, Cursor, etc.) to scrape any URL with built-in anti-bot bypass (Cloudflare, DataDome, PerimeterX, Akamai, Shape). Covers the getPageSource endpoint (raw HTML / AI-parsed JSON), serpApi (Google results), getImage, country targeting, render waits, and retries."
 user-invocable: false
 ---
 
