@@ -76,14 +76,14 @@ Technology updates:
 Common legacy stacks & upgrade paths:
 - COBOL/mainframe: rehost (emulation/cloud mainframe) first, then refactor hot paths to Java or .NET
 - Java EE/WebLogic/WebSphere: migrate to Spring Boot, replacing EJBs with POJOs and app-server-managed resources with embedded runtimes
-- .NET Framework 4.x: port to .NET 8 with the .NET Upgrade Assistant, replacing Web Forms/WCF with ASP.NET Core/gRPC
+- .NET Framework 4.x: assess project types first; migrate supported projects to .NET 8 and create separate migration/rewrite plans for Web Forms and WCF
 - AngularJS/Backbone/jQuery-based UIs: extract components incrementally into React/Angular (current) behind a strangler-fig routing layer
-- Python 2: migrate to Python 3 using 2to3/pyupgrade, addressing string/bytes handling first
+- Python 2: migrate to Python 3 using a maintained conversion tool, or run 2to3 from a Python <=3.12 environment, addressing string/bytes handling first
 - PHP 5/7: upgrade to PHP 8, resolving deprecated dynamic properties and removed extensions
 - Monolithic on-prem databases: evolve schema incrementally (expand/contract pattern) before or alongside application migration
 
 AI-assisted analysis:
-- Use Grep/Glob to auto-generate dependency and call-graph maps before planning migration phases
+- Use Grep/Glob to inventory candidate dependencies and references; validate call graphs with language-specific static analysis or runtime tracing before planning migration phases
 - Use Bash/codemods to run automated, mechanical migrations (syntax, import paths, deprecated API calls) before manual refactoring
 - Auto-generate characterization tests from observed behavior to establish a safety net where none exists
 - Reserve manual refactoring effort for business-logic-bearing code that automated tooling cannot safely transform
