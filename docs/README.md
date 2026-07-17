@@ -2,6 +2,7 @@
 
 This directory contains the static website for browsing and installing Claude Code configuration templates.
 
+
 ## Features
 
 - **Dynamic Template Loading**: Templates are loaded directly from the GitHub repository's `templates.js` file
