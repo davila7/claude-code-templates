@@ -1,12 +1,77 @@
 {
-  "lastUpdated": "2026-07-16T04:09:28.595418+00:00",
-  "totalJobs": 102,
+  "lastUpdated": "2026-07-17T04:04:18.924651+00:00",
+  "totalJobs": 104,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5355526008",
+      "company": "Anthropic",
+      "position": "Finance Systems Engineer, Revenue",
+      "location": "San Francisco, CA | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic’s Finance Systems team builds and owns the infrastructure that powers our quote-to-cash lifecycle—from pricing and billing through revenue recognition and financial close. As our revenue model grows in complexity, the team is moving beyond configuring off-the-shelf platforms and into...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5355526008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5355526008",
+      "postedAt": "2026-07-16T13:46:06-04:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "Java",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-48915735",
+      "company": "Portless",
+      "position": "AI Engineer",
+      "location": "Remote (North America)",
+      "remote": true,
+      "salary": "$180k-$230k",
+      "description": "We're a company doing real operational work in e-commerce/3PL logistics. AI usage internally is still basic — decks, spreadsheets, a few people vibe-coding dashboards. No real agentic workflows in production yet. That's what this role is for. You'd be the first dedicated AI engineer here. Two...",
+      "applyUrl": "https://news.ycombinator.com/item?id=48915735",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=48915735",
+      "postedAt": "2026-07-15T03:02:35+00:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Claude Code",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-designer-intelligent-change-1134905",
+      "company": "Intelligent Change",
+      "position": "Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "A Note from the Founder Intelligent Change began as something personal. Before it was a company, it was a question I was trying to answer in my own life: Why do we know so much about personal growth, yet struggle to live it consistently? Over the years, what we created resonated far beyond anything...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-designer-intelligent-change-1134905",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-designer-intelligent-change-1134905",
+      "postedAt": "2026-07-14T16:10:22+00:00",
+      "tags": [
+        "Go"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-48900749",
       "company": "Namecoach/Euphonia",
@@ -746,26 +811,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5201715008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect Lead, EMEA Commercial",
-      "location": "Dublin, IE",
-      "remote": false,
-      "salary": "",
-      "description": "As the Lead of the Commercial Applied AI Architect team for EMEA, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and the API) across commercial accounts throughout Europe: companies with fewer than 2,500 employees...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5201715008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5201715008",
-      "postedAt": "2026-06-05T11:21:47-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-48404934",
