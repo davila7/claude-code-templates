@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-17T04:04:18.924651+00:00",
-  "totalJobs": 104,
+  "lastUpdated": "2026-07-18T04:07:58.938002+00:00",
+  "totalJobs": 103,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -580,6 +580,26 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-arize-ai-open-source-design-engineer",
+      "company": "Arize Ai",
+      "position": "Open Source Design Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$145,000 - $185,000,",
+      "description": "Headquarters: Remote (United States) About Arize AI is rapidly transforming the world. As generative AI reshapes industries, teams need powerful ways to monitor, troubleshoot, and optimize their AI systems. That’s where we come in. Arize AI is the leading AI & Agent Engineering observability and...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/arize-ai-open-source-design-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/arize-ai-open-source-design-engineer",
+      "postedAt": "2026-06-30T20:31:42+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5198999008",
       "company": "Anthropic",
       "position": "Technical Architect",
@@ -666,51 +686,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-remote-va-web-developer-ai-specialist",
-      "company": "Remote VA",
-      "position": "Web Developer & AI Specialist",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Central Luzon, Philippines URL: http://remoteva.ph Description Job Description: Web Developer & AI Specialist Position Overview We are seeking a highly skilled Web Developer & AI Specialist to design, develop, and maintain advanced web applications while integrating artificial...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/remote-va-web-developer-ai-specialist",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/remote-va-web-developer-ai-specialist",
-      "postedAt": "2026-06-18T02:19:12+00:00",
-      "tags": [
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "PostgreSQL",
-        "Docker",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-mrioa-web-developer-remote",
-      "company": "MRIoA",
-      "position": "Web Developer (Remote)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Salt Lake City, Utah, United States URL: http://mrioa.com Who We Are - Motivated by Purpose. Powered by Clinical Expertise. Founded in 1983, we’re a clinically driven, tech-enabled utilization management company offering expert clinical reviews, regulatory guidance, and actionable...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/mrioa-web-developer-remote",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/mrioa-web-developer-remote",
-      "postedAt": "2026-06-18T02:19:12+00:00",
-      "tags": [
-        "React",
-        "JavaScript",
-        "Python",
-        "Go",
-        "Node.js",
-        "Claude Code",
-        "Django"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5255912008",
