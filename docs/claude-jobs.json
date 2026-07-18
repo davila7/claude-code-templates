@@ -1,11 +1,10 @@
 {
-  "lastUpdated": "2026-07-17T04:03:25.122762+00:00",
-  "totalJobs": 104,
+  "lastUpdated": "2026-07-18T04:02:14.641973+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
     {
@@ -666,51 +665,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-remote-va-web-developer-ai-specialist",
-      "company": "Remote VA",
-      "position": "Web Developer & AI Specialist",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Central Luzon, Philippines URL: http://remoteva.ph Description Job Description: Web Developer & AI Specialist Position Overview We are seeking a highly skilled Web Developer & AI Specialist to design, develop, and maintain advanced web applications while integrating artificial...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/remote-va-web-developer-ai-specialist",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/remote-va-web-developer-ai-specialist",
-      "postedAt": "2026-06-18T02:19:12+00:00",
-      "tags": [
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "PostgreSQL",
-        "Docker",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-mrioa-web-developer-remote",
-      "company": "MRIoA",
-      "position": "Web Developer (Remote)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Salt Lake City, Utah, United States URL: http://mrioa.com Who We Are - Motivated by Purpose. Powered by Clinical Expertise. Founded in 1983, we’re a clinically driven, tech-enabled utilization management company offering expert clinical reviews, regulatory guidance, and actionable...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/mrioa-web-developer-remote",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/mrioa-web-developer-remote",
-      "postedAt": "2026-06-18T02:19:12+00:00",
-      "tags": [
-        "React",
-        "JavaScript",
-        "Python",
-        "Go",
-        "Node.js",
-        "Claude Code",
-        "Django"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5255912008",
