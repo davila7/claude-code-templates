@@ -1,0 +1,16 @@
+{
+  "description": "Live allergen re-check for DoorDash CLI group orders. When a checkout runs for a cart that has a doordash-group-orders round ledger (.dd/round-*.json), this hook itself runs 'dd-cli cart show', joins cart lines to eaters via the person-to-cart-item-id ledger, and re-derives allergen conflicts against each eater's entry in the team-food.json roster - blocking with exit 2 on a live anaphylaxis-tier match. Verifies reality at checkout time instead of trusting a flag file: a skipped vetting step or a cart edited after review cannot pass silently. Only activates for carts with a round ledger; solo orders are doordash-allergy-shield territory.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/doordash-group-checkout-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

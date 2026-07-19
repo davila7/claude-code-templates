@@ -99,7 +99,11 @@ Use the component-reviewer agent to review [component-path]
 3. Include clear descriptions and usage examples
 4. **REVIEW with component-reviewer agent** (validates format, security, naming)
 5. Fix any issues identified by the reviewer
-6. Run `python scripts/generate_components_json.py` to update catalog
+6. **TEST before generating/publishing**: ask the human in the session whether
+   they want to test the newly created/modified component(s) first. Do NOT run
+   `generate_components_json.py`, commit, or publish until testing is confirmed
+   or explicitly skipped by the user.
+7. Run `python scripts/generate_components_json.py` to update catalog
 
 **The component-reviewer agent checks:**
 - ✅ Valid YAML frontmatter and required fields
