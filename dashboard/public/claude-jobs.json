@@ -1,10 +1,9 @@
 {
-  "lastUpdated": "2026-07-18T04:07:58.938002+00:00",
-  "totalJobs": 103,
+  "lastUpdated": "2026-07-19T04:17:21.073073+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
@@ -52,23 +51,6 @@
         "Claude Code",
         "Cursor",
         "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-designer-intelligent-change-1134905",
-      "company": "Intelligent Change",
-      "position": "Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "A Note from the Founder Intelligent Change began as something personal. Before it was a company, it was a question I was trying to answer in my own life: Why do we know so much about personal growth, yet struggle to live it consistently? Over the years, what we created resonated far beyond anything...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-designer-intelligent-change-1134905",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-designer-intelligent-change-1134905",
-      "postedAt": "2026-07-14T16:10:22+00:00",
-      "tags": [
-        "Go"
       ],
       "companyIcon": ""
     },
