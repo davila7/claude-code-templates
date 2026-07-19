@@ -1,0 +1,3 @@
+borrala, vamos a hacer brainstorming con todo lo que viste que es capaz este cli que skills crees que deberíamos crear, pero que tengan realmente utilidad ? no solo pedir algo, por que yo ya puedo simplemente pedirle a Claude que utilice la cli para pedirme un starbucks.
+
+Piensalo ultracode
