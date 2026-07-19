@@ -1,0 +1,1 @@
+si tenemos la web de aitmpl.com en workers pages, no tienes estas env vars ya en tu ambiente ?
