@@ -4,6 +4,7 @@ const { program } = require('commander');
 const chalk = require('chalk');
 const { createClaudeConfig } = require('../src/index');
 const { showBanner } = require('../src/tui');
+const { captureCliError } = require('../src/error-reporting');
 
 const pkg = require('../package.json');
 
@@ -63,6 +64,7 @@ program
       await createClaudeConfig(options);
     } catch (error) {
       console.error(chalk.red('Error:'), error.message);
+      await captureCliError(error, { command: 'createClaudeConfig' });
       process.exit(1);
     }
   });

@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { getNeonClient } from '../../lib/api/neon';
+import { captureApiError } from '../../lib/api/error-tracking';
 
 function validateOutcomeData(data: {
   componentType?: string;
@@ -80,6 +81,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (error) {
     console.error('Installation outcome tracking error:', error);
+    await captureApiError(error, { route: '/api/track-installation-outcome' });
     return jsonResponse(
       {
         error: 'Internal server error',

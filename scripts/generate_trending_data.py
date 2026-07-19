@@ -159,8 +159,8 @@ def main():
                 print(f"✅ Fetched final page {page_num} with {len(page_data)} records")
                 break
 
-            if len(all_downloads) >= 1000000:
-                print(f"⚠️  Reached safety limit of 1,000,000 records")
+            if len(all_downloads) >= 10000000:
+                print(f"⚠️  Reached safety limit of 10,000,000 records")
                 break
         
         if not all_downloads:

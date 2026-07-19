@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
+import { captureApiError } from '../../lib/api/error-tracking';
 
 function getSupabaseClient() {
   const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
@@ -97,6 +98,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (error) {
     console.error('Download tracking error:', error);
+    await captureApiError(error, { route: '/api/track-download-supabase' });
     return jsonResponse(
       {
         error: 'Internal server error',

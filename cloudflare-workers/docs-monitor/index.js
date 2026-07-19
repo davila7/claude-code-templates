@@ -4,11 +4,19 @@
  * Monitors https://code.claude.com/docs for changes and sends Telegram notifications
  * Runs on Cloudflare Workers with Cron Triggers
  * Uses Cloudflare KV for state storage
+ *
+ * Error tracking: set SENTRY_DSN (wrangler secret put SENTRY_DSN) to report
+ * failures to the "aitmpl-workers" Sentry project, in addition to the
+ * existing Telegram error notification. Optional — degrades gracefully.
  */
+
+import { reportError, checkIn } from './sentry.js';
 
 export default {
   async scheduled(event, env, ctx) {
     console.log('🔍 Starting docs monitoring check...');
+
+    const checkInId = await checkIn(env, 'docs-monitor', 'in_progress');
 
     try {
       // 1. Fetch the documentation page
@@ -43,10 +51,7 @@ export default {
         await env.DOCS_MONITOR_KV.put('last_hash', currentHash);
         await env.DOCS_MONITOR_KV.put('last_checked', new Date().toISOString());
         console.log('✅ First run - hash stored, monitoring started');
-        return;
-      }
-
-      if (currentHash !== previousHash) {
+      } else if (currentHash !== previousHash) {
         // Changes detected - send notification
         console.log('🔔 Change detected! Sending notification...');
 
@@ -76,8 +81,13 @@ export default {
         await env.DOCS_MONITOR_KV.put('last_checked', new Date().toISOString());
       }
 
+      await checkIn(env, 'docs-monitor', 'ok', checkInId);
+
     } catch (error) {
       console.error('❌ Error in docs monitor:', error);
+
+      await reportError(env, error, { worker: 'claude-docs-monitor' });
+      await checkIn(env, 'docs-monitor', 'error', checkInId);
 
       // Send error notification to Telegram
       await sendTelegramNotification(env, {

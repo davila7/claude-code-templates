@@ -1,0 +1,30 @@
+{
+  "name": "daily-health-report",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker — daily monitoring digest (site health, workers, Sentry errors) sent via Telegram",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "test": "wrangler dev --test-scheduled",
+    "secret:telegram-bot": "wrangler secret put TELEGRAM_BOT_TOKEN",
+    "secret:telegram-chat": "wrangler secret put TELEGRAM_CHAT_ID",
+    "secret:sentry-token": "wrangler secret put SENTRY_AUTH_TOKEN",
+    "secret:sentry-org": "wrangler secret put SENTRY_ORG_SLUG",
+    "secret:trigger": "wrangler secret put TRIGGER_SECRET"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "telegram",
+    "monitoring",
+    "health-check",
+    "sentry"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.91.0"
+  }
+}
