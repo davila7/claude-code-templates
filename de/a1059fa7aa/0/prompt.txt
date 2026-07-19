@@ -1,0 +1,186 @@
+<scheduled-task name="pr-verification" file="/Users/danipower/.claude/scheduled-tasks/pr-verification/SKILL.md">
+This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, execute autonomously without asking clarifying questions — make reasonable choices and note them in your output. "write" actions (e.g. MCP tools that send, post, create, update, or delete), only take them if the task file asks for that specific action. When in doubt, producing a report of what you found is the correct output.
+
+You are the **PR verification orchestrator**. Run hourly. For every cycle in
+the live-task API with `status="completed"` and a `pr_url`, check CI, merge
+when green, regenerate the catalog so the changes are visible on the website,
+clean up the branch, and mark the cycle `merged`.
+
+Also detect and recover stuck active cycles (active > 2 hours with no update).
+
+The PostToolUse hook at `~/.claude/hooks/log-review-tools.sh` will
+auto-log every tool call to the API while the marker file
+`/tmp/.claude-review-active` exists with the right contents. **Write the
+marker before each PR's verify block** so the dashboard's per-cycle log
+includes the verification + catalog regen + merge tools.
+
+---
+
+## Constants
+
+- API base: `https://www.aitmpl.com/api/live-task`
+- Repo:     `/Users/danipower/Proyectos/Github/claude-code-templates`
+- Marker:   `/tmp/.claude-review-active`
+
+---
+
+## Step 0. Check pause flag
+
+```bash
+curl -s https://www.aitmpl.com/api/live-task/control
+```
+
+If `"is_paused": true`, exit immediately.
+
+---
+
+## Step 1. Recover stuck active cycles
+
+Fetch all active cycles:
+```bash
+curl -s "https://www.aitmpl.com/api/live-task/cycles?status=active&limit=10"
+```
+
+For each active cycle, check if `updated_at` is more than 2 hours ago. If so,
+mark it failed:
+```bash
+curl -s -X PATCH https://www.aitmpl.com/api/live-task/cycles \
+  -H 'Content-Type: application/json' \
+  -d "{\"id\":$CYCLE_ID,\"status\":\"failed\",\"phase\":\"failed\",\"error_message\":\"Auto-recovered: cycle stuck in active state for >2 hours without updates\"}"
+```
+
+This unblocks the daily component-review task.
+
+---
+
+## Step 2. Fetch cycles awaiting verification
+
+```bash
+curl -s "https://www.aitmpl.com/api/live-task/cycles?status=completed&limit=20" \
+  | jq '.cycles[] | select(.pr_url != null and .pr_number != null)'
+```
+
+Each cycle has: `id`, `session_id`, `pr_url`, `pr_number`, `branch_name`,
+`linear_issue_id` (may be null), `component_path`.
+
+If the list is empty, exit cleanly — nothing to verify.
+
+---
+
+## Step 3. For each cycle, run the verify block
+
+Process cycles **sequentially** (catalog regen + commits to main can race if
+you parallelize). On any failure inside this block, jump to step 4 (failure
+handling) for that cycle, then continue with the next one.
+
+### 3a. Write the marker (so the hook starts logging this cycle)
+
+```bash
+printf '%s\n%s\n%s\n' "$SESSION_ID" "$CYCLE_ID" "verify" > /tmp/.claude-review-active
+```
+
+Reuse the same `session_id` from the cycle row — the dashboard joins on it.
+
+### 3b. Check CI
+
+```bash
+gh pr checks $PR_NUMBER --repo davila7/claude-code-templates
+```
+
+- If **any check is in progress**: skip this cycle (will retry next hour).
+  Delete the marker (step 3i) and move on.
+- If **any check has failed**: this is a failure → step 4.
+- If **all checks pass** (or no checks exist): continue.
+- If the PR is already **merged or closed**: skip CI check and go to step 3h
+  to update the DB.
+
+### 3c. Merge with squash + delete branch
+
+```bash
+gh pr merge $PR_NUMBER \
+  --repo davila7/claude-code-templates \
+  --squash \
+  --delete-branch
+```
+
+If merge fails because PR is already merged or branch already deleted, do not
+abort — log and continue to step 3d.
+
+### 3d. Pull main locally
+
+```bash
+cd /Users/danipower/Proyectos/Github/claude-code-templates
+git checkout main
+git pull origin main
+```
+
+### 3e. Regenerate catalog
+
+Spawn the `catalog-generator` agent. It runs
+`python3 scripts/generate_components_json.py`. Wait for it to finish (~30–60s).
+
+### 3f. Sync catalog to the dashboard
+
+```bash
+cp docs/components.json dashboard/public/components.json
+```
+
+### 3g. Commit + push the catalog refresh
+
+```bash
+git add docs/components.json dashboard/public/components.json
+git diff --cached --quiet || git commit -m "chore: regenerate catalog after #$PR_NUMBER
+
+Reflects merged improvements to $COMPONENT_PATH.
+
+Automated by pr-verification cycle | Co-Authored-By: Claude Code <noreply@anthropic.com>"
+git push origin main
+```
+
+### 3h. PATCH cycle as merged
+
+```bash
+curl -s -X PATCH https://www.aitmpl.com/api/live-task/cycles \
+  -H 'Content-Type: application/json' \
+  -d "{\"id\":$CYCLE_ID,\"status\":\"merged\",\"phase\":\"completed\"}"
+```
+
+### 3i. Always delete the marker
+
+```bash
+rm -f /tmp/.claude-review-active
+```
+
+This must run on every exit path from the verify block (success, skip,
+or failure) so the next cycle starts clean.
+
+---
+
+## Step 4. Failure handling
+
+If CI fails, merge fails, catalog regen fails, or push fails:
+
+a. PATCH the cycle:
+   ```bash
+   curl -s -X PATCH https://www.aitmpl.com/api/live-task/cycles \
+     -H 'Content-Type: application/json' \
+     -d "{\"id\":$CYCLE_ID,\"status\":\"failed\",\"error_message\":\"$ERROR\"}"
+   ```
+
+b. If the cycle has a `linear_issue_id`, spawn the `linear-tracker` agent
+   with a "Report Failure" request including:
+   - the original component_path
+   - the failing PR url
+   - which step failed (CI, merge, catalog, push)
+   - the error message
+
+c. Delete the marker (step 3i) and continue to the next cycle. **Do not
+   re-throw** — one failed cycle should not block the others.
+
+---
+
+## Output
+
+End the run with a one-line summary per cycle: `cycle <id> #<pr> <result>`.
+Also report how many stuck active cycles were recovered in step 1.
+</scheduled-task>
