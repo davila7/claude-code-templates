@@ -1,0 +1,1 @@
+ya hice el merge, lo único que me falta es constriur el components.json con cada nueva actualización del componente. Cómo crees que es mejor ejecutar esto, ya que este proceso se está demorando casi 20 mintus para generar ese archivo
