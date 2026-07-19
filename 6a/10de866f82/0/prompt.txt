@@ -1,0 +1,5 @@
+<task-notification>
+<task-id>bqn1i9tbd</task-id>
+<summary>Monitor event: "pr-verification run: watch cycle 33 status and PR #662 merge state until terminal"</summary>
+<event>[Monitor timed out — re-arm if needed.]</event>
+</task-notification>
