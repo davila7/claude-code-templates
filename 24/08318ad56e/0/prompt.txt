@@ -1,0 +1,1 @@
+que hace este comando ? /commit-push-pr now auto-allows git push to the repo’s configured push remote (remote.pushDefault, or the sole remote when only one is configured) in addition to origin
