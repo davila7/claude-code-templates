@@ -1,0 +1,1 @@
+revisa el statusline y agrega uno de exactamente lo nmismo pero ahora de cloudflare
