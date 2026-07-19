@@ -1,0 +1,11 @@
+<scheduled-task name="skill-migrator" file="/Users/danipower/.claude/scheduled-tasks/skill-migrator/SKILL.md">
+This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, execute autonomously without asking clarifying questions — make reasonable choices and note them in your output. "write" actions (e.g. MCP tools that send, post, create, update, or delete), only take them if the task file asks for that specific action. When in doubt, producing a report of what you found is the correct output.
+
+Migrate official Anthropic skills from https://github.com/anthropics/skills to this repository using the component-migrator agent.
+
+Before migrating, compare source skills with existing ones in cli-tool/components/skills/. If nothing is new or updated, finish without making changes.
+
+Only sync new or modified skills. Never delete or overwrite locally customized skills.
+
+After migrating, push to main.
+</scheduled-task>
