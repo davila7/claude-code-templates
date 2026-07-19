@@ -1,0 +1,19 @@
+{
+  "name": "adrianflda-claude-code-templates",
+  "owner": {
+    "name": "Adrian"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugin marketplace (fork). Custom plugins on top of claude-code-templates."
+  },
+  "plugins": [
+    {
+      "name": "pre-push-review",
+      "source": "./plugins/pre-push-review",
+      "description": "Fires an expert panel of code reviewers before every git push and blocks the push on critical findings. Portable, versioned — no per-machine hand-wiring.",
+      "version": "1.0.0",
+      "category": "quality-gates",
+      "keywords": ["code-review", "pre-push", "git", "quality-gate", "hooks", "security", "multi-agent"]
+    }
+  ]
+}
