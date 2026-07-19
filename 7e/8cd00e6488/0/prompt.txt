@@ -1,0 +1,9 @@
+dame el post en Linkedin sobre esto, ayuda:
+
+el comando /commit-push-pr acaba de tener un upgrade en la última versión de Claude Code
+
+(explicación del cambio)
+
+En este video te muestro como instalar el marketplace oficial de Anthropic, luego instalar el plugin y finalmente utilizar el PR.
+
+Ten en cuenta qu debes correr el comando / reload-plugins luego de instalarlo, tal como aparece en el video
