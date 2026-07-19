@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "9e8017f78ad9",
+  "strategy": "manual-commit",
+  "branch": "feat/hide-loops-menu",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "dashboard/src/components/Sidebar.astro",
+    "dashboard/src/components/TypeTabs.astro",
+    "dashboard/src/lib/icons.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/9e/8017f78ad9/0/metadata.json",
+      "transcript": "/9e/8017f78ad9/0/full.jsonl",
+      "compact_transcript": "/9e/8017f78ad9/0/transcript.jsonl",
+      "content_hash": "/9e/8017f78ad9/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1180,
+    "cache_creation_tokens": 50719,
+    "cache_read_tokens": 1174273,
+    "output_tokens": 5345,
+    "api_call_count": 19
+  }
+}
