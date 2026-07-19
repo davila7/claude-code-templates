@@ -1,0 +1,1 @@
+wait, antes de generar y publicar, tenemos que probar. Agrega eso a tu CLAUDE.md, preguntar al humano en la sesión si desea probar los skills recien creados.
