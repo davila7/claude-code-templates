@@ -1,0 +1,1 @@
+Puedes crear un skill para crear lo mismo en cada repo ? y agregalo a cli-tool
