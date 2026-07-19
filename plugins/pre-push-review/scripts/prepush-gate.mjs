@@ -27,7 +27,10 @@ function readStdin() {
   return new Promise((res) => {
     let data = '';
     process.stdin.setEncoding('utf8');
-    process.stdin.on('data', (c) => (data += c));
+    // Bound the read — a PreToolUse payload is small; never accumulate unboundedly.
+    process.stdin.on('data', (c) => {
+      if (data.length < 1_000_000) data += c;
+    });
     process.stdin.on('end', () => res(data));
     // Safety: if no stdin arrives, don't hang the tool call.
     setTimeout(() => res(data), 2000).unref?.();

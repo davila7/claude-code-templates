@@ -37,6 +37,10 @@ import { resolve } from 'path';
 import { homedir } from 'os';
 
 const MAX_DIFF_LINES = 3000;
+// Cap per-child captured output — mirrors the execSync maxBuffer used elsewhere in this
+// file. runAgent runs 6x concurrently on every push, so uncapped `out += d` on a runaway
+// `claude -p` (huge output, debug spew, CLI bug) could grow unbounded across all children.
+const MAX_AGENT_OUTPUT = 8 * 1024 * 1024;
 const MODEL = process.env.AI_REVIEW_MODEL || 'sonnet';
 const TIMEOUT_MS = Number(process.env.AI_REVIEW_TIMEOUT_MS || 240_000);
 const BLOCK_ON = (process.env.AI_REVIEW_BLOCK_ON || 'critical').toLowerCase();
@@ -225,8 +229,17 @@ function runAgent(bin, role, userPrompt) {
       finish({ role, ok: false, error: `timeout after ${TIMEOUT_MS}ms`, findings: [] });
     }, TIMEOUT_MS);
 
-    child.stdout.on('data', (d) => (out += d));
-    child.stderr.on('data', (d) => (err += d));
+    child.stdout.on('data', (d) => {
+      if (out.length < MAX_AGENT_OUTPUT) out += d;
+      else if (!settled) {
+        try {
+          child.kill('SIGKILL');
+        } catch {}
+      }
+    });
+    child.stderr.on('data', (d) => {
+      if (err.length < MAX_AGENT_OUTPUT) err += d;
+    });
     child.on('error', (e) => finish({ role, ok: false, error: e.message, findings: [] }));
     child.on('close', (code) => {
       const parsed = parseFindings(out);
