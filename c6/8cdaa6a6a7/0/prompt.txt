@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bio3c370q</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-danipower-Proyectos-Github-claude-code-templates/9fb15425-36f1-4808-b27a-c0304afcb19c/tasks/bio3c370q.output</output-file>
+<status>completed</status>
+<summary>Background command "Regenerate trending data with fix" completed (exit code 0)</summary>
+</task-notification>
