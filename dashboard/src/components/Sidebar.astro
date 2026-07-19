@@ -67,7 +67,7 @@ function isActive(path: string): boolean {
       <span class="sidebar-text font-ui-mono text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-[0.1em] select-none transition-all duration-300 block">Browse</span>
     </div>
 
-    {Object.entries(TYPE_CONFIG).map(([type, config]) => (
+    {Object.entries(TYPE_CONFIG).filter(([, config]) => !config.hidden).map(([type, config]) => (
       <a
         href={`/${type}`}
         data-nav-type={type}
