@@ -1,0 +1,1 @@
+generemos el components.json y subamos un nuevo pr
