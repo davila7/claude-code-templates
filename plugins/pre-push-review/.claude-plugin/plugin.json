@@ -1,0 +1,19 @@
+{
+  "name": "pre-push-review",
+  "version": "1.0.0",
+  "description": "Fires an expert panel of code reviewers before every `git push` and BLOCKS the push on critical findings. A portable, versioned Claude Code plugin — works in every repo, no per-machine hand-wiring.",
+  "author": {
+    "name": "Adrian"
+  },
+  "keywords": [
+    "code-review",
+    "pre-push",
+    "git",
+    "quality-gate",
+    "hooks",
+    "security",
+    "multi-agent"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/adrianflda/claude-code-templates/tree/main/plugins/pre-push-review"
+}
