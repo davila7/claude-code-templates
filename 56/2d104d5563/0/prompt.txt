@@ -1,0 +1,1 @@
+estoy viendo esto: ▲ Vercel | ❌ ERROR | ⏰ 14302m ago | 🌐 Deploy | ☁️ Cloudflare 🔧 config-needed
