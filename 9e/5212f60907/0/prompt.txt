@@ -1,0 +1,114 @@
+## Context
+
+- Current git status: On branch main
+Your branch is behind 'origin/main' by 96 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   dashboard/package-lock.json
+	modified:   dashboard/package.json
+	modified:   dashboard/public/components.json
+	modified:   dashboard/public/trending-data.json
+	modified:   docs/components.json
+	modified:   docs/trending-data.json
+	modified:   scripts/generate_trending_data.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.astro/
+	cli-tool/components/settings/statusline/cloudflare-pages-deployment-monitor.json
+	dashboard/public/trending-dashboard.html
+	dashboard/src/components/live/
+	dashboard/src/lib/live/
+	dashboard/src/pages/api/live/
+	dashboard/src/pages/live.astro
+	docu/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+- Current git diff (staged and unstaged changes): <persisted-output>
+Output too large (874.5KB). Full output saved to: /Users/danipower/.claude/projects/-Users-danipower-Proyectos-Github-claude-code-templates/66b66f2d-527c-43fd-801f-606feb54cfcd/tool-results/bmipy0ej1.txt
+
+Preview (first 2KB):
+diff --git a/dashboard/package-lock.json b/dashboard/package-lock.json
+index 02be85e1..2ab2fa94 100644
+--- a/dashboard/package-lock.json
++++ b/dashboard/package-lock.json
+@@ -8,7 +8,7 @@
+       "name": "claude-code-templates-dashboard",
+       "version": "0.0.1",
+       "dependencies": {
+-        "@astrojs/cloudflare": "^12.5.4",
++        "@astrojs/cloudflare": "^12.6.13",
+         "@astrojs/react": "^4.4.2",
+         "@clerk/backend": "^3.0.1",
+         "@clerk/clerk-react": "^5.60.1",
+diff --git a/dashboard/package.json b/dashboard/package.json
+index a4a70e06..2405072d 100644
+--- a/dashboard/package.json
++++ b/dashboard/package.json
+@@ -11,8 +11,8 @@
+     "astro": "astro"
+   },
+   "dependencies": {
++    "@astrojs/cloudflare": "^12.6.13",
+     "@astrojs/react": "^4.4.2",
+-    "@astrojs/cloudflare": "^12.5.4",
+     "@clerk/backend": "^3.0.1",
+     "@clerk/clerk-react": "^5.60.1",
+     "@neondatabase/serverless": "^1.0.2",
+diff --git a/dashboard/public/components.json b/dashboard/public/components.json
+index 0afbcc17..2f2c3f00 100644
+--- a/dashboard/public/components.json
++++ b/dashboard/public/components.json
+@@ -12,7 +12,7 @@
+       "version": "",
+       "license": "",
+       "keywords": [],
+-      "downloads": 47,
++      "downloads": 29,
+       "security": {
+         "validated": false,
+         "valid": null,
+@@ -34,7 +34,7 @@
+       "version": "",
+       "license": "",
+       "keywords": [],
+-      "downloads": 478,
++      "downloads": 203,
+       "security": {
+         "validated": false,
+         "valid": null,
+@@ -56,7 +56,7 @@
+       "version": "",
+       "license": "",
+       "keywords": [],
+-      "downloads": 628,
++      "downloads": 281,
+       "security": {
+         "validated": false,
+         "valid": null,
+@@ -78,7 +78,7 @@
+       "version": "",
+       "license": "",
+       "keywords": [],
+-      "downloads": 348,
++      "downloads": 154,
+       "security": {
+         "validated": false,
+         "valid": null,
+@@ -100,7 +100,7 @@
+...
+</persisted-output>
+- Current branch: main
+
+## Your task
+
+Based on the above changes:
+
+1. Create a new branch if on main
+2. Create a single commit with an appropriate message
+3. Push the branch to origin
+4. Create a pull request using `gh pr create`
+5. You have the capability to call multiple tools in a single response. You MUST do all of the above in a single message. Do not use any other tools or do anything else. Do not send any other text or messages besides these tool calls.
