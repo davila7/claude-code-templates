@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>b71c5vld1</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-danipower-Proyectos-Github-claude-code-templates/2c4f9f43-4248-4ccd-ae60-ee0eb4391655/tasks/b71c5vld1.output</output-file>
+<status>completed</status>
+<summary>Background command "Regenerate component catalog" completed (exit code 0)</summary>
+</task-notification>
