@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trending · Claude Code Templates</title>
+<style>
+  /* ---- Design-system palette (validated: light ΔE 24.2, dark ΔE 10.3) ---- */
+  :root {
+    --plane:        #f9f9f7;
+    --surface-1:    #fcfcfb;
+    --text-primary: #0b0b0b;
+    --text-secondary:#52514e;
+    --muted:        #898781;
+    --grid:         #e1e0d9;
+    --baseline:     #c3c2b7;
+    --border:       rgba(11,11,11,0.10);
+    --good:         #006300;
+    /* categorical slots */
+    --c-agents:    #2a78d6; /* blue   */
+    --c-skills:    #1baf7a; /* aqua   */
+    --c-commands:  #eda100; /* yellow */
+    --c-mcps:      #008300; /* green  */
+    --c-settings:  #4a3aa7; /* violet */
+    --c-hooks:     #e34948; /* red    */
+    --c-templates: #e87ba4; /* magenta*/
+    /* sequential blue ramp (magnitude bars) */
+    --seq:         #2a78d6;
+    --seq-soft:    #cde2fb;
+  }
+  html[data-theme="dark"] {
+    --plane:        #0d0d0d;
+    --surface-1:    #1a1a19;
+    --text-primary: #ffffff;
+    --text-secondary:#c3c2b7;
+    --muted:        #898781;
+    --grid:         #2c2c2a;
+    --baseline:     #383835;
+    --border:       rgba(255,255,255,0.10);
+    --good:         #0ca30c;
+    --c-agents:    #3987e5;
+    --c-skills:    #199e70;
+    --c-commands:  #c98500;
+    --c-mcps:      #008300;
+    --c-settings:  #9085e9;
+    --c-hooks:     #e66767;
+    --c-templates: #d55181;
+    --seq:         #3987e5;
+    --seq-soft:    #184f95;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  header.top h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header.top .sub { color: var(--text-secondary); font-size: 13px; }
+  .controls { display: flex; gap: 8px; }
+  .btn {
+    font: inherit; font-size: 13px; cursor: pointer;
+    background: var(--surface-1); color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { color: var(--text-primary); }
+
+  /* stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+  .tile .label { color: var(--text-secondary); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
+  .tile .value { font-size: 30px; font-weight: 650; margin-top: 6px; letter-spacing: -0.02em; }
+  .tile .value small { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+  .tile .foot { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 12px; margin-bottom: 18px; }
+  .card h2 { font-size: 15px; margin: 0; letter-spacing: -0.01em; }
+  .card .desc { color: var(--text-secondary); font-size: 12.5px; margin: 3px 0 12px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px 16px; margin-top: 6px; }
+  .legend .item { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend .swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .grid line { stroke: var(--grid); stroke-width: 1; }
+  .axis text { fill: var(--muted); font-size: 11px; }
+  .axis text.tab { font-variant-numeric: tabular-nums; }
+  .serieslabel { font-size: 11px; font-weight: 600; }
+  .barlabel { fill: var(--text-secondary); font-size: 11.5px; }
+  .barvalue { fill: var(--text-primary); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* tooltip */
+  .tt {
+    position: fixed; pointer-events: none; z-index: 20; opacity: 0; transition: opacity .08s;
+    background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px;
+    font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.16); min-width: 150px;
+  }
+  .tt .tt-title { color: var(--text-secondary); font-size: 11px; margin-bottom: 6px; }
+  .tt .tt-row { display: flex; align-items: center; gap: 7px; justify-content: space-between; margin: 2px 0; }
+  .tt .tt-row .k { display: inline-flex; align-items: center; gap: 6px; }
+  .tt .tt-row .sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+  .tt .tt-row .v { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* table view */
+  .tableview { display: none; overflow-x: auto; }
+  .tableview.on { display: block; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  thead th { color: var(--text-secondary); font-weight: 600; }
+
+  .flag { font-size: 15px; }
+  @media (max-width: 720px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .row2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Trending · Claude Code Templates</h1>
+      <div class="sub" id="updated">Loading…</div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="tableBtn" aria-pressed="false">▤ Table view</button>
+      <button class="btn" id="themeBtn">◐ Theme</button>
+    </div>
+  </header>
+
+  <!-- KPI tiles -->
+  <section class="tiles" id="tiles"></section>
+
+  <!-- Cumulative downloads over time -->
+  <section class="card">
+    <h2>Cumulative downloads by component type</h2>
+    <div class="desc" id="lineDesc">Running total over the last 30 days.</div>
+    <div id="lineChart"></div>
+    <div class="legend" id="lineLegend"></div>
+    <div class="tableview" id="lineTable"></div>
+  </section>
+
+  <div class="row2">
+    <!-- Top components -->
+    <section class="card">
+      <h2>Top trending components</h2>
+      <div class="desc">By all-time downloads.</div>
+      <div id="compChart"></div>
+      <div class="tableview" id="compTable"></div>
+    </section>
+
+    <!-- Top countries -->
+    <section class="card">
+      <h2>Downloads by country</h2>
+      <div class="desc">Top 5 of <span id="countryTotal">185</span> countries.</div>
+      <div id="ctryChart"></div>
+      <div class="tableview" id="ctryTable"></div>
+    </section>
+  </div>
+</div>
+
+<div class="tt" id="tooltip" role="status" aria-live="polite"></div>
+
+<!-- Embedded snapshot (fallback when opened via file://). Live copy fetched from ./trending-data.json when served. -->
+<script id="embedded" type="application/json">
+{"lastUpdated":"2026-07-01T23:42:24.324003+00:00Z","globalStats":{"totalComponents":2018,"totalDownloads":1331456,"monthlyDownloads":111025,"weeklyDownloads":27162,"todayDownloads":3334,"totalCountries":190},"topCountries":[{"code":"US","name":"United States","flag":"🇺🇸","downloads":197659,"percentage":14.8},{"code":"BR","name":"Brazil","flag":"🇧🇷","downloads":86406,"percentage":6.5},{"code":"KR","name":"South Korea","flag":"🇰🇷","downloads":54901,"percentage":4.1},{"code":"ES","name":"Spain","flag":"🇪🇸","downloads":51818,"percentage":3.9},{"code":"TR","name":"Turkey","flag":"🇹🇷","downloads":48072,"percentage":3.6}],"trending":{"commands":[{"id":"command-generate-tests","name":"generate-tests","category":"testing","downloadsToday":21,"downloadsWeek":142,"downloadsMonth":584,"downloadsTotal":10646},{"id":"command-ultra-think","name":"ultra-think","category":"utilities","downloadsToday":14,"downloadsWeek":58,"downloadsMonth":224,"downloadsTotal":7807},{"id":"command-create-architecture-documentation","name":"create-architecture-documentation","category":"documentation","downloadsToday":7,"downloadsWeek":42,"downloadsMonth":178,"downloadsTotal":5648},{"id":"command-code-review","name":"code-review","category":"utilities","downloadsToday":10,"downloadsWeek":42,"downloadsMonth":208,"downloadsTotal":5070},{"id":"command-update-docs","name":"update-docs","category":"documentation","downloadsToday":7,"downloadsWeek":30,"downloadsMonth":114,"downloadsTotal":3550},{"id":"command-refactor-code","name":"refactor-code","category":"utilities","downloadsToday":3,"downloadsWeek":30,"downloadsMonth":144,"downloadsTotal":4583},{"id":"command-security-audit","name":"security-audit","category":"security","downloadsToday":2,"downloadsWeek":29,"downloadsMonth":96,"downloadsTotal":1188},{"id":"command-todo","name":"todo","category":"project-management","downloadsToday":2,"downloadsWeek":24,"downloadsMonth":98,"downloadsTotal":2528},{"id":"command-architecture-review","name":"architecture-review","category":"team","downloadsToday":2,"downloadsWeek":24,"downloadsMonth":120,"downloadsTotal":3128},{"id":"command-secrets-scanner","name":"secrets-scanner","category":"security","downloadsToday":2,"downloadsWeek":24,"downloadsMonth":52,"downloadsTotal":486}],"agents":[{"id":"agent-frontend-developer","name":"frontend-developer","category":"development-team","downloadsToday":66,"downloadsWeek":553,"downloadsMonth":2254,"downloadsTotal":35044},{"id":"agent-code-reviewer","name":"code-reviewer","category":"development-tools","downloadsToday":61,"downloadsWeek":380,"downloadsMonth":1616,"downloadsTotal":27131},{"id":"agent-ui-ux-designer","name":"ui-ux-designer","category":"development-team","downloadsToday":44,"downloadsWeek":371,"downloadsMonth":1579,"downloadsTotal":23194},{"id":"agent-backend-architect","name":"backend-architect","category":"development-team","downloadsToday":36,"downloadsWeek":263,"downloadsMonth":1113,"downloadsTotal":21034},{"id":"agent-fullstack-developer","name":"fullstack-developer","category":"development-team","downloadsToday":32,"downloadsWeek":258,"downloadsMonth":1044,"downloadsTotal":15714},{"id":"agent-security-auditor","name":"security-auditor","category":"security","downloadsToday":26,"downloadsWeek":210,"downloadsMonth":770,"downloadsTotal":8908},{"id":"agent-database-architect","name":"database-architect","category":"database","downloadsToday":29,"downloadsWeek":195,"downloadsMonth":744,"downloadsTotal":10540},{"id":"agent-debugger","name":"debugger","category":"development-tools","downloadsToday":33,"downloadsWeek":178,"downloadsMonth":737,"downloadsTotal":11807},{"id":"agent-prompt-engineer","name":"prompt-engineer","category":"ai-specialists","downloadsToday":26,"downloadsWeek":174,"downloadsMonth":774,"downloadsTotal":14757},{"id":"agent-context-manager","name":"context-manager","category":"development-tools","downloadsToday":17,"downloadsWeek":134,"downloadsMonth":549,"downloadsTotal":9890}],"settings":[{"id":"setting-context-monitor","name":"context-monitor","category":"statusline","downloadsToday":26,"downloadsWeek":148,"downloadsMonth":672,"downloadsTotal":14422},{"id":"setting-performance-optimization","name":"performance-optimization","category":"environment","downloadsToday":6,"downloadsWeek":75,"downloadsMonth":336,"downloadsTotal":6428},{"id":"setting-colorful-statusline","name":"colorful-statusline","category":"statusline","downloadsToday":2,"downloadsWeek":33,"downloadsMonth":141,"downloadsTotal":3319},{"id":"setting-allow-npm-commands","name":"allow-npm-commands","category":"permissions","downloadsToday":3,"downloadsWeek":30,"downloadsMonth":124,"downloadsTotal":2431},{"id":"setting-development-mode","name":"development-mode","category":"permissions","downloadsToday":4,"downloadsWeek":29,"downloadsMonth":142,"downloadsTotal":2708},{"id":"setting-development-utils","name":"development-utils","category":"environment","downloadsToday":3,"downloadsWeek":22,"downloadsMonth":151,"downloadsTotal":3549},{"id":"setting-git-commit-settings","name":"git-commit-settings","category":"global","downloadsToday":2,"downloadsWeek":21,"downloadsMonth":82,"downloadsTotal":2418},{"id":"setting-disable-telemetry","name":"disable-telemetry","category":"telemetry","downloadsToday":0,"downloadsWeek":15,"downloadsMonth":60,"downloadsTotal":996},{"id":"setting-bash-timeouts","name":"bash-timeouts","category":"environment","downloadsToday":0,"downloadsWeek":15,"downloadsMonth":55,"downloadsTotal":854},{"id":"setting-allow-git-operations","name":"allow-git-operations","category":"permissions","downloadsToday":0,"downloadsWeek":14,"downloadsMonth":62,"downloadsTotal":1470}],"hooks":[{"id":"hook-simple-notifications","name":"simple-notifications","category":"automation","downloadsToday":30,"downloadsWeek":177,"downloadsMonth":900,"downloadsTotal":9319},{"id":"hook-update-search-year","name":"update-search-year","category":"pre-tool","downloadsToday":7,"downloadsWeek":173,"downloadsMonth":369,"downloadsTotal":2707},{"id":"hook-smart-formatting","name":"smart-formatting","category":"development-tools","downloadsToday":12,"downloadsWeek":33,"downloadsMonth":120,"downloadsTotal":2656},{"id":"hook-smart-commit","name":"smart-commit","category":"git-workflow","downloadsToday":9,"downloadsWeek":32,"downloadsMonth":139,"downloadsTotal":3325},{"id":"hook-security-scanner","name":"security-scanner","category":"security","downloadsToday":3,"downloadsWeek":29,"downloadsMonth":128,"downloadsTotal":1913},{"id":"hook-lint-on-save","name":"lint-on-save","category":"development-tools","downloadsToday":8,"downloadsWeek":29,"downloadsMonth":118,"downloadsTotal":2982},{"id":"hook-secret-scanner","name":"secret-scanner","category":"security","downloadsToday":0,"downloadsWeek":29,"downloadsMonth":94,"downloadsTotal":1023},{"id":"hook-dependency-checker","name":"dependency-checker","category":"automation","downloadsToday":9,"downloadsWeek":28,"downloadsMonth":105,"downloadsTotal":2120},{"id":"hook-run-tests-after-changes","name":"run-tests-after-changes","category":"post-tool","downloadsToday":10,"downloadsWeek":26,"downloadsMonth":512,"downloadsTotal":1729},{"id":"hook-dangerous-command-blocker","name":"dangerous-command-blocker","category":"security","downloadsToday":2,"downloadsWeek":26,"downloadsMonth":64,"downloadsTotal":1121}],"mcps":[{"id":"mcp-memory-integration","name":"memory-integration","category":"integration","downloadsToday":8,"downloadsWeek":86,"downloadsMonth":300,"downloadsTotal":7304},{"id":"mcp-context7","name":"context7","category":"devtools","downloadsToday":12,"downloadsWeek":84,"downloadsMonth":339,"downloadsTotal":13923},{"id":"mcp-chrome-devtools","name":"chrome-devtools","category":"devtools","downloadsToday":12,"downloadsWeek":72,"downloadsMonth":209,"downloadsTotal":3706},{"id":"mcp-playwright-mcp-server","name":"playwright-mcp-server","category":"browser_automation","downloadsToday":10,"downloadsWeek":67,"downloadsMonth":249,"downloadsTotal":5707},{"id":"mcp-postgresql-integration","name":"postgresql-integration","category":"database","downloadsToday":5,"downloadsWeek":60,"downloadsMonth":267,"downloadsTotal":4329},{"id":"mcp-web-fetch","name":"web-fetch","category":"web","downloadsToday":3,"downloadsWeek":46,"downloadsMonth":178,"downloadsTotal":4357},{"id":"mcp-github-integration","name":"github-integration","category":"integration","downloadsToday":3,"downloadsWeek":44,"downloadsMonth":199,"downloadsTotal":3741},{"id":"mcp-browser-use-mcp-server","name":"browser-use-mcp-server","category":"browser_automation","downloadsToday":2,"downloadsWeek":39,"downloadsMonth":116,"downloadsTotal":2136},{"id":"mcp-filesystem-access","name":"filesystem-access","category":"filesystem","downloadsToday":2,"downloadsWeek":36,"downloadsMonth":121,"downloadsTotal":2814},{"id":"mcp-playwright-mcp","name":"playwright-mcp","category":"browser_automation","downloadsToday":0,"downloadsWeek":30,"downloadsMonth":90,"downloadsTotal":1744}],"skills":[{"id":"skill-frontend-design","name":"frontend-design","category":"creative-design","downloadsToday":184,"downloadsWeek":1358,"downloadsMonth":5428,"downloadsTotal":36228},{"id":"skill-ui-ux-pro-max","name":"ui-ux-pro-max","category":"creative-design","downloadsToday":134,"downloadsWeek":955,"downloadsMonth":3791,"downloadsTotal":18492},{"id":"skill-code-reviewer","name":"code-reviewer","category":"development","downloadsToday":104,"downloadsWeek":795,"downloadsMonth":3278,"downloadsTotal":25789},{"id":"skill-senior-frontend","name":"senior-frontend","category":"development","downloadsToday":91,"downloadsWeek":726,"downloadsMonth":2956,"downloadsTotal":22437},{"id":"skill-senior-backend","name":"senior-backend","category":"development","downloadsToday":80,"downloadsWeek":631,"downloadsMonth":2711,"downloadsTotal":19726},{"id":"skill-senior-architect","name":"senior-architect","category":"development","downloadsToday":72,"downloadsWeek":483,"downloadsMonth":1974,"downloadsTotal":16472},{"id":"skill-react-best-practices","name":"react-best-practices","category":"web-development","downloadsToday":53,"downloadsWeek":391,"downloadsMonth":1469,"downloadsTotal":14267},{"id":"skill-ui-design-system","name":"ui-design-system","category":"creative-design","downloadsToday":41,"downloadsWeek":366,"downloadsMonth":1582,"downloadsTotal":12848},{"id":"skill-mobile-design","name":"mobile-design","category":"creative-design","downloadsToday":45,"downloadsWeek":336,"downloadsMonth":1268,"downloadsTotal":6526},{"id":"skill-senior-fullstack","name":"senior-fullstack","category":"development","downloadsToday":56,"downloadsWeek":335,"downloadsMonth":1355,"downloadsTotal":9222}],"templates":[{"id":"template-none","name":"none","category":"python","downloadsToday":2,"downloadsWeek":13,"downloadsMonth":195,"downloadsTotal":2458},{"id":"template-react","name":"react","category":"javascript-typescript","downloadsToday":0,"downloadsWeek":3,"downloadsMonth":20,"downloadsTotal":702},{"id":"template-null","name":"null","category":"common","downloadsToday":0,"downloadsWeek":3,"downloadsMonth":27,"downloadsTotal":762},{"id":"template-fastapi","name":"fastapi","category":"python","downloadsToday":0,"downloadsWeek":2,"downloadsMonth":11,"downloadsTotal":233},{"id":"template-vue","name":"vue","category":"javascript-typescript","downloadsToday":0,"downloadsWeek":1,"downloadsMonth":3,"downloadsTotal":113},{"id":"template-node","name":"node","category":"javascript-typescript","downloadsToday":0,"downloadsWeek":1,"downloadsMonth":9,"downloadsTotal":250},{"id":"template-flask","name":"flask","category":"python","downloadsToday":0,"downloadsWeek":1,"downloadsMonth":1,"downloadsTotal":44},{"id":"template-django","name":"django","category":"python","downloadsToday":0,"downloadsWeek":0,"downloadsMonth":2,"downloadsTotal":46},{"id":"template-angular","name":"angular","category":"javascript-typescript","downloadsToday":0,"downloadsWeek":0,"downloadsMonth":0,"downloadsTotal":25},{"id":"template-rails","name":"rails","category":"ruby","downloadsToday":0,"downloadsWeek":0,"downloadsMonth":0,"downloadsTotal":16}],"all":[{"id":"skill-frontend-design","name":"frontend-design","category":"creative-design","downloadsToday":184,"downloadsWeek":1358,"downloadsMonth":5428,"downloadsTotal":36228},{"id":"skill-ui-ux-pro-max","name":"ui-ux-pro-max","category":"creative-design","downloadsToday":134,"downloadsWeek":955,"downloadsMonth":3791,"downloadsTotal":18492},{"id":"skill-code-reviewer","name":"code-reviewer","category":"development","downloadsToday":104,"downloadsWeek":795,"downloadsMonth":3278,"downloadsTotal":25789},{"id":"skill-senior-frontend","name":"senior-frontend","category":"development","downloadsToday":91,"downloadsWeek":726,"downloadsMonth":2956,"downloadsTotal":22437},{"id":"skill-senior-backend","name":"senior-backend","category":"development","downloadsToday":80,"downloadsWeek":631,"downloadsMonth":2711,"downloadsTotal":19726},{"id":"agent-frontend-developer","name":"frontend-developer","category":"development-team","downloadsToday":66,"downloadsWeek":553,"downloadsMonth":2254,"downloadsTotal":35044},{"id":"skill-senior-architect","name":"senior-architect","category":"development","downloadsToday":72,"downloadsWeek":483,"downloadsMonth":1974,"downloadsTotal":16472},{"id":"skill-react-best-practices","name":"react-best-practices","category":"web-development","downloadsToday":53,"downloadsWeek":391,"downloadsMonth":1469,"downloadsTotal":14267},{"id":"agent-code-reviewer","name":"code-reviewer","category":"development-tools","downloadsToday":61,"downloadsWeek":380,"downloadsMonth":1616,"downloadsTotal":27131},{"id":"agent-ui-ux-designer","name":"ui-ux-designer","category":"development-team","downloadsToday":44,"downloadsWeek":371,"downloadsMonth":1579,"downloadsTotal":23194}]},"chartData":{"dates":["2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-06","2026-06-07","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-19","2026-06-20","2026-06-21","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-27","2026-06-28","2026-06-29","2026-06-30","2026-07-01"],"series":{"commands":[171,250,332,652,752,815,998,1081,1163,1443,1704,1818,1895,2051,2544,2755,2955,3051,3135,3212,3334,3398,3459,3558,3634,3691,3832,4254,4521,4667],"agents":[1013,1971,3015,4156,5543,6234,7616,8573,10222,11443,12829,13849,14646,15526,16718,17754,19145,20203,22026,22863,24049,24984,26514,27672,28386,29089,29738,31364,32645,33770],"settings":[55,90,146,253,388,446,470,627,688,817,902,935,1062,1140,1235,1320,1474,1573,1696,1745,1801,1860,1908,1985,2052,2100,2210,2355,2397,2448],"hooks":[108,160,270,392,457,521,610,1119,2131,2209,2318,2356,2400,2535,2723,2825,3011,3107,3138,4437,4538,4686,4792,4881,4975,5008,5187,5323,5452,5591],"mcps":[117,197,394,631,746,800,932,993,1100,1360,1580,1657,1740,1886,2050,2389,2576,2689,2763,2826,2914,3035,3146,3282,3358,3477,3758,3969,4037,4123],"skills":[1846,3698,5603,7454,9030,10633,12430,14441,16348,18321,20382,21906,23380,25485,27428,29497,31756,33979,35792,37587,39821,41999,44237,46123,47961,49233,50670,52793,54716,56501],"templates":[5,6,9,16,19,23,25,28,31,44,79,83,192,198,201,211,217,225,229,233,237,240,243,247,252,255,258,262,262,264]}}}
+</script>
+
+<script>
+"use strict";
+const NUM = n => n.toLocaleString("en-US");
+const $ = s => document.querySelector(s);
+const tt = $("#tooltip");
+
+// component-type -> {label, colorVar}. Color follows the entity, never its rank.
+const TYPES = [
+  { key: "skills",    label: "Skills",    color: "var(--c-skills)"    },
+  { key: "agents",    label: "Agents",    color: "var(--c-agents)"    },
+  { key: "commands",  label: "Commands",  color: "var(--c-commands)"  },
+  { key: "mcps",      label: "MCPs",      color: "var(--c-mcps)"      },
+  { key: "settings",  label: "Settings",  color: "var(--c-settings)"  },
+  { key: "hooks",     label: "Hooks",     color: "var(--c-hooks)"     },
+  { key: "templates", label: "Templates", color: "var(--c-templates)" },
+];
+
+function showTip(html, x, y) {
+  tt.innerHTML = html;
+  tt.style.opacity = "1";
+  const pad = 14, w = tt.offsetWidth, h = tt.offsetHeight;
+  let left = x + pad, top = y + pad;
+  if (left + w > window.innerWidth - 8) left = x - w - pad;
+  if (top + h > window.innerHeight - 8) top = y - h - pad;
+  tt.style.left = Math.max(8, left) + "px";
+  tt.style.top = Math.max(8, top) + "px";
+}
+const hideTip = () => (tt.style.opacity = "0");
+
+function svg(w, h) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  s.setAttribute("role", "img");
+  return s;
+}
+function el(tag, attrs, parent) {
+  const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function niceTop(max) {
+  if (!(max > 0)) return { top: 10, step: 5 }; // empty / all-zero data
+  const pow = Math.pow(10, Math.floor(Math.log10(max)));
+  const step = [1, 2, 2.5, 5, 10].find(s => s * pow >= max / 4) * pow;
+  return { top: Math.ceil(max / step) * step, step };
+}
+
+/* ---------------- KPI tiles ---------------- */
+function renderTiles(d) {
+  const g = d.globalStats;
+  const tiles = [
+    { label: "Total downloads", value: NUM(g.totalDownloads) },
+    { label: "This month",      value: NUM(g.monthlyDownloads), foot: "downloads in the last 30 days" },
+    { label: "Components",      value: NUM(g.totalComponents),  foot: "agents, commands, MCPs, skills…" },
+    { label: "Countries",       value: NUM(g.totalCountries),   foot: "with at least one install" },
+  ];
+  $("#tiles").innerHTML = tiles.map(t =>
+    `<div class="tile"><div class="label">${t.label}</div>
+       <div class="value">${t.value}</div>
+       <div class="foot">${t.foot || " "}</div></div>`
+  ).join("");
+}
+
+/* ---------------- Line chart ---------------- */
+let lineState = null;
+function renderLine(d) {
+  const host = $("#lineChart"); host.innerHTML = "";
+  const dates = d.chartData.dates, series = d.chartData.series;
+  const W = 1040, H = 420, m = { t: 14, r: 96, b: 34, l: 52 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const n = dates.length;
+  let max = 0;
+  TYPES.forEach(t => (series[t.key] || []).forEach(v => (max = Math.max(max, v))));
+  const { top, step } = niceTop(max);
+  const X = i => m.l + (iw * i) / (n - 1);
+  const Y = v => m.t + ih - (ih * v) / top;
+  const s = svg(W, H); host.appendChild(s);
+
+  // gridlines + y ticks
+  const gg = el("g", { class: "grid" }, s);
+  const ax = el("g", { class: "axis" }, s);
+  for (let v = 0; v <= top + 1; v += step) {
+    el("line", { x1: m.l, y1: Y(v), x2: m.l + iw, y2: Y(v) }, gg);
+    const tx = el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", class: "tab" }, ax);
+    tx.textContent = v >= 1000 ? (v / 1000) + "k" : v;
+  }
+  // x ticks (every ~5 days + last)
+  dates.forEach((dt, i) => {
+    if (i % 5 === 0 || i === n - 1) {
+      const tx = el("text", { x: X(i), y: H - 12, "text-anchor": "middle" }, ax);
+      tx.textContent = dt.slice(5);
+    }
+  });
+  // baseline
+  el("line", { x1: m.l, y1: Y(0), x2: m.l + iw, y2: Y(0), stroke: "var(--baseline)", "stroke-width": 1 }, s);
+
+  // lines (direct labels = secondary encoding, satisfies relief rule)
+  const ends = [];
+  TYPES.forEach(t => {
+    const data = series[t.key]; if (!data) return;
+    const dstr = data.map((v, i) => `${i ? "L" : "M"}${X(i)},${Y(v)}`).join(" ");
+    el("path", { d: dstr, fill: "none", stroke: t.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
+    ends.push({ t, y: Y(data[n - 1]) });
+  });
+  // declutter end labels: keep >=13px apart, top→bottom
+  ends.sort((a, b) => a.y - b.y);
+  const GAP = 13;
+  for (let i = 1; i < ends.length; i++)
+    if (ends[i].y - ends[i - 1].y < GAP) ends[i].y = ends[i - 1].y + GAP;
+  // clamp to plot and re-spread upward if pushed past the bottom
+  const bottom = m.t + ih;
+  for (let i = ends.length - 1; i >= 0; i--) {
+    if (ends[i].y > bottom) ends[i].y = bottom - (ends.length - 1 - i) * GAP;
+    if (i < ends.length - 1 && ends[i + 1].y - ends[i].y < GAP) ends[i].y = ends[i + 1].y - GAP;
+  }
+  ends.forEach(e => {
+    const lab = el("text", { x: m.l + iw + 8, y: e.y + 4, class: "serieslabel", fill: e.t.color }, s);
+    lab.textContent = e.t.label;
+  });
+
+  // crosshair + hover layer
+  const cross = el("line", { x1: 0, y1: m.t, x2: 0, y2: m.t + ih, stroke: "var(--baseline)", "stroke-width": 1, opacity: 0 }, s);
+  const dots = TYPES.map(t => el("circle", { r: 4, fill: t.color, stroke: "var(--surface-1)", "stroke-width": 2, opacity: 0 }, s));
+  const hit = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, s);
+  function move(evt) {
+    const r = s.getBoundingClientRect();
+    const px = (evt.clientX - r.left) / r.width * W;
+    let i = Math.round((px - m.l) / iw * (n - 1));
+    i = Math.max(0, Math.min(n - 1, i));
+    cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 1);
+    const rows = TYPES.map((t, k) => {
+      const v = series[t.key] ? series[t.key][i] : 0;
+      dots[k].setAttribute("cx", X(i)); dots[k].setAttribute("cy", Y(v)); dots[k].setAttribute("opacity", 1);
+      return { t, v };
+    }).sort((a, b) => b.v - a.v);
+    const html = `<div class="tt-title">${dates[i]}</div>` + rows.map(r =>
+      `<div class="tt-row"><span class="k"><span class="sw" style="background:${r.t.color}"></span>${r.t.label}</span><span class="v">${NUM(r.v)}</span></div>`
+    ).join("");
+    showTip(html, evt.clientX, evt.clientY);
+  }
+  hit.addEventListener("mousemove", move);
+  hit.addEventListener("mouseleave", () => { hideTip(); cross.setAttribute("opacity", 0); dots.forEach(dd => dd.setAttribute("opacity", 0)); });
+
+  // legend
+  $("#lineLegend").innerHTML = TYPES.map(t =>
+    `<span class="item"><span class="swatch" style="background:${t.color}"></span>${t.label}</span>`
+  ).join("");
+
+  // description — flag an empty window (no downloads recorded in range)
+  const win = `${dates[0]} → ${dates[dates.length - 1]}`;
+  if (max === 0) {
+    $("#lineDesc").innerHTML = `Running total per component type, ${win}. <b>No downloads recorded in this window</b> — the latest data in the source ends earlier.`;
+    el("text", { x: m.l + iw / 2, y: m.t + ih / 2, "text-anchor": "middle", fill: "var(--muted)", "font-size": 13 }, s).textContent = "No activity in this date range";
+  } else {
+    $("#lineDesc").textContent = `Running total per component type, ${win}.`;
+  }
+
+  // table
+  const head = `<tr><th>Date</th>${TYPES.map(t => `<th class="num">${t.label}</th>`).join("")}</tr>`;
+  const body = dates.map((dt, i) =>
+    `<tr><td>${dt}</td>${TYPES.map(t => `<td class="num">${NUM(series[t.key] ? series[t.key][i] : 0)}</td>`).join("")}</tr>`
+  ).join("");
+  $("#lineTable").innerHTML = `<table><thead>${head}</thead><tbody>${body}</tbody></table>`;
+}
+
+/* ---------------- Horizontal magnitude bars ---------------- */
+function renderBars(hostSel, tableSel, items, opts) {
+  const host = $(hostSel); host.innerHTML = "";
+  const rowH = 34, gap = 8, m = { t: 6, r: 64, b: 6, l: opts.labelW };
+  const W = 500, H = m.t + m.b + items.length * rowH;
+  const iw = W - m.l - m.r;
+  const max = Math.max(...items.map(it => it.value));
+  const { top } = niceTop(max);
+  const s = svg(W, H); host.appendChild(s);
+  const barH = rowH - gap;
+
+  items.forEach((it, i) => {
+    const y = m.t + i * rowH;
+    const w = Math.max(2, iw * it.value / top);
+    // label
+    const lab = el("text", { x: m.l - 10, y: y + barH / 2 + 4, "text-anchor": "end", class: "barlabel" }, s);
+    lab.textContent = it.label;
+    if (it.flag) { const f = el("text", { x: 2, y: y + barH / 2 + 5 }, s); f.textContent = it.flag; f.setAttribute("font-size", "15"); }
+    // track
+    el("rect", { x: m.l, y, width: iw, height: barH, rx: 4, fill: "var(--grid)", opacity: .5 }, s);
+    // bar — 4px rounded data-end
+    const bar = el("rect", { x: m.l, y, width: w, height: barH, rx: 4, fill: opts.color }, s);
+    // value
+    const val = el("text", { x: m.l + w + 8, y: y + barH / 2 + 4, class: "barvalue" }, s);
+    val.textContent = NUM(it.value);
+    // hover
+    const hit = el("rect", { x: 0, y, width: W, height: rowH, fill: "transparent" }, s);
+    const over = e => showTip(
+      `<div class="tt-title">${it.label}</div>
+       <div class="tt-row"><span class="k"><span class="sw" style="background:${opts.color}"></span>${opts.valueLabel}</span><span class="v">${NUM(it.value)}</span></div>` +
+      (it.sub ? `<div class="tt-row"><span class="k">${it.sub.k}</span><span class="v">${it.sub.v}</span></div>` : ""),
+      e.clientX, e.clientY);
+    hit.addEventListener("mousemove", over);
+    hit.addEventListener("mouseleave", hideTip);
+    bar.addEventListener("mousemove", over);
+  });
+
+  // table
+  $(tableSel).innerHTML = `<table><thead><tr><th>${opts.rowLabel}</th><th class="num">${opts.valueLabel}</th>${opts.subCol ? `<th class="num">${opts.subCol}</th>` : ""}</tr></thead><tbody>` +
+    items.map(it => `<tr><td>${it.flag ? it.flag + " " : ""}${it.label}</td><td class="num">${NUM(it.value)}</td>${opts.subCol ? `<td class="num">${it.sub ? it.sub.v : ""}</td>` : ""}</tr>`).join("") +
+    "</tbody></table>";
+}
+
+/* ---------------- Boot ---------------- */
+function render(d) {
+  const dt = new Date(d.lastUpdated.replace("+00:00Z", "Z"));
+  $("#updated").textContent = "Updated " + dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) +
+    " · " + NUM(d.globalStats.totalComponents) + " components tracked";
+  $("#countryTotal").textContent = NUM(d.globalStats.totalCountries);
+
+  renderTiles(d);
+  renderLine(d);
+
+  const comps = [...d.trending.all].sort((a, b) => b.downloadsTotal - a.downloadsTotal)
+    .map(c => ({ label: c.name, value: c.downloadsTotal, sub: { k: "Category", v: c.category } }));
+  renderBars("#compChart", "#compTable", comps, {
+    color: "var(--seq)", labelW: 190, valueLabel: "Downloads", rowLabel: "Component", subCol: "Category",
+  });
+
+  const ctry = d.topCountries.map(c => ({ label: c.name, flag: c.flag, value: c.downloads, sub: { k: "Share", v: c.percentage + "%" } }));
+  renderBars("#ctryChart", "#ctryTable", ctry, {
+    color: "var(--seq)", labelW: 150, valueLabel: "Downloads", rowLabel: "Country", subCol: "Share",
+  });
+
+  // re-render on resize so tooltips/labels stay aligned
+  clearTimeout(window.__rz);
+  window.addEventListener("resize", () => { clearTimeout(window.__rz); window.__rz = setTimeout(() => renderLine(d), 150); }, { once: true });
+}
+
+// theme
+const themeBtn = $("#themeBtn");
+function applyTheme(mode) { document.documentElement.setAttribute("data-theme", mode); localStorage.setItem("cct-theme", mode); }
+applyTheme(localStorage.getItem("cct-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+themeBtn.addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  applyTheme(cur === "dark" ? "light" : "dark");
+});
+// table toggle
+const tableBtn = $("#tableBtn");
+tableBtn.addEventListener("click", () => {
+  const on = tableBtn.getAttribute("aria-pressed") === "true";
+  tableBtn.setAttribute("aria-pressed", String(!on));
+  document.querySelectorAll(".tableview").forEach(t => t.classList.toggle("on", !on));
+});
+
+// data: prefer live file, fall back to embedded snapshot
+const embedded = JSON.parse($("#embedded").textContent);
+fetch("./trending-data.json", { cache: "no-store" })
+  .then(r => (r.ok ? r.json() : Promise.reject()))
+  .then(render)
+  .catch(() => render(embedded));
+</script>
+</body>
+</html>
