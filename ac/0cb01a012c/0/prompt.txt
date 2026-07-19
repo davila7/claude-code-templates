@@ -1,0 +1,1 @@
+vuelve a generar el archivo de traending-data.json y revisemos nuevamente el dashboard
