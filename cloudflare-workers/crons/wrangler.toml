@@ -12,3 +12,8 @@ crons = ["*/30 * * * *", "0 * * * *"]
 # Required:
 # - DASHBOARD_URL: https://www.aitmpl.com (no trailing slash)
 # - TRIGGER_SECRET: shared secret for authenticating internal cron calls
+#
+# Optional (error tracking):
+# - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure
+#   Cron Monitors in Sentry with slugs "claude-code-check" and "health-check"
+#   to get alerted if a schedule stops running entirely.

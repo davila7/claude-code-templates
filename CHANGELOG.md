@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.29.4] - 2026-07-13
+
+### Security
+- **Fix unauthenticated OS command injection / RCE in Claude Code Studio
+  (`--studio`)** — GHSA-79wm-x847-7cvg (CWE-78, CWE-306, CWE-352; CVSS 8.8).
+  Reported by @spartan8806. The studio server
+  (`cli-tool/src/sandbox-server.js`) bound to all interfaces, sent
+  `Access-Control-Allow-Origin: *`, required no auth, and passed request-body
+  fields into `child_process.spawn(..., { shell: true })`. Fixes:
+  - Removed `shell: true` from all task/agent spawns so arguments stay discrete
+    argv entries and shell metacharacters can no longer execute.
+  - Added a strict allowlist (`^[A-Za-z0-9._/-]+$`) for the `agentName`/`agent`
+    fields, rejected before reaching any child process.
+  - Bound the server to loopback (`127.0.0.1`) instead of `0.0.0.0`, removing
+    the LAN attack surface.
+  - Restricted CORS to the local Studio UI origin and rejected cross-origin
+    requests, closing the drive-by CSRF vector.
+  - Resolved `npx`/`claude` via their `.cmd` shims on Windows so removing
+    `shell: true` does not break agent installation on win32.
+
 ## [Unreleased]
 
 ### Added

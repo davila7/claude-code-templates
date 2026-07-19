@@ -1,0 +1,54 @@
+name: Update Star History
+
+on:
+  schedule:
+    # Every Monday at 4:00 AM UTC
+    - cron: '0 4 * * 1'
+  workflow_dispatch: # Allow manual runs from the GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  update-star-history:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install requests
+
+      - name: Generate star-history.svg
+        run: python scripts/generate_star_history.py
+        env:
+          # The repo's own GITHUB_TOKEN can read its own stargazers, which
+          # GitHub now restricts to the repository's admins and collaborators.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet docs/star-history.svg || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/star-history.svg
+          git commit -m "chore: Update star history chart
+
+          🤖 Generated with [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          git push

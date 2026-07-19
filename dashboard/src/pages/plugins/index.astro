@@ -66,15 +66,9 @@ try {
 
   <!-- Emit sidebar counts (ComponentGrid not present on this page) -->
   <script is:inline>
-    fetch('/components.json')
+    fetch('/counts.json')
       .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var counts = {};
-        Object.keys(data).forEach(function(type) {
-          if (Array.isArray(data[type])) {
-            counts[type] = data[type].length;
-          }
-        });
+      .then(function(counts) {
         window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));
       })
       .catch(function() {});

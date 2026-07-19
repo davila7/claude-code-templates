@@ -19,8 +19,13 @@ Astro 5 + React islands + Tailwind v4 application. Hosted natively on **Cloudfla
 ## API Routes
 
 - Export named HTTP methods: `export const GET: APIRoute`, `export const POST: APIRoute`
-- Use shared libs from `dashboard/src/lib/api/` (cors, neon, auth)
+- Use shared libs from `dashboard/src/lib/api/` (cors, neon, auth, error-tracking)
 - CORS via `corsResponse()` / `jsonResponse()` from `dashboard/src/lib/api/cors.ts`
+- Error tracking: call `captureApiError(error, { route: '/api/...' })` from
+  `dashboard/src/lib/api/error-tracking.ts` in `catch` blocks that matter
+  (tracking endpoints, cron-triggered endpoints). No SDK — sends directly to
+  the Sentry envelope API via `fetch()`. Requires `SENTRY_DSN` env var
+  (DSN from the "aitmpl-dashboard" Sentry project); no-ops if unset.
 
 ## React Islands
 

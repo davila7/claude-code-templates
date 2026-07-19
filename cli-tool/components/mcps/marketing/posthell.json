@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "posthell": {
+      "description": "posthell - social media scheduler for AI agents. Shape rough notes into posts in your voice, queue drafts for human approval, read growth analytics, and (per-key opt-in) publish to 15 networks (X, LinkedIn, Instagram, TikTok, and more). Hosted remote server; create your API key in the posthell dashboard (https://www.posthell.com/mcp).",
+      "type": "http",
+      "url": "https://www.posthell.com/api/mcp",
+      "headers": {
+        "Authorization": "Bearer your_api_key"
+      }
+    }
+  }
+}

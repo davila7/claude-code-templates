@@ -832,7 +832,9 @@ def generate_components_json():
 
     print(f"Generated {written_content_count} component content files in {dashboard_content_dir}/")
 
-    # 2. Build index: strip 'content' from all component types
+    # 2. Build the legacy/docs index: strip only 'content'.
+    #    The legacy static site (docs/js/*) renders security badges, so the
+    #    'security' field MUST stay in docs/components.json.
     index_data = {}
     for k, v in components_data.items():
         if k in content_bearing_types:
@@ -840,7 +842,7 @@ def generate_components_json():
         else:
             index_data[k] = v
 
-    # 3. Write lightweight index to docs/components.json and dashboard/public/components.json
+    # 3. Write the docs index (with 'security', without 'content').
     try:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(index_data, f, indent=2, ensure_ascii=False)
@@ -848,13 +850,90 @@ def generate_components_json():
     except IOError as e:
         print(f"Error writing to {output_path}: {e}")
 
+    # ---------------------------------------------------------------------------
+    # Dashboard-specific artifacts (Cloudflare Pages, www.aitmpl.com).
+    #
+    # The dashboard never reads the 'security' field, so we strip it here to
+    # shrink the payload the browser downloads. We also emit smaller,
+    # purpose-built artifacts so islands stop downloading the whole index:
+    #
+    #   components.json          → full index, no 'content', no 'security'
+    #   counts.json              → { type: count } (sidebars/plugins pages)
+    #   components/{type}.json   → per-type slice (grid loads only active type)
+    #   search-index.json        → flat [{type,name,path,description,category}]
+    # ---------------------------------------------------------------------------
+    STRIP_KEYS = {'content', 'security'}
+
+    def strip_for_dashboard(component):
+        return {key: val for key, val in component.items() if key not in STRIP_KEYS}
+
+    # Build the dashboard index (content + security stripped from components).
+    dashboard_index_data = {}
+    for k, v in index_data.items():
+        if k in content_bearing_types and isinstance(v, list):
+            dashboard_index_data[k] = [strip_for_dashboard(c) for c in v]
+        elif isinstance(v, list):
+            # Non-content types (e.g. mcps/settings/hooks may carry security)
+            dashboard_index_data[k] = [strip_for_dashboard(c) for c in v]
+        else:
+            dashboard_index_data[k] = v
+
     try:
         os.makedirs(dashboard_public_dir, exist_ok=True)
         dashboard_index_path = os.path.join(dashboard_public_dir, 'components.json')
-        shutil.copy2(output_path, dashboard_index_path)
-        print(f"Copied index to {dashboard_index_path}")
+        with open(dashboard_index_path, 'w', encoding='utf-8') as f:
+            json.dump(dashboard_index_data, f, ensure_ascii=False)
+        print(f"Generated {dashboard_index_path} (dashboard index, no content/security).")
     except Exception as e:
-        print(f"Warning: Could not copy files to dashboard/public/: {e}")
+        print(f"Warning: Could not write dashboard index: {e}")
+
+    # counts.json — tiny per-type counts so sidebars/plugins pages stop
+    # downloading the full index just to read array lengths.
+    try:
+        counts = {k: len(v) for k, v in dashboard_index_data.items() if isinstance(v, list)}
+        counts_path = os.path.join(dashboard_public_dir, 'counts.json')
+        with open(counts_path, 'w', encoding='utf-8') as f:
+            json.dump(counts, f, ensure_ascii=False)
+        print(f"Generated {counts_path} ({counts}).")
+    except Exception as e:
+        print(f"Warning: Could not write counts.json: {e}")
+
+    # components/{type}.json — per-type slices so the grid loads only the
+    # active type instead of all 1800+ components at once.
+    try:
+        per_type_dir = os.path.join(dashboard_public_dir, 'components')
+        os.makedirs(per_type_dir, exist_ok=True)
+        for k, v in dashboard_index_data.items():
+            if not isinstance(v, list):
+                continue
+            type_path = os.path.join(per_type_dir, f'{k}.json')
+            with open(type_path, 'w', encoding='utf-8') as f:
+                json.dump(v, f, ensure_ascii=False)
+        print(f"Generated per-type index files in {per_type_dir}/")
+    except Exception as e:
+        print(f"Warning: Could not write per-type index files: {e}")
+
+    # search-index.json — flat array with only the fields the global (Cmd+K)
+    # search reads: type, name, path, description, category.
+    try:
+        search_index = []
+        for k, v in dashboard_index_data.items():
+            if not isinstance(v, list):
+                continue
+            for c in v:
+                search_index.append({
+                    'type': c.get('type'),
+                    'name': c.get('name'),
+                    'path': c.get('path'),
+                    'description': c.get('description', ''),
+                    'category': c.get('category'),
+                })
+        search_path = os.path.join(dashboard_public_dir, 'search-index.json')
+        with open(search_path, 'w', encoding='utf-8') as f:
+            json.dump(search_index, f, ensure_ascii=False)
+        print(f"Generated {search_path} ({len(search_index)} entries).")
+    except Exception as e:
+        print(f"Warning: Could not write search-index.json: {e}")
 
     # Log summary (uses original components_data which still has content for accurate counts)
     print("\n--- Generation Summary ---")

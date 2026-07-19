@@ -3,10 +3,10 @@ import ThemeToggle from './ThemeToggle.tsx';
 ---
 
 <header class="sticky top-0 z-20 bg-[var(--color-surface-0)] border-b border-[var(--color-border)] transition-all duration-200">
-  <div class="flex items-center justify-between px-6 h-14">
+  <div class="flex items-center gap-3 justify-between px-6 h-14">
     <!-- Mobile menu button -->
     <button
-      class="md:hidden p-2 rounded border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-all duration-150 flex items-center justify-center"
+      class="md:hidden shrink-0 p-2 rounded border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-all duration-150 flex items-center justify-center"
       onclick="toggleSidebar()"
       aria-label="Toggle menu"
     >
@@ -18,7 +18,7 @@ import ThemeToggle from './ThemeToggle.tsx';
     <!-- Search trigger — terminal style -->
     <button
       id="searchTrigger"
-      class="flex items-center gap-2 px-4 py-2 border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-1)] transition-all duration-150 w-full max-w-md group font-ui-mono"
+      class="flex items-center gap-2 px-4 py-2 border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-1)] transition-all duration-150 flex-1 min-w-0 max-w-md group font-ui-mono"
     >
       <span class="terminal-prompt text-[13px]">&gt;</span>
       <span class="text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]">Search components...</span>

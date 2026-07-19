@@ -1,17 +1,22 @@
 /**
  * Cloudflare Worker: Pulse — Weekly KPI Report
  *
- * Collects metrics from GitHub, Discord, Supabase, npm, Vercel, and Google Analytics,
+ * Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics,
  * then sends a consolidated report via Telegram every Sunday at 14:00 UTC.
  *
  * All source collectors are in this single file (no npm dependencies).
+ *
+ * Error tracking: set SENTRY_DSN (wrangler secret put SENTRY_DSN) to report
+ * failed collectors to the "aitmpl-workers" Sentry project. Optional — the
+ * worker degrades gracefully (console.error only) if it's not configured.
  */
+
+import { reportError, checkIn } from './sentry.js';
 
 const REPO = 'davila7/claude-code-templates';
 const NPM_PACKAGE = 'claude-code-templates';
 const GITHUB_API = 'https://api.github.com';
 const DISCORD_API = 'https://discord.com/api/v10';
-const VERCEL_API = 'https://api.vercel.com';
 const NPM_API = 'https://api.npmjs.org';
 const GA4_API = 'https://analyticsdata.googleapis.com/v1beta';
 const TELEGRAM_API = 'https://api.telegram.org';
@@ -48,7 +53,7 @@ export default {
         status: 'running',
         worker: 'pulse-weekly-report',
         schedule: 'Sundays 14:00 UTC',
-        sources: ['github', 'discord', 'downloads', 'npm', 'vercel', 'analytics']
+        sources: ['github', 'discord', 'downloads', 'npm', 'analytics']
       });
     }
 
@@ -64,6 +69,8 @@ export default {
 async function runReport(env, opts = {}) {
   const { onlySource, sendTelegram = true } = opts;
 
+  const checkInId = await checkIn(env, 'pulse-weekly-report', 'in_progress');
+
   let results = {};
 
   if (onlySource) {
@@ -72,7 +79,6 @@ async function runReport(env, opts = {}) {
       discord: collectDiscord,
       downloads: collectDownloads,
       npm: collectNpm,
-      vercel: collectVercel,
       analytics: collectAnalytics
     };
     const collector = collectors[onlySource];
@@ -81,14 +87,23 @@ async function runReport(env, opts = {}) {
     }
     results[onlySource] = await collector(env);
   } else {
-    const [github, discord, downloads, npm, vercel] = await Promise.all([
+    const [github, discord, downloads, npm] = await Promise.all([
       collectGitHub(env),
       collectDiscord(env),
       collectDownloads(env),
-      collectNpm(env),
-      collectVercel(env)
+      collectNpm(env)
     ]);
-    results = { github, discord, downloads, npm, vercel };
+    results = { github, discord, downloads, npm };
+  }
+
+  // Report any failed collectors to Sentry (they still degrade gracefully
+  // into "Unavailable" in the rendered report — this just makes failures visible).
+  const failedSources = Object.entries(results).filter(([, v]) => v && v.error);
+  for (const [source, value] of failedSources) {
+    await reportError(env, `pulse collector "${source}" failed: ${value.error}`, {
+      worker: 'pulse-weekly-report',
+      source
+    });
   }
 
   const reportText = formatReport(results);
@@ -97,6 +112,8 @@ async function runReport(env, opts = {}) {
   if (sendTelegram) {
     telegramResult = await sendToTelegram(env, reportText);
   }
+
+  await checkIn(env, 'pulse-weekly-report', failedSources.length > 0 ? 'error' : 'ok', checkInId);
 
   return {
     success: true,
@@ -350,67 +367,6 @@ async function collectDownloads(env) {
     return { totalAllTime, totalWeek, topComponents, byType, topCountries };
   } catch (error) {
     console.error('Supabase downloads source error:', error.message);
-    return { error: error.message };
-  }
-}
-
-// ─── Source: Vercel ──────────────────────────────────────────────────────────
-
-async function collectVercel(env) {
-  try {
-    if (!env.VERCEL_TOKEN || !env.VERCEL_PROJECT_ID) {
-      return { error: 'VERCEL_TOKEN or VERCEL_PROJECT_ID not configured' };
-    }
-
-    const headers = { Authorization: `Bearer ${env.VERCEL_TOKEN}` };
-    const since = weekAgo();
-
-    const data = await fetchJSON(
-      `${VERCEL_API}/v6/deployments?projectId=${env.VERCEL_PROJECT_ID}&since=${since.getTime()}&limit=100`,
-      { headers }
-    );
-
-    const deployments = data.deployments || [];
-    const successCount = deployments.filter(d => d.state === 'READY').length;
-    const errorCount = deployments.filter(d => d.state === 'ERROR').length;
-
-    let latestStatus = null;
-    let latestAge = null;
-    if (deployments.length > 0) {
-      const latest = deployments[0];
-      latestStatus = latest.state;
-
-      const age = Date.now() - latest.created;
-      const hours = Math.floor(age / (1000 * 60 * 60));
-      const days = Math.floor(hours / 24);
-      if (days > 0) {
-        latestAge = `${days}d ago`;
-      } else if (hours > 0) {
-        latestAge = `${hours}h ago`;
-      } else {
-        latestAge = `${Math.floor(age / (1000 * 60))}m ago`;
-      }
-    }
-
-    // Average build time
-    let avgBuildTime = null;
-    const buildTimes = deployments
-      .filter(d => d.ready && d.buildingAt)
-      .map(d => (d.ready - d.buildingAt) / 1000);
-    if (buildTimes.length > 0) {
-      avgBuildTime = Math.round(buildTimes.reduce((a, b) => a + b, 0) / buildTimes.length);
-    }
-
-    // Last commit message
-    let lastCommit = null;
-    if (deployments.length > 0 && deployments[0].meta?.githubCommitMessage) {
-      lastCommit = deployments[0].meta.githubCommitMessage;
-      if (lastCommit.length > 60) lastCommit = lastCommit.substring(0, 57) + '...';
-    }
-
-    return { totalWeek: deployments.length, successCount, errorCount, latestStatus, latestAge, avgBuildTime, lastCommit };
-  } catch (error) {
-    console.error('Vercel source error:', error.message);
     return { error: error.message };
   }
 }
@@ -676,25 +632,6 @@ function formatReport(results) {
       `├ Active: ~${fmt(d.activeMembers)}`,
       `└ Messages: ${fmt(d.messagesWeek)}`
     ].join('\n'));
-  }
-
-  // Vercel
-  if (results.vercel?.error) {
-    sections.push(`VERCEL\n└ Unavailable: ${results.vercel.error}`);
-  } else if (results.vercel) {
-    const v = results.vercel;
-    const status = v.latestStatus === 'READY' ? 'OK' : 'ERROR';
-    const lines = [
-      `VERCEL`,
-      `├ Deploys: ${fmt(v.totalWeek)} (${fmt(v.successCount)} ok, ${fmt(v.errorCount)} failed)`,
-      `├ Latest: ${v.latestAge} [${status}]`
-    ];
-    if (v.avgBuildTime != null) {
-      lines.push(`└ Avg build: ${v.avgBuildTime}s`);
-    } else {
-      lines[lines.length - 1] = lines[lines.length - 1].replace('├', '└');
-    }
-    sections.push(lines.join('\n'));
   }
 
   return sections.join('\n\n');
