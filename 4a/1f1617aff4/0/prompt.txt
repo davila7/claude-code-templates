@@ -1,0 +1,1 @@
+Check gen_log.txt for the generate_components_json.py run: confirm the npm security-audit step completed, inspect why "Security: 0 validated" appeared previously, and verify docs/components.json output is correct/valid.
