@@ -1,0 +1,1 @@
+ejecuta el script para generar de components.json y verifica que realmente funcione
