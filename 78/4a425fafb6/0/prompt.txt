@@ -1,0 +1,1 @@
+ya no tenemos el proyecto en vercel, actualiza el CLAUDE.md, ahora está en cloudflare. Luego elimina lo de vercel y luego quiero que hagas las rutinas para que corran en la nube
