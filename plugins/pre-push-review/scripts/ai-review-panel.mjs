@@ -208,9 +208,15 @@ function runAgent(bin, role, userPrompt) {
   return new Promise((done) => {
     const env = { ...process.env };
     delete env.CLAUDECODE; // allow nested invocation from within Claude Code
+    // --setting-sources '' loads NO user/project/local settings in the nested review session,
+    // so OTHER installed plugins' lifecycle hooks (e.g. a memory plugin's SessionEnd/Stop that
+    // shells to a worker) never fire here and never pollute this headless agent's stdout —
+    // which would make the JSON reply unparseable so every agent "fails" and the panel silently
+    // passes. OAuth/keychain auth is NOT a setting source, so it still works (unlike --bare,
+    // which drops OAuth and demands ANTHROPIC_API_KEY). Reviewers only read a diff.
     const child = spawn(
       bin,
-      ['-p', '--model', MODEL, '--append-system-prompt', role.system],
+      ['-p', '--setting-sources', '', '--model', MODEL, '--append-system-prompt', role.system],
       { env },
     );
     let out = '';
@@ -387,7 +393,36 @@ console.log(
   `[pre-push-review] Reviewing ${description} (${diffLines} lines) with ${ROLES.length} expert agents [model=${MODEL}]...`,
 );
 
-const results = await Promise.all(ROLES.map((role) => runAgent(bin, role, userPrompt)));
+// Run one agent, retrying ONCE on a transient failure (a burst of 6 concurrent heavy
+// nested requests can trip a momentary rate/concurrency limit → the child exits non-zero
+// with empty output; a single retry after a short backoff recovers it). A real "LGTM" or
+// findings short-circuits.
+async function runAgentResilient(bin, role, userPrompt) {
+  let res = await runAgent(bin, role, userPrompt);
+  if (!res.ok && !String(res.error || '').includes('timeout')) {
+    await new Promise((r) => setTimeout(r, 1500 + Math.floor(role.title.length * 50)));
+    res = await runAgent(bin, role, userPrompt);
+  }
+  return res;
+}
+
+// Cap concurrency so we don't fire all 6 heavy requests at once (the burst is what trips the
+// rate/concurrency limit). A tiny pool keeps wall-clock low while staying under the ceiling.
+async function runPool(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const i = next++;
+      out[i] = await fn(items[i]);
+    }
+  });
+  await Promise.all(workers);
+  return out;
+}
+
+const AGENT_CONCURRENCY = Number(process.env.AI_REVIEW_CONCURRENCY || 3);
+const results = await runPool(ROLES, AGENT_CONCURRENCY, (role) => runAgentResilient(bin, role, userPrompt));
 
 // ---------------------------------------------------------------------------
 // Aggregate + report
