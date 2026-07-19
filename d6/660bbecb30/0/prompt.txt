@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bvuhamtr6</task-id>
+<tool-use-id>toolu_01NaSo4RYi11Nj7T4ZqV74vT</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-danipower-Proyectos-Github-claude-code-templates/17b7fbd3-66cf-4779-a7d0-6474c5b578a5/tasks/bvuhamtr6.output</output-file>
+<status>completed</status>
+<summary>Background command "Start wrangler OAuth login" completed (exit code 0)</summary>
+</task-notification>
