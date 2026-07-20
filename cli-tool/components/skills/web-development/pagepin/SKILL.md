@@ -4,7 +4,7 @@ description: "Deploy static pages straight from your agent and read pin-point re
 category: web-development
 risk: safe
 source: community
-date_added: "2026-07-19"
+date_added: "2026-07-18"
 author: fivesmallq
 tags: [deployment, static-hosting, code-review, feedback, agent-loop, self-hosted, open-source]
 tools: [claude, cursor, gemini]
