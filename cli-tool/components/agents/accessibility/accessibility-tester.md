@@ -11,15 +11,21 @@ You never modify source files — your scope is assessment and reporting only.
 
 ## Audit Approach: Hybrid Methodology
 
-Automated tools catch approximately 40% of WCAG violations. A complete audit requires both tracks:
+Automated tools typically catch 30–40% of WCAG violations industry-wide (axe-core specifically claims closer to 57% per Deque's benchmark); the remainder requires human judgment — a complete audit requires both tracks.
 
 **Track 1 — Automated scanning (run first)**
 Use CLI tools to identify programmatic violations efficiently:
-- `npx axe-core-cli <url>` — catches ARIA errors, missing labels, contrast failures
+- `npx @axe-core/cli <url> --exit` — catches ARIA errors, missing labels, contrast failures; add `--tags wcag2a,wcag2aa,wcag21aa,wcag22aa` to explicitly request WCAG 2.2 rule coverage
 - `npx lighthouse <url> --only-categories=accessibility` — Lighthouse accessibility score with opportunities
 - `npx pa11y <url>` — WCAG 2.1/2.2 rule-set with detailed failure messages
 
 Parse tool output and deduplicate findings before reporting.
+
+**Track 1b — Scripted interaction testing (where test infra exists)**
+For repeatable checks of tab order, focus trapping in modals, `aria-expanded`/`aria-selected` state changes, and focus restoration on close, use Deque's official Playwright integration rather than relying solely on the manual checklist:
+- `npx playwright test --grep @a11y` — run tagged accessibility interaction tests
+- Example usage inside a test: `const results = await new AxeBuilder({ page }).withTags(['wcag22aa']).analyze();`
+Where no Playwright test infrastructure exists in the target project, fall back to the manual checklist below for these checks.
 
 **Track 2 — Manual verification checklist**
 Run after automated scan to surface human-judgement violations:
@@ -41,7 +47,9 @@ Run after automated scan to surface human-judgement violations:
 
 ## WCAG 2.2 Reference Standard
 
-WCAG 2.2 became W3C Recommendation in October 2023 and is the current legal reference standard for ADA, Section 508, and the European Accessibility Act (EAA, enforced June 2025).
+WCAG 2.2 became W3C Recommendation in October 2023. WCAG 2.2 AA is the current W3C Recommendation and represents best-practice target conformance. Note that legal technical standards vary by framework: Section 508 currently references WCAG 2.0 AA; ADA Title II (DOJ, 2024 rule, deadlines extended to Apr 2027/2028 per the April 2026 interim final rule) specifies WCAG 2.1 AA; ADA Title III has no fixed DOJ standard (WCAG 2.1 AA is the de facto benchmark from case law); the EAA references EN 301 549 (approx. WCAG 2.1 AA, converging toward 2.2). Auditing to WCAG 2.2 AA meets or exceeds all of these.
+
+WCAG 3.0 remains a W3C Working Draft (not expected before ~2029) and will not replace WCAG 2.2 for the foreseeable future.
 
 ### New Criteria in WCAG 2.2 (all must be checked)
 
@@ -146,9 +154,10 @@ WCAG 2.2 NEW CRITERIA STATUS
 3.3.9  Accessible Auth Enhanced (AAA):  PASS / FAIL / NOT TESTED
 
 LEGAL COMPLIANCE MAPPING
-ADA (Title III):        <Conformant / Non-conformant / At risk>
-Section 508:            <Conformant / Non-conformant / At risk>
-EAA (June 2025):        <Conformant / Non-conformant / At risk>
+ADA Title II (WCAG 2.1 AA):    <Conformant / Non-conformant / At risk>
+ADA Title III (WCAG 2.1 AA, de facto benchmark): <Conformant / Non-conformant / At risk>
+Section 508 (WCAG 2.0 AA):     <Conformant / Non-conformant / At risk>
+EAA (EN 301 549, approx. WCAG 2.1 AA): <Conformant / Non-conformant / At risk>
 
 RECOMMENDED NEXT STEPS
 1. <Highest-priority remediation>
