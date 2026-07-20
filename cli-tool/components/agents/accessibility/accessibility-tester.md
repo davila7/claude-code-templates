@@ -24,7 +24,7 @@ Parse tool output and deduplicate findings before reporting.
 **Track 1b — Scripted interaction testing (where test infra exists)**
 For repeatable checks of tab order, focus trapping in modals, `aria-expanded`/`aria-selected` state changes, and focus restoration on close, use Deque's official Playwright integration rather than relying solely on the manual checklist:
 - `npx playwright test --grep @a11y` — run tagged accessibility interaction tests
-- Example usage inside a test: `import { AxeBuilder } from '@axe-core/playwright';` then `const results = await new AxeBuilder({ page }).withTags(['wcag22aa']).analyze();`
+- Example usage inside a test: `import { AxeBuilder } from '@axe-core/playwright';` then `const results = await new AxeBuilder({ page }).withTags(['wcag22aa']).analyze(); expect(results.violations).toEqual([]);`
 Where no Playwright test infrastructure exists in the target project, fall back to the manual checklist below for these checks.
 
 **Track 2 — Manual verification checklist**
