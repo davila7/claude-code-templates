@@ -1,12 +1,51 @@
 {
-  "lastUpdated": "2026-07-19T04:17:21.073073+00:00",
-  "totalJobs": 102,
+  "lastUpdated": "2026-07-20T04:23:15.504369+00:00",
+  "totalJobs": 104,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-presentation-designer-infuse-1135025",
+      "company": "INFUSE",
+      "position": "Presentation Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "OUR HIRING PROCESS: We will review your application against our job requirements. We do not employ machine learning technologies during this phase as we believe every human deserves attention from another human. We do not think machines can evaluate your application quite like our seasoned...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-presentation-designer-infuse-1135025",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-presentation-designer-infuse-1135025",
+      "postedAt": "2026-07-18T09:56:25+00:00",
+      "tags": [
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-react-native-engineer-helpbnk-1135014",
+      "company": "HelpBnk",
+      "position": "React Native Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About us At HelpBnk, we don’t just build software; we build infrastructure for a future where everyone has the agency to follow their dreams. Co-founded by Simon Squibb, we are on a mission to Free Humanity from the trap of unfulfilling work and the looming challenges of AI-driven automation. We...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-react-native-engineer-helpbnk-1135014",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-react-native-engineer-helpbnk-1135014",
+      "postedAt": "2026-07-18T08:05:08+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Claude Code",
+        "Cursor",
+        "React Native"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5355526008",
       "company": "Anthropic",
