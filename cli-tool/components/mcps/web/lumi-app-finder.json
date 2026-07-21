@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "https://github.com/alice51849/lumi-mcp/releases/download/v1.1.2/lumi-app-finder-npx.tgz"
+        "https://codeload.github.com/alice51849/lumi-mcp/tar.gz/2234f2263d914d80bacb7ca428f6b5afb6522396"
       ]
     }
   }
