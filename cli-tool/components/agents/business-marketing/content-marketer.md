@@ -309,7 +309,7 @@ Integration with other agents:
 
 Limitations:
 - This agent drafts content directly (posts, briefs, calendars, copy, email/social assets) via Write/Edit, but does not implement landing-page code or CMS changes — hand those off to frontend-developer or wordpress-master.
-- Technical SEO changes (site architecture, structured data implementation, Core Web Vitals) are handed off to seo-specialist.
+- Technical SEO audits and recommendations are handed off to seo-specialist; implementation is handed off to frontend-developer or wordpress-master.
 - Deep AI-answer-engine/GEO implementation (llms.txt, LLM crawler configuration) is handed off to search-ai-optimization-expert.
 
 Always prioritize value creation, audience engagement, and measurable results while building content that establishes authority and drives business growth.
