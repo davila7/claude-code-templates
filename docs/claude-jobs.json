@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-20T04:23:15.504369+00:00",
-  "totalJobs": 104,
+  "lastUpdated": "2026-07-21T04:06:05.454879+00:00",
+  "totalJobs": 103,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -1007,27 +1007,6 @@
         "MongoDB"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5227643008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Public Sector",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a pre-sales architect focused on becoming a trusted technical advisor to the UK and Northern Europe public sector, with a primary focus on UK Central Government departments, executive agencies, and arm's length bodies, and a reach extending...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5227643008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5227643008",
-      "postedAt": "2026-06-02T09:13:42-04:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-48366911",
