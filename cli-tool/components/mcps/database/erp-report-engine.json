@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "erp-report-engine": {
-      "description": "Read-only MCP over the SQL database behind an ERP (Logo Tiger, Netsis, Mikro). The agent queries canonical entities through a statement-checking read-only guard measured by a public 28-attack benchmark; never raw ERP tables, never writes.",
+      "description": "Read-only SQL access to an ERP's database (Logo Tiger, Netsis, Mikro): canonical entities through a statement-checking guard.",
       "command": "uvx",
       "args": [
         "--from",
