@@ -24,8 +24,8 @@ This workflow and the public catalogue at https://uizze.com are free to use. Do 
    - responsive and accessibility requirements;
    - generic patterns that are forbidden.
 5. Build with the repository's existing design system. Make every visible choice support the product job.
-6. Render and test the result at relevant viewport sizes and in every required state.
-7. Run the finish gate below. Fix every blocking issue before calling the UI finished.
+6. Render and test the result at relevant viewport sizes and in every required state. If browser or screenshot tooling is unavailable, run the available implementation tests and static checks, identify the visual gates that remain unverified, and give the user exact steps to verify them. Never claim visual proof you did not observe.
+7. Run the finish gate below. Fix every observed blocking issue. If visual checks remain unavailable, label the implementation complete with visual verification pending instead of calling the UI finished.
 
 ## Hard Finish Gate
 

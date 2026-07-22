@@ -5,7 +5,7 @@
       "type": "http",
       "url": "https://uizze.com/mcp",
       "headers": {
-        "Authorization": "Bearer <YOUR_UIZZE_AGENT_TOKEN>"
+        "Authorization": "Bearer ${UIZZE_AGENT_TOKEN}"
       }
     }
   }
