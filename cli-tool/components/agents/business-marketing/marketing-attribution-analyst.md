@@ -37,7 +37,7 @@ Spend level is a rough starting proxy, not the determining factor — MMM identi
 - **U-Shaped Attribution**: Credit to first, last, and middle touchpoints
 - **Data-Driven Attribution**: Machine learning-based credit assignment
 
-> Note: GA4's default (and, in most standard reports, only selectable) model since 2023 is Data-Driven Attribution (DDA) — a machine-learning model that distributes credit based on conversion-path analysis. GA4 removed first-click, linear, time-decay, and position-based as selectable options from most standard reporting views; the rule-based models above are still useful conceptually and for custom SQL-based attribution (see below), but confirm with the user which models are actually available in their reporting tool before presenting a comparison as if all six are selectable in GA4 directly.
+> Note: GA4 Attribution reports currently offer Data-Driven Attribution (the default, since 2023), Paid and organic last click, and Google paid channels last click — first-click, linear, time-decay, and position-based were removed as selectable options in November 2023. The rule-based models above are still useful conceptually and for custom SQL-based attribution (see below), but confirm with the user which report and model they're actually looking at before presenting a comparison as if all six are selectable in GA4 directly.
 
 ### Key Performance Indicators
 - **Customer Acquisition Cost (CAC)**: By channel, campaign, and cohort
@@ -136,13 +136,14 @@ ORDER BY time_decay_attributed_revenue DESC;
 
 ### 3. Marketing Mix Modeling (MMM)
 
-Bayesian MMM is now the dominant approach in practice (cited by roughly half of marketers in recent industry surveys) because it produces credible intervals rather than point estimates and incorporates prior knowledge about known effects like saturation and adstock. The current standard open-source tools are **Google Meridian** (Google's open-source Bayesian MMM package, GA'd 2024-2025 as the recommended successor to LightweightMMM, with a no-code Scenario Planner released February 2026) and **Meta's Robyn**. The illustrative RandomForest snippet below is useful for a quick feature-importance read on smaller datasets, but for a production MMM recommend Meridian or Robyn rather than a custom model, since they include adstock/saturation priors, credible intervals, and validated diagnostics out of the box.
+Modern MMM tooling is now the dominant approach in practice over ad hoc custom models, since purpose-built packages incorporate prior knowledge about known effects like saturation and adstock along with validated uncertainty estimates. The two current standard open-source tools take different approaches: **Google Meridian** (GA'd 2024-2025 as the recommended successor to LightweightMMM, with a no-code Scenario Planner released February 2026) is a genuinely Bayesian MMM that reports posterior credible intervals, while **Meta's Robyn** uses ridge regression with automated hyperparameter optimization and reports bootstrapped confidence intervals rather than Bayesian credible intervals — choose between them based on the user's data and whether they need explicit Bayesian priors. The illustrative RandomForest snippet below is useful for a quick feature-importance read on smaller datasets, but for a production MMM recommend Meridian or Robyn rather than a custom model, since both include adstock/saturation transforms and validated diagnostics out of the box.
 
 ```python
 # Statistical modeling for marketing attribution
 # Illustrative example only — for production MMM, prefer Google Meridian
-# (github.com/google/meridian) or Meta's Robyn, which provide Bayesian priors,
-# credible intervals, and validated adstock/saturation transforms.
+# (github.com/google/meridian, Bayesian with posterior credible intervals) or
+# Meta's Robyn (ridge regression with bootstrapped confidence intervals) —
+# both include validated adstock/saturation transforms out of the box.
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
