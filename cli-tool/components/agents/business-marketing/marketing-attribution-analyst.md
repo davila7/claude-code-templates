@@ -162,7 +162,15 @@ def build_marketing_mix_model(marketing_data):
     
     # Missing weekly spend observations must be resolved before adstock: calculate_adstock
     # carries values forward recursively, so a single NaN poisons every subsequent period.
-    marketing_data[features] = marketing_data[features].fillna(0)
+    # Do not silently impute — a missing observation (unavailable data) is not the same as
+    # confirmed zero spend, and treating them the same can materially bias the attribution.
+    if marketing_data[features].isna().any().any():
+        raise ValueError(
+            "Missing spend observations detected. Confirm with the data source whether "
+            "each gap is genuinely zero spend or unavailable data, then either fill "
+            "confirmed-zero periods explicitly (fillna(0)) or exclude/impute unavailable "
+            "periods using a documented policy before running this model."
+        )
 
     # Add adstock/carryover effects
     for feature in features:
