@@ -24,10 +24,10 @@ No single method is sufficient on its own; the current consensus is to triangula
 - **Incrementality / lift testing** (geo holdouts, PSA/ghost ads, matched-market tests) — causal validation of whether a channel's credited results are real. Use this to sanity-check both MMM and MTA outputs, especially for large or ambiguous line items.
 - **Multi-touch attribution (MTA)** — tactical, campaign/creative-level optimization using individual-level touchpoint data where available.
 
-Spend-tier guidance:
-- **Early-stage / <$50K per month**: MTA plus simple UTM-based analysis is usually sufficient; MMM needs more historical data points than most early-stage companies have.
-- **Mid-market / $50K-$500K per month**: MTA for tactical optimization, paired with periodic (quarterly) incrementality tests on the largest 2-3 channels.
-- **Enterprise / $500K+ per month**: Full triangulation — MMM for strategic allocation, incrementality testing as the causal ground truth, MTA for day-to-day optimization.
+Spend level is a rough starting proxy, not the determining factor — MMM identifiability depends on the actual volume and variance of historical spend/outcome data (typically at least 1-2 years of weekly observations with enough spend variation across channels), which a low-spend company with a long tracking history may have, and a high-spend company that just launched may not. Always confirm data history and variance before committing to a method, using spend level only as a first-pass heuristic:
+- **Early-stage / <$50K per month**: MTA plus simple UTM-based analysis is usually sufficient by default; consider MMM only if the user already has the requisite length/variance of historical data.
+- **Mid-market / $50K-$500K per month**: MTA for tactical optimization, paired with periodic (quarterly) incrementality tests on the largest 2-3 channels; add MMM once sufficient historical data exists.
+- **Enterprise / $500K+ per month**: Full triangulation is the target — MMM for strategic allocation, incrementality testing as the causal ground truth, MTA for day-to-day optimization — but confirm the data history/variance requirement is actually met before deploying MMM, and fall back to incrementality + MTA in the interim if it isn't.
 
 ### Attribution Models
 - **First-Touch Attribution**: Credit to first interaction
@@ -55,8 +55,8 @@ As of 2026, third-party cookie deprecation in Chrome has been reversed (Google a
 
 Confirm with the user whether these are already in place before assuming a client-side-only setup:
 - **Server-side tagging** (e.g., server-side Google Tag Manager) to reduce data loss from ad blockers and browser restrictions, and to control what leaves the first-party domain.
-- **Google Consent Mode v2** — mandatory for sites serving the EEA since March 2024; without it, Google Ads/Analytics tags do not fire for users who decline consent, and modeled conversions fill the gap. Confirm the user's consent management platform is sending `ad_user_data`/`ad_personalization`/`analytics_storage` signals correctly.
-- **Enhanced Conversions / server-side conversion APIs** (Google Ads Enhanced Conversions, Meta Conversions API, TikTok Events API) — the current standard way to recover match rate and signal quality lost to client-side tracking restrictions, by sending hashed first-party identifiers server-to-server.
+- **Google Consent Mode v2** — required by Google for applicable Google Ads and Analytics features serving EEA traffic; it is not a universal legal requirement for every EEA-facing site. Confirm which Google products and consent-mode implementation the user has, then verify that the consent management platform sends the required signals, including `ad_user_data`, `ad_personalization`, `analytics_storage`, and `ad_storage`, correctly.
+- **Enhanced Conversions / server-side conversion APIs** (Google Ads Enhanced Conversions, Meta Conversions API, TikTok Events API) — where consent and applicable regional rules permit, these can improve match rate and signal quality by sending hashed first-party identifiers server-to-server. Confirm that the implementation propagates consent state and suppresses ineligible events and identifiers; hashing and server-side delivery do not bypass consent requirements.
 
 ```javascript
 // Google Analytics 4 Enhanced Ecommerce tracking
@@ -193,6 +193,10 @@ def calculate_adstock(spend_series, decay_rate):
         adstocked[i] = spend_series.iloc[i] + decay_rate * adstocked[i-1]
     
     return adstocked
+
+def apply_saturation(adstocked_series, saturation_point):
+    """Apply diminishing-returns (Hill-style) saturation transform"""
+    return 1 - np.exp(-saturation_point * adstocked_series / adstocked_series.max())
 ```
 
 ## Performance Analysis Framework
@@ -386,7 +390,7 @@ def optimize_budget_allocation(channel_performance, total_budget):
 - [ ] UTM parameter standardization across campaigns
 - [ ] Cross-domain tracking configured
 - [ ] Server-side tracking for accuracy
-- [ ] Google Consent Mode v2 configured (required for EEA traffic)
+- [ ] Google Consent Mode v2 configured for applicable Google Ads/Analytics features (required for those features when serving EEA traffic)
 - [ ] Enhanced Conversions / server-side conversion APIs (Meta CAPI, TikTok Events API) configured where applicable
 - [ ] Privacy-compliant data collection
 
