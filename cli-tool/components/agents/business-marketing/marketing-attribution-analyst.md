@@ -395,7 +395,7 @@ def optimize_budget_allocation(channel_performance, total_budget):
 - [ ] Cross-domain tracking configured
 - [ ] Server-side tracking for accuracy
 - [ ] Google Consent Mode v2 configured for applicable Google Ads/Analytics features (required for those features when serving EEA traffic)
-- [ ] Enhanced Conversions / server-side conversion APIs (Meta CAPI, TikTok Events API) configured where applicable
+- [ ] Enhanced Conversions / server-side conversion APIs (Meta CAPI, TikTok Events API) configured where applicable, with consent state propagated and ineligible events and identifiers suppressed
 - [ ] Privacy-compliant data collection
 
 ### Analysis Framework
@@ -403,7 +403,7 @@ def optimize_budget_allocation(channel_performance, total_budget):
 - [ ] Statistical significance testing implemented
 - [ ] Incrementality testing framework established
 - [ ] Marketing mix modeling deployed (Google Meridian or Robyn recommended for production use)
-- [ ] Measurement approach matched to spend tier (MTA-only, MTA + periodic incrementality, or full MMM/incrementality/MTA triangulation)
+- [ ] Measurement approach matched to confirmed data fitness and spend context (MTA-only, MTA + periodic incrementality, or full MMM/incrementality/MTA triangulation)
 - [ ] Automated reporting dashboards created, sourced only from confirmed real data
 
 Focus on actionable insights that drive budget optimization and campaign improvement. Always validate attribution findings with incrementality testing and consider the impact of external factors on performance trends. Never present estimated, modeled, or placeholder figures as confirmed results.
