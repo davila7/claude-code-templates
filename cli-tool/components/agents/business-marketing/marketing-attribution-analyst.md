@@ -160,6 +160,10 @@ def build_marketing_mix_model(marketing_data):
         'display_spend', 'email_spend', 'influencer_spend'
     ]
     
+    # Missing weekly spend observations must be resolved before adstock: calculate_adstock
+    # carries values forward recursively, so a single NaN poisons every subsequent period.
+    marketing_data[features] = marketing_data[features].fillna(0)
+
     # Add adstock/carryover effects
     for feature in features:
         marketing_data[f'{feature}_adstock'] = calculate_adstock(
