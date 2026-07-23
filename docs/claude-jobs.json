@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-22T04:10:28.654094+00:00",
-  "totalJobs": 103,
+  "lastUpdated": "2026-07-23T04:08:48.659712+00:00",
+  "totalJobs": 101,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -9,40 +9,19 @@
   ],
   "jobs": [
     {
-      "id": "rok-remote-presentation-designer-infuse-1135025",
-      "company": "INFUSE",
-      "position": "Presentation Designer",
+      "id": "rok-remote-graphic-designer-sezzle-1135192",
+      "company": "Sezzle",
+      "position": "Graphic Designer",
       "location": "Remote",
       "remote": true,
       "salary": "",
-      "description": "OUR HIRING PROCESS: We will review your application against our job requirements. We do not employ machine learning technologies during this phase as we believe every human deserves attention from another human. We do not think machines can evaluate your application quite like our seasoned...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-presentation-designer-infuse-1135025",
+      "description": "About Sezzle: With a mission to financially empower the next generation, Sezzle is revolutionizing the shopping experience beyond payments, blending cutting-edge tech with seamless, interest-free installment plans that make shopping smarter and more accessible. We’re not just transforming payments;...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-graphic-designer-sezzle-1135192",
       "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-presentation-designer-infuse-1135025",
-      "postedAt": "2026-07-18T09:56:25+00:00",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-graphic-designer-sezzle-1135192",
+      "postedAt": "2026-07-21T20:50:52+00:00",
       "tags": [
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-react-native-engineer-helpbnk-1135014",
-      "company": "HelpBnk",
-      "position": "React Native Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "About us At HelpBnk, we don’t just build software; we build infrastructure for a future where everyone has the agency to follow their dreams. Co-founded by Simon Squibb, we are on a mission to Free Humanity from the trap of unfulfilling work and the looming challenges of AI-driven automation. We...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-react-native-engineer-helpbnk-1135014",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-react-native-engineer-helpbnk-1135014",
-      "postedAt": "2026-07-18T08:05:08+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Claude Code",
-        "Cursor",
-        "React Native"
+        "Rust"
       ],
       "companyIcon": ""
     },
@@ -1767,26 +1746,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5179882008",
-      "company": "Anthropic",
-      "position": "Product Operations Manager, Feedback Loops",
-      "location": "New York City, NY; San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "We're hiring a Product Operations Manager — Feedback Loops to own and continuously improve how customer signal flows into product and research decisions at Anthropic. This is a horizontal, org-wide role — you won't be embedded in a single product team, you'll build the shared operating system for...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5179882008",
-      "postedAt": "2026-04-11T22:14:11-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5174743008",
       "company": "Anthropic",
       "position": "Senior Software Engineer, Full-stack",
@@ -1943,7 +1902,7 @@
       "id": "anth-5140403008",
       "company": "Anthropic",
       "position": "Applied AI Architect, State and Local Government",
-      "location": "Washington, DC",
+      "location": "New York City, NY; San Francisco, CA; Seattle, WA; Washington, DC",
       "remote": false,
       "salary": "",
       "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping state and local government agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology...",
