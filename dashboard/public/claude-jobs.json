@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-23T04:08:48.659712+00:00",
-  "totalJobs": 101,
+  "lastUpdated": "2026-07-24T04:05:10.055510+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -602,7 +602,7 @@
     {
       "id": "anth-5198999008",
       "company": "Anthropic",
-      "position": "Technical Architect",
+      "position": "Technical Specialist, Claude Code",
       "location": "London, UK",
       "remote": false,
       "salary": "",
@@ -1251,6 +1251,30 @@
         "Cursor"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5229345008",
+      "company": "Anthropic",
+      "position": "Staff Software Engineer, Claude Design",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Claude...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
+      "postedAt": "2026-05-27T20:20:38-04:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5228463008",
