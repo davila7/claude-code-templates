@@ -12,14 +12,14 @@ export const ICONS: Record<string, string> = {
 // Compact inline SVG for React (as string)
 export const ICON_SVGS = ICONS;
 
-export const TYPE_CONFIG: Record<string, { icon: string; label: string; singular: string; color: string; flag: string }> = {
+export const TYPE_CONFIG: Record<string, { icon: string; label: string; singular: string; color: string; flag: string; hidden?: boolean }> = {
   skills:   { icon: 'skills',   label: 'Skills',   singular: 'skill',   color: '#f59e0b', flag: '--skill' },
   agents:   { icon: 'agents',   label: 'Agents',   singular: 'agent',   color: '#3b82f6', flag: '--agent' },
   commands: { icon: 'commands', label: 'Commands', singular: 'command', color: '#10b981', flag: '--command' },
   settings: { icon: 'settings', label: 'Settings', singular: 'setting', color: '#8b5cf6', flag: '--setting' },
   hooks:    { icon: 'hooks',    label: 'Hooks',    singular: 'hook',    color: '#f97316', flag: '--hook' },
   mcps:     { icon: 'mcps',     label: 'MCPs',     singular: 'mcp',     color: '#06b6d4', flag: '--mcp' },
-  loops:    { icon: 'loops',    label: 'Loops',    singular: 'loop',    color: '#ec4899', flag: '--loop' },
+  loops:    { icon: 'loops',    label: 'Loops',    singular: 'loop',    color: '#ec4899', flag: '--loop', hidden: true },
 };
 
 export const VALID_TYPES = Object.keys(TYPE_CONFIG);

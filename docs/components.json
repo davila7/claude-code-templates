@@ -5,7 +5,7 @@
       "path": "accessibility/accessibility-tester.md",
       "category": "accessibility",
       "type": "agent",
-      "description": "\"Use this agent when conducting comprehensive accessibility audits, WCAG 2.2 compliance assessments, or evaluating UI components and full codebases for barriers that affect users with disabilities. Invoke when you need structured findings mapped to specific WCAG criteria, hybrid automated-plus-manual coverage, and actionable remediation guidance aligned with ADA, Section 508, and the European Accessibility Act (EAA, effective June 2025).\\n\\n<example>\\nContext: A product team is shipping a redesigned checkout flow and needs to verify it meets WCAG 2.2 AA before release.\\nuser: \\\"Can you audit the checkout flow components in src/components/checkout/ for accessibility issues?\\\"\\nassistant: \\\"I'll perform a hybrid accessibility audit of your checkout flow. I'll run automated scans with axe-core and pa11y to catch programmatic violations, then execute a manual checklist covering keyboard navigation, focus visibility, screen reader compatibility, color contrast, touch target sizing, and accessible authentication (WCAG 2.2 criterion 3.3.8). Each finding will be mapped to the relevant WCAG 2.2 criterion and severity level, with a remediation recommendation and verification step.\\\"\\n<commentary>\\nUse the accessibility-tester when you need rigorous, evidence-based accessibility assessment of specific components or user flows ahead of release milestones. The hybrid approach catches violations that automated tools miss.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A company's legal team has flagged potential ADA and EAA exposure ahead of the European Accessibility Act enforcement deadline and requests a full codebase scan.\\nuser: \\\"We need a full accessibility compliance scan across the entire frontend codebase before the EAA June 2025 deadline. Can you identify all WCAG 2.2 AA gaps?\\\"\\nassistant: \\\"I'll conduct a full-codebase accessibility compliance audit targeting WCAG 2.2 AA conformance. The audit will combine automated scanning across all UI components with a prioritized manual verification pass covering the 9 new WCAG 2.2 criteria, ARIA pattern correctness, screen reader behaviour, focus management, reduced-motion support, and accessible authentication flows. I'll deliver a structured findings report with WCAG criterion numbers, severity ratings, affected elements, remediation steps, and a summary scorecard showing critical/high/medium/low counts — with compliance mapping to ADA, Section 508, and EAA requirements.\\\"\\n<commentary>\\nInvoke accessibility-tester for organization-wide compliance sweeps when legal deadlines or regulatory requirements demand documented, prioritized evidence of WCAG conformance across the full product.\\n</commentary>\\n</example>\"",
+      "description": "\"Use this agent when conducting comprehensive accessibility audits, WCAG 2.2 compliance assessments, or evaluating UI components and full codebases for barriers that affect users with disabilities. Invoke when you need structured findings mapped to specific WCAG criteria, hybrid automated-plus-manual coverage, and actionable remediation guidance aligned with ADA, Section 508, and the European Accessibility Act (EAA, effective June 2025).\\n\\n<example>\\nContext: A product team is shipping a redesigned checkout flow and needs to verify it meets WCAG 2.2 AA before release.\\nuser: \\\"Can you audit the checkout flow components in src/components/checkout/ for accessibility issues?\\\"\\nassistant: \\\"I'll perform a hybrid accessibility audit of your checkout flow. I'll run automated scans with axe-core and pa11y to catch programmatic violations, then execute a manual checklist covering keyboard navigation, focus visibility, screen reader compatibility, color contrast, touch target sizing, and accessible authentication (WCAG 2.2 criterion 3.3.8). Each finding will be mapped to the relevant WCAG 2.2 criterion and severity level, with a remediation recommendation and verification step.\\\"\\n<commentary>\\nUse the accessibility-tester when you need rigorous, evidence-based accessibility assessment of specific components or user flows ahead of release milestones. The hybrid approach catches violations that automated tools miss.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A company's legal team has flagged potential ADA, Section 508, and EAA compliance exposure and requests a full codebase scan.\\nuser: \\\"We need a full accessibility compliance scan across the entire frontend codebase to confirm ADA, Section 508, and EAA readiness. Can you identify all WCAG 2.2 AA gaps?\\\"\\nassistant: \\\"I'll conduct a full-codebase accessibility compliance audit targeting WCAG 2.2 AA conformance. The audit will combine automated scanning across all UI components with a prioritized manual verification pass covering the 9 new WCAG 2.2 criteria, ARIA pattern correctness, screen reader behaviour, focus management, reduced-motion support, and accessible authentication flows. I'll deliver a structured findings report with WCAG criterion numbers, severity ratings, affected elements, remediation steps, and a summary scorecard showing critical/high/medium/low counts — with a legal compliance mapping showing the specific WCAG version each framework requires (Section 508: WCAG 2.0 AA; ADA Title II/III: WCAG 2.1 AA; EAA: EN 301 549, approx. WCAG 2.1 AA).\\\"\\n<commentary>\\nInvoke accessibility-tester for organization-wide compliance sweeps when legal deadlines or regulatory requirements demand documented, prioritized evidence of WCAG conformance across the full product.\\n</commentary>\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -572,7 +572,7 @@
       "path": "business-marketing/marketing-attribution-analyst.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "Marketing attribution and performance analysis specialist. Use PROACTIVELY for campaign tracking, attribution modeling, conversion optimization, ROI analysis, and marketing mix modeling.",
+      "description": "\"Use when you need to model multi-touch attribution, measure marketing mix impact, validate channel performance with incrementality testing, or optimize budget allocation across paid/owned/earned channels. Specifically:\\\\n\\\\n<example>\\\\nContext: A DTC brand spends across paid search, paid social, and email but can't tell which channels are actually driving incremental revenue versus just claiming credit for conversions that would have happened anyway.\\\\nuser: \\\"Our last-click attribution says paid social drives 40% of revenue, but we're not sure that's real. How do we find out?\\\"\\\\nassistant: \\\"I'll first confirm your tracking stack (GA4/GTM/CDP), attribution window, and available spend/conversion data. Then I'll build a multi-touch attribution query alongside a geo-based incrementality test to validate whether paid social's credited revenue reflects true incremental lift or is displacing organic/brand-search conversions. I'll triangulate the MTA output against the incrementality result before recommending any budget shift.\\\"\\\\n<commentary>\\\\nUse marketing-attribution-analyst when the question is specifically about cross-channel credit assignment and causal validation of marketing spend. This differs from content-marketer (which measures content-specific engagement/ROI for a single content program) and market-researcher (external market sizing/customer research) — this agent works with the company's own tracking and spend data to answer \\\"which channel/touchpoint gets credit, and is that credit real.\\\"\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A mid-market SaaS company with $2M/year in marketing spend wants to move from last-click attribution to something more defensible before their next board budget review.\\\\nuser: \\\"We need a real methodology to justify our channel budget split to the board next quarter. What should we actually use?\\\"\\\\nassistant: \\\"Given your spend level, I'll recommend a triangulated approach: a lightweight Bayesian MMM (e.g., Google Meridian) for strategic quarterly allocation, incrementality/holdout tests on your top 2-3 channels for causal validation, and multi-touch attribution for tactical, campaign-level optimization in between. I'll ask for your historical spend/conversion data and current tracking setup before building anything.\\\"\\\\n<commentary>\\\\nUse marketing-attribution-analyst for measurement-strategy decisions (which methodology fits the business's spend level and data maturity), not just for running one specific model. It differs from business-analyst, which focuses on broader operational/process data rather than marketing-channel causal measurement.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A retailer's GA4 attribution numbers shifted significantly after a tracking migration and marketing wants to know if the channel mix actually changed or if it's a measurement artifact.\\\\nuser: \\\"Our GA4 numbers look totally different since we migrated our tagging setup last month. Did our channel mix actually shift, or is this a tracking issue?\\\"\\\\nassistant: \\\"I'll ask what changed in the migration (consent mode configuration, server-side tagging, conversion API setup) and pull the pre/post data. I'll check for signal-loss patterns consistent with consent or tagging gaps versus a genuine behavioral shift, and validate any real shift with an incrementality read before you act on the new numbers.\\\"\\\\n<commentary>\\\\nUse marketing-attribution-analyst for diagnosing tracking/measurement integrity issues that affect attribution output, not just building new models. Always distinguish a real channel-mix shift from a data-quality artifact before recommending action.\\\\n</commentary>\\\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -8840,27 +8840,6 @@
         "warningCount": 0,
         "lastValidated": null
       }
-    },
-    {
-      "name": "sdd-orchestrator",
-      "path": "workflow-methodology/sdd-orchestrator.md",
-      "category": "workflow-methodology",
-      "type": "agent",
-      "description": "Spec-Driven Development orchestrator — guides the full SDD pipeline from initialization to implementation, enforces quality gates, and keeps the human in the loop at every decision point",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
     }
   ],
   "commands": [
@@ -9668,6 +9647,111 @@
       "category": "documentation",
       "type": "command",
       "description": "Systematically update project documentation with implementation status, API changes, and synchronized content",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-budget",
+      "path": "doordash/doordash-budget.md",
+      "category": "doordash",
+      "type": "command",
+      "description": "View DoorDash spend vs caps, edit the dd-guard spending policy interactively, and reconcile the intent ledger against real order history",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-lunch",
+      "path": "doordash/doordash-lunch.md",
+      "category": "doordash",
+      "type": "command",
+      "description": "Team lunch orchestration via DoorDash CLI - build a group round, emit checkout with split table, track payer rotation",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-playbook",
+      "path": "doordash/doordash-playbook.md",
+      "category": "doordash",
+      "type": "command",
+      "description": "Manage saved DoorDash order playbooks (list, add from order history, remove, inspect) stored in ~/.claude/dd-cli/playbooks.json",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-profile",
+      "path": "doordash/doordash-profile.md",
+      "category": "doordash",
+      "type": "command",
+      "description": "Manage the dietary profile (allergens with severity tiers, diets, dislikes) used by doordash-allergy-shield to vet DoorDash carts",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-report",
+      "path": "doordash/doordash-report.md",
+      "category": "doordash",
+      "type": "command",
+      "description": "Spend and activity report for agent-driven DoorDash ordering - reconciles the audit log against real order history and renders totals, per-restaurant breakdown, repeat rate, and abandoned-cart rate",
       "author": "",
       "repo": "",
       "version": "",
@@ -12419,216 +12503,6 @@
       "category": "project-management",
       "type": "command",
       "description": "Manage project todos in todos.md file",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-analyze",
-      "path": "sdd/sdd-analyze.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Cross-artifact consistency analysis — verify spec, plan, and tasks align before TDD and implementation (read-only)\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-clarify",
-      "path": "sdd/sdd-clarify.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Resolve spec ambiguities with up to 5 targeted questions before planning — reduces downstream rework\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-constitution",
-      "path": "sdd/sdd-constitution.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Create or update the project constitution — governing principles for SDD workflow\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-implement",
-      "path": "sdd/sdd-implement.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Execute implementation from tasks.md — phase by phase, marking tasks complete as they finish\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-init",
-      "path": "sdd/sdd-init.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Initialize Spec-Driven Development structure in the current project\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-plan",
-      "path": "sdd/sdd-plan.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Generate technical implementation plan from the feature spec — define stack, architecture, and design artifacts with mandatory expert review\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-review",
-      "path": "sdd/sdd-review.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Mandatory multi-agent review gate — runs 6 expert agents and creates the PR gate marker\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-specify",
-      "path": "sdd/sdd-specify.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Create a feature specification from a natural language description OR an IDT-produced issue (--from-issue) — creates git branch and spec.md\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-tasks",
-      "path": "sdd/sdd-tasks.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Generate dependency-ordered tasks.md from spec and plan — TDD tasks MANDATORY, parallel markers, user story grouping\"",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
-      "name": "sdd-tdd",
-      "path": "sdd/sdd-tdd.md",
-      "category": "sdd",
-      "type": "command",
-      "description": "\"Generate failing tests from spec and contracts — RED state must be proven before /sdd-implement\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -15671,27 +15545,6 @@
       }
     },
     {
-      "name": "flatten-mcp",
-      "path": "devtools/flatten-mcp.json",
-      "category": "devtools",
-      "type": "mcp",
-      "description": "Flatten Claude Code sessions: moves bulky tool output into a sidecar file and keeps every prompt and event verbatim, so the same conversation resumes at a lower token count instead of being compacted into a lossy summary. Reversible and crash-safe. Optional ANTHROPIC_API_KEY enables exact token counting.",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
       "name": "github-official",
       "path": "devtools/github-official.json",
       "category": "devtools",
@@ -17689,6 +17542,27 @@
       }
     },
     {
+      "name": "cloudflare-pages-deployment-monitor",
+      "path": "statusline/cloudflare-pages-deployment-monitor.json",
+      "category": "statusline",
+      "type": "setting",
+      "description": "Real-time Cloudflare Pages deployment monitor with clickable deploy link. Shows build status, time since last deployment, and a clickable OSC 8 hyperlink to the deployment URL (Cmd+click). Setup: Export environment variables 'export CLOUDFLARE_API_TOKEN=your_token', 'export CLOUDFLARE_ACCOUNT_ID=your_account_id' and 'export CLOUDFLARE_PROJECT_NAME=your_project_name', or add them to a .env file in your project root. Get your API token from dash.cloudflare.com/profile/api-tokens (needs 'Cloudflare Pages: Read' permission), your account ID from the right sidebar of any zone in the Cloudflare dashboard, and the project name from your Pages project settings.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "code-casino-statusline",
       "path": "statusline/code-casino-statusline.json",
       "category": "statusline",
@@ -18935,6 +18809,90 @@
       "category": "development-tools",
       "type": "hook",
       "description": "Worktree Ghostty Layout. Opens a 3-panel Ghostty layout when creating worktrees: Claude Code (left) | lazygit (top-right) / yazi (bottom-right). Creates worktrees in a sibling directory (../worktrees/<repo>/<name>/) and cleans up on removal. macOS only. Requires: jq, Ghostty terminal, lazygit, yazi. Ghostty keybindings required: super+d = new_split:right, super+shift+d = new_split:down.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-allergy-checkout-gate",
+      "path": "doordash/doordash-allergy-checkout-gate.json",
+      "category": "doordash",
+      "type": "hook",
+      "description": "Deterministic allergy tripwire for DoorDash CLI (dd-cli) checkouts. Before any 'dd-cli order checkout-url' (direct or via the dd-guard wrapper) it verifies that a fresh vetted-cart dump exists for that cart (written by the doordash-allergy-shield skill after vetting) and independently re-greps the dump against the anaphylaxis-severity allergens in the user's dietary profile plus their hidden-source synonyms (satay->peanut, aioli->egg, ponzu->soy/fish). Blocks with exit 2 when the dump is missing, stale (older than the last cart mutation), or contains a match. Also timestamps cart mutations so staleness is verifiable. A tripwire against agent mistakes, not medical-grade protection.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-audit-log",
+      "path": "doordash/doordash-audit-log.json",
+      "category": "doordash",
+      "type": "hook",
+      "description": "Append-only audit log of every DoorDash CLI (dd-cli) invocation made through Claude Code. A PostToolUse hook records one versioned JSON line per dd-cli command (timestamp, session, cwd, command with tokens stripped, event type derived from the command itself - search / cart_mutation / checkout_url / history - plus cart/order uuids when extractable) to ~/.claude/dd-guard/audit.jsonl. Answers 'what has my AI been ordering and what did it cost' with data instead of memory. Self-contained: captures checkout and mutation events from the command text itself, no dependency on other dd-cli hooks. Pair with the /doordash-report command for reconciled spend summaries.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-group-checkout-gate",
+      "path": "doordash/doordash-group-checkout-gate.json",
+      "category": "doordash",
+      "type": "hook",
+      "description": "Live allergen re-check for DoorDash CLI group orders. When a checkout runs for a cart that has a doordash-group-orders round ledger (.dd/round-*.json), this hook itself runs 'dd-cli cart show', joins cart lines to eaters via the person-to-cart-item-id ledger, and re-derives allergen conflicts against each eater's entry in the team-food.json roster - blocking with exit 2 on a live anaphylaxis-tier match. Verifies reality at checkout time instead of trusting a flag file: a skipped vetting step or a cart edited after review cannot pass silently. Only activates for carts with a round ledger; solo orders are doordash-allergy-shield territory.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "doordash-spend-guard",
+      "path": "doordash/doordash-spend-guard.json",
+      "category": "doordash",
+      "type": "hook",
+      "description": "Enforce the dd-guard spending gate for DoorDash CLI (dd-cli). Denies raw 'dd-cli order checkout-url' and 'dd-cli cart add-items' Bash calls that bypass the dd-guard.sh wrapper (installed by the doordash-spend-guard skill), and denies command-line writes to the policy file limits.json, which must only change through the interactive /doordash-budget command. Deterministic budget enforcement for agent-driven food ordering: a budget in a prompt is advisory, an exit-2 hook is not.",
       "author": "",
       "repo": "",
       "version": "",
@@ -35250,6 +35208,155 @@
       ]
     },
     {
+      "name": "doordash-allergy-shield",
+      "path": "doordash/doordash-allergy-shield",
+      "category": "doordash",
+      "type": "skill",
+      "description": "Persistent dietary safety layer for DoorDash CLI (dd-cli) ordering. Stores a personal/household dietary profile (allergens with severity tiers, diets, dislikes) that every cart is vetted against before checkout, with a deterministic tripwire — the vetting step saves the full cart contents to a vetted-cart dump, and a PreToolUse hook re-greps that dump against the anaphylaxis-severity allergen list before any checkout URL is allowed. Use when the user mentions allergies or dietary restrictions, when ordering food for someone with restrictions, or on every dd-cli cart flow while this skill is installed. A tripwire, not medical-grade — the human checkout page is the final check.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [
+        "DoorDash",
+        "Allergies",
+        "Dietary Restrictions",
+        "Safety",
+        "Guardrails",
+        "CLI"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/allergen-synonyms.md"
+      ]
+    },
+    {
+      "name": "doordash-group-orders",
+      "path": "doordash/doordash-group-orders",
+      "category": "doordash",
+      "type": "skill",
+      "description": "Group food ordering through the DoorDash CLI (dd-cli) from a persistent team roster. One request (\"lunch for the team\") fans out into a single merged cart with every line attributed to its eater via a person-to-cart-item-id ledger, per-person cost split with fee proration, payer rotation history, and a checkout gate that re-derives allergen conflicts against the roster live. Use when ordering for multiple people — team lunch, incident-response food, \"collect orders from the thread\" — or for /whose-turn payer rotation questions. Handles paste-a-thread intake: paste a Slack/chat thread and it builds the order ledger from it.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [
+        "DoorDash",
+        "Team Lunch",
+        "Group Orders",
+        "Cost Split",
+        "CLI",
+        "Coordination"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
+      "name": "doordash-order-ledger",
+      "path": "doordash/doordash-order-ledger",
+      "category": "doordash",
+      "type": "skill",
+      "description": "Accountability layer for agent-driven DoorDash ordering. Works with the doordash-audit-log hook (which appends every dd-cli invocation to an append-only audit log) and the /doordash-report command to answer \"what has my AI been ordering and what did it cost\" from data instead of memory. Use when the user asks about their DoorDash spending, ordering patterns, what the agent did in past sessions, or wants jq recipes for querying the audit log. Covers log schema, query patterns, rotation, and privacy guidance.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [
+        "DoorDash",
+        "Audit Log",
+        "Spend Tracking",
+        "Analytics",
+        "Accountability",
+        "CLI"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
+      "name": "doordash-order-playbooks",
+      "path": "doordash/doordash-order-playbooks",
+      "category": "doordash",
+      "type": "skill",
+      "description": "Named, context-bound saved DoorDash orders (\"post-gym\", \"late-night deploy\") recalled through the DoorDash CLI (dd-cli) with a mandatory cart-diff before any checkout link is handed over. Use when the user names a saved order (\"order my post-gym bowl\", \"the usual\", \"my Friday ramen\"), wants to save the order they just placed as a playbook, or asks to list/remove saved orders. Persists name→order-uuid playbooks across sessions, catches silent menu/price drift on every recall, and self-heals stale playbooks when a restaurant's menu changes. Requires dd-cli (macOS Apple Silicon, waitlist-gated).",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [
+        "DoorDash",
+        "Food Delivery",
+        "CLI",
+        "Saved Orders",
+        "Reorder",
+        "Automation"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
+      "name": "doordash-spend-guard",
+      "path": "doordash/doordash-spend-guard",
+      "category": "doordash",
+      "type": "skill",
+      "description": "Hard spending policy for agent-driven DoorDash ordering through the DoorDash CLI (dd-cli). Per-order ceiling, daily/weekly/monthly caps, cooldown between orders, and blocked hours — enforced deterministically by routing every cart-mutation and checkout through the dd-guard wrapper script, which prices the cart, checks the policy against a persistent spend ledger, and refuses out-of-policy checkouts with exit code 2. Use when the user wants budget limits on agent food ordering, asks \"how much have I spent on DoorDash\", wants to set spending caps, or whenever building carts / checking out with dd-cli while this skill is installed. Pairs with a PreToolUse hook that denies raw dd-cli checkout calls that bypass the wrapper.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [
+        "DoorDash",
+        "Budget",
+        "Spending Limits",
+        "Guardrails",
+        "CLI",
+        "Safety"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "scripts/dd-guard.sh"
+      ]
+    },
+    {
       "name": "backend-to-frontend-handoff-docs",
       "path": "enterprise-communication/backend-to-frontend-handoff-docs",
       "category": "enterprise-communication",
@@ -45395,9 +45502,9 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".mcp.json",
-        "CLAUDE.md",
         "README.md",
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/commands/project-setup.md",
         ".claude/commands/git-workflow.md"
       ],
@@ -45414,9 +45521,9 @@
       "description": "Django-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/views.md",
         ".claude/commands/django-model.md",
-        ".claude/commands/admin.md"
+        ".claude/commands/admin.md",
+        ".claude/commands/views.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -45431,11 +45538,11 @@
       "description": "Fastapi-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/deployment.md",
+        ".claude/commands/auth.md",
         ".claude/commands/testing.md",
-        ".claude/commands/api-endpoints.md",
         ".claude/commands/database.md",
-        ".claude/commands/auth.md"
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/deployment.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -45450,12 +45557,12 @@
       "description": "Flask-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/app-factory.md",
-        ".claude/commands/deployment.md",
         ".claude/commands/testing.md",
+        ".claude/commands/flask-route.md",
+        ".claude/commands/database.md",
+        ".claude/commands/deployment.md",
         ".claude/commands/blueprint.md",
-        ".claude/commands/database.md"
+        ".claude/commands/app-factory.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -45482,17 +45589,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".mcp.json",
-        "CLAUDE.md",
         "README.md",
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/npm-scripts.md",
+        ".claude/commands/test.md",
         ".claude/commands/api-endpoint.md",
+        ".claude/commands/npm-scripts.md",
         ".claude/commands/lint.md",
-        ".claude/commands/typescript-migrate.md",
         ".claude/commands/debug.md",
-        ".claude/commands/refactor.md",
-        ".claude/commands/test.md"
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/refactor.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -45507,10 +45614,10 @@
       "description": "Node-Api with Javascript-Typescript",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/middleware.md",
         ".claude/commands/api-endpoint.md",
+        ".claude/commands/database.md",
         ".claude/commands/route.md",
-        ".claude/commands/database.md"
+        ".claude/commands/middleware.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -45523,11 +45630,11 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        ".mcp.json",
         "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/lint.md",
-        ".claude/commands/test.md"
+        ".claude/commands/test.md",
+        ".claude/commands/lint.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -45572,11 +45679,11 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        ".mcp.json",
         "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/model.md",
-        ".claude/commands/test.md"
+        ".claude/commands/test.md",
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
