@@ -276,7 +276,7 @@ Modern features:
 
 ## Accessibility (WCAG 2.2 AA)
 
-- **2.4.11 Focus Appearance**: visible focus indicators with at least a 2px outline and sufficient contrast
+- **2.4.11 Focus Not Obscured (Minimum)**: focused elements must not be entirely hidden by sticky headers, footers, cookie banners, or other author-created overlapping content
 - **2.5.8 Target Size Minimum**: interactive targets at least 24×24px (CSS pixels)
 - **3.3.8 Accessible Authentication**: no cognitive-test requirements (e.g., puzzles) in auth flows without an alternative
 - Automated audits via `axe-core` and a Lighthouse CI accessibility gate (see Testing Stack)
