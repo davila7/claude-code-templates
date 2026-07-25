@@ -4411,6 +4411,48 @@
       }
     },
     {
+      "name": "adversarial-critic",
+      "path": "epistemic-discipline/adversarial-critic.md",
+      "category": "epistemic-discipline",
+      "type": "agent",
+      "description": "\"Adversarial evaluator that attacks completed work to find gaps before they reach review or production. Use PROACTIVELY after any implementation before committing or marking a task done. Its only role is to find problems — it cannot approve, only report gaps or issue a justified LGTM. Includes Dimension 8 (Oracle Depth): work touching external state whose evidence is mock/HTTP-shape-only gets an ORACLE_GAP finding, and inference presented as fact caps the score.\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "pipeline-breaker",
+      "path": "epistemic-discipline/pipeline-breaker.md",
+      "category": "epistemic-discipline",
+      "type": "agent",
+      "description": "\"Blind breaker for the pre-push review pipeline (step 4.5, between qa-expert and se-security-reviewer) — and the generic blind verifier for any completed work. Receives ONLY the contract (acceptance criteria / declared invariants) plus a live system URL and probe command — NEVER the diff, the author's reasoning, or prior reviewers' output. It derives falsifying vectors from the contract, EXECUTES each against the live system, and returns a typed verdict with evidence. The review gate is only unlocked on BREAKER_PASS. A step that only reads code does not count as completed.\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "4.1-Beast",
       "path": "expert-advisors/4.1-Beast.md",
       "category": "expert-advisors",
@@ -6453,6 +6495,69 @@
       "category": "ocr-extraction-team",
       "type": "agent",
       "description": "Visual analysis and OCR specialist. Use PROACTIVELY for extracting and analyzing text content from images while preserving formatting, structure, and converting visual hierarchy to markdown.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "project-orchestrator",
+      "path": "orchestration/project-orchestrator.md",
+      "category": "orchestration",
+      "type": "agent",
+      "description": "Root of a hierarchical, looped build pipeline. Use PROACTIVELY when a goal splits into independent subprojects that can progress in parallel (e.g. greenfield app = api + web + db + infra + auth). It runs a THINK-TANK to decompose the goal and freeze the shared contract, dispatches ONE subproject-pm per subproject (each runs the full looped pipeline: SDD -> TDD impl-loop -> review-repair loop), then runs an integration gate across the seams. It does NOT write feature code. <example>Context: greenfield build. user: \"Build a residential-building self-management system.\" assistant: \"This spans several independent subprojects — I'll use the project-orchestrator: think-tank to decompose + freeze the contract, then a subproject-pm per subproject running the looped pipeline, then an integration gate.\" <commentary>Use the root when value comes from parallel subprojects under one integration authority; each subproject runs the looped think-tank->SDD->impl-loop->review-loop pipeline via its PM.</commentary></example>",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "subproject-pm",
+      "path": "orchestration/subproject-pm.md",
+      "category": "orchestration",
+      "type": "agent",
+      "description": "Middle tier of a hierarchical looped build — owns ONE subproject end to end. Dispatched by project-orchestrator (one PM per subproject). It runs the looped pipeline for its slice: SDD (spec/plan/tasks with a critique loop) using the task-execution-engine for state, dispatches a swarm of workers that each run a TDD test-repair loop, then runs a PM gate + a review-repair loop until 0 CRÍTICO/ALTO, and reports a verdict up. Use it as the subagent_type the project-orchestrator spawns per subproject. <example>Context: root split a greenfield build into api/web/db. assistant: \"Dispatching a subproject-pm for 'api' with its contract slice + acceptance criteria; it will SDD-spec it, run a swarm with TDD loops, and a review-repair loop before reporting up.\" <commentary>Each subproject gets a PM that owns the full looped pipeline for its slice; the root only integrates.</commentary></example>",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "swarm-worker",
+      "path": "orchestration/swarm-worker.md",
+      "category": "orchestration",
+      "type": "agent",
+      "description": "Leaf-tier implementer in a hierarchical looped build — a generic worker dispatched by a subproject-pm to implement ONE task via a bounded TDD test-repair loop. Prefer a specific domain agent (backend-developer, frontend-developer, database-architect, devops-engineer) when one fits; use swarm-worker as the generic fallback. It writes a failing test anchored to the acceptance criterion/contract, implements, runs, and repairs in a loop capped at 3 attempts, then reports GREEN or STOPS with the failing test + diagnosis (never weakens the test to pass). <example>Context: a PM has a task \"POST /units creates a unit and returns 201 with the unit id\". assistant: \"Dispatching a swarm-worker: it writes the failing endpoint test first, implements the handler, runs, repairs until green (cap 3), and reports coverage.\" <commentary>Leaf workers do the actual implementation via a contract-anchored TDD loop; the PM gates and integrates.</commentary></example>",
       "author": "",
       "repo": "",
       "version": "",
@@ -8840,6 +8945,27 @@
         "warningCount": 0,
         "lastValidated": null
       }
+    },
+    {
+      "name": "sdd-orchestrator",
+      "path": "workflow-methodology/sdd-orchestrator.md",
+      "category": "workflow-methodology",
+      "type": "agent",
+      "description": "Spec-Driven Development orchestrator — guides the full SDD pipeline from initialization to implementation, enforces quality gates, and keeps the human in the loop at every decision point",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
     }
   ],
   "commands": [
@@ -9752,6 +9878,27 @@
       "category": "doordash",
       "type": "command",
       "description": "Spend and activity report for agent-driven DoorDash ordering - reconciles the audit log against real order history and renders totals, per-restaurant breakdown, repeat rate, and abandoned-cart rate",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "diagnose",
+      "path": "epistemic-discipline/diagnose.md",
+      "category": "epistemic-discipline",
+      "type": "command",
+      "description": "Disciplined diagnosis entry point — probe the real system first, enumerate all mutation paths, attempt to refute the leading hypothesis, and report in the mandatory diagnostic-report format (residual risk first, OBSERVED vs INFERRED separated).",
       "author": "",
       "repo": "",
       "version": "",
@@ -11763,6 +11910,27 @@
       }
     },
     {
+      "name": "orchestrate-project",
+      "path": "orchestration/orchestrate-project.md",
+      "category": "orchestration",
+      "type": "command",
+      "description": "Kick off a hierarchical, looped build — think-tank decomposition + one PM per subproject (each running SDD -> TDD impl-loop -> review-repair loop) + an integration gate. For greenfield or multi-subproject work that parallelizes.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "remove",
       "path": "orchestration/remove.md",
       "category": "orchestration",
@@ -12503,6 +12671,216 @@
       "category": "project-management",
       "type": "command",
       "description": "Manage project todos in todos.md file",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-analyze",
+      "path": "sdd/sdd-analyze.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Cross-artifact consistency analysis — verify spec, plan, and tasks align before TDD and implementation (read-only)\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-clarify",
+      "path": "sdd/sdd-clarify.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Resolve spec ambiguities with up to 5 targeted questions before planning — reduces downstream rework\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-constitution",
+      "path": "sdd/sdd-constitution.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Create or update the project constitution — governing principles for SDD workflow\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-implement",
+      "path": "sdd/sdd-implement.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Execute implementation from tasks.md — phase by phase, marking tasks complete as they finish\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-init",
+      "path": "sdd/sdd-init.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Initialize Spec-Driven Development structure in the current project\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-plan",
+      "path": "sdd/sdd-plan.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Generate technical implementation plan from the feature spec — define stack, architecture, and design artifacts with mandatory expert review\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-review",
+      "path": "sdd/sdd-review.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Mandatory multi-agent review gate — runs 6 expert agents and creates the PR gate marker\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-specify",
+      "path": "sdd/sdd-specify.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Create a feature specification from a natural language description OR an IDT-produced issue (--from-issue) — creates git branch and spec.md\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-tasks",
+      "path": "sdd/sdd-tasks.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Generate dependency-ordered tasks.md from spec and plan — TDD tasks MANDATORY, parallel markers, user story grouping\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "sdd-tdd",
+      "path": "sdd/sdd-tdd.md",
+      "category": "sdd",
+      "type": "command",
+      "description": "\"Generate failing tests from spec and contracts — RED state must be proven before /sdd-implement\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -19229,6 +19607,27 @@
       "category": "pre-tool",
       "type": "hook",
       "description": "Warns about console.log statements when editing files on production branches (main/master). Helps prevent debug code from reaching production.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "epistemic-preamble-guard",
+      "path": "pre-tool/epistemic-preamble-guard.json",
+      "category": "pre-tool",
+      "type": "hook",
+      "description": "Blocks any subagent spawn (Task/Agent tool) whose prompt does not carry the [EPISTEMIC-DISCIPLINE v1] preamble or an explicit [EPISTEMIC-EXEMPT: <reason>] tag. This is the forcing function that makes the epistemic-discipline rules apply to ALL subagents instead of being prose: a spawn without the preamble physically fails (exit 2) with instructions to add it. Deterministic literal-marker check (no semantic grepping, no false positives from content). Fail-open by design: any parse/runtime error in the hook itself allows the spawn (exit 0) — the gate must never brick agent work because of its own bugs. Escape hatch: include [EPISTEMIC-EXEMPT: <reason>] in the prompt for trivial mechanical agents (pure search/fetch); the tag is auditable in transcripts.",
       "author": "",
       "repo": "",
       "version": "",
@@ -36569,6 +36968,28 @@
       "references": []
     },
     {
+      "name": "hierarchical-orchestration",
+      "path": "orchestration/hierarchical-orchestration",
+      "category": "orchestration",
+      "type": "skill",
+      "description": "Method for building large or greenfield software with a three-tier agent hierarchy (project-orchestrator -> subproject-pm -> swarm-worker) where EVERY tier runs a bounded, self-verifying looped pipeline (think-tank -> SDD -> TDD impl-loop -> review-repair loop). Use when a goal splits into independent subprojects that parallelize, or when you want the \"most complete flow\" — decomposition + a frozen shared contract + test-and-repair loops at every stage + gates. Composes with the task-execution-engine, SDD, code-review, adversarial-critic and qa-paradigms components rather than replacing them.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
       "name": "pb-api-rules",
       "path": "pocketbase/pb-api-rules",
       "category": "pocketbase",
@@ -45502,9 +45923,9 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        "README.md",
-        "CLAUDE.md",
         ".mcp.json",
+        "CLAUDE.md",
+        "README.md",
         ".claude/commands/project-setup.md",
         ".claude/commands/git-workflow.md"
       ],
@@ -45521,9 +45942,9 @@
       "description": "Django-App with Python",
       "files": [
         "CLAUDE.md",
+        ".claude/commands/views.md",
         ".claude/commands/django-model.md",
-        ".claude/commands/admin.md",
-        ".claude/commands/views.md"
+        ".claude/commands/admin.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -45538,11 +45959,11 @@
       "description": "Fastapi-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/auth.md",
+        ".claude/commands/deployment.md",
         ".claude/commands/testing.md",
-        ".claude/commands/database.md",
         ".claude/commands/api-endpoints.md",
-        ".claude/commands/deployment.md"
+        ".claude/commands/database.md",
+        ".claude/commands/auth.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -45557,12 +45978,12 @@
       "description": "Flask-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/testing.md",
         ".claude/commands/flask-route.md",
-        ".claude/commands/database.md",
+        ".claude/commands/app-factory.md",
         ".claude/commands/deployment.md",
+        ".claude/commands/testing.md",
         ".claude/commands/blueprint.md",
-        ".claude/commands/app-factory.md"
+        ".claude/commands/database.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -45589,17 +46010,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        "README.md",
-        "CLAUDE.md",
         ".mcp.json",
+        "CLAUDE.md",
+        "README.md",
         ".claude/settings.json",
-        ".claude/commands/test.md",
-        ".claude/commands/api-endpoint.md",
         ".claude/commands/npm-scripts.md",
+        ".claude/commands/api-endpoint.md",
         ".claude/commands/lint.md",
-        ".claude/commands/debug.md",
         ".claude/commands/typescript-migrate.md",
-        ".claude/commands/refactor.md"
+        ".claude/commands/debug.md",
+        ".claude/commands/refactor.md",
+        ".claude/commands/test.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -45614,10 +46035,10 @@
       "description": "Node-Api with Javascript-Typescript",
       "files": [
         "CLAUDE.md",
+        ".claude/commands/middleware.md",
         ".claude/commands/api-endpoint.md",
-        ".claude/commands/database.md",
         ".claude/commands/route.md",
-        ".claude/commands/middleware.md"
+        ".claude/commands/database.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -45630,11 +46051,11 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        "CLAUDE.md",
         ".mcp.json",
+        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md"
+        ".claude/commands/lint.md",
+        ".claude/commands/test.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -45679,11 +46100,11 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        "CLAUDE.md",
         ".mcp.json",
+        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/test.md",
-        ".claude/commands/model.md"
+        ".claude/commands/model.md",
+        ".claude/commands/test.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
