@@ -1,0 +1,16 @@
+{
+  "description": "Blocks any subagent spawn (Task/Agent tool) whose prompt does not carry the [EPISTEMIC-DISCIPLINE v1] preamble or an explicit [EPISTEMIC-EXEMPT: <reason>] tag. This is the forcing function that makes the epistemic-discipline rules apply to ALL subagents instead of being prose: a spawn without the preamble physically fails (exit 2) with instructions to add it. Deterministic literal-marker check (no semantic grepping, no false positives from content). Fail-open by design: any parse/runtime error in the hook itself allows the spawn (exit 0) — the gate must never brick agent work because of its own bugs. Escape hatch: include [EPISTEMIC-EXEMPT: <reason>] in the prompt for trivial mechanical agents (pure search/fetch); the tag is auditable in transcripts.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import sys,json\ntry:\n    d=json.load(sys.stdin)\n    p=str(d.get('tool_input',{}).get('prompt',''))\n    if '[EPISTEMIC-DISCIPLINE' in p or '[EPISTEMIC-EXEMPT:' in p:\n        sys.exit(0)\n    sys.stderr.write('BLOCKED by epistemic-preamble-guard: subagent prompt lacks the [EPISTEMIC-DISCIPLINE v1] preamble. Prepend the block from skills/epistemic-discipline/discipline-preamble.md to the prompt, or tag the spawn [EPISTEMIC-EXEMPT: <reason>] if it is a trivial mechanical agent (pure search/fetch, no claims).')\n    sys.exit(2)\nexcept SystemExit:\n    raise\nexcept Exception:\n    sys.exit(0)\n\""
+          }
+        ]
+      }
+    ]
+  }
+}
