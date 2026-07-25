@@ -88,6 +88,31 @@ describe('ConversationAnalyzer.calculateRealTokenUsage', () => {
     expect(result.outputTokens).toBe(100);
   });
 
+  it('does not merge an id with an unrelated record that reuses it as a uuid', () => {
+    // `id` and `uuid` are separate namespaces: ConversationAnalyzer.js sets
+    // `id: item.message.id || item.uuid`, so the same string can legitimately
+    // reach this function through either field on two different records. They
+    // must stay distinct, otherwise the conversation is undercounted.
+    const result = analyzer.calculateRealTokenUsage([
+      record('shared-identifier', usage(1, 10)),
+      record(null, usage(2, 20), { uuid: 'shared-identifier' }),
+    ]);
+
+    expect(result.messagesWithUsage).toBe(2);
+    expect(result.inputTokens).toBe(3);
+    expect(result.outputTokens).toBe(30);
+  });
+
+  it('does not merge an id that looks like a generated positional key', () => {
+    const result = analyzer.calculateRealTokenUsage([
+      record('idx:1', usage(1, 10)),
+      record(null, usage(2, 20)),
+    ]);
+
+    expect(result.messagesWithUsage).toBe(2);
+    expect(result.outputTokens).toBe(30);
+  });
+
   it('keeps the last usage seen for a repeated message id', () => {
     const result = analyzer.calculateRealTokenUsage([
       record('msg_01AAA', usage(10, 100)),

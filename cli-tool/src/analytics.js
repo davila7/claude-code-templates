@@ -193,7 +193,14 @@ class ClaudeAnalytics {
     const usageByMessage = new Map();
     parsedMessages.forEach((message, index) => {
       if (!message.usage) return;
-      const key = message.id || message.uuid || `__no_id_${index}`;
+      // Namespace each identifier source so a value that happens to appear as
+      // both an `id` and a `uuid` — or an id that looks like a generated key —
+      // cannot collapse two distinct records into one.
+      const key = message.id
+        ? `id:${message.id}`
+        : message.uuid
+          ? `uuid:${message.uuid}`
+          : `idx:${index}`;
       usageByMessage.set(key, message.usage);
     });
 
