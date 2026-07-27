@@ -97,7 +97,10 @@ themselves.
    exception, or a deadline — a search snippet is never a sufficient basis.
    Use `canonical_ref` values from returned rows; the references under
    *Verified call shapes* were verified against the live gateway and may be
-   called directly.
+   called directly. Inline mentions such as `get_provision NIS2:art_2`,
+   `get_cve_details`, and `check_kev_status` name the tool and its key
+   argument only; every actual call carries the full argument object shown
+   under *Verified call shapes*.
 9. **Every stated duty carries a citation**: instrument, article, and the
    `source_url` from the fetched row. Cite only HTTPS URLs whose host is an
    official publisher domain (eur-lex.europa.eu, an EU institution domain,
