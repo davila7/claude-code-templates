@@ -2,7 +2,7 @@
 
 Patterns you'll write on the client side when driving a Managed Agent session, grounded in working SDK examples.
 
-Code samples are TypeScript — Python and cURL follow the same shape; see `python/managed-agents/README.md` and `curl/managed-agents.md` for equivalents.
+Code samples are TypeScript — other languages follow the same shape; see `{lang}/managed-agents/README.md` (cURL and C#: `curl/managed-agents.md`) for equivalents.
 
 ---
 
@@ -39,7 +39,9 @@ for await (const event of stream) {
 
 ## 2. `processed_at` — queued vs processed
 
-Every event on the stream carries `processed_at` (ISO 8601). For client-sent events (`user.message`, `user.interrupt`, `user.tool_confirmation`, `user.custom_tool_result`) it's `null` when the event has been queued but not yet picked up by the agent, and populated once the agent processes it. The same event appears on the stream twice — once with `processed_at: null`, once with a timestamp.
+Every event on the stream carries `processed_at` (ISO 8601), set when the event finishes processing. For client-sent events (`user.message`, `user.interrupt`, `user.tool_confirmation`) it's `null` while the event is queued behind earlier ones, and populated once the agent processes it — so the same event appears on the stream twice, once with `null` and once with a timestamp.
+
+**Three event types skip the queued phase:** `user.define_outcome`, `user.custom_tool_result`, and `user.tool_result` are processed on receipt and echoed back with `processed_at` already populated. A pending → acknowledged UI that assumes "first sighting is always `null`" will never clear for these — treat a populated `processed_at` on first sighting as immediately acknowledged.
 
 ```ts
 for await (const event of stream) {
@@ -183,7 +185,9 @@ Delete the original via `files.delete(uploaded.id)`; the session-scoped copy is 
 
 ## 9. Secrets for non-MCP APIs and CLIs — keep them host-side via custom tools
 
-**Problem:** you want the agent to call a third-party API or run a CLI that needs a secret (API key, token, service-account credential), but there is currently no way to set environment variables inside the session container, and vaults currently hold MCP credentials only — they are not exposed to the container's shell. So `curl`, installed CLIs, or SDK clients running via the `bash` tool have no first-class place to read a secret from.
+**Problem:** you want the agent to call a third-party API or run a CLI that needs a secret (API key, token, service-account credential), but you can't or don't want to hand the secret to a vault.
+
+**First check:** for cloud environments, the first-class answer is now a vault `environment_variable` credential — the agent's shell sees an opaque placeholder and the real secret is substituted at egress. See `shared/managed-agents-tools.md` → Vaults. Use this pattern instead when that doesn't fit: **self-hosted sandboxes** (env-var credentials not yet supported there), clients that reject the placeholder via local format validation, secrets that must never leave your infrastructure, or calls that need host-side binaries.
 
 **Solution:** move the authenticated call to your side. Declare a custom tool on the agent; when the agent emits `agent.custom_tool_use`, your orchestrator (the process reading the SSE stream) executes the call with its own credentials and responds with `user.custom_tool_result`. The container never sees the key.
 
@@ -196,7 +200,11 @@ for await (const event of stream) {
   if (event.type === 'agent.custom_tool_use' && event.name === 'linear_graphql') {
     const result = await linear.request(event.input.query, event.input.vars) // host's key
     await client.beta.sessions.events.send(session.id, {
-      events: [{ type: 'user.custom_tool_result', tool_use_id: event.id, result }],
+      events: [{
+        type: 'user.custom_tool_result',
+        custom_tool_use_id: event.id,
+        content: [{ type: 'text', text: JSON.stringify(result) }],
+      }],
     })
   }
 }
