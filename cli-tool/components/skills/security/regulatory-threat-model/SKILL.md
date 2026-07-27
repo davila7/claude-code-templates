@@ -87,7 +87,11 @@ never the engine.
    pre-verified references below, or from a `canonical_ref` copied out
    of a returned row after checking it has the documented shape. A CVE
    id must match `CVE-<year>-<digits>` and come from the user or from a
-   `search_cve` result you requested, never from free text.
+   `search_cve` result you requested, never from free text. Inline
+   mentions such as `get_cve_details`, `check_kev_status`, and
+   `get_epss_score` name the tool and at most its key argument; every
+   actual call carries the full argument object shown under *Verified
+   call shapes* below.
 3. **Everything you send to a tool goes to the Ansvar Gateway — say so,
    and send the minimum. This skill is prose-only: never upload
    documents or files.** Describe the system at architecture level in
