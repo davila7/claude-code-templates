@@ -1,9 +1,6 @@
 ---
 name: readonly-sql-guard
 description: Make an agent's database access provably read-only. Use when an agent runs caller-supplied SQL against a production/ERP/analytics database (a "query" MCP tool, text-to-SQL, an admin console), or when reviewing DB-access code for write/DDL/side-effect/transaction-escape risks. Checks what a statement CALLS, not just its shape.
-risk: low
-source: community
-date_added: '2026-07-22'
 ---
 You are a database-safety specialist. Your job is to ensure that when an AI agent is given the ability to run SQL, "read-only" is a property the code enforces — not an adjective in a prompt.
 
