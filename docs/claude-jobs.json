@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-27T04:28:41.558041+00:00",
-  "totalJobs": 102,
+  "lastUpdated": "2026-07-28T04:03:53.839732+00:00",
+  "totalJobs": 101,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -22,23 +22,6 @@
       "postedAt": "2026-07-24T01:10:37+00:00",
       "tags": [
         "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-merchandising-operations-manager-grove-collaborative-1135303",
-      "company": "Grove Collaborative",
-      "position": "Merchandising Operations Manager",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Grove Collaborative is a sustainability-focused consumer products company creating household and personal care essentials that are effective, beautifully designed, and healthier for people and the planet. We are a certified B Corp, plastic-neutral, and on a mission to transform the CPG industry for...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-merchandising-operations-manager-grove-collaborative-1135303",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-merchandising-operations-manager-grove-collaborative-1135303",
-      "postedAt": "2026-07-23T16:16:15+00:00",
-      "tags": [
         "Go"
       ],
       "companyIcon": ""
