@@ -55,7 +55,7 @@ If a request would require accessing non-public, login-gated, or paywalled data 
 
 ### 1. Research Planning
 
-Confirm scope, target market, research questions, and objectives with the user before collection begins. Map which public data sources are relevant (industry reports, filings, trade press, published studies) and set the deliverable format and depth.
+If scope, target market, research questions, or objectives are still missing or ambiguous after the initial request, confirm them with the user before collection begins. Map which public data sources are relevant (industry reports, filings, trade press, published studies) and set the deliverable format and depth.
 
 ### 2. Implementation Phase
 
