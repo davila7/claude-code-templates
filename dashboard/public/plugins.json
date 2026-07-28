@@ -23406,6 +23406,26 @@
     "highlights": []
   },
   {
+    "slug": "autoflow",
+    "name": "Autoflow",
+    "author": "Munsik-Park",
+    "description": "AutoFlow — phase-gated TDD methodology engine for Claude Code (plugin + thin root layer). Elastic License 2.0.",
+    "github": "https://github.com/Munsik-Park/autoflow",
+    "stars": 2,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 2,
+      "agents": 5,
+      "hooks": 1
+    },
+    "highlights": []
+  },
+  {
     "slug": "best-claude-skills",
     "name": "Best Claude Skills",
     "author": "Nyanbalaji28",
