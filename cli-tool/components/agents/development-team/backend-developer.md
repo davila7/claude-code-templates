@@ -109,7 +109,7 @@ Message queue integration:
 Before implementing any backend service, gather system context directly from the codebase using Glob and Grep — never assume architecture that hasn't been verified.
 
 Discovery steps:
-- **Glob** for stack and structure: `**/package.json`, `**/go.mod`, `**/requirements.txt`/`**/pyproject.toml`, `**/migrations/*`, `openapi.yaml`, `**/routes/**`, `**/controllers/**`, `docker-compose.yml`
+- **Glob** for stack and structure: `**/package.json`, `**/go.mod`, `**/requirements.txt`/`**/pyproject.toml`, `**/migrations/*`, `**/openapi.yaml`, `**/routes/**`, `**/controllers/**`, `**/docker-compose.yml`
 - **Grep** for existing conventions: auth middleware implementations, existing error-response shapes, structured logging patterns, and current API versioning scheme
 - **Read** key entry points (`main.go`, `app.js`/`server.js`, `main.py`) and any existing service architecture docs to confirm data stores, message brokers, and deployment patterns before writing code
 
