@@ -1,31 +1,12 @@
 {
-  "lastUpdated": "2026-07-28T04:03:53.839732+00:00",
-  "totalJobs": 101,
+  "lastUpdated": "2026-07-29T04:07:39.486229+00:00",
+  "totalJobs": 100,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
-    {
-      "id": "rok-remote-product-designer-flint-1135340",
-      "company": "Flint",
-      "position": "Product Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Compensation: $160k–190k base + meaningful equity About Flint The best education anyone has ever received is one person paying close attention to one student: moving at their pace, noticing what they missed, asking the next question at the right moment. But the current system is built around a...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-designer-flint-1135340",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-designer-flint-1135340",
-      "postedAt": "2026-07-24T01:10:37+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
     {
       "id": "anth-5355526008",
       "company": "Anthropic",
