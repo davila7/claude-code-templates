@@ -4,7 +4,7 @@ description: "Compile a proven agent skill (a SKILL.md plus references) into a d
 license: Apache-2.0
 metadata:
   author: trevhud
-  version: "0.12.0"
+  version: "0.12.1"
   homepage: https://github.com/trevhud/rote
 ---
 
@@ -52,13 +52,13 @@ you can omit `--runtime` entirely.
 ## 3. Resolve the CLI
 
 The CLI ships on PyPI as `rote-cli` and its executable is named `rote`. With
-`uvx` that means every invocation is `uvx --from rote-cli rote <args>`. Do
+`uvx` that means every invocation is `uvx --from 'rote-cli>=0.12.1' rote <args>`. Do
 not run `uvx rote-cli ...`; uvx looks for an executable named after the
 package, and the published wheel does not ship one.
 
 ```sh
 uv --version                              # install uv first if missing
-uvx --from rote-cli rote --version        # confirm the CLI resolves
+uvx --from 'rote-cli>=0.12.1' rote --version        # confirm the CLI resolves
 ```
 
 If uv is missing, one command installs it:
@@ -80,7 +80,7 @@ the user explicitly wants API billing, pass `--agent api`.
 ## 4. Run the compilation
 
 ```sh
-uvx --from rote-cli rote compile <skill-dir> --runtime <runtime> --out <out-dir>
+uvx --from 'rote-cli>=0.12.1' rote compile <skill-dir> --runtime <runtime> --out <out-dir>
 ```
 
 Pick an out-dir the user will find, such as `./compiled/<skill-name>` next
@@ -137,9 +137,9 @@ Register the pipeline once the runtime side is actually running (a DBOS app
 in worker mode, a Temporal worker, or a deployed Cloudflare Worker):
 
 ```sh
-uvx --from rote-cli rote register <out-dir>
-uvx --from rote-cli rote register <out-dir> --runtime temporal
-uvx --from rote-cli rote register <out-dir> --runtime cloudflare --url https://<worker>.workers.dev
+uvx --from 'rote-cli>=0.12.1' rote register <out-dir>
+uvx --from 'rote-cli>=0.12.1' rote register <out-dir> --runtime temporal
+uvx --from 'rote-cli>=0.12.1' rote register <out-dir> --runtime cloudflare --url https://<worker>.workers.dev
 ```
 
 This upserts `~/.rote/registry.json`. Re-registering updates in place. After
@@ -150,7 +150,7 @@ emitted code.
 Then add the server:
 
 ```sh
-claude mcp add --scope user rote -- uvx --from 'rote-cli[serve,dbos]' rote serve
+claude mcp add --scope user rote -- uvx --from 'rote-cli[serve,dbos]>=0.12.1' rote serve
 ```
 
 Each registry entry becomes two tools, or three on DBOS: `<name>` starts a
