@@ -1,12 +1,28 @@
 {
-  "lastUpdated": "2026-07-30T04:06:11.793502+00:00",
-  "totalJobs": 100,
+  "lastUpdated": "2026-07-31T04:15:42.709816+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-senior-demand-generation-manager-testgorilla-1135606",
+      "company": "TestGorilla",
+      "position": "Senior Demand Generation Manager",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "â¨ Where do we hire from? Find out if we're hiring in your location from hiring at TestGorilla Hi there, I'm Mehak , interim Head of Marketing at TestGorilla. We’re excited to share more about the Sr. Demand Generation Manager role and our team. About the role As our Sr. Demand Generation Manager...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-demand-generation-manager-testgorilla-1135606",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-demand-generation-manager-testgorilla-1135606",
+      "postedAt": "2026-07-29T11:15:01+00:00",
+      "tags": [],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5355526008",
       "company": "Anthropic",
@@ -213,6 +229,51 @@
         "PostgreSQL",
         "AWS",
         "GCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-vidalytics-ai-automation-engineer-in-house-martech-video-saas",
+      "company": "Vidalytics",
+      "position": "AI Automation Engineer, In-House MarTech Video SaaS",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Austin, TX URL: https://vidalytics.com If you love building AI agents, wiring systems together, and watching whole teams stop doing by hand what a machine can do better, faster, and cheaper, and you want to make a whole company AI native rather than ship a slick demo, keep reading....",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/vidalytics-ai-automation-engineer-in-house-martech-video-saas",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/vidalytics-ai-automation-engineer-in-house-martech-video-saas",
+      "postedAt": "2026-07-07T12:49:42+00:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "GCP",
+        "Claude Code",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-vidalytics-europe-only-gtm-martech-engineer-growth-attribution-at-video-martech-saas",
+      "company": "Vidalytics",
+      "position": "[EUROPE ONLY] GTM MarTech Engineer (Growth & Attribution) at Video MarTech SaaS",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Austin, TX URL: https://vidalytics.com This is not a typical product engineering role, rather you’re gonna be the key technical person, as a fullstack engineer who gets marketing, for the GTM teams @ Vidalytics. Reporting to the CEO who owns these functions. LFG! You’ll own tracking,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/vidalytics-europe-only-gtm-martech-engineer-growth-attribution-at-video-martech-saas",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/vidalytics-europe-only-gtm-martech-engineer-growth-attribution-at-video-martech-saas",
+      "postedAt": "2026-07-07T12:39:09+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Rust",
+        "Go",
+        "Node.js",
+        "GCP",
+        "Claude Code",
+        "MySQL"
       ],
       "companyIcon": ""
     },
@@ -558,26 +619,6 @@
       "tags": [
         "Claude Code",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-arize-ai-open-source-design-engineer",
-      "company": "Arize Ai",
-      "position": "Open Source Design Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$145,000 - $185,000,",
-      "description": "Headquarters: Remote (United States) About Arize AI is rapidly transforming the world. As generative AI reshapes industries, teams need powerful ways to monitor, troubleshoot, and optimize their AI systems. That’s where we come in. Arize AI is the leading AI & Agent Engineering observability and...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/arize-ai-open-source-design-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/arize-ai-open-source-design-engineer",
-      "postedAt": "2026-06-30T20:31:42+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Rust",
-        "Claude Code"
       ],
       "companyIcon": ""
     },
