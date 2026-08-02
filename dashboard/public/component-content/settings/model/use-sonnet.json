@@ -1,1 +1,1 @@
-{"content": "{\n  \"description\": \"Configure Claude Code to use Claude 3.5 Sonnet model.\",\n  \"model\": \"claude-3-5-sonnet-20241022\"\n}"}
+{"content": "{\n  \"description\": \"Configure Claude Code to use Claude Sonnet 4.6 model.\",\n  \"model\": \"claude-sonnet-4-6\"\n}"}
