@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-01T04:19:54.725422+00:00",
-  "totalJobs": 102,
+  "lastUpdated": "2026-08-02T04:13:31.427992+00:00",
+  "totalJobs": 103,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,25 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
+      "company": "Magic Compass Limited",
+      "position": "GenAI Engineer AI Builder AI Agent Associate Specialist",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Employment Type: Full-time Contractor, Remote Working Hours: 9:00 AM – 6:00 PM Local Time About the Role We are looking for a proactive GenAI Engineer / AI Builder/ AI Agent Associate / AI Application Specialist to design and build AI-powered workflows and AI Agents that enhance business...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
+      "postedAt": "2026-07-31T08:46:48+00:00",
+      "tags": [
+        "Python",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-senior-demand-generation-manager-testgorilla-1135606",
       "company": "TestGorilla",
