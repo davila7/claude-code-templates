@@ -101,7 +101,7 @@ Tier 1 splits into two bands. **Both are always replaced**; the edit is the same
 
 In `detect` mode, report the two bands separately. Presenting a wordiness fix as authorship evidence is the error this split exists to prevent.
 
-Caveat worth keeping visible: the "appears far more often in AI text" claim behind 1A is **inherited, not measured here**. It traces to [brandonwise/humanizer](https://github.com/brandonwise/humanizer), which states a 5–20x ratio without publishing a method or dataset. Treat 1A as a well-supported convention rather than a verified statistic until this repo measures the ratios itself against a machine-written corpus.
+Caveat worth keeping visible: the "appears far more often in AI text" claim behind 1A is **inherited, not measured here**. It traces to [brandonwise/humanizer](https://github.com/brandonwise/humanizer), which states a 5–20x ratio without publishing a method or dataset. Treat 1A as a well-supported convention rather than a verified statistic until the ratios are measured against a machine-written corpus.
 
 ##### Tier 1A — AI frequency markers
 
@@ -509,7 +509,7 @@ These slot-fill constructions signal that a sentence was generated, not written.
 - Fix: break at thought boundaries. One idea per line-group, the way a person actually types a reply.
 - Observed in the wild: a maintainer on a GitHub issue called out an assisted-sounding reply with "I prefer to talk human to human" — the dense block-paragraph shape was the tell, not any single word in it.
 - Distinct from paragraph-length uniformity (which is about long-form prose where every paragraph is the same size): this rule is about short, reply-length text having *zero* breaks at all, not uneven ones.
-- Carve-out: a single dense paragraph is the *correct* shape in formal, long-form registers — a blog intro, a docs paragraph, a deliberately tight one-paragraph email. This rule fires only in conversational reply registers; never flag continuous long-form prose just because it lacks internal breaks. That false-positive class is exactly why the structural detector was reverted (see `detector/CATEGORIES.md` §C), and why the tolerance matrix below is the wrong home for it: a plain issue comment auto-detects to the `blog` profile, so the scoping has to live in this rule's judgment, not in a per-profile strictness cell.
+- Carve-out: a single dense paragraph is the *correct* shape in formal, long-form registers — a blog intro, a docs paragraph, a deliberately tight one-paragraph email. This rule fires only in conversational reply registers; never flag continuous long-form prose just because it lacks internal breaks. That false-positive class is exactly why an automated structural detector for this rule was reverted upstream, and why the tolerance matrix below is the wrong home for it: a plain issue comment auto-detects to the `blog` profile, so the scoping has to live in this rule's judgment, not in a per-profile strictness cell.
 
 ### Recap-flattery opener
 - Replying to a person by summarizing their own work back at them with praise before getting to the point: "Thanks for all the legwork here — the migration script and the rollback plan you worked through are what made this possible." The reader already knows what they did; the recap performs appreciation instead of conveying information.
@@ -745,13 +745,8 @@ A bulleted list of the changes, each with the file location and the before → a
 **2. Verification**
 Confirm you re-read the file and the flagged patterns are resolved. Note anything you deliberately left alone because it was already human or intentional.
 
-**Mechanical check (optional, recommended for edit mode).** If the repo ships the detector engine, run the preservation validator against the before and after text:
-
-```bash
-node detector/validate.js <original> <rewritten>
-```
-
-It exits non-zero when a rewrite altered a fenced code block, YAML frontmatter, a blockquote, a table cell, inline code, a URL, a file path, or the heading structure, and when the rewrite introduced more flagged patterns than it removed. Those are the promises made above; this is what checks them. Rewording a heading to fix Title Case and stripping an AI tracking parameter from a URL are carved out, because this skill instructs both.
+**3. Preservation check**
+Confirm the rewrite did not alter a fenced code block, YAML frontmatter, a blockquote, a table cell, inline code, a URL, a file path, or the heading structure, and that it did not introduce more flagged patterns than it removed. Those are the promises made above. Rewording a heading to fix Title Case and stripping an AI tracking parameter from a URL are the two carve-outs, because this skill instructs both.
 
 ---
 
