@@ -122,9 +122,9 @@ description: Generate React component with tests
 ### `model` (Optional)
 Specify which Claude model to use:
 ```yaml
-model: claude-3-5-sonnet-20241022    # Default, balanced performance
-model: claude-3-5-haiku-20241022     # Faster, simpler tasks
-model: claude-3-opus-20240229        # Most capable, complex tasks
+model: claude-sonnet-4-6          # Default, balanced performance
+model: claude-haiku-4-5-20251001  # Faster, simpler tasks
+model: claude-opus-4-8            # Most capable, complex tasks
 ```
 
 ### `disable-model-invocation` (Optional)
@@ -261,7 +261,7 @@ Analyze the architectural implications of @src/config/architecture.md and provid
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git log:*)
 argument-hint: [optional-commit-message]
 description: Create a well-formatted git commit
-model: claude-3-5-sonnet-20241022
+model: claude-sonnet-4-6
 ---
 
 ## Repository Context
@@ -295,7 +295,7 @@ Commit message should be:
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [component-name] [directory]
 description: Generate React component with TypeScript and tests
-model: claude-3-5-sonnet-20241022
+model: claude-sonnet-4-6
 ---
 
 ## Component Generation Task
@@ -350,7 +350,7 @@ Follow the existing code patterns from: @src/components/
 allowed-tools: Read, Edit, Bash, WebFetch
 argument-hint: [endpoint-path]
 description: Generate comprehensive API tests
-model: claude-3-5-sonnet-20241022
+model: claude-sonnet-4-6
 ---
 
 ## API Testing Generation
@@ -407,7 +407,7 @@ For each supported method (GET, POST, PUT, DELETE):
 ---
 allowed-tools: Read, Bash, Grep, Glob
 description: Analyze application performance and suggest optimizations
-model: claude-3-5-sonnet-20241022
+model: claude-sonnet-4-6
 ---
 
 ## Performance Analysis Report
@@ -469,7 +469,7 @@ model: claude-3-5-sonnet-20241022
 ---
 allowed-tools: Read, Bash, Grep
 description: Comprehensive security audit of the codebase
-model: claude-3-5-sonnet-20241022
+model: claude-sonnet-4-6
 ---
 
 ## Security Audit Report
@@ -548,7 +548,7 @@ model: claude-3-5-sonnet-20241022
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: [migration-name]
 description: Create database migration with rollback
-model: claude-3-5-sonnet-20241022
+model: claude-sonnet-4-6
 ---
 
 ## Database Migration Creation

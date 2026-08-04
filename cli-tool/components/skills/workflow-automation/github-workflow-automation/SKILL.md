@@ -67,7 +67,7 @@ jobs:
             const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
             const response = await client.messages.create({
-              model: "claude-3-sonnet-20240229",
+              model: "claude-sonnet-4-6",
               max_tokens: 4096,
               messages: [{
                 role: "user",

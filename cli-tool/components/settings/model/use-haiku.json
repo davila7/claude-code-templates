@@ -1,4 +1,4 @@
 {
-  "description": "Configure Claude Code to use Claude 3.5 Haiku model for faster responses.",
-  "model": "claude-3-5-haiku-20241022"
+  "description": "Configure Claude Code to use Claude Haiku 4.5 model for faster responses.",
+  "model": "claude-haiku-4-5-20251001"
 }
