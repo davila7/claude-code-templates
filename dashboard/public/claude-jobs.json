@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-03T04:18:15.836886+00:00",
-  "totalJobs": 102,
+  "lastUpdated": "2026-08-04T04:08:03.200548+00:00",
+  "totalJobs": 108,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,98 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49163658",
+      "company": "pganalyze",
+      "position": "Software Engineer",
+      "location": "REMOTE (US)",
+      "remote": true,
+      "salary": "",
+      "description": "At pganalyze, we build observability and automation tools for optimizing the performance of Postgres databases. Our product helps customers such as Auto Trader, Notion and Robinhood to understand complex Postgres problems and solve performance issues. We are bootstrapped, profitable, with over 500...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49163658",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49163658",
+      "postedAt": "2026-08-04T02:09:55+00:00",
+      "tags": [
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5251866008",
+      "company": "Anthropic",
+      "position": "Product Manager, Claude Code",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As a Product Manager for Claude Tag, you will bring Claude Tag to where work collaboration happens. Claude Tag is a multiplayer and proactive agent that lives in your collaboration tools. It’s changed how we work at Anthropic: our internal version of Claude Tag writes 65% of merged PRs for our...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5251866008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5251866008",
+      "postedAt": "2026-08-03T18:01:44-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-49157129",
+      "company": "Checkly",
+      "position": "Senior Sales Engineer",
+      "location": "Remote (Europe / US Eastern Time zone)",
+      "remote": true,
+      "salary": "",
+      "description": "Checkly is the active reliability layer for developers and agents — we unify testing, synthetic monitoring, and observability into a single AI-native workflow, so engineering teams (and the agents shipping alongside them) can catch issues before customers do. We're hiring two roles on our Sales...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49157129",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49157129",
+      "postedAt": "2026-08-03T15:31:37+00:00",
+      "tags": [
+        "Node.js",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49156702",
+      "company": "Flywheel Motion (  )",
+      "position": "Software Engineer",
+      "location": "REMOTE (worldwide)",
+      "remote": true,
+      "salary": "",
+      "description": "We build authority infrastructure for people whose expertise has outgrown their digital presence — founders, scientists, operators. Positioning and narrative first, then the sites, content pipelines and distribution that make it compound. The delivery layer is agentic: Claude Code, Cursor and Aider...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49156702",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49156702",
+      "postedAt": "2026-08-03T15:01:43+00:00",
+      "tags": [
+        "TypeScript",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-jasper-hot9ja-1135932",
+      "company": "Hot9ja",
+      "position": "Jasper",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "GEO & AI OptimizationWin the new front door of searchMeasure how your brand performs across every major AI answer engine, prioritize the actions that matter, and ship brand-governed content at scale.GEO DiagnosticLearn what AI is saying about your brand, where the gaps are, and what governs the...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-jasper-hot9ja-1135932",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-jasper-hot9ja-1135932",
+      "postedAt": "2026-08-03T02:41:20+00:00",
+      "tags": [
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
       "company": "Magic Compass Limited",
@@ -2054,6 +2146,27 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5096878008",
       "postedAt": "2026-01-26T16:58:37-05:00",
       "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5079511008",
+      "company": "Anthropic",
+      "position": "Applied AI Architect, National Security",
+      "location": "Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping national security and defense agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079511008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079511008",
+      "postedAt": "2026-01-22T17:33:12-05:00",
+      "tags": [
+        "Python",
         "Rust",
         "AWS",
         "Claude Code",
