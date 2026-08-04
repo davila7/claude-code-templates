@@ -81,6 +81,15 @@ function safeUrl(url: string): string {
   return /^https?:\/\//i.test(url) ? url : '#';
 }
 
+// The dashboard themes itself by putting `light` or `dark` on <html>
+// (DashboardLayout.astro). Logos are read at call time so the right one is
+// requested for the theme in force: a mark that is invisible on the current
+// background is declined and the initial-letter fallback below takes over.
+function logoTheme(): 'light' | 'dark' {
+  if (typeof document === 'undefined') return 'dark';
+  return document.documentElement.classList.contains('light') ? 'light' : 'dark';
+}
+
 export default function JobsView() {
   const [data, setData] = useState<JobsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -167,7 +176,7 @@ export default function JobsView() {
     const domain = companyName.toLowerCase()
       .replace(/\s+/g, '')
       .replace(/[^a-z0-9]/g, '');
-    return `https://extractbrand.dev/img/${domain}.com?token=pub_C6rkKpFrdD8rUIRX77ClfY4R`;
+    return `https://extractbrand.dev/img/${domain}.com?token=pub_C6rkKpFrdD8rUIRX77ClfY4R&theme=${logoTheme()}`;
   };
 
   const allTags = useMemo(() => {
