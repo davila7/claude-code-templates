@@ -59,7 +59,8 @@ Apply in order — stop at the first condition that matches:
 | < 10K examples, GPU memory tight | QLoRA (4-bit base + LoRA) | `peft` + `bitsandbytes`, or `unsloth` (up to ~2x faster, ~70% less VRAM, includes MoE fine-tuning support) |
 | > 100K examples, full task adaptation | Full fine-tune with DeepSpeed ZeRO-3 | `accelerate` + `deepspeed` |
 | Instruction following, chat format | SFTTrainer with chat template | `trl` SFTTrainer |
-| Preference alignment, paired preferences, already have an SFT checkpoint | DPO (simpler) or GRPO (reasoning tasks) | `trl` DPOTrainer / GRPOTrainer |
+| Preference alignment, paired preferences, already have an SFT checkpoint | DPO | `trl` DPOTrainer |
+| Preference alignment, prompt-only data with a reward function | GRPO (reasoning tasks) | `trl` GRPOTrainer |
 | Preference alignment, unpaired binary feedback (thumbs up/down) | KTO | `trl` KTOTrainer |
 | Preference alignment, paired preferences, want to skip a separate SFT stage | ORPO (combines SFT + alignment in one pass, no reference model) | `trl` ORPOTrainer |
 
