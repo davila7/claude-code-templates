@@ -59,11 +59,15 @@ function getCompanyLogoUrl(companyName: string, existingIcon?: string): string {
   // If icon exists in data, use it
   if (existingIcon) return existingIcon;
   
-  // Otherwise, try to fetch from Clearbit Logo API
+  // Otherwise, resolve it from the company's domain.
+  // Clearbit's logo API shut down on 1 December 2025 and now resolves to
+  // nothing. This is the same hotlinkable-image contract: a domain with no
+  // known logo answers 404, so the onError handlers below still fall back to
+  // the company's initial exactly as they did before.
   const domain = companyName.toLowerCase()
     .replace(/\s+/g, '')
     .replace(/[^a-z0-9]/g, '');
-  return `https://logo.clearbit.com/${domain}.com`;
+  return `https://extractbrand.dev/img/${domain}.com?token=pub_C6rkKpFrdD8rUIRX77ClfY4R`;
 }
 
 interface Props {
