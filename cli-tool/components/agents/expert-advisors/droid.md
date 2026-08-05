@@ -204,7 +204,7 @@ droid exec -f deployment-steps.md --auto high
 # Automated PR review integration
 droid exec "Review this pull request for code quality, security issues, and best practices. Provide specific feedback and suggestions for improvement."
 
-# Hook into GitHub Actions (check docs.factory.ai/models for the current model ID)
+# Hook into GitHub Actions
 - name: AI Code Review
   run: |
     droid exec "Review PR #${{ github.event.number }} for security and quality" \
