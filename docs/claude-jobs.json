@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-04T04:08:03.200548+00:00",
-  "totalJobs": 108,
+  "lastUpdated": "2026-08-05T04:06:20.257300+00:00",
+  "totalJobs": 106,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -9,77 +9,42 @@
   ],
   "jobs": [
     {
-      "id": "hn-49163658",
-      "company": "pganalyze",
-      "position": "Software Engineer",
-      "location": "REMOTE (US)",
+      "id": "hn-49169017",
+      "company": "Portless",
+      "position": "AI Engineer",
+      "location": "REMOTE (North America only)",
       "remote": true,
-      "salary": "",
-      "description": "At pganalyze, we build observability and automation tools for optimizing the performance of Postgres databases. Our product helps customers such as Auto Trader, Notion and Robinhood to understand complex Postgres problems and solve performance issues. We are bootstrapped, profitable, with over 500...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49163658",
+      "salary": "$180K-$230K",
+      "description": "Founding AI engineer seat. AI adoption at Portless today is basic (decks, spreadsheets, call summaries, a bit of vibe-coded dashboards) — no real end-to-end agentic workflows yet. You'll build the AI infrastructure: shipping high-impact agentic workflows yourself, and building reusable \"Lego...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49169017",
       "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49163658",
-      "postedAt": "2026-08-04T02:09:55+00:00",
-      "tags": [
-        "PostgreSQL",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "anth-5251866008",
-      "company": "Anthropic",
-      "position": "Product Manager, Claude Code",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As a Product Manager for Claude Tag, you will bring Claude Tag to where work collaboration happens. Claude Tag is a multiplayer and proactive agent that lives in your collaboration tools. It’s changed how we work at Anthropic: our internal version of Claude Tag writes 65% of merged PRs for our...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5251866008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5251866008",
-      "postedAt": "2026-08-03T18:01:44-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "hn-49157129",
-      "company": "Checkly",
-      "position": "Senior Sales Engineer",
-      "location": "Remote (Europe / US Eastern Time zone)",
-      "remote": true,
-      "salary": "",
-      "description": "Checkly is the active reliability layer for developers and agents — we unify testing, synthetic monitoring, and observability into a single AI-native workflow, so engineering teams (and the agents shipping alongside them) can catch issues before customers do. We're hiring two roles on our Sales...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49157129",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49157129",
-      "postedAt": "2026-08-03T15:31:37+00:00",
-      "tags": [
-        "Node.js",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49156702",
-      "company": "Flywheel Motion (  )",
-      "position": "Software Engineer",
-      "location": "REMOTE (worldwide)",
-      "remote": true,
-      "salary": "",
-      "description": "We build authority infrastructure for people whose expertise has outgrown their digital presence — founders, scientists, operators. Positioning and narrative first, then the sites, content pipelines and distribution that make it compound. The delivery layer is agentic: Claude Code, Cursor and Aider...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49156702",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49156702",
-      "postedAt": "2026-08-03T15:01:43+00:00",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49169017",
+      "postedAt": "2026-08-04T13:52:34+00:00",
       "tags": [
         "TypeScript",
+        "Python",
+        "Go",
         "Claude Code",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49165622",
+      "company": "Viteus",
+      "position": "Full-Stack Engineer",
+      "location": "Contract (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "Viteus is Alteus's production support service for AI-built applications, delivered in partnership with vitX. We work with enterprises and scale-ups across APAC to audit, refactor, and support AI-built apps in production. When we win client engagements, we match contractors from the network onto...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49165622",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49165622",
+      "postedAt": "2026-08-04T08:04:08+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor",
+        "Copilot"
       ],
       "companyIcon": ""
     },
@@ -97,25 +62,6 @@
       "postedAt": "2026-08-03T02:41:20+00:00",
       "tags": [
         "Rust"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
-      "company": "Magic Compass Limited",
-      "position": "GenAI Engineer AI Builder AI Agent Associate Specialist",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Employment Type: Full-time Contractor, Remote Working Hours: 9:00 AM – 6:00 PM Local Time About the Role We are looking for a proactive GenAI Engineer / AI Builder/ AI Agent Associate / AI Application Specialist to design and build AI-powered workflows and AI Agents that enhance business...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-genai-engineer-ai-builder-ai-agent-associate-specialist-magic-compass-limited-1135735",
-      "postedAt": "2026-07-31T08:46:48+00:00",
-      "tags": [
-        "Python",
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -2190,6 +2136,29 @@
         "TypeScript",
         "Python",
         "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5063007008",
+      "company": "Anthropic",
+      "position": "Software Engineer, Cybersecurity Products",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "We're looking for a Software Engineer to join the team building Claude Security. In this role, you'll take new security capabilities in frontier models and turn them into products that customers can rely on, working across the full stack from early prototype through production. This role sits close...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5063007008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5063007008",
+      "postedAt": "2026-01-09T17:55:51-05:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
         "AWS",
         "Claude Code",
         "Anthropic"
