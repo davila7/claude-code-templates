@@ -1,69 +1,31 @@
 {
-  "lastUpdated": "2026-08-05T04:06:20.257300+00:00",
-  "totalJobs": 106,
+  "lastUpdated": "2026-08-06T04:04:25.198334+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
     {
-      "id": "hn-49169017",
-      "company": "Portless",
-      "position": "AI Engineer",
-      "location": "REMOTE (North America only)",
-      "remote": true,
-      "salary": "$180K-$230K",
-      "description": "Founding AI engineer seat. AI adoption at Portless today is basic (decks, spreadsheets, call summaries, a bit of vibe-coded dashboards) — no real end-to-end agentic workflows yet. You'll build the AI infrastructure: shipping high-impact agentic workflows yourself, and building reusable \"Lego...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49169017",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49169017",
-      "postedAt": "2026-08-04T13:52:34+00:00",
-      "tags": [
-        "TypeScript",
-        "Python",
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49165622",
-      "company": "Viteus",
-      "position": "Full-Stack Engineer",
-      "location": "Contract (Remote)",
-      "remote": true,
+      "id": "anth-5109653008",
+      "company": "Anthropic",
+      "position": "Product Design, Manager",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
       "salary": "",
-      "description": "Viteus is Alteus's production support service for AI-built applications, delivered in partnership with vitX. We work with enterprises and scale-ups across APAC to audit, refactor, and support AI-built apps in production. When we win client engagements, we match contractors from the network onto...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49165622",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49165622",
-      "postedAt": "2026-08-04T08:04:08+00:00",
+      "description": "Design at Anthropic sits at the intersection of craft, research, and product intuition. We're a small team working on products that millions of people use daily—and on interactions that don't have established conventions yet. Our work shapes how people experience AI: whether Claude feels like a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5109653008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5109653008",
+      "postedAt": "2026-08-05T13:53:54-04:00",
       "tags": [
+        "Rust",
+        "AWS",
         "Claude Code",
-        "Cursor",
-        "Copilot"
+        "Anthropic"
       ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-jasper-hot9ja-1135932",
-      "company": "Hot9ja",
-      "position": "Jasper",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "GEO & AI OptimizationWin the new front door of searchMeasure how your brand performs across every major AI answer engine, prioritize the actions that matter, and ship brand-governed content at scale.GEO DiagnosticLearn what AI is saying about your brand, where the gaps are, and what governs the...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-jasper-hot9ja-1135932",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-jasper-hot9ja-1135932",
-      "postedAt": "2026-08-03T02:41:20+00:00",
-      "tags": [
-        "Rust"
-      ],
-      "companyIcon": ""
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5355526008",
@@ -700,53 +662,6 @@
       "tags": [
         "Rust",
         "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5271428008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Developer Productivity (CI/CD) - Claude Code",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "Every engineer at Anthropic depends on the path from pull request to production. The Developer Productivity team owns that path end to end — review automation, CI, the merge queue, the deploy pipeline, and the policy that gates each step. These pieces exist today; the opportunity is to integrate...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271428008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271428008",
-      "postedAt": "2026-06-18T23:28:56-04:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "Kubernetes",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5271426008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Developer Productivity (Dev Environments) - Claude Code",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "Every minute an Anthropic engineer or researcher spends waiting on a container to boot, a dependency to resolve, or CI to surface a failure that could have been caught locally is a minute not spent on frontier AI safety. The Developer Productivity team owns the inner development loop for the people...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5271426008",
-      "postedAt": "2026-06-18T23:28:54-04:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "Docker",
-        "Kubernetes",
         "Claude Code",
         "Anthropic"
       ],
