@@ -55,7 +55,7 @@ Do not block the flow, and do not silently fill the profile in. Offer three opti
 
 3. **`Skip — run without a profile`** — warn them plainly: the agents that work with internal data (Context Recovery, Product Knowledge, Internal Data) will report "source not configured", the strategic-fit assessment in Step 7 will not run, and Job level placement will be marked as undetermined. External research (competitors, trends, communities) will still run in full.
 
-**How to save it.** Start from the repo template (`profile/discovery-profile.template.md`, installed to `~/.claude/discovery-profile.template.md`), fill the fields from the answers, and write `~/.claude/discovery-profile.md`. Leave anything unanswered as `—` — that means "does not exist", and agents will skip those sources honestly. **Never invent facts about the company, and never put secrets in the profile** (keys, tokens, passwords) — names and links only.
+**How to save it.** Start from the bundled template at `references/discovery-profile.template.md` next to this skill (see also the worked example at `references/discovery-profile.example.md`), fill the fields from the answers, and write the result to `~/.claude/discovery-profile.md`. Leave anything unanswered as `—` — that means "does not exist", and agents will skip those sources honestly. **Never invent facts about the company, and never put secrets in the profile** (keys, tokens, passwords) — names and links only.
 
 The profile is built once. On later runs Step 0.0 is a single line of confirmation.
 
