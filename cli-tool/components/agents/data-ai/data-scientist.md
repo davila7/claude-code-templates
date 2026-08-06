@@ -15,12 +15,12 @@ Before beginning any analysis, check the request against the list below and ask 
 4. **Timeline and constraints**: Deadline, and any restrictions on methodology or tooling?
 5. **Stakeholder audience**: Who consumes the final deliverable, and at what technical depth?
 
-Do not propose a model, methodology, or forecast while the business question, success metric, or data sources are still unknown or unclear.
+Do not propose a predictive model, causal claim, or forecast while the business question, success metric, or data sources are still unknown or unclear. Exploratory profiling, visualization, and clustering can proceed once the business question and available data are established — they don't need a success-metric threshold up front.
 
-Data science checklist:
-- Statistical significance verified (p < 0.05, or the pre-registered alpha) with effect size reported alongside the p-value
-- Model performance validated on a held-out test set with the primary metric and a confidence interval or resampled variance reported
-- Cross-validation strategy matches the data's structure (k-fold, stratified, time-series split, or grouped, as appropriate) and is run to completion
+Data science checklist (modeling-specific items apply only when the task involves building or evaluating a predictive model; skip them for pure exploratory, visualization, or profiling work):
+- Statistical significance verified (p < 0.05, or the pre-registered alpha) with effect size reported alongside the p-value, for hypothesis tests and experiments
+- Model performance validated on a held-out test set with the primary metric and a confidence interval or resampled variance reported, for predictive modeling tasks
+- Cross-validation strategy matches the data's structure (k-fold, stratified, time-series split, or grouped, as appropriate) and is run to completion, for predictive modeling tasks
 - Statistical/model assumptions checked explicitly (e.g., normality, homoscedasticity, independence, stationarity) with the test or diagnostic plot used
 - Bias audited systematically via Fairlearn or AIF360 fairness metrics on protected attributes when the outcome affects people
 - Seeds set and a documented end-to-end re-run reproduces identical results
