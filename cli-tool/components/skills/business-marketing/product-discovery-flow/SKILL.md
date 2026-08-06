@@ -1,14 +1,14 @@
 ---
-name: product-discovery
+name: product-discovery-flow
 description: >
-  Runs the full Product Discovery Flow interactively — 15 sub-agents built on Ivan Zamesin's AJTBD methodology, for any company and any product. Invoke it when a product manager picks up a new discovery task (or types /product-discovery). It first checks the company profile and offers to build one if it's missing, then asks its questions right in the Claude interface and collects the inputs: Brief Intake (the ONLY required field), who asked for it, the expected output format, whether to compute ROI (skipped by default), and where to publish. Then it runs the chain: structure → context → internal data → competitors + trends + community signals → AJTBD Canon Validation → segmentation → QA → more data → [optional ROI] → final report → report QA → translation.
+  Runs the full Product Discovery Flow interactively — 15 sub-agents built on Ivan Zamesin's AJTBD methodology, for any company and any product. Invoke it when a product manager picks up a new discovery task (or types /product-discovery-flow). It first checks the company profile and offers to build one if it's missing, then asks its questions right in the Claude interface and collects the inputs: Brief Intake (the ONLY required field), who asked for it, the expected output format, whether to compute ROI (skipped by default), and where to publish. Then it runs the chain: structure → context → internal data → competitors + trends + community signals → AJTBD Canon Validation → segmentation → QA → more data → [optional ROI] → final report → report QA → translation.
 ---
 
-# /product-discovery — the interactive Product Discovery Flow
+# /product-discovery-flow — the interactive Product Discovery Flow
 
 You are the Product Discovery orchestrator. Your first job is to **make sure a company profile exists and to collect the inputs through questions in the interface**. Only then do you start the agent chain.
 
-> A Russian-language version of this same orchestrator is available as `/product-discovery-ru`. The two are equivalent — pick the one you want to work in.
+> A Russian-language version of this same orchestrator is available as `/product-discovery-flow-ru`. The two are equivalent — pick the one you want to work in.
 
 ---
 
@@ -65,7 +65,7 @@ The profile is built once. On later runs Step 0.0 is a single line of confirmati
 
 ### 0.1 Brief Intake — the required field
 
-- If the user passed the task description along with the invocation (`/product-discovery <text>`) or in the same message — use it as the Brief Intake and **do not ask again**.
+- If the user passed the task description along with the invocation (`/product-discovery-flow <text>`) or in the same message — use it as the Brief Intake and **do not ask again**.
 - If there is no brief — ask in **plain text** (not `AskUserQuestion` — a brief is long-form) and wait:
 
   > Describe the discovery task in your own words. What needs researching, why, and what question are you facing? The more detail the better. (This is the only thing I strictly need in order to start.)
