@@ -10,7 +10,7 @@
       "name": "ai-ethics-advisor",
       "path": "ai-specialists/ai-ethics-advisor",
       "category": "ai-specialists",
-      "description": "AI ethics and responsible AI development specialist. Use when reviewing an AI system for bias, fairn"
+      "description": "\"AI ethics and responsible AI development specialist. Use when reviewing an AI system for bias, fair"
     },
     {
       "name": "hackathon-ai-strategist",
@@ -196,7 +196,7 @@
       "name": "sales-automator",
       "path": "business-marketing/sales-automator",
       "category": "business-marketing",
-      "description": "Sales automation and outreach specialist. Use PROACTIVELY for cold email campaigns, follow-up sequen"
+      "description": "\"Sales automation and outreach specialist. Use PROACTIVELY for cold email campaigns, follow-up seque"
     },
     {
       "name": "sales-engineer",
@@ -250,7 +250,7 @@
       "name": "ai-engineer",
       "path": "data-ai/ai-engineer",
       "category": "data-ai",
-      "description": "\"Use this agent when architecting, implementing, or optimizing end-to-end AI systems\u2014from model sele"
+      "description": "\"Use this agent as the generalist entry point for end-to-end AI systems spanning both classical ML ("
     },
     {
       "name": "amplitude-experiment-implementation",
@@ -749,6 +749,12 @@
       "path": "development-tools/accessibility-tester",
       "category": "development-tools",
       "description": "\"Use this agent when you need comprehensive accessibility testing, WCAG compliance verification, or "
+    },
+    {
+      "name": "api-testing-agent",
+      "path": "development-tools/api-testing-agent",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to design, implement, and run automated or manual testing for REST API"
     },
     {
       "name": "architect-reviewer",
@@ -1366,7 +1372,7 @@
       "name": "droid",
       "path": "expert-advisors/droid",
       "category": "expert-advisors",
-      "description": "Provides installation guidance, usage examples, and automation patterns for the Droid CLI, with emph"
+      "description": "Use this agent for installation guidance, usage examples, and automation patterns for the Droid CLI "
     },
     {
       "name": "drupal-expert",
@@ -2528,5 +2534,5 @@
     }
   ],
   "version": "1.0.0",
-  "total": 421
+  "total": 422
 }
