@@ -250,8 +250,7 @@ For each Job:
 **Level 1 — full 8 elements:**
 
 *State A (When)*
-- **Context:** the causal features of the person and the situation that explain exactly these criteria
-- **Past experience / knowledge:** the specific experience that shaped a criterion
+- **Context:** the causal features of the person and the situation — including any past experience or knowledge that shaped a criterion — that explain exactly these criteria
 - **Negative emotions:** anxiety / frustration / fear, held until the outcome is reached
 - **Consideration Set:** which alternative ways of performing the higher-level Big Job the customer is weighing, and the fear attached to each
 - **Trigger:** a specific event in time (not "when I'm ready", but "after X")

@@ -103,8 +103,7 @@ When the PM provides completed research, evaluate it across these dimensions:
 ### 1.2 AJTBD Job quality (per the "AJTBD audit standard" block above)
 For each Job in the research, verify all 8 Level-1 elements are present:
 - **Primary element** in canonical form `I want to + infinitive verb` (not the Christensen one-liner "When ___, I want ___, so that ___")
-- **Context** (causal features of person + situation that produce these criteria — not background noise)
-- **Past experience / knowledge** that conditioned a specific criterion
+- **Context** (causal features of person + situation, including past experience or knowledge that conditioned a specific criterion — not background noise)
 - **Negative emotions** in State A
 - **Consideration Set** (alternative ways to perform the Big Job the user already considered)
 - **Trigger** (specific event in time)

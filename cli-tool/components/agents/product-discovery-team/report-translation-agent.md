@@ -90,11 +90,11 @@ Source reports follow Ivan Zamesin's **Advanced Jobs To Be Done** canon. The pri
 - "as a [role], I want X, so that Y" as a single sentence with no hierarchy
 - "pain points" used in place of Problem without the `Job → Solution → Problem` chain
 
-**Confidence labels (keep in English):** HIGH, MODERATE, MEDIUM, LOW, CONDITIONAL, CRITICAL
+**Confidence labels (keep in English):** `[Strong evidence]`, `[Moderate evidence]`, `[Weak evidence]`, `[Hypothesis only]` (finding-level), `[calculated]`, `[assumption: ...]` (numeric-delta level) — these are the exact tags `discovery-final-report-agent` emits.
 
 **Layer headers (keep in English):** Layer 1, Layer 2, Layer 3
 
-**Gap type labels (keep in English):** Product gap, Activation gap, Execution gap, SOP gap, Integration gap
+**Gap type labels (keep in English):** SOP gap, Structural gap — the two types `discovery-final-report-agent` actually uses.
 
 ---
 
