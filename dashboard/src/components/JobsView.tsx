@@ -81,6 +81,15 @@ function safeUrl(url: string): string {
   return /^https?:\/\//i.test(url) ? url : '#';
 }
 
+// The dashboard themes itself by putting `light` or `dark` on <html>
+// (DashboardLayout.astro). Logos are read at call time so the right one is
+// requested for the theme in force: a mark that is invisible on the current
+// background is declined and the initial-letter fallback below takes over.
+function logoTheme(): 'light' | 'dark' {
+  if (typeof document === 'undefined') return 'dark';
+  return document.documentElement.classList.contains('light') ? 'light' : 'dark';
+}
+
 export default function JobsView() {
   const [data, setData] = useState<JobsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -159,12 +168,15 @@ export default function JobsView() {
     // If companyIcon exists in data, use it
     if (job?.companyIcon) return job.companyIcon;
     
-    // Otherwise, try to fetch from Clearbit Logo API
-    // Format: https://logo.clearbit.com/{domain}
+    // Otherwise, resolve it from the company's domain.
+    // Clearbit's logo API shut down on 1 December 2025 and now resolves to
+    // nothing. This is the same hotlinkable-image contract: a domain with no
+    // known logo answers 404, so the onError handlers below still fall back to
+    // the company's initial exactly as they did before.
     const domain = companyName.toLowerCase()
       .replace(/\s+/g, '')
       .replace(/[^a-z0-9]/g, '');
-    return `https://logo.clearbit.com/${domain}.com`;
+    return `https://extractbrand.dev/img/${domain}.com?token=pub_C6rkKpFrdD8rUIRX77ClfY4R&theme=${logoTheme()}`;
   };
 
   const allTags = useMemo(() => {
