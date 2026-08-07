@@ -44,6 +44,13 @@ test-node: install-dev
 	@echo "✅ Node test completed"
 	@rm -rf /tmp/test-node
 
+test-csharp: install-dev
+	@echo "🔷 Testing C# scenario..."
+	@mkdir -p /tmp/test-csharp
+	@cd /tmp/test-csharp && claude-code-templates --language csharp --framework aspnet-core-api --dry-run --yes
+	@echo "✅ C# test completed"
+	@rm -rf /tmp/test-csharp
+
 test-hooks: install-dev
 	@echo "🔧 Testing Hooks functionality..."
 	@mkdir -p /tmp/test-hooks
