@@ -1,12 +1,52 @@
 {
-  "lastUpdated": "2026-08-06T04:04:25.198334+00:00",
+  "lastUpdated": "2026-08-07T04:06:23.842082+00:00",
   "totalJobs": 102,
   "sources": [
     "Anthropic",
-    "HackerNews",
-    "WeWorkRemotely"
+    "HackerNews"
   ],
   "jobs": [
+    {
+      "id": "hn-49200756",
+      "company": "Aeqium",
+      "position": "Product Engineer",
+      "location": "San Francisco (SF)",
+      "remote": false,
+      "salary": "$110k-$170k",
+      "description": "** PLEASE NOTE: We CANNOT provide visa sponsorship, transfers, or OPT/STEM extensions of any kind. Applicants must already be authorized to work in the US permanently. ** Aeqium is building an AI-powered compensation planning platform (backed by top VCs). We replace messy spreadsheets with...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49200756",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49200756",
+      "postedAt": "2026-08-06T18:53:25+00:00",
+      "tags": [
+        "Claude Code",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49199157",
+      "company": "DoubleVerify (DV Scibids)",
+      "position": "Software Engineer",
+      "location": "ONSITE/HYBRID - New York, NY (3x/week)",
+      "remote": false,
+      "salary": "$89K–$178K",
+      "description": "DV Scibids is the AI-powered digital campaign activation arm of DoubleVerify — the market standard for digital media measurement trusted by hundreds of Fortune 500 brands. Our Data Engineering team owns the critical integrations and data flows that connect Scibids' optimization engine to the...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49199157",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49199157",
+      "postedAt": "2026-08-06T16:47:25+00:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "GCP",
+        "Docker",
+        "Claude Code",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5109653008",
       "company": "Anthropic",
@@ -233,51 +273,6 @@
         "PostgreSQL",
         "AWS",
         "GCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-vidalytics-ai-automation-engineer-in-house-martech-video-saas",
-      "company": "Vidalytics",
-      "position": "AI Automation Engineer, In-House MarTech Video SaaS",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Austin, TX URL: https://vidalytics.com If you love building AI agents, wiring systems together, and watching whole teams stop doing by hand what a machine can do better, faster, and cheaper, and you want to make a whole company AI native rather than ship a slick demo, keep reading....",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/vidalytics-ai-automation-engineer-in-house-martech-video-saas",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/vidalytics-ai-automation-engineer-in-house-martech-video-saas",
-      "postedAt": "2026-07-07T12:49:42+00:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "GCP",
-        "Claude Code",
-        "Rails"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-vidalytics-europe-only-gtm-martech-engineer-growth-attribution-at-video-martech-saas",
-      "company": "Vidalytics",
-      "position": "[EUROPE ONLY] GTM MarTech Engineer (Growth & Attribution) at Video MarTech SaaS",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Austin, TX URL: https://vidalytics.com This is not a typical product engineering role, rather you’re gonna be the key technical person, as a fullstack engineer who gets marketing, for the GTM teams @ Vidalytics. Reporting to the CEO who owns these functions. LFG! You’ll own tracking,...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/vidalytics-europe-only-gtm-martech-engineer-growth-attribution-at-video-martech-saas",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/vidalytics-europe-only-gtm-martech-engineer-growth-attribution-at-video-martech-saas",
-      "postedAt": "2026-07-07T12:39:09+00:00",
-      "tags": [
-        "React",
-        "JavaScript",
-        "Rust",
-        "Go",
-        "Node.js",
-        "GCP",
-        "Claude Code",
-        "MySQL"
       ],
       "companyIcon": ""
     },
@@ -2060,7 +2055,7 @@
     {
       "id": "anth-5063007008",
       "company": "Anthropic",
-      "position": "Software Engineer, Cybersecurity Products",
+      "position": "Staff+ Software Engineer, Cybersecurity Products",
       "location": "San Francisco, CA",
       "remote": false,
       "salary": "",
