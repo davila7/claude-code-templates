@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/terminal-tab-unread-marker.sh mark"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/terminal-tab-unread-marker.sh mark"
           }
         ]
       }
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/terminal-tab-unread-marker.sh clear"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/terminal-tab-unread-marker.sh clear"
           }
         ]
       }

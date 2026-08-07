@@ -97,8 +97,22 @@ REST=${STATE#*|}
 FRONT=${REST%%|*}
 TITLE=${REST#*|}
 
-# Strip any marker we previously wrote, without keeping a copy of the title.
-BARE="${TITLE##*"$WJ" }"
+# Strip our own marker prefix, and only ours. The marker is always
+# "<glyph><WJ><space>" at position 0, so a WORD JOINER later in a title cannot
+# be ours. An unanchored longest-match would truncate a user title that happened
+# to contain a WJ-space sequence. Requiring it inside the first few bytes stays
+# glyph-agnostic, so TABTINT_MARK can be a multi-byte emoji.
+strip_mark() {
+  local s="$1" pre
+  pre=${s%%"$WJ" *}
+  if [ "$pre" != "$s" ] && [ ${#pre} -le 8 ]; then
+    printf '%s' "${s#*"$WJ" }"
+  else
+    printf '%s' "$s"
+  fi
+}
+
+BARE=$(strip_mark "$TITLE")
 
 case "${1:-mark}" in
   mark)
@@ -106,12 +120,27 @@ case "${1:-mark}" in
     [ "$SELECTED" = "true" ] && [ "$FRONT" = "true" ] && exit 0
     # Never replace a title we cannot read; a lone marker is unremovable.
     [ -n "$BARE" ] || exit 0
-    # Re-assert past Claude Code's own idle-transition title rewrite. This runs
-    # detached so Stop returns immediately instead of stalling the session for
-    # the length of the loop.
+    # Re-assert past Claude Code's own idle-transition title rewrite, detached so
+    # Stop returns immediately.
+    #
+    # Every iteration re-reads the tab rather than replaying the title captured
+    # at Stop. Two reasons, both real:
+    #   - If you focus the tab and submit a prompt inside this window, `clear`
+    #     strips the marker and the next tick would put it straight back, so the
+    #     tab you are actively using shows a stale unread mark. Re-reading lets
+    #     the loop see `selected` and stop.
+    #   - If you /rename inside this window, replaying the captured title would
+    #     silently overwrite the name you just set.
     (
       for _ in 1 2 3 4 5 6; do
-        set_title "/dev/$TTY" "$MARK$WJ $BARE"
+        st=$(tab_state "/dev/$TTY") || exit 0
+        [ -n "$st" ] || exit 0
+        sel=${st%%|*}; rest=${st#*|}; fr=${rest%%|*}; ttl=${rest#*|}
+        # You are looking at it now, so the signal has done its job.
+        [ "$sel" = "true" ] && [ "$fr" = "true" ] && exit 0
+        bare=$(strip_mark "$ttl")
+        [ -n "$bare" ] || exit 0
+        [ "$ttl" = "$MARK$WJ $bare" ] || set_title "/dev/$TTY" "$MARK$WJ $bare"
         sleep 0.7
       done
     ) >/dev/null 2>&1 &
