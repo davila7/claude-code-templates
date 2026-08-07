@@ -1,0 +1,27 @@
+{
+  "description": "Marks the macOS Terminal.app tab of a Claude Code session that finished while you were looking somewhere else, and clears the mark when you next type in it. Solves the problem you get once several sessions run at once: a notification tells you something finished, but not which window. This puts the answer in the tab bar. Two non-obvious details are handled: Claude Code pipes stdin to hooks so `tty` reports 'not a tty' and the session tty has to be recovered by walking the process tree, and Claude Code re-asserts the terminal title about a second after Stop when the session goes idle, silently wiping a marker a Stop hook just wrote (set CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 if you would rather own the title outright). A zero-width WORD JOINER marks the prefix so it can be stripped without storing a copy of your title, which means it cannot clobber a title you set with /rename. Change the glyph with TABTINT_MARK. macOS Terminal.app only, exits silently elsewhere; iTerm2, Ghostty and kitty already have native tab colours. Prerequisite: the script terminal-tab-unread-marker.sh in .claude/hooks/. Full version with per-project window colours and a palette: https://github.com/dotcomjack/claude-session-tint",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/terminal-tab-unread-marker.sh mark"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/terminal-tab-unread-marker.sh clear"
+          }
+        ]
+      }
+    ]
+  }
+}
