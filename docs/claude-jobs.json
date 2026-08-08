@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-07T04:06:23.842082+00:00",
+  "lastUpdated": "2026-08-08T03:33:28.380160+00:00",
   "totalJobs": 102,
   "sources": [
     "Anthropic",
@@ -7,43 +7,66 @@
   ],
   "jobs": [
     {
-      "id": "hn-49200756",
-      "company": "Aeqium",
-      "position": "Product Engineer",
-      "location": "San Francisco (SF)",
+      "id": "hn-49215237",
+      "company": "Deepline",
+      "position": "Software Engineer",
+      "location": "On-site",
       "remote": false,
-      "salary": "$110k-$170k",
-      "description": "** PLEASE NOTE: We CANNOT provide visa sponsorship, transfers, or OPT/STEM extensions of any kind. Applicants must already be authorized to work in the US permanently. ** Aeqium is building an AI-powered compensation planning platform (backed by top VCs). We replace messy spreadsheets with...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49200756",
+      "salary": "$160k–$230k",
+      "description": "User interfaces are dead. Knowledge workers will exclusively work through agent interfaces like Claude Code/Cowork. We've built the interface layer to enable that. One API that unifies hundreds of data providers, workflows, and data infrastructure to agents like Claude Code. This is GTM as code —...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49215237",
       "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49200756",
-      "postedAt": "2026-08-06T18:53:25+00:00",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49215237",
+      "postedAt": "2026-08-07T19:32:31+00:00",
       "tags": [
-        "Claude Code",
-        "Copilot"
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code"
       ],
       "companyIcon": ""
     },
     {
-      "id": "hn-49199157",
-      "company": "DoubleVerify (DV Scibids)",
-      "position": "Software Engineer",
-      "location": "ONSITE/HYBRID - New York, NY (3x/week)",
+      "id": "anth-5383610008",
+      "company": "Anthropic",
+      "position": "Staff Software Engineer, Claude Code",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
       "remote": false,
-      "salary": "$89K–$178K",
-      "description": "DV Scibids is the AI-powered digital campaign activation arm of DoubleVerify — the market standard for digital media measurement trusted by hundreds of Fortune 500 brands. Our Data Engineering team owns the critical integrations and data flows that connect Scibids' optimization engine to the...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49199157",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49199157",
-      "postedAt": "2026-08-06T16:47:25+00:00",
+      "salary": "",
+      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383610008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383610008",
+      "postedAt": "2026-08-07T17:48:56-04:00",
       "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
         "Python",
         "Rust",
-        "GCP",
-        "Docker",
+        "AWS",
         "Claude Code",
-        "Cursor",
-        "Java"
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-49206998",
+      "company": "Talonic",
+      "position": "Staff Site Reliability Engineer",
+      "location": "Berlin, Germany",
+      "remote": false,
+      "salary": "€80–90k",
+      "description": "We do enterprise document ingestion — capture a document once into a canonical field registry, then project it to any schema, no re-extraction. Stack: AWS, Docker, Railway. We've never had a dedicated reliability owner and it's starting to show. You'd be the first: SLOs and an error-budget policy...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49206998",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49206998",
+      "postedAt": "2026-08-07T07:24:31+00:00",
+      "tags": [
+        "AWS",
+        "Docker",
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -1653,26 +1676,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
       "postedAt": "2026-04-24T12:17:48-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5184077008",
-      "company": "Anthropic",
-      "position": "Head of ANZ, Applied AI",
-      "location": "Sydney, Australia",
-      "remote": false,
-      "salary": "",
-      "description": "As the founding leader of Applied AI Solutions Architecture in ANZ, you will drive the adoption of frontier AI by enabling the deployment of Anthropic's products (Claude for Enterprise, Claude Code, and API) across Australian and New Zealand enterprises and digital-first organizations. You'll...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5184077008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5184077008",
-      "postedAt": "2026-04-24T10:30:10-04:00",
       "tags": [
         "Rust",
         "AWS",
