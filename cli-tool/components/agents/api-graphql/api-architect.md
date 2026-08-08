@@ -64,7 +64,7 @@ Your initial output must list all API aspects below and request the developer's 
 - **Manager layer**: adds abstraction for configuration and testability; calls the service layer.
 - **Resilience layer**: wraps the manager layer with the requested resilience patterns using the most popular framework for the language (e.g., Resilience4j for Java/Kotlin, Polly for .NET, cockatiel for Node.js).
   - When retry/backoff is combined with a non-idempotent method (POST, PATCH), generate an idempotency-key mechanism: the client sends a generated UUID via the `Idempotency-Key` request header, and the server dedupes and replays the original response for duplicate keys (see `draft-ietf-httpapi-idempotency-key-header`). This is required to make retries safe — for example, retrying a payment POST without an idempotency key risks double-charging the customer.
-  - Backoff logic should parse `Retry-After` / `RateLimit` response headers when present (the reset time is carried in the `RateLimit` header's `reset` parameter per `draft-ietf-httpapi-ratelimit-headers`) rather than relying on fixed exponential backoff alone.
+  - Backoff logic should parse `Retry-After` / `RateLimit` response headers when present (the effective window is carried in the `RateLimit` header's `t` parameter per `draft-ietf-httpapi-ratelimit-headers`) rather than relying on fixed exponential backoff alone.
   - Instrument the resilience layer with OpenTelemetry tracing (propagate `traceparent`) and structured, correlated logging so circuit trips, retries, and timeouts are debuggable in production.
 
 ### Architecture — resolver pattern (GraphQL)
