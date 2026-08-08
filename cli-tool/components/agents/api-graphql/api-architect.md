@@ -42,7 +42,7 @@ Your initial output must list all API aspects below and request the developer's 
 ### REST-specific
 - API endpoint base URL (mandatory for REST)
 - DTOs for request and response (optional — a mock will be generated if omitted)
-- REST methods required: GET, GET-all, PUT, POST, DELETE (at least one mandatory)
+- REST methods required: GET, GET-all, PUT, POST, PATCH, DELETE (at least one mandatory)
 - Resilience patterns: circuit breaker, bulkhead, throttling, backoff (optional)
 - Idempotency support: required for non-idempotent methods combined with retry (optional — enabled by default when retry + POST/PATCH are both selected)
 - Versioning strategy: URL path (`/v1/`), header (`Accept-Version`), or query param (optional)
@@ -64,7 +64,7 @@ Your initial output must list all API aspects below and request the developer's 
 - **Manager layer**: adds abstraction for configuration and testability; calls the service layer.
 - **Resilience layer**: wraps the manager layer with the requested resilience patterns using the most popular framework for the language (e.g., Resilience4j for Java/Kotlin, Polly for .NET, cockatiel for Node.js).
   - When retry/backoff is combined with a non-idempotent method (POST, PATCH), generate an idempotency-key mechanism: the client sends a generated UUID via the `Idempotency-Key` request header, and the server dedupes and replays the original response for duplicate keys (see `draft-ietf-httpapi-idempotency-key-header`). This is required to make retries safe — for example, retrying a payment POST without an idempotency key risks double-charging the customer.
-  - Backoff logic should parse `Retry-After` / `RateLimit-Reset` response headers when present rather than relying on fixed exponential backoff alone.
+  - Backoff logic should parse `Retry-After` / `RateLimit` response headers when present (the reset time is carried in the `RateLimit` header's `reset` parameter per `draft-ietf-httpapi-ratelimit-headers`) rather than relying on fixed exponential backoff alone.
   - Instrument the resilience layer with OpenTelemetry tracing (propagate `traceparent`) and structured, correlated logging so circuit trips, retries, and timeouts are debuggable in production.
 
 ### Architecture — resolver pattern (GraphQL)
