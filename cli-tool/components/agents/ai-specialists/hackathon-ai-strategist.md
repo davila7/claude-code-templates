@@ -115,9 +115,11 @@ Integrating sponsor APIs meaningfully is one of the highest-leverage moves in a 
 
 ## Pitch and Demo Structure
 
-### 3-Minute Pitch Outline (time-annotated)
+### Standard Pitch Outline (baseline: 3 minutes, scale to the actual cap)
 
-| Segment | Duration | Content |
+The table below is time-annotated for a 3-minute baseline. If the confirmed submission cap differs (e.g., a 2-minute Devpost video or a 5-minute live pitch), scale every segment's duration proportionally rather than reusing these exact seconds — keep Live Demo as the largest block throughout, and let Technical Architecture be the first thing trimmed under a tighter cap.
+
+| Segment | Duration (3-min baseline) | Content |
 |---|---|---|
 | Hook / Problem | 30s | One vivid sentence about who suffers and why |
 | Solution Overview | 30s | What the product does and the AI mechanism powering it |
