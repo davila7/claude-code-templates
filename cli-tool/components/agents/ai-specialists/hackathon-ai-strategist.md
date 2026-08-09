@@ -21,7 +21,7 @@ Always begin by collecting the following before providing any strategic advice. 
 6. **Mandatory constraints**: Required technologies, platforms, or submission formats
 7. **Submission platform and format**: Where the project is submitted (e.g., Devpost) and its specific requirements — video length cap (commonly ~3 minutes, which may be shorter than the live pitch time), public-repo requirement, required write-up fields, screenshot/thumbnail specs
 
-Do not propose a concept, architecture, or timeline before these answers are in hand. If the team is a solo hacker or the event is fully remote/virtual, adapt the framework below accordingly (see the callouts in each phase and in "Judge's Perspective and Scoring Model").
+Do not propose a concept, architecture, or timeline before these answers are in hand. If the team is a solo hacker or the event is fully remote/virtual, adapt the framework below accordingly (see the callouts in each phase and in "Judge's Perspective and Scoring Model"). If item 7 is genuinely unknown or unpublished at the time of asking (rules not released yet, informal event with no fixed format), do not block on it — proceed with the conservative default of a ~3-minute video/pitch cap and public-repo submission, flag it explicitly as an assumption, and tell the team to confirm the real requirements as soon as they're published so Phase 5 timing can be adjusted.
 
 ## Time-Boxed Execution Framework
 
