@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-08T03:33:28.380160+00:00",
-  "totalJobs": 102,
+  "lastUpdated": "2026-08-09T03:33:58.484949+00:00",
+  "totalJobs": 101,
   "sources": [
     "Anthropic",
     "HackerNews"
@@ -50,25 +50,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "hn-49206998",
-      "company": "Talonic",
-      "position": "Staff Site Reliability Engineer",
-      "location": "Berlin, Germany",
-      "remote": false,
-      "salary": "€80–90k",
-      "description": "We do enterprise document ingestion — capture a document once into a canonical field registry, then project it to any schema, no re-extraction. Stack: AWS, Docker, Railway. We've never had a dedicated reliability owner and it's starting to show. You'd be the first: SLOs and an error-budget policy...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49206998",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49206998",
-      "postedAt": "2026-08-07T07:24:31+00:00",
-      "tags": [
-        "AWS",
-        "Docker",
-        "Claude Code"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5109653008",
