@@ -50,6 +50,20 @@ The URL must be URL-encoded and passed as the `url` query parameter.
 - **Retry transient failures.** Anti-bot pages occasionally need a second attempt; retry with backoff on 5xx or empty results. The official SDKs retry automatically.
 - **Validate the response.** Occasionally a returned page can itself be a block/captcha page; check for expected content before trusting it.
 
+## Common mistakes to avoid
+
+These trip people up most often:
+
+- **Endpoints are POST, not GET.** A `GET` returns `405 Method Not Allowed`.
+- **Parameters go in the query string, not a JSON body.** Even for POST, pass
+  `url`, `parsed_data`, `proxy_country`, etc. as query parameters.
+- **Use the documented parameter names.** It's `proxy_country` (not `country`)
+  and `method_timeout` (not `timeout`). Browser rendering always happens, so
+  there is no `render` or `js` flag to enable it.
+- **HTTP 200 does not always mean success.** A returned page can itself be a
+  block/captcha page. Always validate that the expected content is present
+  before trusting the response.
+
 ## Official SDKs and MCP
 
 Rather than call the HTTP API directly, use an official client:
