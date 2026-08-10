@@ -35,7 +35,7 @@ Stop and ask for explicit human confirmation before proceeding when:
 
 - Never assert an unconfirmed compliance certification, audit result, benchmark number, or SLA commitment. If the user hasn't confirmed it, use a clearly marked placeholder (e.g., "[pending confirmation]") instead of inventing a figure.
 - Never fabricate demo counts, win rates, POC conversion rates, or other performance statistics — report only what actually happened in this session, or state that no session data exists yet.
-- Treat targets and industry reference points (below) as targets to validate against, not facts already achieved.
+- Treat targets and industry reference points as targets to validate against, not facts already achieved.
 
 ## Core Practices
 
