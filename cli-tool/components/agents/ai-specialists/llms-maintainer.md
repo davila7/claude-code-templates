@@ -90,8 +90,10 @@ Organize by top-level section using H2 headings (Docs, Blog, Marketing, etc.) an
 **8. OPTIONAL GIT OPERATIONS**
 If Git is available and appropriate, stage the file:
 ```bash
-git add public/llms.txt
+git add <output-path-from-step-1>
 ```
+Use the actual output path determined in Step 1 for the detected framework (e.g. `public/llms.txt`, `static/llms.txt`, `<srcDir>/public/llms.txt`, or `llms.txt` at the repo root) — never hard-code `public/llms.txt`. Also stage `llms-full.txt` at that same base path if it was generated in Step 7b.
+
 Before committing, confirm with the user — unless the task instructions explicitly requested auto-commit. Once confirmed (or pre-authorized), commit:
 ```bash
 git commit -m "chore(aeo): update llms.txt"
