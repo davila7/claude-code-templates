@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "humanpen": {
+      "description": "Lower a Word/PowerPoint/PDF document's AI-detection score so it reads as human-written, keeping every fact, number, table and all formatting intact.",
+      "command": "npx",
+      "args": ["-y", "humanpen-mcp"],
+      "env": {
+        "HUMANPEN_API_KEY": "<your-api-key>"
+      }
+    }
+  }
+}
