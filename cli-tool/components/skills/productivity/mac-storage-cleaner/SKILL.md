@@ -24,7 +24,9 @@ hit something a script didn't classify or you need the precise command.
   them. Reversibility is the whole point; never hard-delete a user's data.
 - **When unsure, demote a tier.** A slower rebuild is trivial; deleting a
   license, an unpushable Xcode archive, or someone's only local backup is not.
-- **Every destructive run is logged** to `~/Library/Logs/mac-storage-cleaner/operations.log`.
+- **Every destructive run is logged** to `~/Library/Logs/mac-storage-cleaner/operations.log` —
+  deletions refuse to run unlogged (exit 3) unless the log directory is writable, or
+  `MSC_ALLOW_UNLOGGED=1` explicitly opts into an unlogged run.
 
 ## Workflow
 
@@ -61,10 +63,36 @@ files, skips anything macOS protects (reporting rather than failing), runs
 deletion, and prints what it reclaimed. If the user only wanted specific items,
 delete those directly instead.
 
+To preview first (recommended when the user hesitates or asks what will go): add
+`--dry-run` — full preview with sizes, zero deletion, zero log writes. Guards and
+whitelist run identically in both modes, so the preview always matches reality.
+
+The safe tier now keeps the 2 newest DeviceSupport versions
+(MSC_DEVICE_SUPPORT_KEEP), keeps the active + 1 previous version of
+auto-updating AI CLIs (claude / cursor-agent / copilot, pinned via their
+launcher symlink), and skips any path whose owning process is running (Xcode
+family, Gradle daemon) — report skipped items to the user instead of retrying.
+
 **Browser & Electron app caches** (Chrome/Arc/Slack/VS Code/…) are safe but live
 inside app-data folders — clear only the `Cache`/`Code Cache`/`GPUCache`
 subfolders the survey lists, ideally with the app quit, and **never** the whole
 app folder. Exact paths: `references/cache-catalog.md`.
+
+### User whitelist
+
+`~/.config/mac-storage-cleaner/whitelist` — one path or glob per line, `#`
+comments, `~/` expansion; protects the entry and everything under it, and
+governs every tier `clean-safe.sh` touches (safe, keep-N, AI-agent, Handoff),
+dry-run included, down to individual children inside a keep-N/AI-agent/Handoff
+base directory — surfaced by the survey too. One limit: an entry BELOW a
+**safe-tier** allowlist path (e.g. `~/.npm/some-package`) can't be honored,
+because the safe tier removes those paths atomically (`rm -rf ~/.npm`) rather
+than walking their children — whitelist the safe-tier path itself instead.
+`find-extras.sh` and
+`trash-items.sh` do **not** read it (they only ever act on paths the user
+explicitly approves that session), so when the user says "always keep X", add
+a line here **and** keep checking find-extras candidates against it yourself
+before proposing removal — the script won't stop you.
 
 ### 3. Surface the "ask" tier — recommend, don't delete
 
@@ -95,12 +123,13 @@ D="${CLAUDE_PLUGIN_ROOT:+$CLAUDE_PLUGIN_ROOT/skills/mac-storage-cleaner}"; D="${
 bash "$D/scripts/trash-items.sh" "/path/one" "/path/two"
 ```
 
-**If trashing reports "could NOT trash (permissions/TCC?)"** for every item, the
-controlling app hasn't been granted Automation control of Finder — a normal
-first-run state. Tell the user to allow it in System Settings › Privacy &
-Security › Automation (enable Finder for the terminal/app), then re-run; or move
-the item to the Trash manually in Finder. Don't report space as freed when items
-logged `trash-failed` — nothing was actually removed.
+**Trash chain and refusals.** trash-items.sh now tries `/usr/bin/trash` first (no
+TCC prompt, works headless), then Finder (needs the Automation grant — System
+Settings › Privacy & Security › Automation), then a same-volume `mv` into
+`~/.Trash`. The log records which method moved each item; refused entries mean
+the path is on the tool's deny list (system/user roots) — never work around a
+refusal. Don't report space as freed when items logged `trash-failed` — nothing
+was actually removed.
 
 **App leftovers need verification.** The scan lists containers whose owning app a
 quick check couldn't confirm is installed — but Spotlight misses un-indexed apps,
@@ -141,3 +170,21 @@ Read `references/cache-catalog.md` for the full tiered inventory and gotchas. Th
   (only `caches/`). `~/.npm` is pure cache so it's fine whole.
 - **Continue past errors and verify** with `du`; `rm -rf` on multiple paths keeps
   going after a failure, so never assume total success or total failure.
+- **Handoff shared-pasteboard buffers are cleared only when untouched for 60+
+  minutes** — never delete fresher ones, an in-flight Universal Clipboard sync
+  may be using them.
+
+## Environment variables
+
+- `MSC_DRY_RUN` — set to `1` to force preview mode (same as `--dry-run`) on `clean-safe.sh`, and to make `trash-items.sh` preview instead of trashing.
+- `MSC_WHITELIST_FILE` — override the whitelist path (default `~/.config/mac-storage-cleaner/whitelist`).
+- `MSC_TRASH_BIN` — override the `trash` binary `trash_path` tries first (default `/usr/bin/trash`).
+- `MSC_DEVICE_SUPPORT_KEEP` (default `2`) — how many newest Xcode DeviceSupport versions to keep per platform.
+- `MSC_AI_AGENTS_KEEP` (default `1`) — how many newest non-active AI CLI versions to keep alongside the active (symlink-pinned) one.
+- `MSC_ALLOW_UNLOGGED` — set to `1` to let a destructive run proceed even when the audit log can't be written (default: refuse, exit 3).
+
+## Tests
+
+`bats tests/` from the repo root (`brew install bats-core`). Every test runs
+against a fake `$HOME`; the dangerous-path corpus in `tests/fixtures/` is a
+floor — investigate a failure, never weaken the corpus.
