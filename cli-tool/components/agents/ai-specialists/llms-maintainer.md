@@ -14,8 +14,7 @@ Your core responsibility is to create or update the llms.txt file following this
 Determine where to write llms.txt, and which directories to scan for candidate pages in Step 3, based on the project framework:
 - If `astro.config.*` exists → output `public/llms.txt`; scan `src/pages/`, `src/content/`
 - If `nuxt.config.*` exists → output `public/llms.txt`; scan `pages/`, `content/`
-- If `next.config.*` exists and `app/` exists (App Router) → output `public/llms.txt`; scan `app/`
-- If `next.config.*` exists and `pages/` exists (Pages Router) → output `public/llms.txt`; scan `pages/`
+- If `next.config.*` exists → output `public/llms.txt`; if `app/` exists (App Router), scan `app/` — and also scan `pages/` if it exists too, since hybrid/half-migrated Next projects keep legacy routes there; otherwise (no `app/`) scan `pages/` (Pages Router)
 - If `svelte.config.*` exists → output `static/llms.txt`; scan `src/routes/`
 - If `hugo.toml` or `hugo.yaml` exists → output `static/llms.txt`; scan `content/`
 - If `docusaurus.config.*` exists → output `static/llms.txt`; scan `docs/`, `blog/`
@@ -31,7 +30,7 @@ Determine where to write llms.txt, and which directories to scan for candidate p
 **3. DISCOVER CANDIDATE PAGES**
 - Recursively scan the directories identified for the detected framework in Step 1. If no framework was detected, fall back to scanning: /app, /pages, /content, /docs, /blog
 - IGNORE files matching these patterns:
-  - Paths with /_* (private/internal)
+  - Paths with /_* (private/internal) — EXCEPT Jekyll's `_posts/` (blog content), which must be scanned despite the underscore prefix; still ignore other Jekyll internals like `_layouts/`, `_includes/`, `_data/`, `_sass/`
   - /api/ routes
   - /admin/ or /beta/ paths
   - Files ending in .test, .spec, .stories
