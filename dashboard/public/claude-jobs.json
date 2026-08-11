@@ -1,11 +1,31 @@
 {
-  "lastUpdated": "2026-08-10T03:41:29.432665+00:00",
+  "lastUpdated": "2026-08-11T03:39:53.239116+00:00",
   "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews"
   ],
   "jobs": [
+    {
+      "id": "anth-5383596008",
+      "company": "Anthropic",
+      "position": "Developer Relations",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As Developer Relations at Anthropic, you will help developers discover, onboard, and get the most out of Claude Code, Claude Tag, and future developer products. This role is pivotal in helping developers adopt Claude-powered products, growing our developer ecosystem, gathering crucial feedback to...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "postedAt": "2026-08-10T15:57:04-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-49215237",
       "company": "Deepline",
@@ -872,27 +892,6 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5198999008",
-      "company": "Anthropic",
-      "position": "Technical Specialist, Claude Code",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is hiring Technical Architects: hands-on builders and live technical communicators who help our customers go from \"we bought Claude\" to \"our people use it every day.\" You'll be the technical partner our CSMs pull into the room whenever the work gets technical. For our customers, that's...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5198999008",
-      "postedAt": "2026-06-25T03:30:52-04:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5277834008",
       "company": "Anthropic",
       "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
@@ -916,7 +915,7 @@
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "San Francisco, CA",
       "remote": false,
       "salary": "",
       "description": "Enterprise is central to Anthropic's mission. The organizations that could benefit most from Claude are often the most demanding buyers, with rigorous requirements around security, compliance, and control. We believe earning their trust is essential to ensuring AI benefits the world broadly. We're...",
@@ -1648,6 +1647,7 @@
         "Rust",
         "AWS",
         "Claude Code",
+        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
@@ -1668,6 +1668,7 @@
         "Rust",
         "AWS",
         "Claude Code",
+        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
