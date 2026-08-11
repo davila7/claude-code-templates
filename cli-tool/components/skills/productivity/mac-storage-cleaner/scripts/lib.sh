@@ -67,20 +67,39 @@ KEEP_N_PATHS=(
 # Primary path: `LC_ALL=C sort -rV` when a probe confirms this machine's
 # `sort` supports -V (verified working on stock macOS 2.3-Apple sort).
 # Fallback path (probe fails — some non-Apple `sort` without version-sort
-# support): awk builds a lexical key from the first 4 numeric components of
+# support): awk builds a lexical key from the first 8 numeric components of
 # each name, zero-padded to 10 digits, then `LC_ALL=C sort -r` on that key
 # reproduces the same ordering `sort -rV` would have given — so retention
 # never silently no-ops just because `sort -V` happens to be unavailable.
 # "18.5 (22F76)" -> components 18,5,22,76; semver "1.0.117" -> 1,0,117 — both
-# order correctly under either path.
+# order correctly under either path. Depth 8 covers every realistic version
+# string (DeviceSupport names like "18.5.1 (22G100)" = 18,5,1,22,100 need
+# only 5) with headroom to spare.
+# When two names' 8-component keys tie exactly (identical numeric content,
+# e.g. "22G76" vs "22F76"), the lexical compare on the untouched remainder
+# breaks the tie and correctly orders Apple build letters (22F76 < 22G76).
+# Fail-closed on overflow: if a name still has a 9th+ numeric run left over
+# after the first 8 are consumed, awk can't build a key that's guaranteed
+# correct for it, so it emits the sentinel line __MSC_VERSION_OVERFLOW__
+# instead of a keyed line for that name. If the sentinel shows up anywhere
+# in the fallback's output, this function prints NOTHING for the whole
+# directory rather than risk an ordering it can't guarantee — retention
+# would rather keep everything than delete a possibly-newer version.
 _version_sort_desc () {
   if printf '1\n' | sort -V >/dev/null 2>&1; then
     LC_ALL=C sort -rV
   else
-    awk '{ key=""; s=$0; n=0
-           while (match(s, /[0-9]+/) && n<4) { key = key sprintf("%010d.", substr(s,RSTART,RLENGTH)+0); s = substr(s, RSTART+RLENGTH); n++ }
-           while (n<4) { key = key "0000000000."; n++ }
-           printf "%s\t%s\n", key, $0 }' | LC_ALL=C sort -r | cut -f2-
+    local out
+    out=$(awk '{ key=""; s=$0; n=0
+           while (match(s, /[0-9]+/) && n<8) { key = key sprintf("%010d.", substr(s,RSTART,RLENGTH)+0); s = substr(s, RSTART+RLENGTH); n++ }
+           while (n<8) { key = key "0000000000."; n++ }
+           if (match(s, /[0-9]+/)) { print "__MSC_VERSION_OVERFLOW__"; next }
+           printf "%s\t%s\n", key, $0 }' | LC_ALL=C sort -r | cut -f2-)
+    case "$out" in
+      *__MSC_VERSION_OVERFLOW__*) return 0 ;;
+    esac
+    [ -n "$out" ] && printf '%s\n' "$out"
+    return 0
   fi
 }
 
