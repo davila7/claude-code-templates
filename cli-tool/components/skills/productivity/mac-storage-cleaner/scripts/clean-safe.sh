@@ -245,7 +245,14 @@ if [ -d "$PB" ] && [ ! -L "$PB" ] && ! is_whitelisted "$PB"; then
     # changes, so an old-looking top-level dir can still have an in-flight
     # sync writing to it right now. Skip if ANY descendant was modified in
     # the last 60 minutes — never cut something still actively syncing.
-    if [ -d "$p" ] && [ -n "$(find "$p" -mmin -60 -print -quit 2>/dev/null)" ]; then continue; fi
+    # rc-aware: an unreadable descendant (permissions) makes `find` exit
+    # non-zero without necessarily finding a fresh file — that is an
+    # inconclusive scan, not evidence of idleness, so fail closed (skip) on
+    # a non-zero rc too, not just on a fresh-file match.
+    if [ -d "$p" ]; then
+      _fresh=$(find "$p" -mmin -60 -print -quit 2>/dev/null); _frc=$?
+      if [ -n "$_fresh" ] || [ "$_frc" -ne 0 ]; then continue; fi
+    fi
     if is_whitelisted "$p"; then
       echo "  skipped (whitelisted): $p"; log_op skipped-whitelisted "-" "$p"; skipped=$((skipped+1)); skipped_wl=$((skipped_wl+1)); continue
     fi
@@ -279,7 +286,11 @@ fi
 # a recent crash report may still be needed (e.g. for a bug report), so only
 # stale ones are cleared. Same shape as the Handoff section: base-level
 # symlink/whitelist gate the whole section, per-child symlink/whitelist gate
-# each report.
+# each report. Enumeration is restricted to actual report ARTIFACTS — regular
+# files with a known crash-report extension, plus the legacy `Retired`
+# directory — never a bare "anything sitting in this folder" sweep, so a
+# user's own notes/README/whatever dropped in here (or a differently-named
+# dir) is never swept up just for being old.
 DR="$HOME/Library/Logs/DiagnosticReports"
 if [ -d "$DR" ] && [ -L "$DR" ]; then
   echo "  skipped (symlink base): $DR"
@@ -310,7 +321,7 @@ elif [ -d "$DR" ] && ! is_whitelisted "$DR"; then
       echo "  removed $disp  $p (crash report >30d)"
       log_op removed "$disp" "$p"; total_kb=$((total_kb + ${kb:-0}))
     fi
-  done < <(find "$DR" -mindepth 1 -maxdepth 1 -mtime +30 -print0 2>/dev/null)
+  done < <(find "$DR" -mindepth 1 -maxdepth 1 -mtime +30 \( -type f \( -iname '*.ips' -o -iname '*.crash' -o -iname '*.diag' -o -iname '*.spin' -o -iname '*.hang' -o -iname '*.panic' -o -iname '*.shutdownStall' \) -o -type d -name Retired \) -print0 2>/dev/null)
 fi
 
 # Electron/Chromium-style app caches: survey.sh has long reported these
@@ -343,20 +354,22 @@ elif [ -d "$AS" ]; then
     fi
     # Process guard, fail-closed (tri-state): an Electron app rewrites these
     # caches live, so a running (or unreadable-process-table) owner must
-    # block deletion, not just a known-idle one. The app DIRECTORY name is an
-    # approximation of the real process name — a real process name doesn't
-    # always match its Application Support folder name verbatim — so a plain
-    # exact-name miss must not fail OPEN. Check both directions,
-    # case-insensitively: an exact process-name match OR a substring match
-    # against any command line. Over-matching only ever costs an extra skip
-    # (safe); only a clean double miss counts as idle.
-    if command -v pgrep >/dev/null 2>&1; then
-      if pgrep -qix "$app" 2>/dev/null || pgrep -qif "$app" 2>/dev/null; then guard_rc=0
-      else rc=$?; if [ "$rc" -eq 1 ]; then guard_rc=1; else guard_rc=2; fi; fi
+    # block deletion, not just a known-idle one. pgrep -f patterns are ERE —
+    # an app dir literally named "App (Beta)" builds a regex whose parens are
+    # GROUPING, so the literal process name never matches its own process
+    # (fail-open, empirically confirmed). Literal match only — ps snapshot +
+    # grep -F is metachar-proof, case-insensitive; a failed snapshot is
+    # unknown state (skip), per tri-state.
+    st=1
+    if ! _pt=$(ps -axo comm=,command= 2>/dev/null) || [ -z "$_pt" ]; then
+      st=2
+    elif printf '%s\n' "$_pt" | LC_ALL=C grep -qiF "$app"; then
+      st=0
     else
-      guard_rc=2
+      grc=$?
+      [ "$grc" -eq 1 ] || st=2
     fi
-    if [ "$guard_rc" != 1 ]; then
+    if [ "$st" != 1 ]; then
       echo "  skipped (app running or state unknown): $p"
       log_op skipped-in-use "-" "$p"; skipped=$((skipped+1)); skipped_inuse=$((skipped_inuse+1)); continue
     fi

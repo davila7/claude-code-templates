@@ -63,7 +63,7 @@ echo "===== App caches — Electron apps (clean-safe clears these automatically 
 # below: browser profile caches are NEVER auto-cleared, so grouping them
 # under the same "auto-clear" title would overclaim what this tool does.
 electron_apps=$(
-  find "$HOME/Library/Application Support" -maxdepth 2 -type d \
+  find "$HOME/Library/Application Support" -mindepth 2 -maxdepth 2 -type d \
     \( -name Cache -o -name "Code Cache" -o -name GPUCache -o -name DawnWebGPUCache \) 2>/dev/null \
   | while IFS= read -r d; do du -sh "$d" 2>/dev/null; done | sort -rh | head -15
 )

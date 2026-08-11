@@ -84,6 +84,9 @@ version_sorted_children () {
   for d in "$dir"/*; do
     [ -e "$d" ] || continue
     [ -d "$d" ] || continue
+    # control chars would corrupt the line protocol — such names are skipped
+    # entirely (never counted, never deleted)
+    case "$d" in *[[:cntrl:]]*) continue ;; esac
     printf '%s\n' "${d##*/}"
   done | LC_ALL=C sort -rV
 }
@@ -275,6 +278,21 @@ _vtp_denied () {
     "$home_lower/.gnupg"
   )
   for r in "${vtp_never_roots[@]}"; do
+    case "$lower" in "$r"|"$r"/*) return 0 ;; esac
+  done
+  # System-root subtree denials (round-2 review): these five roots are
+  # unambiguously OS-owned with no legitimate trash-items.sh use ever — deny
+  # the root AND everything under it, same shape as the never-tier loop
+  # above. Deliberately narrow: /Library, /Applications, /usr, and /var are
+  # NOT subtree-denied here (only their bare roots, via the exact-root loop
+  # above) because legitimate workflows need to reach INSIDE them — e.g.
+  # removing a leftover /Library/LaunchAgents plist, clearing /usr/local
+  # Homebrew cruft, or trashing a stale /private/tmp scratch dir — and a
+  # blanket subtree deny on those would break all of that.
+  local vtp_system_roots=(
+    "/system" "/bin" "/sbin" "/dev" "/private/var/db"
+  )
+  for r in "${vtp_system_roots[@]}"; do
     case "$lower" in "$r"|"$r"/*) return 0 ;; esac
   done
   # Photos libraries — the bundle itself and everything inside it (masters,
