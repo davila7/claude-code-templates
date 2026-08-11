@@ -283,14 +283,17 @@ fi
 
 # Shared per-item body for the DiagnosticReports section below: symlink skip,
 # per-child whitelist, validate_target_path, DRY preview, rm with the
-# skipped/partial honesty branch, same counters/log actions. Factored out
-# because it's applied to TWO enumerations (top-level DR, and DR/Retired's
-# children) that must behave identically — duplicating it would risk the two
-# copies drifting. Operates on globals (DRY/total_kb/skipped/...) like the
-# rest of this single-script file; bash 3.2-safe (no associative arrays,
-# `local` only).
+# removed/partially-removed/skipped honesty branch — a blocked rm gets one
+# chmod -R u+w retry (read-only report files), and if the path still exists
+# afterward a size-diff credits any bytes actually freed (logged as `partial`)
+# instead of silently reporting a no-op skip — same counters/log actions as
+# the DeviceSupport keep-N loop above. Factored out because it's applied to
+# TWO enumerations (top-level DR, and DR/Retired's children) that must behave
+# identically — duplicating it would risk the two copies drifting. Operates on
+# globals (DRY/total_kb/skipped/...) like the rest of this single-script file;
+# bash 3.2-safe (no associative arrays, `local` only).
 _msc_remove_old_report () {
-  local p="$1" kb disp
+  local p="$1" kb disp kb_after freed
   [ -n "$p" ] || return 0
   [ -e "$p" ] || return 0
   [ -L "$p" ] && return 0
@@ -307,10 +310,21 @@ _msc_remove_old_report () {
     echo "  would remove $disp  $p (crash report >30d)"
     total_kb=$((total_kb + ${kb:-0})); return 0
   fi
-  rm -rf "$p" 2>/dev/null
+  if ! rm -rf "$p" 2>/dev/null; then
+    chmod -R u+w "$p" 2>/dev/null
+    rm -rf "$p" 2>/dev/null
+  fi
   if [ -e "$p" ]; then
-    echo "  skipped (protected or in use): $p"
-    log_op skipped "$disp" "$p"; skipped=$((skipped + 1))
+    kb_after=$(size_kb "$p")
+    if [ -n "$kb_after" ] && [ "${kb_after:-0}" -lt "${kb:-0}" ]; then
+      freed=$(( ${kb:-0} - kb_after ))
+      echo "  partially removed ($(human_kb "$freed") freed, $(human_kb "$kb_after") blocked): $p"
+      log_op partial "$(human_kb "$freed")" "$p"
+      total_kb=$((total_kb + freed)); skipped=$((skipped+1))
+    else
+      echo "  skipped (protected or in use): $p"
+      log_op skipped "$disp" "$p"; skipped=$((skipped + 1))
+    fi
   else
     echo "  removed $disp  $p (crash report >30d)"
     log_op removed "$disp" "$p"; total_kb=$((total_kb + ${kb:-0}))
