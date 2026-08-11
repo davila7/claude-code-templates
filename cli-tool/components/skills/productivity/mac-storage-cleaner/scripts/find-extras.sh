@@ -59,7 +59,11 @@ for fw in \
   "/Applications/Brave Browser.app/Contents/Frameworks/Brave Browser Framework.framework/Versions"; do
   [ -d "$fw" ] || continue
   cur=$(readlink "$fw/Current" 2>/dev/null)
-  cur=$(basename "${cur:-none}")
+  if [ -z "$cur" ]; then
+    echo "  (could not resolve Current for $(basename "$fw") — skipping suggestions; verify manually)"
+    continue
+  fi
+  cur=$(basename "$cur")
   for v in "$fw"/*; do
     [ -d "$v" ] || continue
     name=$(basename "$v")

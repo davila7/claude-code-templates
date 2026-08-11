@@ -56,15 +56,22 @@ echo "Only the vetted safe list above is auto-deleted; these are for you to revi
 du -sh "$HOME/Library/Caches/"* 2>/dev/null | sort -rh | head -12
 echo
 
-echo "===== App caches — Electron & browsers (clean-safe clears these automatically when the app isn't running) ====="
-# Electron-style cache subfolders (depth<=2) + known browser profile caches.
-# Capture the listing once, so the "found little" message reflects what was
-# ACTUALLY shown (incl. the deeper browser-profile caches) — not a re-run of a
-# shallower find that could disagree with it.
-apps=$(
+echo "===== App caches — Electron apps (clean-safe clears these automatically when the app isn't running) ====="
+# Electron-style cache subfolders (depth<=2) directly under an app's own
+# Application Support dir — these are what clean-safe.sh actually auto-clears.
+# Kept as a separate listing (and header) from the browser-profile block
+# below: browser profile caches are NEVER auto-cleared, so grouping them
+# under the same "auto-clear" title would overclaim what this tool does.
+electron_apps=$(
+  find "$HOME/Library/Application Support" -maxdepth 2 -type d \
+    \( -name Cache -o -name "Code Cache" -o -name GPUCache -o -name DawnWebGPUCache \) 2>/dev/null \
+  | while IFS= read -r d; do du -sh "$d" 2>/dev/null; done | sort -rh | head -15
+)
+if [ -n "$electron_apps" ]; then printf '%s\n' "$electron_apps"; else echo "  (no Electron-style app caches found, or they're TCC-protected)"; fi
+echo
+echo "  browser profile caches (NOT auto-cleared — review via catalog):"
+browser_apps=$(
   {
-    find "$HOME/Library/Application Support" -maxdepth 2 -type d \
-      \( -name Cache -o -name "Code Cache" -o -name GPUCache -o -name DawnWebGPUCache \) 2>/dev/null
     for b in \
       "Google/Chrome" "BraveSoftware/Brave-Browser" "Microsoft Edge" \
       "Arc" "Vivaldi" "Chromium" "com.operasoftware.Opera"; do
@@ -75,7 +82,7 @@ apps=$(
     done
   } | while IFS= read -r d; do du -sh "$d" 2>/dev/null; done | sort -rh | head -15
 )
-if [ -n "$apps" ]; then printf '%s\n' "$apps"; else echo "  (no app caches found, or they're TCC-protected)"; fi
+if [ -n "$browser_apps" ]; then printf '%s\n' "$browser_apps"; else echo "  (none found)"; fi
 echo
 
 echo "===== ASK first — big, but expensive to restore or not a cache ====="

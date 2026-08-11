@@ -3,15 +3,17 @@
 # Use for anything riskier than a pure cache: ask-tier items, app leftovers,
 # big/old files. The user can restore from Trash until it's emptied. Every
 # action is logged. Usage: trash-items.sh <path> [<path> ...]
-# Exit codes: 0 = ok (nothing failed); 1 = at least one item could not be
-# trashed (permissions/TCC); 2 = every item was refused and nothing moved;
-# 3 = refused to run at all because the audit log isn't writable (see
-# MSC_ALLOW_UNLOGGED below).
+# Exit codes: 0 = ok (nothing failed — includes a dry-run mix of
+# previewed+refused items, and a missing-only run); 1 = at least one item
+# could not be trashed (permissions/TCC); 2 = nothing was moved or previewed
+# and at least one item was refused (all-refused, dry or real); 3 = refused
+# to run at all because the audit log isn't writable (see MSC_ALLOW_UNLOGGED
+# below).
 set -u
 DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$DIR/lib.sh"
 
-[ "$#" -eq 0 ] && { echo "usage: trash-items.sh <path> [<path> ...]  (exit 0=ok, 1=a trash failed, 2=all refused/nothing moved, 3=audit log unwritable)"; exit 1; }
+[ "$#" -eq 0 ] && { echo "usage: trash-items.sh <path> [<path> ...]  (exit 0=ok/previewed/missing-only, 1=a trash failed, 2=all refused & nothing moved/previewed, 3=audit log unwritable)"; exit 1; }
 
 # MSC_DRY_RUN=1 is a REAL preview here, not just a log_op no-op: without this,
 # a caller that exports MSC_DRY_RUN=1 (e.g. following clean-safe.sh's
@@ -38,9 +40,12 @@ fi
 moved=0
 failed=0
 refused=0
+previewed=0
+missing=0
 for p in "$@"; do
   if [ ! -e "$p" ] && [ ! -L "$p" ]; then
     echo "  not found: $p"
+    missing=$((missing + 1))
     continue
   fi
   # Refuse BEFORE the size scan: du -sk on a protected root ($HOME, /Users,
@@ -60,6 +65,7 @@ for p in "$@"; do
   sz=$([ -n "$kb" ] && human_kb "$kb" || echo "size?")
   if [ "$DRY" = 1 ]; then
     echo "  would trash $sz  $p"
+    previewed=$((previewed + 1))
     continue
   fi
   rc=0; trash_path "$p" || rc=$?
@@ -88,15 +94,24 @@ done
 echo
 if [ "$DRY" = 1 ]; then
   echo "Preview only — nothing was trashed. Re-run without MSC_DRY_RUN=1 to actually trash these items."
+  [ "$previewed" -gt 0 ] && echo "$previewed item(s) previewed."
 else
   echo "$moved item(s) moved to Trash — restorable until you empty it."
   echo "Space is reclaimed when the Trash is emptied (Finder > Empty Trash)."
 fi
+[ "$refused" -gt 0 ] && echo "$refused item(s) refused (protected path)."
+[ "$missing" -gt 0 ] && echo "$missing item(s) not found."
 echo "Log: $LOG_DIR/operations.log"
 
+# Exit codes: 1 = at least one item could not be trashed (permissions/TCC);
+# 2 = nothing was moved or even previewed AND at least one item was refused
+# (an all-refused run — dry or real — signals failure; a run mixing a valid
+# path with a refused one still exits 0, since the valid path did/would move,
+# and a missing-only run also exits 0 — nothing failed or was refused, the
+# missing count is just called out above).
 if [ "$failed" -gt 0 ]; then
   exit 1
-elif [ "$refused" -gt 0 ] && [ "$moved" -eq 0 ]; then
+elif [ "$((moved + previewed))" -eq 0 ] && [ "$refused" -gt 0 ]; then
   exit 2
 fi
 exit 0

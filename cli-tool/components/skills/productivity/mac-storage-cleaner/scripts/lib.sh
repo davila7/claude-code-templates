@@ -61,26 +61,40 @@ KEEP_N_PATHS=(
   "$HOME/Library/Developer/Xcode/tvOS DeviceSupport"
 )
 
-# Print child NAMES of <dir> beyond the <n> most recently modified, one per
-# line (they are the deletion candidates). ls -1t = newest first; version dirs
-# ("17.5 (21F79)") contain spaces but never newlines.
-# Candidates must be DIRECTORIES: a stray file (e.g. a newest-mtime .DS_Store)
-# would otherwise consume one of the N "keep" slots and either get force-kept
-# ahead of a real version dir or, worse, be counted toward NR without ever
-# being a legitimate deletion target. Filter to dirs BEFORE counting N, not
-# after, so the N kept slots always land on real version dirs.
-keep_newest_n_children () {
-  local dir="$1" n="$2" child i
+# Print directory-child NAMES of <dir>, one per line, ordered by the HIGHEST
+# VERSION encoded in the name first (never by mtime — mtime reflects whenever
+# Xcode/CoreSimulator/an updater last touched the directory, which can
+# reorder on a device reconnect, Spotlight reindex, pre-download-before-switch,
+# ... and has no relationship to which version is actually newest). Enumerate
+# via a newline-safe glob (never ls, which mis-handles names containing
+# newlines/control chars and can't be told to sort by anything but time/name)
+# and sort with `sort -rV` (version sort, descending) so "18.5 (22F76)" sorts
+# ahead of "16.0 (20A362)", and semver dirs like "1.0.117" correctly sort
+# ahead of "1.0.2", regardless of which directory macOS/the updater touched
+# last. Candidates must be DIRECTORIES: a stray file (e.g. a newest-mtime
+# .DS_Store) must never be treated as a version dir.
+# sort -V (version sort) isn't guaranteed on every `sort` this could run
+# under — if it's missing, fail CLOSED (print nothing, i.e. keep everything)
+# rather than fall back to an ordering (mtime/name) that silently
+# reintroduces the bug this function exists to fix.
+version_sorted_children () {
+  local dir="$1" d
   [ -d "$dir" ] || return 0
-  i=0
-  while IFS= read -r child; do
-    [ -n "$child" ] || continue
-    [ -d "$dir/$child" ] || continue
-    i=$((i + 1))
-    [ "$i" -gt "$n" ] && printf '%s\n' "$child"
-  done <<EOF
-$(ls -1t "$dir" 2>/dev/null)
-EOF
+  if ! printf '1\n' | sort -V >/dev/null 2>&1; then return 0; fi
+  for d in "$dir"/*; do
+    [ -e "$d" ] || continue
+    [ -d "$d" ] || continue
+    printf '%s\n' "${d##*/}"
+  done | LC_ALL=C sort -rV
+}
+
+# Print child NAMES of <dir> beyond the <n> HIGHEST VERSIONS, one per line
+# (they are the deletion candidates). Filter to dirs and sort by version
+# BEFORE counting N, not after, so the N kept slots always land on real
+# version dirs ordered correctly (see version_sorted_children above).
+keep_newest_n_children () {
+  local dir="$1" n="$2"
+  version_sorted_children "$dir" | awk -v n="$n" 'NR > n'
 }
 
 # --- ASK tier -------------------------------------------------------------
