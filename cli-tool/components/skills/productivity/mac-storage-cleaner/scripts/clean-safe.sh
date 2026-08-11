@@ -281,47 +281,73 @@ if [ -d "$PB" ] && [ ! -L "$PB" ] && ! is_whitelisted "$PB"; then
   done < <(find "$PB" -mindepth 1 -maxdepth 1 -mmin +60 -print0 2>/dev/null)
 fi
 
+# Shared per-item body for the DiagnosticReports section below: symlink skip,
+# per-child whitelist, validate_target_path, DRY preview, rm with the
+# skipped/partial honesty branch, same counters/log actions. Factored out
+# because it's applied to TWO enumerations (top-level DR, and DR/Retired's
+# children) that must behave identically — duplicating it would risk the two
+# copies drifting. Operates on globals (DRY/total_kb/skipped/...) like the
+# rest of this single-script file; bash 3.2-safe (no associative arrays,
+# `local` only).
+_msc_remove_old_report () {
+  local p="$1" kb disp
+  [ -n "$p" ] || return 0
+  [ -e "$p" ] || return 0
+  [ -L "$p" ] && return 0
+  if is_whitelisted "$p"; then
+    echo "  skipped (whitelisted): $p"; log_op skipped-whitelisted "-" "$p"; skipped=$((skipped+1)); skipped_wl=$((skipped_wl+1)); return 0
+  fi
+  kb=$(size_kb "$p")
+  disp=$([ -n "$kb" ] && human_kb "$kb" || echo "size?")
+  if ! validate_target_path "$p"; then
+    echo "  REFUSED (protected path reached deletion loop — report this): $p"
+    log_op refused "-" "$p"; skipped=$((skipped+1)); return 0
+  fi
+  if [ "$DRY" = 1 ]; then
+    echo "  would remove $disp  $p (crash report >30d)"
+    total_kb=$((total_kb + ${kb:-0})); return 0
+  fi
+  rm -rf "$p" 2>/dev/null
+  if [ -e "$p" ]; then
+    echo "  skipped (protected or in use): $p"
+    log_op skipped "$disp" "$p"; skipped=$((skipped + 1))
+  else
+    echo "  removed $disp  $p (crash report >30d)"
+    log_op removed "$disp" "$p"; total_kb=$((total_kb + ${kb:-0}))
+  fi
+}
+
 # Crash reports: apps/macOS write .crash/.ips files here on every crash and
 # never prune old ones. Age-gated (30+ days) the same way as Handoff above —
 # a recent crash report may still be needed (e.g. for a bug report), so only
 # stale ones are cleared. Same shape as the Handoff section: base-level
 # symlink/whitelist gate the whole section, per-child symlink/whitelist gate
 # each report. Enumeration is restricted to actual report ARTIFACTS — regular
-# files with a known crash-report extension, plus the legacy `Retired`
-# directory — never a bare "anything sitting in this folder" sweep, so a
-# user's own notes/README/whatever dropped in here (or a differently-named
-# dir) is never swept up just for being old.
+# files with a known crash-report extension — never a bare "anything sitting
+# in this folder" sweep, so a user's own notes/README/whatever dropped in
+# here (or a differently-named dir) is never swept up just for being old.
 DR="$HOME/Library/Logs/DiagnosticReports"
 if [ -d "$DR" ] && [ -L "$DR" ]; then
   echo "  skipped (symlink base): $DR"
   log_op skipped-symlink "-" "$DR"; skipped=$((skipped+1)); skipped_sym=$((skipped_sym+1))
 elif [ -d "$DR" ] && ! is_whitelisted "$DR"; then
   while IFS= read -r -d '' p; do
-    [ -n "$p" ] || continue
-    [ -e "$p" ] || continue
-    [ -L "$p" ] && continue
-    if is_whitelisted "$p"; then
-      echo "  skipped (whitelisted): $p"; log_op skipped-whitelisted "-" "$p"; skipped=$((skipped+1)); skipped_wl=$((skipped_wl+1)); continue
-    fi
-    kb=$(size_kb "$p")
-    disp=$([ -n "$kb" ] && human_kb "$kb" || echo "size?")
-    if ! validate_target_path "$p"; then
-      echo "  REFUSED (protected path reached deletion loop — report this): $p"
-      log_op refused "-" "$p"; skipped=$((skipped+1)); continue
-    fi
-    if [ "$DRY" = 1 ]; then
-      echo "  would remove $disp  $p (crash report >30d)"
-      total_kb=$((total_kb + ${kb:-0})); continue
-    fi
-    rm -rf "$p" 2>/dev/null
-    if [ -e "$p" ]; then
-      echo "  skipped (protected or in use): $p"
-      log_op skipped "$disp" "$p"; skipped=$((skipped + 1))
-    else
-      echo "  removed $disp  $p (crash report >30d)"
-      log_op removed "$disp" "$p"; total_kb=$((total_kb + ${kb:-0}))
-    fi
-  done < <(find "$DR" -mindepth 1 -maxdepth 1 -mtime +30 \( -type f \( -iname '*.ips' -o -iname '*.crash' -o -iname '*.diag' -o -iname '*.spin' -o -iname '*.hang' -o -iname '*.panic' -o -iname '*.shutdownStall' \) -o -type d -name Retired \) -print0 2>/dev/null)
+    _msc_remove_old_report "$p"
+  done < <(find "$DR" -mindepth 1 -maxdepth 1 -mtime +30 -type f \( -iname '*.ips' -o -iname '*.crash' -o -iname '*.diag' -o -iname '*.spin' -o -iname '*.hang' -o -iname '*.panic' -o -iname '*.shutdownStall' \) -print0 2>/dev/null)
+
+  # Legacy `Retired` subfolder: macOS moves stale/rotated reports here. It
+  # must NEVER be rm -rf'd as a unit — that would bypass every per-item
+  # protection above (whitelist, validate, age) for whatever a whitelisted
+  # child or an in-place-modified (fresh-mtime) report happens to be sitting
+  # inside it. Walk its direct children through the exact same per-item
+  # pipeline instead; only report artifacts older than 30 days are removed,
+  # and an emptied Retired directory is left in place (never removed itself).
+  RT="$DR/Retired"
+  if [ -d "$RT" ] && [ ! -L "$RT" ]; then
+    while IFS= read -r -d '' p; do
+      _msc_remove_old_report "$p"
+    done < <(find "$RT" -mindepth 1 -maxdepth 1 -mtime +30 \( -type f \( -iname '*.ips' -o -iname '*.crash' -o -iname '*.diag' -o -iname '*.spin' -o -iname '*.hang' -o -iname '*.panic' -o -iname '*.shutdownStall' \) \) -print0 2>/dev/null)
+  fi
 fi
 
 # Electron/Chromium-style app caches: survey.sh has long reported these
