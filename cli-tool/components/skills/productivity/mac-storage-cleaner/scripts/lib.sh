@@ -61,6 +61,29 @@ KEEP_N_PATHS=(
   "$HOME/Library/Developer/Xcode/tvOS DeviceSupport"
 )
 
+# Version-descending sort of names on stdin. Names are already
+# control-char-filtered upstream (version_sorted_children is the only
+# caller), so tab-delimiting the awk fallback's sort key below is safe.
+# Primary path: `LC_ALL=C sort -rV` when a probe confirms this machine's
+# `sort` supports -V (verified working on stock macOS 2.3-Apple sort).
+# Fallback path (probe fails — some non-Apple `sort` without version-sort
+# support): awk builds a lexical key from the first 4 numeric components of
+# each name, zero-padded to 10 digits, then `LC_ALL=C sort -r` on that key
+# reproduces the same ordering `sort -rV` would have given — so retention
+# never silently no-ops just because `sort -V` happens to be unavailable.
+# "18.5 (22F76)" -> components 18,5,22,76; semver "1.0.117" -> 1,0,117 — both
+# order correctly under either path.
+_version_sort_desc () {
+  if printf '1\n' | sort -V >/dev/null 2>&1; then
+    LC_ALL=C sort -rV
+  else
+    awk '{ key=""; s=$0; n=0
+           while (match(s, /[0-9]+/) && n<4) { key = key sprintf("%010d.", substr(s,RSTART,RLENGTH)+0); s = substr(s, RSTART+RLENGTH); n++ }
+           while (n<4) { key = key "0000000000."; n++ }
+           printf "%s\t%s\n", key, $0 }' | LC_ALL=C sort -r | cut -f2-
+  fi
+}
+
 # Print directory-child NAMES of <dir>, one per line, ordered by the HIGHEST
 # VERSION encoded in the name first (never by mtime — mtime reflects whenever
 # Xcode/CoreSimulator/an updater last touched the directory, which can
@@ -68,19 +91,16 @@ KEEP_N_PATHS=(
 # ... and has no relationship to which version is actually newest). Enumerate
 # via a newline-safe glob (never ls, which mis-handles names containing
 # newlines/control chars and can't be told to sort by anything but time/name)
-# and sort with `sort -rV` (version sort, descending) so "18.5 (22F76)" sorts
-# ahead of "16.0 (20A362)", and semver dirs like "1.0.117" correctly sort
-# ahead of "1.0.2", regardless of which directory macOS/the updater touched
+# and order with _version_sort_desc, which prefers `sort -rV` (version sort,
+# descending — so "18.5 (22F76)" sorts ahead of "16.0 (20A362)", and semver
+# dirs like "1.0.117" correctly sort ahead of "1.0.2") and falls back to a
+# portable awk-key sort for a `sort` without -V support, so retention never
+# silently no-ops regardless of which directory macOS/the updater touched
 # last. Candidates must be DIRECTORIES: a stray file (e.g. a newest-mtime
 # .DS_Store) must never be treated as a version dir.
-# sort -V (version sort) isn't guaranteed on every `sort` this could run
-# under — if it's missing, fail CLOSED (print nothing, i.e. keep everything)
-# rather than fall back to an ordering (mtime/name) that silently
-# reintroduces the bug this function exists to fix.
 version_sorted_children () {
   local dir="$1" d
   [ -d "$dir" ] || return 0
-  if ! printf '1\n' | sort -V >/dev/null 2>&1; then return 0; fi
   for d in "$dir"/*; do
     [ -e "$d" ] || continue
     [ -d "$d" ] || continue
@@ -88,7 +108,7 @@ version_sorted_children () {
     # entirely (never counted, never deleted)
     case "$d" in *[[:cntrl:]]*) continue ;; esac
     printf '%s\n' "${d##*/}"
-  done | LC_ALL=C sort -rV
+  done | _version_sort_desc
 }
 
 # Print child NAMES of <dir> beyond the <n> HIGHEST VERSIONS, one per line
