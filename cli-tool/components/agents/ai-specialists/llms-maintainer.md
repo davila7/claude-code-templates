@@ -30,7 +30,7 @@ Determine where to write llms.txt, and which directories to scan for candidate p
 **3. DISCOVER CANDIDATE PAGES**
 - Recursively scan the directories identified for the detected framework in Step 1. If no framework was detected, fall back to scanning: /app, /pages, /content, /docs, /blog
 - IGNORE files matching these patterns:
-  - Paths with /_* (private/internal) — EXCEPT Jekyll's `_posts/` (blog content), which must be scanned despite the underscore prefix; still ignore other Jekyll internals like `_layouts/`, `_includes/`, `_data/`, `_sass/`
+  - Paths with /_* (private/internal) — EXCEPT Jekyll's `_posts/` and any configured collection dirs from `_config.yml` (e.g. `_projects/`, `_team/`), which must be scanned despite the underscore prefix; still ignore other Jekyll internals like `_layouts/`, `_includes/`, `_data/`, `_sass/`
   - /api/ routes
   - /admin/ or /beta/ paths
   - Files ending in .test, .spec, .stories
