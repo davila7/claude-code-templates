@@ -29,6 +29,29 @@ const BASE = "https://xquik.com/api/v1";
 const headers = { "x-api-key": API_KEY, "Content-Type": "application/json" };
 ```
 
+## OpenClaw plugin option
+
+Use TweetClaw for X tasks inside OpenClaw. It requires Node.js 22 or newer and
+OpenClaw 2026.7.1 or newer. Pin the published package for reproducible installs:
+
+```bash
+openclaw plugins install npm:@xquik/tweetclaw@1.6.44 --pin
+openclaw config set tools.alsoAllow '["explore", "tweetclaw"]'
+openclaw plugins inspect tweetclaw --runtime --json
+```
+
+If the Gateway does not reload automatically, run `openclaw gateway restart`.
+
+Configure the API key before account-backed calls:
+
+```bash
+openclaw config set plugins.entries.tweetclaw.config.apiKey "$XQUIK_API_KEY"
+```
+
+Use `explore` to find the current route before calling `tweetclaw`. `explore`
+works without credentials. Require explicit approval before each paid, private,
+recurring, or write call.
+
 ## Choosing the Right Endpoint
 
 | Goal | Endpoint | Notes |
@@ -162,3 +185,4 @@ The MCP server exposes 22 tools covering all API capabilities. Supported platfor
 - **Dashboard & API keys**: [xquik.com](https://xquik.com)
 - **Full API docs**: [docs.xquik.com](https://docs.xquik.com)
 - **GitHub (skill source)**: [github.com/Xquik-dev/x-twitter-scraper](https://github.com/Xquik-dev/x-twitter-scraper)
+- **TweetClaw OpenClaw plugin**: [github.com/Xquik-dev/tweetclaw](https://github.com/Xquik-dev/tweetclaw)
