@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "humanpen": {
-      "description": "Lower a Word/PowerPoint/PDF document's AI-detection score so it reads as human-written, keeping every fact, number, table and all formatting intact.",
+      "description": "Document-level AI humanizer — rewrite a whole .docx/.pptx, selected passages, or Turnitin/iThenticate-flagged text in place, keeping formatting, tables, citations and formulas intact.",
       "command": "npx",
       "args": ["-y", "humanpen-mcp"],
       "env": {
