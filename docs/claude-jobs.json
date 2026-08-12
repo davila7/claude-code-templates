@@ -1,11 +1,31 @@
 {
-  "lastUpdated": "2026-08-11T03:39:53.239116+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-08-12T03:48:02.243194+00:00",
+  "totalJobs": 94,
   "sources": [
     "Anthropic",
     "HackerNews"
   ],
   "jobs": [
+    {
+      "id": "anth-5383660008",
+      "company": "Anthropic",
+      "position": "Product Designer, People Products",
+      "location": "San Francisco, CA | New York City, NY (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "The People Products team exists to support Anthropic’s mission by defining the blueprint for AI at work. We help hire the best person in the world for every job, ensure manager effectiveness, ramp new hires successfully, and ensure that we apply first principles thinking in how we shape Anthropic’s...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383660008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383660008",
+      "postedAt": "2026-08-11T13:04:10-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5383596008",
       "company": "Anthropic",
@@ -183,26 +203,6 @@
         "GCP"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5109653008",
-      "company": "Anthropic",
-      "position": "Product Design, Manager",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "Design at Anthropic sits at the intersection of craft, research, and product intuition. We're a small team working on products that millions of people use daily—and on interactions that don't have established conventions yet. Our work shapes how people experience AI: whether Claude feels like a...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5109653008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5109653008",
-      "postedAt": "2026-08-05T13:53:54-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-49172196",
@@ -890,26 +890,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5277834008",
-      "company": "Anthropic",
-      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
-      "postedAt": "2026-06-24T13:51:42-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5255912008",
@@ -1753,27 +1733,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5140405008",
       "postedAt": "2026-03-05T14:59:18-05:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5140403008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, State and Local Government",
-      "location": "New York City, NY; San Francisco, CA; Seattle, WA; Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping state and local government agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5140403008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5140403008",
-      "postedAt": "2026-03-05T14:58:48-05:00",
       "tags": [
         "Python",
         "Rust",
