@@ -29,6 +29,25 @@ const BASE = "https://xquik.com/api/v1";
 const headers = { "x-api-key": API_KEY, "Content-Type": "application/json" };
 ```
 
+## OpenClaw Plugin Option
+
+When the user works inside OpenClaw, prefer TweetClaw for native plugin
+workflows instead of hand-writing REST calls. Pin the package source:
+
+```bash
+openclaw plugins install npm:@xquik/tweetclaw@1.6.42 --pin
+openclaw plugins inspect tweetclaw --runtime --json
+```
+
+Managed Gateways restart after plugin installs. Otherwise, run
+`openclaw gateway restart`.
+
+Use TweetClaw read tools for tweet research, user lookup, follower export,
+media references, monitors, webhooks, and giveaway evidence. Require explicit
+approval before posts, replies, direct messages, media uploads, monitor
+creation, webhook changes, extraction jobs, giveaway draws, or any other
+external-state change.
+
 ## Choosing the Right Endpoint
 
 | Goal | Endpoint | Notes |
@@ -147,7 +166,7 @@ Add to `.mcp.json` in your project root:
 }
 ```
 
-The MCP server exposes 22 tools covering all API capabilities. Supported platforms: Claude Code, Claude Desktop, ChatGPT, Codex CLI, Cursor, VS Code, Windsurf, OpenCode.
+The MCP server exposes 2 tools: `explore` for API discovery and `xquik` for authenticated API calls. Supported platforms: Claude Code, Claude Desktop, ChatGPT, Codex CLI, Cursor, VS Code, Windsurf, OpenCode.
 
 ## Workflow Patterns
 
@@ -162,3 +181,4 @@ The MCP server exposes 22 tools covering all API capabilities. Supported platfor
 - **Dashboard & API keys**: [xquik.com](https://xquik.com)
 - **Full API docs**: [docs.xquik.com](https://docs.xquik.com)
 - **GitHub (skill source)**: [github.com/Xquik-dev/x-twitter-scraper](https://github.com/Xquik-dev/x-twitter-scraper)
+- **TweetClaw OpenClaw plugin**: [github.com/Xquik-dev/tweetclaw](https://github.com/Xquik-dev/tweetclaw)
