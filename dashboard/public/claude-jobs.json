@@ -1,11 +1,184 @@
 {
-  "lastUpdated": "2026-08-12T03:48:02.243194+00:00",
-  "totalJobs": 94,
+  "lastUpdated": "2026-08-13T03:50:58.711398+00:00",
+  "totalJobs": 103,
   "sources": [
     "Anthropic",
-    "HackerNews"
+    "HackerNews",
+    "RemoteOK",
+    "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49271778",
+      "company": "Odin",
+      "position": "Senior Design Engineer",
+      "location": "Remote (US)",
+      "remote": true,
+      "salary": "",
+      "description": "Odin is the workforce visibility and compliance platform for critical infrastructure. We protect the world’s largest construction projects, data centers, and critical assets—from groundbreaking through post-turnover—by unifying physical access control, workforce compliance, video monitoring, and...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49271778",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49271778",
+      "postedAt": "2026-08-12T13:03:29+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "GCP",
+        "Kubernetes",
+        "React Native",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49269646",
+      "company": "ORIGAMICS",
+      "position": "Backend Engineer",
+      "location": "REMOTE (US)",
+      "remote": true,
+      "salary": "",
+      "description": "Origamics is building AI models that reason about hardware and electronics systems. We turn existing schematics into production ready boards, helping hardware design move at the speed of software. We’re hiring our first founding engineer to work directly with the founders. You’ll own product...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49269646",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49269646",
+      "postedAt": "2026-08-12T09:10:00+00:00",
+      "tags": [
+        "Python",
+        "PostgreSQL",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5385599008",
+      "company": "Anthropic",
+      "position": "Product Marketing Operations Manager",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Alongside our model releases, Anthropic ships a steady stream of launches across the rest of the portfolio — products like Claude, Claude Code, and the developer platform; solutions for enterprises and startups; and the safeguards work that keeps Claude safe and trustworthy. Each launch brings...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5385599008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5385599008",
+      "postedAt": "2026-08-12T02:00:31-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-typefully-ai-supermarket-1136391",
+      "company": "AI Supermarket",
+      "position": "Typefully",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-typefully-ai-supermarket-1136391",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-typefully-ai-supermarket-1136391",
+      "postedAt": "2026-08-11T16:50:57+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-apify-ai-supermarket-1136554",
+      "company": "AI Supermarket",
+      "position": "Apify",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-apify-ai-supermarket-1136554",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-apify-ai-supermarket-1136554",
+      "postedAt": "2026-08-11T16:50:41+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-aragon-ai-ai-supermarket-1136388",
+      "company": "AI Supermarket",
+      "position": "Aragon AI",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-aragon-ai-ai-supermarket-1136388",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-aragon-ai-ai-supermarket-1136388",
+      "postedAt": "2026-08-11T16:50:40+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-beehiiv-ai-supermarket-1136389",
+      "company": "AI Supermarket",
+      "position": "Beehiiv",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-beehiiv-ai-supermarket-1136389",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-beehiiv-ai-supermarket-1136389",
+      "postedAt": "2026-08-11T16:50:33+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-meshy-ai-supermarket-1136386",
+      "company": "AI Supermarket",
+      "position": "Meshy",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-meshy-ai-supermarket-1136386",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-meshy-ai-supermarket-1136386",
+      "postedAt": "2026-08-11T16:50:22+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-getresponse-ai-supermarket-1136556",
+      "company": "AI Supermarket",
+      "position": "GetResponse",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
+      "postedAt": "2026-08-11T16:49:47+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5383660008",
       "company": "Anthropic",
@@ -338,30 +511,21 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5355526008",
-      "company": "Anthropic",
-      "position": "Finance Systems Engineer, Revenue",
-      "location": "San Francisco, CA | Seattle, WA",
-      "remote": false,
+      "id": "wwr-dropbox-head-of-field-and-partner-marketing",
+      "company": "Dropbox",
+      "position": "Head of Field and Partner Marketing",
+      "location": "Remote",
+      "remote": true,
       "salary": "",
-      "description": "Anthropic’s Finance Systems team builds and owns the infrastructure that powers our quote-to-cash lifecycle—from pricing and billing through revenue recognition and financial close. As our revenue model grows in complexity, the team is moving beyond configuring off-the-shelf platforms and into...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5355526008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5355526008",
-      "postedAt": "2026-07-16T13:46:06-04:00",
+      "description": "Headquarters: Remote - US: Select locations Role Description Dropbox is hiring a Head of Field & Partner Marketing to lead our global field and partner marketing organization and drive pipeline growth across our Sales-Led Growth (SLG) business and strategic partner ecosystem. This executive...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/dropbox-head-of-field-and-partner-marketing",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/dropbox-head-of-field-and-partner-marketing",
+      "postedAt": "2026-07-22T07:01:44+00:00",
       "tags": [
-        "React",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Claude Code",
-        "Java",
-        "Anthropic"
+        "Rust"
       ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
+      "companyIcon": ""
     },
     {
       "id": "hn-48915735",
