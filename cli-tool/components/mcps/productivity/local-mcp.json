@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "local-mcp": {
+      "description": "Connect Claude Code to 160+ native macOS apps — Mail, Calendar, Contacts, Messages, Notes, Reminders, Finder, Safari, Teams, Slack, WhatsApp, OneDrive, Google Drive, Microsoft 365, Outlook, Word, Excel, PowerPoint, and more. All tools run locally with no API keys or cloud data copies. Requires the free Local MCP tray app (local-mcp.com, macOS only).",
+      "command": "npx",
+      "args": ["-y", "local-mcp@latest"]
+    }
+  }
+}
