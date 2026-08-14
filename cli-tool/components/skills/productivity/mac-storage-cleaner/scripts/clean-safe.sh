@@ -8,16 +8,32 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$DIR/lib.sh"
 load_whitelist
 
-# Reject anything other than --dry-run outright: an unrecognized flag (typo,
-# stale docs, a future option someone half-wires up) must never fail OPEN into
-# a real deletion run just because it doesn't match the "--dry-run" check below.
-[ $# -gt 0 ] && [ "$1" != "--dry-run" ] && { echo "unknown argument: $1 (only --dry-run is supported)"; exit 2; }
-
-DRY=0
-[ "${1:-}" = "--dry-run" ] && DRY=1
+# Safe by default (v3.0.0): no argument previews. Deleting requires --apply.
+# Rationale: several agents (opencode, OpenClaw) execute shell commands with no
+# approval prompt at all, so a destructive default means an agent can delete
+# caches the user never saw proposed. --dry-run is still accepted as a no-op
+# alias, because it is what the previous docs, the aitmpl copy and muscle memory
+# use. An unrecognized argument still exits 2 rather than failing open.
+# More than one argument is rejected outright too (exit 2): only $1 was ever
+# inspected below, so e.g. `clean-safe.sh --apply --dry-run` matched the
+# --apply branch and deleted for real — the trailing --dry-run was silently
+# ignored instead of downgrading the run to a preview.
+[ "$#" -gt 1 ] && { echo "unknown argument: too many arguments (use --apply to delete; no argument or --dry-run previews)"; exit 2; }
+APPLY=0
+case "${1:-}" in
+  "")        ;;
+  --apply)   APPLY=1 ;;
+  --dry-run) ;;
+  *) echo "unknown argument: $1 (use --apply to delete; no argument or --dry-run previews)"; exit 2 ;;
+esac
+DRY=1
+[ "$APPLY" = 1 ] && DRY=0
+# MSC_DRY_RUN may only ever make a run safer, so it overrides --apply.
 [ "${MSC_DRY_RUN:-0}" = "1" ] && DRY=1
 export MSC_DRY_RUN="$DRY"
-[ "$DRY" = 1 ] && echo "=== DRY RUN — nothing will be deleted ==="
+if [ "$DRY" = 1 ]; then
+  echo "=== PREVIEW — nothing will be deleted (re-run with --apply to delete) ==="
+fi
 
 total_kb=0
 skipped=0
@@ -39,6 +55,7 @@ if [ "$DRY" != 1 ] && ! log_writable; then
     exit 3
   fi
 fi
+[ "$DRY" = 1 ] || log_op consent "-" "--apply"
 echo "Clearing safe caches (pure caches only)..."
 collect "${SAFE_PATHS[@]}"
 # bash 3.2 (macOS default) throws "unbound variable" on "${FOUND[@]}" when the
@@ -490,7 +507,7 @@ fi
 
 echo
 if [ "$DRY" = 1 ]; then
-  echo "Would reclaim from cache deletions: $(human_kb "$total_kb") — run without --dry-run to apply."
+  echo "Would reclaim from cache deletions: $(human_kb "$total_kb") — re-run with --apply to delete."
 else
   echo "Approx. reclaimed from cache deletions: $(human_kb "$total_kb") (brew/simulator cleanup above frees more, not counted here)"
 fi
