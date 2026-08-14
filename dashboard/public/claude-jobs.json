@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-13T03:50:58.711398+00:00",
-  "totalJobs": 103,
+  "lastUpdated": "2026-08-14T03:50:25.900922+00:00",
+  "totalJobs": 105,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,30 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49291876",
+      "company": "Alaffia Health",
+      "position": "Principal Engineer",
+      "location": "NYC (Hybrid)",
+      "remote": false,
+      "salary": "",
+      "description": "Alaffia Health is a Series B healthtech company in NYC fixing a real, expensive problem: US health plans lose billions every year to improper payments and administrative waste in claims processing. We combine clinicians with AI to catch billing errors before they get paid out. Just raised $55M in...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49291876",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49291876",
+      "postedAt": "2026-08-13T21:06:43+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Go",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49271778",
       "company": "Odin",
@@ -70,6 +94,24 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-jenni-ai-ai-supermarket-1136602",
+      "company": "AI Supermarket",
+      "position": "Jenni AI",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-jenni-ai-ai-supermarket-1136602",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-jenni-ai-ai-supermarket-1136602",
+      "postedAt": "2026-08-11T16:51:03+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "rok-remote-typefully-ai-supermarket-1136391",
@@ -1733,7 +1775,7 @@
     {
       "id": "anth-5192104008",
       "company": "Anthropic",
-      "position": "Head of Applied AI Architecture, Beneficial Deployments",
+      "position": "Head of Applied AI Architects, Beneficial Deployments (Non-profits & Higher Ed)",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
