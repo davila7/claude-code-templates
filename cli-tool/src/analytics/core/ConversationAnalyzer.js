@@ -78,9 +78,20 @@ class ConversationAnalyzer {
 
         for (const item of items) {
           const itemPath = path.join(dir, item);
-          const stats = await fs.stat(itemPath);
+          let stats;
+          try {
+            // Use lstat so we inspect the symlink itself rather than following it.
+            // Broken symlinks (e.g. ~/.claude/debug/latest -> deleted file) would
+            // cause fs.stat() to throw ENOENT and abort the entire scan.
+            stats = await fs.lstat(itemPath);
+          } catch (e) {
+            continue; // skip unreadable / permission-denied entries
+          }
 
-          if (stats.isDirectory()) {
+          if (stats.isSymbolicLink()) {
+            // Skip symlinks entirely – conversation files are never symlinks
+            continue;
+          } else if (stats.isDirectory()) {
             // Recursively search subdirectories
             const subFiles = await findJsonlFiles(itemPath);
             files.push(...subFiles);
