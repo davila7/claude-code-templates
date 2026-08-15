@@ -140,6 +140,7 @@ const schemaData = JSON.stringify({
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');
         const toggleBtn = document.getElementById('sidebar-toggle');
+        const sidebarLogo = document.getElementById('sidebar-logo');
         
         if (!sidebar || !mainContent || !toggleBtn) return;
 
@@ -163,6 +164,7 @@ const schemaData = JSON.stringify({
           if (!sidebar || !mainContent) return;
           
           sidebar.dataset.collapsed = String(collapsed);
+          sidebarLogo?.classList.toggle('hidden', collapsed);
           
           if (collapsed) {
             sidebar.classList.remove('w-[220px]');
