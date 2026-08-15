@@ -3,7 +3,7 @@ name: mac-storage-cleaner
 description: Safely reclaim disk space on a Mac — the trustworthy, transparent, reversible alternative to CleanMyMac and similar tools. Use whenever the user says their Mac disk or storage is full or nearly full, gets a "startup disk almost full" / low-storage warning, asks to free up space, clean/clear caches, remove junk, delete leftover files from apps they uninstalled, or find what's eating their disk — in any language (e.g. English "my mac is out of space", "free up disk", "clear caches", "what's taking up my storage"; Georgian "ქეში გაასუფთავე", "მეხსიერება გადამევსო", "ადგილი აღარ მაქვს"). Surveys usage first, auto-clears only pure caches, moves anything riskier to the Trash (restorable), asks before anything expensive, logs every deletion, and reports what was freed. Do NOT use for cloud storage, RAM/memory-pressure, or a single named app's own in-app cache button.
 license: MIT
 metadata:
-  version: 3.0.0
+  version: 3.0.1
   author: Juba Kitiashvili
   homepage: https://github.com/JubaKitiashvili/mac-storage-cleaner
   platforms: macOS

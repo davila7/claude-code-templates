@@ -77,6 +77,12 @@ MAX_ITEMS="${MSC_MAX_TRASH_ITEMS:-100}"
 MAX_GB="${MSC_MAX_TRASH_GB:-5}"
 case "$MAX_ITEMS" in ''|*[!0-9]*) MAX_ITEMS=100 ;; esac
 case "$MAX_GB"    in ''|*[!0-9]*) MAX_GB=5 ;; esac
+# An all-digit string can still be an invalid OCTAL literal in bash arithmetic
+# ("08" -> "value too great for base"), which would make $(( )) below fail and
+# silently skip the size cap. Force base 10 once, here, so every later use —
+# arithmetic and display alike — sees a normalized decimal.
+MAX_ITEMS=$((10#$MAX_ITEMS))
+MAX_GB=$((10#$MAX_GB))
 eligible_n=0
 eligible=()
 for p in "$@"; do
