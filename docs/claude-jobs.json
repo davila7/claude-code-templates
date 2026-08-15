@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-14T03:50:25.900922+00:00",
-  "totalJobs": 105,
+  "lastUpdated": "2026-08-15T03:22:43.093040+00:00",
+  "totalJobs": 108,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,29 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5391151008",
+      "company": "Anthropic",
+      "position": "AI Operations Engineer, Partnerships",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Our Partner Experience team is building an AI-native operating model. We already run a growing set of partner-facing systems: a partner portal, CRM workflows, enablement and certification platforms, and the trackers that connect them. The systems lead on our team owns that foundation — the portal,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5391151008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5391151008",
+      "postedAt": "2026-08-14T18:07:17-04:00",
+      "tags": [
+        "JavaScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-49291876",
       "company": "Alaffia Health",
@@ -215,6 +238,24 @@
       "source": "RemoteOK",
       "sourceUrl": "https://remoteok.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
       "postedAt": "2026-08-11T16:49:47+00:00",
+      "tags": [
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-askyourpdf-ai-supermarket-1136704",
+      "company": "AI Supermarket",
+      "position": "AskYourPDF",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-askyourpdf-ai-supermarket-1136704",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-askyourpdf-ai-supermarket-1136704",
+      "postedAt": "2026-08-11T16:49:39+00:00",
       "tags": [
         "Rust",
         "Go"
@@ -1742,6 +1783,26 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
       "postedAt": "2026-04-24T12:17:48-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5197597008",
+      "company": "Anthropic",
+      "position": "Technical Specialist, Claude Code",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic launches products at lightning speed and many of them grow at an unprecedented pace, too. For no product is this more true than Claude Code, the fastest-growing software product in history. That said, speed of adoption is not the same as depth of adoption. We’re building a team of...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197597008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197597008",
+      "postedAt": "2026-04-23T18:13:14-04:00",
       "tags": [
         "Rust",
         "AWS",
