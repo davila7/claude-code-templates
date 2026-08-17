@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "chart-library": {
+      "description": "Historical chart pattern search engine with 24M+ patterns across 15K+ symbols and 10 years of data. Search for similar patterns, analyze forward returns, detect anomalies, check market regime, and run scenario analysis.",
+      "command": "python",
+      "args": [
+        "-m",
+        "chartlibrary_mcp"
+      ]
+    }
+  }
+}
