@@ -13,6 +13,8 @@ These skills are freely usable, modifiable, and redistributable:
 - `artifacts-builder` - Build complex HTML artifacts with React and Tailwind
 - `brand-guidelines` - Apply Anthropic's brand guidelines
 - `canvas-design` - Design visual art in .png and .pdf formats
+- `claude-academy-guide` - Recommend Claude Academy courses, tutorials, and use cases
+- `frontend-design` - Guidance for distinctive, intentional visual design
 - `internal-comms` - Write internal communications
 - `mcp-builder` - Guide for creating MCP servers
 - `skill-creator` - Guide for creating effective skills
