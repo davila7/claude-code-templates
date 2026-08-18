@@ -208,6 +208,46 @@ git tag vX.Y.Z && git push origin vX.Y.Z
 - The local `package.json` version may drift from npm if published from CI — always check `npm view claude-code-templates version` first
 - Never hardcode or commit tokens
 
+## Agent Plugins (Open Standard) Layer
+
+Components are additionally distributed as portable [Agent Plugins](https://agent-plugins.org)
+v1.0.0 bundles (open standard by Amazon, Cursor, Microsoft, OpenAI, Vercel). This is an
+**additive packaging layer** — `cli-tool/components/` stays the single source of truth and
+every normalization happens only on the emitted bundle copies. Do NOT confuse it with
+Claude Code's own plugin format (`.claude-plugin/` + `marketplace.json`, modeled by
+`generate_plugins_json.py` and the `/plugins` pages) — they are different formats; each
+bundle carries a dual `.claude-plugin/plugin.json` so one directory serves both.
+
+```bash
+# Lint components against the spec (report-only; --strict for CI)
+python scripts/validate_agent_plugins.py
+
+# Build + validate bundles from cli-tool/agent-plugins/bundles.yaml
+node scripts/build_agent_plugins.js            # -> build/agent-plugins/ (gitignored)
+node scripts/build_agent_plugins.js --publish  # -> dashboard/public/agent-plugins/ (committed)
+node scripts/build_agent_plugins.js --check    # CI mode: build, validate, discard
+
+# Install a bundle (end users)
+npx claude-code-templates@latest --plugin postgres-toolkit
+```
+
+**Key paths:**
+- `cli-tool/src/plugin/` — single-source packer (the ONLY bundle generator; the CLI and the build script both use it)
+- `cli-tool/src/plugin-installer.js` — `--plugin` installer: sha256-verified download to `.agent-plugins/{name}/`, then activation into `.claude/` (skills, mcp merge via the shared `mergeMcpServers()`, agents/commands/loops flat). Hooks/settings in bundles are unpacked but activated via the interactive `--hook`/`--setting` flows.
+- `cli-tool/agent-plugins/bundles.yaml` — curated bundle definitions (v1 policy: curated packs only, no auto per-skill bundles)
+- `schemas/agent-plugins/1.0.0/` — vendored official JSON schemas (offline validation)
+- `dashboard/public/agent-plugins/` — committed registry (`index.json`) + exploded bundle trees + per-bundle `files.json`; zips are built at deploy time only (deploy.yml)
+- `dashboard/src/pages/agent-plugins/` — registry browse/detail pages (prerendered)
+
+**Component mapping:** skills → `skills/` and mcps → `mcp.json` are first-class per the
+spec; agents, commands, hooks, settings and loops travel byte-exact under the
+`com.aitmpl.claude-code` extensions namespace (other clients ignore them). Loops
+auto-inline their referenced components (bundles must be self-contained).
+
+**Release order for CLI changes:** deploy dashboard/API first (the tracking endpoints must
+accept type `plugin` before a CLI that sends it is published — tracking failures are
+silent), verify `https://www.aitmpl.com/agent-plugins/index.json`, then `npm publish`.
+
 ## API Architecture
 
 ### Critical Endpoints
