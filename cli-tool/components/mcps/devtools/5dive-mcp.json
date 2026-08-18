@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "5dive": {
+      "description": "Model Context Protocol (stdio) server for 5dive. Exposes the 5dive agent-fleet CLI (tasks, agents, digest) as MCP tools.",
+      "command": "npx",
+      "args": ["-y", "@5dive/mcp"]
+    }
+  }
+}
