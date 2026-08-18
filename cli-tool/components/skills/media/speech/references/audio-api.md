@@ -1,5 +1,8 @@
 # Audio Speech API quick reference
 
+This page documents the default OpenAI backend. For the optional asynchronous
+Atlas Cloud backend, use `references/atlas-cloud.md` and its dedicated CLI.
+
 ## Endpoint
 - Create speech: `POST /v1/audio/speech`
 
