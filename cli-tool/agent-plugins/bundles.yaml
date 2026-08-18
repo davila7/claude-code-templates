@@ -1,0 +1,29 @@
+# Curated Agent Plugins bundles (agent-plugins.org v1.0.0)
+#
+# Built by: node scripts/build_agent_plugins.js
+# Each entry becomes one spec-conformant plugin directory. Components use the
+# same "type:category/name" tokens as loop frontmatter. Loops auto-inline
+# every component they reference (spec plugins must be self-contained).
+#
+# v1 policy: curated packs only — no auto-generated per-skill bundles
+# (876 exploded trees would pressure the Cloudflare Pages 20k-file cap).
+
+defaults:
+  version: 1.0.0
+  license: MIT
+
+bundles:
+  - name: postgres-toolkit
+    description: PostgreSQL design and operations pack — schema design and Supabase best-practice skills, a Postgres expert agent, and the Supabase MCP server.
+    keywords: [postgres, database, supabase, sql, schema]
+    components:
+      - skill:database/postgres-schema-design
+      - skill:database/supabase-postgres-best-practices
+      - mcp:database/supabase
+      - agent:database/postgres-pro
+
+  - name: docs-automation
+    description: Documentation automation pack seeded from the docs-sweep-loop — the loop plus the documentation engineer agent and docs/PR commands it references.
+    keywords: [documentation, automation, loop, ci]
+    components:
+      - loop:engineering/docs-sweep-loop
