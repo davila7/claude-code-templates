@@ -1,0 +1,33 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "docs-automation",
+  "version": "1.0.0",
+  "description": "Documentation automation pack seeded from the docs-sweep-loop — the loop plus the documentation engineer agent and docs/PR commands it references.",
+  "author": {
+    "name": "aitmpl.com (claude-code-templates community)",
+    "url": "https://www.aitmpl.com"
+  },
+  "homepage": "https://www.aitmpl.com",
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "documentation",
+    "automation",
+    "loop",
+    "ci"
+  ],
+  "extensions": {
+    "com.aitmpl.claude-code": {
+      "agents": [
+        "./com.aitmpl.claude-code/agents/documentation/documentation-engineer.md"
+      ],
+      "commands": [
+        "./com.aitmpl.claude-code/commands/documentation/update-docs.md",
+        "./com.aitmpl.claude-code/commands/git-workflow/create-pr.md"
+      ],
+      "loops": [
+        "./com.aitmpl.claude-code/loops/engineering/docs-sweep-loop.md"
+      ]
+    }
+  }
+}
