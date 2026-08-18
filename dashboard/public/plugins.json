@@ -23512,5 +23512,272 @@
         "author": "anthropics"
       }
     ]
+  },
+  {
+    "slug": "yaps-plugins",
+    "name": "Yaps Plugins",
+    "author": "richawo",
+    "description": "Claude Code plugins for Yaps — local-first dictation, transcription, meeting notes, captions, voice, translation, and memory tools.",
+    "github": "https://github.com/richawo/yaps-plugins",
+    "stars": 0,
+    "type": "marketplace",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "plugins": 11,
+      "components": {
+        "skills": 11
+      }
+    },
+    "highlights": [
+      "11 plugins in marketplace",
+      "Web UI: https://www.yaps.ai"
+    ],
+    "website": "https://www.yaps.ai",
+    "plugins_list": [
+      {
+        "name": "yaps-memory",
+        "description": "Persistent private memory for Claude, stored as local Markdown.",
+        "source": "./yaps-memory",
+        "tags": [
+          "memory",
+          "markdown",
+          "local-first",
+          "notes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-memory",
+              "description": "Use the user's private local Markdown Yaps vault as a durable memory store across AI tasks. Trigger for cross-task memory, remembered facts, personal knowledge, prior context, or requests to remember, capture, retrieve, search, cite, organize, update, tag, connect, or recover notes, ideas, dictation history, meeting notes, resources, and daily notes stored in Yaps."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-dictation",
+        "description": "Voice-type into Claude Code and other desktop apps through Yaps.",
+        "source": "./yaps-dictation",
+        "tags": [
+          "dictation",
+          "voice",
+          "speech-to-text",
+          "accessibility"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-dictation",
+              "description": "Set up, use, diagnose, or recover system-wide Yaps voice dictation for Claude Code, Codex, and other desktop apps. Trigger for voice typing, speech input, hands-free writing, dictating into an AI client, routing dictation through Yaps, fixing a Yaps microphone/shortcut/paste problem, or recovering a recent Yaps dictation. Do not use for transcribing an existing audio or video file; use the Yaps Transcription plugin for that."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-transcription",
+        "description": "Transcribe audio and video files into clean text with Yaps.",
+        "source": "./yaps-transcription",
+        "tags": [
+          "transcription",
+          "audio",
+          "video",
+          "speech-to-text"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-transcription",
+              "description": "Transcribe an existing audio or video file into a plain-text transcript with the installed Yaps desktop engine. Trigger for transcribe audio, transcribe video, audio to text, video to text, speech recording transcription, interview transcription, podcast transcription, voice memo transcription, or saving media speech as a .txt file. Do not use for live voice typing or when the requested deliverable is specifically an .srt subtitle file."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-meeting-transcription",
+        "description": "Transcribe meetings and interviews with timed speaker labels.",
+        "source": "./yaps-meeting-transcription",
+        "tags": [
+          "meetings",
+          "transcription",
+          "diarization",
+          "speakers"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-meeting-transcription",
+              "description": "Transcribe meeting, interview, podcast, webinar, focus-group, or call recordings with timed speaker labels using the installed Yaps desktop engine. Use for meeting transcription, speaker diarization, who-spoke-when transcripts, correcting or reassigning segments, renaming/adding/merging speakers, exporting reviewed transcripts, generating recaps or chapters, and grounded Q&A over one or all local meetings. Do not use for live dictation, single-speaker plain transcription, subtitles, burned-in captions, or dead-space video cutting."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-srt-generator",
+        "description": "Generate timestamped SRT subtitles from video or audio with Yaps.",
+        "source": "./yaps-srt-generator",
+        "tags": [
+          "subtitles",
+          "srt",
+          "captions",
+          "video"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-srt-generator",
+              "description": "Generate subtitles, closed captions, or a timestamped .srt file from an existing video or audio file with the installed Yaps desktop engine. Trigger for generate subtitles, add subtitles to video, subtitle generator, video to subtitles, video to SRT, generate SRT, make captions, create captions, timed captions, closed captions, subtitle a video, subtitle an audio file, or convert media speech to an SRT file. Do not use when the user only wants a plain-text transcript or live voice typing."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-auto-captions",
+        "description": "Add editable social-video captions to any video with Yaps.",
+        "source": "./yaps-auto-captions",
+        "tags": [
+          "captions",
+          "video",
+          "shorts",
+          "reels"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-auto-captions",
+              "description": "Add editable, styled, word-timed captions to a video and export a new burned-in MP4 through the installed Yaps desktop engine. Trigger for add captions to video, auto caption video, caption a video, video subtitle editor, animated captions, TikTok captions, Instagram Reels captions, YouTube Shorts captions, karaoke captions, word-by-word captions, burn subtitles into video, or subtitle a video into a finished file. Do not use when the user only wants a separate .srt subtitle file (use yaps-srt-generator) or a plain-text transcript."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-audio-cleaner",
+        "description": "Remove background noise, hiss, and static from speech recordings locally.",
+        "source": "./yaps-audio-cleaner",
+        "tags": [
+          "audio",
+          "denoise",
+          "speech",
+          "local"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-audio-cleaner",
+              "description": "Remove background noise, hiss, static, room noise, and other distractions from an existing speech recording through the installed Yaps desktop audio-cleaning engines. Trigger for remove background noise from audio, clean audio, denoise audio, enhance a voice recording, remove hiss or static, improve podcast audio, clean an interview, speech enhancement, voice cleaner, or audio restoration. Do not use for separating music stems or editing the spoken words."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-background-removal",
+        "description": "Remove image backgrounds and export transparent PNGs with Yaps.",
+        "source": "./yaps-background-removal",
+        "tags": [
+          "images",
+          "background-removal",
+          "transparent-png"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-background-removal",
+              "description": "Remove the background from an existing JPG, PNG, WebP, or BMP image and export a transparent PNG, or a version composited onto a solid colour, through the installed Yaps desktop engine. Trigger for background remover, remove the background from this image, make this PNG transparent, cut out the subject, remove a photo's background, create a subject cutout, isolate the foreground of an image, product photo cutout, or produce a transparent-background PNG. Do not use for removing a video's background (use the Yaps app's Media tab) or for placing text behind a subject."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-text-to-speech",
+        "description": "Turn text into spoken audio, narration, or voice-over with Yaps.",
+        "source": "./yaps-text-to-speech",
+        "tags": [
+          "text-to-speech",
+          "tts",
+          "audio",
+          "voice-over"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-text-to-speech",
+              "description": "Convert text or a text file into a local WAV or raw PCM speech file with the installed Yaps desktop voice engine. Trigger for text to speech, TTS, generate audio from text, text to audio, AI voice generator, voice-over generator, generate a voice-over, script to voice, create a voice file, synthesize speech, make narration, read a script aloud, generate a WAV, speak German or Spanish or other non-English text, or use a Yaps Kokoro, Chatterbox, or Supertonic voice. Do not use for transcribing media or live dictation."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-translation",
+        "description": "Translate text and files locally without metered translation API tokens.",
+        "source": "./yaps-translation",
+        "tags": [
+          "translation",
+          "local",
+          "documents",
+          "subtitles"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-translation",
+              "description": "Accurately translate existing text, a Markdown or plain-text file, or an SRT subtitle file with the on-device Accurate Translation engine supplied by Yaps desktop, without calling a hosted translation API or consuming metered cloud translation/API tokens. Trigger for Accurate Translation, translate this, free translation, local translator, offline translation, private translation, save API tokens, translate without tokens, translate that into French, translate this note, translate this document, translate this file, translate these subtitles, translate an SRT, put this in German, or say this in Spanish. Do not use for live voice typing, for generating subtitles from a video, or for transcribing audio."
+            }
+          ]
+        }
+      },
+      {
+        "name": "yaps-video-to-audio",
+        "description": "Convert videos to MP3, WAV, or M4A audio files with Yaps.",
+        "source": "./yaps-video-to-audio",
+        "tags": [
+          "video",
+          "audio",
+          "mp3",
+          "wav",
+          "m4a"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "yaps-video-to-audio",
+              "description": "Convert a video file to MP3, WAV, or M4A audio with the installed Yaps desktop app. Trigger for video to audio, convert video to MP3, convert video to WAV, convert video to M4A, extract audio from video, save a video's sound, remove the video track, or make an audio-only copy of a video. Do not use when the user wants a transcript, subtitles, or text-to-speech."
+            }
+          ]
+        }
+      }
+    ]
   }
 ]
