@@ -20,6 +20,7 @@ const { runPluginDashboard } = require('./plugin-dashboard');
 const { runSkillDashboard } = require('./skill-dashboard');
 const { runTeamsDashboard } = require('./teams-dashboard');
 const { trackingService } = require('./tracking-service');
+const { installIndividualPlugin, mergeMcpServers } = require('./plugin-installer');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
@@ -143,7 +144,7 @@ async function createClaudeConfig(options = {}) {
   }
   
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.plugin) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -649,40 +650,12 @@ async function installIndividualMCP(mcpName, targetDir, options) {
     const mcpConfigText = await response.text();
     const mcpConfig = JSON.parse(mcpConfigText);
 
-    // Remove description field from each MCP server before merging
-    if (mcpConfig.mcpServers) {
-      for (const serverName in mcpConfig.mcpServers) {
-        if (mcpConfig.mcpServers[serverName] && typeof mcpConfig.mcpServers[serverName] === 'object') {
-          delete mcpConfig.mcpServers[serverName].description;
-        }
-      }
-    }
-    
-    // Check if .mcp.json exists in target directory
+    // Merge into .mcp.json via the shared helper (strips per-server
+    // description, preserves existing servers) — same code path used by
+    // Agent Plugin bundle activation.
     const targetMcpFile = path.join(targetDir, '.mcp.json');
-    let existingConfig = {};
-    
-    if (await fs.pathExists(targetMcpFile)) {
-      existingConfig = await fs.readJson(targetMcpFile);
-      console.log(chalk.yellow('📝 Existing .mcp.json found, merging configurations...'));
-    }
-    
-    // Merge configurations with deep merge for mcpServers
-    const mergedConfig = {
-      ...existingConfig,
-      ...mcpConfig
-    };
-    
-    // Deep merge mcpServers specifically to avoid overwriting existing servers
-    if (existingConfig.mcpServers && mcpConfig.mcpServers) {
-      mergedConfig.mcpServers = {
-        ...existingConfig.mcpServers,
-        ...mcpConfig.mcpServers
-      };
-    }
-    
-    // Write the merged configuration
-    await fs.writeJson(targetMcpFile, mergedConfig, { spaces: 2 });
+    const hadExistingConfig = await fs.pathExists(targetMcpFile);
+    const mergedConfig = await mergeMcpServers(targetDir, mcpConfig);
     
     if (!options.silent) {
       console.log(chalk.green(`✅ MCP "${mcpName}" installed successfully!`));
@@ -693,7 +666,7 @@ async function installIndividualMCP(mcpName, targetDir, options) {
     // Track successful MCP installation
     trackingService.trackDownload('mcp', mcpName, {
       installation_type: 'individual_mcp',
-      merged_with_existing: existingConfig !== null,
+      merged_with_existing: hadExistingConfig,
       servers_count: Object.keys(mergedConfig.mcpServers || {}).length,
       source: 'github_main'
     });
@@ -1784,7 +1757,8 @@ async function installMultipleComponents(options, targetDir) {
       settings: [],
       hooks: [],
       skills: [],
-      loops: []
+      loops: [],
+      plugins: []
     };
     
     // Parse comma-separated values for each component type
@@ -1823,7 +1797,12 @@ async function installMultipleComponents(options, targetDir) {
       components.loops = loopsInput.split(',').map(l => l.trim()).filter(l => l);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length;
+    if (options.plugin) {
+      const pluginsInput = Array.isArray(options.plugin) ? options.plugin.join(',') : options.plugin;
+      components.plugins = pluginsInput.split(',').map(p => p.trim()).filter(p => p);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.plugins.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
@@ -1838,6 +1817,7 @@ async function installMultipleComponents(options, targetDir) {
     console.log(chalk.gray(`   Hooks: ${components.hooks.length}`));
     console.log(chalk.gray(`   Skills: ${components.skills.length}`));
     console.log(chalk.gray(`   Loops: ${components.loops.length}`));
+    console.log(chalk.gray(`   Agent Plugins: ${components.plugins.length}`));
 
     // Counter for successfully installed components
     let successfullyInstalled = 0;
@@ -1947,6 +1927,13 @@ async function installMultipleComponents(options, targetDir) {
         batchId
       });
       if (loopSuccess) successfullyInstalled++;
+    }
+
+    // Install Agent Plugins (open standard bundles from aitmpl.com)
+    for (const plugin of components.plugins) {
+      console.log(chalk.gray(`   Installing Agent Plugin: ${plugin}`));
+      const pluginSuccess = await installIndividualPlugin(plugin, targetDir, { ...options, silent: true, batchId });
+      if (pluginSuccess) successfullyInstalled++;
     }
 
     // Handle YAML workflow if provided
