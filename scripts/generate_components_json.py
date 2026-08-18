@@ -10,6 +10,23 @@ from pathlib import Path
 # Load environment variables
 load_dotenv()
 
+def clean_yaml_scalar(raw):
+    """
+    Strip a YAML single-line quoted scalar down to its plain text value.
+
+    The frontmatter parsing below is line-based, not a real YAML parser, so a
+    quoted description (e.g. `description: "Uses \"quotes\" and: colons."`)
+    is extracted verbatim including its delimiters. This unwraps a matching
+    pair of leading/trailing quotes and undoes YAML's escaping for that quote
+    style so the value that reaches the catalog matches what the author wrote.
+    """
+    if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in ('"', "'"):
+        inner = raw[1:-1]
+        if raw[0] == '"':
+            return inner.replace('\\"', '"').replace('\\\\', '\\')
+        return inner.replace("''", "'")
+    return raw
+
 def run_security_validation():
     """
     Run security validation on all components and return the results.
@@ -433,7 +450,7 @@ def generate_components_json():
                                             frontmatter = content[3:frontmatter_end]
                                             for line in frontmatter.split('\n'):
                                                 if line.startswith('description:'):
-                                                    description = line.split('description:', 1)[1].strip()
+                                                    description = clean_yaml_scalar(line.split('description:', 1)[1].strip())
                                                 elif line.startswith('author:'):
                                                     author = line.split('author:', 1)[1].strip()
                                                 elif line.startswith('repo:'):
@@ -555,7 +572,7 @@ def generate_components_json():
                                         frontmatter = content[3:frontmatter_end]
                                         for line in frontmatter.split('\n'):
                                             if line.startswith('description:'):
-                                                description = line.split('description:', 1)[1].strip()
+                                                description = clean_yaml_scalar(line.split('description:', 1)[1].strip())
                                             elif line.startswith('author:'):
                                                 author = line.split('author:', 1)[1].strip()
                                             elif line.startswith('repo:'):
