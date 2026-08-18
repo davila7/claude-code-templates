@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-17T03:27:22.248638+00:00",
-  "totalJobs": 108,
+  "lastUpdated": "2026-08-18T03:39:38.505105+00:00",
+  "totalJobs": 107,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -261,26 +261,6 @@
         "Go"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5383660008",
-      "company": "Anthropic",
-      "position": "Product Designer, People Products",
-      "location": "San Francisco, CA | New York City, NY (Remote)",
-      "remote": true,
-      "salary": "",
-      "description": "The People Products team exists to support Anthropic’s mission by defining the blueprint for AI at work. We help hire the best person in the world for every job, ensure manager effectiveness, ramp new hires successfully, and ensure that we apply first principles thinking in how we shape Anthropic’s...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383660008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383660008",
-      "postedAt": "2026-08-11T13:04:10-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5383596008",
