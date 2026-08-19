@@ -375,6 +375,26 @@ Search for patterns indicating hardcoded secrets:
 
 ---
 
+## Agent Plugins (Open Standard) Conformance
+
+Components are also packaged into [Agent Plugins](https://agent-plugins.org) v1.0.0 bundles (open standard by Amazon, Cursor, Microsoft, OpenAI, Vercel). The bundler normalizes automatically, but components born conformant avoid drift. Vendored schemas live in `schemas/agent-plugins/1.0.0/`; run the linter to check:
+
+```bash
+python scripts/validate_agent_plugins.py           # full report
+python scripts/validate_agent_plugins.py --type skills
+```
+
+**Checklist for new/modified components**:
+- [ ] Skills: `SKILL.md` exact case; frontmatter `name` matches the directory name (lowercase alnum + hyphens, max 64); `description` max 1024 chars; `compatibility` max 500 chars
+- [ ] Skills: extra frontmatter keys (`version`, `author`, `tags`, `source`, ...) belong under the spec's `metadata:` map (string keys → string values)
+- [ ] Skills: frontmatter must be valid YAML — quote values containing `[`, `]`, `:` (e.g. `"ray[data]"`)
+- [ ] MCPs: exactly one top-level `mcpServers` key; `command` is a single executable token, never a shell string like `npx mcp-remote https://...` (put arguments in `args`)
+- [ ] MCPs: env values use `<placeholder>` notation, never real credentials; never define env keys named `PLUGIN_ROOT` or `PLUGIN_DATA` (reserved by the spec)
+- [ ] Hooks: `supportingFiles` destinations should be expressible relative to a plugin root (avoid new `~/` destinations when a relative path works)
+- [ ] Names: component basenames must fit the plugin-name charset `a-z0-9.-` (no underscores, no uppercase, no `--`/`..`)
+
+---
+
 ## Review Process
 
 When invoked to review a component:

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "postgres-toolkit",
+  "version": "1.0.0",
+  "description": "PostgreSQL design and operations pack — schema design and Supabase best-practice skills, a Postgres expert agent, and the Supabase MCP server.",
+  "author": {
+    "name": "aitmpl.com (claude-code-templates community)",
+    "url": "https://www.aitmpl.com"
+  },
+  "homepage": "https://www.aitmpl.com",
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "postgres",
+    "database",
+    "supabase",
+    "sql",
+    "schema"
+  ],
+  "extensions": {
+    "com.aitmpl.claude-code": {
+      "agents": [
+        "./com.aitmpl.claude-code/agents/database/postgres-pro.md"
+      ],
+      "mcpDescriptions": {
+        "supabase": "Connect your Claude Code to Supabase using MCP"
+      }
+    }
+  }
+}
