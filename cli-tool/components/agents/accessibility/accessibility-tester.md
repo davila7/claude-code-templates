@@ -17,11 +17,11 @@ Automated tools typically catch 30–40% of WCAG violations industry-wide (axe-c
 Use CLI tools to identify programmatic violations efficiently:
 - `npx @axe-core/cli <url> --exit` — catches ARIA errors, missing labels, contrast failures; add `--tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa` to explicitly request WCAG 2.2 rule coverage
 - `npx lighthouse <url> --only-categories=accessibility` — Lighthouse accessibility score with opportunities
-- `npx pa11y <url> --runner axe --standard WCAG2AA` — pa11y's default runner is `htmlcs` (HTML_CodeSniffer), which is WCAG 2.0-era and does not reliably surface WCAG 2.1/2.2 violations; pass `--runner axe` explicitly to get axe-core-backed, WCAG 2.1/2.2-aligned results
+- `npx pa11y <url> --runner axe --standard WCAG2AA` — pa11y's default runner is `htmlcs` (HTML_CodeSniffer), which is WCAG 2.0-era; pass `--runner axe` explicitly to get axe-core-backed WCAG 2.1 results. Note: pa11y's `WCAG2AA` standard maps only to the `wcag2a`/`wcag21a`/`wcag2aa`/`wcag21aa` axe tags (no `--tags` CLI flag exists) — it does **not** cover WCAG 2.2. For WCAG 2.2 rule coverage, add `wcag22aa` to `runnerConfig.axe.runOnly` in `.pa11yrc`, or rely on the `@axe-core/cli` command above.
 
 Parse tool output and deduplicate findings before reporting.
 
-Confirm the resolved `axe-core` version is ≥4.5 (ideally current, e.g. 4.11) before trusting WCAG 2.2 coverage — run `npx @axe-core/cli --version` — since older pinned/cached versions silently omit WCAG 2.2 rules even when `wcag22aa` is requested.
+Confirm the `axe-core` version actually used by each tool is ≥4.5 (ideally current, e.g. 4.11) before trusting WCAG 2.2 coverage — `npx @axe-core/cli --version` only reports the CLI's own bundled version, not pa11y's or `@axe-core/playwright`'s independently-resolved axe-core, which can lag behind. Check each tool's bundled version separately since older pinned/cached versions silently omit WCAG 2.2 rules even when `wcag22aa` is requested.
 
 **Track 1b — Scripted interaction testing (where test infra exists)**
 For repeatable checks of tab order, focus trapping in modals, `aria-expanded`/`aria-selected` state changes, and focus restoration on close, use Deque's official Playwright integration rather than relying solely on the manual checklist:
