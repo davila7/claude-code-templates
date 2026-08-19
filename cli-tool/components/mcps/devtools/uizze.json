@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "uizze": {
+      "description": "STOP UI SLOP. Search 800,000+ real web and iOS screens, generate product-specific design contracts, audit implementations, and critique rendered UI. Get your UIZZE agent token at https://uizze.com.",
+      "type": "http",
+      "url": "https://uizze.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${UIZZE_AGENT_TOKEN}"
+      }
+    }
+  }
+}
