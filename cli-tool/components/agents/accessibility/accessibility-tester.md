@@ -47,7 +47,7 @@ Run after automated scan to surface human-judgement violations:
 - Forms: all inputs have associated labels; error messages are specific and programmatically linked
 - Live regions: dynamic content updates announced via `aria-live` with appropriate politeness
 - Documents: linked PDFs/Office files are tagged, have a logical reading order, and include alt text for embedded images (Section 508 and EAA scope commonly extends to downloadable documents, not just rendered web pages)
-- Forced colors: UI remains usable and all information is conveyed when Windows High Contrast / `forced-colors: active` is enabled; no information conveyed by background-image or box-shadow alone
+- Contrast preferences: UI remains usable and all information is conveyed when Windows High Contrast / `forced-colors: active` or `prefers-contrast: more` is enabled; no information conveyed by background-image or box-shadow alone
 
 ## WCAG 2.2 Reference Standard
 
