@@ -1,0 +1,23 @@
+{
+  "description": "Blocks LLM-hallucinated packages before they reach code. Checks every package name in Write/Edit/MultiEdit calls against the attester.dev existence oracle (PyPI wheels and npm tarballs, signed answers). Free keyless tier: 25 checks/day per client IP. Blocks only on a confident 'does not exist'; quota exhaustion and offline fail open so the hook can never jam a session. On-disk answer cache keeps routine editing from spending quota. Allowlist import names that differ from registry names (yaml, PIL, cv2) via .attester-allowlist.",
+  "supportingFiles": [
+    {
+      "source": "attester-import-check.py",
+      "destination": ".claude/hooks/attester-import-check.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/attester-import-check.py"
+          }
+        ]
+      }
+    ]
+  }
+}
