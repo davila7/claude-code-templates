@@ -1,13 +1,55 @@
 {
-  "lastUpdated": "2026-08-18T03:39:38.505105+00:00",
-  "totalJobs": 107,
+  "lastUpdated": "2026-08-19T03:39:08.144165+00:00",
+  "totalJobs": 98,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5394948008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Platform Connectivity",
+      "location": "London, UK; San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Our mission on the Connectivity team is to make Claude the most connected AI. As agents take on more real-world work, we're taking a leading role in defining how they get access to external systems — safely, with the right permissions, and in ways enterprises can trust. We ship standards and...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5394948008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5394948008",
+      "postedAt": "2026-08-18T21:02:33-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5390877008",
+      "company": "Anthropic",
+      "position": "Applied AI Architect, Public Sector (National Security)",
+      "location": "Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping national security and defense agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390877008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390877008",
+      "postedAt": "2026-08-18T13:00:45-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5391151008",
       "company": "Anthropic",
@@ -95,170 +137,6 @@
         "Python",
         "PostgreSQL",
         "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "anth-5385599008",
-      "company": "Anthropic",
-      "position": "Product Marketing Operations Manager",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Alongside our model releases, Anthropic ships a steady stream of launches across the rest of the portfolio — products like Claude, Claude Code, and the developer platform; solutions for enterprises and startups; and the safeguards work that keeps Claude safe and trustworthy. Each launch brings...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5385599008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5385599008",
-      "postedAt": "2026-08-12T02:00:31-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-jenni-ai-ai-supermarket-1136602",
-      "company": "AI Supermarket",
-      "position": "Jenni AI",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-jenni-ai-ai-supermarket-1136602",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-jenni-ai-ai-supermarket-1136602",
-      "postedAt": "2026-08-11T16:51:03+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-typefully-ai-supermarket-1136391",
-      "company": "AI Supermarket",
-      "position": "Typefully",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-typefully-ai-supermarket-1136391",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-typefully-ai-supermarket-1136391",
-      "postedAt": "2026-08-11T16:50:57+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-apify-ai-supermarket-1136554",
-      "company": "AI Supermarket",
-      "position": "Apify",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-apify-ai-supermarket-1136554",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-apify-ai-supermarket-1136554",
-      "postedAt": "2026-08-11T16:50:41+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-aragon-ai-ai-supermarket-1136388",
-      "company": "AI Supermarket",
-      "position": "Aragon AI",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-aragon-ai-ai-supermarket-1136388",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-aragon-ai-ai-supermarket-1136388",
-      "postedAt": "2026-08-11T16:50:40+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-beehiiv-ai-supermarket-1136389",
-      "company": "AI Supermarket",
-      "position": "Beehiiv",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-beehiiv-ai-supermarket-1136389",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-beehiiv-ai-supermarket-1136389",
-      "postedAt": "2026-08-11T16:50:33+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-meshy-ai-supermarket-1136386",
-      "company": "AI Supermarket",
-      "position": "Meshy",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-meshy-ai-supermarket-1136386",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-meshy-ai-supermarket-1136386",
-      "postedAt": "2026-08-11T16:50:22+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-getresponse-ai-supermarket-1136556",
-      "company": "AI Supermarket",
-      "position": "GetResponse",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
-      "postedAt": "2026-08-11T16:49:47+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-askyourpdf-ai-supermarket-1136704",
-      "company": "AI Supermarket",
-      "position": "AskYourPDF",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-askyourpdf-ai-supermarket-1136704",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-askyourpdf-ai-supermarket-1136704",
-      "postedAt": "2026-08-11T16:49:39+00:00",
-      "tags": [
-        "Rust",
-        "Go"
       ],
       "companyIcon": ""
     },
@@ -1913,7 +1791,6 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5157847008",
       "postedAt": "2026-04-08T12:56:33-04:00",
       "tags": [
-        "TypeScript",
         "Python",
         "Rust",
         "AWS",
@@ -1964,27 +1841,6 @@
         "AWS",
         "Claude Code",
         "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5140405008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Government Technology",
-      "location": "Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping systems integrators, startups, and other GovTech companies understand the value of Claude and paint the vision on how they can successfully integrate and deploy...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5140405008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5140405008",
-      "postedAt": "2026-03-05T14:59:18-05:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
@@ -2093,27 +1949,6 @@
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5096878008",
       "postedAt": "2026-01-26T16:58:37-05:00",
       "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5079511008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, National Security",
-      "location": "Washington, DC",
-      "remote": false,
-      "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping national security and defense agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079511008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5079511008",
-      "postedAt": "2026-01-22T17:33:12-05:00",
-      "tags": [
-        "Python",
         "Rust",
         "AWS",
         "Claude Code",
