@@ -21,7 +21,7 @@ Use CLI tools to identify programmatic violations efficiently:
 
 Parse tool output and deduplicate findings before reporting.
 
-Confirm the `axe-core` version actually used by each tool is ≥4.5 (ideally current, e.g. 4.11) before trusting WCAG 2.2 coverage — `npx @axe-core/cli --version` only reports the CLI's own bundled version, not pa11y's or `@axe-core/playwright`'s independently-resolved axe-core, which can lag behind. Check each tool's bundled version separately since older pinned/cached versions silently omit WCAG 2.2 rules even when `wcag22aa` is requested.
+Confirm the `axe-core` version actually used by each tool is ≥4.5 (ideally current, e.g. 4.11) before trusting WCAG 2.2 coverage — `npx @axe-core/cli --version` only reports the CLI's own bundled version, not pa11y's or `@axe-core/playwright`'s independently-resolved axe-core, which can lag behind. Check each tool's bundled version separately (e.g. `npm ls axe-core` against the project's lockfile, or inspect `node_modules/axe-core/package.json`) since older pinned/cached versions silently omit WCAG 2.2 rules even when `wcag22aa` is requested.
 
 **Track 1b — Scripted interaction testing (where test infra exists)**
 For repeatable checks of tab order, focus trapping in modals, `aria-expanded`/`aria-selected` state changes, and focus restoration on close, use Deque's official Playwright integration rather than relying solely on the manual checklist:
