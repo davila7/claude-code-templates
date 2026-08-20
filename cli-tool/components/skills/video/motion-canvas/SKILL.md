@@ -6,7 +6,7 @@ author: motion-canvas
 repo: https://github.com/motion-canvas/motion-canvas
 license: MIT
 tags: [Video, TypeScript, Animation, Motion Canvas, Signals, Generators, Canvas API, Vector, Audio Sync, Vite, ESM]
-dependencies: [@motion-canvas/core>=3.0.0, @motion-canvas/2d>=3.0.0, @motion-canvas/ui>=3.0.0, @motion-canvas/vite-plugin>=3.0.0]
+dependencies: ["@motion-canvas/core>=3.0.0", "@motion-canvas/2d>=3.0.0", "@motion-canvas/ui>=3.0.0", "@motion-canvas/vite-plugin>=3.0.0"]
 ---
 
 # Motion Canvas - Production-Ready Video Creation with TypeScript
