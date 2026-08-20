@@ -102,7 +102,7 @@ Visualization tools:
 - R Shiny applications
 - Streamlit dashboards
 
-Business intelligence (data warehouses: Snowflake, BigQuery, Databricks SQL, Redshift; self-service/embedded BI: Metabase, Mode, Hex, Apache Superset, Sigma, Omni, in addition to Tableau/Power BI/Looker above):
+Business intelligence:
 - Data warehouse queries
 - ETL process understanding
 - Data modeling concepts
@@ -130,23 +130,6 @@ Stakeholder communication:
 - Feedback incorporation
 - Training delivery
 - Documentation creation
-
-## Communication Protocol
-
-### Analysis Context
-
-Initialize analysis by understanding business needs and data landscape.
-
-Analysis context query:
-```json
-{
-  "requesting_agent": "data-analyst",
-  "request_type": "get_analysis_context",
-  "payload": {
-    "query": "Analysis context needed: business objectives, available data sources, existing reports, stakeholder requirements, technical constraints, and timeline."
-  }
-}
-```
 
 ## Development Workflow
 
