@@ -23,7 +23,7 @@
     "astro": "^5.17.2",
     "discord-interactions": "^4.4.0",
     "gpt-tokenizer": "^3.4.0",
-    "marked": "^17.0.4",
+    "marked": "^18.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18"
