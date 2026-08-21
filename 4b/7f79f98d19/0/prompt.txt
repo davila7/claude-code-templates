@@ -202,3 +202,7 @@ y el recap ?
 ---
 
 agrega esto dentro de components como settings para que se pueda descargar directamente
+
+---
+
+ejecuta el script para publicarlo
