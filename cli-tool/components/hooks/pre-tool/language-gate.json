@@ -1,0 +1,13 @@
+{
+  "description": "Pre-push language gate (epistemic-discipline). Blocks git push / gh pr create when the OUTGOING diff introduces Spanish in committed source/docs (English-only rule; Spanish only in chat). Scans ONLY added lines, so it never re-flags pre-existing debt. Recognises the CRÍTICO/ALTO/MEDIO/BAJO review-severity convention (use CRITICAL/HIGH/MEDIUM/LOW); allow-lists i18n/locale/unicode/non-ASCII and any line tagged EXEMPT-ES <reason>. Fail-open on internal errors; override CLAUDE_LANG_GATE_OVERRIDE=1 (logged). Install: copy spanish-gate.py + spanish-scan.py (from skills/epistemic-discipline/) into ~/.claude/hooks/, then merge this hooks block into settings.json. Pairs with spanish-scan.py for a whole-repo audit.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "python3 ~/.claude/hooks/spanish-gate.py" }
+        ]
+      }
+    ]
+  }
+}
