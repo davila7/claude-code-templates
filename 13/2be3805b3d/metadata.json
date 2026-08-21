@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "132be3805b3d",
+  "strategy": "manual-commit",
+  "branch": "feat/concise-mode-setting",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "dashboard/public/components/templates.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/13/2be3805b3d/0/metadata.json",
+      "transcript": "/13/2be3805b3d/0/full.jsonl",
+      "compact_transcript": "/13/2be3805b3d/0/transcript.jsonl",
+      "content_hash": "/13/2be3805b3d/0/content_hash.txt",
+      "prompt": "/13/2be3805b3d/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 54,
+    "cache_creation_tokens": 77887,
+    "cache_read_tokens": 1868250,
+    "output_tokens": 10633,
+    "api_call_count": 27
+  }
+}
