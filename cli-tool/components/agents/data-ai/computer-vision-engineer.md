@@ -331,6 +331,7 @@ class VideoAnalyzer:
         self.processing = False
         self._capture_thread = None
         self._process_thread = None
+        self._cap = None
 
     def stop_processing(self, timeout=5.0):
         """
@@ -338,9 +339,23 @@ class VideoAnalyzer:
         shared frame/result queues or model are reused.
         """
         self.processing = False
+
+        # cap.read() blocks until a frame arrives (or the source stalls), so
+        # a plain join() can hang past the timeout with the capture thread
+        # still alive. Releasing the capture here makes read() return
+        # immediately, so the thread observes processing == False right away.
+        if self._cap is not None:
+            self._cap.release()
+
         for thread in (self._capture_thread, self._process_thread):
             if thread is not None and thread.is_alive():
                 thread.join(timeout=timeout)
+                if thread.is_alive():
+                    raise RuntimeError(
+                        f"{thread.name} did not stop within {timeout}s; "
+                        "refusing to reuse the shared model/queues while it "
+                        "may still be running"
+                    )
 
         # Drain queues so frames from the old stream don't leak into the next one
         for q in (self.frame_queue, self.result_queue):
@@ -393,7 +408,8 @@ class VideoAnalyzer:
         Capture frames from video source
         """
         cap = cv2.VideoCapture(video_source)
-        
+        self._cap = cap
+
         while self.processing:
             ret, frame = cap.read()
             if ret:
