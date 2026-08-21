@@ -1,12 +1,96 @@
 {
-  "lastUpdated": "2026-08-20T03:39:30.108604+00:00",
-  "totalJobs": 98,
+  "lastUpdated": "2026-08-21T03:49:34.284208+00:00",
+  "totalJobs": 101,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5390894008",
+      "company": "Anthropic",
+      "position": "Manager Applied AI Architecture, Financial Services",
+      "location": "New York City, NY; San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As manager of the Financial Services Solutions Architect team within Applied AI at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. We work with customers that include companies across banking, insurance, asset management, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390894008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390894008",
+      "postedAt": "2026-08-20T21:55:46-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5390890008",
+      "company": "Anthropic",
+      "position": "Manager Applied AI Architecture, Healthcare & Life Sciences",
+      "location": "New York City, NY; San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As manager of the Healthcare and Life Sciences Solutions Architect team within Applied AI at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. We work with customers that include companies across payers, providers, life sciences,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390890008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390890008",
+      "postedAt": "2026-08-20T21:53:08-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5390865008",
+      "company": "Anthropic",
+      "position": "Manager of Applied AI Architecture, Commercial",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As the Manager of Commercial Applied AI Architects at Anthropic, you will drive adoption of frontier AI across our mid-market and SMB customers by leading a team of technical architects who help companies build and deploy with the Claude API, Claude Code, the Agent SDK, and Claude for Enterprise....",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390865008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390865008",
+      "postedAt": "2026-08-20T15:07:21-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5393526008",
+      "company": "Anthropic",
+      "position": "Product Manager, Cyber Security ",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Claude is now good at security work. It finds and fixes vulnerabilities in real codebases, triages alerts, and reasons about how an attacker would move through a system, and it improves with every model we ship. Many security platforms build on Claude and we shipped our first security product this...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5393526008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5393526008",
+      "postedAt": "2026-08-20T12:35:52-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5394948008",
       "company": "Anthropic",
@@ -997,6 +1081,26 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5277834008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "postedAt": "2026-06-24T13:51:42-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
@@ -1609,27 +1713,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5222289008",
-      "company": "Anthropic",
-      "position": "Manager of Applied AI Architecture, Enterprise Tech",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5222289008",
-      "postedAt": "2026-05-18T17:11:30-04:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5197538008",
       "company": "Anthropic",
       "position": "Manager of Applied AI Architecture, Enterprise Tech (Cyber)",
@@ -1797,28 +1880,6 @@
         "GCP",
         "Azure",
         "Kubernetes",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5173031008",
-      "company": "Anthropic",
-      "position": "Manager of Applied AI Architecture, Partnerships",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As the Manager of the Partnerships Applied AI Solutions Architect team, you will drive adoption of frontier AI by enabling deployment of Anthropic’s products (Claude for Enterprise, Claude Code, API) through our Global and Regional System Integrators, cloud partners (AWS, GCP, Azure), and strategic...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5173031008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5173031008",
-      "postedAt": "2026-04-01T16:58:51-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "GCP",
-        "Azure",
         "Claude Code",
         "Anthropic"
       ],
