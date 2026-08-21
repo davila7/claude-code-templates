@@ -1,6 +1,6 @@
 ---
 name: doordash-group-orders
-description: Group food ordering through the DoorDash CLI (dd-cli) from a persistent team roster. One request ("lunch for the team") fans out into a single merged cart with every line attributed to its eater via a person-to-cart-item-id ledger, per-person cost split with fee proration, payer rotation history, and a checkout gate that re-derives allergen conflicts against the roster live. Use when ordering for multiple people — team lunch, incident-response food, "collect orders from the thread" — or for /whose-turn payer rotation questions. Handles paste-a-thread intake: paste a Slack/chat thread and it builds the order ledger from it.
+description: "Group food ordering through the DoorDash CLI (dd-cli) from a persistent team roster. One request (\"lunch for the team\") fans out into a single merged cart with every line attributed to its eater via a person-to-cart-item-id ledger, per-person cost split with fee proration, payer rotation history, and a checkout gate that re-derives allergen conflicts against the roster live. Use when ordering for multiple people — team lunch, incident-response food, \"collect orders from the thread\" — or for /whose-turn payer rotation questions. Handles paste-a-thread intake: paste a Slack/chat thread and it builds the order ledger from it."
 allowed-tools: Bash(dd-cli:*), Bash(command -v:*), Bash(mkdir:*), Bash(cat:*), Bash(jq:*), Read, Write, Edit
 tags: [DoorDash, Team Lunch, Group Orders, Cost Split, CLI, Coordination]
 ---
