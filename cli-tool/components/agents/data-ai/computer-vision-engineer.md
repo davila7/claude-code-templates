@@ -383,8 +383,13 @@ class VideoAnalyzer:
         # persist=True, Ultralytics caches track state on self.model's
         # predictor across calls, so reusing this instance for a new,
         # independent video/camera would otherwise carry over stale IDs.
-        if getattr(self.model, 'predictor', None) is not None:
-            for tracker in self.model.predictor.trackers:
+        # `trackers` is only registered on the predictor once model.track()
+        # has run at least once — if this model was only ever used with
+        # model.predict()/model() before, predictor exists but has no
+        # trackers attribute yet, so use getattr rather than assuming it.
+        trackers = getattr(getattr(self.model, 'predictor', None), 'trackers', None)
+        if trackers:
+            for tracker in trackers:
                 tracker.reset()
 
         self.processing = True
