@@ -324,11 +324,37 @@ class VideoAnalyzer:
         self.frame_queue = Queue(maxsize=buffer_size)
         self.result_queue = Queue()
         self.processing = False
-        
+        self._capture_thread = None
+        self._process_thread = None
+
+    def stop_processing(self, timeout=5.0):
+        """
+        Stop any running stream and wait for its threads to exit before the
+        shared frame/result queues or model are reused.
+        """
+        self.processing = False
+        for thread in (self._capture_thread, self._process_thread):
+            if thread is not None and thread.is_alive():
+                thread.join(timeout=timeout)
+
+        # Drain queues so frames from the old stream don't leak into the next one
+        for q in (self.frame_queue, self.result_queue):
+            while not q.empty():
+                try:
+                    q.get_nowait()
+                except Exception:
+                    break
+
     def start_real_time_analysis(self, video_source=0):
         """
         Start real-time video analysis
         """
+        # Stop any previous stream first — otherwise its capture/process
+        # threads keep running against the shared frame_queue/result_queue
+        # and model, mixing frames and tracker state across streams.
+        if self.processing:
+            self.stop_processing()
+
         # Reset any tracker state left over from a previous stream. With
         # persist=True, Ultralytics caches track state on self.model's
         # predictor across calls, so reusing this instance for a new,
@@ -351,7 +377,10 @@ class VideoAnalyzer:
         process_thread = threading.Thread(target=self._process_frames)
         process_thread.daemon = True
         process_thread.start()
-        
+
+        self._capture_thread = capture_thread
+        self._process_thread = process_thread
+
         return capture_thread, process_thread
     
     def _capture_frames(self, video_source):
