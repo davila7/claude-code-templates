@@ -371,8 +371,12 @@ class VideoAnalyzer:
         """
         # Stop any previous stream first — otherwise its capture/process
         # threads keep running against the shared frame_queue/result_queue
-        # and model, mixing frames and tracker state across streams.
-        if self.processing:
+        # and model, mixing frames and tracker state across streams. Check
+        # actual thread liveness rather than self.processing: stop_processing
+        # sets that flag False before it can guarantee the old threads have
+        # exited, so a retry after a raised RuntimeError must still re-check
+        # and re-join them rather than skipping straight to relaunch.
+        if any(t is not None and t.is_alive() for t in (self._capture_thread, self._process_thread)):
             self.stop_processing()
 
         # Reset any tracker state left over from a previous stream. With
