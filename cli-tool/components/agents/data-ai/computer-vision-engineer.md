@@ -295,13 +295,18 @@ class DocumentAnalyzer:
         import layoutparser as lp
 
         image = cv2.imread(image_path)
+        # PubLayNet was trained on RGB; cv2.imread loads BGR, so convert
+        # before detect() or the color-channel mismatch hurts accuracy
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         model = lp.Detectron2LayoutModel(
             'lp://PubLayNet/faster_rcnn_R_50_FPN_3x/config'
         )
         layout = model.detect(image)
 
         return {
-            'text_regions': [b for b in layout if b.type == 'Text'],
+            # PubLayNet's 'Text' label excludes headings/list items, which
+            # are still text — include 'Title' and 'List' so they aren't dropped
+            'text_regions': [b for b in layout if b.type in ('Text', 'Title', 'List')],
             'tables': [b for b in layout if b.type == 'Table'],
             'figures': [b for b in layout if b.type == 'Figure']
         }
