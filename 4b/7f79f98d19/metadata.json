@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "4b7f79f98d19",
+  "strategy": "manual-commit",
+  "branch": "feat/doordash-cli-skills",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "cli-tool/components/settings/global/concise-mode.json",
+    "dashboard/public/components.json",
+    "dashboard/public/components/agents.json",
+    "dashboard/public/components/commands.json",
+    "dashboard/public/components/hooks.json",
+    "dashboard/public/components/mcps.json",
+    "dashboard/public/components/settings.json",
+    "dashboard/public/components/skills.json",
+    "dashboard/public/counts.json",
+    "dashboard/public/search-index.json",
+    "docs/components.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/4b/7f79f98d19/0/metadata.json",
+      "transcript": "/4b/7f79f98d19/0/full.jsonl",
+      "compact_transcript": "/4b/7f79f98d19/0/transcript.jsonl",
+      "content_hash": "/4b/7f79f98d19/0/content_hash.txt",
+      "prompt": "/4b/7f79f98d19/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 26,
+    "cache_creation_tokens": 70103,
+    "cache_read_tokens": 800514,
+    "output_tokens": 5202,
+    "api_call_count": 13
+  }
+}
