@@ -329,6 +329,14 @@ class VideoAnalyzer:
         """
         Start real-time video analysis
         """
+        # Reset any tracker state left over from a previous stream. With
+        # persist=True, Ultralytics caches track state on self.model's
+        # predictor across calls, so reusing this instance for a new,
+        # independent video/camera would otherwise carry over stale IDs.
+        if getattr(self.model, 'predictor', None) is not None:
+            for tracker in self.model.predictor.trackers:
+                tracker.reset()
+
         self.processing = True
         
         # Start capture thread
