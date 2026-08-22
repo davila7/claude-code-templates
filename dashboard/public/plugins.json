@@ -23373,7 +23373,7 @@
   },
   {
     "slug": "clawcode",
-    "name": "Clawcode",
+    "name": "ClawCode",
     "author": "crisandrews",
     "description": "Persistent agents for Claude Code as a plugin, not a harness. Memory, personality, messaging across WhatsApp, Telegram, and Discord, plus a service mode for 24/7 runs. Imports from OpenClaw.",
     "github": "https://github.com/crisandrews/ClawCode",
@@ -23387,7 +23387,10 @@
       "skills": 20,
       "hooks": 1
     },
-    "highlights": []
+    "highlights": [
+      "Web UI: https://github.com/crisandrews/ClawCode#quick-setup"
+    ],
+    "website": "https://github.com/crisandrews/ClawCode#quick-setup"
   },
   {
     "slug": "skills",
