@@ -50,7 +50,8 @@ const pluginCount = containsObj.plugins ?? 0;
 // Install commands
 const repoPath = plugin.github.replace('https://github.com/', '');
 const addMarketplaceCmd = `/plugin marketplace add ${repoPath}`;
-const marketplaceName = repoPath.replace('/', '-');
+const marketplaceName = plugin.marketplace_name ?? repoPath.replace('/', '-');
+const pluginName = plugin.plugin_name ?? plugin.slug;
 ---
 
 <DashboardLayout
@@ -178,7 +179,7 @@ const marketplaceName = repoPath.replace('/', '-');
           {isMarketplace && pluginsList.length > 0 ? (
             <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{`/plugin install <plugin-name>@${marketplaceName}`}</code></pre>
           ) : (
-            <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{`/plugin install ${plugin.slug}@${marketplaceName}`}</code></pre>
+            <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{`/plugin install ${pluginName}@${marketplaceName}`}</code></pre>
           )}
         </div>
 

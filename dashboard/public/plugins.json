@@ -23512,5 +23512,37 @@
         "author": "anthropics"
       }
     ]
+  },
+  {
+    "slug": "cohesivity-plugin",
+    "name": "Cohesivity Plugin",
+    "author": "cohesivity-org",
+    "description": "cohesivity.ai offers free agent native backend services. Annonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
+    "github": "https://github.com/cohesivity-org/cohesivity-plugin",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "mcps"
+    ],
+    "contains": {
+      "skills": 1,
+      "mcps": 2
+    },
+    "highlights": [
+      "Web UI: https://cohesivity.ai"
+    ],
+    "website": "https://cohesivity.ai",
+    "marketplace_name": "cohesivity",
+    "plugin_name": "cohesivity",
+    "plugin_manifest": {
+      "skills": [
+        "cohesivity"
+      ],
+      "mcpServers": [
+        "cohesivity",
+        "cohesivity-local"
+      ]
+    }
   }
 ]

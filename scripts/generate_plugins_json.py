@@ -14,6 +14,8 @@ Requires:
 
 import json
 import os
+import posixpath
+import shutil
 import sys
 import time
 import subprocess
@@ -61,9 +63,15 @@ REPOS = [
     ("chu2bard/pinion-os", None),
     ("Airtable/skills", None),
     ("krasserm/ml-plugins", None),
+    ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
 ]
 
+DESCRIPTION_OVERRIDES = {
+    "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
+}
+
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
+GH_CLI = shutil.which("gh") or "gh"
 
 # --- GitHub API helpers (uses gh CLI) ---
 
@@ -81,7 +89,7 @@ def gh_api(endpoint, retries=3):
             time.sleep(1)
 
         try:
-            cmd = ["/usr/local/bin/gh", "api", endpoint.lstrip("/")]
+            cmd = [GH_CLI, "api", endpoint.lstrip("/")]
             result = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=30, env=_GH_ENV
             )
@@ -115,7 +123,7 @@ def gh_file_content(repo, path):
 
     try:
         result = subprocess.run(
-            ["/usr/local/bin/gh", "api", f"repos/{repo}/contents/{path}", "--jq", ".content"],
+            [GH_CLI, "api", f"repos/{repo}/contents/{path}", "--jq", ".content"],
             capture_output=True, text=True, timeout=30, env=_GH_ENV
         )
         if result.returncode != 0 or not result.stdout.strip():
@@ -151,7 +159,7 @@ def parse_json_safe(text):
             return None
 
 
-def extract_plugin_components(plugin_json):
+def extract_plugin_components(plugin_json, repo=None, dir_path=""):
     """Extract component counts from a plugin.json manifest."""
     if not plugin_json:
         return {}
@@ -176,11 +184,21 @@ def extract_plugin_components(plugin_json):
         elif isinstance(hooks, str):
             counts["hooks"] = 1
     # MCPs
-    mcps = plugin_json.get("mcpServers")
+    mcps_value = plugin_json.get("mcpServers")
+    mcps = (
+        resolve_server_manifest(repo, dir_path, mcps_value, "mcpServers")
+        if repo
+        else mcps_value
+    )
     if isinstance(mcps, dict) and len(mcps) > 0:
         counts["mcps"] = len(mcps)
     # LSPs
-    lsps = plugin_json.get("lspServers")
+    lsps_value = plugin_json.get("lspServers")
+    lsps = (
+        resolve_server_manifest(repo, dir_path, lsps_value, "lspServers")
+        if repo
+        else lsps_value
+    )
     if isinstance(lsps, dict) and len(lsps) > 0:
         counts["lsps"] = len(lsps)
     # Rules
@@ -261,6 +279,30 @@ def extract_frontmatter_description(content):
     return ""
 
 
+def resolve_server_manifest(repo, dir_path, manifest_value, manifest_key):
+    """Resolve inline or file-backed MCP/LSP server maps from plugin.json."""
+    if isinstance(manifest_value, dict):
+        return manifest_value
+    if not isinstance(manifest_value, str):
+        return {}
+
+    relative_path = posixpath.normpath(manifest_value.replace("\\", "/"))
+    if (
+        relative_path in ("", ".")
+        or relative_path.startswith("../")
+        or relative_path.startswith("/")
+    ):
+        return {}
+
+    full_path = f"{dir_path.rstrip('/')}/{relative_path}".lstrip("/")
+    raw = gh_file_content(repo, full_path)
+    document = parse_json_safe(raw)
+    if not isinstance(document, dict):
+        return {}
+    servers = document.get(manifest_key)
+    return servers if isinstance(servers, dict) else {}
+
+
 def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     """Scan a plugin directory for skills/, agents/, commands/, hooks/ subdirs
     and list the files inside each. Returns (counts, items) where `counts` is
@@ -310,12 +352,12 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     if plugin_json_raw:
         pj = parse_json_safe(plugin_json_raw)
         if pj:
-            mcps = pj.get("mcpServers")
-            if isinstance(mcps, dict) and len(mcps) > 0:
+            mcps = resolve_server_manifest(repo, dir_path, pj.get("mcpServers"), "mcpServers")
+            if mcps:
                 components["mcps"] = len(mcps)
                 component_items["mcps"] = [{"name": k, "description": ""} for k in mcps.keys()]
-            lsps = pj.get("lspServers")
-            if isinstance(lsps, dict) and len(lsps) > 0:
+            lsps = resolve_server_manifest(repo, dir_path, pj.get("lspServers"), "lspServers")
+            if lsps:
                 components["lsps"] = len(lsps)
                 component_items["lsps"] = [{"name": k, "description": ""} for k in lsps.keys()]
 
@@ -499,7 +541,9 @@ def process_repo(repo_full, website_override=None):
     marketplace_component_totals = aggregate_marketplace_components(plugins_detail)
 
     # 6. Extract single plugin components
-    single_components = extract_plugin_components(plugin_json) if plugin_json else {}
+    single_components = (
+        extract_plugin_components(plugin_json, repo=repo_full) if plugin_json else {}
+    )
 
     # 7. Build contains
     if repo_type == "marketplace":
@@ -570,7 +614,7 @@ def process_repo(repo_full, website_override=None):
         "slug": slug,
         "name": display_name,
         "author": repo_owner,
-        "description": description or marketplace.get("description", ""),
+        "description": DESCRIPTION_OVERRIDES.get(repo_full, description or marketplace.get("description", "")),
         "github": f"https://github.com/{repo_full}",
         "stars": stars,
         "type": repo_type,
@@ -581,6 +625,15 @@ def process_repo(repo_full, website_override=None):
 
     if website:
         result["website"] = website
+
+    marketplace_name = marketplace.get("name")
+    if isinstance(marketplace_name, str) and marketplace_name:
+        result["marketplace_name"] = marketplace_name
+
+    if repo_type == "plugin" and len(plugins_detail) == 1:
+        install_name = plugins_detail[0].get("name")
+        if isinstance(install_name, str) and install_name:
+            result["plugin_name"] = install_name
 
     # 14. Add marketplace plugins list (for individual pages)
     if repo_type == "marketplace" and plugins_detail:
@@ -593,12 +646,35 @@ def process_repo(repo_full, website_override=None):
             val = plugin_json.get(key)
             if isinstance(val, list) and val:
                 plugin_detail[key] = val
-        mcps = plugin_json.get("mcpServers")
-        if isinstance(mcps, dict) and mcps:
+        mcps = resolve_server_manifest(
+            repo_full, "", plugin_json.get("mcpServers"), "mcpServers"
+        )
+        if mcps:
             plugin_detail["mcpServers"] = list(mcps.keys())
-        lsps = plugin_json.get("lspServers")
-        if isinstance(lsps, dict) and lsps:
+        lsps = resolve_server_manifest(
+            repo_full, "", plugin_json.get("lspServers"), "lspServers"
+        )
+        if lsps:
             plugin_detail["lspServers"] = list(lsps.keys())
+        if plugin_detail:
+            result["plugin_manifest"] = plugin_detail
+    elif repo_type == "plugin" and len(plugins_detail) == 1:
+        component_items = plugins_detail[0].get("components_items", {})
+        plugin_detail = {}
+        for source_key, output_key in (
+            ("skills", "skills"),
+            ("agents", "agents"),
+            ("commands", "commands"),
+            ("mcps", "mcpServers"),
+            ("lsps", "lspServers"),
+        ):
+            names = [
+                item.get("name")
+                for item in component_items.get(source_key, [])
+                if isinstance(item, dict) and item.get("name")
+            ]
+            if names:
+                plugin_detail[output_key] = names
         if plugin_detail:
             result["plugin_manifest"] = plugin_detail
 
@@ -614,7 +690,7 @@ def main():
     # Check gh CLI is available
     try:
         test = subprocess.run(
-            ["/usr/local/bin/gh", "api", "rate_limit", "--jq", ".rate.remaining"],
+            [GH_CLI, "api", "rate_limit", "--jq", ".rate.remaining"],
             capture_output=True, text=True, timeout=10, env=_GH_ENV
         )
         if test.returncode == 0:
