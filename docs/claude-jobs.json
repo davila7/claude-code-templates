@@ -1,12 +1,33 @@
 {
-  "lastUpdated": "2026-08-21T03:49:34.284208+00:00",
+  "lastUpdated": "2026-08-22T03:23:06.187013+00:00",
   "totalJobs": 101,
   "sources": [
     "Anthropic",
-    "HackerNews",
-    "WeWorkRemotely"
+    "HackerNews"
   ],
   "jobs": [
+    {
+      "id": "anth-5398227008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Auth & Identity",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "The Auth & Identity team builds the authentication, authorization, and identity platform that underpins every Anthropic product: the API, Claude Code, Claude.ai, and our Enterprise offerings. Every login, API key, OAuth token, access decision, and organization record flows through the systems we...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398227008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398227008",
+      "postedAt": "2026-08-21T12:17:20-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5390894008",
       "company": "Anthropic",
@@ -73,7 +94,7 @@
     {
       "id": "anth-5393526008",
       "company": "Anthropic",
-      "position": "Product Manager, Cyber Security ",
+      "position": "Product Manager, Cybersecurity ",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
@@ -532,23 +553,6 @@
         "TypeScript",
         "Claude Code",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-dropbox-head-of-field-and-partner-marketing",
-      "company": "Dropbox",
-      "position": "Head of Field and Partner Marketing",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote - US: Select locations Role Description Dropbox is hiring a Head of Field & Partner Marketing to lead our global field and partner marketing organization and drive pipeline growth across our Sales-Led Growth (SLG) business and strategic partner ecosystem. This executive...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/dropbox-head-of-field-and-partner-marketing",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/dropbox-head-of-field-and-partner-marketing",
-      "postedAt": "2026-07-22T07:01:44+00:00",
-      "tags": [
-        "Rust"
       ],
       "companyIcon": ""
     },
