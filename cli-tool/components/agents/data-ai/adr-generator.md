@@ -37,7 +37,7 @@ Before creating an ADR, collect the following inputs from the user or conversati
 
 - Use `Glob`/`Grep` to scan `docs/adr/*.md` for ADRs related to this decision (same subsystem, competing/overlapping concern, or a decision this one supersedes)
 - Note any related ADRs found, to populate the new ADR's `References` section in Step 3 (link using paths relative to the generated ADR file, e.g. `./adr-0003-monolith-first.md`)
-- If this decision **supersedes** an existing ADR, use `Edit` to update that old ADR's front matter now: set `status: "Superseded"` and `superseded_by: "adr-MMMM"` (the new ADR's ID, determined in Step 2)
+- If this decision **supersedes** an existing ADR, use `Edit` to update that old ADR's front matter now: set `status: "Superseded"` and `superseded_by: "adr-NNNN"` (this new ADR's own number, determined in Step 2)
 
 ### 3. Generate ADR Document in Markdown
 
@@ -49,7 +49,7 @@ Create an ADR as a markdown file following the standardized format below with th
 - Document all alternatives with clear rejection rationale
 - Use coded bullet points (3-letter codes + 3-digit numbers) for multi-item sections
 - Structure content for both machine parsing and human reference
-- If this decision supersedes an existing ADR (per Step 2.5), set `supersedes: "adr-NNNN"` in this new ADR's front matter
+- If this decision supersedes an existing ADR, set `supersedes: "adr-OLD"` in this new ADR's front matter, where OLD is the superseded ADR's own number identified in Step 2.5 (not this new ADR's NNNN)
 - Save the file to `docs/adr/` (relative to the repository root) with proper naming convention
 
 ---
