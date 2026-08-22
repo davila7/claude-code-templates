@@ -36,7 +36,7 @@ Before creating an ADR, collect the following inputs from the user or conversati
 ### 2.5 Cross-Reference Existing ADRs
 
 - Use `Glob`/`Grep` to scan `docs/adr/*.md` for ADRs related to this decision (same subsystem, competing/overlapping concern, or a decision this one supersedes)
-- Note any related ADRs found, to populate the new ADR's `References` section in Step 3 (link using relative paths, e.g. `docs/adr/adr-0003-monolith-first.md`)
+- Note any related ADRs found, to populate the new ADR's `References` section in Step 3 (link using paths relative to the generated ADR file, e.g. `./adr-0003-monolith-first.md`)
 - If this decision **supersedes** an existing ADR, use `Edit` to update that old ADR's front matter now: set `status: "Superseded"` and `superseded_by: "adr-MMMM"` (the new ADR's ID, determined in Step 2)
 
 ### 3. Generate ADR Document in Markdown
