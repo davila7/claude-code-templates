@@ -23407,6 +23407,27 @@
     "highlights": []
   },
   {
+    "slug": "claude-whatsapp",
+    "name": "Claude WhatsApp",
+    "author": "crisandrews",
+    "description": "WhatsApp channel plugin for Claude Code — connect your WhatsApp to an AI agent. QR scan, voice transcription, access control, media support.",
+    "github": "https://github.com/crisandrews/claude-whatsapp",
+    "stars": 13,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 2,
+      "hooks": 1
+    },
+    "highlights": [
+      "Web UI: https://github.com/crisandrews/claude-whatsapp#quick-setup"
+    ],
+    "website": "https://github.com/crisandrews/claude-whatsapp#quick-setup"
+  },
+  {
     "slug": "ml-plugins",
     "name": "ML Research",
     "author": "krasserm",

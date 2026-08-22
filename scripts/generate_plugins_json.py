@@ -62,6 +62,7 @@ REPOS = [
     ("Airtable/skills", None),
     ("krasserm/ml-plugins", None),
     ("crisandrews/ClawCode", None),
+    ("crisandrews/claude-whatsapp", None),
 ]
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
