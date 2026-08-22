@@ -22,7 +22,7 @@ if ! mdutil -s / 2>/dev/null | grep -qi 'indexing enabled'; then
   echo "    here and may list apps that are actually installed. Treat as informational"
   echo "    only and confirm every app by hand before removing anything."
 fi
-export IDS="$(installed_bundle_ids | sort -u)"
+IDS="$(installed_bundle_ids | sort -u)"   # plain var: container_is_orphan is a shell function, not a subprocess
 for d in "$HOME/Library/Containers/"*; do
   [ -d "$d" ] || continue
   name=$(basename "$d")
@@ -50,6 +50,34 @@ for d in "$HOME/Library/Containers/"*; do
 done | sort -rh | head -5
 echo
 
+echo "===== Browser old-version frameworks (quit the browser, keep Current) ====="
+echo "Chromium browsers leave whole previous versions inside the .app bundle."
+echo "Safe to Trash every version EXCEPT the one 'Current' points to. Report-only:"
+for fw in \
+  "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions" \
+  "/Applications/Microsoft Edge.app/Contents/Frameworks/Microsoft Edge Framework.framework/Versions" \
+  "/Applications/Brave Browser.app/Contents/Frameworks/Brave Browser Framework.framework/Versions"; do
+  [ -d "$fw" ] || continue
+  cur=$(readlink "$fw/Current" 2>/dev/null)
+  if [ -z "$cur" ]; then
+    echo "  (could not resolve Current for $(basename "$fw") — skipping suggestions; verify manually)"
+    continue
+  fi
+  cur=$(basename "$cur")
+  for v in "$fw"/*; do
+    [ -d "$v" ] || continue
+    name=$(basename "$v")
+    [ "$name" = "Current" ] && continue
+    if [ "$name" = "$cur" ]; then
+      printf '  %s\t%s   (Current — KEEP)\n' "$(human_kb "$(size_kb "$v")")" "$v"
+    else
+      printf '  %s\t%s\n' "$(human_kb "$(size_kb "$v")")" "$v"
+    fi
+  done
+done
+echo "  (if empty: no multi-version browser frameworks found)"
+echo
+
 echo "===== Stale installers (.dmg/.pkg/.iso in Downloads & Desktop) ====="
 find "$HOME/Downloads" "$HOME/Desktop" -maxdepth 2 -type f \
   \( -iname '*.dmg' -o -iname '*.pkg' -o -iname '*.iso' -o -iname '*.msi' \) 2>/dev/null \
@@ -63,10 +91,10 @@ find "$HOME/Downloads" "$HOME/Desktop" "$HOME/Documents" "$HOME/Movies" \
 echo
 
 echo "===== Old Downloads (not modified in 90+ days) ====="
-old=$(find "$HOME/Downloads" -maxdepth 1 -mtime +90 2>/dev/null | wc -l | tr -d ' ')
+old=$(find "$HOME/Downloads" -mindepth 1 -maxdepth 1 -mtime +90 2>/dev/null | wc -l | tr -d ' ')
 if [ "${old:-0}" -gt 0 ]; then
   echo "  $old item(s), totaling:"
-  find "$HOME/Downloads" -maxdepth 1 -mtime +90 -exec du -sk {} + 2>/dev/null \
+  find "$HOME/Downloads" -mindepth 1 -maxdepth 1 -mtime +90 -exec du -sk {} + 2>/dev/null \
     | awk '{s+=$1} END{printf "  %.1f GB\n", s/1024/1024}'
 else
   echo "  (none)"
