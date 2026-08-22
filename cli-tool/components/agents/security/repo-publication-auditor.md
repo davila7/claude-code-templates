@@ -63,7 +63,20 @@ grep -rIn -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' .
 grep -rInE '(postgres|mysql|mongodb(\+srv)?)://[^:@/]+:[^@/]+@' .
 ```
 
-Run these against the history too, not only the tree.
+Run these against the history too, not only the tree — a credential deleted in a later commit is
+still served by the GitHub API, and a tree-only scan reports the repository clean:
+
+```bash
+# Every pattern above, across every reachable commit rather than the checkout.
+REVS=$(git rev-list --all)
+git grep -InE 'AKIA[A-Z0-9]{16}|sk_live_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|glpat-[A-Za-z0-9_-]{20,}|SG\.[A-Za-z0-9]{20,}\.|xox[baprs]-[0-9]{6,}|sk-ant-api03-|AC[0-9a-f]{32}|hooks\.slack\.com/services/T' $REVS -- .
+git grep -In -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' $REVS -- .
+```
+
+Output is `<commit>:<path>:<line>:<match>`, so a hit names the commit to rewrite. On a large
+repository this reads every revision of every file; scope it with `-- <path>` or a shorter
+`git rev-list -n 500 --all` when a full sweep is too slow, and say in the report which you ran —
+a partial sweep reported as a full one is worse than no sweep.
 
 When a repository legitimately needs credential-shaped fixtures — a redaction test, a scanner's own corpus — do not recommend weakening the fixture. Recommend placeholders plus a local generator seeded to a fixed value, so the fixture is complete on the user's disk and absent from the published tree, and two people generating it get the same one.
 
@@ -72,7 +85,7 @@ When a repository legitimately needs credential-shaped fixtures — a redaction 
 These leak quietly. Nothing blocks them and nobody notices until the repository is public.
 
 ```bash
-grep -rInE '/Users/[a-z0-9_.-]+/|/home/[a-z0-9_.-]+/|C:\\\\Users\\\\' .
+grep -rInE '/Users/[a-z0-9_.-]+/|/home/[a-z0-9_.-]+/|C:\\+Users\\+' .
 grep -rInE '\.(internal|corp|local|lan)\b|10\.[0-9]+\.[0-9]+\.[0-9]+|192\.168\.' .
 ```
 
