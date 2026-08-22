@@ -23372,6 +23372,24 @@
     }
   },
   {
+    "slug": "clawcode",
+    "name": "Clawcode",
+    "author": "crisandrews",
+    "description": "Persistent agents for Claude Code as a plugin, not a harness. Memory, personality, messaging across WhatsApp, Telegram, and Discord, plus a service mode for 24/7 runs. Imports from OpenClaw.",
+    "github": "https://github.com/crisandrews/ClawCode",
+    "stars": 61,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 20,
+      "hooks": 1
+    },
+    "highlights": []
+  },
+  {
     "slug": "skills",
     "name": "Skills",
     "author": "Airtable",
