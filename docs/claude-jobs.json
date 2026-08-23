@@ -1,9 +1,10 @@
 {
-  "lastUpdated": "2026-08-22T03:23:06.187013+00:00",
-  "totalJobs": 101,
+  "lastUpdated": "2026-08-23T03:22:54.030772+00:00",
+  "totalJobs": 103,
   "sources": [
     "Anthropic",
-    "HackerNews"
+    "HackerNews",
+    "WeWorkRemotely"
   ],
   "jobs": [
     {
@@ -553,6 +554,52 @@
         "TypeScript",
         "Claude Code",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
+      "company": "Hygraph",
+      "position": "Senior Fullstack Engineer (f/m/d) - Berlin I Germany, EMEA I Remote",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Dircksenstraße 47, 10178 Berlin, Germany URL: https://hygraph.com How will you make an impact? As a Senior Full Stack Engineer, you'll work at the intersection of engineering and product to shape how our users build with Hygraph. You'll ship features that solve real customer problems,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
+      "postedAt": "2026-07-31T11:59:36+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Rust",
+        "Go",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-yoko-co-front-end-wordpress-developer",
+      "company": "Yoko Co",
+      "position": "Front-End WordPress Developer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: McLean, VA URL: https://www.yokoco.com/ We’re seeking a Front-End Developer who wants to make the world a better place through clean code, thoughtful craftsmanship, and a genuine love of building great websites. This isn’t just about turning designs into code, it’s about translating...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/yoko-co-front-end-wordpress-developer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/yoko-co-front-end-wordpress-developer",
+      "postedAt": "2026-07-24T14:03:46+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Claude Code",
+        "Copilot"
       ],
       "companyIcon": ""
     },
