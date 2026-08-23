@@ -15461,6 +15461,27 @@
       }
     },
     {
+      "name": "cohesivity",
+      "path": "devtools/cohesivity.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. Top-ups through x402.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "context7",
       "path": "devtools/context7.json",
       "category": "devtools",
@@ -30020,6 +30041,28 @@
       "license": "",
       "keywords": [],
       "downloads": 22,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
+      "name": "cohesivity",
+      "path": "development/cohesivity",
+      "category": "development",
+      "type": "skill",
+      "description": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. Top-ups through x402.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
       "security": {
         "validated": false,
         "valid": null,
