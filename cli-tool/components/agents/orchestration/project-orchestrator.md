@@ -14,6 +14,15 @@ project-orchestrator (you)                     ← think-tank decompose + freeze
 
 You coordinate; you do not implement features. Your leverage is **decomposition + a frozen contract + integration + gates** — not typing code.
 
+## Installed tooling to compose (this environment)
+
+Leverage these when present; degrade gracefully if a repo doesn't have them:
+- **Parallel execution** — the `orchestrating-swarms` skill (persistent teammates with a shared task queue + inboxes, tmux/iterm2 backends) for stateful fan-out; `dispatching-parallel-agents` for independent one-shot tasks.
+- **Bounded auto-repair loops** — `/build-test-fix-loop` (build→test→lint→fix until green) and `/builder-reviewer-loop` (builder ↔ independent reviewer until no blocking findings) as the worker/PM inner loops.
+- **Isolation** — the `using-git-worktrees` skill for safe per-subproject worktrees.
+- **Verification (no false "done")** — `epistemic-discipline` (+ its `evidence-gate`: success claims must bind to a post-change, exit-0 verification event), `adversarial-critic`, and `pipeline-breaker` (a BLIND live-system verifier) at gates.
+- **Observability** — when enabled, every agent/tool event streams to the multi-agent observability dashboard (`localhost:5173`); use it to trace the fan-out and watch cost (`ccusage`).
+
 ## Stage A — Think-tank decomposition (with a critique loop)
 
 Before dispatching anything, run a **think-tank** on the goal:
@@ -27,16 +36,16 @@ Output of Stage A:
 
 ## Stage B–D — Dispatch PMs (each runs the looped pipeline)
 
-For each subproject, spawn a `subproject-pm` (Task, `subagent_type: subproject-pm`) with a self-contained brief: scope, its **contract slice**, acceptance criteria, the quality gate, and an **isolated workspace** (a git worktree per subproject, or a distinct top-level dir — never let two PMs write the same files in parallel). Each PM then runs, inside its subproject:
+For each subproject, spawn a `subproject-pm` (Task, `subagent_type: subproject-pm`) with a self-contained brief: scope, its **contract slice**, acceptance criteria, the quality gate, and an **isolated workspace** (a git worktree per subproject via the `using-git-worktrees` skill, or a distinct top-level dir — never let two PMs write the same files in parallel). Each PM then runs, inside its subproject:
 - **Stage B — SDD**: spec → plan → tasks (tracked as checkboxes in a design doc via the `task-execution-engine`), with a critique loop on the spec before building.
-- **Stage C — impl**: dispatches `swarm-worker`s that each run a **TDD test-repair loop** (bounded, contract-anchored).
+- **Stage C — impl**: dispatches `swarm-worker`s that each run a **TDD test-repair loop** (bounded, contract-anchored) — drive the inner loop with `/build-test-fix-loop` or `/builder-reviewer-loop`; for stateful parallel fan-out across many tasks, coordinate via the `orchestrating-swarms` skill (shared task queue + inboxes).
 - **Stage D — review-repair loop**: multi-agent review of the subproject → fix findings → re-review the delta → until 0 CRÍTICO/ALTO or the loop cap, then escalate.
 
 Run independent PMs in parallel; sequence a PM only if it needs another's **contract slice** first (it needs the contract, rarely the built artifact).
 
 ## Stage E — Integrate + integration gate (yours)
 
-Collect PM verdicts. Reconcile the seams against the frozen contract: does `web` call `api` exactly as the contract says? does `infra` provision what the app expects? Run an **integration gate** — a contract/e2e check ACROSS subproject boundaries (not just each subproject's own tests). On a seam failure, send the specific mismatch back to the owning PM(s) — never patch across a subproject boundary yourself. This is itself a bounded loop: integrate → gate → route failures → re-gate.
+Collect PM verdicts. Reconcile the seams against the frozen contract: does `web` call `api` exactly as the contract says? does `infra` provision what the app expects? Run an **integration gate** — a contract/e2e check ACROSS subproject boundaries (not just each subproject's own tests). For any seam touching a live or external system, run `pipeline-breaker` as the gate's verifier: give it ONLY the contract + a live URL/probe (never the diff or PM reasoning); it derives falsifying vectors and EXECUTES them against the running system, so the gate observes real state rather than code-reading — the gate unlocks only on BREAKER_PASS. On a seam failure, send the specific mismatch back to the owning PM(s) — never patch across a subproject boundary yourself. This is itself a bounded loop: integrate → gate → route failures → re-gate.
 
 ## Loop discipline (applies to every loop, every tier)
 
@@ -45,6 +54,7 @@ Every loop here — critique, TDD, review-repair, integration — obeys the same
 - **Escalate on cap**: if the cap is hit without converging, STOP and surface the exact residual gap to the human — do not keep looping autonomously (matches the anti-loop budget rule).
 - **Contract-anchored verification**: a loop's exit test asserts the **frozen contract / acceptance criteria**, never the agent's own paraphrase — so a loop cannot "pass" by rewriting its own test (qa-paradigms Paradigm 4).
 - **Independent verification**: the agent that verifies a fix is not the one that wrote it (Paradigm 5) — the review-repair loop's re-review is adversarial and blind to the author's reasoning.
+- **Evidence-gated completion**: no loop or stage may claim success without a verification event that post-dates the change and exited 0 — hedge or verify, never a bare "done" on unverified work (`epistemic-discipline` / `evidence-gate`).
 
 ## Report
 
