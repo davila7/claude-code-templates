@@ -72,11 +72,10 @@ components:
     ProblemDetails:
       description: RFC 9457 Problem Details for HTTP APIs
       type: object
-      required: [type, title, status]
       properties:
         type:
           type: string
-          format: uri
+          format: uri-reference
           example: "https://api.example.com/problems/invalid-currency"
         title:
           type: string
@@ -89,7 +88,7 @@ components:
           example: "Currency must be a valid ISO 4217 alphabetic code."
         instance:
           type: string
-          format: uri
+          format: uri-reference
           example: "/v1/transactions/abc123"
         code:
           type: string
