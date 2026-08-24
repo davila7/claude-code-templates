@@ -1,6 +1,20 @@
 {
   "articles": [
     {
+      "id": "secure-git-workflow",
+      "title": "Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards",
+      "description": "Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.",
+      "url": "secure-git-workflow/",
+      "image": "assets/secure-git-workflow-cover.png",
+      "category": "Automation",
+      "publishDate": "2026-08-24",
+      "readTime": "7 min read",
+      "tags": ["Claude Code", "Security", "Hooks", "Git", "Skills"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 22
+    },
+    {
       "id": "neon-open-source-program",
       "title": "Claude Code Templates Joins the Neon Open Source Program",
       "description": "We're excited to announce that Claude Code Templates has been accepted into the Neon Open Source Program, bringing $5,000 annual sponsorship, co-marketing opportunities, and instant Postgres provisioning to all users.",
@@ -294,11 +308,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-02-01",
-    "totalArticles": 22,
+    "lastUpdated": "2026-08-24",
+    "totalArticles": 24,
     "difficultyLevels": {
       "basic": 9,
-      "intermediate": 7,
+      "intermediate": 8,
       "advanced": 5
     }
   }
