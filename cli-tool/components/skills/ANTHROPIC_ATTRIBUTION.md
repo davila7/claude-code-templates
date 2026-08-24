@@ -9,10 +9,12 @@ The following skills are used under their respective licenses:
 
 ### Apache 2.0 License (Open Source)
 These skills are freely usable, modifiable, and redistributable:
+- `academy-guide` - Recommend matching Claude Academy courses, tutorials, and use cases
 - `algorithmic-art` - Create generative art using p5.js
 - `artifacts-builder` - Build complex HTML artifacts with React and Tailwind
 - `brand-guidelines` - Apply Anthropic's brand guidelines
 - `canvas-design` - Design visual art in .png and .pdf formats
+- `discernment-nudge` - Prompt users to verify facts, reasoning, and assumptions in substantive answers
 - `internal-comms` - Write internal communications
 - `mcp-builder` - Guide for creating MCP servers
 - `skill-creator` - Guide for creating effective skills
@@ -78,4 +80,4 @@ For more information about skills, visit:
 
 ---
 
-**Last Updated**: July 3, 2026
+**Last Updated**: August 24, 2026
