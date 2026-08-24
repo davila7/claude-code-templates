@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/secure-git-workflow/">
+    <meta property="og:title" content="Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards">
+    <meta property="og:description" content="Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/secure-git-workflow-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Automation">
+    <meta property="article:tag" content="Security">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="Git">
+    <meta property="article:tag" content="Skills">
+    <meta property="article:tag" content="Claude Code">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/secure-git-workflow/">
+    <meta name="twitter:title" content="Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards">
+    <meta name="twitter:description" content="Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/secure-git-workflow-cover.png">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code Hooks, Claude Code Skills, Secret Scanner, Conventional Commits, Git Security, PreToolUse Hook, Secrets Management, Claude Code Templates, DevSecOps">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/secure-git-workflow/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards",
+        "description": "Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.",
+        "image": "https://aitmpl.com/blog/assets/secure-git-workflow-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/secure-git-workflow/"
+        },
+        "keywords": "Claude Code Hooks, Secret Scanner, Conventional Commits, Git Security, PreToolUse Hook, Secrets Management",
+        "wordCount": "1500",
+        "articleSection": "Claude Code Workflows",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Secret Detection"
+            },
+            {
+                "@type": "Thing",
+                "name": "Git Security"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards</h1>
+                <p class="article-subtitle">Two PreToolUse hooks and a secrets-management skill that work together to stop leaked credentials and messy commit history before they ever land in your repo.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">7 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Security</span>
+                        <span class="tag">Hooks</span>
+                        <span class="tag">Git</span>
+                        <span class="tag">Skills</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/secure-git-workflow-cover.png" alt="Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>Installation</h2>
+
+                <p>This workflow combines three Claude Code Templates components. Install all three with one command:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest \
+  --hook security/secret-scanner \
+  --hook git/conventional-commits \
+  --skill security/secrets-management</code></pre>
+
+                <p>This installs both hook scripts into <code>.claude/hooks/</code>, registers them in <code>.claude/settings.json</code>, and adds the skill to <code>.claude/skills/</code>.</p>
+
+                <div class="info-box">
+                    <strong>Want to understand how it works?</strong> Keep reading to see how these three components combine into a single, deterministic git safety net — and why one of them is deliberately not deterministic.
+                </div>
+
+                <h2>The Problem: Two Different Ways a Commit Goes Wrong</h2>
+
+                <p>Most "bad commit" incidents fall into one of two buckets:</p>
+
+                <ul>
+                    <li><strong>A secret slips in</strong> — an API key, a database URL, a token pasted in during a debugging session — and gets committed before anyone notices.</li>
+                    <li><strong>The history turns to noise</strong> — commit messages like <code>"fix"</code> or <code>"wip"</code> that make changelog generation and semantic versioning impossible to automate.</li>
+                </ul>
+
+                <p>Asking Claude nicely in <code>CLAUDE.md</code> to "never commit secrets" or "always use conventional commits" helps, but it's a suggestion Claude can miss under pressure. Hooks turn both rules into code that runs on every single <code>git commit</code>, no exceptions.</p>
+
+                <h2>How the Hooks Actually Intercept a Commit</h2>
+
+                <p>Both hooks register on the <code>PreToolUse</code> event with a matcher for the <code>Bash</code> tool. Every time Claude Code is about to run a Bash command, it sends the tool call as JSON on the hook script's stdin:</p>
+
+                <pre><code class="language-json">{
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "git commit -m \"add login form\"",
+    "description": "Commit the new login form"
+  },
+  "tool_use_id": "...",
+  "cwd": "/path/to/project"
+}</code></pre>
+
+                <p>The hook script inspects <code>tool_input.command</code>, and if it isn't a <code>git commit</code> call, exits immediately with code <code>0</code> so the command runs unmodified. If it <em>is</em> a commit, the script decides whether to allow or deny it — and it can deny in two equivalent ways: exiting with code <code>2</code> (stderr becomes the reason shown to Claude), or exiting <code>0</code> while printing a JSON object with <code>permissionDecision: "deny"</code>. Both hooks in this workflow use the JSON form:</p>
+
+                <pre><code class="language-json">{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "❌ Invalid commit message format..."
+  }
+}</code></pre>
+
+                <p>Because <code>secret-scanner</code> and <code>conventional-commits</code> both match the <code>Bash</code> tool, Claude Code registers them as two independent entries in the <code>PreToolUse</code> array — installing the second doesn't overwrite the first, it appends to it. Every Bash call runs both, and if either one denies, the commit is blocked. A leaked key and a malformed message are caught by the same event, by two hooks that never have to know about each other.</p>
+
+                <h2>1. secret-scanner — Catch Credentials Before They Commit</h2>
+
+                <p>The scanner matches the outgoing command against 30+ provider-specific patterns — not generic "looks like a password" heuristics, but the actual token shapes providers issue:</p>
+
+                <pre><code class="language-python">SECRET_PATTERNS = [
+    (r'AKIA[0-9A-Z]{16}', 'AWS Access Key ID', 'high'),
+    (r'sk-ant-api\d{2}-[A-Za-z0-9\-_]{20,}', 'Anthropic API Key', 'high'),
+    (r'sk-[a-zA-Z0-9]{48,}', 'OpenAI API Key', 'high'),
+    (r'AIza[0-9A-Za-z\-_]{35}', 'Google API Key', 'high'),
+    (r'sk_live_[0-9a-zA-Z]{24,}', 'Stripe Live Secret Key', 'critical'),
+    (r'ghp_[0-9a-zA-Z]{36}', 'GitHub Personal Access Token', 'high'),
+    (r'hf_[a-zA-Z0-9]{34,}', 'Hugging Face Token', 'high'),
+    # ...and 20+ more: GitLab, Vercel, Supabase, Replicate, Groq, Databricks, Azure...
+]</code></pre>
+
+                <p>When a match is found in the staged diff, the hook denies the commit and tells Claude exactly what was matched and why — nudging it toward environment variables instead of silently stripping the line.</p>
+
+                <h2>2. conventional-commits — Keep the History Machine-Readable</h2>
+
+                <p>This hook only activates on commands containing <code>git commit</code>, extracts the message from the <code>-m</code> flag (or a heredoc-style multi-line message), and checks it against the Conventional Commits grammar:</p>
+
+                <pre><code class="language-text">type(scope): description
+
+Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert</code></pre>
+
+                <p>A message like <code>"fix"</code> or <code>"updated stuff"</code> gets denied with the exact rule and two or three corrected examples in the reason string, so Claude can immediately retry with <code>fix: resolve memory leak in parser</code> instead of guessing.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Commit attempt</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>git commit -m "fix"</code></td>
+                            <td>❌ Denied — missing description</td>
+                        </tr>
+                        <tr>
+                            <td><code>git commit -m "Added new feature"</code></td>
+                            <td>❌ Denied — no <code>type:</code> prefix</td>
+                        </tr>
+                        <tr>
+                            <td><code>git commit -m "feat(auth): add JWT refresh"</code></td>
+                            <td>✅ Allowed</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>3. secrets-management — The Skill That Fills the Gap the Hooks Leave Open</h2>
+
+                <p>Here's the part that trips people up: a hook can only <em>react</em> to a hardcoded secret that's already been typed. It can't tell you <em>where that secret should have lived instead</em>. That's not a job for a deterministic script — it depends on your stack, your CI provider, and whether you're rotating credentials or provisioning them for the first time. That's exactly the kind of judgment call a <strong>Skill</strong> is built for.</p>
+
+                <div class="info-box">
+                    <strong>Hooks vs. Skills — different trigger models, on purpose:</strong> A hook is event-driven and deterministic — the harness fires it on every matching tool call, unconditionally. A skill has no <code>hooks</code> field in its frontmatter; instead, Claude reads its description and decides whether it's relevant to the current conversation, the same way it decides whether to reach for any other piece of context. Hooks enforce; skills advise.
+                </div>
+
+                <p>So when <code>secret-scanner</code> blocks a commit containing a Stripe key, Claude has the <code>secrets-management</code> skill available to reach for — and its guidance is specific per backend:</p>
+
+                <pre><code class="language-bash"># AWS Secrets Manager
+aws secretsmanager create-secret \
+  --name production/database/password \
+  --secret-string "super-secret-password"
+
+# HashiCorp Vault
+vault kv put secret/database/config username=admin password=secret
+
+# GitHub Actions
+echo "API Key: ${{ secrets.API_KEY }}"</code></pre>
+
+                <p>The skill also documents rotation, least-privilege access, and masking secrets in CI logs — the practices that keep a fixed leak from becoming a recurring one.</p>
+
+                <h2>The Workflow, End to End</h2>
+
+                <p>Here's what actually happens when you ask Claude Code to commit a change that contains a hardcoded key:</p>
+
+                <div class="warning-box">
+                    <strong>1. Claude runs</strong> <code>git commit -m "feat: add stripe integration"</code><br><br>
+                    <strong>2. Both PreToolUse hooks fire in parallel.</strong> <code>conventional-commits</code> allows the message — it's well-formed. <code>secret-scanner</code> finds <code>sk_live_...</code> in the diff and denies.<br><br>
+                    <strong>3. The commit is blocked.</strong> Claude receives the scanner's reason and, with the <code>secrets-management</code> skill in context, replaces the hardcoded key with <code>process.env.STRIPE_SECRET_KEY</code> and adds it to <code>.env</code> (already gitignored).<br><br>
+                    <strong>4. Claude retries the commit.</strong> This time both hooks allow it, and it lands in your history clean — no secret, properly typed message.
+                </div>
+
+                <p>Nobody had to review a diff to catch the leak, and nobody had to fix the commit message after the fact. The two hooks make the enforcement automatic; the skill makes the fix correct.</p>
+
+                <h2>Where Each Piece Belongs</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Type</th>
+                            <th>Trigger</th>
+                            <th>Job</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>secret-scanner</code></td>
+                            <td>Hook</td>
+                            <td>Every <code>git commit</code></td>
+                            <td>Deny commits containing credential patterns</td>
+                        </tr>
+                        <tr>
+                            <td><code>conventional-commits</code></td>
+                            <td>Hook</td>
+                            <td>Every <code>git commit</code></td>
+                            <td>Deny non-conventional commit messages</td>
+                        </tr>
+                        <tr>
+                            <td><code>secrets-management</code></td>
+                            <td>Skill</td>
+                            <td>Claude's judgment</td>
+                            <td>Guide the fix once a secret is caught</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="success-box">
+                    <strong>Rule of thumb:</strong> If a rule must never be violated, put it in a hook — it runs whether Claude "remembers" or not. If a rule requires context-dependent judgment, a skill is the right shape, because it works alongside the hook rather than trying to replace it.
+                </div>
+
+                <h2>Conclusion</h2>
+
+                <p>None of these three components is complicated on its own. What makes this a workflow rather than three separate installs is that they cover each other's blind spots: the scanner catches the leak, the commit-message hook keeps history usable, and the skill supplies the fix the hooks can't compute. Install all three and your git workflow gets a safety net that works the same way at 2am as it does in a careful code review.</p>
+
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
+
+                <p style="margin-top:2rem;color:#888;font-size:0.95rem;">Created by <a href="https://x.com/dani_avila7" target="_blank" rel="noopener">Daniel Ávila</a></p>
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                let textToCopy = code.textContent;
+
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        return text
+            .split('\n')
+            .map(line => {
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '')
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                if (element.classList.contains('newsletter-cta') ||
+                    element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>
