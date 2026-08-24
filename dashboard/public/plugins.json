@@ -23544,5 +23544,30 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "webmcp-kit",
+    "name": "WebMCP Kit",
+    "author": "nekuda-ai",
+    "description": "Coding-agent plugin that maps a web app's user journeys in a visual Explorer, proposes WebMCP tools for approval, implements them through the app's own logic, and verifies each tool in a real browser.",
+    "github": "https://github.com/nekuda-ai/webmcp-kit",
+    "stars": 2,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 2
+    },
+    "highlights": [],
+    "website": "https://github.com/nekuda-ai/webmcp-kit",
+    "marketplace_name": "nekuda",
+    "plugin_name": "webmcp-kit",
+    "plugin_manifest": {
+      "skills": [
+        "implement",
+        "verify"
+      ]
+    }
   }
 ]
