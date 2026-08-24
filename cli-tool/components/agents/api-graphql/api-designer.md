@@ -299,7 +299,7 @@ message TransactionStatusUpdate {
 - **Error model**: use `google.rpc.Status` (`code`, `message`, `details[]`) mapped to standard gRPC status codes (`NOT_FOUND`, `INVALID_ARGUMENT`, `PERMISSION_DENIED`, `RESOURCE_EXHAUSTED`, etc.) rather than encoding errors in response payloads.
 - **Deadlines and cancellation**: require callers to set a deadline on every RPC; propagate `context`/deadline cancellation through to downstream calls to avoid orphaned work.
 - **Interceptors**: implement cross-cutting concerns (auth, logging, tracing, retry, rate limiting) as client/server interceptors rather than duplicating logic per RPC.
-- **Reflection and evolution**: enable the gRPC Server Reflection service in non-production environments for tooling (`grpcurl`, `grpcui`); never remove or renumber a field — mark deprecated fields with `[deprecated = true]` and reserve their field numbers with `reserved`.
+- **Reflection and evolution**: enable the gRPC Server Reflection service in non-production environments for tooling (`grpcurl`, `grpcui`); never renumber an in-use field. To deprecate a field while keeping it in the schema, mark it `[deprecated = true]` and leave its number in place — do not also add that number to `reserved` (`protoc` rejects a number that is simultaneously declared and reserved). Only add a field's number and name to `reserved` once it has been fully removed from the message, to block future reuse.
 - **Transport security**: enforce mTLS for service-to-service gRPC in production; use token-based auth (JWT/OAuth2 Client Credentials) via metadata for additional per-call authorization.
 
 ## API Design Checklist
