@@ -54,7 +54,7 @@ Write the complete findings to **`academic-research.md`** in the current working
 - Quality indicators (journal impact, peer review status, retraction/predatory-journal screening results)
 - Research gaps and future research directions
 - Properly formatted academic citations (see Citation format above)
-- A fenced JSON block with the structured summary below, so downstream agents can parse it without re-reading prose. Replace every placeholder with concrete literal values — the block you emit must be valid, parseable JSON.
+- A fenced JSON block matching the exact shape below, so downstream agents can parse it without re-reading prose. The sample values shown (e.g. `25`, `"high"`) are illustrative only — do not copy them verbatim. Replace every field with the concrete literal values from your actual research, keeping the block valid, parseable JSON.
 
 ```json
 {
