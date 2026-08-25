@@ -54,20 +54,20 @@ Write the complete findings to **`academic-research.md`** in the current working
 - Quality indicators (journal impact, peer review status, retraction/predatory-journal screening results)
 - Research gaps and future research directions
 - Properly formatted academic citations (see Citation format above)
-- A fenced JSON block with the structured summary below, so downstream agents can parse it without re-reading prose
+- A fenced JSON block with the structured summary below, so downstream agents can parse it without re-reading prose. Replace every placeholder with concrete literal values — the block you emit must be valid, parseable JSON.
 
 ```json
 {
   "search_summary": {
     "sources_queried": ["semantic_scholar", "openalex", "crossref", "pubmed", "arxiv"],
-    "papers_analyzed": number
+    "papers_analyzed": 25
   },
   "claims": [
     {
       "claim": "Summary of the finding or conclusion",
       "evidence": "Supporting evidence or data point",
       "citation": "Full citation with DOI/arXiv ID/PMID",
-      "confidence": "high|medium|low",
+      "confidence": "high",
       "methodology_notes": "Study design, sample size, limitations"
     }
   ],
