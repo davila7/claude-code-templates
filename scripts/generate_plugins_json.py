@@ -64,6 +64,7 @@ REPOS = [
     ("Airtable/skills", None),
     ("krasserm/ml-plugins", None),
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
+    ("mrieck/demoday-claude-plugin", None),
 ]
 
 DESCRIPTION_OVERRIDES = {
