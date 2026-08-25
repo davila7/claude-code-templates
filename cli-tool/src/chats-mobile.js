@@ -12,6 +12,7 @@ const DataCache = require('./analytics/data/DataCache');
 const AgentAnalyzer = require('./analytics/core/AgentAnalyzer');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const SessionSharing = require('./session-sharing');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 class ChatsMobile {
   constructor(options = {}) {
@@ -28,7 +29,7 @@ class ChatsMobile {
     
     // Initialize ConversationAnalyzer with proper parameters
     const homeDir = os.homedir();
-    const claudeDir = path.join(homeDir, '.claude');
+    const claudeDir = getClaudeConfigDir(homeDir);
     this.conversationAnalyzer = new ConversationAnalyzer(claudeDir, this.dataCache);
 
     // Initialize SessionSharing for export/import functionality
@@ -821,7 +822,7 @@ class ChatsMobile {
   async setupFileWatching() {
     try {
       const homeDir = os.homedir();
-      const claudeDir = path.join(homeDir, '.claude');
+      const claudeDir = getClaudeConfigDir(homeDir);
       
       this.fileWatcher.setupFileWatchers(
         claudeDir,
@@ -1004,7 +1005,7 @@ class ChatsMobile {
   async loadInitialData() {
     try {
       const homeDir = os.homedir();
-      const claudeDataDir = path.join(homeDir, '.claude');
+      const claudeDataDir = getClaudeConfigDir(homeDir);
       
       if (await fs.pathExists(claudeDataDir)) {
         // Use ConversationAnalyzer to load conversations
