@@ -20,6 +20,7 @@ Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
 export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 export TTS_GEN="$CODEX_HOME/skills/speech/scripts/text_to_speech.py"
 export ATLAS_TTS_GEN="$CODEX_HOME/skills/speech/scripts/atlas_text_to_speech.py"
+export MUAPI_TTS_GEN="$CODEX_HOME/skills/speech/scripts/muapi_text_to_speech.py"
 ```
 
 Dry-run (no API call; no network required; does not require the `openai` package):
@@ -35,6 +36,15 @@ python "$ATLAS_TTS_GEN" speak \
   --input "Test" \
   --voice eve \
   --language auto \
+  --dry-run
+```
+
+MuAPI dry-run (only when MuAPI is explicitly selected):
+
+```bash
+python "$MUAPI_TTS_GEN" speak \
+  --input "Test" \
+  --language-code en \
   --dry-run
 ```
 
@@ -58,8 +68,11 @@ python "$TTS_GEN" speak --input "Hello" --voice cedar --out speech.mp3
 ## Guardrails (important)
 - Use `python "$TTS_GEN" ...` (or equivalent full path) for the default OpenAI workflow.
 - Use `python "$ATLAS_TTS_GEN" ...` only after the user selects Atlas Cloud.
+- Use `python "$MUAPI_TTS_GEN" ...` only after the user selects MuAPI.
 - Atlas generation POSTs are never retried. Its prediction GET polling is finite.
 - Atlas output downloads never receive the API key and reject private-network URLs.
+- MuAPI generation POSTs are never retried. Its prediction GET polling is finite.
+- MuAPI output downloads never receive the API key and reject private-network URLs.
 - Do **not** create one-off runners (e.g., `gen_audio.py`) unless the user explicitly asks.
 
 ## Defaults (unless overridden by flags)
@@ -71,6 +84,10 @@ python "$TTS_GEN" speak --input "Hello" --voice cedar --out speech.mp3
 
 Atlas Cloud defaults are model `xai/tts-v1`, multilingual voice `eve`, language
 `auto`, codec `mp3`, 2-second polling, and at most 120 polls.
+
+MuAPI defaults are model `elevenlabs-tts-turbo-2-5`, the published default voice
+ID, 2-second polling, and at most 120 polls. See `references/muapi.md` for its
+verified input fields and model links.
 
 ## Input limits
 - Input text must be <= 4096 characters per request.
