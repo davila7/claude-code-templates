@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-25T03:26:02.929055+00:00",
+  "lastUpdated": "2026-08-26T03:25:48.284638+00:00",
   "totalJobs": 103,
   "sources": [
     "Anthropic",
@@ -7,6 +7,50 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5390966008",
+      "company": "Anthropic",
+      "position": "AI Engineer, GTM Claudification ",
+      "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA",
+      "remote": true,
+      "salary": "",
+      "description": "As an AI Engineer on the GTM Claudification team, you will build the agents and AI systems that run Anthropic's own go-to-market work. Our sellers already work alongside agents every day. You will take things to the next step and build agents that run complete autonomous motions across areas like...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390966008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390966008",
+      "postedAt": "2026-08-25T18:59:04-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5387754008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architect, Enterprise Tech",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5387754008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5387754008",
+      "postedAt": "2026-08-25T13:38:58-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5398227008",
       "company": "Anthropic",
@@ -345,23 +389,6 @@
         "AWS",
         "Docker",
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49203310",
-      "company": "Clearview Counseling Group",
-      "position": "Platform Engineer",
-      "location": "REMOTE (US)",
-      "remote": true,
-      "salary": "",
-      "description": "Two-location outpatient behavioral health practice. We've spent the past year building our own internal tools instead of waiting on vendors: patient self-referral, therapist availability, referral pipeline, onboarding. All internal, nothing public yet. They're prototypes — React from a CDN, browser...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49203310",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49203310",
-      "postedAt": "2026-08-06T22:10:33+00:00",
-      "tags": [
-        "React"
       ],
       "companyIcon": ""
     },
@@ -1825,27 +1852,6 @@
         "Python",
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5192104008",
-      "company": "Anthropic",
-      "position": "Head of Applied AI Architects, Beneficial Deployments (Non-profits & Higher Ed)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As the Global Leader of Applied AI Architects for Beneficial Deployments, you will lead the team of Applied AI Architects who serve as the primary technical partners to mission-driven organizations and non-profits adopting Claude. You'll build and scale a world-class, globally distributed team that...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
-      "postedAt": "2026-04-17T10:45:07-04:00",
-      "tags": [
-        "Python",
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
