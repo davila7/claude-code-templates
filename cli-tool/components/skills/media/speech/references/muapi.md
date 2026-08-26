@@ -17,7 +17,7 @@ and set it in the local environment:
 ```bash
 export MUAPI_API_KEY="<your-key>"
 export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-export MUAPI_TTS_GEN="$CODEX_HOME/skills/speech/scripts/muapi_text_to_speech.py"
+export MUAPI_TTS_GEN="$CODEX_HOME/skills/speech/scripts/muapi-text-to-speech.py"
 ```
 
 Keep the key in the environment; do not put it in prompts, JSONL files, shell
@@ -69,7 +69,8 @@ python "$MUAPI_TTS_GEN" speak-batch \
 - Speed, stability, and similarity boost values reject non-finite numbers and
   values outside the model's published ranges.
 - Output URLs must use HTTPS and resolve to public hosts. Redirects are checked
-  too, and downloads are written to a temporary file before atomic replacement.
+  too, DNS is revalidated and pinned at connection setup, and downloads are
+  written to a temporary file before atomic replacement.
 - The download request does not include `MUAPI_API_KEY`.
 - Generated speech is AI-generated; disclose that when sharing the audio.
 

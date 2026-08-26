@@ -1,6 +1,6 @@
 ---
 name: "speech"
-description: "Use when the user asks for text-to-speech narration or voiceover, accessibility reads, audio prompts, or batch speech generation. OpenAI remains the default; Atlas Cloud is an explicit optional backend for asynchronous multilingual speech. Custom voice creation is out of scope."
+description: "Use when the user asks for text-to-speech narration or voiceover, accessibility reads, audio prompts, or batch speech generation. OpenAI remains the default; MuAPI and Atlas Cloud are explicit optional backends for asynchronous speech. Custom voice creation is out of scope."
 author: openai
 ---
 
@@ -10,7 +10,7 @@ author: openai
 Generate spoken audio for the current project (narration, product demo voiceover, IVR prompts, accessibility reads). OpenAI remains the default with `gpt-4o-mini-tts-2025-12-15`; Atlas Cloud is available only when the user explicitly selects it. Prefer the bundled CLIs for deterministic, reproducible runs.
 
 MuAPI is also available as an explicitly selected optional asynchronous speech
-backend through `scripts/muapi_text_to_speech.py`.
+backend through `scripts/muapi-text-to-speech.py`.
 
 ## When to use
 - Generate a single spoken clip from text
@@ -26,7 +26,7 @@ backend through `scripts/muapi_text_to_speech.py`.
 3. If batch: write a temporary JSONL under tmp/ (one job per line), run once, then delete the JSONL.
 4. Augment instructions into a short labeled spec without rewriting the input text.
 5. Run `scripts/text_to_speech.py` for the default OpenAI path, or `scripts/atlas_text_to_speech.py` only when Atlas Cloud was selected (see `references/cli.md`).
-   When MuAPI is explicitly selected, use `scripts/muapi_text_to_speech.py`.
+   When MuAPI is explicitly selected, use `scripts/muapi-text-to-speech.py`.
 6. For important clips, validate: intelligibility, pacing, pronunciation, and adherence to constraints.
 7. Iterate with a single targeted change (voice, speed, or instructions), then re-check.
 8. Save/return final outputs and note the final text + instructions + flags used.
@@ -57,7 +57,7 @@ The Atlas Cloud backend uses only the Python standard library.
 
 If the selected provider key is missing, give the user these steps:
 1. Create an API key in that provider's console.
-2. Set `OPENAI_API_KEY` or `ATLASCLOUD_API_KEY` as an environment variable in their system.
+2. Set `OPENAI_API_KEY`, `MUAPI_API_KEY`, or `ATLASCLOUD_API_KEY` as an environment variable in their system.
 3. Offer to guide them through setting the environment variable for their OS/shell if needed.
 - Keep provider credentials out of chat. Direct the user to set the selected key locally and confirm when ready.
 

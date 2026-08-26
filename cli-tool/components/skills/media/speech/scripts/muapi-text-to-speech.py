@@ -10,6 +10,7 @@ the MuAPI credential.
 from __future__ import annotations
 
 import argparse
+import http.client
 import ipaddress
 import json
 import math
@@ -22,10 +23,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Set
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 
 API_BASE = "https://api.muapi.ai"
+API_HOST = "api.muapi.ai"
 MODEL_NAME = "elevenlabs-tts-turbo-2-5"
 MODEL_ENDPOINT = f"/api/v1/{MODEL_NAME}"
 MODEL_DETAIL_PATH = f"/api/v1/models/{MODEL_NAME}"
@@ -158,6 +160,32 @@ def _api_key(dry_run: bool) -> str:
     return ""
 
 
+def _is_api_origin(url: str) -> bool:
+    parsed = urllib.parse.urlsplit(url)
+    try:
+        port = parsed.port
+    except ValueError:
+        return False
+    return (
+        parsed.scheme.lower() == "https"
+        and parsed.hostname is not None
+        and parsed.hostname.lower() == API_HOST
+        and port in {None, 443}
+    )
+
+
+class _FixedOriginRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+        if not _is_api_origin(newurl):
+            raise RuntimeError("MuAPI API redirect left the fixed API origin")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _open_api(request: urllib.request.Request):
+    opener = urllib.request.build_opener(_FixedOriginRedirectHandler())
+    return opener.open(request, timeout=60)
+
+
 def _request_json(
     url: str,
     *,
@@ -184,7 +212,7 @@ def _request_json(
     for attempt in range(1, attempts + 1):
         request = urllib.request.Request(url, data=body, headers=headers, method=method)
         try:
-            with urllib.request.urlopen(request, timeout=60) as response:
+            with _open_api(request) as response:
                 result = json.loads(response.read().decode("utf-8"))
             if not isinstance(result, dict):
                 raise ValueError("MuAPI returned a non-object JSON response")
@@ -338,6 +366,73 @@ def _is_safe_ip(address: str, *, named_host: bool) -> bool:
     return ip.is_global
 
 
+def _resolve_public_addresses(
+    host: str, port: int
+) -> List[Tuple[int, int, int, Any]]:
+    try:
+        infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+    except socket.gaierror as exc:
+        raise OSError(f"Could not resolve MuAPI output host: {exc}") from exc
+    if not infos:
+        raise OSError("MuAPI output host did not resolve")
+
+    addresses: List[Tuple[int, int, int, Any]] = []
+    seen = set()
+    for family, socktype, protocol, _canonname, sockaddr in infos:
+        address = sockaddr[0]
+        try:
+            safe = _is_safe_ip(address, named_host=True)
+        except ValueError as exc:
+            raise OSError("MuAPI output host returned an invalid address") from exc
+        if not safe:
+            raise OSError("MuAPI output URL resolves to a non-public address")
+        key = (family, socktype, protocol, sockaddr)
+        if key not in seen:
+            seen.add(key)
+            addresses.append((family, socktype, protocol, sockaddr))
+    if not addresses:
+        raise OSError("MuAPI output host did not resolve to a usable address")
+    return addresses
+
+
+class _PinnedHTTPSConnection(http.client.HTTPSConnection):
+    """Connect to the exact public address validated at connection setup."""
+
+    def connect(self):  # type: ignore[no-untyped-def]
+        addresses = _resolve_public_addresses(self.host, self.port)
+        last_error: Optional[OSError] = None
+        for family, socktype, protocol, sockaddr in addresses:
+            sock = socket.socket(family, socktype or socket.SOCK_STREAM, protocol)
+            try:
+                if self.timeout is not socket._GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(self.timeout)
+                sock.connect(sockaddr)
+                try:
+                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                except OSError:
+                    pass
+                self.sock = sock
+                if self._tunnel_host:
+                    self._tunnel()
+                server_hostname = self._tunnel_host or self.host
+                self.sock = self._context.wrap_socket(
+                    self.sock, server_hostname=server_hostname
+                )
+                return
+            except OSError as exc:
+                last_error = exc
+                sock.close()
+                self.sock = None
+        if last_error is not None:
+            raise OSError("Could not connect to MuAPI output host") from last_error
+        raise OSError("Could not connect to MuAPI output host")
+
+
+class _PinnedHTTPSHandler(urllib.request.HTTPSHandler):
+    def https_open(self, req):  # type: ignore[no-untyped-def]
+        return self.do_open(_PinnedHTTPSConnection, req, context=self._context)
+
+
 def _validate_download_url(url: str) -> None:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme.lower() != "https" or not parsed.hostname:
@@ -356,15 +451,10 @@ def _validate_download_url(url: str) -> None:
     if host.lower() == "localhost" or host.lower().endswith(".localhost"):
         _die("MuAPI output URL must not target localhost.")
     try:
-        addresses: Set[str] = {
-            item[4][0]
-            for item in socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-        }
-    except socket.gaierror as exc:
-        _die(f"Could not resolve MuAPI output host: {exc}")
-        return
-    if not addresses or any(not _is_safe_ip(address, named_host=True) for address in addresses):
-        _die("MuAPI output URL resolves to a non-public address.")
+        port = parsed.port or 443
+        _resolve_public_addresses(host, port)
+    except (OSError, ValueError) as exc:
+        _die(str(exc))
 
 
 class _SafeRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -384,7 +474,11 @@ def _download(url: str, out_path: Path, *, force: bool) -> None:
         headers={"Accept": "audio/*", "User-Agent": USER_AGENT},
         method="GET",
     )
-    opener = urllib.request.build_opener(_SafeRedirectHandler())
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({}),
+        _SafeRedirectHandler(),
+        _PinnedHTTPSHandler(),
+    )
     try:
         with tempfile.NamedTemporaryFile(
             prefix=f".{out_path.name}.",
@@ -439,7 +533,13 @@ def _payload(args: argparse.Namespace, text: str) -> Dict[str, Any]:
     return payload
 
 
-def _generate(payload: Mapping[str, Any], out_path: Path, args: argparse.Namespace) -> None:
+def _generate(
+    payload: Mapping[str, Any],
+    out_path: Path,
+    args: argparse.Namespace,
+    *,
+    model_details: Optional[Mapping[str, Any]] = None,
+) -> None:
     _poll_options(args)
     if out_path.exists() and not args.force and not args.dry_run:
         _die(f"Output already exists: {out_path} (use --force to overwrite)")
@@ -459,7 +559,8 @@ def _generate(payload: Mapping[str, Any], out_path: Path, args: argparse.Namespa
         )
         return
 
-    _discover_model()
+    if model_details is None:
+        _discover_model()
     prediction_id = _submit(payload, key)
     output_url = _poll(
         prediction_id,
@@ -500,7 +601,11 @@ def _run_speak(args: argparse.Namespace) -> int:
 
 def _run_batch(args: argparse.Namespace) -> int:
     out_dir = Path(args.out_dir)
-    for index, job in enumerate(_read_jobs(args.input), 1):
+    jobs = _read_jobs(args.input)
+    model_details: Optional[Mapping[str, Any]] = None
+    if not args.dry_run:
+        model_details = _discover_model()
+    for index, job in enumerate(jobs, 1):
         child = argparse.Namespace(**vars(args))
         child.voice_id = job.get("voice_id", args.voice_id)
         child.stability = job.get("stability", args.stability)
@@ -513,7 +618,12 @@ def _run_batch(args: argparse.Namespace) -> int:
         text = _read_text(job_text, None)
         filename = str(job.get("out") or f"{index:03d}-speech.mp3")
         out_path = out_dir / Path(filename).name
-        _generate(_payload(child, text), out_path, child)
+        _generate(
+            _payload(child, text),
+            out_path,
+            child,
+            model_details=model_details,
+        )
     return 0
 
 
