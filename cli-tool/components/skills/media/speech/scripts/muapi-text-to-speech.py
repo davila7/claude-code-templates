@@ -599,9 +599,19 @@ def _run_speak(args: argparse.Namespace) -> int:
     return 0
 
 
+def _batch_output_path(out_dir: Path, index: int, job: Mapping[str, Any]) -> Path:
+    filename = str(job.get("out") or f"{index:03d}-speech.mp3")
+    return out_dir / Path(filename).name
+
+
 def _run_batch(args: argparse.Namespace) -> int:
     out_dir = Path(args.out_dir)
     jobs = _read_jobs(args.input)
+    if not args.dry_run and not args.force:
+        for index, job in enumerate(jobs, 1):
+            out_path = _batch_output_path(out_dir, index, job)
+            if out_path.exists():
+                _die(f"Output already exists: {out_path} (use --force to overwrite)")
     model_details: Optional[Mapping[str, Any]] = None
     if not args.dry_run:
         model_details = _discover_model()
@@ -616,8 +626,7 @@ def _run_batch(args: argparse.Namespace) -> int:
         if not isinstance(job_text, str):
             _die(f"Batch job {index} must provide string input text.")
         text = _read_text(job_text, None)
-        filename = str(job.get("out") or f"{index:03d}-speech.mp3")
-        out_path = out_dir / Path(filename).name
+        out_path = _batch_output_path(out_dir, index, job)
         _generate(
             _payload(child, text),
             out_path,

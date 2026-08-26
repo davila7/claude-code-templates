@@ -193,6 +193,24 @@ class MuapiTextToSpeechTests(unittest.TestCase):
         self.assertEqual(result, 0)
         discover.assert_called_once_with()
 
+    def test_batch_existing_output_stops_before_discovery(self):
+        with tempfile.TemporaryDirectory() as directory:
+            jobs = Path(directory) / "jobs.jsonl"
+            jobs.write_text('{"input":"One"}\n', encoding="utf-8")
+            (Path(directory) / "001-speech.mp3").write_bytes(b"existing")
+            with mock.patch.object(muapi_tts, "_discover_model") as discover:
+                with self.assertRaises(SystemExit):
+                    muapi_tts.main(
+                        [
+                            "speak-batch",
+                            "--input",
+                            str(jobs),
+                            "--out-dir",
+                            directory,
+                        ]
+                    )
+        discover.assert_not_called()
+
     def test_batch_dry_run_uses_job_overrides(self):
         with tempfile.TemporaryDirectory() as directory:
             jobs = Path(directory) / "jobs.jsonl"
