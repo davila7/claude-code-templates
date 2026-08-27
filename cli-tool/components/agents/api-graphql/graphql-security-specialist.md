@@ -285,6 +285,12 @@ useServer(
     onComplete: (ctx) => {
       const count = activeSubscriptionsByConnection.get(ctx) || 0;
       activeSubscriptionsByConnection.set(ctx, Math.max(0, count - 1));
+    },
+    // onComplete does not fire when a subscription ends via onError — release
+    // the slot here too, or a client that keeps erroring leaks its cap
+    onError: (ctx) => {
+      const count = activeSubscriptionsByConnection.get(ctx) || 0;
+      activeSubscriptionsByConnection.set(ctx, Math.max(0, count - 1));
     }
   },
   wsServer
