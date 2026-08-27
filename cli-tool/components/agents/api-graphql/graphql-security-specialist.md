@@ -104,11 +104,6 @@ const server = new ApolloServer({
 // ✅ Disable introspection in production
 // Note: the `playground` constructor option was removed in Apollo Server 3+
 // (2021) — it will error or be silently ignored on current versions.
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  introspection: process.env.NODE_ENV !== 'production'
-});
 
 // If GraphiQL/Apollo Sandbox also needs to be disabled in production,
 // swap the landing-page plugin instead of the old `playground` option:
@@ -270,15 +265,16 @@ const MAX_SUBSCRIPTIONS_PER_CONNECTION = 20;
 useServer(
   {
     schema,
-    context: async (ctx) => {
+    // Authenticate in onConnect — this runs once, at connection
+    // establishment, before onSubscribe or any resource accounting.
+    // Returning false rejects the connection and closes the socket.
+    onConnect: async (ctx) => {
       const token = ctx.connectionParams?.authToken;
       const user = token ? await getUser(token) : null;
-      if (!user) {
-        // Reject the connection outright — no subscription is created
-        throw new Error('Unauthorized: valid authToken required');
-      }
-      return { user };
+      if (!user) return false;
+      ctx.extra.user = user;
     },
+    context: (ctx) => ({ user: ctx.extra.user }),
     onSubscribe: (ctx) => {
       const count = activeSubscriptionsByConnection.get(ctx) || 0;
       if (count >= MAX_SUBSCRIPTIONS_PER_CONNECTION) {
@@ -314,7 +310,7 @@ const server = new ApolloServer({
   resolvers,
   formatError: (formattedError, error) => {
     // Always strip stack traces from the response, even in dev
-    delete formattedError.extensions?.exception?.stacktrace;
+    delete formattedError.extensions?.stacktrace;
 
     const originalErrorName = error?.originalError?.constructor?.name;
     if (SAFE_ERROR_CLASSES.has(originalErrorName)) {
