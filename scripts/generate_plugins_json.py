@@ -64,11 +64,15 @@ REPOS = [
     ("Airtable/skills", None),
     ("krasserm/ml-plugins", None),
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
+    ("nekuda-ai/webmcp-kit", "https://github.com/nekuda-ai/webmcp-kit"),
 ]
 
 DESCRIPTION_OVERRIDES = {
     "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
+    "nekuda-ai/webmcp-kit": "Coding-agent plugin that maps a web app's user journeys in a visual Explorer, proposes WebMCP tools for approval, implements them through the app's own logic, and verifies each tool in a real browser.",
 }
+
+DISPLAY_NAME_OVERRIDES = {"nekuda-ai/webmcp-kit": "WebMCP Kit"}
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
 GH_CLI = shutil.which("gh") or "gh"
@@ -612,7 +616,7 @@ def process_repo(repo_full, website_override=None):
     # 13. Build result
     result = {
         "slug": slug,
-        "name": display_name,
+        "name": DISPLAY_NAME_OVERRIDES.get(repo_full, display_name),
         "author": repo_owner,
         "description": DESCRIPTION_OVERRIDES.get(repo_full, description or marketplace.get("description", "")),
         "github": f"https://github.com/{repo_full}",
