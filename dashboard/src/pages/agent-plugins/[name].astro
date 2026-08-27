@@ -1,0 +1,140 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+
+export const prerender = true;
+
+import fs from 'node:fs';
+import nodePath from 'node:path';
+
+export async function getStaticPaths() {
+  const filePath = nodePath.join(process.cwd(), 'public', 'agent-plugins', 'index.json');
+  let registry: any = { bundles: [] };
+  try {
+    registry = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  } catch { /* no bundles -> no pages */ }
+  return (registry.bundles || []).map((bundle: any) => ({
+    params: { name: bundle.name },
+    props: { bundle },
+  }));
+}
+
+const { bundle } = Astro.props;
+
+let manifest: any = null;
+try {
+  manifest = JSON.parse(
+    fs.readFileSync(nodePath.join(process.cwd(), 'public', 'agent-plugins', bundle.name, 'plugin.json'), 'utf-8')
+  );
+} catch { /* manifest card hidden */ }
+
+const npxCommand = `npx claude-code-templates@latest --plugin ${bundle.name}`;
+const zipUrl = `https://www.aitmpl.com/agent-plugins/zips/${bundle.name}-${bundle.version}.zip`;
+const genericCommand = `curl -fsSL ${zipUrl} -o ${bundle.name}.zip && unzip ${bundle.name}.zip -d ${bundle.name}`;
+
+function formatSize(bytes: number): string {
+  if (!bytes) return '0 B';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+---
+
+<DashboardLayout
+  title={`${bundle.name} — Agent Plugin`}
+  description={bundle.description}
+>
+  <TopBar />
+
+  <div class="px-6 py-10 max-w-5xl mx-auto">
+    <a href="/agent-plugins" class="text-[13px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]">← Agent Plugins</a>
+
+    <div class="mt-4 mb-8">
+      <div class="flex items-center gap-3 flex-wrap">
+        <h1 class="text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">{bundle.name}</h1>
+        <span class="px-2 py-0.5 rounded-full text-[12px] bg-[var(--color-surface-3)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">v{bundle.version}</span>
+        <span class="px-2 py-0.5 rounded-full text-[12px] border" style="background:#34d39915;border-color:#34d39940;color:#34d399">Agent Plugins v1.0.0</span>
+      </div>
+      <p class="mt-3 text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-3xl">{bundle.description}</p>
+      {bundle.keywords?.length > 0 && (
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {bundle.keywords.map((keyword: string) => (
+            <span class="px-2 py-0.5 rounded text-[12px] bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)]">{keyword}</span>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Install -->
+        <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-5">
+          <h2 class="text-[15px] font-semibold text-[var(--color-text-primary)] mb-4">Install</h2>
+
+          <p class="text-[13px] font-medium text-[var(--color-text-secondary)] mb-1.5">Claude Code (via aitmpl CLI — installs and activates everything)</p>
+          <pre class="rounded-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] p-3 overflow-x-auto text-[13px] text-[var(--color-text-primary)] select-all"><code>{npxCommand}</code></pre>
+
+          <p class="mt-4 text-[13px] font-medium text-[var(--color-text-secondary)] mb-1.5">Any Agent Plugins client (portable bundle: skills + mcp.json per the spec)</p>
+          <pre class="rounded-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] p-3 overflow-x-auto text-[13px] text-[var(--color-text-primary)] select-all"><code>{genericCommand}</code></pre>
+
+          <p class="mt-3 text-[12px] text-[var(--color-text-tertiary)] leading-relaxed">
+            The bundle also carries a <code>.claude-plugin/plugin.json</code> manifest, so the unzipped directory works as a native Claude Code plugin.
+            MCP env values like <code>&lt;personal-access-token&gt;</code> are placeholders — set your own credentials before starting servers.
+          </p>
+        </div>
+
+        <!-- Contents -->
+        <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-5">
+          <h2 class="text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">Contents</h2>
+          <div class="flex flex-wrap gap-2 mb-4">
+            {Object.entries(bundle.contents || {}).map(([type, count]) => (
+              <span class="px-2.5 py-1 rounded-full text-[12px] bg-[var(--color-surface-3)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">
+                {count} {type}
+              </span>
+            ))}
+          </div>
+          <ul class="space-y-1">
+            {(bundle.components || []).map((token: string) => (
+              <li class="text-[13px] text-[var(--color-text-secondary)] font-mono">{token}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-5">
+          <h2 class="text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">Details</h2>
+          <dl class="space-y-2 text-[13px]">
+            <div class="flex justify-between gap-2">
+              <dt class="text-[var(--color-text-tertiary)]">Files</dt>
+              <dd class="text-[var(--color-text-secondary)]">{bundle.fileCount}</dd>
+            </div>
+            <div class="flex justify-between gap-2">
+              <dt class="text-[var(--color-text-tertiary)]">Size</dt>
+              <dd class="text-[var(--color-text-secondary)]">{formatSize(bundle.totalSize)}</dd>
+            </div>
+            <div class="flex justify-between gap-2">
+              <dt class="text-[var(--color-text-tertiary)]">License</dt>
+              <dd class="text-[var(--color-text-secondary)]">{manifest?.license || 'MIT'}</dd>
+            </div>
+            <div class="flex justify-between gap-2">
+              <dt class="text-[var(--color-text-tertiary)]">Spec</dt>
+              <dd class="text-[var(--color-text-secondary)]">agent-plugins.org 1.0.0</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-5">
+          <h2 class="text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">Links</h2>
+          <ul class="space-y-2 text-[13px]">
+            <li><a class="underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" href={`/agent-plugins/${bundle.name}/plugin.json`} target="_blank">plugin.json</a></li>
+            <li><a class="underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" href={`/agent-plugins/${bundle.name}/files.json`} target="_blank">files.json (sha256 manifest)</a></li>
+            <li><a class="underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" href={zipUrl}>Download .zip</a></li>
+            <li><a class="underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" href="https://agent-plugins.org/specification" target="_blank" rel="noopener">Agent Plugins specification</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</DashboardLayout>

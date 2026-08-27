@@ -14,7 +14,7 @@ function validateOutcomeData(data: {
     return { valid: false, error: 'componentType, componentName, and outcome are required' };
   }
 
-  const validTypes = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'template'];
+  const validTypes = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'template', 'loop', 'workflow', 'plugin'];
   if (!validTypes.includes(componentType)) {
     return { valid: false, error: 'Invalid component type' };
   }

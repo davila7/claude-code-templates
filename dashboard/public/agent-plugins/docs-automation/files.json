@@ -1,0 +1,40 @@
+{
+  "registryVersion": 1,
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "0b1b01f48281d72a618648b8e941e83b082357f9fdd3df86b641e0767c32a232",
+      "size": 555
+    },
+    {
+      "path": "README.md",
+      "sha256": "ce038c88724899708463c0380f1655ef92a708748fa3b28faceb1a668327d753",
+      "size": 1012
+    },
+    {
+      "path": "com.aitmpl.claude-code/agents/documentation/documentation-engineer.md",
+      "sha256": "615a25edaaf5f23b134bc44e99dbac30b2bdb98e9cdbfc7108a7bd32ab086fd9",
+      "size": 10133
+    },
+    {
+      "path": "com.aitmpl.claude-code/commands/documentation/update-docs.md",
+      "sha256": "aabfd4d3946e2a9fca6f72ffe9b0c46f42485b46716f0457f775f13aed81c020",
+      "size": 4435
+    },
+    {
+      "path": "com.aitmpl.claude-code/commands/git-workflow/create-pr.md",
+      "sha256": "695750001a3ab02ad8a1448e86b132ee951fe9465806aa918d4c2ab98fadbbcb",
+      "size": 795
+    },
+    {
+      "path": "com.aitmpl.claude-code/loops/engineering/docs-sweep-loop.md",
+      "sha256": "00f4e16a3c14b3977be4173cf6be1149225b3cd15df3eb2708ad9987846469cb",
+      "size": 2337
+    },
+    {
+      "path": "plugin.json",
+      "sha256": "ae4757a09f9d3809e66e48fd8ed023711ea0541e7440014c5b88fdf7aec2dc32",
+      "size": 1062
+    }
+  ]
+}

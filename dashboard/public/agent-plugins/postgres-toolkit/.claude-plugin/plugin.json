@@ -1,0 +1,30 @@
+{
+  "name": "postgres-toolkit",
+  "version": "1.0.0",
+  "description": "PostgreSQL design and operations pack — schema design and Supabase best-practice skills, a Postgres expert agent, and the Supabase MCP server.",
+  "author": {
+    "name": "aitmpl.com (claude-code-templates community)"
+  },
+  "skills": [
+    "./skills/postgres-schema-design",
+    "./skills/supabase-postgres-best-practices"
+  ],
+  "agents": [
+    "./com.aitmpl.claude-code/agents/database/postgres-pro.md"
+  ],
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=<project-ref>"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "<personal-access-token>"
+      },
+      "type": "stdio"
+    }
+  }
+}

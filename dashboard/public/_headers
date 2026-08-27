@@ -32,6 +32,14 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+# Agent Plugins (open standard) registry + exploded bundles — third-party
+# clients fetch these cross-origin. One rule for the whole tree keeps
+# Cache-Control unambiguous; new bundles appear within 24h at the edge.
+/agent-plugins/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
 /trending-data.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=300
   Access-Control-Allow-Origin: *

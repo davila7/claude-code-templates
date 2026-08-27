@@ -87,3 +87,6 @@ service-account*.json
 
 # Build artifact: component content written directly to dashboard/public/
 docs/component-content/
+
+# Generated Agent Plugins bundles (build with scripts/build_agent_plugins.js)
+/build/

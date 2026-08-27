@@ -39,6 +39,8 @@ program
   .option('--hook <hook>', 'install specific hook component (supports comma-separated values)')
   .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
   .option('--loop <loop>', 'install specific loop component and its referenced components (supports comma-separated values)')
+  .option('--plugin <plugin>', 'install Agent Plugin (open standard) bundle(s) from aitmpl.com, comma-separated — not to be confused with the --plugins dashboard')
+  .option('--plugin-raw', 'with --plugin: unpack the standard bundle layout only, skip activation into .claude/')
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation or in sandbox')
   .option('--create-agent <agent>', 'create a global agent accessible from anywhere (e.g., customer-support)')

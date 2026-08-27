@@ -1,0 +1,59 @@
+{
+  "registryVersion": 1,
+  "specVersion": "1.0.0",
+  "generated": "2026-08-18T13:45:15.791Z",
+  "homepage": "https://www.aitmpl.com",
+  "note": "Agent Plugins v1.0.0 defines no registry format; this index is the aitmpl.com registry format, versioned via registryVersion.",
+  "bundles": [
+    {
+      "name": "docs-automation",
+      "version": "1.0.0",
+      "description": "Documentation automation pack seeded from the docs-sweep-loop — the loop plus the documentation engineer agent and docs/PR commands it references.",
+      "keywords": [
+        "documentation",
+        "automation",
+        "loop",
+        "ci"
+      ],
+      "contents": {
+        "agents": 1,
+        "commands": 2,
+        "loops": 1
+      },
+      "components": [
+        "loop:engineering/docs-sweep-loop"
+      ],
+      "path": "docs-automation/",
+      "filesUrl": "docs-automation/files.json",
+      "fileCount": 7,
+      "totalSize": 20329
+    },
+    {
+      "name": "postgres-toolkit",
+      "version": "1.0.0",
+      "description": "PostgreSQL design and operations pack — schema design and Supabase best-practice skills, a Postgres expert agent, and the Supabase MCP server.",
+      "keywords": [
+        "postgres",
+        "database",
+        "supabase",
+        "sql",
+        "schema"
+      ],
+      "contents": {
+        "skills": 2,
+        "mcpServers": 1,
+        "agents": 1
+      },
+      "components": [
+        "skill:database/postgres-schema-design",
+        "skill:database/supabase-postgres-best-practices",
+        "mcp:database/supabase",
+        "agent:database/postgres-pro"
+      ],
+      "path": "postgres-toolkit/",
+      "filesUrl": "postgres-toolkit/files.json",
+      "fileCount": 44,
+      "totalSize": 141072
+    }
+  ]
+}
