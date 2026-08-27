@@ -17,9 +17,11 @@ Automated tools typically catch 30–40% of WCAG violations industry-wide (axe-c
 Use CLI tools to identify programmatic violations efficiently:
 - `npx @axe-core/cli <url> --exit` — catches ARIA errors, missing labels, contrast failures; add `--tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa` to explicitly request WCAG 2.2 rule coverage
 - `npx lighthouse <url> --only-categories=accessibility` — Lighthouse accessibility score with opportunities
-- `npx pa11y <url>` — WCAG 2.1/2.2 rule-set with detailed failure messages
+- `npx pa11y <url> --runner axe --standard WCAG2AA` — pa11y's default runner is `htmlcs` (HTML_CodeSniffer), which is WCAG 2.0-era; pass `--runner axe` explicitly to get axe-core-backed WCAG 2.1 results. Note: pa11y's `WCAG2AA` standard maps only to the `wcag2a`/`wcag21a`/`wcag2aa`/`wcag21aa` axe tags (no `--tags` CLI flag exists) — it does **not** cover WCAG 2.2. For WCAG 2.2 rule coverage, add `wcag22aa` to `runnerConfig.axe.runOnly` in `.pa11yrc`, or rely on the `@axe-core/cli` command above.
 
 Parse tool output and deduplicate findings before reporting.
+
+Confirm the `axe-core` version actually used by each tool is ≥4.5 (ideally current, e.g. 4.11) before trusting WCAG 2.2 coverage — `npx @axe-core/cli --version` only reports the CLI's own bundled version, not pa11y's or `@axe-core/playwright`'s independently-resolved axe-core, which can lag behind. Check each tool's bundled version separately (e.g. `npm ls axe-core` against the project's lockfile, or inspect `node_modules/axe-core/package.json`) since older pinned/cached versions silently omit WCAG 2.2 rules even when `wcag22aa` is requested.
 
 **Track 1b — Scripted interaction testing (where test infra exists)**
 For repeatable checks of tab order, focus trapping in modals, `aria-expanded`/`aria-selected` state changes, and focus restoration on close, use Deque's official Playwright integration rather than relying solely on the manual checklist:
@@ -44,6 +46,8 @@ Run after automated scan to surface human-judgement violations:
 - Images: meaningful images have descriptive alt text; decorative images use `alt=""`
 - Forms: all inputs have associated labels; error messages are specific and programmatically linked
 - Live regions: dynamic content updates announced via `aria-live` with appropriate politeness
+- Documents: linked PDFs/Office files are tagged, have a logical reading order, and include alt text for embedded images (Section 508 and EAA scope commonly extends to downloadable documents, not just rendered web pages)
+- Contrast preferences: UI remains usable and all information is conveyed when Windows High Contrast / `forced-colors: active` and `prefers-contrast: more` are each enabled; no information conveyed by background-image or box-shadow alone
 
 ## WCAG 2.2 Reference Standard
 
@@ -64,6 +68,8 @@ WCAG 3.0 remains a W3C Working Draft (not expected before ~2029) and will not re
 | 3.3.7 | A | Redundant Entry | Previously entered information is auto-populated or available for selection |
 | 3.3.8 | AA | Accessible Authentication (Minimum) | No cognitive function test required unless an alternative or assistance is provided |
 | 3.3.9 | AAA | Accessible Authentication (Enhanced) | No cognitive function test required at all during authentication |
+
+Of these 9 criteria, only **2.5.8 Target Size (Minimum)** has a dedicated automated check today — axe-core's `target-size` rule (axe-core ≥4.5, only fires when the `wcag22aa` tag is requested). The remaining 8 criteria have no reliable automated coverage and must be verified via the Track 2 manual checklist.
 
 ## ARIA Patterns and Screen Reader Guidance
 
@@ -113,6 +119,19 @@ Element: <CSS selector or component name>
 Issue: <Clear description of the barrier and its impact on users>
 Remediation: <Specific code-level fix or pattern>
 Verification: <How to confirm the fix resolves the issue>
+```
+
+**Worked example:**
+
+```
+ID: A11Y-001
+WCAG: 1.4.3 Contrast (Minimum) (Level AA)
+Severity: High
+Source: Automated (axe-core)
+Element: button.checkout-submit
+Issue: Button text color (#999999) on white background yields 2.85:1 contrast, below the 4.5:1 minimum for normal text.
+Remediation: Change text color to #595959 or darker (yields 7:1) to meet WCAG 1.4.3.
+Verification: Re-run axe-core color-contrast rule; confirm ratio ≥4.5:1 with a contrast checker.
 ```
 
 **Severity definitions:**
