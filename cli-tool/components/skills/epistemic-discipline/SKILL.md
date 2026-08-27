@@ -53,3 +53,14 @@ This plugin packages the discipline as mechanisms. It is stack-agnostic: nothing
 ## The memory rule (anti-failure-mode #6, meta)
 
 When saving any lesson/feedback memory that contains an actionable behavioral rule: **name the mechanism that enforces it** (hook path, agent dimension, gate, template) — or explicitly tag it `PROSE-ONLY-ACCEPTED: <reason>`. A lesson without a mechanism is a lesson that will be relearned the hard way. This rule is what keeps the next quarter's failure modes from requiring another plugin.
+
+## Language gate (English-only)
+
+Committed source/docs must be English (Spanish only in chat). Two mechanisms:
+
+- **`spanish-gate.py`** (this dir) — a **pre-push** hook (wired via `hooks/pre-tool/language-gate.json`) that scans ONLY the added lines of the outgoing diff and **blocks** `git push` / `gh pr create` (exit 2) when they introduce Spanish. Never re-flags pre-existing debt — only what this push would add. Fail-open on hook errors; override `CLAUDE_LANG_GATE_OVERRIDE=1` (logged).
+- **`spanish-scan.py`** (this dir) — a whole-repo audit (`python3 spanish-scan.py <path>`), exit 1 if Spanish found (CI-usable).
+
+Signals: accented chars, `¿¡`, the review-severity labels `CRÍTICO/ALTO/MEDIO/BAJO` (use `CRITICAL/HIGH/MEDIUM/LOW`), and ≥2 Spanish comment words per line. Allow-list: `i18n`/`locale`/`unicode`/`non-ASCII` and any line tagged `EXEMPT-ES <reason>` (intentional non-English — a unicode fixture, or a functional Spanish string such as a CSV-header matcher). Install per the section above (copy the two `.py` into `~/.claude/hooks/`, merge the hook into `settings.json`).
+
+**Why it belongs here:** the plugin's thesis is *turn each lesson into a standing automated check pointed at real output*. A teammate's agent found Spanish across our PRs because they scan and we didn't — this gate closes that gap mechanically. It was proven RED against a Spanish diff and GREEN against a clean one before being trusted.
