@@ -5,159 +5,125 @@ description: Run a Virtual Think Tank — a structured multi-persona debate — 
 
 # Virtual Think Tank
 
-A pre-planning skill that simulates a moderated expert debate to surface trade-offs, blind spots, and perspectives before committing to a plan. Inspired by real think tanks: the output is NOT a single answer but a structured analysis of approaches, trade-offs, and consensus points that helps the human make a better-informed decision.
+Simulate a moderated expert debate to surface trade-offs and blind spots before committing to a plan. The deliverable is a **structured analysis** the human uses to decide — no answer is handed down, but the panel still converges: it names a strongest option under an explicit condition, or an explicit either/or for the user to arbitrate (Phase 4). The human makes the call.
 
-## Why This Exists
+The personas debate **within one context**, not as separate agents: each sees the others' arguments, concedes points, builds on ideas, and can change position. That shared awareness is what makes the synthesis coherent.
 
-When facing architectural, strategic, or design decisions, a single perspective (even a well-informed one) tends to gravitate toward conventional wisdom and miss important trade-offs. A think tank forces consideration of multiple angles — technical, organizational, philosophical — before planning begins. The result is plans that account for more of reality.
+## The run — steps in order
 
-## How It Works
+Work through six phases. Phases 1–4 each end on a **completion criterion**; do not advance until it is met.
 
-The think tank uses **multiple personas debating within a single context** — not separate agents. This keeps all perspectives aware of each other's arguments, enables real-time synthesis, and produces a coherent output. The personas argue, concede points, build on each other's ideas, and occasionally surprise everyone (including the user).
+### Phase 1 — Frame the decision
 
-## Running the Think Tank
+Pin down exactly what is being decided. Ask the user for anything unclear: the decision itself, the constraints (team, timeline, budget, existing systems, regulatory), what has already been tried, and what a good outcome looks like.
 
-### Phase 1: Frame the Decision
+Restate the decision back to the user as one crisp problem statement.
 
-Before assembling the panel, clearly understand what's being decided. Ask the user (if not already clear):
+**Completion criterion:** the user has confirmed a single-sentence problem statement. The debate targets that exact question.
 
-1. **What is the decision or problem?** (e.g., "monolith vs microservices for a new e-commerce platform")
-2. **What constraints exist?** (team size, timeline, budget, existing systems, regulatory)
-3. **What's already been tried or considered?** (avoid rehashing known ground)
-4. **What would a successful outcome look like?** (helps the panel focus)
+### Phase 2 — Assemble the panel
 
-Restate the problem back to the user in a crisp problem statement before proceeding. This ensures the think tank debates the right question.
+Build 4–6 personas with genuinely divergent priors. Composition is the whole point — see [Casting the panel](#casting-the-panel) for how to pick them. If the user already named panelists, use them; otherwise propose a panel and let the user approve or adjust before proceeding.
 
-### Phase 2: Assemble the Panel
+**Completion criterion:** the user has approved a panel of one moderator plus 3–5 voices that disagree on something substantive.
 
-Build a panel of 4–6 personas. The composition matters — diversity of perspective is the whole point.
+### Phase 3 — Run the debate
 
-**Panel structure:**
+If the repo has a `CONTEXT.md`, read it first so the personas argue in the project's own vocabulary rather than inventing jargon; check ADRs in the area under discussion. When the decision concerns this codebase, personas cite actual files, constraints, and prior decisions — read them if needed.
 
-- **1 Moderator** — A knowledgeable, neutral figure who keeps the debate focused, synthesizes, and pushes for clarity. Pick someone known for balanced analysis in the relevant domain. The moderator opens and closes the session, asks provocative follow-up questions, and calls out when panelists are talking past each other.
+Run it as a moderated discussion where each persona responds to the previous speaker:
 
-- **2–3 Domain voices** — People (real or fictional) with known, distinct positions on the topic. These are the core debaters. They should genuinely disagree on something substantive — not just have mild preferences.
-  - Ask the LLM: "Who would advocate strongly for approach A?" and "Who would push back hardest on that?"
-  - Look for voices that represent different schools of thought, not just different levels of enthusiasm for the same idea.
+1. **Opening statements** (~1 paragraph each) — each persona's initial position.
+2. **First user check-in** — the moderator turns to the user: "Did any opening position surprise you or miss something about your situation?" Pause, wait, and feed the answer back into the debate.
+3. **Moderated rounds** — the moderator drives with focused questions: "What's the strongest argument against your own position?" · "Where do you two actually agree, and where is the real disagreement?" · "What would change your mind?" · "What risk are we not talking about?" · "How does this look at 10× scale? At 0.1×?"
+4. **Personas question the user** — when a persona needs context to argue well, it asks the user directly and the debate pauses for the answer. This adaptation to the user's real situation is where the value is.
+5. **Wildcard interjection** — the outside thinker offers a reframing or analogy from their domain.
+6. **Second user check-in** — before converging: "We're near some conclusions. Is there anything we haven't addressed? Has the discussion changed how you see the problem?"
 
-- **1 Wildcard / Outside thinker** — Someone who hasn't written directly about this topic but brings transferable wisdom from another domain. This is where the unexpected insights come from. A management theorist in a technical debate. A philosopher in a product discussion. A novelist in an architecture review. The wildcard prevents the conversation from being too predictable.
+**Label every claim OBSERVED or INFERRED.** A think tank runs on inference — confident voices, none of it verified. Mark each load-bearing claim so the user can see which rest on evidence and which are educated guesses.
 
-- **1 Practitioner voice (optional)** — Someone who has actually done the thing at scale, in production, with real users. Keeps the debate grounded.
+**Reach for the oracle when a claim is cheap to test.** When the debate turns on a claim that is *falsifiable* and *cheap to check* — a benchmark number, a library behavior, an API shape, a layout question — stop debating it. The moment a claim goes **red** (contested, load-bearing, and testable), the moderator settles it with evidence instead of letting personas keep asserting: build a throwaway probe or prototype in a scratch directory, read-only or sandboxed — never mutating the repo — report what it ran, and discard it afterward. Record the result against the **red** claim so it reaches the summary. This is a conditional move, not a mandatory phase: it fires only when the ground is testable, which is the minority of claims.
 
-**Important persona guidelines:**
-- Use real, named figures when possible — the LLM generates richer, more differentiated responses when inhabiting a specific person vs. a generic "senior engineer."
-- Personas should speak in first person, in their authentic voice. Martin Fowler is thoughtful and measured. DHH is direct and opinionated. Peter Drucker asks questions that reframe the problem.
-- Fictional characters are fine for the wildcard slot — John Galt, Sherlock Holmes, etc. They add variety.
-- If the user suggests specific panelists, use them. If not, propose a panel and let the user approve or adjust before proceeding.
+**Completion criterion:** every persona has taken a position, both user check-ins have happened, each load-bearing claim carries an OBSERVED/INFERRED label, and every **red** claim has been settled by a probe or is carried forward as unresolved.
 
-### Phase 3: Run the Debate
+### Phase 4 — Converge (the gate)
 
-Structure the debate as a moderated discussion, not a series of independent monologues. The personas should respond to each other, not just state their positions in isolation.
+Debate to convergence — **run more than one round.** After the first round the moderator states, in order: the points of genuine **consensus**, then the narrowed **axis of disagreement**, then the strongest *unresolved* points — and runs additional focused rounds on those alone. Repeat until one of two end states is reached:
 
-**The user is a participant, not a spectator.** The user sits "at the table" — the moderator and panelists should address them directly, ask them questions, and incorporate their answers into the ongoing debate. The user is the decision-maker; the panel is there to serve them. Treat the user the way a real think tank would treat the person who commissioned it: with respect for their context knowledge and authority over the final decision.
+- **(A) A strongest option**, named, with the explicit condition that makes it win ("choose X *if* Y is true").
+- **(B) An irreducible trade-off** only the user can arbitrate, stated as a crisp either/or with the consequence of each side ("X buys you … at the cost of …; Y the reverse").
 
-**Debate structure:**
+**Completion criterion — the gate:** you may not produce the Phase 5 summary until the debate has reached **(A)** or **(B)** and recorded it in the summary's **Convergence** section. "We surfaced good points" is not an end state. If two focused rounds produce no new argument on the axis, that *is* end state (B) — write it as the either/or, naming what was tried. A summary whose **Convergence** section names neither **(A)** nor **(B)** means the gate has not been met; run another round.
 
-1. **Opening statements** (~1 paragraph each) — Each panelist states their initial position on the problem. Keep these concise — the real value comes from the interaction.
+### Phase 5 — Produce the output
 
-2. **First check-in with the user** — After opening statements, the moderator pauses and turns to the user:
-   - "Before we dig in — did any of these opening positions surprise you, or miss something important about your situation?"
-   - "Is there a constraint or reality on the ground that the panel should know about?"
-   This is a real pause — wait for the user's response and feed it back into the debate. If the user reveals something (e.g., "we only have 2 developers" or "we're locked into AWS"), the panelists should react to that information and adjust their arguments accordingly.
+Emit the structured summary in [the output format](#output-format). This is what feeds planning.
 
-3. **Moderated discussion** (2–4 rounds) — The moderator poses focused questions that drive the debate into useful territory:
-   - "What's the strongest argument against your own position?"
-   - "Where do you two actually agree, and where does the disagreement really lie?"
-   - "What would change your mind?"
-   - "What's the risk we're not talking about?"
-   - "How does this look different at 10x scale? At 0.1x scale?"
+### Phase 6 — Hand off to planning
 
-4. **Panelists can question the user directly.** During the moderated discussion, panelists may turn to the user to ask clarifying questions when they need more context to argue effectively. For example:
-   - Fowler might ask: "How experienced is your team with distributed systems?"
-   - DHH might ask: "What's your runway — are we talking 6 months to market or 2 years?"
-   - The wildcard might ask: "What does success look like for you personally, not just for the product?"
-   When a panelist asks the user a question, pause the debate and wait for the answer. Then resume with the panelists reacting to the new information. This back-and-forth is where the real value lies — the think tank adapts to the user's actual situation rather than debating in the abstract.
+Present the summary and ask: "Does this capture the key considerations? Which trade-offs matter most to your situation? Ready to move into planning, or dig deeper on a point?" The output is *input to the plan*, not the plan. The human decides.
 
-5. **Wildcard interjection** — The outside thinker offers a reframing or analogy from their domain. This often shifts the conversation in productive ways.
+---
 
-6. **Second check-in with the user** — Before converging, the moderator checks in again:
-   - "We're approaching some conclusions. Is there anything you feel we haven't addressed?"
-   - "Has anything in this discussion changed how you're thinking about the problem?"
-   This gives the user a chance to redirect before the summary phase.
+## Casting the panel
 
-7. **Convergence check** — The moderator identifies:
-   - Points of genuine consensus (things everyone agrees on)
-   - The real axis of disagreement (often narrower than it first appeared)
-   - Conditions under which each approach wins ("If X is true, do A; if Y is true, do B")
+Reference for Phase 2. A good panel is diverse on purpose:
 
-**Tone guidelines:**
-- Personas should argue substantively, not just state opinions. Use evidence, examples, analogies.
-- Allow personas to change their position if persuaded — this is a sign of a good debate, not a weakness.
-- The moderator should push back on vague claims: "What do you mean by 'scalable'? Scalable in what dimension?"
-- Keep the energy high but respectful. Real intellectual disagreement, not performative conflict.
-- When addressing the user, personas should be direct and genuine — not deferential or performative. They're experts having a real conversation with the decision-maker.
+- **1 Moderator** — a neutral, balanced figure who keeps focus, synthesizes, and pushes for clarity. Opens and closes, asks provocative follow-ups, and calls out when panelists talk past each other.
+- **2–3 Domain voices** — real or fictional figures with distinct, opposed positions. They must genuinely disagree on something substantive, not merely differ in enthusiasm. Ask: "Who argues hardest *for* approach A?" and "Who pushes back hardest?"
+- **1 Wildcard** — an outside thinker who brings transferable wisdom from another domain (a management theorist in a technical debate, a philosopher in a product one). This is where the unexpected insight comes from — let them challenge assumptions, not be polite.
+- **1 Practitioner** (optional) — someone who has done the thing at scale, in production, with real users. Keeps the debate grounded.
 
-### Phase 4: Produce the Output
+Guidelines: prefer real, named figures — the model inhabits a specific person more richly than a generic "senior engineer." Personas speak in first person, in their authentic voice: Fowler measured, DHH blunt, Drucker reframing with questions. Fictional characters fit the wildcard slot. When addressing the user, personas speak as direct colleagues to the decision-maker.
 
-After the debate, produce a structured summary. This is what feeds into the planning phase.
+Keep the disagreement real: personas argue with evidence, examples, and analogies, and the moderator pushes back on vague claims ("scalable in what dimension?"). A simulated panel drifts toward theatrical, performative conflict — steer it back to substantive disagreement.
 
-**Output format:**
+## Output format
 
 ```
 ## Think Tank Summary: [Problem Statement]
 
 ### Panel
-[List panelists and their roles/perspectives]
+[Panelists and their roles/perspectives]
 
 ### Key Debate Highlights
-[2-3 of the most illuminating exchanges or insights from the debate — the moments where something shifted or crystallized. Include moments where user input changed the direction of the discussion.]
+[2-3 exchanges where something shifted or crystallized — include moments where user input changed direction.]
 
 ### User-Revealed Context
-[Key constraints, preferences, or realities the user shared during the debate that shaped the panel's thinking. This section ensures nothing the user said gets lost.]
+[Constraints, preferences, or realities the user shared that shaped the debate — so nothing they said is lost.]
 
 ### Consensus Points
-[Things all or most panelists agreed on — these are high-confidence inputs to planning]
+[What all or most panelists agreed on — high-confidence inputs to planning.]
 
 ### Core Trade-offs
-[The real axes of disagreement, stated as trade-offs rather than as one side being right]
-- Trade-off 1: [X] vs [Y] — choosing X gives you [...] but costs you [...]
-- Trade-off 2: ...
+[The real axes of disagreement, each stated as a trade-off, not one side being right.]
+- Trade-off 1: [X] vs [Y] — X gives you [...] but costs [...]
 
 ### Conditional Recommendations
-[Recommendations framed as "if-then" rather than absolutes]
+[If-then, not absolutes.]
 - If [condition], then [approach] because [reasoning]
-- If [condition], then [approach] because [reasoning]
+
+### Convergence (the gate)
+[Exactly one end state — the gate is met only if this names (A) or (B):]
+- (A) Strongest option: <named option> — wins if <condition>
+- (B) Irreducible either/or: <X buys … at cost of …> vs <Y buys … at cost of …>; tried: <rounds/arguments that produced no movement>
+
+### Evidence (probes run)
+[Every claim that went red and the throwaway probe/prototype result that settled it, plus any red claim left unresolved — the only OBSERVED evidence in an otherwise inferential session. "None" if the debate stayed fully in-context.]
 
 ### Risks & Blind Spots
-[Things the panel identified as under-discussed or easy to overlook]
+[What the panel flagged as under-discussed or easy to overlook.]
 
 ### Open Questions
-[Questions that couldn't be resolved in the debate and need more information or experimentation to answer]
+[Secondary questions the debate could not resolve. The primary end state — the named option or the irreducible either/or — lives in Convergence above, not here.]
 
 ### Suggested Next Steps
-[Concrete actions: things to research, prototype, test, or decide before planning]
+[Concrete actions: research, prototype, test, or decide before planning.]
 ```
 
-### Phase 5: Hand Off to Planning
+## Tips
 
-After presenting the summary, ask the user:
-- "Does this capture the key considerations? Anything missing?"
-- "Which trade-offs feel most important to your specific situation?"
-- "Ready to move into planning with these insights, or should we dig deeper on any point?"
-
-The think tank output should be treated as input to the plan — not as the plan itself. The human makes the decision; the think tank provides the analysis.
-
-## Tips for Better Think Tanks
-
-- **Prime the context first.** If relevant documents, code, or architecture diagrams exist, share them before running the think tank. The personas will give much better input with concrete context.
-- **Don't over-specify the panel.** Let the LLM suggest some panelists — it often finds relevant experts you wouldn't have thought of.
-- **Run multiple rounds if needed.** After the first debate, the user might say "I want to dig deeper on the database question." You can reconvene the panel (or a subset) for a focused follow-up.
-- **Use the wildcard aggressively.** The outside thinker is often where the best insights come from. Don't let them be polite — have them challenge assumptions.
-- **The summary is the deliverable.** The debate itself is entertaining, but the structured summary is what actually improves planning. Make it sharp and actionable.
-
-## Example Test Prompts
-
-- "I need to decide between building a custom auth system or using a third-party service like Auth0. Help me think through this."
-- "We're debating whether to use a relational database or go with a document store for our new product. Can you run a think tank on this?"
-- "Before we plan the migration to Kubernetes, I want to make sure we're not missing anything. Can we get some perspectives on this?"
-- "Should our startup build a mobile app or focus on a responsive web app first?"
+- **Prime the context first** — share relevant docs, code, or diagrams before running; concrete context yields far better input.
+- **Let the model suggest panelists** — it often finds relevant experts you would not have.
+- **Reconvene for focused follow-ups** — after the first debate the user may want to dig into one question; run a subset of the panel on it.
+- **The summary is the deliverable** — the debate entertains; the structured summary is what improves the plan. Make it sharp and actionable.

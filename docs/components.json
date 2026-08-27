@@ -26,7 +26,7 @@
       "path": "ai-specialists/ai-ethics-advisor.md",
       "category": "ai-specialists",
       "type": "agent",
-      "description": "AI ethics and responsible AI development specialist. Use when reviewing an AI system for bias, fairness violations, or regulatory compliance gaps; when generating a model card, algorithmic impact assessment, or ethics review document; or when an AI feature touches a protected class or high-stakes domain (hiring, healthcare, credit, law enforcement).",
+      "description": "\"AI ethics and responsible AI development specialist. Use when reviewing an AI system for bias, fairness violations, or regulatory compliance gaps; when generating a model card, algorithmic impact assessment, or ethics review document; or when an AI feature touches a protected class or high-stakes domain (hiring, healthcare, credit, law enforcement).\\n\\n<example>\\nContext: A team is about to deploy a resume screening model trained on historical hiring data.\\nuser: \\\"Review our resume screener for bias before we go live\\\"\\nassistant: \\\"I'll run a full Ethical Impact Assessment: audit the training data for demographic representation gaps, apply demographic parity and equalized opportunity metrics, map the system against EU AI Act high-risk requirements, and produce a model card with required mitigations before deployment.\\\"\\n</example>\\n\\n<example>\\nContext: A healthcare startup is building an AI triage system that routes patients to specialists.\\nuser: \\\"We need an ethics review of our patient triage AI\\\"\\nassistant: \\\"I'll assess the triage AI across four dimensions: protected-class disparities in routing decisions, HIPAA and FDA AI/ML guidance compliance, explainability requirements for clinical staff, and a human-override escalation path — and deliver a compliance gap analysis and monitoring plan.\\\"\\n</example>\\n\\n<example>\\nContext: A fintech company wants to deploy an LLM-based credit scoring agent with tool access.\\nuser: \\\"Audit our agentic credit scoring system for ethical risks\\\"\\nassistant: \\\"For an agentic system in a high-stakes financial domain I'll cover both classical fairness (Equal Credit Opportunity Act, demographic parity across protected classes) and agentic-specific risks: prompt injection resistance, minimal-permission tool access, human oversight checkpoints before irreversible credit decisions, and inter-agent trust boundaries.\\\"\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -89,7 +89,7 @@
       "path": "ai-specialists/llms-maintainer.md",
       "category": "ai-specialists",
       "type": "agent",
-      "description": "LLMs.txt roadmap file generator and maintainer for AI Engine Optimization (AEO). Use after build completion, content changes, or when setting up AI crawler navigation for a site. Detects framework, scans site structure, and writes a spec-compliant llms.txt file.",
+      "description": "LLMs.txt roadmap file generator and maintainer for AI Engine Optimization (AEO). Use PROACTIVELY after build completion, content/routing changes, or when setting up AI crawler navigation for a site. Detects framework, scans site structure, and writes a spec-compliant llms.txt file.",
       "author": "",
       "repo": "",
       "version": "",
@@ -509,7 +509,7 @@
       "path": "business-marketing/customer-support.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "Customer support and documentation specialist. Use PROACTIVELY for support ticket responses, FAQ creation, troubleshooting guides, help documentation, and customer satisfaction optimization.",
+      "description": "\"Customer support and documentation specialist. Use PROACTIVELY for support ticket responses, FAQ creation, troubleshooting guides, help documentation, and customer satisfaction optimization. Specifically:\\n\\n<example>\\nContext: A customer emails in confused about why their exported report is missing a column that used to be there.\\nuser: \\\"A customer says their CSV export is missing the 'status' column since yesterday. Can you draft a reply?\\\"\\nassistant: \\\"I'll acknowledge the issue, check the provided context/docs for any confirmed change to the export format, and draft a clear response. If nothing confirms a format change, I'll say we're looking into it rather than guessing at a cause, offer a workaround if one exists, and flag it for escalation to engineering if it looks like a regression.\\\"\\n<commentary>\\nUse customer-support for direct, single-ticket responses grounded only in confirmed information, with escalation when the root cause isn't verifiable from available context.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Support volume shows the same question about resetting two-factor authentication coming in repeatedly.\\nuser: \\\"We keep getting tickets asking how to reset 2FA. Can you create something we can point people to?\\\"\\nassistant: \\\"I'll search the existing help center/FAQ content first to avoid duplicating or contradicting an existing article, then draft a new FAQ entry with clear numbered steps, called out prerequisites, and a note on when to escalate (e.g., if the customer is locked out entirely and needs identity verification).\\\"\\n<commentary>\\nUse customer-support for FAQ/help-center content creation, checking existing docs for duplicates before writing new ones.\\n</commentary>\\n</example>\\n\\nDoes not cover account health, retention, or expansion conversations — hand those off to customer-success-manager.\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -530,7 +530,7 @@
       "path": "business-marketing/legal-advisor.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "Legal documentation and compliance specialist. Use PROACTIVELY for privacy policies, terms of service, GDPR compliance, legal notices, and regulatory documentation. Expert in technology law and data protection.",
+      "description": "\"Use PROACTIVELY for privacy policies, terms of service, GDPR/CCPA compliance, legal notices, and regulatory documentation. Expert in technology law and data protection. Specifically:\\n\\n<example>\\nContext: A SaaS startup is preparing to launch and needs a privacy policy and terms of service before going live.\\nuser: \\\"We're launching our SaaS product next week and need a privacy policy and terms of service. We collect emails, usage analytics, and payment info via Stripe.\\\"\\nassistant: \\\"I'll draft a privacy policy and terms of service for your SaaS. First I need to confirm the jurisdictions you'll operate in, whether you'll serve EU/UK/California users, your data retention practices, and whether you use any subprocessors besides Stripe, so the documents cover the right regulations without assuming facts you haven't confirmed.\\\"\\n<commentary>\\nUse legal-advisor when drafting new compliance documents from scratch. The agent gathers jurisdiction and data-handling facts before drafting rather than assuming a generic template applies.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A company expanded into the EU market and needs its existing terms of service and privacy policy audited for GDPR gaps.\\nuser: \\\"We just expanded to the EU. Can you review our existing ToS and privacy policy for GDPR compliance gaps?\\\"\\nassistant: \\\"I'll audit your existing documents against GDPR requirements — lawful basis for processing, data subject rights, DPA/subprocessor disclosures, and cross-border transfer mechanisms — and flag specific gaps with citations, rather than rewriting the documents wholesale.\\\"\\n<commentary>\\nUse legal-advisor for compliance audits of existing legal documents, not just first drafts. The agent should flag gaps precisely and avoid asserting a law applies without confirming the actual data flows.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A marketing team wants to know if their planned cookie banner and consent flow are compliant before launch.\\nuser: \\\"Is a simple 'Accept All' cookie banner enough for our EU and California traffic?\\\"\\nassistant: \\\"I'll walk through what the ePrivacy Directive/GDPR and CCPA/CPRA require for cookie consent — including granular opt-in for non-essential cookies in the EU and opt-out signals like Global Privacy Control for California — and flag where 'Accept All' alone would fall short, based on the traffic mix you confirm.\\\"\\n<commentary>\\nUse legal-advisor for targeted compliance questions, not only full document drafting. Confirm the actual audience/jurisdiction mix before giving a definitive answer.\\n</commentary>\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -614,7 +614,7 @@
       "path": "business-marketing/product-manager.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "\"Use this agent when you need to make product strategy decisions, prioritize features, or define roadmap plans based on user needs and business goals. Specifically:\\\\n\\\\n<example>\\\\nContext: User is deciding whether to build feature A (high user demand, low revenue impact) or feature B (medium demand, high revenue impact).\\\\nuser: \\\"We have two features competing for Q2. How should we prioritize? Feature A is requested by many users but won't directly drive revenue. Feature B is less requested but could increase our ARPU significantly.\\\"\\\\nassistant: \\\"I'll help you analyze this using product prioritization frameworks. Let me assess the impact, effort, and strategic alignment of both features to recommend a prioritized roadmap that balances user value and business growth.\\\"\\\\n<commentary>\\\\nUse the product-manager agent when you need to balance competing priorities using data-driven frameworks like RICE scoring, user satisfaction metrics, and business impact analysis.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: User is planning the next quarter and needs to structure goals around product vision and market opportunity.\\\\nuser: \\\"We want to increase retention from 60% to 75% next quarter. What should be our focus areas and how do we measure success?\\\"\\\\nassistant: \\\"I'll develop a strategic roadmap with clear OKRs, identify the retention bottlenecks through user research insights, and prioritize features that address your highest-impact pain points. I'll also establish success metrics and recommend a launch strategy.\\\"\\\\n<commentary>\\\\nInvoke the product-manager agent when you need to develop quarterly strategy, set metrics-driven goals, and create detailed roadmaps aligned with measurable business outcomes.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: User has gathered user feedback about pain points but needs to validate and prioritize what to build.\\\\nuser: \\\"Our support team says users are frustrated with onboarding. We've collected 50 feedback items. How do we know what to build first?\\\"\\\\nassistant: \\\"I'll analyze the feedback patterns, validate the problem through usage data and user interviews, assess the impact on retention and NPS, and create a prioritized list of improvements using pain point analysis and effort estimation.\\\"\\\\n<commentary>\\\\nUse the product-manager agent when you need to synthesize qualitative feedback into validated product requirements, translate user problems into prioritized solutions, and ensure alignment with business objectives.\\\\n</commentary>\\\\n</example>\"",
+      "description": "\"Use this agent when you need to make product strategy decisions, prioritize features, or define roadmap plans based on user needs and business goals. Specifically:\\\\n\\\\n<example>\\\\nContext: User is deciding whether to build feature A (high user demand, low revenue impact) or feature B (medium demand, high revenue impact).\\\\nuser: \\\"We have two features competing for Q2. How should we prioritize? Feature A is requested by many users but won't directly drive revenue. Feature B is less requested but could increase our ARPU significantly.\\\"\\\\nassistant: \\\"I'll help you analyze this using product prioritization frameworks. Let me assess the impact, effort, and strategic alignment of both features to recommend a prioritized roadmap that balances user value and business growth.\\\"\\\\n<commentary>\\\\nUse the product-manager agent when you need to balance competing priorities using data-driven frameworks like RICE scoring, user satisfaction metrics, and business impact analysis. product-strategist also covers prioritization/roadmap work, but product-manager owns the end-to-end discovery-to-launch execution and day-to-day prioritization calls.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: User is planning the next quarter and needs to structure goals around product vision and market opportunity.\\\\nuser: \\\"We want to increase retention from 60% to 75% next quarter. What should be our focus areas and how do we measure success?\\\"\\\\nassistant: \\\"I'll develop a strategic roadmap with clear OKRs, identify the retention bottlenecks through user research insights, and prioritize features that address your highest-impact pain points. I'll also establish success metrics and recommend a launch strategy, using only baseline figures you or your analytics can confirm.\\\"\\\\n<commentary>\\\\nInvoke the product-manager agent when you need to develop quarterly strategy, set metrics-driven goals, and create detailed roadmaps aligned with measurable business outcomes.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: User has gathered user feedback about pain points but needs to validate and prioritize what to build.\\\\nuser: \\\"Our support team says users are frustrated with onboarding. We've collected 50 feedback items. How do we know what to build first?\\\"\\\\nassistant: \\\"I'll analyze the feedback patterns, validate the problem through usage data and user interviews, assess the impact on retention and NPS, and create a prioritized list of improvements using pain point analysis and effort estimation.\\\"\\\\n<commentary>\\\\nUse the product-manager agent when you need to synthesize qualitative feedback into validated product requirements, translate user problems into prioritized solutions, and ensure alignment with business objectives. Once a decision is made, hand off to se-product-manager-advisor to turn it into GitHub issues.\\\\n</commentary>\\\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -673,32 +673,11 @@
       }
     },
     {
-      "name": "risk-manager",
-      "path": "business-marketing/risk-manager.md",
-      "category": "business-marketing",
-      "type": "agent",
-      "description": "Risk management and portfolio analysis specialist. Use PROACTIVELY for portfolio risk assessment, position sizing, R-multiple analysis, hedging strategies, and risk-adjusted performance measurement.",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      }
-    },
-    {
       "name": "sales-automator",
       "path": "business-marketing/sales-automator.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "Sales automation and outreach specialist. Use PROACTIVELY for cold email campaigns, follow-up sequences, proposal templates, case studies, sales scripts, and conversion optimization.",
+      "description": "\"Sales automation and outreach specialist. Use PROACTIVELY for cold email campaigns, follow-up sequences, proposal templates, case studies, sales scripts, and conversion optimization. Specifically:\\n\\n<example>\\nContext: A founder wants a cold outreach sequence for a new B2B SaaS product targeting operations managers.\\nuser: \\\"Write me a 4-email cold sequence to reach operations managers at mid-size logistics companies.\\\"\\nassistant: \\\"I'll first ask for the value proposition, target ICP details, and how the contact list was sourced (opt-in, public directory, or purchased). Then I'll draft a 4-touchpoint sequence that leads with value, includes required CAN-SPAM elements (sender identity, physical address, working unsubscribe), and flags any personalization facts pulled from research with their source.\\\"\\n<commentary>\\nUse sales-automator for cold email/follow-up copy, but only after confirming ICP, value prop, and list provenance, and only with compliance elements built in.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A sales rep wants case studies to include in a proposal template.\\nuser: \\\"Add some case studies and social proof to this proposal — say we've helped companies cut costs by 30%.\\\"\\nassistant: \\\"I can include case studies only using real customer names/results you provide. If you don't have a confirmed example yet, I'll use a clearly marked placeholder (e.g., '[Customer Name — pending confirmed results]') rather than inventing a company, quote, or percentage.\\\"\\n<commentary>\\nUse sales-automator for proposal/case-study drafting, but never fabricate customer names, quotes, or statistics — placeholders only until the user supplies real data.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A prospect asks a deep technical integration question mid-sequence.\\nuser: \\\"The prospect wants to know if our API supports batch webhook retries before they'll take a call.\\\"\\nassistant: \\\"That's a technical capability question best answered by sales-engineer, who can validate it against the actual product. I can draft the outreach copy and scheduling logic around their answer once you have it.\\\"\\n<commentary>\\nsales-automator handles outreach copy and cadences, not product/technical validation — hand off technical questions to sales-engineer.\\n</commentary>\\n</example>\\n\\nDoes not build CRM/outbound sending infrastructure or Salesforce automation — hand off to salesforce-expert or sales-engineer for that. Does not draft jurisdiction-specific compliance/legal language — hand off to legal-advisor.\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -719,7 +698,7 @@
       "path": "business-marketing/sales-engineer.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "\"Use this agent when you need to conduct technical pre-sales activities including solution architecture, proof-of-concept development, and technical demonstrations for complex sales deals. Specifically:\\\\n\\\\n<example>\\\\nContext: A prospect with complex technical requirements needs a custom solution designed and demonstrated before committing to evaluation.\\\\nuser: \\\"We have a potential customer with high technical requirements: 10k+ transaction throughput, sub-100ms latency, and complex integrations. They want to see this works before signing an evaluation agreement.\\\"\\\\nassistant: \\\"I'll conduct discovery to understand their technical landscape, design a solution architecture that addresses their requirements, create a POC environment demonstrating feasibility, and prepare a technical walkthrough addressing their integration needs and performance expectations.\\\"\\\\n<commentary>\\\\nUse the sales-engineer agent when you need to design and demonstrate technical solutions that address specific prospect requirements. This agent bridges technical capabilities with sales objectives, particularly for complex enterprise deals requiring proof of concept.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: Sales team is facing technical objections from a qualified prospect and needs expert help addressing security, scalability, or integration concerns.\\\\nuser: \\\"The prospect's security team is concerned about our compliance posture and data residency. They also want to know how we handle failover and disaster recovery. Can someone address these concerns technically?\\\"\\\\nassistant: \\\"I'll prepare a comprehensive technical response covering our security architecture, compliance mappings, data residency options, and disaster recovery procedures. I'll create documentation showing how our solution meets their requirements and schedule a technical discussion with their team to answer detailed questions.\\\"\\\\n<commentary>\\\\nInvoke sales-engineer when technical objections or deep architectural questions need expert answers that build prospect confidence and move the deal forward.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A prospect is ready to move forward and needs a detailed RFP response with technical specifications, architecture diagrams, and implementation roadmap.\\\\nuser: \\\"We received an RFP from a high-value prospect. They need detailed technical specifications, security documentation, performance benchmarks, and a proposed implementation timeline. This needs to be thorough and competitive.\\\"\\\\nassistant: \\\"I'll build a comprehensive RFP response including detailed architecture diagrams, security and compliance analysis, performance specifications with benchmarks, integration capabilities assessment, customization options, implementation roadmap with milestones, and risk mitigation strategies. I'll ensure the response is competitive and positions our solution as the best technical fit.\\\"\\\\n<commentary>\\\\nUse this agent for RFP/RFI responses and formal technical proposals when you need professional documentation that demonstrates technical fit and differentiates against competitors.\\\\n</commentary>\\\\n</example>\"",
+      "description": "\"Use this agent when you need to conduct technical pre-sales activities including solution architecture, proof-of-concept development, and technical demonstrations for complex sales deals. Specifically:\\\\n\\\\n<example>\\\\nContext: A prospect with complex technical requirements needs a custom solution designed and demonstrated before committing to evaluation.\\\\nuser: \\\"We have a potential customer with high technical requirements: 10k+ transaction throughput, sub-100ms latency, and complex integrations. They want to see this works before signing an evaluation agreement.\\\"\\\\nassistant: \\\"I'll conduct discovery to understand their technical landscape, design a solution architecture that addresses their requirements, create a POC environment demonstrating feasibility, and prepare a technical walkthrough addressing their integration needs and performance expectations.\\\"\\\\n<commentary>\\\\nUse the sales-engineer agent when you need to design and demonstrate technical solutions that address specific prospect requirements. This agent bridges technical capabilities with sales objectives, particularly for complex enterprise deals requiring proof of concept.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: Sales team is facing technical objections from a qualified prospect and needs expert help addressing security, scalability, or integration concerns.\\\\nuser: \\\"The prospect's security team is concerned about our compliance posture and data residency. They also want to know how we handle failover and disaster recovery. Can someone address these concerns technically?\\\"\\\\nassistant: \\\"I'll prepare a comprehensive technical response covering our security architecture, compliance mappings, data residency options, and disaster recovery procedures. I'll create documentation showing how our solution meets their requirements and schedule a technical discussion with their team to answer detailed questions.\\\"\\\\n<commentary>\\\\nInvoke sales-engineer when technical objections or deep architectural questions need expert answers that build prospect confidence and move the deal forward.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A prospect is ready to move forward and needs a detailed RFP response with technical specifications, architecture diagrams, and implementation roadmap.\\\\nuser: \\\"We received an RFP from a high-value prospect. They need detailed technical specifications, security documentation, performance benchmarks, and a proposed implementation timeline. This needs to be thorough and competitive.\\\"\\\\nassistant: \\\"I'll build a comprehensive RFP response including detailed architecture diagrams, security and compliance analysis, performance specifications with benchmarks, integration capabilities assessment, customization options, implementation roadmap with milestones, and risk mitigation strategies. I'll ensure the response is competitive and positions our solution as the best technical fit.\\\"\\\\n<commentary>\\\\nUse this agent for RFP/RFI responses and formal technical proposals when you need professional documentation that demonstrates technical fit and differentiates against competitors.\\\\n</commentary>\\\\n</example>\\\\n\\\\nDoes not own pricing/discount decisions or contract negotiation — hand off to the account team. Does not draft compliance/legal certification language — hand off to legal-advisor.\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -783,6 +762,27 @@
       "category": "business-marketing",
       "type": "agent",
       "description": "\"Use this agent PROACTIVELY when you need comprehensive SEO optimization — technical audits, keyword strategy, content optimization, structured data, or search ranking recovery. Specifically:\\\\n\\\\n<example>\\\\nContext: An e-commerce company is experiencing declining organic traffic and needs a systematic SEO audit and recovery strategy.\\\\nuser: \\\"Our organic traffic dropped 30% after Google's latest algorithm update. Can you audit our technical SEO, identify issues, and create a recovery plan?\\\"\\\\nassistant: \\\"I'll conduct a comprehensive technical SEO audit examining crawl errors, site architecture, Core Web Vitals, structured data, and internal linking. I'll analyze your content for thin pages and optimization gaps, review your backlink profile, assess algorithm impact, and deliver a prioritized recovery strategy with implementation timelines and monitoring dashboards.\\\"\\\\n<commentary>\\\\nUse SEO specialist when you need a full technical SEO audit combined with strategic recommendations for fixing algorithmic issues and improving search visibility. This agent handles deep technical analysis and recovery planning.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A software startup wants to improve search rankings for high-intent, high-value keywords in their target market.\\\\nuser: \\\"We want to rank for enterprise SaaS keywords like 'cloud-based project management for teams' and 'enterprise collaboration tools.' Can you develop a keyword strategy and content roadmap?\\\"\\\\nassistant: \\\"I'll conduct keyword research identifying search volumes, keyword difficulty, and commercial intent. I'll analyze competitor content strategies, identify content gaps and opportunities, develop a content roadmap prioritizing high-impact keywords, and provide on-page optimization guidelines ensuring each piece ranks for target keywords.\\\"\\\\n<commentary>\\\\nInvoke SEO specialist when building comprehensive keyword strategies and content roadmaps for ranking on high-value search terms. The agent combines keyword research, competitor analysis, and content planning.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A media publisher needs to implement structured data across hundreds of pages to enable rich results and improve CTR.\\\\nuser: \\\"We need to implement schema markup across our articles, recipes, and videos to get rich snippets in search results. How do we scale this across 5,000+ pages?\\\"\\\\nassistant: \\\"I'll assess your content structure and identify schema types needed for each content category. I'll develop schema implementation templates, create validation procedures using Rich Results Test, design a rollout plan for your CMS, and establish monitoring to track rich results coverage and CTR improvements.\\\"\\\\n<commentary>\\\\nUse SEO specialist for technical implementation projects like structured data deployment, site architecture changes, and complex SEO infrastructure improvements requiring specialized technical knowledge.\\\\n</commentary>\\\\n</example>\"",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "trading-risk-manager",
+      "path": "business-marketing/trading-risk-manager.md",
+      "category": "business-marketing",
+      "type": "agent",
+      "description": "\"Trading and portfolio risk management specialist for retail/discretionary traders and investors. Use PROACTIVELY for position sizing, R-multiple analysis, hedging strategies, and risk-adjusted performance measurement. Distinct from finance/risk-manager, which covers enterprise-level ERM, regulatory compliance (Basel III, COSO), and institutional risk frameworks. Specifically:\\n\\n<example>\\nContext: A trader wants help sizing a new position in a volatile stock.\\nuser: \\\"I have a $50,000 account and want to buy a stock trading at $120 with a stop-loss at $110. How many shares should I buy?\\\"\\nassistant: \\\"I'll first confirm your risk tolerance (e.g., 1% max risk per trade), then calculate position size in R-multiples: risk per share is $10, so at 1% ($500) max risk you could take roughly 50 shares. I'll also flag that this is educational risk-sizing math, not investment advice.\\\"\\n<commentary>\\nUse trading-risk-manager for concrete position-sizing and R-multiple calculations tied to a stated account size and risk tolerance, not generic stock picks.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A discretionary trader wants to evaluate whether to use full Kelly criterion sizing after a winning streak.\\nuser: \\\"My system has a 60% win rate with a 2:1 reward-to-risk ratio. Should I size positions using the full Kelly criterion?\\\"\\nassistant: \\\"I'll calculate your full Kelly percentage from those inputs, but recommend sizing at a fraction of it (typically half or quarter Kelly) since full Kelly is highly sensitive to estimation error in your win rate and reward ratio and can produce large drawdowns.\\\"\\n<commentary>\\nUse trading-risk-manager when a user proposes an aggressive sizing method; the agent should surface the estimation-error risk and recommend fractional Kelly rather than applying the formula uncritically.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: An investor holding a leveraged crypto position wants to understand liquidation risk.\\nuser: \\\"I'm running 5x leverage on a BTC perpetual futures position. What's my liquidation risk?\\\"\\nassistant: \\\"I'll walk through your liquidation price given the leverage and current margin, discuss how funding rates and volatility affect margin-call risk, and outline hedging options like reducing leverage or adding protective positions — while flagging that leveraged derivatives carry substantial loss-of-principal risk.\\\"\\n<commentary>\\nUse trading-risk-manager for leverage, margin, and liquidation risk questions on derivatives and crypto, a common retail trading scenario.\\n</commentary>\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -866,7 +866,7 @@
       "path": "data-ai/ai-engineer.md",
       "category": "data-ai",
       "type": "agent",
-      "description": "\"Use this agent when architecting, implementing, or optimizing end-to-end AI systems—from model selection and training pipelines to production deployment and monitoring. Specifically:\\\\n\\\\n<example>\\\\nContext: A user is building a recommendation system and needs guidance on model architecture, training infrastructure, and production deployment strategy.\\\\nuser: \\\"I need to build a recommendation engine that serves predictions with <100ms latency. What's the best approach for model selection, training infrastructure, and deployment?\\\"\\\\nassistant: \\\"I'll design the AI system architecture. Let me assess your data characteristics, performance requirements, and infrastructure constraints to recommend the right model type, training pipeline, and inference optimization strategy.\\\"\\\\n<commentary>\\\\nUse the ai-engineer when the user needs comprehensive AI system design spanning architecture decisions, model selection, training setup, and deployment patterns all together.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A user has a PyTorch model in research stage and needs to optimize it for production deployment at scale with latency and cost constraints.\\\\nuser: \\\"We have a working PyTorch model but need to deploy it to handle 10k requests/second with sub-50ms latency. What optimization techniques should we use?\\\"\\\\nassistant: \\\"I'll develop an optimization strategy using quantization, pruning, and distillation techniques, then set up a deployment architecture with model serving, batching, and caching to meet your latency requirements.\\\"\\\\n<commentary>\\\\nUse the ai-engineer for production optimization tasks that require selecting and implementing multiple optimization techniques while considering deployment constraints.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A user is implementing a multi-modal AI system combining vision and language models and needs to ensure it meets fairness, explainability, and governance requirements.\\\\nuser: \\\"We're building a multi-modal system with vision and language components. How do we ensure it's fair, explainable, and maintains governance standards for production?\\\"\\\\nassistant: \\\"I'll design the multi-modal architecture with bias detection, fairness metrics, and explainability tools. I'll also establish governance frameworks for model versioning, monitoring, and incident response.\\\"\\\\n<commentary>\\\\nUse the ai-engineer when building complex AI systems that require careful attention to ethical considerations, governance, monitoring, and cross-component integration.\\\\n</commentary>\\\\n</example>\"",
+      "description": "\"Use this agent as the generalist entry point for end-to-end AI systems spanning both classical ML (model selection, training pipelines, production serving) and generative-AI/LLM application engineering (RAG, agentic tool use, LLM API integration, evals). Specifically:\\\\n\\\\n<example>\\\\nContext: A user is building a recommendation system and needs guidance on model architecture, training infrastructure, and production deployment strategy.\\\\nuser: \\\"I need to build a recommendation engine that serves predictions with <100ms latency. What's the best approach for model selection, training infrastructure, and deployment?\\\"\\\\nassistant: \\\"I'll design the AI system architecture. Let me assess your data characteristics, performance requirements, and infrastructure constraints, then recommend a model type (e.g., LightGBM/XGBoost for tabular ranking or a two-tower embedding model), a training pipeline with a feature store (Feast), and an inference stack (ONNX Runtime or TensorRT) to hit the latency target.\\\"\\\\n<commentary>\\\\nUse the ai-engineer when the user needs comprehensive AI system design spanning architecture decisions, model selection, training setup, and deployment patterns all together.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A user has a PyTorch model in research stage and needs to optimize it for production deployment at scale with latency and cost constraints.\\\\nuser: \\\"We have a working PyTorch model but need to deploy it to handle 10k requests/second with sub-50ms latency. What optimization techniques should we use?\\\"\\\\nassistant: \\\"I'll develop an optimization strategy: post-training quantization (INT8 via TensorRT or ONNX Runtime), structured pruning, and knowledge distillation to a smaller student model, then set up serving with dynamic batching and response caching to meet your latency and throughput requirements.\\\"\\\\n<commentary>\\\\nUse the ai-engineer for production optimization tasks that require selecting and implementing multiple optimization techniques while considering deployment constraints.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A user wants to add a retrieval-augmented Q&A feature backed by an LLM to an existing product, alongside an existing classical ranking model.\\\\nuser: \\\"We want to add a RAG-based support chatbot over our docs, and it needs to work alongside our existing ranking model. Where do we start?\\\"\\\\nassistant: \\\"I'll scope this as a generative-AI addition to your existing AI system: chunking and embedding your docs into a vector store (pgvector given your corpus size), wiring retrieval + an LLM API (Claude/GPT/Gemini — I'll confirm current model IDs with you) for generation, and an evaluation harness (RAGAS) before launch. If you later need deep serving-infra tuning (vLLM, multi-model routing) or a custom fine-tune, I'll hand that off to llm-architect; I'll keep the classical ranking model's production serving with ml-engineer.\\\"\\\\n<commentary>\\\\nUse the ai-engineer for systems that blend classical ML and generative-AI components end-to-end. It hands off deep production-LLM-serving-infrastructure work to llm-architect, classical-model-serving-at-scale/MLOps depth to ml-engineer or machine-learning-engineer, and prompt-text-only optimization on an already-chosen model to prompt-engineer.\\\\n</commentary>\\\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -1055,7 +1055,7 @@
       "path": "data-ai/data-scientist.md",
       "category": "data-ai",
       "type": "agent",
-      "description": "\"Use this agent when you need to analyze data patterns, build predictive models, or extract statistical insights from datasets. Invoke this agent for exploratory analysis, hypothesis testing, machine learning model development, and translating findings into business recommendations. Specifically:\\\\n\\\\n<example>\\\\nContext: Product team wants to understand why customer churn increased 15% last month and identify actionable retention levers.\\\\nuser: \\\"We're seeing higher churn recently. Can you analyze our customer data and tell us what's driving it?\\\"\\\\nassistant: \\\"I'll conduct a comprehensive exploratory analysis to identify churn patterns, then build a predictive model to rank the most influential factors. I'll deliver both statistical findings and business recommendations for retention strategies.\\\"\\\\n<commentary>\\\\nUse this agent when you have a business question tied to data. The agent will perform EDA, identify significant patterns, and translate statistical findings into actionable business insights backed by rigorous methodology.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: Data engineering team has prepared a new dataset with user behavior logs. The product manager wants to forecast demand for the next quarter.\\\\nuser: \\\"We have three months of behavioral data. Can you build a forecast model for next quarter demand?\\\"\\\\nassistant: \\\"I'll analyze temporal patterns, decompose trends and seasonality, test multiple forecasting approaches (ARIMA, Prophet, neural networks), and deliver a probabilistic forecast with confidence intervals plus recommendations for demand planning.\\\"\\\\n<commentary>\\\\nInvoke this agent when you need predictive modeling on time series data. The agent will select appropriate statistical methods, validate assumptions, and deliver forecasts with quantified uncertainty.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A/B test results are ready. Product team ran a pricing experiment and needs guidance on whether the results are statistically significant and if they should ship the change.\\\\nuser: \\\"We ran an A/B test on pricing. Can you analyze if the results are real and what we should do?\\\"\\\\nassistant: \\\"I'll perform hypothesis testing on your treatment vs. control groups, check statistical significance (p-value, effect size), assess for multiple comparison issues, calculate business impact (ROI, revenue lift), and provide a clear recommendation backed by rigorous statistical analysis.\\\"\\\\n<commentary>\\\\nUse this agent when you have experimental or A/B test results requiring statistical validation and business impact assessment. The agent will verify statistical rigor and translate p-values into business decisions.\\\\n</commentary>\\\\n</example>\"",
+      "description": "\"Use this agent when you need to analyze data patterns, build predictive models, or extract statistical insights from datasets. Invoke this agent for exploratory analysis, hypothesis testing, machine learning model development, and translating findings into business recommendations. Specifically:\\n\\n<example>\\nContext: Product team wants to understand why customer churn increased 15% last month and identify actionable retention levers.\\nuser: \\\"We're seeing higher churn recently. Can you analyze our customer data and tell us what's driving it?\\\"\\nassistant: \\\"I'll conduct a comprehensive exploratory analysis to identify churn patterns, then build a predictive model to rank the most influential factors. I'll deliver both statistical findings and business recommendations for retention strategies.\\\"\\n<commentary>\\nUse this agent when you have a business question tied to data. The agent will perform EDA, identify significant patterns, and translate statistical findings into actionable business insights backed by rigorous methodology.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Data engineering team has prepared a new dataset with user behavior logs. The product manager wants to forecast demand for the next quarter.\\nuser: \\\"We have three months of behavioral data. Can you build a forecast model for next quarter demand?\\\"\\nassistant: \\\"I'll analyze temporal patterns, decompose trends and seasonality, test multiple forecasting approaches (ARIMA, Prophet, neural networks), and deliver a probabilistic forecast with confidence intervals plus recommendations for demand planning.\\\"\\n<commentary>\\nInvoke this agent when you need predictive modeling on time series data. The agent will select appropriate statistical methods, validate assumptions, and deliver forecasts with quantified uncertainty.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A/B test results are ready. Product team ran a pricing experiment and needs guidance on whether the results are statistically significant and if they should ship the change.\\nuser: \\\"We ran an A/B test on pricing. Can you analyze if the results are real and what we should do?\\\"\\nassistant: \\\"I'll perform hypothesis testing on your treatment vs. control groups, check statistical significance (p-value, effect size), assess for multiple comparison issues, calculate business impact (ROI, revenue lift), and provide a clear recommendation backed by rigorous statistical analysis.\\\"\\n<commentary>\\nUse this agent when you have experimental or A/B test results requiring statistical validation and business impact assessment. The agent will verify statistical rigor and translate p-values into business decisions.\\n</commentary>\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -1181,7 +1181,7 @@
       "path": "data-ai/ml-engineer.md",
       "category": "data-ai",
       "type": "agent",
-      "description": "\"Use this agent when building production ML systems requiring model training pipelines, model serving infrastructure, performance optimization, and automated retraining. Specifically:\\\\n\\\\n<example>\\\\nContext: A team needs to implement a complete ML system that trains a recommendation model, serves predictions at scale, and monitors for performance degradation.\\\\nuser: \\\"We need to build an ML pipeline that trains a collaborative filtering model on 100M user events daily, serves predictions sub-100ms, handles model drift, and automatically retrains when accuracy drops.\\\"\\\\nassistant: \\\"I'll architect the complete ML system with data validation pipeline, distributed training on multi-GPU infrastructure, model versioning, production serving with low-latency endpoints, and automated monitoring for prediction drift. I'll set up MLflow for experiment tracking, implement A/B testing for new model versions, and establish auto-retraining triggers with fallback mechanisms.\\\"\\\\n<commentary>\\\\nUse the ml-engineer agent when you need to build end-to-end ML systems from data validation through model serving, including infrastructure for handling production workloads, model governance, and continuous improvement.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: An existing ML service is experiencing latency issues and model degradation, requiring optimization of feature engineering and serving infrastructure.\\\\nuser: \\\"Our recommendation model has gone from 15ms to 150ms latency and accuracy dropped 3% last month. We need to optimize features, compress the model, and potentially switch to batch predictions.\\\"\\\\nassistant: \\\"I'll analyze the performance bottlenecks with profiling, identify feature engineering issues, implement online feature stores for faster lookups, apply model compression techniques like quantization, and potentially refactor to batch + caching patterns. I'll compare serving strategies (REST vs gRPC vs batch) and implement canary deployments for safe rollout.\\\"\\\\n<commentary>\\\\nInvoke this agent when addressing production ML system performance issues, model degradation, infrastructure bottlenecks, and optimization of existing deployed models.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A data science team has a trained model and needs production deployment with monitoring, A/B testing capability, and auto-retraining infrastructure.\\\\nuser: \\\"We have a trained XGBoost model with 92% accuracy. How do we deploy this safely, test it against the current model, set up monitoring, and enable automatic retraining as new data arrives?\\\"\\\\nassistant: \\\"I'll set up a production deployment pipeline using BentoML or Seldon, implement blue-green deployment for safe rollouts, configure A/B testing with traffic splitting and significance testing, establish monitoring dashboards for prediction drift and performance metrics, implement automated retraining triggers with DVC versioning, and set up rollback procedures.\\\"\\\\n<commentary>\\\\nUse this agent when you have a trained model ready for production and need to handle deployment, monitoring, testing, and operational aspects of maintaining ML systems in production.\\\\n</commentary>\\\\n</example>\"",
+      "description": "\"Use this agent when building production ML systems end-to-end - training pipelines, initial model serving/deployment, and automated retraining - covering the full lifecycle from data validation through training, validation, and initial deployment. For deep inference-serving performance optimization on an already-deployed model, use the machine-learning-engineer agent instead; for ML platform/infrastructure automation use the mlops-engineer agent, for LLM/GenAI application engineering and evaluation use the ai-engineer agent, and for prompt-text optimization on an already-chosen model use the prompt-engineer agent. Specifically:\\\\n\\\\n<example>\\\\nContext: A team needs to implement a complete ML system that trains a recommendation model, serves predictions at scale, and monitors for performance degradation.\\\\nuser: \\\"We need to build an ML pipeline that trains a collaborative filtering model on 100M user events daily, serves predictions sub-100ms, handles model drift, and automatically retrains when accuracy drops.\\\"\\\\nassistant: \\\"I'll architect the complete ML system with data validation pipeline, distributed training on multi-GPU infrastructure, model versioning, production serving with low-latency endpoints, and automated monitoring for prediction drift. I'll set up MLflow for experiment tracking, implement A/B testing for new model versions, and establish auto-retraining triggers with fallback mechanisms.\\\"\\\\n<commentary>\\\\nUse the ml-engineer agent when you need to build end-to-end ML systems from data validation through model serving, including infrastructure for handling production workloads, model governance, and continuous improvement.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: An existing ML service has both a model-accuracy regression and an inference-latency regression, requiring the team to distinguish training-pipeline root causes from serving-layer optimization.\\\\nuser: \\\"Our recommendation model has gone from 15ms to 150ms latency and accuracy dropped 3% last month. We need to optimize features, compress the model, and potentially switch to batch predictions.\\\"\\\\nassistant: \\\"I'll investigate the training-pipeline side first: profiling for feature drift and data-quality issues behind the 3% accuracy drop, auditing the feature pipeline for training-serving skew, and retraining with corrected features. For the serving-side latency regression — model compression/quantization, comparing serving strategies (REST vs gRPC vs batch), and canary rollout — I'll hand that off to the machine-learning-engineer agent, which owns deep inference-serving optimization.\\\"\\\\n<commentary>\\\\nUse ml-engineer to diagnose and fix the training-pipeline root cause (feature drift, retraining) behind production ML issues; hand off pure serving-latency/inference-optimization work to machine-learning-engineer to keep agent ownership boundaries unambiguous.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: A data science team has a trained model and needs production deployment with monitoring, A/B testing capability, and auto-retraining infrastructure.\\\\nuser: \\\"We have a trained XGBoost model with 92% accuracy. How do we deploy this safely, test it against the current model, set up monitoring, and enable automatic retraining as new data arrives?\\\"\\\\nassistant: \\\"I'll set up a production deployment pipeline using BentoML or Seldon, implement blue-green deployment for safe rollouts, configure A/B testing with traffic splitting and significance testing, establish monitoring dashboards for prediction drift and performance metrics, implement automated retraining triggers with DVC versioning, and set up rollback procedures.\\\"\\\\n<commentary>\\\\nUse this agent for a specific model's own initial deployment, A/B testing, and monitoring/retraining loop as part of its lifecycle. This is model-level lifecycle ownership, distinct from the underlying platform/infrastructure automation (CI/CD, GPU orchestration, cross-model versioning systems) owned by mlops-engineer.\\\\n</commentary>\\\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -2273,7 +2273,7 @@
       "path": "development-team/backend-developer.md",
       "category": "development-team",
       "type": "agent",
-      "description": "\"Use this agent when building server-side APIs, microservices, and backend systems that require robust architecture, scalability planning, and production-ready implementation. Specifically:\\\\n\\\\n<example>\\\\nContext: A project needs a new RESTful API service with database persistence, authentication, and caching for handling high-traffic requests.\\\\nuser: \\\"We need to build a user service API that handles 10k RPS with sub-100ms latency. It should support OAuth2 authentication, PostgreSQL for persistence, and Redis caching.\\\"\\\\nassistant: \\\"I'll design and implement this service architecture. First, let me query the context manager for existing infrastructure. Then I'll build the service with proper API design, database optimization, authentication middleware, and caching strategy. I'll ensure 80%+ test coverage and OpenAPI documentation.\\\"\\\\n<commentary>\\\\nUse the backend-developer agent when you need to implement complete backend services with API endpoints, database integration, authentication, and performance optimization. This agent handles the full stack from architecture decisions to production-ready code.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: An existing monolith needs refactoring to introduce microservices with proper service communication patterns and data consistency.\\\\nuser: \\\"We're starting to decompose our monolith. We need a new orders service that communicates with user and inventory services via gRPC, with Kafka for async events and eventual consistency.\\\"\\\\nassistant: \\\"I'll architect this service decomposition. I'll design service boundaries, implement gRPC communication with circuit breakers, set up Kafka consumers for event handling, and configure proper database isolation. I'll include monitoring instrumentation and deployment configurations.\\\"\\\\n<commentary>\\\\nInvoke this agent when building individual microservices that need to integrate with other services, handle distributed transactions, and maintain data consistency patterns in a larger system.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: The backend team needs to add real-time features to their existing system with WebSocket support and message streaming.\\\\nuser: \\\"Add WebSocket endpoints to our notification service so clients get real-time updates. Need to handle connection pooling, graceful disconnects, and failover to fallback mechanisms.\\\"\\\\nassistant: \\\"I'll implement WebSocket support with connection management, implement health checks and automatic reconnection handling, set up message broadcasting with proper error handling, and integrate with your existing authentication. I'll add load testing and monitoring for connection metrics.\\\"\\\\n<commentary>\\\\nUse this agent for implementing real-time features, WebSocket integration, and async communication patterns within your backend services.\\\\n</commentary>\\\\n</example>\"",
+      "description": "\"Use this agent when building server-side APIs, microservices, and backend systems that require robust architecture, scalability planning, and production-ready implementation. Use PROACTIVELY when implementing backend services, APIs, or database-integrated systems. Specifically:\\\\n\\\\n<example>\\\\nContext: A project needs a new RESTful API service with database persistence, authentication, and caching for handling high-traffic requests.\\\\nuser: \\\"We need to build a user service API that handles 10k RPS with sub-100ms latency. It should support OAuth2 authentication, PostgreSQL for persistence, and Redis caching.\\\"\\\\nassistant: \\\"I'll implement this service against the existing architecture. First, let me discover the existing stack and conventions via Glob/Grep. Then I'll build the service with proper API design, database optimization, authentication middleware, and caching strategy. I'll ensure 80%+ test coverage and OpenAPI documentation.\\\"\\\\n<commentary>\\\\nUse the backend-developer agent when you need to implement complete backend services with API endpoints, database integration, authentication, and performance optimization. This agent handles full implementation — from existing or discovered architecture through to production-ready code — while upfront architecture and service-boundary decisions belong to backend-architect.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: An existing monolith needs refactoring to introduce microservices with proper service communication patterns and data consistency.\\\\nuser: \\\"We're starting to decompose our monolith. We need a new orders service that communicates with user and inventory services via gRPC, with Kafka for async events and eventual consistency.\\\"\\\\nassistant: \\\"I'll implement this service decomposition against the boundaries backend-architect has defined, or infer them from the codebase if undocumented. I'll set up gRPC communication with circuit breakers, configure Kafka consumers for event handling, and configure proper database isolation. I'll include monitoring instrumentation and deployment configurations.\\\"\\\\n<commentary>\\\\nInvoke this agent when building individual microservices that need to integrate with other services, handle distributed transactions, and maintain data consistency patterns in a larger system.\\\\n</commentary>\\\\n</example>\\\\n\\\\n<example>\\\\nContext: The backend team needs to add real-time features to their existing system with WebSocket support and message streaming.\\\\nuser: \\\"Add WebSocket endpoints to our notification service so clients get real-time updates. Need to handle connection pooling, graceful disconnects, and failover to fallback mechanisms.\\\"\\\\nassistant: \\\"I'll implement WebSocket support with connection management, implement health checks and automatic reconnection handling, set up message broadcasting with proper error handling, and integrate with your existing authentication. I'll add load testing and monitoring for connection metrics.\\\"\\\\n<commentary>\\\\nUse this agent for implementing real-time features, WebSocket integration, and async communication patterns within your backend services.\\\\n</commentary>\\\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -4814,7 +4814,7 @@
       "path": "expert-advisors/droid.md",
       "category": "expert-advisors",
       "type": "agent",
-      "description": "Provides installation guidance, usage examples, and automation patterns for the Droid CLI, with emphasis on droid exec for CI/CD and non-interactive automation",
+      "description": "Use this agent for installation guidance, usage examples, and automation patterns for the Droid CLI (Factory AI), with emphasis on droid exec for CI/CD and non-interactive automation. Examples: <example>Context: A user wants to automate code review in their CI pipeline. user: 'How do I run Droid CLI in GitHub Actions to review every PR?' assistant: 'I will use the droid agent to show you a droid exec command and GitHub Actions integration for automated PR review.' <commentary>The droid agent specializes in droid exec syntax, autonomy tiers, and CI/CD integration patterns.</commentary></example> <example>Context: A user is unsure which autonomy level to use for an automated task. user: 'I want Droid to fix failing tests and push to main automatically, is that safe?' assistant: 'Let me use the droid agent to explain the --auto autonomy tiers and which one fits a fix-test-push workflow.' <commentary>The droid agent understands the low/medium/high autonomy boundaries and their safety implications.</commentary></example>",
       "author": "",
       "repo": "",
       "version": "",
@@ -6536,7 +6536,7 @@
       "path": "orchestration/subproject-pm.md",
       "category": "orchestration",
       "type": "agent",
-      "description": "Middle tier of a hierarchical looped build — owns ONE subproject end to end. Dispatched by project-orchestrator (one PM per subproject). It runs the looped pipeline for its slice: SDD (spec/plan/tasks with a critique loop) using the task-execution-engine for state, dispatches a swarm of workers that each run a TDD test-repair loop, then runs a PM gate + a review-repair loop until 0 CRÍTICO/ALTO, and reports a verdict up. Use it as the subagent_type the project-orchestrator spawns per subproject. <example>Context: root split a greenfield build into api/web/db. assistant: \"Dispatching a subproject-pm for 'api' with its contract slice + acceptance criteria; it will SDD-spec it, run a swarm with TDD loops, and a review-repair loop before reporting up.\" <commentary>Each subproject gets a PM that owns the full looped pipeline for its slice; the root only integrates.</commentary></example>",
+      "description": "Middle tier of a hierarchical looped build — owns ONE subproject end to end. Dispatched by project-orchestrator (one PM per subproject). It runs the looped pipeline for its slice: SDD (spec/plan/tasks with a critique loop) using the task-execution-engine for state, dispatches a swarm of workers that each run a TDD test-repair loop, then runs a PM gate + a review-repair loop until 0 CRITICAL/HIGH, and reports a verdict up. Use it as the subagent_type the project-orchestrator spawns per subproject. <example>Context: root split a greenfield build into api/web/db. assistant: \"Dispatching a subproject-pm for 'api' with its contract slice + acceptance criteria; it will SDD-spec it, run a swarm with TDD loops, and a review-repair loop before reporting up.\" <commentary>Each subproject gets a PM that owns the full looped pipeline for its slice; the root only integrates.</commentary></example>",
       "author": "",
       "repo": "",
       "version": "",
@@ -7649,7 +7649,7 @@
       "path": "programming-languages/react-specialist.md",
       "category": "programming-languages",
       "type": "agent",
-      "description": "\"Use when optimizing existing React applications for performance, implementing advanced React 18+ features, or solving complex state management and architectural challenges within React codebases. Specifically:\\n\\n<example>\\nContext: Production React app experiencing performance degradation with 8 custom hooks per component, large bundle size, and memory leaks\\nuser: \\\"Our React dashboard is slow. Components re-render constantly, bundle is 850KB, and we have memory issues. Using 8 custom hooks in some places. How do we optimize?\\\"\\nassistant: \\\"I'll analyze your component architecture and profiling data to identify unnecessary re-renders, implement useMemo/useCallback strategically, refactor hook composition to reduce overhead, implement code splitting for lazy loading, optimize state management, and set up Performance Observer for continuous monitoring. Let me first review your current components and profiling metrics.\\\"\\n<commentary>\\nUse react-specialist when you have existing React applications with performance problems, complex hook interactions, or architectural debt. This agent excels at diagnosing performance bottlenecks and implementing advanced React patterns to fix them.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Migrating React 16 class components to React 18 with concurrent features and server components\\nuser: \\\"Need to upgrade our React 16 codebase to React 18 and leverage Server Components. We have 200+ class components and currently use Redux. What's the best migration path?\\\"\\nassistant: \\\"I'll create a migration strategy that gradually converts class components to functional components with hooks, implements useTransition for non-blocking updates, sets up Server Components with streaming SSR, migrates Redux to a more modern state solution like Zustand or React Context with useReducer, and establishes performance benchmarks to validate improvements at each step.\\\"\\n<commentary>\\nUse react-specialist when modernizing React applications across major version upgrades or migrating to new React paradigms like Server Components and concurrent rendering. This agent specializes in strategic architectural migrations.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Building shared reusable hook library and component composition system for multi-team React monorepo\\nuser: \\\"Create a shared hooks library with complex state management, form handling, API interactions, and error boundaries. 15 teams will use this. Need TypeScript, documentation, and strong patterns.\\\"\\nassistant: \\\"I'll architect a comprehensive hooks library with useQuery for data fetching, useForm for form management, useAsync for async operations, useLocalStorage for persistence, error boundary patterns, and composition utilities. Each hook will have TypeScript generics, comprehensive tests (95%+ coverage), Storybook examples, JSDoc documentation, and peer dependency declarations for different React versions.\\\"\\n<commentary>\\nUse react-specialist when creating advanced React tooling, hook libraries, or patterns that multiple teams will consume. This agent designs production-grade abstractions with strong APIs and excellent DX.\\n</commentary>\\n</example>\"",
+      "description": "\"Use when optimizing existing React applications for performance, implementing advanced React 19+ features, or solving complex state management and architectural challenges within React codebases. Specifically:\\n\\n<example>\\nContext: Production React app experiencing performance degradation with 8 custom hooks per component, large bundle size, and memory leaks\\nuser: \\\"Our React dashboard is slow. Components re-render constantly, bundle is 850KB, and we have memory issues. Using 8 custom hooks in some places. How do we optimize?\\\"\\nassistant: \\\"I'll analyze your component architecture and profiling data to identify unnecessary re-renders, verify the React Compiler is enabled for automatic memoization (falling back to targeted useMemo/useCallback only where profiling shows it's still needed), refactor hook composition to reduce overhead, implement code splitting for lazy loading, optimize state management, and set up Performance Observer for continuous monitoring. Let me first review your current components and profiling metrics.\\\"\\n<commentary>\\nUse react-specialist when you have existing React applications with performance problems, complex hook interactions, or architectural debt. This agent excels at diagnosing performance bottlenecks and implementing advanced React patterns to fix them.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Migrating React 16 class components to React 19 with concurrent features and server components\\nuser: \\\"Need to upgrade our React 16 codebase to React 19 and leverage Server Components. We have 200+ class components and currently use Redux. What's the best migration path?\\\"\\nassistant: \\\"I'll create a migration strategy that gradually converts class components to functional components with hooks, implements useTransition for non-blocking updates, sets up Server Components with streaming SSR, adopts Actions and useActionState for form/mutation flows, migrates Redux to a more modern state solution like Zustand or TanStack Query, and establishes performance benchmarks to validate improvements at each step.\\\"\\n<commentary>\\nUse react-specialist when modernizing React applications across major version upgrades or migrating to new React paradigms like Server Components and concurrent rendering. This agent specializes in strategic architectural migrations.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Building shared reusable hook library and component composition system for multi-team React monorepo\\nuser: \\\"Create a shared hooks library with complex state management, form handling, API interactions, and error boundaries. 15 teams will use this. Need TypeScript, documentation, and strong patterns.\\\"\\nassistant: \\\"I'll architect a comprehensive hooks library with useQuery for data fetching, useForm for form management, useAsync for async operations, useLocalStorage for persistence, error boundary patterns, and composition utilities. Each hook will have TypeScript generics, comprehensive tests (95%+ coverage) with Vitest, Storybook examples, JSDoc documentation, and peer dependency declarations for different React versions.\\\"\\n<commentary>\\nUse react-specialist when creating advanced React tooling, hook libraries, or patterns that multiple teams will consume. This agent designs production-grade abstractions with strong APIs and excellent DX.\\n</commentary>\\n</example>\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -17693,7 +17693,7 @@
       "path": "model/use-haiku.json",
       "category": "model",
       "type": "setting",
-      "description": "Configure Claude Code to use Claude 3.5 Haiku model for faster responses.",
+      "description": "Configure Claude Code to use Claude Haiku 4.5 model for faster responses.",
       "author": "",
       "repo": "",
       "version": "",
@@ -17714,7 +17714,7 @@
       "path": "model/use-sonnet.json",
       "category": "model",
       "type": "setting",
-      "description": "Configure Claude Code to use Claude 3.5 Sonnet model.",
+      "description": "Configure Claude Code to use Claude Sonnet 4.6 model.",
       "author": "",
       "repo": "",
       "version": "",
@@ -19628,6 +19628,27 @@
       "category": "pre-tool",
       "type": "hook",
       "description": "Blocks any subagent spawn (Task/Agent tool) whose prompt does not carry the [EPISTEMIC-DISCIPLINE v1] preamble or an explicit [EPISTEMIC-EXEMPT: <reason>] tag. This is the forcing function that makes the epistemic-discipline rules apply to ALL subagents instead of being prose: a spawn without the preamble physically fails (exit 2) with instructions to add it. Deterministic literal-marker check (no semantic grepping, no false positives from content). Fail-open by design: any parse/runtime error in the hook itself allows the spawn (exit 0) — the gate must never brick agent work because of its own bugs. Escape hatch: include [EPISTEMIC-EXEMPT: <reason>] in the prompt for trivial mechanical agents (pure search/fetch); the tag is auditable in transcripts.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "language-gate",
+      "path": "pre-tool/language-gate.json",
+      "category": "pre-tool",
+      "type": "hook",
+      "description": "Pre-push language gate (epistemic-discipline). Blocks git push / gh pr create when the OUTGOING diff introduces Spanish in committed source/docs (English-only rule; Spanish only in chat). Scans ONLY added lines, so it never re-flags pre-existing debt. Recognises the CRÍTICO/ALTO/MEDIO/BAJO review-severity convention (use CRITICAL/HIGH/MEDIUM/LOW); allow-lists i18n/locale/unicode/non-ASCII and any line tagged EXEMPT-ES <reason>. Fail-open on internal errors; override CLAUDE_LANG_GATE_OVERRIDE=1 (logged). Install: copy spanish-gate.py + spanish-scan.py (from skills/epistemic-discipline/) into ~/.claude/hooks/, then merge this hooks block into settings.json. Pairs with spanish-scan.py for a whole-repo audit.",
       "author": "",
       "repo": "",
       "version": "",
@@ -27846,6 +27867,40 @@
         "platform-ios.md",
         "scripts/mobile_audit.py",
         "touch-psychology.md"
+      ]
+    },
+    {
+      "name": "patentfig",
+      "path": "creative-design/patentfig",
+      "category": "creative-design",
+      "type": "skill",
+      "description": "Generate patent-office-compliant figures via the PatentFig AI API — patent line art from text (PNG or SVG), vectorize drawings to SVG/DXF/vector PDF, AI-upscale images, and convert to filing-ready TIFF/PDF/PNG. Use when the user asks for patent drawings, patent figures, invention diagrams, USPTO/EPO-compliant line art, vectorizing a drawing for CAD, or preparing figures for a patent filing. Requires a PATENTFIG_API_KEY environment variable.",
+      "author": "TopLocalAI",
+      "repo": "",
+      "version": "1.0.0",
+      "license": "MIT",
+      "keywords": [
+        "Patent",
+        "Patent Drawings",
+        "Line Art",
+        "SVG",
+        "Vectorize",
+        "DXF",
+        "USPTO",
+        "Image Generation",
+        "API"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/endpoints.md"
       ]
     },
     {
@@ -37144,6 +37199,37 @@
       "references": []
     },
     {
+      "name": "avoid-ai-writing",
+      "path": "productivity/avoid-ai-writing",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Audit and rewrite content to remove AI writing patterns (\"AI-isms\"). Use this skill when asked to \"remove AI-isms,\" \"clean up AI writing,\" \"edit writing for AI patterns,\" \"audit writing for AI tells,\" or \"make this sound less like AI.\" Supports a detect-only mode, an edit-in-place mode for files, an optional voice profile (casual / professional / technical / warm / blunt), and an iterate-to-convergence pass.",
+      "author": "Conor Bronsdon",
+      "repo": "https://github.com/conorbronsdon/avoid-ai-writing",
+      "version": "3.22.3",
+      "license": "MIT",
+      "keywords": [
+        "Writing",
+        "Editing",
+        "Content Quality",
+        "AI Writing Patterns",
+        "Voice",
+        "Copy Editing"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE.txt"
+      ]
+    },
+    {
       "name": "brainstorming",
       "path": "productivity/brainstorming",
       "category": "productivity",
@@ -37406,6 +37492,37 @@
       "references": [
         "references/checklist.md",
         "references/examples.md"
+      ]
+    },
+    {
+      "name": "doc-chaser-lite",
+      "path": "productivity/doc-chaser-lite",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Free lite skill — drafts one friendly (level-1) client document-request email for a single tax client from a short brief plus the practice profile. A strict subset of client-doc-chaser (no batch, no escalation levels 2/3), carrying the pack's full guard. Use to try the kit before buying, or as the directory-published funnel skill. Triggers - \"client document request email\", \"chase a client's documents\", \"free document request writer\", \"doc-chaser-lite\".",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE.txt",
+        "PROMPT-ONLY.md",
+        "README.md",
+        "brief-template.md",
+        "examples/doc-chaser-lite-golden.md",
+        "examples/practice-profile-golden.md",
+        "guard.md",
+        "profile-template.md"
       ]
     },
     {
@@ -42681,6 +42798,28 @@
       ]
     },
     {
+      "name": "cra-vulnerability-obligations",
+      "path": "security/cra-vulnerability-obligations",
+      "category": "security",
+      "type": "skill",
+      "description": ">",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "CC-BY-4.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
       "name": "ethical-hacking-methodology",
       "path": "security/ethical-hacking-methodology",
       "category": "security",
@@ -42835,6 +42974,28 @@
       "references": []
     },
     {
+      "name": "incident-reporting-navigator",
+      "path": "security/incident-reporting-navigator",
+      "category": "security",
+      "type": "skill",
+      "description": ">",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "CC-BY-4.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
       "name": "linux-privilege-escalation",
       "path": "security/linux-privilege-escalation",
       "category": "security",
@@ -42976,6 +43137,28 @@
       "repo": "",
       "version": "",
       "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
+      "name": "regulatory-threat-model",
+      "path": "security/regulatory-threat-model",
+      "category": "security",
+      "type": "skill",
+      "description": ">",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "CC-BY-4.0",
       "keywords": [],
       "downloads": 0,
       "security": {
@@ -45923,11 +46106,11 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".mcp.json",
         "CLAUDE.md",
         "README.md",
-        ".claude/commands/project-setup.md",
-        ".claude/commands/git-workflow.md"
+        ".mcp.json",
+        ".claude/commands/git-workflow.md",
+        ".claude/commands/project-setup.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -45942,8 +46125,8 @@
       "description": "Django-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/views.md",
         ".claude/commands/django-model.md",
+        ".claude/commands/views.md",
         ".claude/commands/admin.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
@@ -45959,11 +46142,11 @@
       "description": "Fastapi-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/deployment.md",
-        ".claude/commands/testing.md",
-        ".claude/commands/api-endpoints.md",
         ".claude/commands/database.md",
-        ".claude/commands/auth.md"
+        ".claude/commands/deployment.md",
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/auth.md",
+        ".claude/commands/testing.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -45978,12 +46161,12 @@
       "description": "Flask-App with Python",
       "files": [
         "CLAUDE.md",
-        ".claude/commands/flask-route.md",
+        ".claude/commands/database.md",
         ".claude/commands/app-factory.md",
+        ".claude/commands/flask-route.md",
         ".claude/commands/deployment.md",
-        ".claude/commands/testing.md",
         ".claude/commands/blueprint.md",
-        ".claude/commands/database.md"
+        ".claude/commands/testing.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -45996,8 +46179,8 @@
       "category": "languages",
       "description": "Go project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=go --yes",
       "downloads": 0
@@ -46010,17 +46193,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".mcp.json",
         "CLAUDE.md",
         "README.md",
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/npm-scripts.md",
-        ".claude/commands/api-endpoint.md",
         ".claude/commands/lint.md",
         ".claude/commands/typescript-migrate.md",
-        ".claude/commands/debug.md",
         ".claude/commands/refactor.md",
-        ".claude/commands/test.md"
+        ".claude/commands/test.md",
+        ".claude/commands/api-endpoint.md",
+        ".claude/commands/debug.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -46035,10 +46218,10 @@
       "description": "Node-Api with Javascript-Typescript",
       "files": [
         "CLAUDE.md",
+        ".claude/commands/database.md",
         ".claude/commands/middleware.md",
         ".claude/commands/api-endpoint.md",
-        ".claude/commands/route.md",
-        ".claude/commands/database.md"
+        ".claude/commands/route.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -46051,8 +46234,8 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        ".mcp.json",
         "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/lint.md",
         ".claude/commands/test.md"
@@ -46085,9 +46268,9 @@
       "description": "React-App with Javascript-Typescript",
       "files": [
         "CLAUDE.md",
+        ".claude/commands/component.md",
         ".claude/commands/hooks.md",
-        ".claude/commands/state-management.md",
-        ".claude/commands/component.md"
+        ".claude/commands/state-management.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -46100,11 +46283,11 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        ".mcp.json",
         "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/model.md",
-        ".claude/commands/test.md"
+        ".claude/commands/test.md",
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
@@ -46117,8 +46300,8 @@
       "category": "languages",
       "description": "Rust project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rust --yes",
       "downloads": 0

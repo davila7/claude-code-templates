@@ -16,7 +16,7 @@ Each PM runs the looped pipeline for its subproject; the root runs the pipeline'
 project-orchestrator      Stage A: think-tank decompose (critique loop) → FROZEN CONTRACT + integration gate
   └─ subproject-pm × N     Stage B: SDD spec/plan/tasks (critique loop, via task-execution-engine)
        └─ swarm-worker × M  Stage C: TDD loop  (test → code → run → repair, cap 3, contract-anchored)
-     ↑                      Stage D: PM gate + review-repair loop (findings → fix → re-review, until 0 CRÍT/ALTO)
+     ↑                      Stage D: PM gate + review-repair loop (findings → fix → re-review, until 0 CRIT/HIGH)
   Stage E: integrate + integration gate (contract/e2e across seams)
 ```
 
@@ -38,7 +38,7 @@ Before any PM builds, the root freezes the **shared contract**: API/OpenAPI sche
 |-------|-----------|-----------|-----|
 | think-tank (root) / SDD spec (PM) | **critique-refine** — adversarial-critic attacks the design/spec; refine | critic finds no blocking gap | 2 |
 | impl (worker) | **TDD test-repair** — failing test → code → run → repair | test GREEN | 3 |
-| subproject review (PM) | **review-repair** — panel finds issues → fix → re-review delta | 0 CRÍTICO/ALTO | 3 |
+| subproject review (PM) | **review-repair** — panel finds issues → fix → re-review delta | 0 CRITICAL/HIGH | 3 |
 | integration (root) | **integrate-gate** — run seam/e2e check → route failures | integration gate green | 3 |
 
 ## Loop discipline (non-negotiable — this is what makes loops safe)

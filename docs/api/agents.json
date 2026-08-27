@@ -1,226 +1,556 @@
 {
   "agents": [
     {
+      "name": "accessibility-tester",
+      "path": "accessibility/accessibility-tester",
+      "category": "accessibility",
+      "description": "\"Use this agent when conducting comprehensive accessibility audits, WCAG 2.2 compliance assessments,"
+    },
+    {
       "name": "ai-ethics-advisor",
       "path": "ai-specialists/ai-ethics-advisor",
       "category": "ai-specialists",
-      "description": ""
+      "description": "AI ethics and responsible AI development specialist. Use when reviewing an AI system for bias, fairn"
     },
     {
       "name": "hackathon-ai-strategist",
       "path": "ai-specialists/hackathon-ai-strategist",
       "category": "ai-specialists",
-      "description": ""
+      "description": "\"Use when a team needs strategic guidance at any stage of a hackathon \u2014 from initial ideation throug"
+    },
+    {
+      "name": "llm-architect",
+      "path": "ai-specialists/llm-architect",
+      "category": "ai-specialists",
+      "description": "\"Use when designing LLM systems for production, implementing fine-tuning or RAG architectures, optim"
     },
     {
       "name": "llms-maintainer",
       "path": "ai-specialists/llms-maintainer",
       "category": "ai-specialists",
-      "description": ""
+      "description": "LLMs.txt roadmap file generator and maintainer for AI Engine Optimization (AEO). Use after build com"
     },
     {
       "name": "model-evaluator",
       "path": "ai-specialists/model-evaluator",
       "category": "ai-specialists",
-      "description": ""
+      "description": "\"AI model evaluation and benchmarking specialist. Use when selecting the right model for a specific "
     },
     {
       "name": "prompt-engineer",
       "path": "ai-specialists/prompt-engineer",
       "category": "ai-specialists",
-      "description": ""
+      "description": "\"Use this agent when you need to design, optimize, test, or evaluate prompts for Claude (or other LL"
     },
     {
       "name": "search-specialist",
       "path": "ai-specialists/search-specialist",
       "category": "ai-specialists",
-      "description": ""
+      "description": "\"Expert web researcher using advanced search techniques, multi-source synthesis, and iterative retri"
     },
     {
       "name": "task-decomposition-expert",
       "path": "ai-specialists/task-decomposition-expert",
       "category": "ai-specialists",
-      "description": ""
+      "description": "\"Use this agent when you need to break down a complex, multi-step goal into an actionable work break"
+    },
+    {
+      "name": "api-architect",
+      "path": "api-graphql/api-architect",
+      "category": "api-graphql",
+      "description": "Expert API architect for designing and implementing REST and GraphQL APIs with production-grade resi"
+    },
+    {
+      "name": "api-designer",
+      "path": "api-graphql/api-designer",
+      "category": "api-graphql",
+      "description": "\"Use this agent when designing new APIs, creating API specifications, or refactoring existing API ar"
     },
     {
       "name": "graphql-architect",
       "path": "api-graphql/graphql-architect",
       "category": "api-graphql",
-      "description": ""
+      "description": "\"Use this agent when designing or evolving GraphQL schemas across microservices, implementing federa"
     },
     {
       "name": "graphql-performance-optimizer",
       "path": "api-graphql/graphql-performance-optimizer",
       "category": "api-graphql",
-      "description": ""
+      "description": "\"GraphQL performance analysis and optimization specialist. Use PROACTIVELY for query performance iss"
     },
     {
       "name": "graphql-security-specialist",
       "path": "api-graphql/graphql-security-specialist",
       "category": "api-graphql",
-      "description": ""
+      "description": "\"GraphQL API security and authorization specialist. Use PROACTIVELY for GraphQL security audits, aut"
+    },
+    {
+      "name": "shopify-expert",
+      "path": "api-graphql/shopify-expert",
+      "category": "api-graphql",
+      "description": "\"Use this agent when building or customizing Shopify themes, developing Shopify apps, working with L"
+    },
+    {
+      "name": "blockchain-developer",
+      "path": "blockchain-web3/blockchain-developer",
+      "category": "blockchain-web3",
+      "description": "\"Use this agent when building smart contracts, DApps, and blockchain protocols that require expertis"
     },
     {
       "name": "smart-contract-auditor",
       "path": "blockchain-web3/smart-contract-auditor",
       "category": "blockchain-web3",
-      "description": ""
+      "description": "Use this agent when conducting security audits of smart contracts. Specializes in vulnerability dete"
     },
     {
       "name": "smart-contract-specialist",
       "path": "blockchain-web3/smart-contract-specialist",
       "category": "blockchain-web3",
-      "description": ""
+      "description": "Use this agent for smart contract architecture and design-pattern advisory work \u2014 choosing proxy/upg"
     },
     {
       "name": "web3-integration-specialist",
       "path": "blockchain-web3/web3-integration-specialist",
       "category": "blockchain-web3",
-      "description": ""
+      "description": "Use this agent when building Web3 frontend applications and wallet integrations. Specializes in bloc"
     },
     {
       "name": "business-analyst",
       "path": "business-marketing/business-analyst",
       "category": "business-marketing",
-      "description": ""
+      "description": "\"Use when analyzing business processes, gathering requirements from stakeholders, or identifying pro"
+    },
+    {
+      "name": "communication-excellence-coach",
+      "path": "business-marketing/communication-excellence-coach",
+      "category": "business-marketing",
+      "description": "\"Use PROACTIVELY when reviewing email or message drafts, calibrating tone for an audience, practicin"
+    },
+    {
+      "name": "competitive-analyst",
+      "path": "business-marketing/competitive-analyst",
+      "category": "business-marketing",
+      "description": "\"Use when you need to analyze direct and indirect competitors, benchmark against market leaders, or "
     },
     {
       "name": "content-marketer",
       "path": "business-marketing/content-marketer",
       "category": "business-marketing",
-      "description": ""
+      "description": "\"Use this agent when you need to develop comprehensive content strategies, create SEO-optimized mark"
+    },
+    {
+      "name": "customer-success-manager",
+      "path": "business-marketing/customer-success-manager",
+      "category": "business-marketing",
+      "description": "\"Use this agent when you need to assess customer health, develop retention strategies, identify upse"
     },
     {
       "name": "customer-support",
       "path": "business-marketing/customer-support",
       "category": "business-marketing",
-      "description": ""
+      "description": "\"Customer support and documentation specialist. Use PROACTIVELY for support ticket responses, FAQ cr"
     },
     {
       "name": "legal-advisor",
       "path": "business-marketing/legal-advisor",
       "category": "business-marketing",
-      "description": ""
+      "description": "\"Use PROACTIVELY for privacy policies, terms of service, GDPR/CCPA compliance, legal notices, and re"
+    },
+    {
+      "name": "market-researcher",
+      "path": "business-marketing/market-researcher",
+      "category": "business-marketing",
+      "description": "\"Use this agent when you need to analyze markets, understand consumer behavior, assess competitive l"
     },
     {
       "name": "marketing-attribution-analyst",
       "path": "business-marketing/marketing-attribution-analyst",
       "category": "business-marketing",
-      "description": ""
+      "description": "\"Use when you need to model multi-touch attribution, measure marketing mix impact, validate channel "
     },
     {
       "name": "payment-integration",
       "path": "business-marketing/payment-integration",
       "category": "business-marketing",
-      "description": ""
+      "description": "Payment systems integration specialist. Use PROACTIVELY for Stripe, PayPal, and payment processor im"
+    },
+    {
+      "name": "product-manager",
+      "path": "business-marketing/product-manager",
+      "category": "business-marketing",
+      "description": "\"Use this agent when you need to make product strategy decisions, prioritize features, or define roa"
     },
     {
       "name": "product-strategist",
       "path": "business-marketing/product-strategist",
       "category": "business-marketing",
-      "description": ""
+      "description": "Product strategy and roadmap planning specialist. Use PROACTIVELY for product positioning, market an"
     },
     {
-      "name": "risk-manager",
-      "path": "business-marketing/risk-manager",
+      "name": "project-manager",
+      "path": "business-marketing/project-manager",
       "category": "business-marketing",
-      "description": ""
+      "description": "\"Use this agent when you need to establish project plans, track execution progress, manage risks, co"
     },
     {
       "name": "sales-automator",
       "path": "business-marketing/sales-automator",
       "category": "business-marketing",
-      "description": ""
+      "description": "Sales automation and outreach specialist. Use PROACTIVELY for cold email campaigns, follow-up sequen"
+    },
+    {
+      "name": "sales-engineer",
+      "path": "business-marketing/sales-engineer",
+      "category": "business-marketing",
+      "description": "\"Use this agent when you need to conduct technical pre-sales activities including solution architect"
+    },
+    {
+      "name": "salesforce-expert",
+      "path": "business-marketing/salesforce-expert",
+      "category": "business-marketing",
+      "description": "Provide expert Salesforce Platform guidance, including Apex Enterprise Patterns, LWC, integration, a"
+    },
+    {
+      "name": "scrum-master",
+      "path": "business-marketing/scrum-master",
+      "category": "business-marketing",
+      "description": "\"Use when teams need facilitation, process optimization, velocity improvement, or agile ceremony man"
+    },
+    {
+      "name": "seo-specialist",
+      "path": "business-marketing/seo-specialist",
+      "category": "business-marketing",
+      "description": "\"Use this agent PROACTIVELY when you need comprehensive SEO optimization \u2014 technical audits, keyword"
+    },
+    {
+      "name": "trading-risk-manager",
+      "path": "business-marketing/trading-risk-manager",
+      "category": "business-marketing",
+      "description": "\"Trading and portfolio risk management specialist for retail/discretionary traders and investors. Us"
+    },
+    {
+      "name": "trend-analyst",
+      "path": "business-marketing/trend-analyst",
+      "category": "business-marketing",
+      "description": "\"Use when analyzing emerging patterns, predicting industry shifts, or developing future scenarios to"
+    },
+    {
+      "name": "ux-researcher",
+      "path": "business-marketing/ux-researcher",
+      "category": "business-marketing",
+      "description": "\"Use this agent when you need to conduct user research, analyze user behavior, or generate actionabl"
+    },
+    {
+      "name": "adr-generator",
+      "path": "data-ai/adr-generator",
+      "category": "data-ai",
+      "description": "Expert agent for creating comprehensive Architectural Decision Records (ADRs) with structured format"
     },
     {
       "name": "ai-engineer",
       "path": "data-ai/ai-engineer",
       "category": "data-ai",
-      "description": ""
+      "description": "\"Use this agent when architecting, implementing, or optimizing end-to-end AI systems\u2014from model sele"
+    },
+    {
+      "name": "amplitude-experiment-implementation",
+      "path": "data-ai/amplitude-experiment-implementation",
+      "category": "data-ai",
+      "description": "This custom agent uses Amplitude's\u00a0MCP tools to deploy new experiments inside of Amplitude, enabling"
+    },
+    {
+      "name": "blueprint-mode-codex",
+      "path": "data-ai/blueprint-mode-codex",
+      "category": "data-ai",
+      "description": "Executes structured workflows with strict correctness and maintainability. Enforces a minimal tool u"
+    },
+    {
+      "name": "blueprint-mode",
+      "path": "data-ai/blueprint-mode",
+      "category": "data-ai",
+      "description": "Executes structured workflows (Debug, Express, Main, Loop) with strict correctness and maintainabili"
+    },
+    {
+      "name": "clojure-interactive-programming",
+      "path": "data-ai/clojure-interactive-programming",
+      "category": "data-ai",
+      "description": "Expert Clojure pair programmer with REPL-first methodology, architectural oversight, and interactive"
+    },
+    {
+      "name": "code-tour",
+      "path": "data-ai/code-tour",
+      "category": "data-ai",
+      "description": "Expert agent for creating and maintaining VSCode CodeTour files with comprehensive schema support an"
     },
     {
       "name": "computer-vision-engineer",
       "path": "data-ai/computer-vision-engineer",
       "category": "data-ai",
-      "description": ""
+      "description": "Computer vision and image processing specialist. Use PROACTIVELY for image analysis, object detectio"
+    },
+    {
+      "name": "data-analyst",
+      "path": "data-ai/data-analyst",
+      "category": "data-ai",
+      "description": "\"Use when you need to extract insights from business data, create dashboards and reports, or perform"
     },
     {
       "name": "data-engineer",
       "path": "data-ai/data-engineer",
       "category": "data-ai",
-      "description": ""
+      "description": "\"Use PROACTIVELY when you need to design, build, or optimize data pipelines, dbt transformation mode"
     },
     {
       "name": "data-scientist",
       "path": "data-ai/data-scientist",
       "category": "data-ai",
-      "description": ""
+      "description": "\"Use this agent when you need to analyze data patterns, build predictive models, or extract statisti"
+    },
+    {
+      "name": "demonstrate-understanding",
+      "path": "data-ai/demonstrate-understanding",
+      "category": "data-ai",
+      "description": "Validate user understanding of code, design patterns, and implementation details through guided ques"
+    },
+    {
+      "name": "dotnet-maui",
+      "path": "data-ai/dotnet-maui",
+      "category": "data-ai",
+      "description": "Support development of .NET MAUI cross-platform apps with controls, XAML, handlers, and performance "
+    },
+    {
+      "name": "hlbpa",
+      "path": "data-ai/hlbpa",
+      "category": "data-ai",
+      "description": "Your perfect AI chat mode for high-level architectural documentation and review. Perfect for targete"
+    },
+    {
+      "name": "machine-learning-engineer",
+      "path": "data-ai/machine-learning-engineer",
+      "category": "data-ai",
+      "description": "\"Use this agent when you need to deploy, optimize, or serve machine learning models at scale in prod"
+    },
+    {
+      "name": "microsoft-agent-framework-dotnet",
+      "path": "data-ai/microsoft-agent-framework-dotnet",
+      "category": "data-ai",
+      "description": "Create, update, refactor, explain or work with code using the .NET version of Microsoft Agent Framew"
     },
     {
       "name": "ml-engineer",
       "path": "data-ai/ml-engineer",
       "category": "data-ai",
-      "description": ""
+      "description": "\"Use this agent when building production ML systems requiring model training pipelines, model servin"
     },
     {
       "name": "mlops-engineer",
       "path": "data-ai/mlops-engineer",
       "category": "data-ai",
-      "description": ""
+      "description": "\"Use this agent when you need to design and implement ML infrastructure, set up CI/CD for machine le"
+    },
+    {
+      "name": "monday-bug-fixer",
+      "path": "data-ai/monday-bug-fixer",
+      "category": "data-ai",
+      "description": "Elite bug-fixing agent that enriches task context from Monday.com platform data. Gathers related ite"
+    },
+    {
+      "name": "ms-sql-dba",
+      "path": "data-ai/ms-sql-dba",
+      "category": "data-ai",
+      "description": "Work with Microsoft SQL Server databases using the MS SQL extension."
+    },
+    {
+      "name": "neon-migration-specialist",
+      "path": "data-ai/neon-migration-specialist",
+      "category": "data-ai",
+      "description": "Safe Postgres migrations with zero-downtime using Neon's branching workflow. Test schema changes in "
+    },
+    {
+      "name": "neon-optimization-analyzer",
+      "path": "data-ai/neon-optimization-analyzer",
+      "category": "data-ai",
+      "description": "Identify and fix slow Postgres queries automatically using Neon's branching workflow. Analyzes execu"
     },
     {
       "name": "nlp-engineer",
       "path": "data-ai/nlp-engineer",
       "category": "data-ai",
-      "description": ""
+      "description": "\"Use when building production NLP systems, implementing text processing pipelines, developing langua"
+    },
+    {
+      "name": "postgresql-dba",
+      "path": "data-ai/postgresql-dba",
+      "category": "data-ai",
+      "description": "Work with PostgreSQL databases using the PostgreSQL extension."
+    },
+    {
+      "name": "power-bi-data-modeling-expert",
+      "path": "data-ai/power-bi-data-modeling-expert",
+      "category": "data-ai",
+      "description": "Expert Power BI data modeling guidance using star schema principles, relationship design, and Micros"
+    },
+    {
+      "name": "power-bi-dax-expert",
+      "path": "data-ai/power-bi-dax-expert",
+      "category": "data-ai",
+      "description": "Expert Power BI DAX guidance using Microsoft best practices for performance, readability, and mainta"
+    },
+    {
+      "name": "power-platform-expert",
+      "path": "data-ai/power-platform-expert",
+      "category": "data-ai",
+      "description": "Power Platform expert providing guidance on Code Apps, canvas apps, Dataverse, connectors, and Power"
+    },
+    {
+      "name": "prd",
+      "path": "data-ai/prd",
+      "category": "data-ai",
+      "description": "Generate a comprehensive Product Requirements Document (PRD) in Markdown, detailing user stories, ac"
+    },
+    {
+      "name": "prompt-builder",
+      "path": "data-ai/prompt-builder",
+      "category": "data-ai",
+      "description": "Expert prompt engineering and validation system for creating high-quality prompts - Brought to you b"
+    },
+    {
+      "name": "prompt-engineer",
+      "path": "data-ai/prompt-engineer",
+      "category": "data-ai",
+      "description": "A specialized chat mode for analyzing and improving prompts. Every user input is treated as a prompt"
     },
     {
       "name": "quant-analyst",
       "path": "data-ai/quant-analyst",
       "category": "data-ai",
-      "description": ""
+      "description": "Quantitative finance and algorithmic trading specialist. Use PROACTIVELY for financial modeling, tra"
+    },
+    {
+      "name": "se-product-manager-advisor",
+      "path": "data-ai/se-product-manager-advisor",
+      "category": "data-ai",
+      "description": "Product management guidance for creating GitHub issues, aligning business value with user needs, and"
+    },
+    {
+      "name": "se-system-architecture-reviewer",
+      "path": "data-ai/se-system-architecture-reviewer",
+      "category": "data-ai",
+      "description": "System architecture review specialist with Well-Architected frameworks, design validation, and scala"
+    },
+    {
+      "name": "semantic-kernel-dotnet",
+      "path": "data-ai/semantic-kernel-dotnet",
+      "category": "data-ai",
+      "description": "Create, update, refactor, explain or work with code using the .NET version of Semantic Kernel."
+    },
+    {
+      "name": "simple-app-idea-generator",
+      "path": "data-ai/simple-app-idea-generator",
+      "category": "data-ai",
+      "description": "Brainstorm and develop new application ideas through fun, interactive questioning until ready for sp"
+    },
+    {
+      "name": "software-engineer-agent-v1",
+      "path": "data-ai/software-engineer-agent-v1",
+      "category": "data-ai",
+      "description": "Expert-level software engineering agent. Deliver production-ready, maintainable code. Execute system"
+    },
+    {
+      "name": "task-planner",
+      "path": "data-ai/task-planner",
+      "category": "data-ai",
+      "description": "Task planner for creating actionable implementation plans - Brought to you by microsoft/edge-ai"
+    },
+    {
+      "name": "task-researcher",
+      "path": "data-ai/task-researcher",
+      "category": "data-ai",
+      "description": "Task research specialist for comprehensive project analysis - Brought to you by microsoft/edge-ai"
+    },
+    {
+      "name": "tdd-green",
+      "path": "data-ai/tdd-green",
+      "category": "data-ai",
+      "description": "Implement minimal code to satisfy GitHub issue requirements and make failing tests pass without over"
+    },
+    {
+      "name": "tdd-red",
+      "path": "data-ai/tdd-red",
+      "category": "data-ai",
+      "description": "Guide test-first development by writing failing tests that describe desired behaviour from GitHub is"
     },
     {
       "name": "database-admin",
       "path": "database/database-admin",
       "category": "database",
-      "description": ""
+      "description": "Database administration specialist for operations, backups, replication, and monitoring. Use PROACTI"
+    },
+    {
+      "name": "database-administrator",
+      "path": "database/database-administrator",
+      "category": "database",
+      "description": "\"Use this agent when optimizing database performance, implementing high-availability architectures, "
     },
     {
       "name": "database-architect",
       "path": "database/database-architect",
       "category": "database",
-      "description": ""
+      "description": "\"Database architecture and design specialist. Use PROACTIVELY for database design decisions, data mo"
     },
     {
       "name": "database-optimization",
       "path": "database/database-optimization",
       "category": "database",
-      "description": ""
+      "description": "Database performance optimization and query tuning specialist. Use PROACTIVELY for slow queries, ind"
     },
     {
       "name": "database-optimizer",
       "path": "database/database-optimizer",
       "category": "database",
-      "description": ""
+      "description": "\"Use this agent when you need to analyze slow queries, optimize database performance across multiple"
+    },
+    {
+      "name": "neon-auth-specialist",
+      "path": "database/neon-auth-specialist",
+      "category": "database",
+      "description": "Neon Auth implementation specialist. Use PROACTIVELY for Stack Auth integration, user management set"
+    },
+    {
+      "name": "neon-database-architect",
+      "path": "database/neon-database-architect",
+      "category": "database",
+      "description": "Neon database architecture specialist. Use PROACTIVELY for database schema design, Drizzle ORM integ"
+    },
+    {
+      "name": "neon-expert",
+      "path": "database/neon-expert",
+      "category": "database",
+      "description": "General Neon Serverless Postgres consultant. Use PROACTIVELY for initial Neon setup, general databas"
     },
     {
       "name": "nosql-specialist",
       "path": "database/nosql-specialist",
       "category": "database",
-      "description": ""
+      "description": "NoSQL database specialist for MongoDB, Redis, Cassandra, and document/key-value stores. Use PROACTIV"
+    },
+    {
+      "name": "postgres-pro",
+      "path": "database/postgres-pro",
+      "category": "database",
+      "description": "\"Use when you need to optimize PostgreSQL performance, design high-availability replication, or trou"
     },
     {
       "name": "supabase-schema-architect",
       "path": "database/supabase-schema-architect",
       "category": "database",
-      "description": ""
+      "description": "Supabase database schema design specialist. Use PROACTIVELY for database schema design, migration pl"
     },
     {
       "name": "academic-researcher",
       "path": "deep-research-team/academic-researcher",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Academic research specialist for scholarly sources, peer-reviewed papers, and academic literature. U"
     },
     {
       "name": "agent-overview",
@@ -232,711 +562,1971 @@
       "name": "competitive-intelligence-analyst",
       "path": "deep-research-team/competitive-intelligence-analyst",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Competitive intelligence and market research specialist. Use PROACTIVELY for competitor analysis, ma"
     },
     {
       "name": "data-analyst",
       "path": "deep-research-team/data-analyst",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need quantitative analysis, statistical insights, or data-driven research. T"
+    },
+    {
+      "name": "data-researcher",
+      "path": "deep-research-team/data-researcher",
+      "category": "deep-research-team",
+      "description": "\"Use this agent when you need to discover, collect, and validate data from multiple sources to fuel "
     },
     {
       "name": "fact-checker",
       "path": "deep-research-team/fact-checker",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Fact verification and source validation specialist. Use PROACTIVELY for claim verification, source c"
+    },
+    {
+      "name": "nia-oracle",
+      "path": "deep-research-team/nia-oracle",
+      "category": "deep-research-team",
+      "description": "Expert research agent specialized in leveraging Nia's knowledge tools. Use PROACTIVELY for discoveri"
     },
     {
       "name": "query-clarifier",
       "path": "deep-research-team/query-clarifier",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to analyze research queries for clarity and determine if user clarifica"
     },
     {
       "name": "report-generator",
       "path": "deep-research-team/report-generator",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to transform synthesized research findings into a comprehensive, well-s"
+    },
+    {
+      "name": "research-analyst",
+      "path": "deep-research-team/research-analyst",
+      "category": "deep-research-team",
+      "description": "\"Use this agent when you need comprehensive research across multiple sources with synthesis of findi"
     },
     {
       "name": "research-brief-generator",
       "path": "deep-research-team/research-brief-generator",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to transform a user's research query into a structured, actionable rese"
     },
     {
       "name": "research-coordinator",
       "path": "deep-research-team/research-coordinator",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to strategically plan and coordinate complex research tasks across mult"
     },
     {
       "name": "research-orchestrator",
       "path": "deep-research-team/research-orchestrator",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to coordinate a comprehensive research project that requires multiple s"
     },
     {
       "name": "research-synthesizer",
       "path": "deep-research-team/research-synthesizer",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to consolidate and synthesize findings from multiple research sources o"
+    },
+    {
+      "name": "search-specialist",
+      "path": "deep-research-team/search-specialist",
+      "category": "deep-research-team",
+      "description": "\"Use when you need to find specific information across multiple sources using advanced search strate"
     },
     {
       "name": "technical-researcher",
       "path": "deep-research-team/technical-researcher",
       "category": "deep-research-team",
-      "description": ""
+      "description": "Use this agent when you need to analyze code repositories, technical documentation, implementation d"
     },
     {
       "name": "backend-architect",
       "path": "development-team/backend-architect",
       "category": "development-team",
-      "description": ""
+      "description": "\"Backend system architecture and API design specialist. Use PROACTIVELY for greenfield service desig"
+    },
+    {
+      "name": "backend-developer",
+      "path": "development-team/backend-developer",
+      "category": "development-team",
+      "description": "\"Use this agent when building server-side APIs, microservices, and backend systems that require robu"
     },
     {
       "name": "cli-ui-designer",
       "path": "development-team/cli-ui-designer",
       "category": "development-team",
-      "description": ""
+      "description": "CLI interface design specialist. Use PROACTIVELY to create terminal-inspired user interfaces with mo"
+    },
+    {
+      "name": "code-architect",
+      "path": "development-team/code-architect",
+      "category": "development-team",
+      "description": "Designs feature architectures by analyzing existing codebase patterns and conventions, then providin"
+    },
+    {
+      "name": "code-explorer",
+      "path": "development-team/code-explorer",
+      "category": "development-team",
+      "description": "Deeply analyzes existing codebase features by tracing execution paths, mapping architecture layers, "
     },
     {
       "name": "devops-engineer",
       "path": "development-team/devops-engineer",
       "category": "development-team",
-      "description": ""
+      "description": "DevOps and infrastructure specialist for CI/CD, deployment automation, and cloud operations. Use PRO"
+    },
+    {
+      "name": "electron-pro",
+      "path": "development-team/electron-pro",
+      "category": "development-team",
+      "description": "\"Use this agent when building Electron desktop applications that require native OS integration, cros"
     },
     {
       "name": "frontend-developer",
       "path": "development-team/frontend-developer",
       "category": "development-team",
-      "description": ""
+      "description": "\"Use when building complete frontend applications across React, Vue, and Angular frameworks requirin"
     },
     {
       "name": "fullstack-developer",
       "path": "development-team/fullstack-developer",
       "category": "development-team",
-      "description": ""
+      "description": "\"Use this agent when you need to build complete features spanning database, API, and frontend layers"
     },
     {
       "name": "ios-developer",
       "path": "development-team/ios-developer",
       "category": "development-team",
-      "description": ""
+      "description": "Native iOS development specialist with Swift and SwiftUI. Use PROACTIVELY for iOS applications, UIKi"
+    },
+    {
+      "name": "mobile-app-developer",
+      "path": "development-team/mobile-app-developer",
+      "category": "development-team",
+      "description": "\"Use this agent when developing iOS and Android mobile applications with focus on native or cross-pl"
     },
     {
       "name": "mobile-developer",
       "path": "development-team/mobile-developer",
       "category": "development-team",
+      "description": "\"Use this agent when building cross-platform mobile applications requiring native performance optimi"
+    },
+    {
+      "name": "sdd-spec-writer",
+      "path": "development-team/sdd-spec-writer",
+      "category": "development-team",
       "description": ""
+    },
+    {
+      "name": "test-generator",
+      "path": "development-team/test-generator",
+      "category": "development-team",
+      "description": "Analyzes code changes and generates comprehensive test cases by understanding existing test patterns"
+    },
+    {
+      "name": "test-runner",
+      "path": "development-team/test-runner",
+      "category": "development-team",
+      "description": "Executes tests, analyzes results, identifies failures, diagnoses root causes, and provides actionabl"
+    },
+    {
+      "name": "ui-designer",
+      "path": "development-team/ui-designer",
+      "category": "development-team",
+      "description": "\"Use this agent when designing visual interfaces, creating design systems, building component librar"
     },
     {
       "name": "ui-ux-designer",
       "path": "development-team/ui-ux-designer",
       "category": "development-team",
-      "description": ""
+      "description": "Use proactively when reviewing UI/UX design, evaluating visual interfaces, auditing web components f"
+    },
+    {
+      "name": "accessibility-tester",
+      "path": "development-tools/accessibility-tester",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need comprehensive accessibility testing, WCAG compliance verification, or "
+    },
+    {
+      "name": "architect-reviewer",
+      "path": "development-tools/architect-reviewer",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to evaluate system design decisions, architectural patterns, and techn"
+    },
+    {
+      "name": "ascii-ui-mockup-generator",
+      "path": "development-tools/ascii-ui-mockup-generator",
+      "category": "development-tools",
+      "description": "Specialist in creating ASCII mockups for UI concepts, generating multiple visualization options for "
+    },
+    {
+      "name": "build-engineer",
+      "path": "development-tools/build-engineer",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to optimize build performance, reduce compilation times, or scale buil"
+    },
+    {
+      "name": "chaos-engineer",
+      "path": "development-tools/chaos-engineer",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to design and execute controlled failure experiments, validate system "
+    },
+    {
+      "name": "cli-developer",
+      "path": "development-tools/cli-developer",
+      "category": "development-tools",
+      "description": "\"Use this agent when building command-line tools and terminal applications that require intuitive co"
     },
     {
       "name": "code-reviewer",
       "path": "development-tools/code-reviewer",
       "category": "development-tools",
-      "description": ""
+      "description": "\"Use this agent when you need to conduct comprehensive code reviews focusing on code quality, securi"
+    },
+    {
+      "name": "code-simplifier",
+      "path": "development-tools/code-simplifier",
+      "category": "development-tools",
+      "description": "Simplifies and refines code for clarity, consistency, and maintainability while preserving all funct"
+    },
+    {
+      "name": "codebase-explorer",
+      "path": "development-tools/codebase-explorer",
+      "category": "development-tools",
+      "description": "|"
+    },
+    {
+      "name": "codebase-pattern-finder",
+      "path": "development-tools/codebase-pattern-finder",
+      "category": "development-tools",
+      "description": "Specialist for finding code patterns and examples in the codebase, providing concrete implementation"
     },
     {
       "name": "command-expert",
       "path": "development-tools/command-expert",
       "category": "development-tools",
-      "description": ""
+      "description": "CLI command development specialist for the claude-code-templates system. Use PROACTIVELY for command"
     },
     {
       "name": "context-manager",
       "path": "development-tools/context-manager",
       "category": "development-tools",
-      "description": ""
+      "description": "Context management specialist for multi-agent workflows and long-running tasks. Use PROACTIVELY for "
     },
     {
       "name": "debugger",
       "path": "development-tools/debugger",
       "category": "development-tools",
-      "description": ""
+      "description": "\"Use this agent when you need to diagnose and fix bugs, identify root causes of failures, or analyze"
+    },
+    {
+      "name": "dependency-manager",
+      "path": "development-tools/dependency-manager",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to audit dependencies for vulnerabilities, resolve version conflicts, "
     },
     {
       "name": "dx-optimizer",
       "path": "development-tools/dx-optimizer",
       "category": "development-tools",
-      "description": ""
+      "description": "\"Use this agent when optimizing the complete developer workflow including build times, feedback loop"
     },
     {
       "name": "error-detective",
       "path": "development-tools/error-detective",
       "category": "development-tools",
-      "description": ""
+      "description": "\"Use this agent when you need to diagnose why errors are occurring in your system, correlate errors "
+    },
+    {
+      "name": "flutter-go-reviewer",
+      "path": "development-tools/flutter-go-reviewer",
+      "category": "development-tools",
+      "description": "|"
+    },
+    {
+      "name": "general-purpose",
+      "path": "development-tools/general-purpose",
+      "category": "development-tools",
+      "description": "Default agent for handling complex, multi-step tasks with automatic delegation capabilities"
+    },
+    {
+      "name": "laravel-expert-agent",
+      "path": "development-tools/laravel-expert-agent",
+      "category": "development-tools",
+      "description": "Expert Laravel development assistant specializing in modern Laravel 12+ applications with Eloquent, "
+    },
+    {
+      "name": "launchdarkly-flag-cleanup",
+      "path": "development-tools/launchdarkly-flag-cleanup",
+      "category": "development-tools",
+      "description": "A specialized GitHub Copilot agent that uses the LaunchDarkly MCP server to safely automate feature "
     },
     {
       "name": "mcp-expert",
       "path": "development-tools/mcp-expert",
       "category": "development-tools",
-      "description": ""
+      "description": "Model Context Protocol (MCP) integration specialist for the cli-tool components system. Use PROACTIV"
+    },
+    {
+      "name": "pagerduty-incident-responder",
+      "path": "development-tools/pagerduty-incident-responder",
+      "category": "development-tools",
+      "description": "Responds to PagerDuty incidents by analyzing incident context, identifying recent code changes, and "
+    },
+    {
+      "name": "performance-engineer",
+      "path": "development-tools/performance-engineer",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to identify and eliminate performance bottlenecks in applications, dat"
     },
     {
       "name": "performance-profiler",
       "path": "development-tools/performance-profiler",
       "category": "development-tools",
-      "description": ""
+      "description": "Performance analysis and optimization specialist. Use PROACTIVELY for performance bottlenecks, memor"
+    },
+    {
+      "name": "playwright-tester",
+      "path": "development-tools/playwright-tester",
+      "category": "development-tools",
+      "description": "Testing mode for Playwright tests"
+    },
+    {
+      "name": "qa-expert",
+      "path": "development-tools/qa-expert",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need comprehensive quality assurance strategy, test planning across the ent"
+    },
+    {
+      "name": "refactoring-specialist",
+      "path": "development-tools/refactoring-specialist",
+      "category": "development-tools",
+      "description": "\"Use when you need to transform poorly structured, complex, or duplicated code into clean, maintaina"
+    },
+    {
+      "name": "rootly-incident-responder",
+      "path": "development-tools/rootly-incident-responder",
+      "category": "development-tools",
+      "description": "|"
+    },
+    {
+      "name": "slack-expert",
+      "path": "development-tools/slack-expert",
+      "category": "development-tools",
+      "description": "\"Use this agent when developing Slack applications, implementing Slack API integrations, or reviewin"
+    },
+    {
+      "name": "technical-debt-manager",
+      "path": "development-tools/technical-debt-manager",
+      "category": "development-tools",
+      "description": "Expert technical debt analyst for code health, maintainability, and strategic refactoring planning. "
+    },
+    {
+      "name": "test-automator",
+      "path": "development-tools/test-automator",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to build, implement, or enhance automated test frameworks, create test"
     },
     {
       "name": "test-engineer",
       "path": "development-tools/test-engineer",
       "category": "development-tools",
-      "description": ""
+      "description": "Test automation and quality assurance specialist. Use PROACTIVELY for test strategy, test automation"
+    },
+    {
+      "name": "thinking-beast-mode",
+      "path": "development-tools/thinking-beast-mode",
+      "category": "development-tools",
+      "description": "Use this agent for long-running, autonomous multi-step engineering tasks that must be driven to full"
+    },
+    {
+      "name": "tooling-engineer",
+      "path": "development-tools/tooling-engineer",
+      "category": "development-tools",
+      "description": "\"Use this agent when you need to build or enhance developer tools including CLIs, code generators, b"
+    },
+    {
+      "name": "unused-code-cleaner",
+      "path": "development-tools/unused-code-cleaner",
+      "category": "development-tools",
+      "description": "Detects and removes unused code (imports, functions, classes) across multiple languages. Use PROACTI"
+    },
+    {
+      "name": "apify-integration-expert",
+      "path": "devops-infrastructure/apify-integration-expert",
+      "category": "devops-infrastructure",
+      "description": "Expert agent for integrating Apify Actors into codebases. Handles Actor selection, workflow design, "
+    },
+    {
+      "name": "arm-migration",
+      "path": "devops-infrastructure/arm-migration",
+      "category": "devops-infrastructure",
+      "description": "Arm Cloud Migration Assistant accelerates moving x86 workloads to Arm infrastructure. It scans the r"
+    },
+    {
+      "name": "azure-iac-exporter",
+      "path": "devops-infrastructure/azure-iac-exporter",
+      "category": "devops-infrastructure",
+      "description": "Export existing Azure resources to Infrastructure as Code templates via Azure Resource Graph analysi"
+    },
+    {
+      "name": "azure-iac-generator",
+      "path": "devops-infrastructure/azure-iac-generator",
+      "category": "devops-infrastructure",
+      "description": "Central hub for generating Infrastructure as Code (Bicep, ARM, Terraform, Pulumi) with format-specif"
+    },
+    {
+      "name": "azure-infra-engineer",
+      "path": "devops-infrastructure/azure-infra-engineer",
+      "category": "devops-infrastructure",
+      "description": "\"Use when designing, deploying, or managing Azure infrastructure with focus on network architecture,"
+    },
+    {
+      "name": "azure-logic-apps-expert",
+      "path": "devops-infrastructure/azure-logic-apps-expert",
+      "category": "devops-infrastructure",
+      "description": "Expert guidance for Azure Logic Apps development focusing on workflow design, integration patterns, "
+    },
+    {
+      "name": "azure-principal-architect",
+      "path": "devops-infrastructure/azure-principal-architect",
+      "category": "devops-infrastructure",
+      "description": "Provide expert Azure Principal Architect guidance using Azure Well-Architected Framework principles "
+    },
+    {
+      "name": "azure-saas-architect",
+      "path": "devops-infrastructure/azure-saas-architect",
+      "category": "devops-infrastructure",
+      "description": "Provide expert Azure SaaS Architect guidance focusing on multitenant applications using Azure Well-A"
+    },
+    {
+      "name": "azure-verified-modules-bicep",
+      "path": "devops-infrastructure/azure-verified-modules-bicep",
+      "category": "devops-infrastructure",
+      "description": "Create, update, or review Azure IaC in Bicep using Azure Verified Modules (AVM)."
+    },
+    {
+      "name": "azure-verified-modules-terraform",
+      "path": "devops-infrastructure/azure-verified-modules-terraform",
+      "category": "devops-infrastructure",
+      "description": "Create, update, or review Azure IaC in Terraform using Azure Verified Modules (AVM)."
+    },
+    {
+      "name": "bicep-implement",
+      "path": "devops-infrastructure/bicep-implement",
+      "category": "devops-infrastructure",
+      "description": "Act as an Azure Bicep Infrastructure as Code coding specialist that creates Bicep templates."
+    },
+    {
+      "name": "bicep-plan",
+      "path": "devops-infrastructure/bicep-plan",
+      "category": "devops-infrastructure",
+      "description": "Act as implementation planner for your Azure Bicep Infrastructure as Code task."
     },
     {
       "name": "cloud-architect",
       "path": "devops-infrastructure/cloud-architect",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "\"Use this agent when you need to design, evaluate, or optimize cloud infrastructure architecture at "
     },
     {
       "name": "deployment-engineer",
       "path": "devops-infrastructure/deployment-engineer",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "\"Use this agent when designing, building, or optimizing CI/CD pipelines and deployment automation st"
+    },
+    {
+      "name": "devops-engineer",
+      "path": "devops-infrastructure/devops-engineer",
+      "category": "devops-infrastructure",
+      "description": "\"Use this agent when building or optimizing infrastructure automation, CI/CD pipelines, containeriza"
+    },
+    {
+      "name": "devops-expert",
+      "path": "devops-infrastructure/devops-expert",
+      "category": "devops-infrastructure",
+      "description": "DevOps specialist following the infinity loop principle (Plan \u2192 Code \u2192 Build \u2192 Test \u2192 Release \u2192 Depl"
+    },
+    {
+      "name": "devops-incident-responder",
+      "path": "devops-infrastructure/devops-incident-responder",
+      "category": "devops-infrastructure",
+      "description": "\"Use when actively responding to production incidents, diagnosing critical service failures, or cond"
     },
     {
       "name": "devops-troubleshooter",
       "path": "devops-infrastructure/devops-troubleshooter",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "Production troubleshooting and incident response specialist. Use PROACTIVELY for debugging issues, l"
+    },
+    {
+      "name": "incident-responder",
+      "path": "devops-infrastructure/incident-responder",
+      "category": "devops-infrastructure",
+      "description": "\"Use this agent when an active security breach, service outage, or operational incident requires imm"
+    },
+    {
+      "name": "kubernetes-specialist",
+      "path": "devops-infrastructure/kubernetes-specialist",
+      "category": "devops-infrastructure",
+      "description": "\"Use this agent when you need to design, deploy, configure, or troubleshoot Kubernetes clusters and "
+    },
+    {
+      "name": "kusto-assistant",
+      "path": "devops-infrastructure/kusto-assistant",
+      "category": "devops-infrastructure",
+      "description": "Expert KQL assistant for live Azure Data Explorer analysis via Azure MCP server"
+    },
+    {
+      "name": "m365-admin",
+      "path": "devops-infrastructure/m365-admin",
+      "category": "devops-infrastructure",
+      "description": "\"Use when automating Microsoft 365 administrative tasks including Exchange Online mailbox provisioni"
+    },
+    {
+      "name": "microservices-architect",
+      "path": "devops-infrastructure/microservices-architect",
+      "category": "devops-infrastructure",
+      "description": "\"Use when designing distributed system architecture, decomposing monolithic applications into indepe"
+    },
+    {
+      "name": "microsoft-study-mode",
+      "path": "devops-infrastructure/microsoft-study-mode",
+      "category": "devops-infrastructure",
+      "description": "Activate your personal Microsoft/Azure tutor - learn through guided discovery, not just answers."
     },
     {
       "name": "monitoring-specialist",
       "path": "devops-infrastructure/monitoring-specialist",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "Monitoring and observability infrastructure specialist. Use PROACTIVELY for metrics collection, aler"
+    },
+    {
+      "name": "neo4j-docker-client-generator",
+      "path": "devops-infrastructure/neo4j-docker-client-generator",
+      "category": "devops-infrastructure",
+      "description": "AI agent that generates simple, high-quality Python Neo4j client libraries from GitHub issues with p"
     },
     {
       "name": "network-engineer",
       "path": "devops-infrastructure/network-engineer",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "\"Use this agent when designing, optimizing, or troubleshooting cloud and hybrid network infrastructu"
+    },
+    {
+      "name": "octopus-deploy-release-notes-mcp",
+      "path": "devops-infrastructure/octopus-deploy-release-notes-mcp",
+      "category": "devops-infrastructure",
+      "description": "Generates markdown release notes for an Octopus Deploy release by combining Octopus release/build-in"
+    },
+    {
+      "name": "platform-engineer",
+      "path": "devops-infrastructure/platform-engineer",
+      "category": "devops-infrastructure",
+      "description": "\"Use when building or improving internal developer platforms (IDPs), designing self-service infrastr"
+    },
+    {
+      "name": "se-gitops-ci-specialist",
+      "path": "devops-infrastructure/se-gitops-ci-specialist",
+      "category": "devops-infrastructure",
+      "description": "DevOps specialist for CI/CD pipelines, deployment debugging, and GitOps workflows focused on making "
     },
     {
       "name": "security-engineer",
       "path": "devops-infrastructure/security-engineer",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "Security infrastructure and compliance specialist. Use PROACTIVELY for security architecture, compli"
+    },
+    {
+      "name": "sre-engineer",
+      "path": "devops-infrastructure/sre-engineer",
+      "category": "devops-infrastructure",
+      "description": "\"Use this agent when you need to establish or improve system reliability through SLO definition, err"
+    },
+    {
+      "name": "terraform-azure-implement",
+      "path": "devops-infrastructure/terraform-azure-implement",
+      "category": "devops-infrastructure",
+      "description": "Act as an Azure Terraform Infrastructure as Code coding specialist that creates and reviews Terrafor"
+    },
+    {
+      "name": "terraform-azure-planning",
+      "path": "devops-infrastructure/terraform-azure-planning",
+      "category": "devops-infrastructure",
+      "description": "Act as implementation planner for your Azure Terraform Infrastructure as Code task."
+    },
+    {
+      "name": "terraform-engineer",
+      "path": "devops-infrastructure/terraform-engineer",
+      "category": "devops-infrastructure",
+      "description": "\"Use when building, refactoring, or scaling infrastructure as code using Terraform with focus on mul"
+    },
+    {
+      "name": "terraform-iac-reviewer",
+      "path": "devops-infrastructure/terraform-iac-reviewer",
+      "category": "devops-infrastructure",
+      "description": "Terraform-focused agent that reviews and creates safer IaC changes with emphasis on state safety, le"
     },
     {
       "name": "terraform-specialist",
       "path": "devops-infrastructure/terraform-specialist",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "Terraform and Infrastructure as Code specialist. Use PROACTIVELY for Terraform modules, state manage"
+    },
+    {
+      "name": "terragrunt-expert",
+      "path": "devops-infrastructure/terragrunt-expert",
+      "category": "devops-infrastructure",
+      "description": "Expert Terragrunt specialist mastering infrastructure orchestration, DRY configurations, and multi-e"
     },
     {
       "name": "vercel-deployment-specialist",
       "path": "devops-infrastructure/vercel-deployment-specialist",
       "category": "devops-infrastructure",
-      "description": ""
+      "description": "Expert in Vercel platform features, edge functions, middleware, and deployment strategies. Use PROAC"
+    },
+    {
+      "name": "windows-infra-admin",
+      "path": "devops-infrastructure/windows-infra-admin",
+      "category": "devops-infrastructure",
+      "description": "\"Use when managing Windows Server infrastructure, Active Directory, DNS, DHCP, and Group Policy conf"
     },
     {
       "name": "api-documenter",
       "path": "documentation/api-documenter",
       "category": "documentation",
-      "description": ""
+      "description": "\"Use this agent when creating or improving API documentation, writing OpenAPI specifications, buildi"
+    },
+    {
+      "name": "arch",
+      "path": "documentation/arch",
+      "category": "documentation",
+      "description": "Expert in modern architecture design patterns, NFR requirements, and creating comprehensive architec"
     },
     {
       "name": "changelog-generator",
       "path": "documentation/changelog-generator",
       "category": "documentation",
-      "description": ""
+      "description": "Changelog and release notes specialist. Use PROACTIVELY for generating changelogs from git history, "
+    },
+    {
+      "name": "context7",
+      "path": "documentation/context7",
+      "category": "documentation",
+      "description": "Expert in latest library versions, best practices, and correct syntax using up-to-date documentation"
+    },
+    {
+      "name": "diagram-architect",
+      "path": "documentation/diagram-architect",
+      "category": "documentation",
+      "description": "Create technical diagrams in multiple formats (ASCII, Mermaid, PlantUML, Draw.io). Use PROACTIVELY f"
+    },
+    {
+      "name": "documentation-engineer",
+      "path": "documentation/documentation-engineer",
+      "category": "documentation",
+      "description": "\"Use this agent when you need to create, architect, or overhaul comprehensive documentation systems "
     },
     {
       "name": "docusaurus-expert",
       "path": "documentation/docusaurus-expert",
       "category": "documentation",
-      "description": ""
+      "description": "Docusaurus documentation specialist. Use PROACTIVELY when working with Docusaurus documentation for "
+    },
+    {
+      "name": "microsoft_learn_contributor",
+      "path": "documentation/microsoft_learn_contributor",
+      "category": "documentation",
+      "description": "Microsoft Learn Contributor chatmode for editing and writing Microsoft Learn documentation following"
+    },
+    {
+      "name": "se-technical-writer",
+      "path": "documentation/se-technical-writer",
+      "category": "documentation",
+      "description": "Technical writing specialist for creating developer documentation, technical blogs, tutorials, and e"
+    },
+    {
+      "name": "tech-debt-remediation-plan",
+      "path": "documentation/tech-debt-remediation-plan",
+      "category": "documentation",
+      "description": "Generate technical debt remediation plans for code, tests, and documentation."
     },
     {
       "name": "technical-writer",
       "path": "documentation/technical-writer",
       "category": "documentation",
-      "description": ""
+      "description": "\"Use this agent when you need to create, improve, or maintain technical documentation including API "
+    },
+    {
+      "name": "4.1-Beast",
+      "path": "expert-advisors/4.1-Beast",
+      "category": "expert-advisors",
+      "description": "GPT 4.1 as a top-notch coding agent."
+    },
+    {
+      "name": "Ultimate-Transparent-Thinking-Beast-Mode",
+      "path": "expert-advisors/Ultimate-Transparent-Thinking-Beast-Mode",
+      "category": "expert-advisors",
+      "description": "Ultimate Transparent Thinking Beast Mode"
+    },
+    {
+      "name": "WinFormsExpert",
+      "path": "expert-advisors/WinFormsExpert",
+      "category": "expert-advisors",
+      "description": "Support development of .NET (OOP) WinForms Designer compatible Apps."
+    },
+    {
+      "name": "address-comments",
+      "path": "expert-advisors/address-comments",
+      "category": "expert-advisors",
+      "description": "Address PR comments"
     },
     {
       "name": "agent-expert",
       "path": "expert-advisors/agent-expert",
       "category": "expert-advisors",
-      "description": ""
+      "description": "|-"
+    },
+    {
+      "name": "agent-installer",
+      "path": "expert-advisors/agent-installer",
+      "category": "expert-advisors",
+      "description": "\"Use this agent when the user wants to discover, browse, or install Claude Code agents from the awes"
+    },
+    {
+      "name": "agent-organizer",
+      "path": "expert-advisors/agent-organizer",
+      "category": "expert-advisors",
+      "description": "\"Use when assembling and optimizing multi-agent teams to execute complex projects that require caref"
     },
     {
       "name": "architect-review",
       "path": "expert-advisors/architect-review",
       "category": "expert-advisors",
-      "description": ""
+      "description": "Use this agent to review code for architectural consistency and patterns. Specializes in SOLID princ"
+    },
+    {
+      "name": "atlassian-requirements-to-jira",
+      "path": "expert-advisors/atlassian-requirements-to-jira",
+      "category": "expert-advisors",
+      "description": "Transform requirements documents into structured Jira epics and user stories with intelligent duplic"
+    },
+    {
+      "name": "context-manager",
+      "path": "expert-advisors/context-manager",
+      "category": "expert-advisors",
+      "description": "\"Use for managing shared state, information retrieval, and data synchronization when multiple agents"
+    },
+    {
+      "name": "critical-thinking",
+      "path": "expert-advisors/critical-thinking",
+      "category": "expert-advisors",
+      "description": "Challenge assumptions and encourage critical thinking to ensure the best possible solution and outco"
+    },
+    {
+      "name": "custom-agent-foundry",
+      "path": "expert-advisors/custom-agent-foundry",
+      "category": "expert-advisors",
+      "description": "Expert at designing and creating VS Code custom agents with optimal configurations"
+    },
+    {
+      "name": "debug",
+      "path": "expert-advisors/debug",
+      "category": "expert-advisors",
+      "description": "Debug your application to find and fix a bug"
+    },
+    {
+      "name": "declarative-agents-architect",
+      "path": "expert-advisors/declarative-agents-architect",
+      "category": "expert-advisors",
+      "description": "Specialized agent"
     },
     {
       "name": "dependency-manager",
       "path": "expert-advisors/dependency-manager",
       "category": "expert-advisors",
-      "description": ""
+      "description": "Use this agent to manage project dependencies. Specializes in dependency analysis, vulnerability sca"
     },
     {
       "name": "documentation-expert",
       "path": "expert-advisors/documentation-expert",
       "category": "expert-advisors",
-      "description": ""
+      "description": "Use this agent to create, improve, and maintain project documentation. Specializes in technical writ"
+    },
+    {
+      "name": "dotnet-upgrade",
+      "path": "expert-advisors/dotnet-upgrade",
+      "category": "expert-advisors",
+      "description": "Perform janitorial tasks on C#/.NET code including cleanup, modernization, and tech debt remediation"
+    },
+    {
+      "name": "droid",
+      "path": "expert-advisors/droid",
+      "category": "expert-advisors",
+      "description": "Provides installation guidance, usage examples, and automation patterns for the Droid CLI, with emph"
+    },
+    {
+      "name": "drupal-expert",
+      "path": "expert-advisors/drupal-expert",
+      "category": "expert-advisors",
+      "description": "Expert assistant for Drupal development, architecture, and best practices using PHP 8.3+ and modern "
+    },
+    {
+      "name": "error-coordinator",
+      "path": "expert-advisors/error-coordinator",
+      "category": "expert-advisors",
+      "description": "\"Use this agent when distributed system errors occur and need coordinated handling across multiple c"
+    },
+    {
+      "name": "expert-dotnet-software-engineer",
+      "path": "expert-advisors/expert-dotnet-software-engineer",
+      "category": "expert-advisors",
+      "description": "Provide expert .NET software engineering guidance using modern software design patterns."
+    },
+    {
+      "name": "gilfoyle",
+      "path": "expert-advisors/gilfoyle",
+      "category": "expert-advisors",
+      "description": "Code review and analysis with the sardonic wit and technical elitism of Bertram Gilfoyle from Silico"
+    },
+    {
+      "name": "gpt-5-beast-mode",
+      "path": "expert-advisors/gpt-5-beast-mode",
+      "category": "expert-advisors",
+      "description": "Beast Mode 2.0: A powerful autonomous agent tuned specifically for GPT-5 that can solve complex prob"
+    },
+    {
+      "name": "implementation-plan",
+      "path": "expert-advisors/implementation-plan",
+      "category": "expert-advisors",
+      "description": "Generate an implementation plan for new features or refactoring existing code."
+    },
+    {
+      "name": "it-ops-orchestrator",
+      "path": "expert-advisors/it-ops-orchestrator",
+      "category": "expert-advisors",
+      "description": "\"Use for orchestrating complex IT operations tasks that span multiple domains (PowerShell automation"
+    },
+    {
+      "name": "janitor",
+      "path": "expert-advisors/janitor",
+      "category": "expert-advisors",
+      "description": "Perform janitorial tasks on any codebase including cleanup, simplification, and tech debt remediatio"
+    },
+    {
+      "name": "knowledge-synthesizer",
+      "path": "expert-advisors/knowledge-synthesizer",
+      "category": "expert-advisors",
+      "description": "\"Use when you need to extract actionable patterns from agent interactions, synthesize insights acros"
+    },
+    {
+      "name": "kotlin-mcp-expert",
+      "path": "expert-advisors/kotlin-mcp-expert",
+      "category": "expert-advisors",
+      "description": "Expert assistant for building Model Context Protocol (MCP) servers in Kotlin using the official SDK."
+    },
+    {
+      "name": "legal-advisor",
+      "path": "expert-advisors/legal-advisor",
+      "category": "expert-advisors",
+      "description": "\"Use this agent when you need to draft contracts, review compliance requirements, develop IP protect"
+    },
+    {
+      "name": "mcp-m365-agent-expert",
+      "path": "expert-advisors/mcp-m365-agent-expert",
+      "category": "expert-advisors",
+      "description": "Expert assistant for building MCP-based declarative agents for Microsoft 365 Copilot with Model Cont"
+    },
+    {
+      "name": "mentor",
+      "path": "expert-advisors/mentor",
+      "category": "expert-advisors",
+      "description": "Help mentor the engineer by providing guidance and support."
+    },
+    {
+      "name": "meta-agentic-project-scaffold",
+      "path": "expert-advisors/meta-agentic-project-scaffold",
+      "category": "expert-advisors",
+      "description": "Meta agentic project creation assistant to help users create and manage project workflows effectivel"
+    },
+    {
+      "name": "modernization",
+      "path": "expert-advisors/modernization",
+      "category": "expert-advisors",
+      "description": "Human-in-the-loop modernization assistant for analyzing, documenting, and planning complete project "
+    },
+    {
+      "name": "multi-agent-coordinator",
+      "path": "expert-advisors/multi-agent-coordinator",
+      "category": "expert-advisors",
+      "description": "\"Use when coordinating multiple concurrent agents that need to communicate, share state, synchronize"
+    },
+    {
+      "name": "performance-monitor",
+      "path": "expert-advisors/performance-monitor",
+      "category": "expert-advisors",
+      "description": "\"Use when establishing observability infrastructure to track system metrics, detect performance anom"
+    },
+    {
+      "name": "php-mcp-expert",
+      "path": "expert-advisors/php-mcp-expert",
+      "category": "expert-advisors",
+      "description": "Expert assistant for PHP MCP server development using the official PHP SDK with attribute-based disc"
+    },
+    {
+      "name": "pimcore-expert",
+      "path": "expert-advisors/pimcore-expert",
+      "category": "expert-advisors",
+      "description": "Expert Pimcore development assistant specializing in CMS, DAM, PIM, and E-Commerce solutions with Sy"
+    },
+    {
+      "name": "plan",
+      "path": "expert-advisors/plan",
+      "category": "expert-advisors",
+      "description": "Strategic planning and architecture assistant focused on thoughtful analysis before implementation. "
+    },
+    {
+      "name": "planner",
+      "path": "expert-advisors/planner",
+      "category": "expert-advisors",
+      "description": "Generate an implementation plan for new features or refactoring existing code."
+    },
+    {
+      "name": "power-bi-performance-expert",
+      "path": "expert-advisors/power-bi-performance-expert",
+      "category": "expert-advisors",
+      "description": "Expert Power BI performance optimization guidance for troubleshooting, monitoring, and improving the"
+    },
+    {
+      "name": "power-bi-visualization-expert",
+      "path": "expert-advisors/power-bi-visualization-expert",
+      "category": "expert-advisors",
+      "description": "Expert Power BI report design and visualization guidance using Microsoft best practices for creating"
+    },
+    {
+      "name": "power-platform-mcp-integration-expert",
+      "path": "expert-advisors/power-platform-mcp-integration-expert",
+      "category": "expert-advisors",
+      "description": "Expert in Power Platform custom connector development with MCP integration for Copilot Studio - comp"
+    },
+    {
+      "name": "principal-software-engineer",
+      "path": "expert-advisors/principal-software-engineer",
+      "category": "expert-advisors",
+      "description": "Provide principal-level software engineering guidance with focus on engineering excellence, technica"
+    },
+    {
+      "name": "refine-issue",
+      "path": "expert-advisors/refine-issue",
+      "category": "expert-advisors",
+      "description": "Refine the requirement or issue with Acceptance Criteria, Technical Considerations, Edge Cases, and "
+    },
+    {
+      "name": "research-technical-spike",
+      "path": "expert-advisors/research-technical-spike",
+      "category": "expert-advisors",
+      "description": "Systematically research and validate technical spike documents through exhaustive investigation and "
+    },
+    {
+      "name": "se-ux-ui-designer",
+      "path": "expert-advisors/se-ux-ui-designer",
+      "category": "expert-advisors",
+      "description": "Jobs-to-be-Done analysis, user journey mapping, and UX research artifacts for Figma and design workf"
+    },
+    {
+      "name": "specification",
+      "path": "expert-advisors/specification",
+      "category": "expert-advisors",
+      "description": "Generate or update specification documents for new or existing functionality."
+    },
+    {
+      "name": "swift-mcp-expert",
+      "path": "expert-advisors/swift-mcp-expert",
+      "category": "expert-advisors",
+      "description": "Expert assistance for building Model Context Protocol servers in Swift using modern concurrency feat"
+    },
+    {
+      "name": "task-distributor",
+      "path": "expert-advisors/task-distributor",
+      "category": "expert-advisors",
+      "description": "\"Use when distributing tasks across multiple agents or workers, managing queues, and balancing workl"
+    },
+    {
+      "name": "voidbeast-gpt41enhanced",
+      "path": "expert-advisors/voidbeast-gpt41enhanced",
+      "category": "expert-advisors",
+      "description": "4.1 voidBeast_GPT41Enhanced 1.0 : a advanced autonomous developer agent, designed for elite full-sta"
+    },
+    {
+      "name": "wg-code-alchemist",
+      "path": "expert-advisors/wg-code-alchemist",
+      "category": "expert-advisors",
+      "description": "Ask WG Code Alchemist to transform your code with Clean Code principles and SOLID design"
+    },
+    {
+      "name": "workflow-orchestrator",
+      "path": "expert-advisors/workflow-orchestrator",
+      "category": "expert-advisors",
+      "description": "\"Use this agent when you need to design, implement, or optimize complex business process workflows w"
     },
     {
       "name": "audio-mixer",
       "path": "ffmpeg-clip-team/audio-mixer",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Multi-track audio mixing and mastering specialist. Use PROACTIVELY for complex audio arrangements, t"
     },
     {
       "name": "audio-quality-controller",
       "path": "ffmpeg-clip-team/audio-quality-controller",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Audio quality enhancement and analysis specialist. Use PROACTIVELY for loudness normalization, noise"
     },
     {
       "name": "podcast-content-analyzer",
       "path": "ffmpeg-clip-team/podcast-content-analyzer",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Podcast content analysis specialist. Use PROACTIVELY for identifying viral moments, creating chapter"
     },
     {
       "name": "podcast-metadata-specialist",
       "path": "ffmpeg-clip-team/podcast-metadata-specialist",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Podcast metadata and show notes specialist. Use PROACTIVELY for SEO-optimized titles, chapter marker"
     },
     {
       "name": "podcast-transcriber",
       "path": "ffmpeg-clip-team/podcast-transcriber",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Audio transcription specialist. Use PROACTIVELY for extracting accurate transcripts from media files"
     },
     {
       "name": "social-media-clip-creator",
       "path": "ffmpeg-clip-team/social-media-clip-creator",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Social media video clip optimization specialist. Use PROACTIVELY for creating platform-specific clip"
     },
     {
       "name": "timestamp-precision-specialist",
       "path": "ffmpeg-clip-team/timestamp-precision-specialist",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Frame-accurate timestamp extraction specialist. Use PROACTIVELY for precise cut points, speech bound"
     },
     {
       "name": "video-editor",
       "path": "ffmpeg-clip-team/video-editor",
       "category": "ffmpeg-clip-team",
-      "description": ""
+      "description": "Video editing and production specialist. Use PROACTIVELY for video cuts, transitions, effects, color"
+    },
+    {
+      "name": "bettoredge-value-finder",
+      "path": "finance/bettoredge-value-finder",
+      "category": "finance",
+      "description": "Find +EV betting opportunities on BettorEdge prediction markets with edge calculation, Kelly criteri"
+    },
+    {
+      "name": "fintech-engineer",
+      "path": "finance/fintech-engineer",
+      "category": "finance",
+      "description": "\"Use when building payment systems, financial integrations, or compliance-heavy financial applicatio"
+    },
+    {
+      "name": "payment-integration",
+      "path": "finance/payment-integration",
+      "category": "finance",
+      "description": "\"Use this agent when implementing payment systems, integrating payment gateways, or handling financi"
+    },
+    {
+      "name": "quant-analyst",
+      "path": "finance/quant-analyst",
+      "category": "finance",
+      "description": "\"Use this agent when you need to develop quantitative trading strategies, build financial models wit"
+    },
+    {
+      "name": "risk-manager",
+      "path": "finance/risk-manager",
+      "category": "finance",
+      "description": "\"Use this agent when you need to identify, quantify, and mitigate enterprise-level risks across fina"
     },
     {
       "name": "3d-artist",
       "path": "game-development/3d-artist",
       "category": "game-development",
-      "description": ""
+      "description": "3D art and asset creation specialist for game development. Use PROACTIVELY for 3D modeling, texturin"
     },
     {
       "name": "game-designer",
       "path": "game-development/game-designer",
       "category": "game-development",
-      "description": ""
+      "description": "Game design specialist focusing on mechanics, balancing, player psychology, and system design. Use P"
+    },
+    {
+      "name": "game-developer",
+      "path": "game-development/game-developer",
+      "category": "game-development",
+      "description": "\"Use this agent when implementing game systems, optimizing graphics rendering, building multiplayer "
     },
     {
       "name": "unity-game-developer",
       "path": "game-development/unity-game-developer",
       "category": "game-development",
-      "description": ""
+      "description": "Expert Unity game developer specializing in C# scripting, 3D graphics, mobile optimization, and comp"
     },
     {
       "name": "unreal-engine-developer",
       "path": "game-development/unreal-engine-developer",
       "category": "game-development",
+      "description": "Expert Unreal Engine developer specializing in C++ programming, Blueprint visual scripting, and AAA "
+    },
+    {
+      "name": "commit-guardian",
+      "path": "git/commit-guardian",
+      "category": "git",
       "description": ""
+    },
+    {
+      "name": "git-flow-manager",
+      "path": "git/git-flow-manager",
+      "category": "git",
+      "description": "Git Flow workflow manager. Use PROACTIVELY for Git Flow operations including branch creation, mergin"
+    },
+    {
+      "name": "git-workflow-manager",
+      "path": "git/git-workflow-manager",
+      "category": "git",
+      "description": "\"Use this agent when you need to design, establish, or optimize Git workflows, branching strategies,"
     },
     {
       "name": "mcp-deployment-orchestrator",
       "path": "mcp-dev-team/mcp-deployment-orchestrator",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP server deployment and operations specialist. Use PROACTIVELY for containerization, Kubernetes de"
+    },
+    {
+      "name": "mcp-developer",
+      "path": "mcp-dev-team/mcp-developer",
+      "category": "mcp-dev-team",
+      "description": "\"Use this agent when you need to build, debug, or optimize Model Context Protocol (MCP) servers and "
     },
     {
       "name": "mcp-integration-engineer",
       "path": "mcp-dev-team/mcp-integration-engineer",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP server integration and orchestration specialist. Use PROACTIVELY for client-server integration, "
     },
     {
       "name": "mcp-protocol-specialist",
       "path": "mcp-dev-team/mcp-protocol-specialist",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP protocol specification and standards specialist. Use PROACTIVELY for protocol design, specificat"
     },
     {
       "name": "mcp-registry-navigator",
       "path": "mcp-dev-team/mcp-registry-navigator",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP registry discovery and integration specialist. Use PROACTIVELY for finding servers, evaluating c"
     },
     {
       "name": "mcp-security-auditor",
       "path": "mcp-dev-team/mcp-security-auditor",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP server security specialist. Use PROACTIVELY for security reviews, OAuth implementation, RBAC des"
     },
     {
       "name": "mcp-server-architect",
       "path": "mcp-dev-team/mcp-server-architect",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP server architecture and implementation specialist. Use PROACTIVELY for designing servers, implem"
     },
     {
       "name": "mcp-testing-engineer",
       "path": "mcp-dev-team/mcp-testing-engineer",
       "category": "mcp-dev-team",
-      "description": ""
+      "description": "MCP server testing and quality assurance specialist. Use PROACTIVELY for protocol compliance, securi"
     },
     {
       "name": "architecture-modernizer",
       "path": "modernization/architecture-modernizer",
       "category": "modernization",
-      "description": ""
+      "description": "Software architecture modernization specialist. Use PROACTIVELY for monolith decomposition, microser"
     },
     {
       "name": "cloud-migration-specialist",
       "path": "modernization/cloud-migration-specialist",
       "category": "modernization",
-      "description": ""
+      "description": "Cloud migration and infrastructure modernization specialist. Use PROACTIVELY for on-premise to cloud"
     },
     {
       "name": "legacy-modernizer",
       "path": "modernization/legacy-modernizer",
       "category": "modernization",
-      "description": ""
+      "description": "\"Use this agent when modernizing legacy systems that need incremental migration strategies, technica"
     },
     {
       "name": "connection-agent",
       "path": "obsidian-ops-team/connection-agent",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "Obsidian vault connection specialist. Use PROACTIVELY for analyzing and suggesting links between rel"
     },
     {
       "name": "content-curator",
       "path": "obsidian-ops-team/content-curator",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "Obsidian content curation and quality specialist. Use PROACTIVELY for identifying outdated content, "
     },
     {
       "name": "metadata-agent",
       "path": "obsidian-ops-team/metadata-agent",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "Obsidian metadata management specialist. Use PROACTIVELY for frontmatter standardization, metadata a"
     },
     {
       "name": "moc-agent",
       "path": "obsidian-ops-team/moc-agent",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "\"Obsidian Map of Content specialist. Use PROACTIVELY when a vault needs new MOCs created, existing M"
     },
     {
       "name": "review-agent",
       "path": "obsidian-ops-team/review-agent",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "Obsidian vault quality assurance specialist. Use PROACTIVELY for cross-checking enhancement work, va"
     },
     {
       "name": "tag-agent",
       "path": "obsidian-ops-team/tag-agent",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "Obsidian tag taxonomy specialist. Use PROACTIVELY for normalizing and hierarchically organizing tag "
     },
     {
       "name": "vault-optimizer",
       "path": "obsidian-ops-team/vault-optimizer",
       "category": "obsidian-ops-team",
-      "description": ""
+      "description": "Obsidian vault performance optimization specialist. Use PROACTIVELY for analyzing vault performance,"
     },
     {
       "name": "document-structure-analyzer",
       "path": "ocr-extraction-team/document-structure-analyzer",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "Document structure analysis specialist. Use PROACTIVELY for identifying document layouts, analyzing "
     },
     {
       "name": "markdown-syntax-formatter",
       "path": "ocr-extraction-team/markdown-syntax-formatter",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "Markdown formatting specialist. Use PROACTIVELY for converting text to proper markdown syntax, fixin"
     },
     {
       "name": "ocr-grammar-fixer",
       "path": "ocr-extraction-team/ocr-grammar-fixer",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "OCR text correction specialist. Use PROACTIVELY for cleaning up and correcting OCR-processed text, f"
     },
     {
       "name": "ocr-preprocessing-optimizer",
       "path": "ocr-extraction-team/ocr-preprocessing-optimizer",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "OCR preprocessing and image optimization specialist. Use PROACTIVELY for image enhancement, noise re"
     },
     {
       "name": "ocr-quality-assurance",
       "path": "ocr-extraction-team/ocr-quality-assurance",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "OCR pipeline validation specialist. Use PROACTIVELY for final review and validation of OCR-corrected"
     },
     {
       "name": "text-comparison-validator",
       "path": "ocr-extraction-team/text-comparison-validator",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "Text comparison and validation specialist. Use PROACTIVELY for comparing extracted text with existin"
     },
     {
       "name": "visual-analysis-ocr",
       "path": "ocr-extraction-team/visual-analysis-ocr",
       "category": "ocr-extraction-team",
-      "description": ""
+      "description": "Visual analysis and OCR specialist. Use PROACTIVELY for extracting and analyzing text content from i"
     },
     {
       "name": "load-testing-specialist",
       "path": "performance-testing/load-testing-specialist",
       "category": "performance-testing",
-      "description": ""
+      "description": "Load testing and stress testing specialist. Use PROACTIVELY for creating comprehensive load test sce"
     },
     {
       "name": "performance-engineer",
       "path": "performance-testing/performance-engineer",
       "category": "performance-testing",
-      "description": ""
+      "description": "Profile applications, optimize bottlenecks, and implement caching strategies. Handles load testing, "
     },
     {
       "name": "react-performance-optimization",
       "path": "performance-testing/react-performance-optimization",
       "category": "performance-testing",
-      "description": ""
+      "description": "React performance optimization specialist. Use PROACTIVELY for identifying and fixing performance bo"
     },
     {
       "name": "test-automator",
       "path": "performance-testing/test-automator",
       "category": "performance-testing",
-      "description": ""
+      "description": "Create comprehensive test suites with unit, integration, and e2e tests. Sets up CI pipelines, mockin"
     },
     {
       "name": "web-vitals-optimizer",
       "path": "performance-testing/web-vitals-optimizer",
       "category": "performance-testing",
-      "description": ""
+      "description": "Core Web Vitals optimization specialist. Use PROACTIVELY for improving LCP, FID, CLS, and other web "
     },
     {
       "name": "academic-research-synthesizer",
       "path": "podcast-creator-team/academic-research-synthesizer",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Academic research synthesis specialist. Use PROACTIVELY for comprehensive research on academic topic"
     },
     {
       "name": "comprehensive-researcher",
       "path": "podcast-creator-team/comprehensive-researcher",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Comprehensive research specialist. Use PROACTIVELY for in-depth research on any topic, requiring mul"
     },
     {
       "name": "episode-orchestrator",
       "path": "podcast-creator-team/episode-orchestrator",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Episode workflow orchestrator. Use PROACTIVELY for managing episode-based workflows that coordinate "
     },
     {
       "name": "guest-outreach-coordinator",
       "path": "podcast-creator-team/guest-outreach-coordinator",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Podcast guest outreach and coordination specialist. Use PROACTIVELY for guest research, outreach tem"
     },
     {
       "name": "market-research-analyst",
       "path": "podcast-creator-team/market-research-analyst",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Market research and competitive analysis specialist. Use PROACTIVELY for comprehensive market intell"
     },
     {
       "name": "podcast-editor",
       "path": "podcast-creator-team/podcast-editor",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Podcast editing and post-production specialist. Use PROACTIVELY for audio editing guidance, show not"
     },
     {
       "name": "podcast-trend-scout",
       "path": "podcast-creator-team/podcast-trend-scout",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Podcast trend analysis specialist. Use PROACTIVELY for identifying emerging tech topics, breaking de"
     },
     {
       "name": "project-supervisor-orchestrator",
       "path": "podcast-creator-team/project-supervisor-orchestrator",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Project workflow orchestrator. Use PROACTIVELY for managing complex multi-step workflows that coordi"
     },
     {
       "name": "seo-podcast-optimizer",
       "path": "podcast-creator-team/seo-podcast-optimizer",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "SEO podcast optimization specialist. Use PROACTIVELY for creating SEO-friendly titles, meta descript"
     },
     {
       "name": "social-media-copywriter",
       "path": "podcast-creator-team/social-media-copywriter",
       "category": "podcast-creator-team",
-      "description": ""
+      "description": "Social media content creation specialist. Use PROACTIVELY for creating Twitter threads, LinkedIn pos"
     },
     {
       "name": "twitter-ai-influencer-manager",
       "path": "podcast-creator-team/twitter-ai-influencer-manager",
       "category": "podcast-creator-team",
+      "description": "Twitter AI influencer engagement specialist. Use PROACTIVELY for interacting with AI thought leaders"
+    },
+    {
+      "name": "CSharpExpert",
+      "path": "programming-languages/CSharpExpert",
+      "category": "programming-languages",
+      "description": "An agent designed to assist with software development tasks for .NET projects."
+    },
+    {
+      "name": "README",
+      "path": "programming-languages/README",
+      "category": "programming-languages",
       "description": ""
+    },
+    {
+      "name": "angular-architect",
+      "path": "programming-languages/angular-architect",
+      "category": "programming-languages",
+      "description": "\"Use when architecting enterprise Angular 15+ applications with complex state management, optimizing"
     },
     {
       "name": "c-pro",
       "path": "programming-languages/c-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "Write efficient C code with proper memory management, pointer arithmetic, and system calls. Handles "
     },
     {
       "name": "c-sharp-pro",
       "path": "programming-languages/c-sharp-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "Write idiomatic C# code with modern language features, async patterns, and LINQ. Masters .NET ecosys"
     },
     {
       "name": "cpp-pro",
       "path": "programming-languages/cpp-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use this agent when building high-performance C++ systems requiring modern C++20/23 features, templ"
+    },
+    {
+      "name": "csharp-developer",
+      "path": "programming-languages/csharp-developer",
+      "category": "programming-languages",
+      "description": "\"Use this agent when building ASP.NET Core web APIs, cloud-native .NET solutions, or modern C# appli"
+    },
+    {
+      "name": "csharp-dotnet-janitor",
+      "path": "programming-languages/csharp-dotnet-janitor",
+      "category": "programming-languages",
+      "description": "Perform janitorial tasks on C#/.NET code including cleanup, modernization, and tech debt remediation"
+    },
+    {
+      "name": "csharp-mcp-expert",
+      "path": "programming-languages/csharp-mcp-expert",
+      "category": "programming-languages",
+      "description": "Expert assistant for developing Model Context Protocol (MCP) servers in C#"
+    },
+    {
+      "name": "diffblue-cover",
+      "path": "programming-languages/diffblue-cover",
+      "category": "programming-languages",
+      "description": "Expert agent for creating unit tests for java applications using Diffblue Cover."
+    },
+    {
+      "name": "django-developer",
+      "path": "programming-languages/django-developer",
+      "category": "programming-languages",
+      "description": "\"Use when building Django 4+ web applications, REST APIs, or modernizing existing Django projects wi"
+    },
+    {
+      "name": "dotnet-core-expert",
+      "path": "programming-languages/dotnet-core-expert",
+      "category": "programming-languages",
+      "description": "\"Use when building .NET Core applications requiring cloud-native architecture, high-performance micr"
+    },
+    {
+      "name": "dotnet-framework-4.8-expert",
+      "path": "programming-languages/dotnet-framework-4.8-expert",
+      "category": "programming-languages",
+      "description": "\"Use this agent when working on legacy .NET Framework 4.8 enterprise applications that require maint"
+    },
+    {
+      "name": "elixir-expert",
+      "path": "programming-languages/elixir-expert",
+      "category": "programming-languages",
+      "description": "\"Use this agent when you need to build fault-tolerant, concurrent systems leveraging OTP patterns, G"
+    },
+    {
+      "name": "embedded-systems",
+      "path": "programming-languages/embedded-systems",
+      "category": "programming-languages",
+      "description": "\"Use when developing firmware for resource-constrained microcontrollers, implementing RTOS-based app"
+    },
+    {
+      "name": "expert-cpp-software-engineer",
+      "path": "programming-languages/expert-cpp-software-engineer",
+      "category": "programming-languages",
+      "description": "Provide expert C++ software engineering guidance using modern C++ and industry best practices."
+    },
+    {
+      "name": "flutter-expert",
+      "path": "programming-languages/flutter-expert",
+      "category": "programming-languages",
+      "description": "\"Use when building cross-platform mobile applications with Flutter 3+ that require custom UI impleme"
+    },
+    {
+      "name": "go-mcp-expert",
+      "path": "programming-languages/go-mcp-expert",
+      "category": "programming-languages",
+      "description": "Expert assistant for building Model Context Protocol (MCP) servers in Go using the official SDK."
     },
     {
       "name": "golang-pro",
       "path": "programming-languages/golang-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use when building Go applications requiring concurrent programming, high-performance systems, micro"
+    },
+    {
+      "name": "iot-engineer",
+      "path": "programming-languages/iot-engineer",
+      "category": "programming-languages",
+      "description": "\"Use when designing and deploying IoT solutions requiring expertise in device management, edge compu"
+    },
+    {
+      "name": "java-architect",
+      "path": "programming-languages/java-architect",
+      "category": "programming-languages",
+      "description": "\"Use this agent when designing enterprise Java architectures, migrating Spring Boot applications, or"
     },
     {
       "name": "javascript-pro",
       "path": "programming-languages/javascript-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use this agent when you need to build, optimize, or refactor modern JavaScript code for browser, No"
+    },
+    {
+      "name": "kotlin-specialist",
+      "path": "programming-languages/kotlin-specialist",
+      "category": "programming-languages",
+      "description": "\"Use when building Kotlin applications requiring advanced coroutine patterns, multiplatform code sha"
+    },
+    {
+      "name": "laravel-specialist",
+      "path": "programming-languages/laravel-specialist",
+      "category": "programming-languages",
+      "description": "\"Use when building Laravel 10+ applications, architecting Eloquent models with complex relationships"
+    },
+    {
+      "name": "microsoft-agent-framework-python",
+      "path": "programming-languages/microsoft-agent-framework-python",
+      "category": "programming-languages",
+      "description": "Create, update, refactor, explain or work with code using the Python version of Microsoft Agent Fram"
+    },
+    {
+      "name": "mongodb-performance-advisor",
+      "path": "programming-languages/mongodb-performance-advisor",
+      "category": "programming-languages",
+      "description": "Analyze MongoDB database performance, offer query and index optimization insights and provide action"
+    },
+    {
+      "name": "nextjs-developer",
+      "path": "programming-languages/nextjs-developer",
+      "category": "programming-languages",
+      "description": "\"Use this agent when building production Next.js 14+ applications that require full-stack developmen"
     },
     {
       "name": "php-pro",
       "path": "programming-languages/php-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use this agent when working with PHP 8.3+ projects that require strict typing, modern language feat"
+    },
+    {
+      "name": "powershell-5.1-expert",
+      "path": "programming-languages/powershell-5.1-expert",
+      "category": "programming-languages",
+      "description": "\"Use when automating Windows infrastructure tasks requiring PowerShell 5.1 scripts with RSAT modules"
+    },
+    {
+      "name": "powershell-7-expert",
+      "path": "programming-languages/powershell-7-expert",
+      "category": "programming-languages",
+      "description": "\"Use when building cross-platform cloud automation scripts, Azure infrastructure orchestration, or C"
+    },
+    {
+      "name": "powershell-module-architect",
+      "path": "programming-languages/powershell-module-architect",
+      "category": "programming-languages",
+      "description": "\"Use this agent when architecting and refactoring PowerShell modules, designing profile systems, or "
+    },
+    {
+      "name": "powershell-ui-architect",
+      "path": "programming-languages/powershell-ui-architect",
+      "category": "programming-languages",
+      "description": "\"Use when designing or building desktop graphical interfaces (WinForms, WPF, Metro-style dashboards)"
+    },
+    {
+      "name": "python-mcp-expert",
+      "path": "programming-languages/python-mcp-expert",
+      "category": "programming-languages",
+      "description": "Expert assistant for developing Model Context Protocol (MCP) servers in Python"
     },
     {
       "name": "python-pro",
       "path": "programming-languages/python-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use this agent when you need to build type-safe, production-ready Python code for web APIs, system "
+    },
+    {
+      "name": "rails-expert",
+      "path": "programming-languages/rails-expert",
+      "category": "programming-languages",
+      "description": "\"Use when building or modernizing Rails applications requiring full-stack development, Hotwire react"
+    },
+    {
+      "name": "react-specialist",
+      "path": "programming-languages/react-specialist",
+      "category": "programming-languages",
+      "description": "\"Use when optimizing existing React applications for performance, implementing advanced React 19+ fe"
+    },
+    {
+      "name": "ruby-mcp-expert",
+      "path": "programming-languages/ruby-mcp-expert",
+      "category": "programming-languages",
+      "description": "Expert assistance for building Model Context Protocol servers in Ruby using the official MCP Ruby SD"
+    },
+    {
+      "name": "rust-engineer",
+      "path": "programming-languages/rust-engineer",
+      "category": "programming-languages",
+      "description": "\"Use when building Rust systems where memory safety, ownership patterns, zero-cost abstractions, and"
+    },
+    {
+      "name": "rust-gpt-4.1-beast-mode",
+      "path": "programming-languages/rust-gpt-4.1-beast-mode",
+      "category": "programming-languages",
+      "description": "Rust GPT-4.1 Coding Beast Mode for VS Code"
+    },
+    {
+      "name": "rust-mcp-expert",
+      "path": "programming-languages/rust-mcp-expert",
+      "category": "programming-languages",
+      "description": "Expert assistant for Rust MCP server development using the rmcp SDK with tokio async runtime"
     },
     {
       "name": "rust-pro",
       "path": "programming-languages/rust-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "Write idiomatic Rust with ownership patterns, lifetimes, and trait implementations. Masters async/aw"
+    },
+    {
+      "name": "semantic-kernel-python",
+      "path": "programming-languages/semantic-kernel-python",
+      "category": "programming-languages",
+      "description": "Create, update, refactor, explain or work with code using the Python version of Semantic Kernel."
     },
     {
       "name": "shell-scripting-pro",
       "path": "programming-languages/shell-scripting-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "Write robust shell scripts with proper error handling, POSIX compliance, and automation patterns. Ma"
+    },
+    {
+      "name": "spring-boot-engineer",
+      "path": "programming-languages/spring-boot-engineer",
+      "category": "programming-languages",
+      "description": "\"Use this agent when building enterprise Spring Boot 3+ applications requiring microservices archite"
     },
     {
       "name": "sql-pro",
       "path": "programming-languages/sql-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use this agent when you need to optimize complex SQL queries, design efficient database schemas, or"
+    },
+    {
+      "name": "swift-expert",
+      "path": "programming-languages/swift-expert",
+      "category": "programming-languages",
+      "description": "\"Use this agent when building native iOS, macOS, or server-side Swift applications requiring advance"
+    },
+    {
+      "name": "technical-content-evaluator",
+      "path": "programming-languages/technical-content-evaluator",
+      "category": "programming-languages",
+      "description": "Elite technical content editor and curriculum architect for evaluating technical training materials,"
+    },
+    {
+      "name": "typescript-mcp-expert",
+      "path": "programming-languages/typescript-mcp-expert",
+      "category": "programming-languages",
+      "description": "Expert assistant for developing Model Context Protocol (MCP) servers in TypeScript"
     },
     {
       "name": "typescript-pro",
       "path": "programming-languages/typescript-pro",
       "category": "programming-languages",
-      "description": ""
+      "description": "\"Use when implementing TypeScript code requiring advanced type system patterns, complex generics, ty"
+    },
+    {
+      "name": "vue-expert",
+      "path": "programming-languages/vue-expert",
+      "category": "programming-languages",
+      "description": "\"Use this agent when building Vue 3 applications that require Composition API mastery, reactivity op"
     },
     {
       "name": "supabase-realtime-optimizer",
       "path": "realtime/supabase-realtime-optimizer",
       "category": "realtime",
-      "description": ""
+      "description": "Supabase realtime performance specialist. Use PROACTIVELY to optimize realtime subscriptions, debug "
+    },
+    {
+      "name": "websocket-engineer",
+      "path": "realtime/websocket-engineer",
+      "category": "realtime",
+      "description": "\"Use this agent when implementing real-time bidirectional communication features using WebSockets, S"
+    },
+    {
+      "name": "ad-security-reviewer",
+      "path": "security/ad-security-reviewer",
+      "category": "security",
+      "description": "\"Use this agent when you need to audit Active Directory security posture, evaluate privilege escalat"
+    },
+    {
+      "name": "ai-agent-audit-specialist",
+      "path": "security/ai-agent-audit-specialist",
+      "category": "security",
+      "description": "\"Use this agent when you need to design, validate, or harden forensic audit trails for AI coding age"
     },
     {
       "name": "api-security-audit",
       "path": "security/api-security-audit",
       "category": "security",
-      "description": ""
+      "description": "API security audit specialist. Use PROACTIVELY for REST API security audits, authentication vulnerab"
+    },
+    {
+      "name": "comet-opik",
+      "path": "security/comet-opik",
+      "category": "security",
+      "description": "Unified Comet Opik agent for instrumenting LLM apps, managing prompts/projects, auditing prompts, an"
+    },
+    {
+      "name": "compliance-auditor",
+      "path": "security/compliance-auditor",
+      "category": "security",
+      "description": "\"Use this agent when you need to achieve regulatory compliance, implement compliance controls, or pr"
     },
     {
       "name": "compliance-specialist",
       "path": "security/compliance-specialist",
       "category": "security",
-      "description": ""
+      "description": "Security compliance and regulatory framework specialist. Use PROACTIVELY for compliance assessments,"
+    },
+    {
+      "name": "dynatrace-expert",
+      "path": "security/dynatrace-expert",
+      "category": "security",
+      "description": "The Dynatrace Expert Agent integrates observability and security capabilities directly into GitHub w"
+    },
+    {
+      "name": "elasticsearch-observability",
+      "path": "security/elasticsearch-observability",
+      "category": "security",
+      "description": "Our expert AI assistant for debugging code (O11y), optimizing vector search (RAG), and remediating s"
+    },
+    {
+      "name": "github-actions-expert",
+      "path": "security/github-actions-expert",
+      "category": "security",
+      "description": "GitHub Actions specialist focused on secure CI/CD workflows, action pinning, OIDC authentication, pe"
     },
     {
       "name": "incident-responder",
       "path": "security/incident-responder",
       "category": "security",
-      "description": ""
+      "description": "Handles production incidents with urgency and precision. Use IMMEDIATELY when production issues occu"
+    },
+    {
+      "name": "jfrog-sec",
+      "path": "security/jfrog-sec",
+      "category": "security",
+      "description": "The dedicated Application Security agent for automated security remediation. Verifies package and ve"
+    },
+    {
+      "name": "llm-redteam-specialist",
+      "path": "security/llm-redteam-specialist",
+      "category": "security",
+      "description": "\"Use this agent when you need to red-team a Large Language Model deployment \u2014 jailbreak probes, prom"
     },
     {
       "name": "penetration-tester",
       "path": "security/penetration-tester",
       "category": "security",
-      "description": ""
+      "description": "\"Use this agent when you need to conduct authorized security penetration tests to identify real vuln"
+    },
+    {
+      "name": "platform-sre-kubernetes",
+      "path": "security/platform-sre-kubernetes",
+      "category": "security",
+      "description": "SRE-focused Kubernetes specialist prioritizing reliability, safe rollouts/rollbacks, security defaul"
+    },
+    {
+      "name": "powershell-security-hardening",
+      "path": "security/powershell-security-hardening",
+      "category": "security",
+      "description": "\"Use this agent when you need to harden PowerShell automation, secure remoting configuration, enforc"
+    },
+    {
+      "name": "read-only-auditor",
+      "path": "security/read-only-auditor",
+      "category": "security",
+      "description": "\"Use this agent when you need a security audit that is guaranteed to make no changes to the codebase"
+    },
+    {
+      "name": "se-security-reviewer",
+      "path": "security/se-security-reviewer",
+      "category": "security",
+      "description": "Security-focused code review specialist with OWASP Top 10, Zero Trust, LLM security, and enterprise "
     },
     {
       "name": "security-auditor",
       "path": "security/security-auditor",
       "category": "security",
+      "description": "\"Use this agent when conducting comprehensive security audits, compliance assessments, or risk evalu"
+    },
+    {
+      "name": "security-engineer",
+      "path": "security/security-engineer",
+      "category": "security",
+      "description": "\"Use this agent when implementing comprehensive security solutions across infrastructure, building a"
+    },
+    {
+      "name": "stackhawk-security-onboarding",
+      "path": "security/stackhawk-security-onboarding",
+      "category": "security",
+      "description": "Automatically set up StackHawk security testing for your repository with generated configuration and"
+    },
+    {
+      "name": "supply-chain-security",
+      "path": "security/supply-chain-security",
+      "category": "security",
       "description": ""
+    },
+    {
+      "name": "tdd-refactor",
+      "path": "security/tdd-refactor",
+      "category": "security",
+      "description": "Improve code quality, apply security best practices, and enhance design whilst maintaining green tes"
+    },
+    {
+      "name": "terraform",
+      "path": "security/terraform",
+      "category": "security",
+      "description": "Terraform infrastructure specialist with automated HCP Terraform workflows. Leverages Terraform MCP "
+    },
+    {
+      "name": "wg-code-sentinel",
+      "path": "security/wg-code-sentinel",
+      "category": "security",
+      "description": "Ask WG Code Sentinel to review your code for security issues."
+    },
+    {
+      "name": "screenshot-business-analyzer",
+      "path": "ui-analysis/screenshot-business-analyzer",
+      "category": "ui-analysis",
+      "description": "Extracts business logic, functional modules, and data entities from UI screenshots"
+    },
+    {
+      "name": "screenshot-interaction-analyzer",
+      "path": "ui-analysis/screenshot-interaction-analyzer",
+      "category": "ui-analysis",
+      "description": "Analyzes user interaction flows, clickable elements, and state transitions from UI screenshots"
+    },
+    {
+      "name": "screenshot-reviewer",
+      "path": "ui-analysis/screenshot-reviewer",
+      "category": "ui-analysis",
+      "description": "Reviews synthesized task lists for completeness, consistency, and quality"
+    },
+    {
+      "name": "screenshot-synthesizer",
+      "path": "ui-analysis/screenshot-synthesizer",
+      "category": "ui-analysis",
+      "description": "Synthesizes analysis results from multiple agents into a unified feature list and task breakdown"
+    },
+    {
+      "name": "screenshot-ui-analyzer",
+      "path": "ui-analysis/screenshot-ui-analyzer",
+      "category": "ui-analysis",
+      "description": "Analyzes visual components, layout structure, and design patterns from UI screenshots"
+    },
+    {
+      "name": "accessibility",
+      "path": "web-tools/accessibility",
+      "category": "web-tools",
+      "description": "Expert assistant for web accessibility (WCAG 2.1/2.2), inclusive UX, and a11y testing"
+    },
+    {
+      "name": "aem-frontend-specialist",
+      "path": "web-tools/aem-frontend-specialist",
+      "category": "web-tools",
+      "description": "Expert assistant for developing AEM components using HTL, Tailwind CSS, and Figma-to-code workflows "
+    },
+    {
+      "name": "electron-angular-native",
+      "path": "web-tools/electron-angular-native",
+      "category": "web-tools",
+      "description": "Code Review Mode tailored for Electron app with Node.js backend (main), Angular frontend (render), a"
+    },
+    {
+      "name": "expert-nextjs-developer",
+      "path": "web-tools/expert-nextjs-developer",
+      "category": "web-tools",
+      "description": "Expert Next.js 16 developer specializing in App Router, Server Components, Cache Components, Turbopa"
+    },
+    {
+      "name": "expert-react-frontend-engineer",
+      "path": "web-tools/expert-react-frontend-engineer",
+      "category": "web-tools",
+      "description": "Expert React 19.2 frontend engineer specializing in modern hooks, Server Components, Actions, TypeSc"
+    },
+    {
+      "name": "java-mcp-expert",
+      "path": "web-tools/java-mcp-expert",
+      "category": "web-tools",
+      "description": "Expert assistance for building Model Context Protocol servers in Java using reactive streams, the of"
+    },
+    {
+      "name": "lingodotdev-i18n",
+      "path": "web-tools/lingodotdev-i18n",
+      "category": "web-tools",
+      "description": "Expert at implementing internationalization (i18n) in web applications using a systematic, checklist"
     },
     {
       "name": "nextjs-architecture-expert",
       "path": "web-tools/nextjs-architecture-expert",
       "category": "web-tools",
-      "description": ""
+      "description": "Master of Next.js best practices, App Router, Server Components, and performance optimization. Use P"
     },
     {
       "name": "react-performance-optimizer",
       "path": "web-tools/react-performance-optimizer",
       "category": "web-tools",
-      "description": ""
+      "description": "Specialist in React performance patterns, bundle optimization, and Core Web Vitals. Use PROACTIVELY "
+    },
+    {
+      "name": "se-responsible-ai-code",
+      "path": "web-tools/se-responsible-ai-code",
+      "category": "web-tools",
+      "description": "Responsible AI specialist ensuring AI works for everyone through bias prevention, accessibility comp"
+    },
+    {
+      "name": "search-ai-optimization-expert",
+      "path": "web-tools/search-ai-optimization-expert",
+      "category": "web-tools",
+      "description": "Expert guidance for modern search optimization: SEO, Answer Engine Optimization (AEO), and Generativ"
     },
     {
       "name": "seo-analyzer",
       "path": "web-tools/seo-analyzer",
       "category": "web-tools",
-      "description": ""
+      "description": "SEO analysis and optimization specialist. Use PROACTIVELY for technical SEO audits, meta tag optimiz"
     },
     {
       "name": "url-context-validator",
       "path": "web-tools/url-context-validator",
       "category": "web-tools",
-      "description": ""
+      "description": "URL validation and contextual analysis specialist. Use PROACTIVELY for validating links not just for"
     },
     {
       "name": "url-link-extractor",
       "path": "web-tools/url-link-extractor",
       "category": "web-tools",
-      "description": ""
+      "description": "URL and link extraction specialist. Use PROACTIVELY for finding, extracting, and cataloging all URLs"
     },
     {
       "name": "web-accessibility-checker",
       "path": "web-tools/web-accessibility-checker",
       "category": "web-tools",
-      "description": ""
+      "description": "Web accessibility compliance specialist. Use PROACTIVELY for WCAG compliance audits, accessibility t"
+    },
+    {
+      "name": "wordpress-master",
+      "path": "web-tools/wordpress-master",
+      "category": "web-tools",
+      "description": "\"Use this agent when you need to architect, optimize, or troubleshoot WordPress implementations rang"
     }
   ],
   "version": "1.0.0",
-  "total": 156
+  "total": 421
 }

@@ -39,7 +39,7 @@ Output of Stage A:
 For each subproject, spawn a `subproject-pm` (Task, `subagent_type: subproject-pm`) with a self-contained brief: scope, its **contract slice**, acceptance criteria, the quality gate, and an **isolated workspace** (a git worktree per subproject via the `using-git-worktrees` skill, or a distinct top-level dir — never let two PMs write the same files in parallel). Each PM then runs, inside its subproject:
 - **Stage B — SDD**: spec → plan → tasks (tracked as checkboxes in a design doc via the `task-execution-engine`), with a critique loop on the spec before building.
 - **Stage C — impl**: dispatches `swarm-worker`s that each run a **TDD test-repair loop** (bounded, contract-anchored) — drive the inner loop with `/build-test-fix-loop` or `/builder-reviewer-loop`; for stateful parallel fan-out across many tasks, coordinate via the `orchestrating-swarms` skill (shared task queue + inboxes).
-- **Stage D — review-repair loop**: multi-agent review of the subproject → fix findings → re-review the delta → until 0 CRÍTICO/ALTO or the loop cap, then escalate.
+- **Stage D — review-repair loop**: multi-agent review of the subproject → fix findings → re-review the delta → until 0 CRITICAL/HIGH or the loop cap, then escalate.
 
 Run independent PMs in parallel; sequence a PM only if it needs another's **contract slice** first (it needs the contract, rarely the built artifact).
 
