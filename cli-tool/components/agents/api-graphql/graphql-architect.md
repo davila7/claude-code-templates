@@ -110,7 +110,7 @@ const resolvers = {
     // so the router trusts it and skips the extra round trip to the warehouse subgraph
     warehouse: async ({ id }, { loaders }) => {
       const warehouse = await loaders.warehouseByProductId.load(id);
-      return { id: warehouse.id, label: warehouse.label };
+      return warehouse ? { id: warehouse.id, label: warehouse.label } : null;
     }
   }
 };
