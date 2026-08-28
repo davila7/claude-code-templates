@@ -86,6 +86,11 @@ type Product @key(fields: "id") {
   warehouse: Warehouse @provides(fields: "code")
 }
 
+type Warehouse @key(fields: "id") {
+  id: ID!
+  code: String! @external         # owned by a separate warehouse subgraph; provided here to save a hop
+}
+
 # Reference resolver — invoked by the router when composing a Product from another subgraph
 const resolvers = {
   Product: {
