@@ -105,7 +105,13 @@ type Warehouse @key(fields: "id") {
 // Reference resolver — invoked by the router when composing a Product from another subgraph
 const resolvers = {
   Product: {
-    __resolveReference: async ({ id }, { loaders }) => loaders.product.load(id)
+    __resolveReference: async ({ id }, { loaders }) => loaders.product.load(id),
+    // @provides(fields: "label") is a contract: this resolver must populate label itself,
+    // so the router trusts it and skips the extra round trip to the warehouse subgraph
+    warehouse: async ({ id }, { loaders }) => {
+      const warehouse = await loaders.warehouseByProductId.load(id);
+      return { id: warehouse.id, label: warehouse.label };
+    }
   }
 };
 ```
