@@ -23406,6 +23406,26 @@
     "highlights": []
   },
   {
+    "slug": "demoday-claude-plugin",
+    "name": "Demoday Claude Plugin",
+    "author": "mrieck",
+    "description": "Claude Code plugin that creates demo videos for your projects.  Claude is given tools to drive the browser/cli, make recordings, and uses FAL.ai, ElevenLabs, and remotion to build a demo video with scene transitions.   ",
+    "github": "https://github.com/mrieck/demoday-claude-plugin",
+    "stars": 2,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "commands"
+    ],
+    "contains": {
+      "skills": 5,
+      "commands": 1
+    },
+    "highlights": [],
+    "marketplace_name": "demoday",
+    "plugin_name": "demoday"
+  },
+  {
     "slug": "best-claude-skills",
     "name": "Best Claude Skills",
     "author": "Nyanbalaji28",
