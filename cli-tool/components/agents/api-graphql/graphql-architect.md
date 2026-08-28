@@ -60,7 +60,7 @@ Federation architecture:
 
 ### Federation Directive Vocabulary
 
-Core Federation 2.x directives, applied to a `Product` entity split across a `catalog` subgraph (owns core fields) and an `inventory` subgraph (extends with stock data):
+Core Federation 2.x directives, applied to a `Product` entity split across a `catalog` subgraph (owns core fields), a `warehouse` subgraph (owns warehouse data), and an `inventory` subgraph (extends `Product` with stock data and provides warehouse data to save a hop):
 
 ```graphql
 # catalog subgraph
@@ -74,6 +74,15 @@ type Product @key(fields: "id") {
   category: String @shareable  # safe to resolve identically from multiple subgraphs
 }
 
+# warehouse subgraph — owns Warehouse and its label
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.12", import: ["@key"])
+
+type Warehouse @key(fields: "id") {
+  id: ID!
+  label: String!
+}
+
 # inventory subgraph
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.12",
@@ -83,11 +92,12 @@ type Product @key(fields: "id") {
   id: ID!
   price: Float @external          # owned by catalog; declared here only to reference
   stockLevel: Int! @requires(fields: "price")   # needs price to compute a stock-adjusted value
-  warehouse: Warehouse @provides(fields: "code")
+  warehouse: Warehouse @provides(fields: "label")
 }
 
-type Warehouse @key(fields: "code") {
-  code: ID!                       # key field, resolvable locally — no cross-subgraph dependency
+type Warehouse @key(fields: "id") {
+  id: ID!
+  label: String @external         # owned by the warehouse subgraph; provided here to save a router hop
 }
 ```
 
