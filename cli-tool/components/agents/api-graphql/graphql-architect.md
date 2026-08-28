@@ -86,12 +86,13 @@ type Product @key(fields: "id") {
   warehouse: Warehouse @provides(fields: "code")
 }
 
-type Warehouse @key(fields: "id") {
-  id: ID!
-  code: String! @external         # owned by a separate warehouse subgraph; provided here to save a hop
+type Warehouse @key(fields: "code") {
+  code: ID!                       # key field, resolvable locally — no cross-subgraph dependency
 }
+```
 
-# Reference resolver — invoked by the router when composing a Product from another subgraph
+```js
+// Reference resolver — invoked by the router when composing a Product from another subgraph
 const resolvers = {
   Product: {
     __resolveReference: async ({ id }, { loaders }) => loaders.product.load(id)
