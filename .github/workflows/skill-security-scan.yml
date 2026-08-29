@@ -65,8 +65,11 @@ jobs:
           sarif_file: skillspector.sarif
           category: skillspector
 
+      # Fork PRs run with a read-only GITHUB_TOKEN, so createComment 403s and
+      # fails the job before Enforce gate can run. Skip commenting for forks;
+      # the report is still available in the skillspector-report artifact.
       - name: Comment PR with results
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
           script: |
