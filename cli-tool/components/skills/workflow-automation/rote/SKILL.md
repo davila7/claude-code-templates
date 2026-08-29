@@ -61,11 +61,11 @@ uv --version                              # install uv first if missing
 uvx --from 'rote-cli>=0.12.1' rote --version        # confirm the CLI resolves
 ```
 
-If uv is missing, one command installs it:
-
-```sh
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+If uv is missing, do not pipe a remote script into a shell. Ask the user to
+install it through their package manager (`brew install uv`, `pipx install uv`,
+or `pip install uv`) or to follow the official guide at
+https://docs.astral.sh/uv/getting-started/installation/ and choose the method
+they trust.
 
 `pip install rote-cli` works too if the user prefers a virtualenv.
 
