@@ -1,6 +1,26 @@
 {
   "articles": [
     {
+      "id": "technical-writer-agent",
+      "title": "Technical Writer Agent for Claude Code: Auto-Generate API Docs & Guides",
+      "description": "Install the Technical Writer agent for Claude Code to auto-generate API references, SDK docs, and user guides directly from your codebase.",
+      "url": "technical-writer-agent/",
+      "image": "assets/technical-writer-agent-cover.png",
+      "category": "Agents",
+      "readTime": "7 min read",
+      "tags": [
+        "Agents",
+        "Documentation",
+        "API Docs",
+        "Technical Writing",
+        "Claude Code",
+        "Automation"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 22
+    },
+    {
       "id": "neon-open-source-program",
       "title": "Claude Code Templates Joins the Neon Open Source Program",
       "description": "We're excited to announce that Claude Code Templates has been accepted into the Neon Open Source Program, bringing $5,000 annual sponsorship, co-marketing opportunities, and instant Postgres provisioning to all users.",
@@ -8,7 +28,13 @@
       "image": "assets/neon-open-source-program-cover.svg",
       "category": "Partnership",
       "readTime": "5 min read",
-      "tags": ["Neon", "Postgres", "Open Source", "Partnership", "Sponsorship"],
+      "tags": [
+        "Neon",
+        "Postgres",
+        "Open Source",
+        "Partnership",
+        "Sponsorship"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 0
@@ -21,7 +47,15 @@
       "image": "assets/neon-template-cover.png",
       "category": "Partnership",
       "readTime": "12 min read",
-      "tags": ["Neon", "Postgres", "Template", "Skills", "Agents", "MCP", "Partnership"],
+      "tags": [
+        "Neon",
+        "Postgres",
+        "Template",
+        "Skills",
+        "Agents",
+        "MCP",
+        "Partnership"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 1
@@ -34,7 +68,14 @@
       "image": "assets/frontend-developer-agent-cover.png",
       "category": "Agents",
       "readTime": "12 min read",
-      "tags": ["Agents", "Frontend", "React", "Vue", "Next.js", "AI Development"],
+      "tags": [
+        "Agents",
+        "Frontend",
+        "React",
+        "Vue",
+        "Next.js",
+        "AI Development"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 1
@@ -47,7 +88,13 @@
       "image": "assets/code-reviewer-agent-cover.png",
       "category": "Agents",
       "readTime": "14 min read",
-      "tags": ["Agents", "Code Review", "Security", "Best Practices", "Automation"],
+      "tags": [
+        "Agents",
+        "Code Review",
+        "Security",
+        "Best Practices",
+        "Automation"
+      ],
       "difficulty": "intermediate",
       "featured": true,
       "order": 2
@@ -60,7 +107,13 @@
       "image": "assets/context7-mcp-cover.png",
       "category": "MCP",
       "readTime": "12 min read",
-      "tags": ["MCP", "Documentation", "Context7", "Real-time", "Libraries"],
+      "tags": [
+        "MCP",
+        "Documentation",
+        "Context7",
+        "Real-time",
+        "Libraries"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 3
@@ -73,7 +126,13 @@
       "image": "assets/skills-creator-cover.png",
       "category": "Skills",
       "readTime": "15 min read",
-      "tags": ["Skills", "Workflows", "Automation", "Progressive Loading", "Custom AI"],
+      "tags": [
+        "Skills",
+        "Workflows",
+        "Automation",
+        "Progressive Loading",
+        "Custom AI"
+      ],
       "difficulty": "intermediate",
       "featured": true,
       "order": 4
@@ -86,7 +145,13 @@
       "image": "assets/e2b-claude-code-sandbox-cover.png",
       "category": "Cloud Development",
       "readTime": "6 min read",
-      "tags": ["E2B", "Cloud", "Sandbox", "Security", "Isolation"],
+      "tags": [
+        "E2B",
+        "Cloud",
+        "Sandbox",
+        "Security",
+        "Isolation"
+      ],
       "difficulty": "advanced",
       "featured": true,
       "order": 5
@@ -99,7 +164,13 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*UkD_4OChMB5_x50ZPledvw.png",
       "category": "Database",
       "readTime": "5 min read",
-      "tags": ["Supabase", "Database", "Agents", "Commands", "MCP"],
+      "tags": [
+        "Supabase",
+        "Database",
+        "Agents",
+        "Commands",
+        "MCP"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 6
@@ -112,7 +183,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*hY3wY-RvsuF4aIFopX9cMg.png",
       "category": "Development",
       "readTime": "7 min read",
-      "tags": ["Git", "Workflow", "Version Control", "Automation"],
+      "tags": [
+        "Git",
+        "Workflow",
+        "Version Control",
+        "Automation"
+      ],
       "difficulty": "intermediate",
       "order": 7
     },
@@ -124,7 +200,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*1mhKnj46P_xCxovKsQqBuQ.png",
       "category": "Cloud & AI",
       "readTime": "8 min read",
-      "tags": ["Google Cloud", "Vertex AI", "Integration", "Cloud"],
+      "tags": [
+        "Google Cloud",
+        "Vertex AI",
+        "Integration",
+        "Cloud"
+      ],
       "difficulty": "advanced",
       "order": 8
     },
@@ -136,7 +217,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*Qxn21wqw6J4QACgoZkWWpg.png",
       "category": "Documentation",
       "readTime": "6 min read",
-      "tags": ["Documentation", "Docusaurus", "Automation", "Agents"],
+      "tags": [
+        "Documentation",
+        "Docusaurus",
+        "Automation",
+        "Agents"
+      ],
       "difficulty": "advanced",
       "order": 9
     },
@@ -148,7 +234,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*YwxsC2eeW5fW1K6E8VBZpA.png",
       "category": "Getting Started",
       "readTime": "5 min read",
-      "tags": ["Getting Started", "Templates", "Installation", "Configuration"],
+      "tags": [
+        "Getting Started",
+        "Templates",
+        "Installation",
+        "Configuration"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 10
@@ -161,7 +252,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*T5gG6RGS-4dpD0K6mhnkHA.png",
       "category": "Automation",
       "readTime": "3 min read",
-      "tags": ["Hooks", "Automation", "Context", "Problem Solving"],
+      "tags": [
+        "Hooks",
+        "Automation",
+        "Context",
+        "Problem Solving"
+      ],
       "difficulty": "basic",
       "order": 11
     },
@@ -173,7 +269,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*CMFx_4KLxgIbv8xZ6UCpQw.png",
       "category": "Integrations",
       "readTime": "4 min read",
-      "tags": ["Telegram", "Hooks", "Notifications", "Integration"],
+      "tags": [
+        "Telegram",
+        "Hooks",
+        "Notifications",
+        "Integration"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 12
@@ -186,7 +287,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*dGIs0XoRdrs9STzM-BWDSA.png",
       "category": "Customization",
       "readTime": "3 min read",
-      "tags": ["Vercel", "Statusline", "Deployment", "Monitoring"],
+      "tags": [
+        "Vercel",
+        "Statusline",
+        "Deployment",
+        "Monitoring"
+      ],
       "difficulty": "basic",
       "order": 13
     },
@@ -198,7 +304,13 @@
       "image": "https://miro.medium.com/v2/resize:fit:640/format:webp/1*g9xeEVW_qaX8vfrFY8lxqg.png",
       "category": "Cloud Development",
       "readTime": "7 min read",
-      "tags": ["Cloudflare", "Sandbox", "Agents", "Security", "Workers"],
+      "tags": [
+        "Cloudflare",
+        "Sandbox",
+        "Agents",
+        "Security",
+        "Workers"
+      ],
       "difficulty": "advanced",
       "order": 14
     },
@@ -210,7 +322,12 @@
       "image": "https://miro.medium.com/v2/resize:fit:720/format:webp/1*lV1ujaM_2kDSJXNlmLIg2A.png",
       "category": "Best Practices",
       "readTime": "4 min read",
-      "tags": ["Best Practices", "Code Organization", "Optimization", "Setup"],
+      "tags": [
+        "Best Practices",
+        "Code Organization",
+        "Optimization",
+        "Setup"
+      ],
       "difficulty": "advanced",
       "order": 15
     },
@@ -222,7 +339,13 @@
       "image": "https://www.aitmpl.com/blog/assets/simple-notifications-hook-cover.png",
       "category": "Automation",
       "readTime": "4 min read",
-      "tags": ["Claude Code", "Hooks", "Notifications", "Automation", "Desktop Alerts"],
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Notifications",
+        "Automation",
+        "Desktop Alerts"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 16
@@ -235,7 +358,14 @@
       "image": "assets/react-best-practices-skill-cover.svg",
       "category": "Skills",
       "readTime": "8 min read",
-      "tags": ["React", "Next.js", "Performance", "Optimization", "Best Practices", "Skills"],
+      "tags": [
+        "React",
+        "Next.js",
+        "Performance",
+        "Optimization",
+        "Best Practices",
+        "Skills"
+      ],
       "difficulty": "intermediate",
       "featured": true,
       "order": 17
@@ -248,7 +378,14 @@
       "image": "assets/heygen-best-practices-skill-cover.svg",
       "category": "Skills",
       "readTime": "10 min read",
-      "tags": ["HeyGen", "AI Video", "Avatar", "Text-to-Video", "API Integration", "Skills"],
+      "tags": [
+        "HeyGen",
+        "AI Video",
+        "Avatar",
+        "Text-to-Video",
+        "API Integration",
+        "Skills"
+      ],
       "difficulty": "intermediate",
       "featured": true,
       "order": 18
@@ -261,7 +398,13 @@
       "image": "assets/security-hooks-secrets-cover.svg",
       "category": "Security",
       "readTime": "4 min read",
-      "tags": ["Security", "Hooks", "Git", "Secrets", "Best Practices"],
+      "tags": [
+        "Security",
+        "Hooks",
+        "Git",
+        "Secrets",
+        "Best Practices"
+      ],
       "difficulty": "intermediate",
       "featured": true,
       "order": 19
@@ -274,7 +417,13 @@
       "image": "assets/vercel-deployment-monitor-statusline-cover.svg",
       "category": "Monitoring",
       "readTime": "5 min read",
-      "tags": ["Vercel", "Statusline", "Deployment", "Monitoring", "DevOps"],
+      "tags": [
+        "Vercel",
+        "Statusline",
+        "Deployment",
+        "Monitoring",
+        "DevOps"
+      ],
       "difficulty": "intermediate",
       "featured": true,
       "order": 20
@@ -287,17 +436,24 @@
       "image": "assets/hackathon-ai-strategist-agent-cover.svg",
       "category": "Agents",
       "readTime": "5 min read",
-      "tags": ["Hackathon", "AI Strategy", "Agents", "Ideation", "Competition", "Claude Code"],
+      "tags": [
+        "Hackathon",
+        "AI Strategy",
+        "Agents",
+        "Ideation",
+        "Competition",
+        "Claude Code"
+      ],
       "difficulty": "basic",
       "featured": true,
       "order": 21
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-02-01",
-    "totalArticles": 22,
+    "lastUpdated": "2026-08-25",
+    "totalArticles": 24,
     "difficultyLevels": {
-      "basic": 9,
+      "basic": 10,
       "intermediate": 7,
       "advanced": 5
     }
