@@ -135,6 +135,13 @@ const schemaData = JSON.stringify({
     </div>
 
     <script>
+      // WebMCP tools (no-op unless the browser supports document.modelContext
+      // and PUBLIC_WEBMCP_ENABLED=true at build time).
+      import { initWebMCP } from '../lib/webmcp';
+      initWebMCP();
+    </script>
+
+    <script>
       // Sidebar collapse functionality
       function initSidebarCollapse() {
         const sidebar = document.getElementById('sidebar');
