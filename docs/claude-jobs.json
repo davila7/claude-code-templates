@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-29T03:10:36.135380+00:00",
-  "totalJobs": 105,
+  "lastUpdated": "2026-08-30T03:16:41.105624+00:00",
+  "totalJobs": 104,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -19,26 +19,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5407337008",
       "postedAt": "2026-08-27T15:48:13-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5392054008",
-      "company": "Anthropic",
-      "position": "Product Designer, Core Apps",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "Design at Anthropic sits at the intersection of craft, research, and product intuition. We're a small team working on products that millions of people use daily—and on interactions that don't have established conventions yet. Our work shapes how people experience AI: whether Claude feels like a...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5392054008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5392054008",
-      "postedAt": "2026-08-26T12:11:18-04:00",
       "tags": [
         "Rust",
         "AWS",
