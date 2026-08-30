@@ -40,7 +40,7 @@ export async function fetchActiveAds(): Promise<ActiveAd[]> {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const res = await fetch(ADS_URL, { signal: controller.signal });
     clearTimeout(timeoutId);

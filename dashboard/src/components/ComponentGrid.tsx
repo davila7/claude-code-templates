@@ -8,6 +8,9 @@ import SaveToCollectionButton from './SaveToCollectionButton';
 
 type GridComponent = Component & { sponsored?: boolean };
 
+// Max time the initial render waits for the optional ads request.
+const ADS_FIRST_PAINT_WAIT_MS = 1500;
+
 interface Props {
   initialType: string;
 }
@@ -64,13 +67,26 @@ export default function ComponentGrid({ initialType }: Props) {
       try {
         setLoading(true);
         setError(null);
-        // Ads resolve with the components so the first paint already has the
-        // sponsored card pinned (no post-load reorder). fetchActiveAds never throws.
-        const [components, activeAds] = await Promise.all([
-          fetchComponentsByType(activeType),
-          fetchActiveAds(),
+        // Ads normally resolve with the components so the first paint already
+        // has the sponsored card pinned. They are optional though: the catalog
+        // never waits more than ADS_FIRST_PAINT_WAIT_MS for them — if the ads
+        // endpoint is slow or down, render without ads and apply them late.
+        const adsPromise = fetchActiveAds(); // never throws
+        const adsOrTimeout = Promise.race<ActiveAd[] | null>([
+          adsPromise,
+          new Promise((resolve) => setTimeout(() => resolve(null), ADS_FIRST_PAINT_WAIT_MS)),
         ]);
-        if (!cancelled) { setTypeComponents(components); setAds(activeAds); setLoading(false); }
+        const [components, earlyAds] = await Promise.all([
+          fetchComponentsByType(activeType),
+          adsOrTimeout,
+        ]);
+        if (cancelled) return;
+        setTypeComponents(components);
+        if (earlyAds) setAds(earlyAds);
+        setLoading(false);
+        if (!earlyAds) {
+          adsPromise.then((lateAds) => { if (!cancelled && lateAds.length > 0) setAds(lateAds); });
+        }
       } catch {
         if (!cancelled) { setError('Failed to load components'); setLoading(false); }
       }
