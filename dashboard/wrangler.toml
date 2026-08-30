@@ -11,6 +11,8 @@ PUBLIC_COMPONENTS_JSON_URL = "/components.json"
 PUBLIC_GITHUB_CLIENT_ID = "Ov23li3KjfA4cuLi5c0k"
 # Sponsored placements (CCT Ads) are inert until this is set to "true":
 # PUBLIC_ADS_ENABLED = "true"
+# WebMCP catalog tools (src/lib/webmcp.ts); set to "false" to disable:
+PUBLIC_WEBMCP_ENABLED = "true"
 
 # Secrets are set via Cloudflare Dashboard or `wrangler secret put`:
 # CLERK_SECRET_KEY
