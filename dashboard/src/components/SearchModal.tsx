@@ -169,10 +169,26 @@ export default function SearchModal() {
     return top;
   }, [data, ads, query]);
 
-  // Keyboard navigation — also reset when ads arrive async and reorder results
+  // Keyboard navigation: reset on new queries; when the same query's results
+  // reorder (ads arriving async), re-anchor to the item that was highlighted
+  // instead of snapping back to the top.
+  const prevResultsRef = useRef<SearchResult[]>([]);
+  const lastQueryRef = useRef(query);
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [query, ads]);
+    const prev = prevResultsRef.current;
+    prevResultsRef.current = results;
+    if (lastQueryRef.current !== query) {
+      lastQueryRef.current = query;
+      setSelectedIndex(0);
+      return;
+    }
+    setSelectedIndex((i) => {
+      const selected = prev[i];
+      if (!selected) return 0;
+      const newIndex = results.findIndex((r) => r.path === selected.path && r.type === selected.type);
+      return newIndex === -1 ? 0 : newIndex;
+    });
+  }, [query, results]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') {

@@ -5,8 +5,10 @@
  */
 
 export interface ActiveAd {
-  id: string;
-  component_type: string; // plural, e.g. 'agents'
+  // Contract with the (private) ads writer service: component_type is stored
+  // PLURAL ('agents', 'commands', ...) — unlike other tables in this repo,
+  // which store it singular. matchesAd() below relies on this.
+  component_type: string;
   component_path: string;
   component_name: string;
   ends_at: string;
@@ -14,6 +16,7 @@ export interface ActiveAd {
 
 const ADS_URL = '/api/ads/active';
 const CACHE_TTL = 5 * 60 * 1000;
+const STALE_MAX_MS = 15 * 60 * 1000;
 
 // Feature flag: sponsored placements are inert unless PUBLIC_ADS_ENABLED=true
 // is set at build time (dashboard/wrangler.toml [vars]). While off, no request
@@ -51,7 +54,12 @@ export async function fetchActiveAds(): Promise<ActiveAd[]> {
     return stillLive(data);
   } catch {
     clearTimeout(timeoutId);
-    return adsCache ? stillLive(adsCache.data) : [];
+    // Serve last-known-good during short outages, but never indefinitely:
+    // past STALE_MAX_MS a deactivated placement must stop showing.
+    if (adsCache && now - adsCache.ts < STALE_MAX_MS) {
+      return stillLive(adsCache.data);
+    }
+    return [];
   }
 }
 

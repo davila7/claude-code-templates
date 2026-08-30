@@ -85,7 +85,9 @@ export default function ComponentGrid({ initialType }: Props) {
         if (earlyAds) setAds(earlyAds);
         setLoading(false);
         if (!earlyAds) {
-          adsPromise.then((lateAds) => { if (!cancelled && lateAds.length > 0) setAds(lateAds); });
+          // Apply every late result — including [] — so stale placements from
+          // a previously viewed type get cleared.
+          adsPromise.then((lateAds) => { if (!cancelled) setAds(lateAds); });
         }
       } catch {
         if (!cancelled) { setError('Failed to load components'); setLoading(false); }

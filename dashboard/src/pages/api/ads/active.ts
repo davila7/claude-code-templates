@@ -7,15 +7,21 @@ export const prerender = false;
 
 export const OPTIONS: APIRoute = async () => corsResponse();
 
+// Same build-time flag that gates the frontend: while off, the deployment is
+// fully inert — no database access even for direct requests to this route.
+const ADS_ENABLED = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
+
 /**
  * Public list of currently active sponsored ads, ordered by activation date
  * (earliest buyer wins the slot). Exposes no user or payment data.
  */
 export const GET: APIRoute = async () => {
+  if (!ADS_ENABLED) return jsonResponse({ ads: [] });
+
   try {
     const sql = getNeonClient();
     const ads = await sql`
-      SELECT id, component_type, component_path, component_name, ends_at
+      SELECT component_type, component_path, component_name, ends_at
       FROM sponsored_ads
       WHERE status = 'active' AND ends_at > now()
       ORDER BY starts_at ASC
