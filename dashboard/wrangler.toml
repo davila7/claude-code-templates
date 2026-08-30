@@ -9,6 +9,8 @@ pages_build_output_dir = "./dist"
 PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuYWl0bXBsLmNvbSQ"
 PUBLIC_COMPONENTS_JSON_URL = "/components.json"
 PUBLIC_GITHUB_CLIENT_ID = "Ov23li3KjfA4cuLi5c0k"
+# Sponsored placements (CCT Ads) are inert until this is set to "true":
+# PUBLIC_ADS_ENABLED = "true"
 
 # Secrets are set via Cloudflare Dashboard or `wrangler secret put`:
 # CLERK_SECRET_KEY

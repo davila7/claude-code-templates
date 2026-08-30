@@ -3,7 +3,10 @@ import type { Component } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE } from '../lib/constants';
 import { fetchComponentsByType } from '../lib/data';
+import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
+
+type GridComponent = Component & { sponsored?: boolean };
 
 interface Props {
   initialType: string;
@@ -45,6 +48,7 @@ export default function ComponentGrid({ initialType }: Props) {
   const [showFilters, setShowFilters] = useState(false);
   const [minDownloads, setMinDownloads] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [ads, setAds] = useState<ActiveAd[]>([]);
 
   // Sync activeType when initialType changes (e.g. sidebar navigation)
   useEffect(() => {
@@ -60,8 +64,13 @@ export default function ComponentGrid({ initialType }: Props) {
       try {
         setLoading(true);
         setError(null);
-        const components = await fetchComponentsByType(activeType);
-        if (!cancelled) { setTypeComponents(components); setLoading(false); }
+        // Ads resolve with the components so the first paint already has the
+        // sponsored card pinned (no post-load reorder). fetchActiveAds never throws.
+        const [components, activeAds] = await Promise.all([
+          fetchComponentsByType(activeType),
+          fetchActiveAds(),
+        ]);
+        if (!cancelled) { setTypeComponents(components); setAds(activeAds); setLoading(false); }
       } catch {
         if (!cancelled) { setError('Failed to load components'); setLoading(false); }
       }
@@ -114,12 +123,23 @@ export default function ComponentGrid({ initialType }: Props) {
     }
     
     // Sort
-    const sorted = [...items];
+    const sorted: GridComponent[] = [...items];
     if (sortBy === 'downloads') sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
     else if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
-    
+
+    // Sponsored placement: if an active ad's component survived the current
+    // filters, pin it to the top of page 1 (reorder only — counts and
+    // pagination stay untouched).
+    const adIdx = findSponsoredIndex(ads, sorted);
+    if (adIdx > 0) {
+      const [sponsored] = sorted.splice(adIdx, 1);
+      sorted.unshift({ ...sponsored, sponsored: true });
+    } else if (adIdx === 0) {
+      sorted[0] = { ...sorted[0], sponsored: true };
+    }
+
     return sorted;
-  }, [typeComponents, category, selectedCategories, search, sortBy, minDownloads]);
+  }, [typeComponents, category, selectedCategories, search, sortBy, minDownloads, ads]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paged = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -468,7 +488,11 @@ export default function ComponentGrid({ initialType }: Props) {
             return (
               <div
                 key={component.path ?? component.name}
-                className="group relative flex items-center gap-5 p-4 rounded-md bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:bg-[var(--color-card-hover)] hover:border-[var(--color-accent)] transition-all duration-150 cursor-pointer animate-fade-in-up"
+                className={`group relative flex items-center gap-5 p-4 rounded-md bg-[var(--color-card-bg)] border hover:bg-[var(--color-card-hover)] transition-all duration-150 cursor-pointer animate-fade-in-up ${
+                  component.sponsored
+                    ? 'border-[var(--color-primary-500)] ring-1 ring-[var(--color-primary-500)]/40'
+                    : 'border-[var(--color-border)] hover:border-[var(--color-accent)]'
+                }`}
                 style={{
                   animationDelay: `${idx * 30}ms`,
                   animationFillMode: 'both'
@@ -501,6 +525,11 @@ export default function ComponentGrid({ initialType }: Props) {
 
                 {/* Badges */}
                 <div className="flex items-center gap-2 shrink-0">
+                  {component.sponsored && (
+                    <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]">
+                      Sponsored
+                    </span>
+                  )}
                   {component.category && (
                     <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)]">
                       {component.category}
@@ -552,7 +581,11 @@ export default function ComponentGrid({ initialType }: Props) {
           return (
             <div
               key={component.path ?? component.name}
-              className="group relative flex items-start gap-4 p-5 rounded-md bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:bg-[var(--color-card-hover)] hover:border-[var(--color-accent)] transition-all duration-150 cursor-pointer animate-fade-in-up"
+              className={`group relative flex items-start gap-4 p-5 rounded-md bg-[var(--color-card-bg)] border hover:bg-[var(--color-card-hover)] transition-all duration-150 cursor-pointer animate-fade-in-up ${
+                component.sponsored
+                  ? 'border-[var(--color-primary-500)] ring-1 ring-[var(--color-primary-500)]/40'
+                  : 'border-[var(--color-border)] hover:border-[var(--color-accent)]'
+              }`}
               style={{
                 animationDelay: `${idx * 50}ms`,
                 animationFillMode: 'both'
@@ -582,6 +615,11 @@ export default function ComponentGrid({ initialType }: Props) {
                   {component.description || component.content?.slice(0, 120) || 'No description'}
                 </p>
                 <div className="flex items-center gap-2 mt-3">
+                  {component.sponsored && (
+                    <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]">
+                      Sponsored
+                    </span>
+                  )}
                   {component.category && (
                     <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)]">
                       {component.category}
