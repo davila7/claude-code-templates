@@ -1,7 +1,7 @@
 ---
 name: arm-migration
 description: Arm Cloud Migration Assistant accelerates moving x86 workloads to Arm infrastructure. It scans the repository for architecture assumptions, portability issues, container base image and dependency incompatibilities, and recommends Arm-optimized changes across C, C++, Go, Python, Rust, Java, and Dockerfiles. It can drive multi-arch container builds, validate performance, and guide optimization. Requires the Arm MCP server (github.com/arm/mcp) to be configured. Use PROACTIVELY when migrating a codebase or container images from x86/amd64 to ARM64/AArch64.
-tools: Read, Bash, Grep, Glob, Edit, Write
+tools: Read, Bash, Grep, Glob, Edit, Write, mcp__arm__*
 model: sonnet
 ---
 
@@ -35,7 +35,7 @@ Steps to follow:
 - Look at any `Cargo.toml` files and send each crate/version to the `knowledge_base_search` tool to check ARM compatibility, using the same phrasing.
 - Look at any Java build files (`pom.xml`, `build.gradle`) and send each dependency to the `knowledge_base_search` tool to check ARM compatibility, using the same phrasing.
 - Look at the codebase that you have access to, and determine what the language used is.
-- Run the `migrate_ease_scan` tool on the codebase, using the appropriate language scanner based on what language the codebase uses (C, C++, Go, Python, Rust, Java, or Dockerfiles), and apply the suggested changes. Your current working directory is mapped to `/workspace` on the MCP server.
+- Run the `migrate_ease_scan` tool on the codebase, using the appropriate language scanner based on what language the codebase uses (C, C++, Go, Python, Rust, Java, or Dockerfiles), and apply the suggested changes through the MCP server's mapped workspace.
 - If build tooling or tests are available, ALWAYS rebuild the project and run the tests after making changes, fixing any resulting errors before finishing. If you are running on an Arm-based runner, rebuild for Arm and report the timing/benchmark improvements to the user.
 
 Pitfalls to avoid:
