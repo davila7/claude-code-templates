@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"agentplat-docs\": {\n      \"description\": \"Read-only AgentPlat documentation MCP for Agent Rooms, Agent Mesh, governed multi-agent runtimes, inference control, trust, and evidence boundaries.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@agentplat/mcp-docs\"]\n    }\n  }\n}\n"}
