@@ -35,7 +35,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install requests python-dotenv
+          pip install requests python-dotenv pyyaml
 
       - name: Install Node.js dependencies
         run: |

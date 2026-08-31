@@ -3,6 +3,7 @@ import json
 import shutil
 import requests
 import subprocess
+import yaml
 from collections import defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
@@ -431,23 +432,21 @@ def generate_components_json():
                                         frontmatter_end = content.find('---', 3)
                                         if frontmatter_end != -1:
                                             frontmatter = content[3:frontmatter_end]
-                                            for line in frontmatter.split('\n'):
-                                                if line.startswith('description:'):
-                                                    description = line.split('description:', 1)[1].strip()
-                                                elif line.startswith('author:'):
-                                                    author = line.split('author:', 1)[1].strip()
-                                                elif line.startswith('repo:'):
-                                                    repo = line.split('repo:', 1)[1].strip()
-                                                elif line.startswith('version:'):
-                                                    version = line.split('version:', 1)[1].strip()
-                                                elif line.startswith('license:'):
-                                                    license_field = line.split('license:', 1)[1].strip()
-                                                elif line.startswith('tags:'):
-                                                    tags_str = line.split('tags:', 1)[1].strip()
-                                                    # Parse tags array [tag1, tag2, tag3]
-                                                    if tags_str.startswith('[') and tags_str.endswith(']'):
-                                                        tags_str = tags_str[1:-1]
-                                                        keywords = [tag.strip() for tag in tags_str.split(',')]
+                                            try:
+                                                # yaml.safe_load handles block scalars
+                                                # (description: > or |-) that a naive
+                                                # line-by-line split would truncate.
+                                                parsed = yaml.safe_load(frontmatter) or {}
+                                            except yaml.YAMLError:
+                                                parsed = {}
+                                            description = str(parsed.get('description', '') or '').strip()
+                                            author = str(parsed.get('author', '') or '').strip()
+                                            repo = str(parsed.get('repo', '') or '').strip()
+                                            version = str(parsed.get('version', '') or '').strip()
+                                            license_field = str(parsed.get('license', '') or '').strip()
+                                            tags = parsed.get('tags')
+                                            if isinstance(tags, list):
+                                                keywords = [str(tag).strip() for tag in tags]
 
                                 except Exception as e:
                                     print(f"Warning: Could not read file {skill_file_path}: {e}")

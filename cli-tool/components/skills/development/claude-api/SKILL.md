@@ -143,7 +143,7 @@ The harness/deployment split is the key mental model: options 1, 2, and 4 all **
 >
 > Both are **harness-only — you host and deploy them.** The difference is scope of harness: the Tool Runner loops over tools *you* define (with per-turn hooks for approval, interception, result modification, and retries — but no built-in tools); the Agent SDK is the full Claude Code harness with built-in tools. Neither provides managed deployment — that's what **Managed Agents (CMA)** adds (Anthropic hosts the loop and a per-session sandbox).
 >
-> **This skill covers the Claude API and Managed Agents (options 1–3); it does not generate Claude Agent SDK code.** If the user actually wants the Claude Agent SDK, point them to its docs (`code.claude.com/docs/en/agent-sdk`) — don't substitute the API Tool Runner for it, or vice-versa.
+> **This skill covers the Claude API and Managed Agents (options 1–3); it does not generate Claude Agent SDK code.** If the user actually wants the Claude Agent SDK, point them to its docs (`code.claude.com/docs/en/agent-sdk`) — don't substitute the API Tool Runner for it, or vice-versa. (`python/agent-sdk/` and `typescript/agent-sdk/` in this skill are locally maintained reference notes, not part of the official skill and not kept in sync with the real docs — prefer WebFetching `code.claude.com/docs/en/agent-sdk` over them.)
 
 ### Should I Build an Agent?
 
