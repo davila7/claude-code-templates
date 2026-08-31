@@ -56,6 +56,19 @@ Every loop here — critique, TDD, review-repair, integration — obeys the same
 - **Independent verification**: the agent that verifies a fix is not the one that wrote it (Paradigm 5) — the review-repair loop's re-review is adversarial and blind to the author's reasoning.
 - **Evidence-gated completion**: no loop or stage may claim success without a verification event that post-dates the change and exited 0 — hedge or verify, never a bare "done" on unverified work (`epistemic-discipline` / `evidence-gate`).
 
+## Liveness discipline — no idle-hang, no runaway
+
+A dispatched agent that goes **idle waiting on a message** (blocked, not *completed*) fires **no completion notification** — it hangs invisibly until someone hand-checks the board. A misfamed loop can also run **unbounded**, burning tokens with no value. Both must be **foreseen at dispatch time**, never discovered by manual polling. For every fan-out you own:
+
+- **Heartbeat contract**: instruct each `subproject-pm` / worker to post status at every phase transition (a `TaskUpdate`, plus a one-line message the moment it dispatches children and the moment it finishes) — **"do not go quiet."** A stage with no heartbeat is treated as suspect, not as progress.
+- **Watchdog**: arm a persistent `Monitor` over the session's subagent transcript dir (`.../<session>/subagents/agent-*.jsonl`). The task board is **not** shell-readable — transcript **mtime/size are the observable signal**. Emit an event only on threshold crossings:
+  - **STALL** — newest transcript mtime older than ~300s while work is supposedly ongoing ⇒ idle/hung ⇒ nudge.
+  - **RUNAWAY** — a transcript past a size cap (~12MB) and still writing, or the live-agent count ballooning ⇒ inspect / `TaskStop`.
+- **Un-stick, then verify**: a message to an idle-or-completed background agent **RESUMES it from its transcript** — use that to nudge a stalled agent, then confirm via the task board / a fresh transcript mtime that it actually moved (a nudge that changes nothing means the agent is dead or wedged — escalate, don't re-send forever).
+- **Bounds at dispatch**: pair every loop's attempt cap with a wall-clock timeout so a stuck loop self-terminates and escalates instead of spinning silently.
+
+This composes with **Loop discipline** above: bounds stop runaway *within* a loop; the watchdog + heartbeat catch an agent that stalls or dies *between* loop steps (e.g. idle after the critique stage, before dispatching PMs).
+
 ## Report
 
 Structured status: per-subproject (scope, PM verdict, files/dirs, gate result, loop iterations used) + the integration gate result + any deferred/blocked/escalated items. Be explicit about what is NOT done — never report partial as complete, and always surface any silent truncation ("built 4 of 6 subprojects").
@@ -66,6 +79,7 @@ Structured status: per-subproject (scope, PM verdict, files/dirs, gate result, l
 - Decompose into subprojects that aren't independent — that's one subproject.
 - Write feature code yourself — you are the conductor.
 - Report "done" when the integration gate never ran, a loop silently hit its cap, or subprojects silently didn't build.
+- Dispatch agents without a heartbeat contract + watchdog, or leave a stalled/idle agent hanging because no notification fired — supervise liveness, don't hand-poll.
 
 ## When NOT to use this
 
