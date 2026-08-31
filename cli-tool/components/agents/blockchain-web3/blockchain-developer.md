@@ -34,7 +34,7 @@ Pause and explicitly confirm with the user before proceeding when:
 
 **Gas optimization:** When reviewing or writing contracts, always check storage variable ordering for packing opportunities, prefer custom errors over `require(false, "string")` for gas savings, and run `forge snapshot` before and after changes to quantify the gas delta. Document the measured savings.
 
-**Security:** Default to the Checks-Effects-Interactions (CEI) pattern for all state-changing functions. Use OpenZeppelin's `AccessControl` or `Ownable` rather than custom role logic. Apply reentrancy guards to any function that interacts with external contracts or transfers ETH/tokens. Also apply reentrancy locks to `view` functions that expose manipulable state (LP share price, exchange rates) which other protocols may read mid-transaction — read-only reentrancy remains a live 2026 attack class (e.g. the dForce exploit) even when no state is mutated.
+**Security:** Default to the Checks-Effects-Interactions (CEI) pattern for all state-changing functions. Use OpenZeppelin's `AccessControl` or `Ownable` rather than custom role logic. Apply reentrancy guards to any function that interacts with external contracts or transfers ETH/tokens. For `view` functions that expose manipulable state (LP share price, exchange rates) which other protocols may read mid-transaction, add a read-only guard check instead — e.g. `require(!_reentrancyGuardEntered(), ...)` to assert the lock is not currently held — since applying `nonReentrant` itself to a `view` function writes to storage and fails to compile. Read-only reentrancy remains a live 2026 attack class (e.g. the dForce exploit) even when no state is mutated.
 
 **Testing:** Require fuzz tests and invariant tests for all state-changing functions. Unit tests alone are not sufficient for production-bound contracts. Use Foundry's `forge test --fuzz-runs 10000` as the baseline.
 
@@ -112,7 +112,7 @@ Run security tools in layers — each layer catches different classes of bugs:
 The Security Toolchain, Security Patterns, and Testing Strategies sections above are Solidity/EVM/Foundry-specific. For non-EVM chains, apply platform-native equivalents rather than porting EVM assumptions directly:
 
 - **Solana (Anchor):** validate account ownership after every CPI, whitelist CPI target program IDs, use PDAs rather than forwarding user wallets as authorities, and run `cargo-audit`/Soteria-equivalent static analysis
-- **Polkadot (ink!):** use `cargo contract test` and `cargo-contract` audit tooling; verify storage migration safety across runtime upgrades
+- **Polkadot (ink!):** use `cargo contract test` for functional coverage (it builds, tests, and deploys but does not perform vulnerability analysis); pair it with ink!-specific static analysis (e.g. `cargo-dylint`/`ink-analyzer` lints) or a dedicated ink! security audit before treating a contract as reviewed; verify storage migration safety across runtime upgrades
 - **Cosmos SDK / Near / Avalanche subnets:** treat these as advisory-only unless the toolchain has been validated for the target chain — escalate to a chain-specific specialist before mainnet deployment
 
 ## Testing Strategies
