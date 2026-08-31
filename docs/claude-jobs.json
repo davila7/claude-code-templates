@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-30T03:16:41.105624+00:00",
-  "totalJobs": 104,
+  "lastUpdated": "2026-08-31T03:06:34.921325+00:00",
+  "totalJobs": 105,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -268,6 +268,29 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
+      "company": "Toptal",
+      "position": "Python Backend Development Talent with RAG and Agentic AI Experience",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Summary: We are seeking an experienced Python Backend Developer to design, build, and deploy scalable AI-powered applications using Retrieval-Augmented Generation, large language models, and agentic AI frameworks. The role will focus on delivering a production-grade RAG system and AI...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
+      "postedAt": "2026-08-12T18:38:32+00:00",
+      "tags": [
+        "Python",
+        "Go",
+        "AWS",
+        "Azure",
+        "Docker",
+        "Kubernetes",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-49271778",
       "company": "Odin",
       "position": "Senior Design Engineer",
@@ -288,6 +311,31 @@
         "Kubernetes",
         "React Native",
         "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-toptal-senior-software-engineer-for-ai-powered-banking-platform",
+      "company": "Toptal",
+      "position": "Senior Software Engineer for AI-Powered Banking Platform",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: We are seeking a Senior Software Engineer to build and scale production-grade AI-powered financial products. This is a hands-on engineering role focused on backend platform development, AI integration, and distributed systems. The ideal candidate has strong experience with TypeScript,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/toptal-senior-software-engineer-for-ai-powered-banking-platform",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/toptal-senior-software-engineer-for-ai-powered-banking-platform",
+      "postedAt": "2026-08-12T12:18:51+00:00",
+      "tags": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Kubernetes",
+        "Claude Code",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -626,32 +674,6 @@
       "tags": [
         "TypeScript",
         "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
-      "company": "Hygraph",
-      "position": "Senior Fullstack Engineer (f/m/d) - Berlin I Germany, EMEA I Remote",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Dircksenstraße 47, 10178 Berlin, Germany URL: https://hygraph.com How will you make an impact? As a Senior Full Stack Engineer, you'll work at the intersection of engineering and product to shape how our users build with Hygraph. You'll ship features that solve real customer problems,...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
-      "postedAt": "2026-07-31T11:59:36+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Rust",
-        "Go",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
         "Cursor"
       ],
       "companyIcon": ""
