@@ -102,11 +102,22 @@ const server = new ApolloServer({
 #### 3. Information Disclosure via Introspection
 ```javascript
 // ✅ Disable introspection in production
+// Note: the `playground` constructor option was removed in Apollo Server 3+
+// (2021) — it will error or be silently ignored on current versions.
+
+// If GraphiQL/Apollo Sandbox also needs to be disabled in production,
+// swap the landing-page plugin instead of the old `playground` option:
+const { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } = require('@apollo/server/plugin/landingPage/default');
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: process.env.NODE_ENV !== 'production',
-  playground: process.env.NODE_ENV !== 'production'
+  plugins: [
+    process.env.NODE_ENV !== 'production'
+      ? ApolloServerPluginLandingPageLocalDefault()
+      : ApolloServerPluginLandingPageProductionDefault({ footer: false })
+  ]
 });
 ```
 
@@ -145,7 +156,46 @@ const server = new ApolloServer({
 // a max-length constraint) to prevent list-batching abuse.
 ```
 
-#### 5. Cross-Site Request Forgery (CSRF) on the GraphQL Endpoint
+#### 5. HTTP Batch Request Overload
+Distinct from alias abuse above: many GraphQL servers accept a JSON **array**
+of independent operations in a single POST body (`[{query: "..."}, {query: "..."}]`).
+Each operation executes and is billed as its own query, but the whole batch
+counts as one HTTP request — silently bypassing per-request rate limiters
+and `maxAliases` (which only limits aliases *within* a single operation).
+
+```javascript
+// ❌ Vulnerable: 500 independent operations in one POST, one rate-limit hit
+// [
+//   { "query": "{ expensiveUser(id: 1) { name } }" },
+//   { "query": "{ expensiveUser(id: 2) { name } }" },
+//   ... x500
+// ]
+
+// ✅ Simplest fix: disable HTTP batching entirely if clients don't need it
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  allowBatchedHttpRequests: false // Apollo Server 4+
+});
+
+// ✅ If batching must stay enabled, cap the array length before it reaches
+// the GraphQL executor, and count each operation in the batch against the
+// same rate-limit bucket as a normal single-operation request
+app.use('/graphql', (req, res, next) => {
+  if (Array.isArray(req.body)) {
+    const MAX_BATCH_SIZE = 5;
+    if (req.body.length > MAX_BATCH_SIZE) {
+      return res.status(413).send('Batch size exceeds maximum allowed operations');
+    }
+    // Attach the batch size so downstream rate limiting/logging treats
+    // this request as N operations, not 1
+    req.operationCount = req.body.length;
+  }
+  next();
+});
+```
+
+#### 6. Cross-Site Request Forgery (CSRF) on the GraphQL Endpoint
 ```javascript
 // ❌ Vulnerable: GET-based queries or text/plain POST bodies bypass
 // CORS preflight, letting a malicious page trigger state-changing
@@ -162,6 +212,10 @@ const server = new ApolloServer({
   csrfPrevention: true // Apollo Server 3.7+ built-in CSRF prevention
 });
 
+// Note: Apollo Server 4+ enables csrfPrevention by default — the explicit
+// `true` above is only strictly required on Apollo Server 3.x, where it
+// defaults to `false` and must be opted into.
+
 // If using Express/Yoga directly, enforce it manually:
 app.use('/graphql', (req, res, next) => {
   const contentType = req.headers['content-type'] || '';
@@ -174,6 +228,113 @@ app.use('/graphql', (req, res, next) => {
     return res.status(403).send('CSRF protection: text/plain requests rejected');
   }
   next();
+});
+```
+
+#### 7. GraphQL Subscriptions / WebSocket Security
+Subscriptions open a long-lived WebSocket connection, which introduces a
+security surface the query/mutation protections above don't cover. Two
+concerns dominate: authenticating the connection *before* any subscription
+starts (not per-message), and bounding how many subscriptions a single
+connection can hold open — unauthenticated subscribe-message flooding has
+caused real-world memory-exhaustion DoS (e.g. strawberry-graphql
+GHSA-hv3w-m4g2-5x77).
+
+```javascript
+// ❌ Vulnerable: auth checked inside the resolver, after the subscription
+// has already been accepted and is consuming server resources
+const resolvers = {
+  Subscription: {
+    messageAdded: {
+      subscribe: (parent, args, context) => {
+        // Too late — the connection/subscription already exists
+        if (!context.user) throw new AuthenticationError('Unauthorized');
+        return pubsub.asyncIterator('MESSAGE_ADDED');
+      }
+    }
+  }
+};
+
+// ✅ Authenticate at connection time via graphql-ws's onConnect hook, and
+// cap active subscriptions per connection to prevent memory exhaustion
+const { useServer } = require('graphql-ws/lib/use/ws');
+
+const activeSubscriptionsByConnection = new WeakMap();
+const MAX_SUBSCRIPTIONS_PER_CONNECTION = 20;
+
+useServer(
+  {
+    schema,
+    // Authenticate in onConnect — this runs once, at connection
+    // establishment, before onSubscribe or any resource accounting.
+    // Returning false rejects the connection and closes the socket.
+    onConnect: async (ctx) => {
+      const token = ctx.connectionParams?.authToken;
+      const user = token ? await getUser(token) : null;
+      if (!user) return false;
+      ctx.extra.user = user;
+    },
+    context: (ctx) => ({ user: ctx.extra.user }),
+    onSubscribe: (ctx) => {
+      const count = activeSubscriptionsByConnection.get(ctx) || 0;
+      if (count >= MAX_SUBSCRIPTIONS_PER_CONNECTION) {
+        throw new Error('Subscription limit exceeded for this connection');
+      }
+      activeSubscriptionsByConnection.set(ctx, count + 1);
+    },
+    onComplete: (ctx) => {
+      const count = activeSubscriptionsByConnection.get(ctx) || 0;
+      activeSubscriptionsByConnection.set(ctx, Math.max(0, count - 1));
+    },
+    // onComplete does not fire when a subscription ends via onError — release
+    // the slot here too, or a client that keeps erroring leaks its cap
+    onError: (ctx) => {
+      const count = activeSubscriptionsByConnection.get(ctx) || 0;
+      activeSubscriptionsByConnection.set(ctx, Math.max(0, count - 1));
+    }
+  },
+  wsServer
+);
+```
+
+#### 8. Information Leakage via Error Handling
+Unmasked errors are one of the most common real-world GraphQL
+misconfigurations — stack traces and raw DB/ORM messages leaking schema
+internals, table names, or query structure to attackers.
+
+```javascript
+// ❌ Vulnerable: default error formatting can leak stack traces and
+// internal error messages (e.g. raw SQL errors) to the client
+const server = new ApolloServer({ typeDefs, resolvers });
+
+// ✅ Mask unrecognized errors; only pass through explicitly "safe",
+// client-facing error classes verbatim
+const SAFE_ERROR_CLASSES = new Set(['UserInputError', 'ForbiddenError', 'AuthenticationError']);
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  formatError: (formattedError, error) => {
+    // Always strip stack traces from the response, even in dev
+    delete formattedError.extensions?.stacktrace;
+
+    const originalErrorName = error?.originalError?.constructor?.name;
+    if (SAFE_ERROR_CLASSES.has(originalErrorName)) {
+      return formattedError;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      // Verbose errors are fine locally/in CI, just without the stacktrace
+      return formattedError;
+    }
+
+    // Production: replace anything not explicitly whitelisted with a
+    // generic message so DB/ORM/internal details never reach the client
+    return {
+      message: 'Internal server error',
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    };
+  }
 });
 ```
 
@@ -637,6 +798,8 @@ const queryAnalyzer = {
 - [ ] Error messages sanitized (no internal details)
 - [ ] Comprehensive security logging enabled
 - [ ] Query timeout protection active
+- [ ] HTTP batch request size capped (or batching disabled)
+- [ ] WebSocket subscriptions authenticated at connection time, with a per-connection subscription cap
 
 ### Authorization Patterns
 - [ ] Role-based access control (RBAC) implemented

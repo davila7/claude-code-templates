@@ -1,11 +1,76 @@
 {
-  "lastUpdated": "2026-08-22T03:23:06.187013+00:00",
-  "totalJobs": 101,
+  "lastUpdated": "2026-08-30T03:16:41.105624+00:00",
+  "totalJobs": 104,
   "sources": [
     "Anthropic",
-    "HackerNews"
+    "HackerNews",
+    "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5407337008",
+      "company": "Anthropic",
+      "position": "Product Manager, Beneficial Deployments (Labs)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Claude has had commercial impact, but there’s significantly more that frontier AI can do outside of general use cases. Some of the largest opportunities: a step change in health, education, and economic opportunity for the people and institutions the technology would otherwise reach last, sit...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5407337008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5407337008",
+      "postedAt": "2026-08-27T15:48:13-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5390966008",
+      "company": "Anthropic",
+      "position": "AI Engineer, GTM Claudification ",
+      "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA",
+      "remote": true,
+      "salary": "",
+      "description": "As an AI Engineer on the GTM Claudification team, you will build the agents and AI systems that run Anthropic's own go-to-market work. Our sellers already work alongside agents every day. You will take things to the next step and build agents that run complete autonomous motions across areas like...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390966008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390966008",
+      "postedAt": "2026-08-25T18:59:04-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5387754008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architect, Enterprise Tech",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5387754008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5387754008",
+      "postedAt": "2026-08-25T13:38:58-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5398227008",
       "company": "Anthropic",
@@ -348,23 +413,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-49203310",
-      "company": "Clearview Counseling Group",
-      "position": "Platform Engineer",
-      "location": "REMOTE (US)",
-      "remote": true,
-      "salary": "",
-      "description": "Two-location outpatient behavioral health practice. We've spent the past year building our own internal tools instead of waiting on vendors: patient self-referral, therapist availability, referral pipeline, onboarding. All internal, nothing public yet. They're prototypes — React from a CDN, browser...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49203310",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49203310",
-      "postedAt": "2026-08-06T22:10:33+00:00",
-      "tags": [
-        "React"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "hn-49200756",
       "company": "Aeqium",
       "position": "Product Engineer",
@@ -420,6 +468,32 @@
       "tags": [
         "PostgreSQL",
         "GCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-lemon-io-senior-ai-engineer-4",
+      "company": "Lemon.io",
+      "position": "Senior AI Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: New York, NY URL: https://lemon.io Are you a talented Senior AI Engineer/Architect looking for a remote job that lets you show your skills and get decent compensation? Look no further than Lemon.io — the marketplace that connects you with hand-picked startups in the US and Europe....",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-4",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-4",
+      "postedAt": "2026-08-05T08:23:41+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Rust",
+        "Go",
+        "Node.js",
+        "React Native",
+        "Swift"
       ],
       "companyIcon": ""
     },
@@ -552,6 +626,32 @@
       "tags": [
         "TypeScript",
         "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
+      "company": "Hygraph",
+      "position": "Senior Fullstack Engineer (f/m/d) - Berlin I Germany, EMEA I Remote",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Dircksenstraße 47, 10178 Berlin, Germany URL: https://hygraph.com How will you make an impact? As a Senior Full Stack Engineer, you'll work at the intersection of engineering and product to shape how our users build with Hygraph. You'll ship features that solve real customer problems,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/hygraph-senior-fullstack-engineer-f-m-d-berlin-i-germany-emea-i-remote",
+      "postedAt": "2026-07-31T11:59:36+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Rust",
+        "Go",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
         "Cursor"
       ],
       "companyIcon": ""
@@ -1772,27 +1872,6 @@
         "Python",
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5192104008",
-      "company": "Anthropic",
-      "position": "Head of Applied AI Architects, Beneficial Deployments (Non-profits & Higher Ed)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As the Global Leader of Applied AI Architects for Beneficial Deployments, you will lead the team of Applied AI Architects who serve as the primary technical partners to mission-driven organizations and non-profits adopting Claude. You'll build and scale a world-class, globally distributed team that...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5192104008",
-      "postedAt": "2026-04-17T10:45:07-04:00",
-      "tags": [
-        "Python",
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
