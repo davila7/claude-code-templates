@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/performance-budget-guard-hook/">
+    <meta property="og:title" content="Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships">
+    <meta property="og:description" content="Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/performance-budget-guard-hook-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Performance">
+    <meta property="article:tag" content="Performance">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="Next.js">
+    <meta property="article:tag" content="Bundle Size">
+    <meta property="article:tag" content="Claude Code">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/performance-budget-guard-hook/">
+    <meta name="twitter:title" content="Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships">
+    <meta name="twitter:description" content="Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/performance-budget-guard-hook-cover.png">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code Hooks, Performance Budget, Bundle Size, Next.js Performance, PostToolUse Hook, Core Web Vitals, Claude Code Templates, Bundle Analyzer">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/performance-budget-guard-hook/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships",
+        "description": "Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.",
+        "image": "https://aitmpl.com/blog/assets/performance-budget-guard-hook-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/performance-budget-guard-hook/"
+        },
+        "keywords": "Claude Code Hooks, Performance Budget, Bundle Size, Next.js Performance, PostToolUse Hook",
+        "wordCount": "1200",
+        "articleSection": "Claude Code Hooks",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Performance Budget"
+            },
+            {
+                "@type": "Thing",
+                "name": "Bundle Size Monitoring"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships</h1>
+                <p class="article-subtitle">A PostToolUse hook that checks every Next.js build against a bundle-size budget and warns about risky imports the moment you save a file.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">5 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Hooks</span>
+                        <span class="tag">Performance</span>
+                        <span class="tag">Next.js</span>
+                        <span class="tag">Bundle Size</span>
+                        <span class="tag">Automation</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/performance-budget-guard-hook-cover.png" alt="Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>Installation</h2>
+
+                <p>Install the Performance Budget Guard hook using the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --hook performance/performance-budget-guard</code></pre>
+
+                <p>This command merges the hook definition into your project's <code>.claude/settings.json</code> (or <code>.claude/settings.local.json</code> if you choose a local install). No extra script files are needed — the entire check runs inline as a shell command.</p>
+
+                <div class="info-box">
+                    <strong>Want to understand how it works?</strong> Keep reading to learn what this hook does under the hood and why it's essential for your workflow.
+                </div>
+
+                <h2>The Problem: Bundles Grow Silently</h2>
+
+                <p>Bundle size creeps up one import at a time. A wildcard import here, a full <code>lodash</code> import there, a forgotten <code>moment.js</code> dependency — none of it looks dangerous in a single diff, but months later your Next.js app ships 400KB more JavaScript than it did at launch, and nobody can point to the exact commit that caused it.</p>
+
+                <p>Claude Code can write and refactor code fast, which makes it even easier for bundle size to drift without a human noticing. A <strong>PostToolUse</strong> hook closes that gap: it runs automatically after every relevant build or file edit and reports back immediately, instead of waiting for a Lighthouse run in CI three days later.</p>
+
+                <h2>How the Hook Works</h2>
+
+                <p>Performance Budget Guard registers two <code>PostToolUse</code> hooks, each with its own matcher:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Matcher</th>
+                            <th>Fires After</th>
+                            <th>What It Checks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Bash</code></td>
+                            <td>A shell command finishes</td>
+                            <td>Whether it was a build command; if so, measures the compiled bundle size</td>
+                        </tr>
+                        <tr>
+                            <td><code>Write|Edit|MultiEdit</code></td>
+                            <td>A file is written or edited</td>
+                            <td>Whether a <code>.js/.jsx/.ts/.tsx</code> file has grown too large or added a risky import</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Each hook receives the tool call as JSON on stdin — including <code>tool_input</code> (what was run or written) and <code>tool_response.success</code> (whether it succeeded) — and only acts when both conditions match. This is what keeps it fast and quiet: on an unrelated <code>git status</code> or a Markdown edit, the hook exits immediately with no output.</p>
+
+                <h3>1. The Build Check</h3>
+
+                <p>When the <code>Bash</code> matcher sees a successful <code>npm run build</code>, <code>next build</code>, <code>vercel build</code>, or <code>yarn build</code>, it looks for the <code>.next/static/chunks</code> output, sums up every JavaScript chunk, and compares the total against a 350KB budget:</p>
+
+                <pre><code class="language-bash">📊 Performance Budget Guard: Analyzing build output...
+📦 Total bundle size: 312KB
+
+✅ Bundle size within budget: 312KB / 350KB
+🎯 Remaining budget: 38KB</code></pre>
+
+                <p>If the build exceeds the budget, the hook writes a detailed report to stderr and exits with code <code>2</code>:</p>
+
+                <pre><code class="language-bash">🚨 PERFORMANCE BUDGET EXCEEDED!
+Current bundle size: 418KB
+Budget limit: 350KB
+Overage: 68KB
+
+📋 Bundle Analysis:
+-rw-r--r--  1 user  staff  142K  chunks/framework-a1b2c3.js
+-rw-r--r--  1 user  staff   98K  chunks/main-d4e5f6.js
+...
+
+💡 Optimization recommendations:
+• Use dynamic imports for large components
+• Implement code splitting with next/dynamic
+• Check for duplicate dependencies
+• Optimize third-party libraries
+• Run: npm run analyze for detailed bundle analysis</code></pre>
+
+                <p>Exit code <code>2</code> on a <code>PostToolUse</code> hook can't undo the build that already ran, but Claude Code surfaces the stderr output straight back to Claude as feedback. In practice, that means Claude sees the overage and the exact list of oversized chunks in the same turn, and can immediately propose a fix — a dynamic import, a smaller dependency, a code-split route — instead of you having to notice the regression yourself later.</p>
+
+                <h3>2. The File-Edit Check</h3>
+
+                <p>The second hook runs on every successful <code>Write</code>, <code>Edit</code>, or <code>MultiEdit</code> that touches a JavaScript/TypeScript file (skipping anything in <code>node_modules</code>). It looks for four common red flags:</p>
+
+                <ul>
+                    <li><strong>Large files</strong> — over 100KB, a sign a component should be split</li>
+                    <li><strong>Import overload</strong> — more than 15 <code>import</code> statements at the top of one file</li>
+                    <li><strong>Wildcard imports</strong> — <code>import * as X from 'y'</code>, which defeats tree-shaking</li>
+                    <li><strong>Known heavy dependencies</strong> — full <code>moment.js</code> or non-scoped <code>lodash</code> imports instead of <code>lodash/debounce</code>-style imports</li>
+                </ul>
+
+                <p>These checks are advisory (they print recommendations, they don't block), which makes sense: you don't want every edit to a large existing file to halt your workflow, but you do want Claude to see the warning in context and course-correct on the next pass.</p>
+
+                <h2>The Hook Configuration</h2>
+
+                <p>Here's the full hook definition installed into <code>.claude/settings.json</code> (trimmed for readability — the installed version is a single-line shell command):</p>
+
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c '... check build output, compare against 350KB budget, exit 2 if exceeded ...'",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c '... check file size, import count, wildcard imports, moment/lodash usage ...'",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+                <p>Both hooks read the tool payload with <code>jq</code>, so make sure <code>jq</code> is available in your environment — it's preinstalled on most CI runners and dev containers.</p>
+
+                <div class="warning-box">
+                    <strong>Budget is hardcoded at 350KB.</strong> Open your installed hook command and change the <code>BUDGET_LIMIT=350</code> value to match your project's actual performance budget before relying on it in CI.
+                </div>
+
+                <h2>Step-by-Step Workflow</h2>
+
+                <p>Once installed, the hook works passively in the background. Here's what a typical session looks like:</p>
+
+                <h3>Step 1: Install the hook</h3>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --hook performance/performance-budget-guard</code></pre>
+
+                <h3>Step 2: Ask Claude Code to make a change</h3>
+
+                <pre><code class="language-bash">claude
+
+> Add a rich text editor to the blog post form using the "react-quill" package</code></pre>
+
+                <h3>Step 3: The file-edit hook fires automatically</h3>
+
+                <p>As Claude writes the new component, the <code>Write|Edit|MultiEdit</code> hook checks the file. If it added a wildcard import or an oversized file, Claude sees the warning right away and can clean it up in the same response.</p>
+
+                <h3>Step 4: Run a build</h3>
+
+                <pre><code class="language-bash">> Now run npm run build to verify everything compiles</code></pre>
+
+                <h3>Step 5: The build hook reports the bundle total</h3>
+
+                <p>If the new dependency pushed the bundle over budget, Claude gets the exact overage and a ranked list of the largest chunks — and can propose swapping the heavy package for a lighter alternative or lazy-loading it with <code>next/dynamic</code>.</p>
+
+                <div class="success-box">
+                    <strong>The payoff:</strong> performance regressions get caught in the same session they were introduced, instead of surfacing as a mysterious Lighthouse score drop weeks later.
+                </div>
+
+                <h2>Extending the Hook</h2>
+
+                <p>Because everything lives in one shell command inside <code>.claude/settings.json</code>, the budget guard is easy to adapt:</p>
+
+                <ul>
+                    <li>Change <code>BUDGET_LIMIT=350</code> to match your project's real target</li>
+                    <li>Point the <code>.next/static/chunks</code> lookup at a different build output directory for Vite, CRA, or other bundlers</li>
+                    <li>Add more denylisted packages to the <code>grep</code> checks (e.g. <code>date-fns</code> misuse, <code>@mui/material</code> full imports)</li>
+                    <li>Swap the 100KB file-size and 15-import thresholds for numbers that fit your codebase</li>
+                </ul>
+
+                <h2>Conclusion</h2>
+
+                <p>Performance Budget Guard turns "we should really watch our bundle size" into something that actually happens on every build, without anyone remembering to run an analyzer manually. It costs nothing when everything is within budget, and the moment it isn't, Claude gets a precise, actionable report instead of you finding out from a slow page in production.</p>
+
+                <p>It pairs well with other automation-focused hooks and skills in the catalog — pull it in alongside a CI performance check for a workflow that catches regressions both locally and before merge.</p>
+
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
+
+                <p style="margin-top:2rem;color:#888;">Created by Daniel Ávila — <a href="https://x.com/dani_avila7" target="_blank" rel="noopener">@dani_avila7</a></p>
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                let textToCopy = code.textContent;
+
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        return text
+            .split('\n')
+            .map(line => {
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '')
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                if (element.classList.contains('newsletter-cta') ||
+                    element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

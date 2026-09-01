@@ -1,6 +1,26 @@
 {
   "articles": [
     {
+      "id": "performance-budget-guard-hook",
+      "title": "Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships",
+      "description": "Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.",
+      "url": "performance-budget-guard-hook/",
+      "image": "assets/performance-budget-guard-hook-cover.png",
+      "category": "Performance",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Performance",
+        "Next.js",
+        "Bundle Size",
+        "Automation"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 23
+    },
+    {
       "id": "technical-writer-agent",
       "title": "Technical Writer Agent for Claude Code: Auto-Generate API Docs & Guides",
       "description": "Install the Technical Writer agent for Claude Code to auto-generate API references, SDK docs, and user guides directly from your codebase.",
@@ -450,11 +470,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-08-25",
-    "totalArticles": 24,
+    "lastUpdated": "2026-09-01",
+    "totalArticles": 25,
     "difficultyLevels": {
       "basic": 10,
-      "intermediate": 7,
+      "intermediate": 8,
       "advanced": 5
     }
   }
