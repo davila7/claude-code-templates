@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/id_rsa*)",
+      "Read(~/.aws/credentials)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(npm publish:*)",
+      "Bash(docker push:*)",
+      "Bash(terraform apply:*)",
+      "Bash(kubectl apply:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,os,re;d=json.load(sys.stdin);p=d.get('tool_input',{}).get('file_path','');approved=bool(re.search(r'\\.sdlc/.+\\.md$',p)) and os.path.exists(p) and 'status: approved' in open(p).read();print('Blocked: this SDLC artifact is approved and immutable. Mark it status: superseded and draft a new one (supersede flow).',file=sys.stderr) if approved else None;sys.exit(2 if approved else 0)\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,re;d=json.load(sys.stdin);c=d.get('tool_input',{}).get('command','');leak=re.search(r'(cat|less|head|tail|scp|curl)\\\\s.*(\\\\.env\\\\b|\\\\.pem\\\\b|id_rsa|credentials)',c);push_main=re.search(r'git\\\\s+push\\\\s.*\\\\b(main|master)\\\\b',c);msg='credential material' if leak else 'direct push to the default branch (open a PR instead)' if push_main else None;print('Blocked: '+msg,file=sys.stderr) if msg else None;sys.exit(2 if msg else 0)\""
+          }
+        ]
+      }
+    ]
+  }
+}

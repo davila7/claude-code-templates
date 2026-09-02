@@ -1,0 +1,79 @@
+# Continuous validation gate (AI-native SDLC, Stages 4–6).
+#
+# Two jobs:
+#   - test-gate: build/test/lint on every PR — make this a REQUIRED status
+#     check so agent-written code cannot merge unverified.
+#   - scheduled-audit: weekly dependency/security audit; findings become
+#     issues, which re-enter the lifecycle as Stage 6 detections
+#     (triage → /ai-native-sdlc new → the fix earns spec, plan, tests, review).
+#
+# Replace the placeholder commands with your project's real ones — the same
+# commands recorded in CLAUDE.md by /ai-native-sdlc init.
+
+name: Test gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC — scheduled audit only
+
+jobs:
+  test-gate:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Replace with your stack's setup, e.g.: ---
+      # - uses: actions/setup-node@v4
+      #   with: { node-version: 22, cache: npm }
+      # - run: npm ci
+
+      - name: Build
+        run: echo "REPLACE ME → your build command" && exit 1
+
+      - name: Test
+        run: echo "REPLACE ME → your test command" && exit 1
+
+      - name: Lint / typecheck
+        run: echo "REPLACE ME → your lint command" && exit 1
+
+  scheduled-audit:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency / security audit
+        id: audit
+        continue-on-error: true
+        # Replace with your ecosystem's auditor:
+        #   npm audit --audit-level=high | pip-audit | cargo audit | govulncheck ./...
+        run: |
+          echo "REPLACE ME → your audit command" > audit.txt
+          exit 1
+
+      - name: File findings as an issue
+        if: steps.audit.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "Scheduled audit found issues. Triage per the AI-native SDLC:"
+            echo "confirmed findings become new intents (\`/ai-native-sdlc new <fix>\`)."
+            echo
+            echo '```'
+            cat audit.txt
+            echo '```'
+          } > body.md
+          gh issue create \
+            --title "Scheduled audit findings — $(date -u +%Y-%m-%d)" \
+            --label maintenance \
+            --body-file body.md
