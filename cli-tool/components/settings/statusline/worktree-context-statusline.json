@@ -1,0 +1,7 @@
+{
+  "description": "Minimal worktree-aware status line showing project name, git branch, model, and accurate context usage. In a linked git worktree it shows the main project name instead of the worktree folder and marks the branch with ⑂. Context percentage and window size (200k or 1M) come directly from Claude Code's context_window data, so it stays correct for extended-context models. The context segment is hidden until the first API response and right after /compact.",
+  "statusLine": {
+    "type": "command",
+    "command": "python3 .claude/scripts/worktree-context-statusline.py"
+  }
+}
