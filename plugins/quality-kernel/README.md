@@ -63,13 +63,31 @@ not establish completeness"). Roles are fixed; **domain expertise is injected**
 
 Automatic, always on (no invocation needed):
 
-- **`hooks/epistemic-guard.py`** (PreToolUse / Task) — requires the
-  `[EPISTEMIC-DISCIPLINE v1]` marker in every agent spawn.
+- **`hooks/epistemic-guard.py`** (PreToolUse / `Task|Agent`) — requires the
+  `[EPISTEMIC-DISCIPLINE v1]` marker in every agent spawn (fires for whichever
+  tool name — `Task` or `Agent` — the host runtime uses to spawn subagents).
   Env `QK_EPISTEMIC_MODE`: `log` (default, warn only) | `block` (exit 2).
 - **`hooks/evidence-gate.py`** (PostToolUse / Bash) — records exit codes of
   test/build/verify commands to `.quality-kernel/evidence-ledger.jsonl`, so a
   "done" claim can be checked against a real verification event newer than the
   last edit. v0 records; hard-blocking is future work.
+
+## Gate status — teeth vs. prose (v0.1.0)
+
+Not every gate is a forcing function yet. This is the honest status per gate, so
+installing the plugin does not imply the full guarantee.
+
+| Gate | Status today | Notes |
+|------|--------------|-------|
+| Epistemic guard (G1) | **wired (teeth)**, advisory | hook; `log` by default, `block` via env |
+| Evidence-gate (G2) | **wired, record-only** | hook writes a ledger; hard-block is v1 |
+| CRAP gate | **wired (teeth)** | deterministic script, non-zero exit over threshold |
+| Pre-push panel | **wired (teeth)** | the existing `pre-push-review` plugin |
+| Blind breaker (live oracle) | **by-reference** | invokes the host's `pipeline-breaker`, not bundled |
+| Adversarial critic (Opus) | **by-reference** | invokes the host's `adversarial-critic` |
+| Intention gate (G0) | **prose** | instruction to the orchestrator in `/forge`; forcing function is v1 |
+| Tier router | **prose** | LLM-driven in `/forge`; a deterministic classifier is v1 |
+| Mutation as CI gate | **script only** | `crap.mjs` / mutation ship; wiring into CI is v1 (F3) |
 
 ## Configuration (per project)
 

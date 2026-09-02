@@ -55,6 +55,11 @@ function main() {
     process.exit(args.help ? 0 : 2);
   }
 
+  if (!Number.isFinite(args.threshold)) {
+    console.error(`[crap] invalid --threshold (must be a number): ${args.threshold}`);
+    process.exit(2);
+  }
+
   let rows;
   try {
     rows = JSON.parse(readFileSync(args.input, "utf8"));
@@ -76,16 +81,18 @@ function main() {
   }));
   scored.sort((a, b) => b.crap - a.crap);
 
-  const violations = scored.filter((r) => r.crap > args.threshold);
+  // A NaN score (malformed complexity/coverage) must never count as a pass.
+  const violations = scored.filter((r) => !Number.isFinite(r.crap) || r.crap > args.threshold);
 
   if (args.json) {
     console.log(JSON.stringify({ threshold: args.threshold, violations, all: scored }, null, 2));
   } else {
     for (const r of violations) {
-      console.log(`CRAP ${r.crap}\t(c=${r.complexity}, cov=${r.coverage})\t${r.file} :: ${r.name}`);
+      const label = Number.isFinite(r.crap) ? `CRAP ${r.crap}` : "INVALID INPUT (NaN)";
+      console.log(`${label}\t(c=${r.complexity}, cov=${r.coverage})\t${r.file} :: ${r.name}`);
     }
     console.log(
-      `\n${violations.length} function(s) over CRAP ${args.threshold} of ${scored.length} scored.`
+      `\n${violations.length} function(s) over CRAP ${args.threshold} (or invalid) of ${scored.length} scored.`
     );
   }
 

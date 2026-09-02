@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { writeFileSync, mkdtempSync } from "node:fs";
+import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,6 +21,8 @@ function runCli(args, input) {
     return { code: 0, out };
   } catch (err) {
     return { code: err.status, out: String(err.stdout ?? "") + String(err.stderr ?? "") };
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
   }
 }
 
@@ -78,4 +80,20 @@ test("CLI: non-array input exits 2", () => {
 test("CLI: malformed JSON input exits 2", () => {
   const { code } = runCli([], "{ this is not json");
   assert.equal(code, 2);
+});
+
+test("CLI: non-numeric --threshold exits 2", () => {
+  const { code } = runCli(
+    ["--threshold", "foo"],
+    JSON.stringify([{ name: "f", file: "a", complexity: 1, coverage: 1 }]),
+  );
+  assert.equal(code, 2);
+});
+
+test("CLI: malformed row (NaN complexity) counts as a violation, not a pass", () => {
+  const { code } = runCli(
+    [],
+    JSON.stringify([{ name: "f", file: "a", complexity: "oops", coverage: 1 }]),
+  );
+  assert.equal(code, 1);
 });

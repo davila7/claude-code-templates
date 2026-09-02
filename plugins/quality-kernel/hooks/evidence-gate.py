@@ -42,20 +42,26 @@ def main() -> None:
         if not VERIFY_RE.search(command):
             sys.exit(0)
 
-        response = data.get("tool_response") or {}
+        response = data.get("tool_response")
         exit_code = "unknown-schema"  # sentinel: makes a schema mismatch discoverable
         if isinstance(response, dict):
             for key in ("exit_code", "exitCode", "returncode", "code"):
-                if key in response:
+                if response.get(key) is not None:  # present-but-null is treated as missing
                     exit_code = response.get(key)
                     break
             else:
                 print(
-                    "[quality-kernel] evidence-gate: PostToolUse response had none of the "
-                    "expected exit-code keys (exit_code/exitCode/returncode/code); "
-                    "recording 'unknown-schema'. Update the key list for this runtime.",
+                    "[quality-kernel] evidence-gate: PostToolUse response had no usable "
+                    "exit-code key (exit_code/exitCode/returncode/code, ignoring null "
+                    "values); recording 'unknown-schema'.",
                     file=sys.stderr,
                 )
+        else:
+            print(
+                "[quality-kernel] evidence-gate: PostToolUse tool_response was not a dict "
+                f"({type(response).__name__}); recording 'unknown-schema'.",
+                file=sys.stderr,
+            )
 
         cwd = data.get("cwd") or os.getcwd()
         ledger_dir = pathlib.Path(cwd) / ".quality-kernel"

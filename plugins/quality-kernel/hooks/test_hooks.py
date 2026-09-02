@@ -112,6 +112,42 @@ class EvidenceGate(unittest.TestCase):
             self.assertEqual(rec["exit"], "unknown-schema")
             self.assertIn("unknown-schema", err)
 
+    def test_present_but_null_exit_code_is_sentinel(self):
+        with tempfile.TemporaryDirectory() as d:
+            code, err = run(
+                GATE,
+                {"tool_name": "Bash", "tool_input": {"command": "pytest -q"}, "tool_response": {"exit_code": None}, "cwd": d},
+                cwd=d,
+            )
+            self.assertEqual(code, 0)
+            rec = json.loads(self._ledger(d)[0])
+            self.assertEqual(rec["exit"], "unknown-schema")
+            self.assertIn("unknown-schema", err)
+
+    def test_non_dict_response_warns(self):
+        with tempfile.TemporaryDirectory() as d:
+            code, err = run(
+                GATE,
+                {"tool_name": "Bash", "tool_input": {"command": "pytest -q"}, "tool_response": "weird string", "cwd": d},
+                cwd=d,
+            )
+            self.assertEqual(code, 0)
+            rec = json.loads(self._ledger(d)[0])
+            self.assertEqual(rec["exit"], "unknown-schema")
+            self.assertIn("not a dict", err)
+
+    def test_recorder_error_is_fail_open(self):
+        # Point cwd at a *file* so mkdir('.quality-kernel') raises inside the try block.
+        with tempfile.TemporaryDirectory() as d:
+            not_a_dir = pathlib.Path(d) / "not-a-dir"
+            not_a_dir.write_text("x")
+            code, err = run(
+                GATE,
+                {"tool_name": "Bash", "tool_input": {"command": "pytest -q"}, "tool_response": {"exit_code": 0}, "cwd": str(not_a_dir)},
+            )
+            self.assertEqual(code, 0)
+            self.assertIn("recorder error (fail-open)", err)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
