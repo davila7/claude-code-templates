@@ -314,10 +314,13 @@ Apollo GraphOS Router (Free plan and up) supports native cost-estimation directi
 
 ```graphql
 # subgraph schema
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.12", import: ["@key", "@cost", "@listSize"])
+
 type Product @key(fields: "id") {
   id: ID!
   reviews(first: Int): [Review!]! @listSize(slicingArguments: ["first"], assumedSize: 10)
-  expensiveRecommendations: [Product!]! @cost(weight: "50")
+  expensiveRecommendations: [Product!]! @cost(weight: 50)
 }
 ```
 
@@ -417,7 +420,7 @@ const performancePlugin = {
 ```
 
 ### OpenTelemetry Instrumentation (recommended for production)
-`@opentelemetry/instrumentation-graphql` provides per-resolver spans with parent/child relationships and can annotate DataLoader batch sizes — a batch size that's always 1 is the clearest production signal of an N+1 that slipped past code review:
+`@opentelemetry/instrumentation-graphql` provides per-resolver spans with parent/child relationships out of the box:
 
 ```javascript
 import { NodeSDK } from '@opentelemetry/sdk-node';
@@ -436,7 +439,25 @@ const sdk = new NodeSDK({
 sdk.start();
 ```
 
-Expect roughly 3-5% latency/CPU overhead from full-depth tracing; mitigate with sampling if it's measurable in your workload. Keep the simple `console.warn` plugin above as a zero-dependency fallback for smaller deployments that don't run a tracing backend.
+It does **not** emit DataLoader batch-size attributes on its own — that needs a manual span around each DataLoader's batch function, since only the batch function sees how many keys were coalesced:
+
+```javascript
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('dataloader');
+
+new DataLoader(async (keys) => {
+  const span = tracer.startSpan('dataloader.batch');
+  span.setAttribute('dataloader.batch_size', keys.length); // ===1 on every call means N+1
+  try {
+    return await batchFn(keys);
+  } finally {
+    span.end();
+  }
+});
+```
+
+Expect roughly 3-5% latency/CPU overhead from full-depth resolver tracing; mitigate with sampling if it's measurable in your workload. Keep the simple `console.warn` plugin above as a zero-dependency fallback for smaller deployments that don't run a tracing backend.
 
 ## Optimization Process
 
@@ -516,19 +537,36 @@ export const options = {
 };
 
 const queries = [
-  { query: 'query GetUsers { users { id name } }', weight: 60 },
-  { query: 'query GetUserDetails($id: ID!) { user(id: $id) { id name orders { id } } }', weight: 30 }
+  { query: 'query GetUsers { users { id name } }', variables: {}, weight: 60 },
+  { query: 'query GetUserDetails($id: ID!) { user(id: $id) { id name orders { id } } }', variables: { id: '1' }, weight: 30 }
 ];
+const totalWeight = queries.reduce((sum, q) => sum + q.weight, 0);
+
+function pickWeightedQuery() {
+  let roll = Math.random() * totalWeight;
+  for (const q of queries) {
+    if (roll < q.weight) return q;
+    roll -= q.weight;
+  }
+  return queries[queries.length - 1];
+}
 
 export default function () {
-  const body = JSON.stringify({ query: queries[0].query });
+  const picked = pickWeightedQuery();
+  const body = JSON.stringify({ query: picked.query, variables: picked.variables });
   const res = http.post('http://localhost:4000/graphql', body, {
     headers: { 'Content-Type': 'application/json' }
   });
 
   check(res, {
     'status is 200': (r) => r.status === 200,
-    'no GraphQL errors': (r) => !JSON.parse(r.body).errors
+    'no GraphQL errors': (r) => {
+      try {
+        return !JSON.parse(r.body).errors;
+      } catch {
+        return false; // non-JSON response (e.g. gateway error page) counts as a failed check
+      }
+    }
   });
 }
 ```
