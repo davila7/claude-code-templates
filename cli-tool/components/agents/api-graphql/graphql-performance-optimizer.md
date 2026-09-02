@@ -537,8 +537,9 @@ export const options = {
 };
 
 const queries = [
-  { query: 'query GetUsers { users { id name } }', variables: {}, weight: 60 },
-  { query: 'query GetUserDetails($id: ID!) { user(id: $id) { id name orders { id } } }', variables: { id: '1' }, weight: 30 }
+  { query: 'query GetUsers { users { id name } }', variables: () => ({}), weight: 60 },
+  // Randomize the id so this exercises many rows instead of always hitting one cached user
+  { query: 'query GetUserDetails($id: ID!) { user(id: $id) { id name orders { id } } }', variables: () => ({ id: String(Math.floor(Math.random() * 1000) + 1) }), weight: 30 }
 ];
 const totalWeight = queries.reduce((sum, q) => sum + q.weight, 0);
 
@@ -553,7 +554,7 @@ function pickWeightedQuery() {
 
 export default function () {
   const picked = pickWeightedQuery();
-  const body = JSON.stringify({ query: picked.query, variables: picked.variables });
+  const body = JSON.stringify({ query: picked.query, variables: picked.variables() });
   const res = http.post('http://localhost:4000/graphql', body, {
     headers: { 'Content-Type': 'application/json' }
   });
