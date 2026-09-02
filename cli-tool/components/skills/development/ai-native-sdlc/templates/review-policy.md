@@ -19,7 +19,9 @@ institutional knowledge, and changing it changes every future review.
 - Unvalidated input at trust boundaries; unsafe defaults.
 
 ## Pass: Compliance
-<!-- Replace with your obligations. Common examples: -->
+
+Replace the examples below with your organization's actual obligations:
+
 - PII handled per policy (collection minimized, retention bounded, logs clean).
 - License compatibility of any new dependency.
 - Audit-relevant actions are logged.

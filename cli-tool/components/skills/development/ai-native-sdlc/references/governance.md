@@ -9,9 +9,10 @@ Hooks fire on every matching tool call — they don't rely on the model
 remembering a rule. `templates/settings.hooks.json` ships ready-to-merge
 examples for `.claude/settings.json`:
 
-- **Protected paths** — block edits to migration history, lockfiles, prod
-  config, `.sdlc/**` files with `status: approved` (approved artifacts change
-  only through the supersede flow).
+- **Protected paths** — block edits to approved `intent.md` and `spec.md`
+  (they change only through the supersede flow). `plan.md` stays editable
+  after approval by design: checking off steps and recording deviations is
+  the documented Build workflow.
 - **Credential guard** — block commands that would print or upload secrets
   (`.env`, key files, cloud credential paths).
 - **Deploy gate** — deploy/release/publish commands require explicit

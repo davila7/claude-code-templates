@@ -1,7 +1,12 @@
 # Headless policy review on every PR (AI-native SDLC, Stage 5).
-# Runs the passes defined in .sdlc/REVIEW.md and posts findings as PR
-# comments. It surfaces; it never approves and never merges — branch
-# protection + human review own the merge.
+# Runs the passes defined in .sdlc/REVIEW.md via Anthropic's official
+# claude-code-action and posts findings as PR comments. It surfaces; it never
+# approves and never merges — branch protection + human review own the merge.
+#
+# COST DISCLOSURE: this workflow calls the Claude API on every PR update,
+# billed to the ANTHROPIC_API_KEY you provide. Installing this file is the
+# explicit operator approval for that spend; remove the workflow (or restrict
+# its triggers) to stop it.
 #
 # Setup:
 #   1. Add ANTHROPIC_API_KEY to the repo's Actions secrets.
@@ -18,6 +23,8 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: read
+  id-token: write
 
 jobs:
   review:
@@ -28,34 +35,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
       - name: Run policy passes
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          claude -p "Review the diff between origin/${{ github.base_ref }} and HEAD \
-          using the review policy in .sdlc/REVIEW.md (if the file is missing, run \
-          bugs and security passes only). Be adversarial: try to refute the diff. \
-          Report only findings with a concrete failure scenario — no style nits. \
-          Write findings to review-findings.md as a markdown list; if there are \
-          none, write 'No findings.'" \
-            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Write" \
-            --permission-mode acceptEdits
-
-      - name: Post findings
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -s review-findings.md ]; then
-            {
-              echo "## 🤖 Claude policy review (.sdlc/REVIEW.md)"
-              echo
-              cat review-findings.md
-              echo
-              echo "_Automated review — surfaces findings only. Humans approve and merge._"
-            } > comment.md
-            gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
-          fi
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review this pull request's diff against the review policy in
+            .sdlc/REVIEW.md (if that file is missing, run bugs and security
+            passes only). Be adversarial: try to refute the diff, not confirm
+            it. Report only findings with a concrete failure scenario — no
+            style nits. Post the findings as a single PR comment titled
+            "Claude policy review"; if there are none, comment "No findings."
+            Do not approve, request changes, or merge — surface findings only.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*)"

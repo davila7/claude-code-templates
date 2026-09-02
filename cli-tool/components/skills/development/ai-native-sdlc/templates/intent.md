@@ -8,23 +8,34 @@ date: <YYYY-MM-DD>
 
 # Intent: <short title>
 
+Template note: lines beginning with "> Guidance:" describe what belongs in
+each section and are replaced by real content when this template is
+instantiated.
+
 ## Problem
-<!-- The originator's own words. Quote them; do not translate into
-     requirements-speak. Who hurts, and how? -->
+
+> Guidance: the originator's own words. Quote them; do not translate into
+> requirements-speak. Who hurts, and how?
 
 ## Desired outcome
-<!-- What success looks like, still in the originator's words. Observable,
-     not implementation-shaped. -->
+
+> Guidance: what success looks like, still in the originator's words.
+> Observable, not implementation-shaped.
 
 ## Affected systems
-<!-- Best current guess — services, modules, screens, data. Refined in the
-     spec, not here. -->
+
+> Guidance: best current guess — services, modules, screens, data. Refined in
+> the spec, not here.
 
 ## Constraints
-<!-- Hard limits only: deadlines, compliance, compatibility, budget. -->
+
+> Guidance: hard limits only — deadlines, compliance, compatibility, budget.
 
 ## Non-goals
-<!-- What this explicitly does NOT cover. The cheapest scope control there is. -->
+
+> Guidance: what this explicitly does NOT cover. The cheapest scope control
+> there is.
 
 ## Open questions
-<!-- Anything unresolved that the Design stage must answer. -->
+
+> Guidance: anything unresolved that the Design stage must answer.

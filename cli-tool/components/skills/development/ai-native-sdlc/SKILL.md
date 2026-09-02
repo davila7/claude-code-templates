@@ -109,7 +109,11 @@ the current stage so users who prefer manual `/model` switches can.
 4. **Governance (offer, don't force)** — ask whether to install the hook and
    settings templates (`templates/settings.hooks.json` → `.claude/settings.json`)
    and CI workflows (`templates/github-actions/`). Explain what each blocks or
-   gates in one line each.
+   gates in one line each. When installing the CI workflows, **replace their
+   placeholder commands with the real build/test/lint/audit commands verified
+   in step 2 before writing the files** — never install a workflow that still
+   contains `REPLACE ME` placeholders (they fail deliberately so an
+   unconfigured copy can't pass silently).
 5. **Commit** the scaffold if approved.
 
 ## The six stages

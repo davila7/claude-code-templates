@@ -7,8 +7,10 @@
 #     issues, which re-enter the lifecycle as Stage 6 detections
 #     (triage → /ai-native-sdlc new → the fix earns spec, plan, tests, review).
 #
-# Replace the placeholder commands with your project's real ones — the same
-# commands recorded in CLAUDE.md by /ai-native-sdlc init.
+# The REPLACE ME commands below fail deliberately so an unconfigured copy of
+# this file can never pass silently. /ai-native-sdlc init substitutes your
+# project's real commands (the ones it verified and recorded in CLAUDE.md)
+# when it installs this workflow; if copying by hand, replace them yourself.
 
 name: Test gate
 

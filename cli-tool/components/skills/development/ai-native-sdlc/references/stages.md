@@ -42,10 +42,12 @@ applied during creation instead of discovered in late review.
 2. **Explore the codebase** for every affected system named or implied:
    current behavior, extension points, existing patterns to follow. Use
    Explore subagents for breadth; read the load-bearing files yourself.
-3. **Gather policy.** Look for, in order: project skills
-   (`.claude/skills/`), org conventions in `CLAUDE.md`, security/compliance
-   docs, API style guides, design systems. Every constraint found becomes a
-   line in the spec's Constraints section with its source cited.
+3. **Gather policy.** Look for, in order: org conventions in `CLAUDE.md`,
+   security/compliance docs, API style guides, design systems. Organization
+   policy packs active in the session contribute their constraints
+   automatically — apply them as given; this stage works only from the
+   project's own documents. Every constraint found becomes a line in the
+   spec's Constraints section with its source cited.
 4. Spawn a **deep-reasoning subagent** to draft the spec (see
    `model-routing.md` for the prompt pattern). Give it: the intent, your
    codebase findings, the policy constraints, and the template.

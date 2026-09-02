@@ -9,28 +9,38 @@ spec: ./spec.md
 
 # Plan: <short title>
 
+Template note: lines beginning with "> Guidance:" describe what belongs in
+each section and are replaced by real content when this template is
+instantiated. This file stays editable after approval: checking off steps and
+recording deviations IS the documented workflow.
+
 ## Strategy
-<!-- One paragraph: the implementation approach and why it fits this
-     codebase's existing patterns. -->
+
+> Guidance: one paragraph — the implementation approach and why it fits this
+> codebase's existing patterns.
 
 ## Steps
-<!-- Ordered checklist — this file is live state during Stage 3; items get
-     checked as they land, one commit per step. Mark independent steps
-     [parallel-ok]. Each step: files touched + how we know it's done. -->
+
+> Guidance: ordered checklist — live state during Stage 3; items get checked
+> as they land, one commit per step. Mark independent steps [parallel-ok].
+> Each step lists the files touched and how we know it's done.
 
 - [ ] 1. …
       - Files: `path/to/file`
       - Done when: …
 
 ## Risks
-<!-- Per risky step: what could go wrong, how we'd notice, how we'd back out. -->
+
+> Guidance: per risky step — what could go wrong, how we'd notice, how we'd
+> back out.
 
 ## Test strategy
-<!-- Acceptance criterion → planned test, one line each:
-     - AC1 → unit test in `…`
-     - AC2 → integration test in `…` -->
+
+> Guidance: acceptance criterion → planned test, one line each, e.g.
+> "AC1 → unit test in `…`".
 
 ## Deviations
-<!-- Empty at approval. If implementation reveals the plan was wrong, the
-     change is recorded here and re-acknowledged by the user before work
-     continues. -->
+
+> Guidance: empty at approval. If implementation reveals the plan was wrong,
+> the change is recorded here and re-acknowledged by the user before work
+> continues.

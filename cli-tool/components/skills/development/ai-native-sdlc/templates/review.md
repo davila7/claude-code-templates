@@ -8,9 +8,14 @@ policy: ../REVIEW.md
 
 # Review: <short title>
 
+Template note: lines beginning with "> Guidance:" describe what belongs in
+each section and are replaced by real content when this template is
+instantiated.
+
 ## Passes run
-<!-- One row per pass from .sdlc/REVIEW.md. Reviewers are adversarial
-     subagents that did not write the code. -->
+
+> Guidance: one row per pass from .sdlc/REVIEW.md. Reviewers are adversarial
+> subagents that did not write the code.
 
 | Pass | Reviewer tier | Findings |
 |---|---|---|
@@ -20,7 +25,8 @@ policy: ../REVIEW.md
 | Simplification | deep | |
 
 ## Findings
-<!-- Every finding, kept regardless of outcome. -->
+
+> Guidance: every finding, kept regardless of outcome.
 
 ### F1 · <one-line summary>
 - **Pass:** bugs
@@ -28,7 +34,9 @@ policy: ../REVIEW.md
 - **Resolution:** fixed in `<commit>` / rejected — <reason>
 
 ## Human review
-<!-- Filled during PR review: each reviewer comment and how it was addressed. -->
+
+> Guidance: filled during PR review — each reviewer comment and how it was
+> addressed.
 
 ## PR
 - Branch: `<branch>`

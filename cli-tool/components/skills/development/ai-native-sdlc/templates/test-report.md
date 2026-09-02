@@ -8,9 +8,14 @@ plan: ./plan.md
 
 # Test report: <short title>
 
+Template note: lines beginning with "> Guidance:" describe what belongs in
+each section and are replaced by real content when this template is
+instantiated.
+
 ## Verification commands
-<!-- Every command run, with its real result. Red rows stay red until fixed —
-     this report never flatters. -->
+
+> Guidance: every command run, with its real result. Red rows stay red until
+> fixed — this report never flatters.
 
 | Command | Result |
 |---|---|
@@ -25,8 +30,10 @@ plan: ./plan.md
 | AC1 … | `path/to/test` | ✅ / ❌ |
 
 ## Visual / manual checks
-<!-- For UI or behavior not capturable in automated tests: what was checked,
-     how (screenshot, browser run), and what was seen. -->
+
+> Guidance: for UI or behavior not capturable in automated tests — what was
+> checked, how (screenshot, browser run), and what was seen.
 
 ## Not verified
-<!-- Anything unverified and why. An honest gap beats a false green. -->
+
+> Guidance: anything unverified and why. An honest gap beats a false green.
