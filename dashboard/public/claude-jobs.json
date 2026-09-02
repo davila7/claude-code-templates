@@ -1,12 +1,116 @@
 {
-  "lastUpdated": "2026-09-01T03:08:04.628907+00:00",
-  "totalJobs": 105,
+  "lastUpdated": "2026-09-02T03:06:41.382412+00:00",
+  "totalJobs": 109,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49530116",
+      "company": "Mattermost",
+      "position": "Senior Full Stack Engineer",
+      "location": "Remote (US and Canada)",
+      "remote": true,
+      "salary": "$142,723 - $172,723",
+      "description": "Mattermost ( https://mattermost.com ) is an open-core collaboration and workflow automation platform for air-gapped, on-prem and private clouds. Our customers are in defense, intelligence, security and critical infrastructure, including the USAF and NASA. Y Combinator led our Series B, their...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49530116",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49530116",
+      "postedAt": "2026-09-02T00:12:24+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Go",
+        "PostgreSQL",
+        "Claude Code",
+        "Cursor",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49529763",
+      "company": "Pagelove",
+      "position": "Software Engineer",
+      "location": "Full-time (Remote)",
+      "remote": true,
+      "salary": "$110k–$130k",
+      "description": "Pagelove collapses the modern web stack into its simplest form: no databases, no APIs, no application servers. Just HTML that works like an app, scales like a CDN, and is AI-native by design. The page becomes the application, API and persisted state. Humans and machines can read and update the same...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49529763",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49529763",
+      "postedAt": "2026-09-01T23:32:18+00:00",
+      "tags": [
+        "Rust",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49528837",
+      "company": "Cora AI",
+      "position": "AI Engineer",
+      "location": "REMOTE (US ONLY, LA/SF preferred)",
+      "remote": true,
+      "salary": "",
+      "description": "We build customer success agents and account intelligence that do the actual manual work — so CS teams can focus on the relationship-driven work that drives growth. What we're looking for: - You build with AI IDEs (Cursor, Claude Code) as a force multiplier — not occasionally, as your default -...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49528837",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49528837",
+      "postedAt": "2026-09-01T22:01:21+00:00",
+      "tags": [
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49528044",
+      "company": "Biobase",
+      "position": "Senior Technical Product Engineer",
+      "location": "REMOTE (US, Canada)",
+      "remote": true,
+      "salary": "",
+      "description": "Biobase has grand ambitions. We broker biospecimens, whole slide images, and the clinical metadata attached to them, on a supply-chain backbone that we're steadily automating. We’re building healthcare-data-focused agents on top of the datasets that we’re assembling, too. We'd rather build the...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49528044",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49528044",
+      "postedAt": "2026-09-01T20:52:34+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Azure",
+        "Claude Code",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49525270",
+      "company": "Sunspell",
+      "position": "Software Engineer",
+      "location": "New York, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Six-person venture lab in New York. We build our own products. A studio arm does client work, is profitable, and pays for the rest. Our founder ran her own design studio and was the founding design partner on Partiful, on Sentropy before Discord bought it, on Goldcast before Cvent, on Make before...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49525270",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49525270",
+      "postedAt": "2026-09-01T17:44:20+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5407337008",
       "company": "Anthropic",
@@ -799,26 +903,6 @@
         "Claude Code"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5304425008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Labs: Applied AI",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Applied AI...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5304425008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5304425008",
-      "postedAt": "2026-07-08T15:55:29-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-48823535",
