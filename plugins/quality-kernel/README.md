@@ -88,6 +88,15 @@ Copy the examples into your repo's `.quality-kernel/`:
   complexity tools); exits non-zero if any function exceeds the threshold
   (default 6).
 
+## Tests
+
+- `scripts/crap.test.mjs` — `node --test plugins/quality-kernel/scripts/crap.test.mjs`
+- `hooks/test_hooks.py` — `python3 plugins/quality-kernel/hooks/test_hooks.py`
+
+They cover the deterministic gate (CRAP formula + CLI exit codes) and the hook
+behavior (marker/exempt detection, log-vs-block mode, fail-open, and the ledger
+recording including the `unknown-schema` sentinel).
+
 ## Design docs
 
 The full design (why each gate exists, the communication model, the graduation

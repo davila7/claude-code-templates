@@ -26,8 +26,9 @@
  * Exit code: 0 if all functions are within the threshold, 1 if any exceed it.
  */
 import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = { input: null, threshold: 6, json: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -39,7 +40,7 @@ function parseArgs(argv) {
   return args;
 }
 
-function crap(complexity, coverage) {
+export function crap(complexity, coverage) {
   const c = Number(complexity);
   const cov = Math.max(0, Math.min(1, Number(coverage)));
   return c * c * Math.pow(1 - cov, 3) + c;
@@ -91,4 +92,7 @@ function main() {
   process.exit(violations.length > 0 ? 1 : 0);
 }
 
-main();
+// Run as CLI only when invoked directly, so the module can be imported for tests.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  main();
+}

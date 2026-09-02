@@ -43,12 +43,19 @@ def main() -> None:
             sys.exit(0)
 
         response = data.get("tool_response") or {}
-        exit_code = None
+        exit_code = "unknown-schema"  # sentinel: makes a schema mismatch discoverable
         if isinstance(response, dict):
             for key in ("exit_code", "exitCode", "returncode", "code"):
                 if key in response:
                     exit_code = response.get(key)
                     break
+            else:
+                print(
+                    "[quality-kernel] evidence-gate: PostToolUse response had none of the "
+                    "expected exit-code keys (exit_code/exitCode/returncode/code); "
+                    "recording 'unknown-schema'. Update the key list for this runtime.",
+                    file=sys.stderr,
+                )
 
         cwd = data.get("cwd") or os.getcwd()
         ledger_dir = pathlib.Path(cwd) / ".quality-kernel"
@@ -60,8 +67,8 @@ def main() -> None:
         }
         with open(ledger_dir / "evidence-ledger.jsonl", "a", encoding="utf-8") as fh:
             fh.write(json.dumps(record) + "\n")
-    except Exception:
-        pass  # never block in v0
+    except Exception as err:  # never block in v0, but make breakage observable
+        print(f"[quality-kernel] evidence-gate: recorder error (fail-open): {err}", file=sys.stderr)
 
     sys.exit(0)
 
