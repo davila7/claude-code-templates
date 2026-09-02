@@ -9,10 +9,10 @@ spec: ./spec.md
 
 # Plan: <short title>
 
-Template note: lines beginning with "> Guidance:" describe what belongs in
-each section and are replaced by real content when this template is
-instantiated. This file stays editable after approval: checking off steps and
-recording deviations IS the documented workflow.
+Template note: remove this paragraph and every line beginning with
+"> Guidance:" when instantiating this template; the committed artifact
+contains only real content. This file stays editable after approval: checking
+off steps and recording deviations IS the documented workflow.
 
 ## Strategy
 

@@ -47,8 +47,8 @@ All artifacts live in `.sdlc/` at the project root:
 │   ├── intent.md      # Stage 1 — the idea, in the originator's words
 │   ├── spec.md        # Stage 2 — requirements + design, policy applied
 │   ├── plan.md        # Stage 3 — approved implementation strategy
-│   ├── review.md      # Stage 5 — review findings and resolutions
-│   └── test-report.md # Stage 4 — verification evidence
+│   ├── test-report.md # Stage 4 — verification evidence
+│   └── review.md      # Stage 5 — review findings and resolutions
 ├── REVIEW.md          # project-wide review policy (shared)
 └── lessons.md         # post-incident / post-mortem learnings (shared)
 ```
@@ -84,8 +84,8 @@ rationale and prompt patterns: `references/model-routing.md`.
 
 | Work | Tier | Why |
 |---|---|---|
-| Intent brainstorming, spec design, implementation planning | **Deepest reasoning available** (Fable/Opus tier) | Judgment-heavy; errors compound downstream |
-| Implementation | Session model | Interactive, user is present |
+| Spec design, implementation planning | **Deepest reasoning available** (Fable/Opus tier) | Judgment-heavy; errors compound downstream |
+| Intent interviewing/drafting, implementation | Session model | Interactive, user is present |
 | Mechanical work: renames, formatting, boilerplate, changelog | **Fast tier** (Haiku) | Speed and cost; no judgment needed |
 | Test triage, adversarial review verification | **Deepest reasoning available** | Must catch what the author-model missed |
 
@@ -98,10 +98,12 @@ the current stage so users who prefer manual `/model` switches can.
 `/ai-native-sdlc init` bootstraps any project, any language:
 
 1. **Scan** the project: language(s), package manager, build/test/lint
-   commands, directory layout, CI system. Use a fast subagent for large repos.
+   commands, the ecosystem's dependency-audit command (`npm audit`,
+   `pip-audit`, `cargo audit`, `govulncheck`, …), directory layout, CI
+   system. Use a fast subagent for large repos.
 2. **CLAUDE.md** — create or update it with: project overview, the verified
-   build/test/lint commands (run them to confirm), conventions observed in the
-   code, and common pitfalls. Never overwrite user content; merge under
+   build/test/lint/audit commands (run them to confirm), conventions observed
+   in the code, and common pitfalls. Never overwrite user content; merge under
    clearly-marked sections.
 3. **`.sdlc/` scaffold** — create the directory, install
    `templates/review-policy.md` as `.sdlc/REVIEW.md`, and seed an empty
@@ -113,7 +115,9 @@ the current stage so users who prefer manual `/model` switches can.
    placeholder commands with the real build/test/lint/audit commands verified
    in step 2 before writing the files** — never install a workflow that still
    contains `REPLACE ME` placeholders (they fail deliberately so an
-   unconfigured copy can't pass silently).
+   unconfigured copy can't pass silently). If no audit command exists for the
+   stack, drop the `scheduled-audit` job from `test-gate.yml` instead of
+   installing its placeholder, and tell the user.
 5. **Commit** the scaffold if approved.
 
 ## The six stages
@@ -128,8 +132,9 @@ a rewrite. Draft from `templates/intent.md`. Gate: user approves intent.
 
 ### 2 · Design → `spec.md`
 Read the approved intent. Explore the codebase for affected systems. Apply
-policy *now* — check for security, compliance, UX, and API-design skills or
-docs in the project and fold their constraints into the spec. Flag concerns
+policy *now* — gather constraints from the project's own documents
+(CLAUDE.md conventions, security/compliance docs, API style guides, design
+systems) and fold them into the spec. Flag concerns
 explicitly rather than silently resolving them. Draft from `templates/spec.md`
 via a deep-reasoning subagent. Gate: user approves spec.
 

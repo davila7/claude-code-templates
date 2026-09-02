@@ -5,7 +5,14 @@
       "Read(./.env.*)",
       "Read(**/*.pem)",
       "Read(**/id_rsa*)",
-      "Read(~/.aws/**)"
+      "Read(**/credentials)",
+      "Read(**/credentials.json)",
+      "Read(~/.aws/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.config/gcloud/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.docker/config.json)"
     ],
     "ask": [
       "Bash(git push:*)",
@@ -31,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c \"import json,sys,re\nd=json.load(sys.stdin)\nc=d.get('tool_input',{}).get('command','')\nmsg=None\nif re.search(r'\\.env\\b(?!\\.example)|\\.pem\\b|id_rsa|\\.aws/',c): msg='command references credential material'\nif not msg:\n    for m in re.finditer(r'\\bgit\\s+push\\b([^;|&]*)',c):\n        rest=[t for t in m.group(1).split() if not t.startswith('-')]\n        if len(rest)<2 or any(re.search(r'^(main|master)$|[:/](main|master)$',t) for t in rest[1:]):\n            msg='bare push or push to the default branch - push an explicit feature branch and open a PR'\n            break\nif msg: print('Blocked: '+msg,file=sys.stderr)\nsys.exit(2 if msg else 0)\""
+            "command": "python3 -c \"import json,sys,re\nd=json.load(sys.stdin)\nc=d.get('tool_input',{}).get('command','')\nmsg=None\nif re.search(r'\\.env\\b(?!\\.example)|\\.pem\\b|id_rsa|\\.aws/|\\.ssh/|\\.config/gcloud/|\\.azure/|\\.kube/|\\.docker/config\\.json|\\bcredentials?\\b(?!\\.example|\\.sample|\\.helper)',c): msg='command references credential material'\nif not msg:\n    for m in re.finditer(r'\\bgit\\s+push\\b([^;|&]*)',c):\n        rest=[t for t in m.group(1).split() if not t.startswith('-')]\n        if len(rest)<2 or any(re.search(r'^(main|master)$|[:/](main|master)$',t) for t in rest[1:]):\n            msg='bare push or push to the default branch - push an explicit feature branch and open a PR'\n            break\nif msg: print('Blocked: '+msg,file=sys.stderr)\nsys.exit(2 if msg else 0)\""
           }
         ]
       }

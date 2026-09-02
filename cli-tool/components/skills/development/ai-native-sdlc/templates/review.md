@@ -8,9 +8,9 @@ policy: ../REVIEW.md
 
 # Review: <short title>
 
-Template note: lines beginning with "> Guidance:" describe what belongs in
-each section and are replaced by real content when this template is
-instantiated.
+Template note: remove this paragraph and every line beginning with
+"> Guidance:" when instantiating this template; the committed artifact
+contains only real content.
 
 ## Passes run
 

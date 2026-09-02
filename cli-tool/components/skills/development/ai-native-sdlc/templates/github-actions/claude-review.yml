@@ -9,9 +9,14 @@
 # its triggers) to stop it.
 #
 # Setup:
-#   1. Add ANTHROPIC_API_KEY to the repo's Actions secrets.
-#   2. Commit this file to .github/workflows/claude-review.yml
-#   3. (Recommended) Make "test-gate" a required status check and require
+#   1. Install the Claude GitHub App on this repository
+#      (https://github.com/apps/claude) - claude-code-action exchanges its
+#      GitHub token through the app and fails at startup without it.
+#      Alternatively, pass your own token via the action's `github_token`
+#      input (needs pull-requests: write).
+#   2. Add ANTHROPIC_API_KEY to the repo's Actions secrets.
+#   3. Commit this file to .github/workflows/claude-review.yml
+#   4. (Recommended) Make "test-gate" a required status check and require
 #      one human review on the default branch.
 
 name: Claude policy review

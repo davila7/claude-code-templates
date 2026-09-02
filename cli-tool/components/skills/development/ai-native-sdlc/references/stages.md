@@ -4,6 +4,11 @@ Read the section for the stage you are about to run. Every stage ends the same
 way: artifact drafted → summarized to the user → approval gate → frontmatter
 updated → committed.
 
+When instantiating any artifact template, delete its "Template note" paragraph
+and every line beginning with "> Guidance:" — committed artifacts contain only
+real content. This applies to every stage below and to subagent-drafted
+artifacts (include it in the subagent's instructions).
+
 ---
 
 ## 1 · Plan — capture intent
@@ -53,7 +58,8 @@ applied during creation instead of discovered in late review.
    codebase findings, the policy constraints, and the template.
 5. Review the draft yourself before showing the user: does every requirement
    trace to the intent? Are concerns *flagged* (⚠ blocks) rather than silently
-   decided? Is anything gold-plated beyond the intent?
+   decided? Is anything gold-plated beyond the intent? Are the template's
+   "Template note" paragraph and "> Guidance:" lines gone?
 6. For UI work: describe the user-facing flow concretely (screens, states,
    copy). If the user has a design tool connected (e.g. Figma MCP), offer to
    pull real frames.

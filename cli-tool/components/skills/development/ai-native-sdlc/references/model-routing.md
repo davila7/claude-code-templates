@@ -43,8 +43,8 @@ Spawn tiered work with the Agent tool and an explicit `model` parameter
 (e.g. `model: "fable"` or `"opus"` for Deep, `"haiku"` for Fast). Omit the
 parameter for Standard — the subagent inherits the session model.
 
-A skill cannot switch the session model itself. Once per stage transition (at
-most), you may note the ideal driving model — e.g. "Stage 2 benefits from a
+A skill cannot switch the session model itself. Once per session (at most),
+you may note the ideal driving model — e.g. "Stage 2 benefits from a
 deep-reasoning session model; `/model` to switch" — then respect the user's
 choice silently.
 
