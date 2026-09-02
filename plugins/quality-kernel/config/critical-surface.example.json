@@ -1,0 +1,34 @@
+{
+  "$comment": "Critical surface for the blast-radius override. Copy to .quality-kernel/critical-surface.json in your project and adjust the globs. Any change whose diff touches these paths forces tier T1+ and requires the blind breaker (live oracle) to pass before merge, regardless of change size. If this file is absent, /forge treats any change outside docs/tests/styling/tooling as critical (fail-safe).",
+  "criticalGlobs": [
+    "**/auth/**",
+    "**/authz/**",
+    "**/session/**",
+    "**/*tenant*/**",
+    "**/billing/**",
+    "**/payments/**",
+    "**/metering/**",
+    "**/migrations/**",
+    "**/*.sql",
+    "**/queue/**",
+    "**/webhooks/**",
+    "**/voice/**",
+    "**/telephony/**",
+    "infra/**",
+    "**/*.tf",
+    "**/Dockerfile*",
+    "**/contracts/**",
+    "**/CONTRACT.md",
+    "**/specs/**/spec.md"
+  ],
+  "safeGlobs": [
+    "**/*.md",
+    "docs/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "**/*.css",
+    "**/*.stories.*",
+    "scripts/dev/**"
+  ]
+}

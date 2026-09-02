@@ -1,0 +1,20 @@
+{
+  "name": "quality-kernel",
+  "version": "0.1.0",
+  "description": "A quality-assurance kernel for agentic development. Wraps the existing SDD + orchestration pipeline with a six-agent SwarmForge-style engine (Specifier -> Coder -> Cleaner -> Architect -> Hardener -> QA), deterministic quality tools (mutation, CRAP, DRY), a blind live-oracle verifier, and epistemic-discipline gates. Guarantees analyze -> implement -> test -> deliver with a declared residual, from a one-line issue to a large feature.",
+  "author": {
+    "name": "Adrian"
+  },
+  "keywords": [
+    "quality-gate",
+    "multi-agent",
+    "spec-driven-development",
+    "tdd",
+    "mutation-testing",
+    "verification",
+    "swarmforge",
+    "agents"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/adrianflda/claude-code-templates/tree/main/plugins/quality-kernel"
+}

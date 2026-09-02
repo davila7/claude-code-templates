@@ -1,0 +1,36 @@
+{
+  "$comment": "Per-language deterministic quality tools for the quality-kernel engine. Copy to .quality-kernel/tools.json in your project and adjust. The cleaner and hardener resolve their tools from here. Default stack order: typescript -> node -> python. For Go/Java, Uncle Bob's own tools (mutate4go, crap4java, ...) are faithful and preferred.",
+  "defaultLanguageOrder": ["typescript", "javascript", "python"],
+  "languages": {
+    "typescript": {
+      "mutation": "stryker run --incremental",
+      "mutationCount": "stryker run --dryRunOnly",
+      "coverage": "c8 --reporter=json",
+      "complexity": "eslint --rule '{\"complexity\":[\"error\",0]}' --format json",
+      "dry": "jscpd --reporters json --silent",
+      "deps": "depcruise --validate .dependency-cruiser.js src"
+    },
+    "javascript": {
+      "mutation": "stryker run --incremental",
+      "mutationCount": "stryker run --dryRunOnly",
+      "coverage": "c8 --reporter=json",
+      "complexity": "eslint --rule '{\"complexity\":[\"error\",0]}' --format json",
+      "dry": "jscpd --reporters json --silent",
+      "deps": "depcruise --validate .dependency-cruiser.js src"
+    },
+    "python": {
+      "mutation": "mutmut run",
+      "mutationCount": "mutmut run --dict-synonyms --simple-output",
+      "coverage": "coverage json",
+      "complexity": "radon cc -j .",
+      "dry": "jscpd --reporters json --silent",
+      "deps": "lint-imports"
+    }
+  },
+  "gates": {
+    "crapMax": 6,
+    "mutationSitesPerFileMax": 100,
+    "mutationDifferentialOnly": true,
+    "runToolsOneAtATime": true
+  }
+}
