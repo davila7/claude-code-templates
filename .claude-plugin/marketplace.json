@@ -14,6 +14,14 @@
       "version": "1.0.0",
       "category": "quality-gates",
       "keywords": ["code-review", "pre-push", "git", "quality-gate", "hooks", "security", "multi-agent"]
+    },
+    {
+      "name": "quality-kernel",
+      "source": "./plugins/quality-kernel",
+      "description": "A quality-assurance kernel for agentic development: a six-agent SwarmForge-style engine (specifier -> coder -> cleaner -> architect -> hardener -> QA) with deterministic quality tools, a blind live-oracle verifier, and epistemic-discipline gates. WIP.",
+      "version": "0.1.0",
+      "category": "quality-gates",
+      "keywords": ["quality-gate", "multi-agent", "spec-driven-development", "tdd", "mutation-testing", "verification", "swarmforge", "agents"]
     }
   ]
 }
