@@ -22,7 +22,7 @@ import time
 
 VERIFY_RE = re.compile(
     r"\b(pytest|vitest|jest|mocha|mutmut|stryker|cosmic-ray|tsc|eslint|jscpd|"
-    r"go\s+test|cargo\s+(test|build)|coverage|nyc|npm\s+(run\s+)?(test|build|lint))\b",
+    r"node\s+--test|go\s+test|cargo\s+(test|build)|coverage|nyc|npm\s+(run\s+)?(test|build|lint))\b",
     re.IGNORECASE,
 )
 

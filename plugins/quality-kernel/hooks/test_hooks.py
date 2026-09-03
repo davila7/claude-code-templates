@@ -100,6 +100,19 @@ class EvidenceGate(unittest.TestCase):
             rec = json.loads(lines[0])
             self.assertEqual(rec["exit"], 0)
 
+    def test_node_test_runner_is_recorded(self):
+        # regression: Node's built-in `node --test` runner must count as a verify command
+        with tempfile.TemporaryDirectory() as d:
+            code, _ = run(
+                GATE,
+                {"tool_name": "Bash", "tool_input": {"command": "node --test --experimental-test-coverage"}, "tool_response": {"exit_code": 0}, "cwd": d},
+                cwd=d,
+            )
+            self.assertEqual(code, 0)
+            lines = self._ledger(d)
+            self.assertEqual(len(lines), 1)
+            self.assertEqual(json.loads(lines[0])["exit"], 0)
+
     def test_unknown_schema_sentinel(self):
         with tempfile.TemporaryDirectory() as d:
             code, err = run(
