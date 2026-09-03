@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "orcareplay": {
+      "description": "Record, replay and fork debugger for coding agents. Exposes recorded runs to Claude Code: list runs, read a run's timeline, inspect the causal graph of what caused what, and replay a run offline byte-for-byte or fork it from a checkpoint onto a different model. Requires Node.js 20+.",
+      "command": "npx",
+      "args": ["-y", "orcareplay", "mcp"]
+    }
+  }
+}
