@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-02T03:06:41.382412+00:00",
-  "totalJobs": 109,
+  "lastUpdated": "2026-09-03T04:18:36.104762+00:00",
+  "totalJobs": 104,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,105 +8,20 @@
   ],
   "jobs": [
     {
-      "id": "hn-49530116",
-      "company": "Mattermost",
-      "position": "Senior Full Stack Engineer",
-      "location": "Remote (US and Canada)",
-      "remote": true,
-      "salary": "$142,723 - $172,723",
-      "description": "Mattermost ( https://mattermost.com ) is an open-core collaboration and workflow automation platform for air-gapped, on-prem and private clouds. Our customers are in defense, intelligence, security and critical infrastructure, including the USAF and NASA. Y Combinator led our Series B, their...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49530116",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49530116",
-      "postedAt": "2026-09-02T00:12:24+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Go",
-        "PostgreSQL",
-        "Claude Code",
-        "Cursor",
-        "Redis"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49529763",
-      "company": "Pagelove",
-      "position": "Software Engineer",
-      "location": "Full-time (Remote)",
-      "remote": true,
-      "salary": "$110k–$130k",
-      "description": "Pagelove collapses the modern web stack into its simplest form: no databases, no APIs, no application servers. Just HTML that works like an app, scales like a CDN, and is AI-native by design. The page becomes the application, API and persisted state. Humans and machines can read and update the same...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49529763",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49529763",
-      "postedAt": "2026-09-01T23:32:18+00:00",
-      "tags": [
-        "Rust",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49528837",
-      "company": "Cora AI",
-      "position": "AI Engineer",
-      "location": "REMOTE (US ONLY, LA/SF preferred)",
-      "remote": true,
-      "salary": "",
-      "description": "We build customer success agents and account intelligence that do the actual manual work — so CS teams can focus on the relationship-driven work that drives growth. What we're looking for: - You build with AI IDEs (Cursor, Claude Code) as a force multiplier — not occasionally, as your default -...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49528837",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49528837",
-      "postedAt": "2026-09-01T22:01:21+00:00",
-      "tags": [
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49528044",
-      "company": "Biobase",
-      "position": "Senior Technical Product Engineer",
-      "location": "REMOTE (US, Canada)",
-      "remote": true,
-      "salary": "",
-      "description": "Biobase has grand ambitions. We broker biospecimens, whole slide images, and the clinical metadata attached to them, on a supply-chain backbone that we're steadily automating. We’re building healthcare-data-focused agents on top of the datasets that we’re assembling, too. We'd rather build the...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49528044",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49528044",
-      "postedAt": "2026-09-01T20:52:34+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "PostgreSQL",
-        "Azure",
-        "Claude Code",
-        "Rails"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49525270",
-      "company": "Sunspell",
-      "position": "Software Engineer",
-      "location": "New York, NY",
+      "id": "hn-49543040",
+      "company": "Tecuity",
+      "position": "Senior Software Engineer",
+      "location": "Hyde Park, UT (ONSITE preferred; will consider candidates who can commute in 1-2",
       "remote": false,
-      "salary": "",
-      "description": "Six-person venture lab in New York. We build our own products. A studio arm does client work, is profitable, and pays for the rest. Our founder ran her own design studio and was the founding design partner on Partiful, on Sentropy before Discord bought it, on Goldcast before Cvent, on Make before...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49525270",
+      "salary": "$90k-$135k",
+      "description": "Tecuity has spent 20+ years building software for Secretary of State offices — state government agencies handling business filings and public records. Real filing deadlines, statutory requirements, and citizens who depend on the system working. We're hiring a Senior Software Engineer I to own...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49543040",
       "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49525270",
-      "postedAt": "2026-09-01T17:44:20+00:00",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49543040",
+      "postedAt": "2026-09-02T21:49:56+00:00",
       "tags": [
         "React",
-        "TypeScript",
-        "Python",
-        "PostgreSQL",
+        "Azure",
         "Claude Code"
       ],
       "companyIcon": ""
@@ -2116,27 +2031,6 @@
         "GCP",
         "Azure",
         "Kubernetes",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5125387008",
-      "company": "Anthropic",
-      "position": "Data Engineering Manager, Product",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Data Engineering Manager focused on Product, you will build and lead the analytics engineering team responsible for creating the data foundations that enable data-driven decision making across Anthropic’s Product organization. You will oversee the development of scalable data solutions for...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5125387008",
-      "postedAt": "2026-02-19T19:49:54-05:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "AWS",
         "Claude Code",
         "Anthropic"
       ],

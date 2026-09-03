@@ -5,8 +5,9 @@ Worktree Context Statusline for Claude Code
 Displays: project | branch (worktree-aware) | model | context usage
 
 - In a linked git worktree the folder segment shows the main project name
-  (not the worktree directory, which usually mirrors the branch) and the
-  branch is marked with the worktree glyph (U+2442).
+  (resolved via `git worktree list`, so bare repositories and external git
+  dirs are handled) instead of the worktree directory, which usually mirrors
+  the branch, and the branch is marked with the worktree glyph (U+2442).
 - Context usage comes straight from the `context_window` object Claude Code
   passes on stdin: real window size (200k or 1M for extended-context models)
   and the pre-calculated `used_percentage` (input tokens only).
@@ -33,6 +34,24 @@ def run_git(cwd, *args):
         return None
 
 
+def get_main_worktree(cwd):
+    """Return the main worktree path from `git worktree list --porcelain`.
+
+    The first entry is always the main worktree. For a bare repository it is
+    the bare git dir itself (flagged with a `bare` line), in which case there
+    is no meaningful project checkout to name, so None is returned.
+    """
+    out = run_git(cwd, "worktree", "list", "--porcelain")
+    if not out:
+        return None
+    first = out.split("\n\n", 1)[0].splitlines()
+    if not first or not first[0].startswith("worktree "):
+        return None
+    if any(line.strip() == "bare" for line in first):
+        return None
+    return first[0][len("worktree "):].strip() or None
+
+
 def get_git_info(current_dir):
     """Return (folder_override, git_segment). folder_override is None when
     not in a linked worktree."""
@@ -49,10 +68,13 @@ def get_git_info(current_dir):
     common_dir = run_git(current_dir, "rev-parse", "--git-common-dir")
 
     if git_dir and common_dir and git_dir != common_dir:
-        # Linked worktree: the common dir lives inside the main checkout's .git
-        common_abs = common_dir if os.path.isabs(common_dir) else os.path.join(current_dir, common_dir)
-        main_root = os.path.realpath(os.path.join(common_abs, os.pardir))
-        return os.path.basename(main_root), f"⑂ {branch}"
+        # Linked worktree: ask git for the main checkout instead of assuming
+        # the common dir lives at <main-checkout>/.git (bare repos and
+        # external git dirs break that assumption).
+        main_root = get_main_worktree(current_dir)
+        if main_root:
+            return os.path.basename(main_root.rstrip(os.sep)), f"⑂ {branch}"
+        return None, f"⑂ {branch}"
 
     return None, f"🌿 {branch}"
 
