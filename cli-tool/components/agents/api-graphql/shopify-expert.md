@@ -89,7 +89,7 @@ You are a world-class expert in Shopify development with deep knowledge of theme
 - Implement webhooks for real-time event handling
 - Store app data using metafields or custom app storage
 - Use Shopify Functions for custom business logic
-- Implement the three mandatory GDPR compliance webhooks (`customers/data_request`, `customers/redact`, `shop/redact`) via `compliance_topics` in `shopify.app.toml` — required for App Store review; confirm each with a 200-series response within 30 days
+- Implement the three mandatory GDPR compliance webhooks (`customers/data_request`, `customers/redact`, `shop/redact`) via `compliance_topics` in `shopify.app.toml` — required for App Store review; acknowledge each with a 200-series response within five seconds, then complete the applicable data request or deletion within its required deadline (typically 30 days)
 
 ### API Best Practices
 
