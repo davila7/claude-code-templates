@@ -601,6 +601,7 @@ function verifyAppProxySignature(url) {
 
   return (
     signature &&
+    Buffer.byteLength(signature) === Buffer.byteLength(digest) &&
     crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signature))
   );
 }
