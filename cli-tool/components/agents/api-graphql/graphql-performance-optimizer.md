@@ -69,6 +69,11 @@ type UserConnection {
 }
 ```
 
+**Expensive aggregate fields in connections**: switching to cursor pagination doesn't help if `UserConnection.totalCount` is naively resolved as `SELECT COUNT(*)` on every page request — that reintroduces a full-table scan on each call regardless of how the edges themselves are fetched. Mitigate with one or more of:
+- Make `totalCount` an explicitly opt-in field the resolver only computes when requested — pair with the `graphql-parse-resolve-info` projection technique below to detect that `totalCount` wasn't in the selection set and skip the count query entirely.
+- Cache the count with a short TTL (seconds, not the row's own TTL) for large/slow tables where an off-by-a-few-hundred count is acceptable between cache refreshes.
+- Use an approximate count (e.g., Postgres `pg_class.reltuples` or an `EXPLAIN` row estimate) when the client only needs an order-of-magnitude figure rather than an exact number.
+
 ## Performance Optimization Strategies
 
 ### 1. DataLoader Implementation
@@ -97,7 +102,49 @@ const server = new ApolloServer({
 });
 ```
 
-### 2. Query Complexity Analysis
+### 2. Query Execution Compilation (graphql-jit)
+For a small set of known hot/repeated operations (e.g., a public API's top 5 queries by volume), `graphql-jit` compiles a query to an optimized JS function on first execution and reuses it on subsequent calls, reporting up to ~10x throughput improvement over the default interpreted executor:
+
+```javascript
+import { compileQuery, isCompiledQuery } from 'graphql-jit';
+import { parse } from 'graphql';
+import { LRUCache } from 'lru-cache';
+
+// Bounded by entry count so the cache itself can't grow without limit. This
+// snippet still compiles whatever query it's given — in production, guard
+// the compile call with the same allowlist/Trusted Documents manifest used
+// below so unauthenticated clients can't force new (CPU-costly) compilations.
+const compiledQueryCache = new LRUCache({ max: 200 });
+
+app.post('/graphql', async (req, res) => {
+  const { query, variables, operationName } = req.body;
+  // Compilation is keyed by document + operationName: a document can define
+  // multiple named operations, and each compiles to a distinct function.
+  const cacheKey = `${operationName || ''}:${query}`;
+
+  let compiled = compiledQueryCache.get(cacheKey);
+  if (!compiled) {
+    let document;
+    try {
+      document = parse(query);
+    } catch (err) {
+      return res.json({ errors: [{ message: err.message }] });
+    }
+    compiled = compileQuery(schema, document, operationName);
+    if (isCompiledQuery(compiled)) compiledQueryCache.set(cacheKey, compiled);
+  }
+
+  const result = isCompiledQuery(compiled)
+    ? await compiled.query(rootValue, contextValue(req), variables)
+    : compiled; // compilation error — falls back to the standard error shape
+
+  res.json(result);
+});
+```
+
+Tradeoffs: every field that resolves to a computed value needs an explicit resolver (graphql-jit is stricter about relying on default property resolution than graphql-js in some edge cases), stack traces from compiled functions are harder to read during debugging, and the compilation step itself has a one-time cost — apply it to a curated allowlist of hot operations (pairs naturally with APQ/Trusted Documents below) rather than as a blanket default executor for the whole schema. Bound the cache and gate compilation behind that same allowlist: without it, a client that can submit arbitrary queries can force unbounded compilation (a CPU cost) on each cache miss, even though the LRU keeps cache growth itself bounded.
+
+### 3. Query Complexity Analysis
 ```javascript
 // Use @envelop/depth-limit (actively maintained) and graphql-query-complexity
 import { envelop, useSchema } from '@envelop/core';
@@ -122,9 +169,11 @@ const getEnveloped = envelop({
 });
 ```
 
+This manual wiring is useful to understand what's actually happening under the hood, but for new production setups consider **`graphql-armor`** (actively maintained, endorsed in GraphQL Yoga's official "Preparing for Production" docs) as the recommended default instead: it bundles depth limit, cost/complexity limit, max aliases, max directives, and max tokens into a single plugin set, so you don't have to wire `@envelop/depth-limit` and `graphql-query-complexity` separately. Also worth limiting **max aliases** specifically — an alias-flood query (the same expensive field aliased hundreds of times) can still exhaust resources even with depth and complexity limits in place, since each alias counts as a distinct field execution; treat max-aliases as complementary to `graphql-query-complexity`, not a replacement for it.
+
 > **Note:** For production APIs where you control all clients, prefer **Trusted Documents** (build-time allowlist) over runtime complexity analysis — it eliminates the analysis overhead entirely and is the stronger security posture. Use runtime complexity only for APIs serving third-party or unknown clients.
 
-### 3. Persisted Queries and Trusted Documents
+### 4. Persisted Queries and Trusted Documents
 
 Choose based on your client relationship:
 
@@ -160,6 +209,21 @@ const server = new ApolloServer({
 });
 ```
 
+**Client-side APQ flow**: the server-side cache above is only half the picture — the client must send the SHA-256 hash first and retry with the full query on a cache miss. `createPersistedQueryLink` handles this automatically:
+
+```javascript
+import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries';
+import { createHttpLink } from '@apollo/client';
+import { sha256 } from 'crypto-hash';
+
+// 1st attempt: sends only { extensions: { persistedQuery: { sha256Hash } } }
+// On a PersistedQueryNotFound error, the link automatically retries once,
+// sending the full { query, extensions } payload so the server can populate its cache
+const link = createPersistedQueryLink({ sha256 }).concat(
+  createHttpLink({ uri: '/graphql' })
+);
+```
+
 #### Trusted Documents with GraphQL Yoga
 ```javascript
 // generate-manifest.ts — run at build time (e.g. graphql-codegen)
@@ -184,7 +248,7 @@ const yoga = createYoga({
 });
 ```
 
-### 4. Caching Strategies
+### 5. Caching Strategies
 
 #### Response Caching
 ```javascript
@@ -228,7 +292,7 @@ const resolvers = {
 };
 ```
 
-### 5. Database Query Optimization
+### 6. Database Query Optimization
 
 Use `graphql-parse-resolve-info` to correctly extract requested fields, including fragments and aliases (the naive approach of reading `info.fieldNodes[0].selectionSet.selections` only handles flat Field nodes and silently drops fragment spreads and inline fragments):
 
@@ -259,7 +323,7 @@ const resolvers = {
 
 Server-side optimization is this agent's primary scope, but a few client-side levers are worth flagging when the same team controls both ends:
 
-- **Apollo Client**: use `BatchHttpLink` to coalesce concurrent queries fired within the same tick into a single HTTP request (tune `batchInterval`). This trades off against HTTP-batch-abuse mitigation — cap batch size server-side regardless of client-side batching.
+- **Apollo Client**: use `BatchHttpLink` to coalesce concurrent queries fired within the same tick into a single HTTP request (tune `batchInterval`). This trades off against HTTP-batch-abuse mitigation — cap batch size server-side regardless of client-side batching. Also note that a batched HTTP request is routed to and processed by a single server/router instance, so large batches can bypass load balancing across replicas even when batch size is capped for abuse prevention — APQ combined with HTTP/2 multiplexing (which lets many independent requests share one connection without bundling them server-side) is generally the preferred first step before reaching for HTTP-level batching.
 - **Relay**: the compiler already batches all fragments for a route into one query automatically; ensure store garbage collection is not disabled, since unbounded cache growth is the most common Relay performance regression in long-lived sessions.
 
 ## Federation Performance
@@ -486,11 +550,12 @@ GRAPHQL PERFORMANCE AUDIT
 
 ### Performance Configuration
 - [ ] DataLoader implemented for all entities (scoped per request)
-- [ ] Query complexity analysis enabled (`@envelop/depth-limit` + `graphql-query-complexity`)
+- [ ] Query complexity analysis enabled (`@envelop/depth-limit` + `graphql-query-complexity`, or `graphql-armor` bundle)
+- [ ] `graphql-jit` compilation applied to known hot operations (optional, high-traffic APIs only)
 - [ ] Persisted queries strategy chosen (APQ or Trusted Documents)
 - [ ] Response caching strategy deployed with `@cacheControl` directives
 - [ ] Database projection via `graphql-parse-resolve-info`
-- [ ] Cursor-based pagination for all list fields
+- [ ] Cursor-based pagination for all list fields, `totalCount` opt-in/cached/approximated for large tables
 - [ ] CDN configured for APQ GET requests (if using APQ)
 
 ### Federation (if applicable)
