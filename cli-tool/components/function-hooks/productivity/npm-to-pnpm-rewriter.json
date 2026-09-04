@@ -1,0 +1,6 @@
+{
+  "description": "Rewrites npm and npx invocations to pnpm (or yarn / bun) before the Bash tool runs them. Function hook on tool.call that forwards a modified event.",
+  "modules": [
+    "./npm-to-pnpm-rewriter.ts"
+  ]
+}

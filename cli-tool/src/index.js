@@ -1689,13 +1689,16 @@ function parseLoopReferencedComponents(loopContent) {
  *
  * Function hooks are an Anthropic proposal under community review
  * (https://github.com/anthropics/claude-code/issues/91870), not a shipped
- * feature. The catalog stores each hook as {name}.md (docs) plus a
- * {name}.ts / {name}.tsx hooks-module. We download the module and write the
- * plugin layout described in the proposal's architecture doc:
+ * feature. The catalog stores each function hook exactly like a shell hook:
+ * {name}.json is the plugin's hooks/hooks.json (plus a "description" we strip
+ * on install) and its "modules" entry names the {name}.ts / {name}.tsx
+ * hooks-module beside it. We download both and write a plugin in the
+ * project's skills directory, which Claude Code auto-loads as
+ * "{name}@skills-dir" once the workspace is trusted (no --plugin-dir needed):
  *
- *   .claude/plugins/{name}/.claude-plugin/plugin.json
- *   .claude/plugins/{name}/hooks/hooks.json      -> { "modules": ["./{name}.ts"] }
- *   .claude/plugins/{name}/hooks/{name}.ts
+ *   .claude/skills/{name}/.claude-plugin/plugin.json
+ *   .claude/skills/{name}/hooks/hooks.json      -> { "modules": ["./{name}.ts"] }
+ *   .claude/skills/{name}/hooks/{name}.ts
  */
 async function installIndividualFunctionHook(hookName, targetDir, options = {}) {
   console.log(chalk.blue(`ƒ  Installing function hook: ${hookName}`));
@@ -1707,54 +1710,49 @@ async function installIndividualFunctionHook(hookName, targetDir, options = {}) 
     const baseName = hookName.includes('/') ? hookName.split('/').pop() : hookName;
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
 
-    // The module may be .ts or .tsx (render hooks use JSX). Try both.
-    let moduleContent = null;
-    let moduleFileName = null;
-    for (const ext of ['ts', 'tsx']) {
-      const response = await fetch(`${baseUrl}.${ext}`);
-      if (response.ok) {
-        moduleContent = await response.text();
-        moduleFileName = `${baseName}.${ext}`;
-        break;
+    // 1. hooks.json (the component file itself)
+    const response = await fetch(`${baseUrl}.json`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(chalk.red(`❌ Function hook "${hookName}" not found`));
+        console.log(chalk.gray('   Browse available function hooks at https://www.aitmpl.com/function-hooks'));
+        trackingService.trackInstallationOutcome('function-hook', hookName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+        return false;
       }
-      if (response.status !== 404) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    const hooksConfig = JSON.parse(await response.text());
+    const description = hooksConfig.description || `Function hook ${baseName} from claude-code-templates`;
+    delete hooksConfig.description; // catalog-only field, same as shell hooks
+
+    const modules = Array.isArray(hooksConfig.modules) ? hooksConfig.modules : [];
+    if (modules.length === 0) {
+      throw new Error('hooks.json has no "modules" entry');
     }
 
-    if (!moduleContent) {
-      console.log(chalk.red(`❌ Function hook "${hookName}" not found`));
-      console.log(chalk.gray('   Browse available function hooks at https://www.aitmpl.com/function-hooks'));
-      trackingService.trackInstallationOutcome('function-hook', hookName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
-      return false;
-    }
-
-    // Pull the description from the catalog .md frontmatter (best effort).
-    let description = `Function hook ${baseName} from claude-code-templates`;
-    try {
-      const mdResponse = await fetch(`${baseUrl}.md`);
-      if (mdResponse.ok) {
-        const md = await mdResponse.text();
-        const match = md.match(/^description:\s*(.+)$/m);
-        if (match) description = match[1].trim();
+    // 2. Every hooks-module named in "modules" (.js/.ts/.jsx/.tsx), stored beside hooks.json
+    const moduleFiles = {};
+    for (const modulePath of modules) {
+      const moduleFileName = modulePath.replace(/^\.\//, '');
+      const moduleResponse = await fetch(`${baseUrl.substring(0, baseUrl.lastIndexOf('/'))}/${moduleFileName}`);
+      if (!moduleResponse.ok) {
+        throw new Error(`hooks-module ${moduleFileName} not found (HTTP ${moduleResponse.status})`);
       }
-    } catch (mdError) {
-      // Optional metadata; ignore failures.
+      moduleFiles[moduleFileName] = await moduleResponse.text();
+      console.log(chalk.green(`✓ Found hooks-module: ${moduleFileName}`));
     }
 
-    // Write the plugin layout
-    const pluginDir = path.join(targetDir, '.claude', 'plugins', baseName);
+    // 3. Write the plugin into the project's skills directory (auto-loaded as {name}@skills-dir)
+    const pluginDir = path.join(targetDir, '.claude', 'skills', baseName);
     const hooksDir = path.join(pluginDir, 'hooks');
     const manifestDir = path.join(pluginDir, '.claude-plugin');
     await fs.ensureDir(hooksDir);
     await fs.ensureDir(manifestDir);
 
-    await fs.writeFile(path.join(hooksDir, moduleFileName), moduleContent, 'utf8');
-    await fs.writeFile(
-      path.join(hooksDir, 'hooks.json'),
-      JSON.stringify({ modules: [`./${moduleFileName}`] }, null, 2) + '\n',
-      'utf8'
-    );
+    await fs.writeFile(path.join(hooksDir, 'hooks.json'), JSON.stringify(hooksConfig, null, 2) + '\n', 'utf8');
+    for (const [fileName, content] of Object.entries(moduleFiles)) {
+      await fs.writeFile(path.join(hooksDir, fileName), content, 'utf8');
+    }
 
     const manifestPath = path.join(manifestDir, 'plugin.json');
     let manifest = { name: baseName, description, version: '0.1.0' };
@@ -1767,15 +1765,21 @@ async function installIndividualFunctionHook(hookName, targetDir, options = {}) 
     }
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 
+    const relPluginDir = path.relative(targetDir, pluginDir);
     if (!options.silent) {
       console.log(chalk.green(`✅ Function hook "${hookName}" installed successfully!`));
     }
-    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, pluginDir)}/`));
-    console.log(chalk.gray(`   hooks/hooks.json  ->  { "modules": ["./${moduleFileName}"] }`));
-    console.log(chalk.gray(`   hooks/${moduleFileName}`));
-    console.log(chalk.blue('\n🧪 To try it, start Claude Code with the experimental flag shown in the proposal demo:'));
-    console.log(chalk.white(`   CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir ${path.relative(targetDir, pluginDir)}`));
-    console.log(chalk.gray('   The flag, the plugin layout and every API name are provisional until Anthropic ships the feature.'));
+    console.log(chalk.cyan(`📁 Installed to: ${relPluginDir}/`));
+    console.log(chalk.gray(`   .claude-plugin/plugin.json`));
+    console.log(chalk.gray(`   hooks/hooks.json  ->  { "modules": ${JSON.stringify(modules)} }`));
+    for (const fileName of Object.keys(moduleFiles)) {
+      console.log(chalk.gray(`   hooks/${fileName}`));
+    }
+    console.log(chalk.blue(`\n🧪 Claude Code loads it as "${baseName}@skills-dir" on the next session (after the workspace trust prompt).`));
+    console.log(chalk.gray('   Function hooks need the experimental code path shown in the proposal demo:'));
+    console.log(chalk.white(`   CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`));
+    console.log(chalk.gray(`   Or load it for one session only: claude --plugin-dir ${relPluginDir}`));
+    console.log(chalk.gray('   The flag, the "modules" key and every $ API name are provisional until Anthropic ships the feature.'));
     console.log(chalk.gray('   Proposal: https://github.com/anthropics/claude-code/issues/91870\n'));
 
     trackingService.trackDownload('function-hook', hookName, {

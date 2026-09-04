@@ -1,0 +1,6 @@
+{
+  "description": "Denies Bash commands that match destructive patterns (recursive rm on roots, force push, hard reset, destructive SQL, disk formatting) before they run. Function hook on tool.call with a Bash matcher.",
+  "modules": [
+    "./block-destructive-commands.ts"
+  ]
+}

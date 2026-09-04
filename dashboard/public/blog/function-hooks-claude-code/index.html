@@ -389,12 +389,15 @@ on("tool.call", { tool: "WebFetch" }, async ($, e, next) => {
 
                 <h2>10 Function Hooks in the Catalog</h2>
 
-                <p>We wrote ten hooks against the API described in the architecture doc, one per pattern the proposal demonstrates. Each is a catalog page with the full module, a <code>hooks.json</code>, the options it reads from <code>userConfig</code>, and a section that lists exactly which parts of <code>$</code> are assumptions. Install any of them with the new <code>--function-hook</code> flag, which writes the plugin layout above to <code>.claude/plugins/&lt;name&gt;/</code> and prints the experimental warning:</p>
+                <p>We wrote ten hooks against the API described in the architecture doc, one per pattern the proposal demonstrates. Each catalog entry is the real thing: the <code>hooks.json</code> with its <code>modules</code> key, and the TypeScript hooks-module it names, with a header comment that lists exactly which parts of <code>$</code> are assumptions. Install any of them with the new <code>--function-hook</code> flag. It writes the plugin layout above to <code>.claude/skills/&lt;name&gt;/</code>, which Claude Code auto-loads as <code>&lt;name&gt;@skills-dir</code> on the next session once you trust the workspace, so no <code>--plugin-dir</code> is needed:</p>
 
                 <pre><code class="language-bash">npx claude-code-templates@latest --function-hook security/block-destructive-commands
 
 # Then, on a build that has the experimental code path:
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/plugins/block-destructive-commands</code></pre>
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+
+# Or load it for one session only, from anywhere:
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/block-destructive-commands</code></pre>
 
                 <table>
                     <thead>
