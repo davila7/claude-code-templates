@@ -30,9 +30,9 @@ import pandas as pd
 import numpy as np
 
 # Configure settings
-sc.settings.verbosity = 3
-sc.settings.set_figure_params(dpi=80, facecolor='white')
+# sc.settings.verbosity = 'hint'  # enable for debugging
 sc.settings.figdir = './figures/'
+sc.print_header()  # in notebooks
 ```
 
 ### Loading Data
