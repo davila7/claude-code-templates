@@ -1,12 +1,56 @@
 {
-  "lastUpdated": "2026-09-03T04:18:36.104762+00:00",
-  "totalJobs": 104,
+  "lastUpdated": "2026-09-04T03:14:37.816566+00:00",
+  "totalJobs": 100,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49552714",
+      "company": "AiMi",
+      "position": "AI Engineer",
+      "location": "Remote(Everywhere)",
+      "remote": true,
+      "salary": "",
+      "description": "AiMi builds agentic AI infrastructure for capital markets: autonomous agents that ingest venue and vendor notifications, assess impact across client infrastructure, and drive change management workflows in real time, replacing what used to be manual, static processes for exchanges and their ops...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49552714",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49552714",
+      "postedAt": "2026-09-03T16:29:17+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "AWS",
+        "Claude Code",
+        "Cursor",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49547792",
+      "company": "Search Atlas",
+      "position": "Product Engineer",
+      "location": "REMOTE (anywhere, EST hours)",
+      "remote": true,
+      "salary": "",
+      "description": "We're ~160 people, fully remote, building an AI marketing platform. Our main product is OTTO, which runs a site's SEO on its own - it reads live search data and pushes the technical and on-page fixes itself, nobody queues them up. Around that we've got ad automation for Google and Meta, GBP...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49547792",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49547792",
+      "postedAt": "2026-09-03T09:25:29+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Go",
+        "Claude Code",
+        "Django"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49543040",
       "company": "Tecuity",
@@ -23,6 +67,171 @@
         "React",
         "Azure",
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49532259",
+      "company": "cloro",
+      "position": "Software Engineer",
+      "location": "REMOTE (EU timezones)",
+      "remote": true,
+      "salary": "$80k-150k",
+      "description": "cloro is one API for search and AI answers. You send a query, we return Google, Google News, ChatGPT, Perplexity, Gemini, Grok and Copilot results as structured fields: the answer, the sources it cited, and the position each result held. Teams use it to measure whether their brand shows up in AI...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49532259",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49532259",
+      "postedAt": "2026-09-02T05:54:47+00:00",
+      "tags": [
+        "Claude Code",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49530116",
+      "company": "Mattermost",
+      "position": "Senior Full Stack Engineer",
+      "location": "Remote (US and Canada)",
+      "remote": true,
+      "salary": "$142,723 - $172,723",
+      "description": "Mattermost ( https://mattermost.com ) is an open-core collaboration and workflow automation platform for air-gapped, on-prem and private clouds. Our customers are in defense, intelligence, security and critical infrastructure, including the USAF and NASA. Y Combinator led our Series B, their...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49530116",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49530116",
+      "postedAt": "2026-09-02T00:12:24+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Go",
+        "PostgreSQL",
+        "Claude Code",
+        "Cursor",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49529763",
+      "company": "Pagelove",
+      "position": "Software Engineer",
+      "location": "Full-time (Remote)",
+      "remote": true,
+      "salary": "$110k–$130k",
+      "description": "Pagelove collapses the modern web stack into its simplest form: no databases, no APIs, no application servers. Just HTML that works like an app, scales like a CDN, and is AI-native by design. The page becomes the application, API and persisted state. Humans and machines can read and update the same...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49529763",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49529763",
+      "postedAt": "2026-09-01T23:32:18+00:00",
+      "tags": [
+        "Rust",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49528837",
+      "company": "Cora AI",
+      "position": "AI Engineer",
+      "location": "REMOTE (US ONLY, LA/SF preferred)",
+      "remote": true,
+      "salary": "",
+      "description": "We build customer success agents and account intelligence that do the actual manual work — so CS teams can focus on the relationship-driven work that drives growth. What we're looking for: - You build with AI IDEs (Cursor, Claude Code) as a force multiplier — not occasionally, as your default -...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49528837",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49528837",
+      "postedAt": "2026-09-01T22:01:21+00:00",
+      "tags": [
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49528608",
+      "company": "Railway",
+      "position": "Senior Product Engineer",
+      "location": "REMOTE (Worldwide)",
+      "remote": true,
+      "salary": "",
+      "description": "Do you feel scared and alone when opening the AWS console? Do you wish you could just tell Claude to manage your infra, and it would just work? Do you dream of a future where software is abundant and developers and normies alike are free to build their wildest dreams? We're Railway, and we think...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49528608",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49528608",
+      "postedAt": "2026-09-01T21:38:54+00:00",
+      "tags": [
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49528044",
+      "company": "Biobase",
+      "position": "Senior Technical Product Engineer",
+      "location": "REMOTE (US, Canada)",
+      "remote": true,
+      "salary": "",
+      "description": "Biobase has grand ambitions. We broker biospecimens, whole slide images, and the clinical metadata attached to them, on a supply-chain backbone that we're steadily automating. We’re building healthcare-data-focused agents on top of the datasets that we’re assembling, too. We'd rather build the...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49528044",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49528044",
+      "postedAt": "2026-09-01T20:52:34+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Azure",
+        "Claude Code",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49525270",
+      "company": "Sunspell",
+      "position": "Software Engineer",
+      "location": "New York, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Six-person venture lab in New York. Part lab, part studio, part operating system, building original products and the systems behind them. Compounding every launch into venture intelligence. Our founder ran her own design studio and was the founding design partner on Partiful, on Sentropy before...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49525270",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49525270",
+      "postedAt": "2026-09-01T17:44:20+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49523703",
+      "company": "VersaFeed.com",
+      "position": "Software Engineer",
+      "location": "REMOTE (USA ONLY)",
+      "remote": true,
+      "salary": "$150K–$220K",
+      "description": "About us : Fancy ETL pipeline which processes products from huge ecommerce companies. Data extraction and massage, delivery to destinations like Google/Meta/TikTok/etc. Profitable, 18+ yrs stable, 100% employee-owned. No VC, no pointless meetings, just serious coding. Stack : Python/Django,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49523703",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49523703",
+      "postedAt": "2026-09-01T15:52:50+00:00",
+      "tags": [
+        "React",
+        "JavaScript",
+        "Python",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Claude Code",
+        "Django",
+        "Vue.js"
       ],
       "companyIcon": ""
     },
@@ -240,6 +449,52 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-collaboration-ai-senior-software-engineer",
+      "company": "Collaboration.Ai",
+      "position": "Senior Software Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Minneapolis, MN URL: http://collaboration.ai Who We Are Collaboration.Ai is a mission-focused, AI-powered software and services company based in Minnesota, with employees, partners, and customers around the world. We unite people, technology, and purpose to accelerate breakthroughs...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-engineer",
+      "postedAt": "2026-08-17T11:51:08+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-zoominfo-technologies-llc-principal-business-intelligence-analyst",
+      "company": "ZoomInfo Technologies LLC",
+      "position": "Principal Business Intelligence Analyst",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote ZoomInfo is where careers accelerate. We move fast, think boldly, and empower you to do the best work of your life. You’ll be surrounded by teammates who care deeply, challenge each other, and celebrate wins. With tools that amplify your impact and a culture that backs your...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/zoominfo-technologies-llc-principal-business-intelligence-analyst",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/zoominfo-technologies-llc-principal-business-intelligence-analyst",
+      "postedAt": "2026-08-15T07:31:27+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5391151008",
       "company": "Anthropic",
       "position": "AI Operations Engineer, Partnerships",
@@ -263,30 +518,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "hn-49291876",
-      "company": "Alaffia Health",
-      "position": "Principal Engineer",
-      "location": "NYC (Hybrid)",
-      "remote": false,
-      "salary": "",
-      "description": "Alaffia Health is a Series B healthtech company in NYC fixing a real, expensive problem: US health plans lose billions every year to improper payments and administrative waste in claims processing. We combine clinicians with AI to catch billing errors before they get paid out. Just raised $55M in...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49291876",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49291876",
-      "postedAt": "2026-08-13T21:06:43+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Go",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Claude Code",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "wwr-toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
       "company": "Toptal",
       "position": "Python Backend Development Talent with RAG and Agentic AI Experience",
@@ -306,30 +537,6 @@
         "Docker",
         "Kubernetes",
         "Rails"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49271778",
-      "company": "Odin",
-      "position": "Senior Design Engineer",
-      "location": "Remote (US)",
-      "remote": true,
-      "salary": "",
-      "description": "Odin is the workforce visibility and compliance platform for critical infrastructure. We protect the world’s largest construction projects, data centers, and critical assets—from groundbreaking through post-turnover—by unifying physical access control, workforce compliance, video monitoring, and...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49271778",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49271778",
-      "postedAt": "2026-08-12T13:03:29+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Node.js",
-        "PostgreSQL",
-        "GCP",
-        "Kubernetes",
-        "React Native",
-        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -359,25 +566,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-49269646",
-      "company": "ORIGAMICS",
-      "position": "Backend Engineer",
-      "location": "REMOTE (US)",
-      "remote": true,
-      "salary": "",
-      "description": "Origamics is building AI models that reason about hardware and electronics systems. We turn existing schematics into production ready boards, helping hardware design move at the speed of software. We’re hiring our first founding engineer to work directly with the founders. You’ll own product...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49269646",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49269646",
-      "postedAt": "2026-08-12T09:10:00+00:00",
-      "tags": [
-        "Python",
-        "PostgreSQL",
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5383596008",
       "company": "Anthropic",
       "position": "Developer Relations",
@@ -396,45 +584,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "hn-49215237",
-      "company": "Deepline",
-      "position": "Software Engineer",
-      "location": "On-site",
-      "remote": false,
-      "salary": "$160k–$230k",
-      "description": "User interfaces are dead. Knowledge workers will exclusively work through agent interfaces like Claude Code/Cowork. We've built the interface layer to enable that. One API that unifies hundreds of data providers, workflows, and data infrastructure to agents like Claude Code. This is GTM as code —...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49215237",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49215237",
-      "postedAt": "2026-08-07T19:32:31+00:00",
-      "tags": [
-        "Next.js",
-        "TypeScript",
-        "Python",
-        "PostgreSQL",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49215140",
-      "company": "Connie Health",
-      "position": "Senior Analytics Engineer",
-      "location": "Boston, MA",
-      "remote": false,
-      "salary": "$150k-$185k",
-      "description": "Connie Health is a fast-growing Medicare brokerage on a mission to empower older Americans to make confident, worry-free Medicare plan decisions. We offer a tech-enabled Medicare navigation platform that combines AI-driven technology with local Medicare experts to help people select optimal...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49215140",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49215140",
-      "postedAt": "2026-08-07T19:24:20+00:00",
-      "tags": [
-        "Rust",
-        "PostgreSQL"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5383610008",
@@ -461,84 +610,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "hn-49206998",
-      "company": "Talonic",
-      "position": "Staff Site Reliability Engineer",
-      "location": "Berlin, Germany",
-      "remote": false,
-      "salary": "€80–90k",
-      "description": "We do enterprise document ingestion — capture a document once into a canonical field registry, then project it to any schema, no re-extraction. Stack: AWS, Docker, Railway. We've never had a dedicated reliability owner and it's starting to show. You'd be the first: SLOs and an error-budget policy...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49206998",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49206998",
-      "postedAt": "2026-08-07T07:24:31+00:00",
-      "tags": [
-        "AWS",
-        "Docker",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49200756",
-      "company": "Aeqium",
-      "position": "Product Engineer",
-      "location": "San Francisco (SF)",
-      "remote": false,
-      "salary": "$110k-$170k",
-      "description": "** PLEASE NOTE: We CANNOT provide visa sponsorship, transfers, or OPT/STEM extensions of any kind. Applicants must already be authorized to work in the US permanently. ** Aeqium is building an AI-powered compensation planning platform (backed by top VCs). We replace messy spreadsheets with...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49200756",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49200756",
-      "postedAt": "2026-08-06T18:53:25+00:00",
-      "tags": [
-        "Claude Code",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49199157",
-      "company": "DoubleVerify (DV Scibids)",
-      "position": "Software Engineer",
-      "location": "ONSITE/HYBRID - New York, NY (3x/week)",
-      "remote": false,
-      "salary": "$89K–$178K",
-      "description": "DV Scibids is the AI-powered digital campaign activation arm of DoubleVerify — the market standard for digital media measurement trusted by hundreds of Fortune 500 brands. Our Data Engineering team owns the critical integrations and data flows that connect Scibids' optimization engine to the...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49199157",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49199157",
-      "postedAt": "2026-08-06T16:47:25+00:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "GCP",
-        "Docker",
-        "Claude Code",
-        "Cursor",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49187999",
-      "company": "Housecat",
-      "position": "Full Stack Engineer",
-      "location": "San Francisco but REMOTE (US) based on qualifications.",
-      "remote": true,
-      "salary": "",
-      "description": "Hi I'm Noah, founder and CTO at Housecat.com Housecat is an email inbox that gets real work done by connecting it to tools like your CRM, Slack, GitHub, and Claude. It is used by individuals and small teams that want to eliminate busywork and get through email incredibly fast. The team is founded...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49187999",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49187999",
-      "postedAt": "2026-08-05T19:48:43+00:00",
-      "tags": [
-        "PostgreSQL",
-        "GCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "wwr-lemon-io-senior-ai-engineer-4",
       "company": "Lemon.io",
       "position": "Senior AI Engineer",
@@ -561,139 +632,6 @@
         "Node.js",
         "React Native",
         "Swift"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49172196",
-      "company": "ALBERT",
-      "position": "Software Engineer",
-      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
-      "remote": true,
-      "salary": "$750k",
-      "description": "We're a consumer fintech with 20M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49172196",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49172196",
-      "postedAt": "2026-08-04T17:40:12+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Rust",
-        "PostgreSQL",
-        "React Native"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49169017",
-      "company": "Portless",
-      "position": "AI Engineer",
-      "location": "REMOTE (North America only)",
-      "remote": true,
-      "salary": "$180K-$230K",
-      "description": "Founding AI engineer seat. AI adoption at Portless today is basic (decks, spreadsheets, call summaries, a bit of vibe-coded dashboards) — no real end-to-end agentic workflows yet. You'll build the AI infrastructure: shipping high-impact agentic workflows yourself, and building reusable \"Lego...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49169017",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49169017",
-      "postedAt": "2026-08-04T13:52:34+00:00",
-      "tags": [
-        "TypeScript",
-        "Python",
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49165622",
-      "company": "Viteus",
-      "position": "Full-Stack Engineer",
-      "location": "Contract (Remote)",
-      "remote": true,
-      "salary": "",
-      "description": "Viteus is Alteus's production support service for AI-built applications, delivered in partnership with vitX. We work with enterprises and scale-ups across APAC to audit, refactor, and support AI-built apps in production. When we win client engagements, we match contractors from the network onto...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49165622",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49165622",
-      "postedAt": "2026-08-04T08:04:08+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49163658",
-      "company": "pganalyze",
-      "position": "Software Engineer",
-      "location": "REMOTE (US)",
-      "remote": true,
-      "salary": "",
-      "description": "At pganalyze, we build observability and automation tools for optimizing the performance of Postgres databases. Our product helps customers such as Auto Trader, Notion and Robinhood to understand complex Postgres problems and solve performance issues. We are bootstrapped, profitable, with over 500...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49163658",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49163658",
-      "postedAt": "2026-08-04T02:09:55+00:00",
-      "tags": [
-        "PostgreSQL",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49160915",
-      "company": "Railway",
-      "position": "Senior Infra Engineer",
-      "location": "REMOTE (Worldwide)",
-      "remote": true,
-      "salary": "",
-      "description": "Do you feel scared and alone when opening the AWS console? Do you wish you could just tell Claude to manage your infra, and it would just work? Do you dream of a future where software is abundant and developers and normies alike are free to build their wildest dreams? We're Railway, and we think...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49160915",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49160915",
-      "postedAt": "2026-08-03T20:21:05+00:00",
-      "tags": [
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49157129",
-      "company": "Checkly",
-      "position": "Senior Sales Engineer",
-      "location": "Remote (Europe / US Eastern Time zone)",
-      "remote": true,
-      "salary": "",
-      "description": "Checkly is the active reliability layer for developers and agents — we unify testing, synthetic monitoring, and observability into a single AI-native workflow, so engineering teams (and the agents shipping alongside them) can catch issues before customers do. We're hiring two roles on our Sales...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49157129",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49157129",
-      "postedAt": "2026-08-03T15:31:37+00:00",
-      "tags": [
-        "Node.js",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49156702",
-      "company": "Flywheel Motion (  )",
-      "position": "Software Engineer",
-      "location": "REMOTE (worldwide)",
-      "remote": true,
-      "salary": "",
-      "description": "We build authority infrastructure for people whose expertise has outgrown their digital presence — founders, scientists, operators. Positioning and narrative first, then the sites, content pipelines and distribution that make it compound. The delivery layer is agentic: Claude Code, Cursor and Aider...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49156702",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49156702",
-      "postedAt": "2026-08-03T15:01:43+00:00",
-      "tags": [
-        "TypeScript",
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
