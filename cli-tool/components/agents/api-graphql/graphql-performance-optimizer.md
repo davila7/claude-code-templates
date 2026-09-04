@@ -110,9 +110,10 @@ import { compileQuery, isCompiledQuery } from 'graphql-jit';
 import { parse } from 'graphql';
 import { LRUCache } from 'lru-cache';
 
-// Bounded by entry count, not by memory — keeps the process safe even if an
-// allowlist entry is missed. Gate on the same allowlist/Trusted Documents
-// manifest used below so unauthenticated clients can't force new compilations.
+// Bounded by entry count so the cache itself can't grow without limit. This
+// snippet still compiles whatever query it's given — in production, guard
+// the compile call with the same allowlist/Trusted Documents manifest used
+// below so unauthenticated clients can't force new (CPU-costly) compilations.
 const compiledQueryCache = new LRUCache({ max: 200 });
 
 app.post('/graphql', async (req, res) => {
@@ -141,7 +142,7 @@ app.post('/graphql', async (req, res) => {
 });
 ```
 
-Tradeoffs: every field that resolves to a computed value needs an explicit resolver (graphql-jit is stricter about relying on default property resolution than graphql-js in some edge cases), stack traces from compiled functions are harder to read during debugging, and the compilation step itself has a one-time cost — apply it to a curated allowlist of hot operations (pairs naturally with APQ/Trusted Documents below) rather than as a blanket default executor for the whole schema. Bound the cache and gate compilation behind that same allowlist: without it, a client that can submit arbitrary queries can force unbounded compilation and cache growth.
+Tradeoffs: every field that resolves to a computed value needs an explicit resolver (graphql-jit is stricter about relying on default property resolution than graphql-js in some edge cases), stack traces from compiled functions are harder to read during debugging, and the compilation step itself has a one-time cost — apply it to a curated allowlist of hot operations (pairs naturally with APQ/Trusted Documents below) rather than as a blanket default executor for the whole schema. Bound the cache and gate compilation behind that same allowlist: without it, a client that can submit arbitrary queries can force unbounded compilation (a CPU cost) on each cache miss, even though the LRU keeps cache growth itself bounded.
 
 ### 3. Query Complexity Analysis
 ```javascript
