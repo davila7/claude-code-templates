@@ -3,7 +3,7 @@ import type { Cart } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 
 const EMPTY_CART: Cart = {
-  agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], templates: [],
+  agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], loops: [], 'function-hooks': [], templates: [],
 };
 
 const TYPE_FLAGS: Record<string, string> = {

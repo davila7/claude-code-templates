@@ -51,7 +51,7 @@ export const GET: APIRoute = () => {
   urls.push(buildUrl('/trending', { priority: '0.8', changefreq: 'daily' }));
   urls.push(buildUrl('/jobs', { priority: '0.6', changefreq: 'weekly' }));
 
-  for (const type of ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings']) {
+  for (const type of ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'function-hooks']) {
     urls.push(buildUrl(`/${type}`, { priority: '0.9', changefreq: 'daily' }));
   }
 
@@ -65,7 +65,7 @@ export const GET: APIRoute = () => {
     }
   }
 
-  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings'];
+  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'function-hooks'];
   for (const type of COMPONENT_TYPES) {
     const items = components[type];
     if (!Array.isArray(items)) continue;

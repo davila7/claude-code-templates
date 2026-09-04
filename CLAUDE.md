@@ -62,6 +62,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **Settings** (60+) - Claude Code configuration files
 **Hooks** (39+) - Automation triggers
 **Loops** (18+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
+**Function Hooks** (10, EXPERIMENTAL) - TypeScript hooks-modules written against the proposed `$` engine interface (Anthropic proposal [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870), not a shipped feature). Each lives at `cli-tool/components/function-hooks/{category}/{name}.md` (docs, shown on the site) plus `{name}.ts` or `{name}.tsx` (the installable module; the generator ignores it). `--function-hook` installs it as a local plugin under `.claude/plugins/{name}/` and prints the experimental warning. Keep the code in the `.md` in sync with the module and keep the experimental banner (listing page + blog) until Anthropic ships the feature.
 **Templates** (14+) - Complete project configurations
 
 ### Installation Patterns

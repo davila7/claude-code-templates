@@ -21,7 +21,7 @@ function validateComponentData(data: { type?: string; name?: string; path?: stri
     return { valid: false, error: 'Component type and name are required' };
   }
 
-  const validTypes = ['agent', 'command', 'setting', 'hook', 'mcp', 'skill', 'template'];
+  const validTypes = ['agent', 'command', 'setting', 'hook', 'mcp', 'skill', 'loop', 'function-hook', 'template'];
   if (!validTypes.includes(type)) {
     return { valid: false, error: 'Invalid component type' };
   }

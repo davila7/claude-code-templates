@@ -44,6 +44,7 @@ const COMPONENT_TYPES = [
   'hook',
   'skill',
   'loop',
+  'function-hook',
   'template',
 ] as const;
 
