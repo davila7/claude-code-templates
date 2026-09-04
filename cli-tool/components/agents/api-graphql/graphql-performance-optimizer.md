@@ -108,16 +108,29 @@ For a small set of known hot/repeated operations (e.g., a public API's top 5 que
 ```javascript
 import { compileQuery, isCompiledQuery } from 'graphql-jit';
 import { parse } from 'graphql';
+import { LRUCache } from 'lru-cache';
 
-const compiledQueryCache = new Map();
+// Bounded by entry count, not by memory — keeps the process safe even if an
+// allowlist entry is missed. Gate on the same allowlist/Trusted Documents
+// manifest used below so unauthenticated clients can't force new compilations.
+const compiledQueryCache = new LRUCache({ max: 200 });
 
 app.post('/graphql', async (req, res) => {
   const { query, variables, operationName } = req.body;
+  // Compilation is keyed by document + operationName: a document can define
+  // multiple named operations, and each compiles to a distinct function.
+  const cacheKey = `${operationName || ''}:${query}`;
 
-  let compiled = compiledQueryCache.get(query);
+  let compiled = compiledQueryCache.get(cacheKey);
   if (!compiled) {
-    compiled = compileQuery(schema, parse(query), operationName);
-    if (isCompiledQuery(compiled)) compiledQueryCache.set(query, compiled);
+    let document;
+    try {
+      document = parse(query);
+    } catch (err) {
+      return res.json({ errors: [{ message: err.message }] });
+    }
+    compiled = compileQuery(schema, document, operationName);
+    if (isCompiledQuery(compiled)) compiledQueryCache.set(cacheKey, compiled);
   }
 
   const result = isCompiledQuery(compiled)
@@ -128,7 +141,7 @@ app.post('/graphql', async (req, res) => {
 });
 ```
 
-Tradeoffs: every field that resolves to a computed value needs an explicit resolver (graphql-jit is stricter about relying on default property resolution than graphql-js in some edge cases), stack traces from compiled functions are harder to read during debugging, and the compilation step itself has a one-time cost — apply it to a curated allowlist of hot operations (pairs naturally with APQ/Trusted Documents below) rather than as a blanket default executor for the whole schema.
+Tradeoffs: every field that resolves to a computed value needs an explicit resolver (graphql-jit is stricter about relying on default property resolution than graphql-js in some edge cases), stack traces from compiled functions are harder to read during debugging, and the compilation step itself has a one-time cost — apply it to a curated allowlist of hot operations (pairs naturally with APQ/Trusted Documents below) rather than as a blanket default executor for the whole schema. Bound the cache and gate compilation behind that same allowlist: without it, a client that can submit arbitrary queries can force unbounded compilation and cache growth.
 
 ### 3. Query Complexity Analysis
 ```javascript
