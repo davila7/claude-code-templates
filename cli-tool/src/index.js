@@ -746,10 +746,16 @@ async function installIndividualSetting(settingName, targetDir, options) {
     // Check if there are additional files to download (e.g., Python scripts)
     const additionalFiles = {};
     
-    // For statusline settings, check if there's a corresponding Python file
-    if (settingName.includes('statusline/')) {
-      const pythonFileName = settingName.split('/')[1] + '.py';
-      const pythonUrl = githubUrl.replace('.json', '.py');
+    // For statusline settings, check if there's a corresponding Python file.
+    // Detect it from the command itself (".claude/scripts/<name>.py") so direct
+    // installs without the "statusline/" prefix also get the companion script.
+    const statusLineCommand = settingConfig?.statusLine?.command;
+    const scriptMatch = typeof statusLineCommand === 'string'
+      ? statusLineCommand.match(/\.claude\/scripts\/([\w.-]+\.py)/)
+      : null;
+    if (settingName.includes('statusline/') || scriptMatch) {
+      const pythonFileName = scriptMatch ? scriptMatch[1] : settingName.split('/').pop() + '.py';
+      const pythonUrl = githubUrl.replace(/[^/]+\.json$/, pythonFileName);
       
       try {
         console.log(chalk.gray(`📥 Downloading Python script: ${pythonFileName}...`));
@@ -935,10 +941,27 @@ async function installIndividualSetting(settingName, targetDir, options) {
         }
       }
       
+      // Statusline scripts are written under <currentTargetDir>/.claude/scripts/.
+      // A relative ".claude/scripts/..." command only resolves from the project
+      // root, so for user/enterprise scope point it at the absolute location.
+      let scopedSettingConfig = settingConfig;
+      if (installLocation !== 'project' && installLocation !== 'local'
+          && typeof settingConfig?.statusLine?.command === 'string'
+          && settingConfig.statusLine.command.includes('.claude/scripts/')) {
+        const scriptsDir = path.join(currentTargetDir, '.claude', 'scripts');
+        scopedSettingConfig = {
+          ...settingConfig,
+          statusLine: {
+            ...settingConfig.statusLine,
+            command: settingConfig.statusLine.command.replace(/\.claude\/scripts\//g, scriptsDir.replace(/\\/g, '/') + '/')
+          }
+        };
+      }
+
       // Deep merge configurations
       const mergedConfig = {
         ...existingConfig,
-        ...settingConfig
+        ...scopedSettingConfig
       };
       
       // Deep merge specific sections (only if no conflicts or user approved overwrite)
