@@ -1,0 +1,6 @@
+{
+  "description": "Asks the user for confirmation before Claude edits or overwrites a file larger than a configurable line count. Function hook on tool.call using the files and permissions primitives.",
+  "modules": [
+    "./large-edit-confirmation.ts"
+  ]
+}

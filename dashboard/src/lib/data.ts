@@ -208,7 +208,14 @@ export function searchComponents(components: Component[], query: string): Compon
  * @param type  - Singular component type from URL params (e.g. "agent", "skill")
  * @param slug  - Path without extension (e.g. "code-quality/linter")
  */
-export async function fetchComponentContent(type: string, slug: string): Promise<string> {
+/** Per-component content file payload. Function hooks also carry their hooks-module. */
+export interface ComponentContentData {
+  content: string;
+  module?: string;        // e.g. "secret-redactor.ts" (function hooks only)
+  moduleSource?: string;  // the module's source (function hooks only)
+}
+
+export async function fetchComponentContentData(type: string, slug: string): Promise<ComponentContentData> {
   // type from the URL param is singular; the file path uses the plural form
   const typePlural = type.endsWith('s') ? type : type + 's';
   const urlPath = `${CONTENT_BASE}/${typePlural}/${slug}.json`;
@@ -221,7 +228,7 @@ export async function fetchComponentContent(type: string, slug: string): Promise
       const filePath = path.resolve(`public/component-content/${typePlural}/${slug}.json`);
       const raw = fs.readFileSync(filePath, 'utf-8');
       const data = JSON.parse(raw);
-      return data.content ?? '';
+      return { content: data.content ?? '', module: data.module, moduleSource: data.moduleSource };
     } catch {
       // fall through to fetch
     }
@@ -242,11 +249,16 @@ export async function fetchComponentContent(type: string, slug: string): Promise
     clearTimeout(timeoutId);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    return data.content ?? '';
+    return { content: data.content ?? '', module: data.module, moduleSource: data.moduleSource };
   } catch {
     clearTimeout(timeoutId);
-    return '';
+    return { content: '' };
   }
+}
+
+export async function fetchComponentContent(type: string, slug: string): Promise<string> {
+  const data = await fetchComponentContentData(type, slug);
+  return data.content;
 }
 
 export function sortComponents(
@@ -271,6 +283,7 @@ export function getComponentCounts(data: ComponentsData): Record<ComponentType, 
     hooks: data.hooks?.length ?? 0,
     mcps: data.mcps?.length ?? 0,
     loops: data.loops?.length ?? 0,
+    'function-hooks': data['function-hooks']?.length ?? 0,
     templates: data.templates?.length ?? 0,
   };
 }
@@ -284,6 +297,7 @@ export function getInstallCommand(component: Component): string {
     hook: '--hook',
     skill: '--skill',
     loop: '--loop',
+    'function-hook': '--function-hook',
     template: '--template',
   };
   const flag = typeFlag[component.type] ?? '--agent';

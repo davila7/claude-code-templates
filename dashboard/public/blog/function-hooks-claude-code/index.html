@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Anthropic is proposing hooks as TypeScript middleware on a $ engine interface. What is known, how to turn the experimental flag on, how a hook composes, and 10 ready-made function hooks in the aitmpl.com catalog.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/function-hooks-claude-code/">
+    <meta property="og:title" content="Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook">
+    <meta property="og:description" content="Anthropic is proposing hooks as TypeScript middleware on a $ engine interface. What is known, how to turn the experimental flag on, how a hook composes, and 10 ready-made function hooks in the aitmpl.com catalog.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/function-hooks-claude-code-cover.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Hooks">
+    <meta property="article:tag" content="Function Hooks">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="TypeScript">
+    <meta property="article:tag" content="Plugins">
+    <meta property="article:tag" content="Claude Code">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/function-hooks-claude-code/">
+    <meta name="twitter:title" content="Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook">
+    <meta name="twitter:description" content="Anthropic is proposing hooks as TypeScript middleware on a $ engine interface. What is known, how to turn the experimental flag on, how a hook composes, and 10 ready-made function hooks in the aitmpl.com catalog.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/function-hooks-claude-code-cover.svg">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code Function Hooks, Claude Code Hooks, TypeScript Hooks, Claude Code Plugins, CLAUDE_CODE_ENABLE_FUNCTION_HOOKS, Koa Middleware, Claude Code Templates, Claude Code Experimental">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/function-hooks-claude-code/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook",
+        "description": "Anthropic is proposing hooks as TypeScript middleware on a $ engine interface. What is known, how to turn the experimental flag on, how a hook composes, and 10 ready-made function hooks in the aitmpl.com catalog.",
+        "image": "https://aitmpl.com/blog/assets/function-hooks-claude-code-cover.svg",
+        "datePublished": "2026-09-04",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/function-hooks-claude-code/"
+        },
+        "keywords": "Claude Code Function Hooks, Claude Code Hooks, TypeScript Hooks, Claude Code Plugins, Koa Middleware",
+        "wordCount": "2300",
+        "articleSection": "Claude Code Hooks",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Function Hooks"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook</h1>
+                <p class="article-subtitle">Anthropic wants to know whether you want hooks as TypeScript middleware. Here is what the proposal actually says, how to turn it on today, and 10 hooks you can start from.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">9 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Function Hooks</span>
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Plugins</span>
+                        <span class="tag">Experimental</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/function-hooks-claude-code-cover.svg" alt="Claude Code Function Hooks: TypeScript middleware for Claude Code" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <div class="warning-box">
+                    <strong>⚠️ Experimental. Read this first.</strong> Function hooks are <em>not</em> a shipped Claude Code feature. They are an internal Anthropic proposal published as a GitHub issue on September 3, 2026, asking the community for feedback. The author says the community's response "likely dictates whether this ships or not". There is no documentation on code.claude.com. The demos run on real binaries behind an experimental flag. Every API name in this article is provisional and comes from the architecture PDF and the videos attached to <a href="https://github.com/anthropics/claude-code/issues/91870" target="_blank" rel="noopener">anthropics/claude-code#91870</a>. If you want this to exist, that issue is where to say so.
+                </div>
+
+                <h2>What Function Hooks Are</h2>
+
+                <p>Today a Claude Code hook is a shell command. Claude Code sends it a JSON payload on stdin, the script exits 0 or 2, and optionally prints JSON to allow, deny, or add context. It works, but the contract is narrow: a shell hook cannot rewrite a tool's input, cannot return its own result in place of the tool, has no state between calls, and cannot draw anything on screen.</p>
+
+                <p>The proposal adds a fifth hook type beside <code>command</code>, <code>prompt</code>, <code>agent</code> and <code>http</code>: a <strong>function</strong>. Your <code>hooks.json</code> names a TypeScript module, the module exports a <code>register</code> function, and every hook inside it has the same signature: <code>($, e, next)</code>. If you have written Express or Koa middleware, you already know the shape.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shell hooks (today)</th>
+                            <th>Function hooks (proposal)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Allow, deny, or inject text</td>
+                            <td>Rewrite inputs, short-circuit, return your own result</td>
+                        </tr>
+                        <tr>
+                            <td>Stateless</td>
+                            <td>Module state per session; a persistent store can be added to <code>$</code></td>
+                        </tr>
+                        <tr>
+                            <td>No UI</td>
+                            <td>Hook <code>ui.render</code> to wrap or replace what the TUI and Desktop draw</td>
+                        </tr>
+                        <tr>
+                            <td>No native model or HTTP calls</td>
+                            <td><code>$.model</code>, <code>$.http</code>, <code>$.fs</code>, <code>$.process</code> primitives (the last three confirmed "very likely" by the author)</td>
+                        </tr>
+                        <tr>
+                            <td>Cannot register or override tools</td>
+                            <td>Intercept any <code>tool.call</code>, or replace a core tool entirely</td>
+                        </tr>
+                        <tr>
+                            <td>Order is array position, no semantics</td>
+                            <td>Order is nesting: the first plugin registered wraps everything below it</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>How to Enable It</h2>
+
+                <p>The videos in the issue show the feature behind an environment variable. The variable name comes from the demo, not from any documentation, so expect it to change:</p>
+
+                <pre><code class="language-bash">CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude</code></pre>
+
+                <p>With the flag on, the demo shows a built-in <code>/plugin-authoring</code> skill that generates a plugin from a one-sentence description. The output lives in <code>.claude/</code> as a plugin: a manifest, a <code>hooks.json</code>, and the <code>.ts</code> file with your hooks.</p>
+
+                <div class="info-box">
+                    <strong>What if the flag does nothing on your build?</strong> Then your Claude Code version does not include the experimental code path. The issue says the demos run on "actual binaries", but does not say which release, and there is no changelog entry. Do not spend an afternoon debugging it; comment on the issue instead.
+                </div>
+
+                <h3>The plugin layout</h3>
+
+                <p>The architecture doc is precise about where things go. Hooks stay in <code>hooks/hooks.json</code>; one new key, <code>modules</code>, points at a file beside it. Your existing command hooks keep working next to the module.</p>
+
+                <pre><code class="language-text">my-plugin/
+├── .claude-plugin/plugin.json
+└── hooks/
+    ├── hooks.json          # { "modules": ["./my-hooks.ts"] }
+    └── my-hooks.ts         # export function register(on, options) { ... }</code></pre>
+
+                <pre><code class="language-json">{
+  "modules": ["./my-hooks.ts"]
+}</code></pre>
+
+                <p>The module may be <code>.js</code>, <code>.ts</code>, <code>.jsx</code> or <code>.tsx</code>. It exports a single <code>register(on, options)</code> function, where <code>options</code> is the plugin's <code>userConfig</code>. Because registration happens up front, <code>claude plugin validate</code> can list every event a plugin hooks before any hook runs.</p>
+
+                <h2>Anatomy of a Hook</h2>
+
+                <p>This is listing 1 from the architecture doc, the same "block <code>rm -rf /</code>" hook that the public docs use as the shell example, rewritten as a function:</p>
+
+                <pre><code class="language-typescript">export function register(on) {
+  on("tool.call", ($, e, next) => {
+    if (e.tool === "Bash" && e.command == "rm -rf /")
+      return { deny: "Destructive command blocked by hook" }
+    return next(e)
+  })
+}</code></pre>
+
+                <p>Three parameters, three jobs:</p>
+
+                <ul>
+                    <li><strong><code>$</code></strong> is the engine interface: everything a hook can see or do. It is an object of nouns, each an object of events: <code>$.tool.call</code>, <code>$.ui.log</code>, <code>$.fs.read</code>. It is the <em>only</em> door. The environment that runs your hook has no ambient filesystem or network, so what a plugin did is exactly the calls it made on <code>$</code>.</li>
+                    <li><strong><code>e</code></strong> is the event: the argument the method was called with, as an immutable plain value. On <code>tool.call</code> it carries the tool name and its arguments as own fields. To change it, pass <code>next</code> a copy.</li>
+                    <li><strong><code>next</code></strong> is the continuation. Calling it runs the next hook registered on the event and resolves to the result of the rest of the chain. You may call it once, many times, or never. It also carries <code>next.event</code>, <code>next.origin</code> (which plugin raised the dispatch), <code>next.signal</code> (an AbortSignal for the dispatch) and <code>next.is(type, e)</code> for narrowing under <code>*</code>.</li>
+                </ul>
+
+                <p>An optional matcher between the event name and the callback narrows both the calls you see and the type of <code>e</code>. It is a partial of <code>e</code>, matched structurally; an array matches when any element matches:</p>
+
+                <pre><code class="language-typescript">on("tool.call", { tool: "Bash" }, ($, e, next) => { /* e.command is typed */ })
+on("tool.call", { tool: ["Edit", "Write", "MultiEdit"] }, ($, e, next) => { /* any of the three */ })
+on("ui.render", { component: "ToolUse", surface: "desktop" }, ($, e, next) => { /* one component, one surface */ })</code></pre>
+
+                <h3>Five placements, one event</h3>
+
+                <p>Where a shell hook needs a pre-event and a post-event, a function hook decides where its logic runs relative to the real action by how it uses <code>next</code>:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Placement</th>
+                            <th>Shape</th>
+                            <th>Typical use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>before</strong></td>
+                            <td><code>doWork(); return next(e)</code></td>
+                            <td>Log, validate, ask the user</td>
+                        </tr>
+                        <tr>
+                            <td><strong>after</strong></td>
+                            <td><code>const r = await next(e); useResult(r); return r</code></td>
+                            <td>Redact output, time the call, audit</td>
+                        </tr>
+                        <tr>
+                            <td><strong>during</strong></td>
+                            <td><code>const p = next(e); doWork(); return p</code></td>
+                            <td>Show a spinner while the tool runs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>instead</strong></td>
+                            <td><code>return { deny: "..." }</code> or <code>return ownResult</code></td>
+                            <td>Deny, serve from cache, replace a tool</td>
+                        </tr>
+                        <tr>
+                            <td><strong>modifying</strong></td>
+                            <td><code>return next({ ...e, command: rewritten })</code></td>
+                            <td>Rewrite npm to pnpm, add a timeout</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Order Is Nesting</h2>
+
+                <p>This is the part of the proposal that took the community a few replays to digest, and it is the part that matters most for security. Hooks registered on one event fold like middleware: <code>on(X, A), on(X, B), on(X, C)</code> becomes <code>X = A(B(C(core)))</code>. The first plugin registered sits on the outside, sees every event first and every result last, and nothing beneath it can bypass it.</p>
+
+                <p>Organizations use exactly this. Managed settings list the plugins an administrator <em>prepends</em> (control) and <em>appends</em> (defaults). A prepended plugin can:</p>
+
+                <ul>
+                    <li>Decide which plugins may exist at all, by hooking <code>plugin.register</code>.</li>
+                    <li>Decide which nouns exist on <code>$</code>, by hooking <code>engine.create</code> and returning the table without, say, <code>http</code> and <code>process</code>. A plugin below cannot call what is not there.</li>
+                    <li>See everything, by hooking <code>*</code>. That hook runs on every event, including every other plugin's own calls on <code>$</code>, so an audit log is one function.</li>
+                </ul>
+
+                <pre><code class="language-typescript">// Listing 5 from the architecture doc: an audit log as one prepended hook.
+on("*", ($, e, next) => {
+  $.ui.log(`${next.origin} called ${next.event} at ${Date.now()}`)
+  return next(e)
+})</code></pre>
+
+                <div class="info-box">
+                    <strong>Why this beats a rule in CLAUDE.md:</strong> a prohibition written as prose holds most of the time and fails exactly when it matters. Removing the affordance from <code>$</code> is mechanical. As one commenter in the thread put it, this is the first plugin model where an audit log is trustworthy by construction rather than by convention.
+                </div>
+
+                <h2>Three Hooks That Shell Hooks Cannot Express</h2>
+
+                <p>The three snippets below are trimmed from components in the aitmpl.com catalog (linked in the table further down). They cover the three things the shell contract cannot do: rewrite, short-circuit, and draw.</p>
+
+                <h3>1. Rewrite the input: npm to pnpm</h3>
+
+                <pre><code class="language-typescript">on("tool.call", { tool: "Bash" }, ($, e, next) => {
+  const rewritten = e.command
+    .replace(/\bnpm\s+(install|i|add)\b/g, "pnpm add")
+    .replace(/\bnpx\s+/g, "pnpm dlx ")
+  if (rewritten === e.command) return next(e)
+  $.ui.log(`[npm-to-pnpm] ${e.command} -> ${rewritten}`)
+  return next({ ...e, command: rewritten })   // events are immutable: forward a copy
+})</code></pre>
+
+                <h3>2. Short-circuit: cache WebFetch</h3>
+
+                <pre><code class="language-typescript">const cache = new Map()
+
+on("tool.call", { tool: "WebFetch" }, async ($, e, next) => {
+  const key = `${e.url}\n${e.prompt}`
+  const hit = cache.get(key)
+  if (hit) return hit.result          // nothing below runs: no network call at all
+  const result = await next(e)
+  if (result && !result.deny) cache.set(key, { result })
+  return result
+})</code></pre>
+
+                <h3>3. Draw: a duration badge on every ToolUse</h3>
+
+                <pre><code class="language-typescript">on("ui.render", { component: "ToolUse" }, async ($, e, next) => {
+  const { Row, Badge } = $.ui.resolve(e)   // the surface's own elements
+  const rendered = await next(e)           // whatever the engine drew
+  return (
+    &lt;Row&gt;
+      {rendered}
+      &lt;Badge text={`${durationFor(e.props)} ms`} /&gt;
+    &lt;/Row&gt;
+  )
+})</code></pre>
+
+                <p>The same JSX renders through Ink on the terminal and through the DOM on Desktop. A hook never receives rendered state, only props and the component to render, so the component names and props are declared public API in the doc, on the same footing as a tool's input schema.</p>
+
+                <h2>10 Function Hooks in the Catalog</h2>
+
+                <p>We wrote ten hooks against the API described in the architecture doc, one per pattern the proposal demonstrates. Each catalog entry is the real thing: the <code>hooks.json</code> with its <code>modules</code> key, and the TypeScript hooks-module it names, with a header comment that lists exactly which parts of <code>$</code> are assumptions. Install any of them with the new <code>--function-hook</code> flag. It writes the plugin layout above to <code>.claude/skills/&lt;name&gt;/</code>, which Claude Code auto-loads as <code>&lt;name&gt;@skills-dir</code> on the next session once you trust the workspace, so no <code>--plugin-dir</code> is needed:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --function-hook security/block-destructive-commands
+
+# Then, on a build that has the experimental code path:
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+
+# Or load it for one session only, from anywhere:
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/block-destructive-commands</code></pre>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hook</th>
+                            <th>Event(s)</th>
+                            <th>Placement</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="/component/function-hook/security/block-destructive-commands"><code>security/block-destructive-commands</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>instead</td>
+                            <td>Denies <code>rm -rf /</code>, force push, hard reset, destructive SQL, disk formatting</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/security/secret-redactor"><code>security/secret-redactor</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>after</td>
+                            <td>Replaces keys, tokens, JWTs and connection strings in tool output before the model reads them</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/security/protected-paths-guard"><code>security/protected-paths-guard</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>instead</td>
+                            <td>Denies edits to .env, lockfiles, CI workflows and private keys, with an allow list</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/security/large-edit-confirmation"><code>security/large-edit-confirmation</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>before</td>
+                            <td>Asks the user before editing a file over N lines, via the permissions primitive</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/productivity/npm-to-pnpm-rewriter"><code>productivity/npm-to-pnpm-rewriter</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>modifying</td>
+                            <td>Rewrites npm/npx to pnpm, yarn or bun</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/productivity/webfetch-cache"><code>productivity/webfetch-cache</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>instead / after</td>
+                            <td>Serves repeated WebFetch calls from a session cache with TTL</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/observability/universal-audit-log"><code>observability/universal-audit-log</code></a></td>
+                            <td><code>*</code></td>
+                            <td>after</td>
+                            <td>JSON line per event with origin, duration and outcome, including denials</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/ui/tool-timing-badge"><code>ui/tool-timing-badge</code></a></td>
+                            <td><code>tool.call</code>, <code>ui.render</code></td>
+                            <td>after</td>
+                            <td>Times every tool call and draws a colored badge next to the ToolUse row</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/integrations/websearch-to-exa"><code>integrations/websearch-to-exa</code></a></td>
+                            <td><code>tool.call</code></td>
+                            <td>instead</td>
+                            <td>Replaces the built-in WebSearch with Exa through <code>$.http</code>, with fallback</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/component/function-hook/enterprise/admin-capability-lockdown"><code>enterprise/admin-capability-lockdown</code></a></td>
+                            <td><code>engine.create</code>, <code>plugin.register</code>, <code>tool.call</code></td>
+                            <td>after / instead</td>
+                            <td>Withholds <code>http</code> and <code>process</code> from <code>$</code>, allowlists plugins, denies shell network commands</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Browse them all at <a href="/function-hooks">aitmpl.com/function-hooks</a>. The listing carries the same experimental banner as this article.</p>
+
+                <h2>What the Thread Is Still Asking</h2>
+
+                <p>The issue collected serious feedback within a day, much of it from people who run dozens of hooks in production. If you are deciding whether to invest, these are the open questions worth tracking, none of which the doc answers yet:</p>
+
+                <ul>
+                    <li><strong>Fail-open or fail-closed?</strong> If a hook three deep throws, does the action proceed or get blocked? For a redaction hook, fail-open is worse than no hook at all. Several commenters want this declared per hook.</li>
+                    <li><strong>Hang budget.</strong> What cancels a hook whose promise never settles? Is there a per-hook timeout, or does one bad <code>await</code> wedge the event for everyone beneath it?</li>
+                    <li><strong>How far does <code>$.fs</code> reach?</strong> Many real hooks read <code>~/.secrets/</code> and write state outside the project. The author confirmed <code>$.fs</code>, <code>$.http</code> and <code>$.process</code> will very likely exist, and that the point is not to restrict plugins but to route everything through <code>$</code> so admins can audit, allowlist and deny.</li>
+                    <li><strong>Do MCP tool calls go through <code>tool.call</code>?</strong> If they reach the model outside <code>$</code>, the biggest gap in today's guards stays open.</li>
+                    <li><strong>Interleaving with command hooks.</strong> Nobody migrates 150 hooks in one release. Does a command hook's deny win over a function hook that called <code>next</code>?</li>
+                    <li><strong>Testing.</strong> A documented fake <code>$</code> and a fixture format would decide whether existing test suites port or get rewritten.</li>
+                    <li><strong>Forward compatibility.</strong> One maintainer measured that an unknown key in <code>hooks.json</code> makes older Claude Code versions drop the whole file silently. A <code>modules</code> key needs to be skipped, not rejected, by builds that predate it.</li>
+                </ul>
+
+                <h2>Should You Care Now?</h2>
+
+                <p>If you only need allow/deny, your shell hooks are fine and will keep working; the doc is explicit that command hooks run beside function hooks, not instead of them. Function hooks earn their complexity in three places: when you need to <em>change</em> what a tool receives or returns, when you need state or a UI, and when you are an administrator who needs a control that cannot be argued with. If any of those is you, the ten catalog hooks are a concrete starting point, and the issue is where your opinion changes the outcome.</p>
+
+                <div class="success-box">
+                    <strong>Bottom line:</strong> treat everything above as a design preview. Write your hooks against the shapes in the architecture doc, keep the assumed parts of <code>$</code> isolated so they are easy to rename, and go tell Anthropic in <a href="https://github.com/anthropics/claude-code/issues/91870" target="_blank" rel="noopener">#91870</a> whether you want this to ship.
+                </div>
+
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
+
+                <p style="margin-top:2rem;color:#888;font-size:0.95rem;">Created by <a href="https://x.com/dani_avila7" target="_blank" rel="noopener">Daniel Ávila</a></p>
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                let textToCopy = code.textContent;
+
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        return text
+            .split('\n')
+            .map(line => {
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '')
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                if (element.classList.contains('newsletter-cta') ||
+                    element.classList.contains('explore-components-banner')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "description": "Overrides the built-in WebSearch tool and routes queries to the Exa search API through the network primitive, with automatic fallback to the built-in search. Function hook on tool.call that replaces a core tool.",
+  "modules": [
+    "./websearch-to-exa.ts"
+  ]
+}

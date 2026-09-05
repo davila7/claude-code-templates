@@ -1,0 +1,6 @@
+{
+  "description": "Organization control plugin: withholds the http and process nouns from $ so no plugin beneath it can reach the network or spawn processes, allowlists which plugins may register, and withholds the Bash tool (shellPolicy \"deny\", default) or, in \"guardrail\" mode, denies well-known network clients as a bypassable speed bump. Function hooks on engine.create, plugin.register and tool.call.",
+  "modules": [
+    "./admin-capability-lockdown.ts"
+  ]
+}

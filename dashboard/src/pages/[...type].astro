@@ -45,7 +45,14 @@ const TYPE_META: Record<string, { title: string; description: string; tagline: s
     description: 'Ready-to-run agentic loops for Claude Code. Each loop defines a goal, an interval, and a stop condition, and composes agents, skills and hooks. Install with a single npx command.',
     tagline: 'Autonomous agentic workflows that run until the job is done'
   },
+  'function-hooks': {
+    title: 'Claude Code Function Hooks (Experimental): TypeScript Hooks That Rewrite, Deny, Cache and Draw',
+    description: 'Experimental function hooks for Claude Code, written as TypeScript middleware on the proposed $ engine interface. Deny destructive commands, redact secrets, cache WebFetch, audit every event, draw in the TUI. Based on the Anthropic proposal in anthropics/claude-code#91870.',
+    tagline: 'TypeScript hooks on the proposed $ engine interface. Experimental: based on an open Anthropic proposal, not a shipped feature.'
+  },
 };
+
+const FUNCTION_HOOKS_ISSUE_URL = 'https://github.com/anthropics/claude-code/issues/91870';
 
 const { type } = Astro.params;
 const activeType = type && VALID_TYPES.includes(type) ? type : 'skills';
@@ -61,6 +68,7 @@ export function getStaticPaths() {
     { params: { type: 'hooks' } },
     { params: { type: 'mcps' } },
     { params: { type: 'loops' } },
+    { params: { type: 'function-hooks' } },
   ];
 }
 ---
@@ -104,6 +112,22 @@ export function getStaticPaths() {
     </div>
   </div>
   
+  {activeType === 'function-hooks' && (
+    <div class="px-6 pt-6 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-[13px] text-[var(--color-text-primary)]">
+        <span class="shrink-0 inline-flex items-center gap-1.5 font-ui-mono text-[11px] font-semibold uppercase tracking-wide text-amber-400">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Experimental
+        </span>
+        <p class="text-[var(--color-text-secondary)] leading-relaxed">
+          Function hooks are an <strong class="text-[var(--color-text-primary)]">Anthropic proposal under community review</strong>, not a shipped Claude Code feature. Every API name in these components is provisional and comes from the proposal's architecture doc and demo videos. Read the proposal and leave feedback in
+          <a href={FUNCTION_HOOKS_ISSUE_URL} target="_blank" rel="noopener" class="underline decoration-amber-400/60 underline-offset-2 hover:text-amber-300">anthropics/claude-code#91870</a>.
+          <a href="/blog/function-hooks-claude-code/" class="ml-1 underline decoration-amber-400/60 underline-offset-2 hover:text-amber-300">How to enable it →</a>
+        </p>
+      </div>
+    </div>
+  )}
+
   <FeaturedSection />
   <ComponentGrid client:load initialType={activeType} />
   <SearchModal client:idle />

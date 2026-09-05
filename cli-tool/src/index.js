@@ -143,7 +143,7 @@ async function createClaudeConfig(options = {}) {
   }
   
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.functionHook) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -1684,6 +1684,127 @@ function parseLoopReferencedComponents(loopContent) {
  * Install a loop component (markdown) into .claude/loops/, then auto-install
  * every component it references (agents, skills, hooks, commands, settings, mcps).
  */
+/**
+ * Install a function hook (EXPERIMENTAL) as a local Claude Code plugin.
+ *
+ * Function hooks are an Anthropic proposal under community review
+ * (https://github.com/anthropics/claude-code/issues/91870), not a shipped
+ * feature. The catalog stores each function hook exactly like a shell hook:
+ * {name}.json is the plugin's hooks/hooks.json (plus a "description" we strip
+ * on install) and its "modules" entry names the {name}.ts / {name}.tsx
+ * hooks-module beside it. We download both and write a plugin in the
+ * project's skills directory, which Claude Code auto-loads as
+ * "{name}@skills-dir" once the workspace is trusted (no --plugin-dir needed):
+ *
+ *   .claude/skills/{name}/.claude-plugin/plugin.json
+ *   .claude/skills/{name}/hooks/hooks.json      -> { "modules": ["./{name}.ts"] }
+ *   .claude/skills/{name}/hooks/{name}.ts
+ */
+async function installIndividualFunctionHook(hookName, targetDir, options = {}) {
+  console.log(chalk.blue(`ƒ  Installing function hook: ${hookName}`));
+  console.log(chalk.yellow('⚠️  Experimental: function hooks are a proposal (anthropics/claude-code#91870), not a shipped Claude Code feature.'));
+  const startTime = Date.now();
+
+  try {
+    // Only "category/name" (or "name") in kebab-case: this string becomes both a URL and a directory name.
+    if (!/^[a-z0-9][a-z0-9-]*(?:\/[a-z0-9][a-z0-9-]*)?$/i.test(hookName)) {
+      throw new Error('Invalid function hook name. Expected "category/name" (letters, digits and hyphens only).');
+    }
+    const baseUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/function-hooks/${hookName}`;
+    const baseName = hookName.includes('/') ? hookName.split('/').pop() : hookName;
+    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+
+    // 1. hooks.json (the component file itself)
+    const response = await fetch(`${baseUrl}.json`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(chalk.red(`❌ Function hook "${hookName}" not found`));
+        console.log(chalk.gray('   Browse available function hooks at https://www.aitmpl.com/function-hooks'));
+        trackingService.trackInstallationOutcome('function-hook', hookName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+        return false;
+      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    const hooksConfig = JSON.parse(await response.text());
+    const description = hooksConfig.description || `Function hook ${baseName} from claude-code-templates`;
+    delete hooksConfig.description; // catalog-only field, same as shell hooks
+
+    const modules = Array.isArray(hooksConfig.modules) ? hooksConfig.modules : [];
+    if (modules.length === 0) {
+      throw new Error('hooks.json has no "modules" entry');
+    }
+
+    // 2. Every hooks-module named in "modules" (.js/.ts/.jsx/.tsx), stored beside hooks.json
+    const moduleFiles = {};
+    for (const modulePath of modules) {
+      const moduleFileName = String(modulePath).replace(/^\.\//, '');
+      // A hooks-module must be a plain file beside hooks.json, never a path.
+      if (!/^[a-z0-9][a-z0-9._-]*\.(js|ts|jsx|tsx)$/i.test(moduleFileName) || moduleFileName.includes('..')) {
+        throw new Error(`Refusing hooks-module with unsafe name: ${modulePath}`);
+      }
+      const moduleResponse = await fetch(`${baseUrl.substring(0, baseUrl.lastIndexOf('/'))}/${moduleFileName}`);
+      if (!moduleResponse.ok) {
+        throw new Error(`hooks-module ${moduleFileName} not found (HTTP ${moduleResponse.status})`);
+      }
+      moduleFiles[moduleFileName] = await moduleResponse.text();
+      console.log(chalk.green(`✓ Found hooks-module: ${moduleFileName}`));
+    }
+
+    // 3. Write the plugin into the project's skills directory (auto-loaded as {name}@skills-dir)
+    const pluginDir = path.join(targetDir, '.claude', 'skills', baseName);
+    const hooksDir = path.join(pluginDir, 'hooks');
+    const manifestDir = path.join(pluginDir, '.claude-plugin');
+    await fs.ensureDir(hooksDir);
+    await fs.ensureDir(manifestDir);
+
+    await fs.writeFile(path.join(hooksDir, 'hooks.json'), JSON.stringify(hooksConfig, null, 2) + '\n', 'utf8');
+    for (const [fileName, content] of Object.entries(moduleFiles)) {
+      await fs.writeFile(path.join(hooksDir, fileName), content, 'utf8');
+    }
+
+    const manifestPath = path.join(manifestDir, 'plugin.json');
+    let manifest = { name: baseName, description, version: '0.1.0' };
+    if (await fs.pathExists(manifestPath)) {
+      try {
+        manifest = { ...JSON.parse(await fs.readFile(manifestPath, 'utf8')), ...manifest };
+      } catch (parseError) {
+        // Overwrite an unreadable manifest.
+      }
+    }
+    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+
+    const relPluginDir = path.relative(targetDir, pluginDir);
+    if (!options.silent) {
+      console.log(chalk.green(`✅ Function hook "${hookName}" installed successfully!`));
+    }
+    console.log(chalk.cyan(`📁 Installed to: ${relPluginDir}/`));
+    console.log(chalk.gray(`   .claude-plugin/plugin.json`));
+    console.log(chalk.gray(`   hooks/hooks.json  ->  { "modules": ${JSON.stringify(modules)} }`));
+    for (const fileName of Object.keys(moduleFiles)) {
+      console.log(chalk.gray(`   hooks/${fileName}`));
+    }
+    console.log(chalk.blue(`\n🧪 Claude Code loads it as "${baseName}@skills-dir" on the next session (after the workspace trust prompt).`));
+    console.log(chalk.gray('   Function hooks need the experimental code path shown in the proposal demo:'));
+    console.log(chalk.white(`   CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`));
+    console.log(chalk.gray(`   Or load it for one session only: claude --plugin-dir ${relPluginDir}`));
+    console.log(chalk.gray('   The flag, the "modules" key and every $ API name are provisional until Anthropic ships the feature.'));
+    console.log(chalk.gray('   Proposal: https://github.com/anthropics/claude-code/issues/91870\n'));
+
+    trackingService.trackDownload('function-hook', hookName, {
+      installation_type: 'individual_function_hook',
+      target_directory: path.relative(process.cwd(), targetDir),
+      source: 'github_main'
+    });
+    trackingService.trackInstallationOutcome('function-hook', hookName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
+    return true;
+  } catch (error) {
+    console.error(chalk.red(`❌ Error installing function hook "${hookName}":`), error.message);
+    trackingService.trackInstallationOutcome('function-hook', hookName, 'failure', { errorType: 'exception', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+}
+
 async function installIndividualLoop(loopName, targetDir, options = {}) {
   console.log(chalk.blue(`🔁 Installing loop: ${loopName}`));
   const startTime = Date.now();
@@ -1784,7 +1905,8 @@ async function installMultipleComponents(options, targetDir) {
       settings: [],
       hooks: [],
       skills: [],
-      loops: []
+      loops: [],
+      functionHooks: []
     };
     
     // Parse comma-separated values for each component type
@@ -1823,7 +1945,12 @@ async function installMultipleComponents(options, targetDir) {
       components.loops = loopsInput.split(',').map(l => l.trim()).filter(l => l);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length;
+    if (options.functionHook) {
+      const fnHooksInput = Array.isArray(options.functionHook) ? options.functionHook.join(',') : options.functionHook;
+      components.functionHooks = fnHooksInput.split(',').map(h => h.trim()).filter(h => h);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.functionHooks.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
@@ -1838,6 +1965,9 @@ async function installMultipleComponents(options, targetDir) {
     console.log(chalk.gray(`   Hooks: ${components.hooks.length}`));
     console.log(chalk.gray(`   Skills: ${components.skills.length}`));
     console.log(chalk.gray(`   Loops: ${components.loops.length}`));
+    if (components.functionHooks.length > 0) {
+      console.log(chalk.gray(`   Function Hooks (experimental): ${components.functionHooks.length}`));
+    }
 
     // Counter for successfully installed components
     let successfullyInstalled = 0;
@@ -1947,6 +2077,13 @@ async function installMultipleComponents(options, targetDir) {
         batchId
       });
       if (loopSuccess) successfullyInstalled++;
+    }
+
+    // Install function hooks (experimental: local plugin with a TypeScript hooks-module)
+    for (const fnHook of components.functionHooks) {
+      console.log(chalk.gray(`   Installing function hook: ${fnHook}`));
+      const fnHookSuccess = await installIndividualFunctionHook(fnHook, targetDir, { ...options, silent: true, batchId });
+      if (fnHookSuccess) successfullyInstalled++;
     }
 
     // Handle YAML workflow if provided
