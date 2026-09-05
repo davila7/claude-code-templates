@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [issue-number] | --team | --project | --close-github | --skip-comments
+argument-hint: "[issue-number] | --team | --project | --close-github | --skip-comments"
 description: Convert individual GitHub issues to Linear tasks with comprehensive data preservation
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [application-type] | --node | --python | --java | --go | --multi-stage
+argument-hint: "[application-type] | --node | --python | --java | --go | --multi-stage"
 description: Containerize application with optimized Docker configuration, security, and multi-stage builds
 ---
 

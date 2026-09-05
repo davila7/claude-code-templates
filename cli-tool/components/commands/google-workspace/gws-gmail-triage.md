@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
+argument-hint: "[resource] [method] [flags]"
 description: Gmail: Show unread inbox summary (sender, subject, date).
 ---
 

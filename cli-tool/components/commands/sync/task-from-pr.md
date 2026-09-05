@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [pr-number] | --team | --estimate | --batch-process | --auto-create
+argument-hint: "[pr-number] | --team | --estimate | --batch-process | --auto-create"
 description: Create Linear tasks from GitHub pull requests with intelligent content extraction and task sizing
 ---
 
