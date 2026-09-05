@@ -1,0 +1,6 @@
+{
+  "description": "One hook on * that records every event on $ (tool calls, prompts, renders, other plugins' side effects) as JSON lines with origin, duration and outcome, including denials. The audit trail from the proposal in a single function.",
+  "modules": [
+    "./universal-audit-log.ts"
+  ]
+}

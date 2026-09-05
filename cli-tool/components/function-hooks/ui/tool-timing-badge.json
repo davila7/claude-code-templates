@@ -1,0 +1,6 @@
+{
+  "description": "Times every tool call and wraps the engine's ToolUse rendering with a colored duration badge, on the terminal and on Desktop. Function hooks on tool.call and ui.render using JSX.",
+  "modules": [
+    "./tool-timing-badge.tsx"
+  ]
+}

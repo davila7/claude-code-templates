@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { listRepos, createPR, type GitHubRepo, type PRResult } from '../lib/github-api';
 import type { CollectionItem } from '../lib/types';
-import { fetchComponentContent } from '../lib/data';
+import { fetchComponentContentData } from '../lib/data';
 
 type Step = 'connect' | 'select-repo' | 'creating' | 'done' | 'error';
 
@@ -34,12 +34,33 @@ async function buildFileMap(
       const type = pluralType(item.component_type);
       const cleanItemPath = cleanPath(item.component_path);
 
-      const content = await fetchComponentContent(item.component_type, cleanItemPath);
+      const contentData = await fetchComponentContentData(item.component_type, cleanItemPath);
+      const content = contentData.content;
       if (!content) return;
 
       const name = item.component_name?.replace(/\.(md|json)$/, '') ?? '';
 
       switch (type) {
+        case 'loops':
+          files[`.claude/loops/${name}.md`] = content;
+          break;
+        case 'function-hooks': {
+          // Same layout the CLI writes: a plugin under .claude/skills/<name>/
+          // with hooks/hooks.json plus the hooks-module it names.
+          let hooksJson = content;
+          try {
+            const parsed = JSON.parse(content);
+            delete parsed.description; // catalog-only field
+            hooksJson = JSON.stringify(parsed, null, 2) + '\n';
+          } catch { /* keep raw content */ }
+          files[`.claude/skills/${name}/.claude-plugin/plugin.json`] =
+            JSON.stringify({ name, version: '0.1.0' }, null, 2) + '\n';
+          files[`.claude/skills/${name}/hooks/hooks.json`] = hooksJson;
+          if (contentData.module && contentData.moduleSource) {
+            files[`.claude/skills/${name}/hooks/${contentData.module}`] = contentData.moduleSource;
+          }
+          break;
+        }
         case 'agents':
           files[`.claude/agents/${name}.md`] = content;
           break;

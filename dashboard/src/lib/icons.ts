@@ -7,6 +7,7 @@ export const ICONS: Record<string, string> = {
   hooks: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>`,
   mcps: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242"/><path d="M12 12v9"/><path d="M8 17l4 4 4-4"/></svg>`,
   loops: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.64-6.36"/><polyline points="21 3 21 8 16 8"/></svg>`,
+  'function-hooks': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H6a2 2 0 00-2 2v3c0 1.1-.9 2-2 2 1.1 0 2 .9 2 2v3a2 2 0 002 2h2"/><path d="M16 4h2a2 2 0 012 2v3c0 1.1.9 2 2 2-1.1 0-2 .9-2 2v3a2 2 0 01-2 2h-2"/><path d="M10 15l2-6 2 6"/></svg>`,
 };
 
 // Compact inline SVG for React (as string)
@@ -20,6 +21,7 @@ export const TYPE_CONFIG: Record<string, { icon: string; label: string; singular
   hooks:    { icon: 'hooks',    label: 'Hooks',    singular: 'hook',    color: '#f97316', flag: '--hook' },
   mcps:     { icon: 'mcps',     label: 'MCPs',     singular: 'mcp',     color: '#06b6d4', flag: '--mcp' },
   loops:    { icon: 'loops',    label: 'Loops',    singular: 'loop',    color: '#ec4899', flag: '--loop', hidden: true },
+  'function-hooks': { icon: 'function-hooks', label: 'Function Hooks', singular: 'function-hook', color: '#a3e635', flag: '--function-hook' },
 };
 
 export const VALID_TYPES = Object.keys(TYPE_CONFIG);

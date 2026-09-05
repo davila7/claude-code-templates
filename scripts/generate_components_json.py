@@ -381,14 +381,14 @@ def generate_components_json():
     templates_base_path = 'cli-tool/templates'
     plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
-    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'templates': [], 'plugins': []}
+    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'function-hooks': [], 'templates': [], 'plugins': []}
 
     # Run security validation
     security_metadata = run_security_validation()
 
     # Fetch download statistics
     download_stats = fetch_download_stats()
-    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops']
+    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'function-hooks']
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -512,6 +512,8 @@ def generate_components_json():
                         version = ''
                         license_field = ''
                         keywords = []
+                        module_file = ''
+                        module_source = ''
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
@@ -529,10 +531,23 @@ def generate_components_json():
                                                 if isinstance(server_config, dict) and 'description' in server_config:
                                                     description = server_config['description']
                                                     break  # Use the first description found
-                                    elif component_type in ['settings', 'hooks']:
+                                    elif component_type in ['settings', 'hooks', 'function-hooks']:
                                         # Extract metadata from settings/hooks JSON files
                                         if 'description' in json_data:
                                             description = json_data['description']
+                                        # Function hooks (experimental): hooks.json names a TypeScript
+                                        # hooks-module beside it via "modules". Read it so the site can
+                                        # show the code and the CLI can install it.
+                                        if component_type == 'function-hooks':
+                                            modules = json_data.get('modules') or []
+                                            if modules:
+                                                module_file = modules[0].lstrip('./')
+                                                module_path = os.path.join(category_path, module_file)
+                                                try:
+                                                    with open(module_path, 'r', encoding='utf-8') as mf:
+                                                        module_source = mf.read()
+                                                except OSError:
+                                                    print(f"Warning: module {module_file} not found for {file_path}")
                                         if 'author' in json_data:
                                             author = json_data['author']
                                         if 'repo' in json_data:
@@ -605,6 +620,9 @@ def generate_components_json():
                             'downloads': downloads,  # Add download count
                             'security': security  # Add security metadata
                         }
+                        if module_file:
+                            component['module'] = module_file          # e.g. "secret-redactor.ts"
+                            component['moduleSource'] = module_source  # stripped from indexes, kept in content files
                         components_data[component_type].append(component)
 
     # Scan templates (new logic)
@@ -809,7 +827,7 @@ def generate_components_json():
     dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
 
     # Component types that carry a 'content' field
-    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops']
+    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'function-hooks']
 
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
@@ -823,9 +841,13 @@ def generate_components_json():
             slug = component['path'].replace('.md', '').replace('.json', '')
             content_file_path = os.path.join(dashboard_content_dir, ctype, slug + '.json')
             os.makedirs(os.path.dirname(content_file_path), exist_ok=True)
+            content_payload = {'content': raw_content}
+            if component.get('module'):
+                content_payload['module'] = component['module']
+                content_payload['moduleSource'] = component.get('moduleSource', '')
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
-                    json.dump({'content': raw_content}, f, ensure_ascii=False)
+                    json.dump(content_payload, f, ensure_ascii=False)
                 written_content_count += 1
             except IOError as e:
                 print(f"Warning: Could not write content file {content_file_path}: {e}")
@@ -838,7 +860,7 @@ def generate_components_json():
     index_data = {}
     for k, v in components_data.items():
         if k in content_bearing_types:
-            index_data[k] = [{key: val for key, val in c.items() if key != 'content'} for c in v]
+            index_data[k] = [{key: val for key, val in c.items() if key not in ('content', 'moduleSource')} for c in v]
         else:
             index_data[k] = v
 
@@ -862,7 +884,7 @@ def generate_components_json():
     #   components/{type}.json   → per-type slice (grid loads only active type)
     #   search-index.json        → flat [{type,name,path,description,category}]
     # ---------------------------------------------------------------------------
-    STRIP_KEYS = {'content', 'security'}
+    STRIP_KEYS = {'content', 'security', 'moduleSource'}
 
     def strip_for_dashboard(component):
         return {key: val for key, val in component.items() if key not in STRIP_KEYS}

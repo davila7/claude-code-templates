@@ -1,6 +1,20 @@
 {
   "articles": [
     {
+      "id": "function-hooks-claude-code",
+      "title": "Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook",
+      "description": "Anthropic is proposing hooks as TypeScript middleware on a $ engine interface. What is known, how to turn the experimental flag on, how a hook composes, and 10 ready-made function hooks in the aitmpl.com catalog.",
+      "url": "function-hooks-claude-code/",
+      "image": "assets/function-hooks-claude-code-cover.svg",
+      "category": "Hooks",
+      "publishDate": "2026-09-04",
+      "readTime": "9 min read",
+      "tags": ["Claude Code", "Function Hooks", "Hooks", "TypeScript", "Plugins", "Experimental"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 23
+    },
+    {
       "id": "secure-git-workflow",
       "title": "Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards",
       "description": "Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.",
