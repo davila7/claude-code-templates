@@ -1706,6 +1706,10 @@ async function installIndividualFunctionHook(hookName, targetDir, options = {}) 
   const startTime = Date.now();
 
   try {
+    // Only "category/name" (or "name") in kebab-case: this string becomes both a URL and a directory name.
+    if (!/^[a-z0-9][a-z0-9-]*(?:\/[a-z0-9][a-z0-9-]*)?$/i.test(hookName)) {
+      throw new Error('Invalid function hook name. Expected "category/name" (letters, digits and hyphens only).');
+    }
     const baseUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/function-hooks/${hookName}`;
     const baseName = hookName.includes('/') ? hookName.split('/').pop() : hookName;
     console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
@@ -1733,7 +1737,11 @@ async function installIndividualFunctionHook(hookName, targetDir, options = {}) 
     // 2. Every hooks-module named in "modules" (.js/.ts/.jsx/.tsx), stored beside hooks.json
     const moduleFiles = {};
     for (const modulePath of modules) {
-      const moduleFileName = modulePath.replace(/^\.\//, '');
+      const moduleFileName = String(modulePath).replace(/^\.\//, '');
+      // A hooks-module must be a plain file beside hooks.json, never a path.
+      if (!/^[a-z0-9][a-z0-9._-]*\.(js|ts|jsx|tsx)$/i.test(moduleFileName) || moduleFileName.includes('..')) {
+        throw new Error(`Refusing hooks-module with unsafe name: ${modulePath}`);
+      }
       const moduleResponse = await fetch(`${baseUrl.substring(0, baseUrl.lastIndexOf('/'))}/${moduleFileName}`);
       if (!moduleResponse.ok) {
         throw new Error(`hooks-module ${moduleFileName} not found (HTTP ${moduleResponse.status})`);

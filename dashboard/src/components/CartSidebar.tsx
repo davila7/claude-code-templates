@@ -8,7 +8,8 @@ const EMPTY_CART: Cart = {
 
 const TYPE_FLAGS: Record<string, string> = {
   agents: '--agent', commands: '--command', settings: '--setting',
-  hooks: '--hook', mcps: '--mcp', skills: '--skill', templates: '--template',
+  hooks: '--hook', mcps: '--mcp', skills: '--skill', loops: '--loop',
+  'function-hooks': '--function-hook', templates: '--template',
 };
 
 function cleanPath(path: string): string {

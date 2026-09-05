@@ -17,7 +17,10 @@ type Next = ((e: any) => Promise<any>) & { event: string; origin: string; signal
 interface Rule { pattern: RegExp; reason: string }
 
 const DEFAULT_RULES: Rule[] = [
-  { pattern: /\brm\s+-[a-z]*r[a-z]*\s+(\/|~|\$HOME|\.\.?)(\s|$)/i, reason: "recursive delete of a root, home or working directory" },
+  // rm with a recursive flag anywhere in its arguments (-r, -rf, -r -f, --recursive, -fR ...)
+  // and a root/home/cwd target, optionally quoted or with a trailing slash ("~/", "$HOME/", "/").
+  { pattern: /\brm\s+(?=(?:\S+\s+)*?(?:-[a-z]*r[a-z]*|--recursive)\b)(?:\S+\s+)*?["']?(?:\/|~|\$HOME|\$\{HOME\}|\.\.?)\/?["']?(?:\s|$|;|&|\|)/i, reason: "recursive delete of a root, home or working directory" },
+  { pattern: /\brm\s+.*--no-preserve-root\b/i, reason: "rm with --no-preserve-root" },
   { pattern: /\bgit\s+push\b(?!.*--force-with-lease).*(--force\b|\s-f\b)/, reason: "force push" },
   { pattern: /\bgit\s+(reset\s+--hard|clean\s+-[a-z]*f)/, reason: "history or working-tree destruction" },
   { pattern: /\b(DROP|TRUNCATE)\s+(TABLE|DATABASE|SCHEMA)\b/i, reason: "destructive SQL" },
