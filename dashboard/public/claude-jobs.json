@@ -1,12 +1,52 @@
 {
-  "lastUpdated": "2026-09-04T03:14:37.816566+00:00",
-  "totalJobs": 100,
+  "lastUpdated": "2026-09-05T03:10:29.546951+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5415529008",
+      "company": "Anthropic",
+      "position": "Head of Technical Training",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "The world’s engineers are hungry to learn how to get the most out of Claude. At Anthropic, technical instruction is already happening everywhere: our Applied AI and Forward Deployed Engineering teams are teaching customers and partners, and engineers across the company are helping others learn to...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5415529008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5415529008",
+      "postedAt": "2026-09-04T12:11:40-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5415537008",
+      "company": "Anthropic",
+      "position": "Lead Technical Instructor",
+      "location": "New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic’s engineers are building some of the most ambitious AI systems and applications in the world. We also help engineers, architects, and technical practitioners across Anthropic, our partners, and our customers learn to build with Claude. Until now, technical instruction has largely been a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5415537008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5415537008",
+      "postedAt": "2026-09-04T12:11:13-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-49552714",
       "company": "AiMi",
@@ -449,6 +489,32 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-collaboration-ai-senior-software-ai-engineer",
+      "company": "Collaboration.Ai",
+      "position": "Senior Software AI Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Minneapolis, MN URL: http://collaboration.ai Who We Are Collaboration.Ai is a mission-focused, AI-powered software and services company based in Minnesota, with employees, partners, and customers around the world. We unite people, technology, and purpose to accelerate breakthroughs...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-ai-engineer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-ai-engineer",
+      "postedAt": "2026-08-17T11:57:38+00:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Claude Code",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "wwr-collaboration-ai-senior-software-engineer",
       "company": "Collaboration.Ai",
       "position": "Senior Software Engineer",
@@ -610,32 +676,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "wwr-lemon-io-senior-ai-engineer-4",
-      "company": "Lemon.io",
-      "position": "Senior AI Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: New York, NY URL: https://lemon.io Are you a talented Senior AI Engineer/Architect looking for a remote job that lets you show your skills and get decent compensation? Look no further than Lemon.io — the marketplace that connects you with hand-picked startups in the US and Europe....",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-4",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/lemon-io-senior-ai-engineer-4",
-      "postedAt": "2026-08-05T08:23:41+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Rust",
-        "Go",
-        "Node.js",
-        "React Native",
-        "Swift"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "hn-48915735",
       "company": "Portless",
       "position": "AI Engineer",
@@ -677,7 +717,7 @@
     {
       "id": "anth-5342935008",
       "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Safeguards Review Tooling",
+      "position": "Staff+ Software Engineer, Safeguards Human Review Tooling",
       "location": "San Francisco, CA",
       "remote": false,
       "salary": "",
