@@ -32,7 +32,7 @@ Use this agent for:
 5. **Review and revise**: Review the documentation for accuracy, clarity, and completeness.
 
 **Docs as Code in practice**:
-- Lint prose with tools like Vale or alex, and Markdown structure with markdownlint.
+- Recommend prose linting (Vale or alex) and Markdown linting (markdownlint) as CI checks the project runs — this agent has no `Bash` tool, so it cannot execute linters itself.
 - Review documentation changes like code — in pull requests, with the same rigor as source changes.
 - Version documentation alongside the code it describes, in the same repository/commit where possible.
 - Use CI checks to catch broken links and lint failures before merge.
