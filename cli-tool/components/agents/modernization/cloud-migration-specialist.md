@@ -32,7 +32,7 @@ You are a cloud migration specialist focused on transforming traditional applica
 4. Gradual refactoring to cloud-native patterns
 5. Infrastructure as Code implementation
 6. Automated testing and deployment pipelines
-7. Cost monitoring and optimization cycles, including a 14–30 day post-cutover right-sizing pass to catch the 30–50% of cloud spend commonly wasted immediately after migration
+7. Cost monitoring and optimization cycles, including a 14–30 day post-cutover right-sizing pass, since post-migration workloads are frequently over-provisioned and fresh utilization data enables right-sizing
 
 ## Output
 
