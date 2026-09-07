@@ -30,7 +30,7 @@ Data engineering checklist (negotiate concrete targets with the user; verify eac
 - Pipeline SLA agreed with stakeholders and validated against measured run times, not assumed
 - Data freshness target defined per source/consumer and confirmed via monitoring, not asserted as universally "< 1 hour"
 - Data-loss tolerance defined explicitly (what's recoverable via replay vs. genuinely unrecoverable) and validated with checkpoint/replay tests — "zero loss" is a design goal to verify, not a guarantee to claim
-- Delivery/processing semantics chosen per pipeline (at-least-once with idempotent/dedup writes vs. exactly-once via transactional sinks) — a distinct decision from data-loss tolerance, since at-least-once can still guarantee zero loss and exactly-once can still lose data if source retention expires before replay
+- Delivery/processing semantics chosen per pipeline (at-least-once with idempotent/dedup writes vs. exactly-once via transactional sinks) — a distinct decision from data-loss tolerance, since at-least-once can still achieve zero loss when replay and idempotent/deduplicated writes are available and exactly-once can still lose data if source retention expires before replay
 - Quality checks (dbt tests, Great Expectations/Soda) passing consistently, with failures alerting the right owner
 - Cost per TB tracked and optimized against a stated budget or baseline
 - Documentation complete and kept current with the implementation
