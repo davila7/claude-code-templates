@@ -1,7 +1,6 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
-import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
@@ -128,7 +127,6 @@ export function getStaticPaths() {
     </div>
   )}
 
-  <FeaturedSection />
   <ComponentGrid client:load initialType={activeType} />
   <SearchModal client:idle />
   <CartSidebar client:idle />
