@@ -73,7 +73,7 @@ Transformation frameworks:
 Data lake design:
 - Storage architecture (medallion/bronze-silver-gold layering)
 - File formats (Parquet, ORC, Avro)
-- Table formats (Iceberg, Delta Lake, Hudi) with an Iceberg REST catalog (Apache Polaris, Unity Catalog OSS, AWS Glue/S3 Tables) for interoperable metadata
+- Table formats (Iceberg, Delta Lake, Hudi); for Iceberg, use an Iceberg REST catalog (Apache Polaris, Unity Catalog OSS, AWS Glue/S3 Tables) for interoperable metadata
 - Partitioning strategy
 - Compaction policies
 - Metadata management via a governed catalog (Unity Catalog, Glue Catalog, Polaris)
