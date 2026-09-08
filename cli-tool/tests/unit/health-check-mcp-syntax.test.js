@@ -74,10 +74,12 @@ describe('HealthChecker.checkMCPConfigurationSyntax', () => {
         fullUrl: { type: 'http', url: '${MCP_URL}' },
         hostPort: { type: 'http', url: 'https://${MCP_HOST}:${MCP_PORT}/mcp' }
       });
-      expect(run()).toEqual({
-        status: 'warn',
-        message: 'All 2 MCP server configurations are valid; 2 use unresolved environment variables in url (not verified)'
-      });
+      const result = run();
+      expect(result.status).toBe('warn');
+      expect(result.message).toContain('2 use unresolved environment variables in url (not verified)');
+      expect(result.message).toContain('${MCP_URL} (not verified) for fullUrl in .mcp.json');
+      expect(result.message).toContain('${MCP_HOST}, ${MCP_PORT} (not verified) for hostPort in .mcp.json');
+      expect(result.message).not.toContain(process.env.MCP_URL);
     } finally {
       if (previous === undefined) {
         delete process.env.MCP_URL;
@@ -95,7 +97,10 @@ describe('HealthChecker.checkMCPConfigurationSyntax', () => {
       badName: { type: 'http', url: 'https://${1HOST}/mcp' },
       ok: { type: 'sse', url: 'https://${MCP_HOST}/sse' }
     });
-    expect(run()).toEqual({ status: 'warn', message: '1/5 MCP servers valid, 4 issues found' });
+    const result = run();
+    expect(result.status).toBe('warn');
+    expect(result.message).toContain('1/5 MCP servers valid, 4 issues found');
+    expect(result.message).toContain('${MCP_HOST} (not verified) for ok in .mcp.json');
   });
 
   test('reports a url without type as a configuration error (Claude Code skips it)', () => {

@@ -868,10 +868,11 @@ class HealthChecker {
       };
     }
     
+    const warningDetails = warnings.length > 0 ? `; ${warnings.join('; ')}` : '';
     if (invalidServers === 0 && unverifiedServers > 0) {
       return {
         status: 'warn',
-        message: `All ${totalServers} MCP server configurations are valid; ${unverifiedServers} use unresolved environment variables in url (not verified)`
+        message: `All ${totalServers} MCP server configurations are valid; ${unverifiedServers} use unresolved environment variables in url (not verified)${warningDetails}`
       };
     } else if (invalidServers === 0) {
       return {
@@ -881,12 +882,12 @@ class HealthChecker {
     } else if (validServers > 0) {
       return {
         status: 'warn',
-        message: `${validServers}/${totalServers} MCP servers valid, ${invalidServers} issues found`
+        message: `${validServers}/${totalServers} MCP servers valid, ${invalidServers} issues found${warningDetails}`
       };
     } else {
       return {
         status: 'fail',
-        message: `All ${totalServers} MCP server configurations have issues`
+        message: `All ${totalServers} MCP server configurations have issues${warningDetails}`
       };
     }
   }
