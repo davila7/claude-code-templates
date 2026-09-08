@@ -644,6 +644,51 @@ class HealthChecker {
     }
   }
 
+  /**
+   * Validate the transport shape of one MCP server entry.
+   * Returns null when the entry is a valid local (stdio) or remote (http/sse)
+   * server definition, otherwise a short issue description.
+   */
+  validateMCPServerTransport(serverConfig) {
+    const hasCommand = typeof serverConfig.command === 'string' && serverConfig.command.trim() !== '';
+    const hasUrl = typeof serverConfig.url === 'string' && serverConfig.url.trim() !== '';
+    const type = serverConfig.type;
+
+    if (type !== undefined && !['stdio', 'http', 'sse'].includes(type)) {
+      return `Unsupported transport type "${type}"`;
+    }
+
+    if (type === 'http' || type === 'sse') {
+      if (!hasUrl) {
+        return `Missing url for ${type} transport`;
+      }
+    } else if (type === 'stdio') {
+      if (!hasCommand) {
+        return 'Missing command for stdio transport';
+      }
+    } else if (!hasCommand && !hasUrl) {
+      return 'Missing command';
+    }
+
+    if (hasUrl) {
+      let parsed;
+      try {
+        parsed = new URL(serverConfig.url);
+      } catch (error) {
+        return 'Invalid url';
+      }
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        return 'Invalid url (must be http or https)';
+      }
+      if (serverConfig.headers !== undefined &&
+          (serverConfig.headers === null || typeof serverConfig.headers !== 'object' || Array.isArray(serverConfig.headers))) {
+        return 'Invalid headers format';
+      }
+    }
+
+    return null;
+  }
+
   checkMCPConfigurationSyntax() {
     const configPaths = [
       path.join(process.cwd(), '.mcp.json')
@@ -672,10 +717,13 @@ class HealthChecker {
                 continue;
               }
               
-              // Check required fields
-              if (!serverConfig.command) {
+              // Check required fields. Claude Code supports local stdio servers
+              // (`command` + optional `args`/`env`) and remote servers
+              // (`url` with `type` "http" or "sse", optional `headers`).
+              const transportIssue = this.validateMCPServerTransport(serverConfig);
+              if (transportIssue) {
                 invalidServers++;
-                issues.push(`Missing command for ${serverName} in ${path.basename(configPath)}`);
+                issues.push(`${transportIssue} for ${serverName} in ${path.basename(configPath)}`);
                 continue;
               }
               
@@ -1361,7 +1409,7 @@ class HealthChecker {
         } else if (result.check === 'MCP Config Syntax' && result.message.includes('Invalid JSON')) {
           recommendations.push('Fix JSON syntax errors in MCP configuration files');
         } else if (result.check === 'MCP Config Syntax' && result.message.includes('Missing command')) {
-          recommendations.push('Add missing command fields to MCP server configurations');
+          recommendations.push('Add a command (stdio) or url with type http/sse to each MCP server configuration');
         } else if (result.check === 'Local Hooks' && result.message.includes('Invalid JSON')) {
           recommendations.push('Fix JSON syntax error in .claude/settings.local.json');
         }
