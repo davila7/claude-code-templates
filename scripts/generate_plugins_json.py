@@ -65,6 +65,7 @@ REPOS = [
     ("krasserm/ml-plugins", None),
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
+    ("atretyak1985/swarmery", "https://atretyak1985.github.io/swarmery/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
