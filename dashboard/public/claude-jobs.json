@@ -1,12 +1,33 @@
 {
-  "lastUpdated": "2026-09-08T07:56:26.336901+00:00",
-  "totalJobs": 105,
+  "lastUpdated": "2026-09-09T07:59:44.499874+00:00",
+  "totalJobs": 106,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49615435",
+      "company": "ALBERT",
+      "position": "Software Engineer",
+      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
+      "remote": true,
+      "salary": "$750k",
+      "description": "We're a consumer fintech with 25M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49615435",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49615435",
+      "postedAt": "2026-09-08T19:19:18+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "React Native"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49598051",
       "company": "BOSS-IQ",
