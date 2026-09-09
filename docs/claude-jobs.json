@@ -1,12 +1,33 @@
 {
-  "lastUpdated": "2026-09-08T03:05:25.449439+00:00",
-  "totalJobs": 103,
+  "lastUpdated": "2026-09-09T03:10:19.370871+00:00",
+  "totalJobs": 106,
   "sources": [
     "Anthropic",
     "HackerNews",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49615435",
+      "company": "ALBERT",
+      "position": "Software Engineer",
+      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
+      "remote": true,
+      "salary": "$750k",
+      "description": "We're a consumer fintech with 25M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49615435",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49615435",
+      "postedAt": "2026-09-08T19:19:18+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "React Native"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49598051",
       "company": "BOSS-IQ",
@@ -488,6 +509,50 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-zeta-global-senior-product-designer-ai",
+      "company": "Zeta Global",
+      "position": "Senior Product Designer, AI",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$160,000 - $180,000",
+      "description": "Headquarters: Remote - United States WHO WE ARE Zeta Global (NYSE: ZETA) is the AI-Powered Marketing Cloud that leverages advanced artificial intelligence (AI) and trillions of consumer signals to make it easier for marketers to acquire, grow, and retain customers more efficiently. Through the Zeta...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-ai",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-ai",
+      "postedAt": "2026-08-18T20:32:19+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "Rust",
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-zeta-global-senior-product-designer-agentic-ai-applications",
+      "company": "Zeta Global",
+      "position": "Senior Product Designer, Agentic AI Applications",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$160,000 - $180,000",
+      "description": "Headquarters: Remote - United States WHO WE ARE Zeta Global (NYSE: ZETA) is the AI-Powered Marketing Cloud that leverages advanced artificial intelligence (AI) and trillions of consumer signals to make it easier for marketers to acquire, grow, and retain customers more efficiently. Through the Zeta...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-agentic-ai-applications",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-agentic-ai-applications",
+      "postedAt": "2026-08-18T20:32:19+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "Rust",
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5390877008",
