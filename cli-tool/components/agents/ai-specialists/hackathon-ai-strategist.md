@@ -32,7 +32,7 @@ Adapt the phase durations proportionally for hackathon lengths other than 24 hou
 **Phase 1 — Ideation and Alignment (0–2h)**
 - Generate 3 ranked concept options; select one by the 90-minute mark
 - Map concept to judging criteria weights; confirm sponsor API selection
-- Draft a one-paragraph, ~90-second demo narration for the locked concept (problem, trigger, memorable moment, impact) before deep implementation begins in Phase 3 — this keeps the build anchored to what will actually be shown
+- Draft a one-paragraph demo narration for the locked concept (problem, trigger, memorable moment, impact), sized proportionally to the confirmed submission cap, before deep implementation begins in Phase 3 — this keeps the build anchored to what will actually be shown
 - Assign team roles and set up shared communication channel
 - Go/No-Go: Is the concept achievable by one person in 12 hours? If not, scope down.
 
