@@ -214,7 +214,7 @@
                         </tr>
                         <tr>
                             <td>No native model or HTTP calls</td>
-                            <td><code>$.model</code>, <code>$.http</code>, <code>$.fs</code>, <code>$.process</code> primitives (the last three confirmed "very likely" by the author)</td>
+                            <td><code>$.model</code>, <code>$.http</code>, <code>$.fs</code>, <code>$.process</code> primitives — all four present in the 2.1.266 binary</td>
                         </tr>
                         <tr>
                             <td>Cannot register or override tools</td>
@@ -235,9 +235,41 @@
 
                 <p>With the flag on, the demo shows a built-in <code>/plugin-authoring</code> skill that generates a plugin from a one-sentence description. The output lives in <code>.claude/</code> as a plugin: a manifest, a <code>hooks.json</code>, and the <code>.ts</code> file with your hooks.</p>
 
-                <div class="info-box">
-                    <strong>What if the flag does nothing on your build?</strong> Then your Claude Code version does not include the experimental code path. The issue says the demos run on "actual binaries", but does not say which release, and there is no changelog entry. Do not spend an afternoon debugging it; comment on the issue instead.
+                <div class="success-box">
+                    <strong>This is not just a document — it is already in your binary.</strong> We ran <code>strings</code> over Claude Code <strong>2.1.266</strong> and the flag name appears five times, alongside the engine that reads it. We then installed <code>security/secret-redactor</code> from the catalog and ran it end to end. It works, unmodified. Details below.
                 </div>
+
+                <h3>Verified against Claude Code 2.1.266</h3>
+
+                <p>We did not take the architecture doc on faith. Two checks, both reproducible:</p>
+
+                <p><strong>1. The engine is compiled in.</strong> The binary carries the event names, the error messages and the <code>$</code> factory functions themselves. The surface is <em>larger</em> than the doc describes:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Noun on <code>$</code></th>
+                            <th>Methods found in the 2.1.266 binary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>$.fs</code></td><td><code>readFile</code>, <code>writeFile</code>, <code>listDir</code>, <code>exists</code>, <code>stat</code>, <code>ancestors</code></td></tr>
+                        <tr><td><code>$.http</code></td><td><code>fetch</code></td></tr>
+                        <tr><td><code>$.process</code></td><td><code>run</code> (argv, <code>cwd</code>, <code>env</code>, <code>stdin</code>, <code>timeoutMs</code>)</td></tr>
+                        <tr><td><code>$.model</code></td><td><code>complete</code>, <code>fork</code>, <code>classify</code> — with a per-plugin token budget</td></tr>
+                        <tr><td><code>$.store</code></td><td><code>get</code>, <code>set</code>, <code>delete</code> — JSON values only, capped at 4,194,304 characters, with a lock</td></tr>
+                        <tr><td><code>$.session</code></td><td><code>messages</code>, <code>cwd</code>, <code>model</code>, <code>turnCount</code>, <code>id</code>, <code>repo</code>, <code>surface</code>, <code>authorize</code></td></tr>
+                        <tr><td><code>$.ui</code></td><td><code>render</code>, <code>ask</code>, <code>select</code>, <code>input</code>, <code>toast</code>, <code>notice</code>, <code>status</code>, <code>log</code>, <code>open</code>, <code>close</code>, <code>press</code>, <code>invalidate</code>, <code>resolve</code></td></tr>
+                        <tr><td><code>$.tool</code></td><td><code>call</code>, <code>describe</code>, <code>list</code>, <code>register</code>, <code>output</code>, <code>execution</code></td></tr>
+                        <tr><td><code>$.agent</code></td><td><code>list</code>, <code>spawn</code></td></tr>
+                        <tr><td><code>$.command</code></td><td><code>list</code>, <code>register</code> — plus the <code>command.run</code> and <code>command.describe</code> events</td></tr>
+                        <tr><td><code>$.prompt</code></td><td><code>submit</code>, plus the <code>prompt.section</code> and <code>prompt.context</code> events</td></tr>
+                    </tbody>
+                </table>
+
+                <p>Beside those, the binary knows <code>engine.create</code>, <code>plugin.register</code>, <code>turn.complete</code>, and a <code>classic.*</code> namespace (<code>classic.PreToolUse</code>, <code>classic.SessionStart</code>, <code>classic.SessionEnd</code>, <code>classic.Setup</code>) — today's shell hooks, surfaced to function hooks as events. The <code>engine.create</code> withholding path even has its own diagnostics for a capability that was withheld but reached the host anyway, which is precisely the mechanism our <code>admin-capability-lockdown</code> hook assumes.</p>
+
+                <p><strong>2. A catalog hook runs unmodified.</strong> We dropped <code>security/secret-redactor</code>'s <code>.ts</code> into a plugin directory, changed nothing, and started Claude Code with the flag. A clean A/B: the same question with the flag off returned an unredacted <code>.env</code>; with the flag on, every one of the ten patterns fired. Redaction covered the <code>Read</code> tool as well as <code>Bash</code>, and a follow-up command containing a <code>[REDACTED:…]</code> placeholder was denied before execution, with the hook's own message. The <code>register(on, options)</code> and <code>($, e, next)</code> signatures the doc describes are the ones the shipping binary calls.</p>
 
                 <h3>The plugin layout</h3>
 
@@ -389,15 +421,25 @@ on("tool.call", { tool: "WebFetch" }, async ($, e, next) => {
 
                 <h2>10 Function Hooks in the Catalog</h2>
 
-                <p>We wrote ten hooks against the API described in the architecture doc, one per pattern the proposal demonstrates. Each catalog entry is the real thing: the <code>hooks.json</code> with its <code>modules</code> key, and the TypeScript hooks-module it names, with a header comment that lists exactly which parts of <code>$</code> are assumptions. Install any of them with the new <code>--function-hook</code> flag. It writes the plugin layout above to <code>.claude/skills/&lt;name&gt;/</code>, which Claude Code auto-loads as <code>&lt;name&gt;@skills-dir</code> on the next session once you trust the workspace, so no <code>--plugin-dir</code> is needed:</p>
+                <p>We wrote ten hooks against the API described in the architecture doc, one per pattern the proposal demonstrates. Each catalog entry is the real thing: the <code>hooks.json</code> with its <code>modules</code> key, and the TypeScript hooks-module it names, with a header comment that lists exactly which parts of <code>$</code> are assumptions. Install any of them with the <code>--function-hook</code> flag, which needs <strong>claude-code-templates 1.29.5 or newer</strong>:</p>
 
-                <pre><code class="language-bash">npx claude-code-templates@latest --function-hook security/block-destructive-commands
+                <pre><code class="language-bash">npx claude-code-templates@latest --function-hook security/block-destructive-commands</code></pre>
 
-# Then, on a build that has the experimental code path:
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+                <p>It writes the plugin layout above to <code>.claude/skills/&lt;name&gt;/</code>. Then start Claude Code with the flag. Pointing <code>--plugin-dir</code> at the directory is the path we tested and the one we recommend:</p>
 
-# Or load it for one session only, from anywhere:
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/block-destructive-commands</code></pre>
+                <pre><code class="language-bash">CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/block-destructive-commands</code></pre>
+
+                <p>Claude Code should also pick the directory up on its own as <code>&lt;name&gt;@skills-dir</code> on the next session, once you trust the workspace — but that auto-load is the one part of this flow we have not confirmed on a real binary, so reach for <code>--plugin-dir</code> if the hook does not fire.</p>
+
+                <div class="info-box">
+                    <strong>Older CLI, or no CLI at all?</strong> The layout is four lines of shell. This is exactly what we tested, and the catalog's <code>.ts</code> file runs in it without a single edit:
+                    <pre><code class="language-bash">mkdir -p .claude/plugins/secret-redactor/{.claude-plugin,hooks}
+cd .claude/plugins/secret-redactor
+echo '{"name":"secret-redactor","version":"0.0.1"}' &gt; .claude-plugin/plugin.json
+echo '{"modules":["./secret-redactor.ts"]}' &gt; hooks/hooks.json
+# then drop secret-redactor.ts next to hooks.json and run:
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/plugins/secret-redactor</code></pre>
+                </div>
 
                 <table>
                     <thead>
@@ -474,14 +516,24 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/block-des
 
                 <p>Browse them all at <a href="/function-hooks">aitmpl.com/function-hooks</a>. The listing carries the same experimental banner as this article.</p>
 
+                <div class="warning-box">
+                    <strong>Two things testing turned up that the table does not tell you.</strong>
+                    <ul>
+                        <li><strong><code>secret-redactor</code> matches by shape, not by meaning.</strong> Its ten patterns catch key- and token-shaped strings, so <code>PASSWORD=hunter2</code> and <code>API_SECRET=correct-horse-battery-staple</code> go through untouched. There is no entropy check and no keyword heuristic. Treat it as a net for the obvious leaks, not as a guarantee.</li>
+                        <li><strong>Its <code>connection-string</code> pattern redacts only the credentials.</strong> The expression stops at the <code>@</code>, so <code>postgres://user:pw@db.internal.example:5432/appdb</code> becomes <code>[REDACTED:connection-string]db.internal.example:5432/appdb</code>. Username and password are gone; host, port and database name still reach the model. That is often what you want in a log, but it is a deliberate half-measure and worth knowing before you rely on it.</li>
+                    </ul>
+                </div>
+
+                <p>One more practical note: <code>$.ui.log</code> appears to be a TUI surface. In headless runs (<code>claude -p</code>, even with <code>--debug</code>) the hooks' log lines did not show up. That does not affect <code>universal-audit-log</code>, which writes through <code>$.fs.append</code> and deliberately skips <code>ui.*</code> events, but it does mean a hook that reports only through <code>$.ui.log</code> will be silent in CI.</p>
+
                 <h2>What the Thread Is Still Asking</h2>
 
                 <p>The issue collected serious feedback within a day, much of it from people who run dozens of hooks in production. If you are deciding whether to invest, these are the open questions worth tracking, none of which the doc answers yet:</p>
 
                 <ul>
                     <li><strong>Fail-open or fail-closed?</strong> If a hook three deep throws, does the action proceed or get blocked? For a redaction hook, fail-open is worse than no hook at all. Several commenters want this declared per hook.</li>
-                    <li><strong>Hang budget.</strong> What cancels a hook whose promise never settles? Is there a per-hook timeout, or does one bad <code>await</code> wedge the event for everyone beneath it?</li>
-                    <li><strong>How far does <code>$.fs</code> reach?</strong> Many real hooks read <code>~/.secrets/</code> and write state outside the project. The author confirmed <code>$.fs</code>, <code>$.http</code> and <code>$.process</code> will very likely exist, and that the point is not to restrict plugins but to route everything through <code>$</code> so admins can audit, allowlist and deny.</li>
+                    <li><strong>Hang budget.</strong> What cancels a hook whose promise never settles? Partly answered by the binary: there is reentrancy detection, and it is specific. Call <code>$.model</code> from a <code>prompt.submit</code> hook and 2.1.266 tells you the call "would wait on the turn this hook is holding", then names the ways out — answer <code>{ text }</code>, call <code>next(e)</code>, or defer to a later event such as <code>turn.complete</code>. There are budgets too (a per-plugin model-token budget that can be spent). What is still unclear is the generic case: a plain <code>await</code> on something slow that is not the model.</li>
+                    <li><strong>How far does <code>$.fs</code> reach?</strong> Many real hooks read <code>~/.secrets/</code> and write state outside the project. The methods exist in 2.1.266 — <code>readFile</code>, <code>writeFile</code>, <code>listDir</code>, <code>exists</code>, <code>stat</code>, <code>ancestors</code> — but what paths they will actually accept, and under whose permission settings, is not something you can read off a binary. The author's stated intent is not to restrict plugins but to route everything through <code>$</code> so admins can audit, allowlist and deny.</li>
                     <li><strong>Do MCP tool calls go through <code>tool.call</code>?</strong> If they reach the model outside <code>$</code>, the biggest gap in today's guards stays open.</li>
                     <li><strong>Interleaving with command hooks.</strong> Nobody migrates 150 hooks in one release. Does a command hook's deny win over a function hook that called <code>next</code>?</li>
                     <li><strong>Testing.</strong> A documented fake <code>$</code> and a fixture format would decide whether existing test suites port or get rewritten.</li>
