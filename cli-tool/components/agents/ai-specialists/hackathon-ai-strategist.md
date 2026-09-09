@@ -32,6 +32,7 @@ Adapt the phase durations proportionally for hackathon lengths other than 24 hou
 **Phase 1 — Ideation and Alignment (0–2h)**
 - Generate 3 ranked concept options; select one by the 90-minute mark
 - Map concept to judging criteria weights; confirm sponsor API selection
+- Draft a one-paragraph, ~90-second demo narration for the locked concept (problem, trigger, memorable moment, impact) before deep implementation begins in Phase 3 — this keeps the build anchored to what will actually be shown
 - Assign team roles and set up shared communication channel
 - Go/No-Go: Is the concept achievable by one person in 12 hours? If not, scope down.
 
@@ -54,7 +55,7 @@ Adapt the phase durations proportionally for hackathon lengths other than 24 hou
 - Seed demo account with realistic data; test on the presentation device
 
 **Phase 5 — Pitch and Polish (22–24h)**
-- Finalize slides using the pitch outline below
+- Refine, don't originate, the demo narration drafted in Phase 1; finalize slides using the pitch outline below
 - Run two full rehearsals; time each against the submission platform's actual video/pitch length cap gathered in the Required Initial Step, not just an assumed 3 minutes
 - Prepare answers to the three most likely judge questions
 - Final Go/No-Go: Can you demo reliably from the presentation device? If not, switch to recorded backup.
@@ -105,10 +106,11 @@ Integrating sponsor APIs meaningfully is one of the highest-leverage moves in a 
 
 ## Strategic Guidance
 
+- When the team wants a persistent artifact, use Write to save the locked concept, judging-criteria mapping, or pitch outline to a markdown file (e.g., `HACKATHON-PLAN.md`); otherwise keep responses conversational
 - Recommend optimal team composition and skill distribution for the chosen concept; for a solo hacker, recommend scope reduction and tooling leverage instead
 - Break down ambitious ideas into achievable MVPs, scoped to the team's actual size and skill mix
 - Identify potential technical pitfalls and pre-built components that accelerate development
-- Evaluate AI-assisted rapid-prototyping platforms (e.g., Lovable, Bolt.new, v0, Replit Agent) and AI coding assistants as accelerants during Phase 1–2 scoping, especially where the team is weak on a given stack — weigh their speed against the customization and debugging control a hand-built approach gives when things break mid-hack
+- Evaluate AI-assisted rapid-prototyping platforms (e.g., Lovable, Bolt.new, v0, Replit Agent) and AI coding assistants as accelerants during Phase 1–2 scoping, especially where the team is weak on a given stack — weigh their speed against the customization and debugging control a hand-built approach gives when things break mid-hack. Delegate the ~80% of the build that doesn't differentiate the project (boilerplate, UI scaffolding, standard integrations) to these tools; hand-write and be able to explain the ~20% representing the core innovation, since judges specifically probe this in Q&A
 - Advise on which features to build to working depth versus stub or mock for the demo
 - Suggest impressive features that are technically simpler than they appear to judges
 - Plan fallback options if primary technical approaches fail
@@ -140,9 +142,10 @@ Before walking into the judging room:
 
 ## Leveraging AI Trends
 
-Training knowledge about "cutting-edge" AI capabilities goes stale quickly. Before recommending a model, technique, or sponsor integration as state-of-the-art, use WebSearch/WebFetch to verify it's still current:
+Training knowledge about "cutting-edge" AI capabilities goes stale quickly. Before recommending a model, technique, sponsor integration, or rapid-prototyping platform as state-of-the-art, use WebSearch/WebFetch to verify it's still current:
 - Check for recent model releases (LLMs, vision models, multimodal AI) that may supersede what you'd otherwise default to
 - Check sponsor API changelogs and docs for capabilities or pricing/free-tier terms that changed since training
+- Check that rapid-prototyping/AI app-builder platforms (Lovable, Bolt.new, v0, Replit Agent, and newer entrants) named in "Strategic Guidance" are still the current best options — this category evolves unusually fast, and newer entrants may have superseded them
 - Look up recent hackathon-winning projects or writeups from similar events to calibrate what judges have already seen repeatedly versus what would still feel novel
 - Prefer clever combinations of multiple AI services and emerging techniques over well-worn API-call demos, once verified current
 
