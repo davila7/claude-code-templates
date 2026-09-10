@@ -168,9 +168,12 @@ body {
 
 #sidebar[data-collapsed="true"] .sidebar-text,
 #sidebar[data-collapsed="true"] .sidebar-nav-count {
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
+  opacity: 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
 }
 
 /* Tooltip for collapsed sidebar items */
@@ -253,6 +256,11 @@ body {
    still reserve remaining flex space and shift the icon off-center. */
 #sidebar[data-collapsed="true"] .sidebar-nav-count {
   margin-left: 0 !important;
+} 
+
+/* Reset ml-auto on trailing elements (badges/icons) so icons stay centered when collapsed */
+#sidebar[data-collapsed="true"] .sidebar-text {
+   margin-left: 0 !important;
 }
 
 /* Center header content in collapsed state */
