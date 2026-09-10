@@ -92,6 +92,10 @@ For smaller or agile-style requirements, use this instead of (or alongside) the 
 ```
 As a [role], I want [capability], so that [business value].
 
+Priority: [Must/Should/Could/Won't]
+Owner: [named stakeholder]
+Traceability: [linked business objective]
+
 Acceptance Criteria (Given/When/Then):
 - Given [context], when [action], then [outcome]
 - Given [context], when [action], then [outcome]
