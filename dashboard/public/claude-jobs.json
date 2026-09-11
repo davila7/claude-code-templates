@@ -1,10 +1,9 @@
 {
-  "lastUpdated": "2026-09-10T03:08:15.469701+00:00",
-  "totalJobs": 105,
+  "lastUpdated": "2026-09-11T03:08:57.532617+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
@@ -362,7 +361,7 @@
     {
       "id": "anth-5390966008",
       "company": "Anthropic",
-      "position": "AI Engineer, GTM Claudification ",
+      "position": "Staff AI Engineer, GTM Claudification ",
       "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA",
       "remote": true,
       "salary": "",
@@ -530,6 +529,26 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-happyco-senior-product-designer-mobile-experience",
+      "company": "Happyco",
+      "position": "Senior Product Designer, Mobile Experience",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote (AU) HappyCo is a company where people can grow their careers and work with like minded people, with no egos or politics. HappyCo is values driven and offers a flexible, supportive culture. Join HappyCo and Make Work Happy ! Sitting within HappyCo’s mobile product team, the...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/happyco-senior-product-designer-mobile-experience",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/happyco-senior-product-designer-mobile-experience",
+      "postedAt": "2026-08-18T20:32:33+00:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "wwr-zeta-global-senior-product-designer-ai",
@@ -803,150 +822,6 @@
         "Python",
         "PostgreSQL",
         "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-jenni-ai-ai-supermarket-1136602",
-      "company": "AI Supermarket",
-      "position": "Jenni AI",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-jenni-ai-ai-supermarket-1136602",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-jenni-ai-ai-supermarket-1136602",
-      "postedAt": "2026-08-11T16:51:03+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-typefully-ai-supermarket-1136391",
-      "company": "AI Supermarket",
-      "position": "Typefully",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-typefully-ai-supermarket-1136391",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-typefully-ai-supermarket-1136391",
-      "postedAt": "2026-08-11T16:50:57+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-apify-ai-supermarket-1136554",
-      "company": "AI Supermarket",
-      "position": "Apify",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-apify-ai-supermarket-1136554",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-apify-ai-supermarket-1136554",
-      "postedAt": "2026-08-11T16:50:41+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-aragon-ai-ai-supermarket-1136388",
-      "company": "AI Supermarket",
-      "position": "Aragon AI",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-aragon-ai-ai-supermarket-1136388",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-aragon-ai-ai-supermarket-1136388",
-      "postedAt": "2026-08-11T16:50:40+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-beehiiv-ai-supermarket-1136389",
-      "company": "AI Supermarket",
-      "position": "Beehiiv",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-beehiiv-ai-supermarket-1136389",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-beehiiv-ai-supermarket-1136389",
-      "postedAt": "2026-08-11T16:50:33+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-meshy-ai-supermarket-1136386",
-      "company": "AI Supermarket",
-      "position": "Meshy",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-meshy-ai-supermarket-1136386",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-meshy-ai-supermarket-1136386",
-      "postedAt": "2026-08-11T16:50:22+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-getresponse-ai-supermarket-1136556",
-      "company": "AI Supermarket",
-      "position": "GetResponse",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-getresponse-ai-supermarket-1136556",
-      "postedAt": "2026-08-11T16:49:47+00:00",
-      "tags": [
-        "Rust",
-        "Go"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "rok-remote-askyourpdf-ai-supermarket-1136704",
-      "company": "AI Supermarket",
-      "position": "AskYourPDF",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Professional forex trading simulator that replays historical market data so traders can practise strategies risk-free. Test and backtest trading systems across years of tick-level data at any speed, then review statistics on win rate, drawdown and risk-reward. Used by aspiring and experienced...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-askyourpdf-ai-supermarket-1136704",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-askyourpdf-ai-supermarket-1136704",
-      "postedAt": "2026-08-11T16:49:39+00:00",
-      "tags": [
-        "Rust",
-        "Go"
       ],
       "companyIcon": ""
     },
@@ -1813,26 +1688,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5247640008",
-      "company": "Anthropic",
-      "position": "Product Manager, Claude Code Model Performance ",
-      "location": "San Francisco, CA | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Product Manager on Claude Code's model performance team, you will drive model launches end-to-end, build evals that measure what matters, and partner directly with researchers and product engineers to translate model improvements into developer-facing outcomes. Claude Code is the most capable...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5247640008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5247640008",
-      "postedAt": "2026-06-04T15:26:42-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5229345008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, Claude Design",
@@ -1874,26 +1729,6 @@
         "Rust",
         "AWS",
         "GCP",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5197538008",
-      "company": "Anthropic",
-      "position": "Manager of Applied AI Architecture, Enterprise Tech (Cyber)",
-      "location": "New York City, NY; San Francisco, CA | New York City, NY; Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "As the manager of the Applied AI Architect, Enterprise Tech (Cyber) team at Anthropic, you will drive the adoption of frontier AI across the cybersecurity industry — enabling leading security companies to build Claude into their detection, response, and security operations products via Anthropic's...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5197538008",
-      "postedAt": "2026-04-24T12:17:48-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
         "Claude Code",
         "Anthropic"
       ],
