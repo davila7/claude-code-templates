@@ -120,15 +120,19 @@ def main():
     if live not in ("passed", "not-applicable"):
         die(f"treatment liveness is {live!r}; must be 'passed' or 'not-applicable'. Assert the arm under test is active before scoring.")
 
-    # If a judged layer is present, the two runs must share the same judge instrument.
-    # Comparing runs graded by different judge prompts or models is fixture drift in
-    # the grader. Checked only when both manifests declare the field; absent = skip.
-    base_judge = base["manifest"].get("judge") or {}
-    treat_judge = treat["manifest"].get("judge") or {}
+    # If either run declares a judge fingerprint, both runs must declare the same value.
+    # Missing metadata is not evidence that the instrument matched, so compare fail-closed.
+    base_judge = base["manifest"].get("judge")
+    treat_judge = treat["manifest"].get("judge")
+    for role, judge in (("baseline", base_judge), ("treatment", treat_judge)):
+        if judge is not None and not isinstance(judge, dict):
+            die(f"{role} judge metadata must be an object or null.")
+    base_judge = base_judge or {}
+    treat_judge = treat_judge or {}
     for field in ("prompt_hash", "model_snapshot"):
         b_val, t_val = base_judge.get(field), treat_judge.get(field)
-        if b_val is not None and t_val is not None and b_val != t_val:
-            die(f"judge {field} differs: baseline={b_val!r} treatment={t_val!r}. "
+        if b_val != t_val:
+            die(f"judge {field} differs or is missing on one arm: baseline={b_val!r} treatment={t_val!r}. "
                 "Re-grade both arms with one pinned judge before comparing the judged layer.")
 
     baseline_all = {item["id"]: item for item in base["items"]}

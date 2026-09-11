@@ -1,64 +1,77 @@
 {
-  "run_id": "r-YYYYMMDD-HHMM-shortname",
-  "preregistration_id": "prereg-YYYYMMDD-short-name",
-  "started_at": "ISO-8601",
-  "finished_at": "ISO-8601",
-  "outcome": "PASS | FAIL | CANNOT-MEASURE",
-  "outcome_reason": "one line",
+  "manifest": {
+    "run_id": "r-YYYYMMDD-HHMM-shortname",
+    "preregistration_id": "prereg-YYYYMMDD-short-name",
+    "started_at": "ISO-8601",
+    "finished_at": "ISO-8601",
+    "outcome": "PASS | FAIL | CANNOT-MEASURE",
+    "outcome_reason": "one line",
 
-  "fixture": {
-    "name": "",
-    "version": "",
-    "content_hash": "sha256:...",
-    "item_count": 0,
-    "strata": {"stratum-name": 0},
-    "label_version": "",
-    "inter_annotator_agreement": null,
-    "label_error_audit": "n sampled, k wrong"
-  },
+    "fixture_hash": "sha256:...",
+    "liveness": "passed | failed | not-applicable",
+    "negative_control_id": "known-bad-item-id",
 
-  "arm": {
-    "name": "baseline | treatment-<lever>",
-    "lever_value": "",
-    "liveness_check": "passed | failed | not-applicable",
-    "liveness_evidence": "what was asserted and what it returned"
-  },
-
-  "system": {
-    "version_or_commit": "",
-    "model_snapshot": "",
-    "config_hash": "sha256:...",
-    "cache_state": "fresh-build | prebuilt:<hash>"
-  },
-
-  "judge": {
-    "model_snapshot": null,
-    "prompt_hash": null,
-    "temperature": null,
-    "calibration_set_version": null,
-    "agreement_with_humans": null
-  },
-
-  "reproducibility": {
-    "seeds": {"sampling": 0, "split": 0, "order": 0, "judge_order": 0},
-    "clock": "fixed:<ISO-8601> | wall",
-    "parallelism": "single-thread | n=<k>",
-    "harness_version": "",
-    "lockfile_hash": "sha256:...",
-    "hardware_class": ""
-  },
-
-  "results": {
-    "items_run": 0,
-    "items_errored": 0,
-    "error_budget": 0.02,
-    "negative_control": "failed-as-expected | PASSED-SCORER-BROKEN",
-    "per_item_records": "path/to/records.jsonl",
-    "layers": {
-      "deterministic": {"pass_rate": null, "n": 0, "ci95": [null, null]},
-      "judged": {"score": null, "n": 0, "ci95": [null, null]}
+    "fixture": {
+      "name": "",
+      "version": "",
+      "item_count": 0,
+      "strata": {"stratum-name": 0},
+      "label_version": "",
+      "inter_annotator_agreement": null,
+      "label_error_audit": "n sampled, k wrong"
     },
-    "cost": {"tokens_in": 0, "tokens_out": 0, "judge_tokens": 0, "cost_per_pass": null},
-    "latency_ms": {"p50": null, "p95": null}
-  }
+
+    "arm": {
+      "name": "baseline | treatment-<lever>",
+      "lever_value": "",
+      "liveness_evidence": "what was asserted and what it returned"
+    },
+
+    "system": {
+      "version_or_commit": "",
+      "model_snapshot": "",
+      "config_hash": "sha256:...",
+      "cache_state": "fresh-build | prebuilt:<hash>"
+    },
+
+    "judge": {
+      "model_snapshot": null,
+      "prompt_hash": null,
+      "temperature": null,
+      "calibration_set_version": null,
+      "agreement_with_humans": null
+    },
+
+    "reproducibility": {
+      "seeds": {"sampling": 0, "split": 0, "order": 0, "judge_order": 0},
+      "clock": "fixed:<ISO-8601> | wall",
+      "parallelism": "single-thread | n=<k>",
+      "harness_version": "",
+      "lockfile_hash": "sha256:...",
+      "hardware_class": ""
+    },
+
+    "results": {
+      "items_run": 0,
+      "items_errored": 0,
+      "error_budget": 0.02,
+      "negative_control": "failed-as-expected | PASSED-SCORER-BROKEN",
+      "per_item_records": "path/to/records.jsonl",
+      "layers": {
+        "deterministic": {"pass_rate": null, "n": 0, "ci95": [null, null]},
+        "judged": {"score": null, "n": 0, "ci95": [null, null]}
+      },
+      "cost": {"tokens_in": 0, "tokens_out": 0, "judge_tokens": 0, "cost_per_pass": null},
+      "latency_ms": {"p50": null, "p95": null}
+    }
+  },
+  "items": [
+    {
+      "id": "known-bad-item-id",
+      "verdict": "fail",
+      "score": 0.0,
+      "layer": "deterministic",
+      "error": null
+    }
+  ]
 }
