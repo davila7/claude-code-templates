@@ -1,0 +1,17 @@
+# Generated man pages
+man1/*.1
+man1/*.1.gz
+
+# Build artifacts
+*.pyc
+__pycache__/
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
