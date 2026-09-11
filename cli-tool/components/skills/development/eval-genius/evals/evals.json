@@ -1,0 +1,23 @@
+[
+  {"query": "I built a small chatbot on top of an LLM. Do I even need evals for this?", "should_trigger": true},
+  {"query": "Where do evals fit in my development process, and at which step should I add one?", "should_trigger": true},
+  {"query": "I have never done this before. How do I know what eval to run for my summarizer?", "should_trigger": true},
+  {"query": "I ran my first eval and got 31/40. How do I tell if that's good, and what do I do next?", "should_trigger": true},
+  {"query": "Build an eval for our RAG pipeline so we can tell if the new chunking is better", "should_trigger": true},
+  {"query": "Set up a regression gate in CI for our agent's task success rate", "should_trigger": true},
+  {"query": "Should we use a public benchmark for long-context retrieval or make our own?", "should_trigger": true},
+  {"query": "Is SWE-bench a good fit to evaluate our code-repair agent?", "should_trigger": true},
+  {"query": "Our LLM judge gives the new prompt 9/10 but users complain. How do I calibrate the judge?", "should_trigger": true},
+  {"query": "The benchmark jumped from 40% to 97% after a one-line change. Is that real?", "should_trigger": true},
+  {"query": "Design an eval harness for our summarization feature", "should_trigger": true},
+  {"query": "Write up the results of our retrieval benchmark for the release notes", "should_trigger": true},
+  {"query": "What metric should we use to measure whether the classifier is better?", "should_trigger": true},
+  {"query": "How many test items do we need to detect a 3-point improvement?", "should_trigger": true},
+  {"query": "Write unit tests for the date parsing function", "should_trigger": false},
+  {"query": "Set up an A/B test for the new checkout button color", "should_trigger": false},
+  {"query": "Tune the learning rate and batch size for fine-tuning", "should_trigger": false},
+  {"query": "Fix the failing pytest in the auth module", "should_trigger": false},
+  {"query": "Benchmark the database query latency with pgbench", "should_trigger": false},
+  {"query": "Write a blog post about why evals matter", "should_trigger": false},
+  {"query": "Evaluate whether we should hire a second backend engineer", "should_trigger": false}
+]
