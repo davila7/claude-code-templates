@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-11T07:55:17.482049+00:00",
+  "lastUpdated": "2026-09-12T07:47:41.478786+00:00",
   "totalJobs": 96,
   "sources": [
     "Anthropic",
@@ -7,6 +7,47 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5421566008",
+      "company": "Anthropic",
+      "position": "Technical Architect ",
+      "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA | New York C",
+      "remote": true,
+      "salary": "",
+      "description": "Claude Code is changing how engineering organizations build software, and most of them need someone to show them how. That's you. Technical Architects help customers get real work done with Claude Code, Claude Tag (Claude Code as an agent in Slack), and the enterprise admin controls that decide...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5421566008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5421566008",
+      "postedAt": "2026-09-11T19:40:53-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5398438008",
+      "company": "Anthropic",
+      "position": "AI Deployment Specialist, Beneficial Deployments",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As a Deployment Manager on the Beneficial Deployments team, you will guide customers from a signed contract into a live, governed, and adopted deployment so that customers achieve tangible impact rather than simply incremental improvement with Claude. You'll guide organizations from contract...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
+      "postedAt": "2026-09-11T10:35:46-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5413642008",
       "company": "Anthropic",
@@ -735,29 +776,6 @@
       "companyIcon": ""
     },
     {
-      "id": "wwr-toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
-      "company": "Toptal",
-      "position": "Python Backend Development Talent with RAG and Agentic AI Experience",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Summary: We are seeking an experienced Python Backend Developer to design, build, and deploy scalable AI-powered applications using Retrieval-Augmented Generation, large language models, and agentic AI frameworks. The role will focus on delivering a production-grade RAG system and AI...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/toptal-python-backend-development-talent-with-rag-and-agentic-ai-experience",
-      "postedAt": "2026-08-12T18:38:32+00:00",
-      "tags": [
-        "Python",
-        "Go",
-        "AWS",
-        "Azure",
-        "Docker",
-        "Kubernetes",
-        "Rails"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "hn-49271778",
       "company": "Odin",
       "position": "Senior Design Engineer",
@@ -778,31 +796,6 @@
         "Kubernetes",
         "React Native",
         "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-toptal-senior-software-engineer-for-ai-powered-banking-platform",
-      "company": "Toptal",
-      "position": "Senior Software Engineer for AI-Powered Banking Platform",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: We are seeking a Senior Software Engineer to build and scale production-grade AI-powered financial products. This is a hands-on engineering role focused on backend platform development, AI integration, and distributed systems. The ideal candidate has strong experience with TypeScript,...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/toptal-senior-software-engineer-for-ai-powered-banking-platform",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/toptal-senior-software-engineer-for-ai-powered-banking-platform",
-      "postedAt": "2026-08-12T12:18:51+00:00",
-      "tags": [
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "AWS",
-        "GCP",
-        "Docker",
-        "Kubernetes",
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -1243,12 +1236,12 @@
     },
     {
       "id": "hn-48823535",
-      "company": "Youth Inc.",
+      "company": "Note: This job is not longer vacant.",
       "position": "Senior Software Engineer",
       "location": "On-site",
       "remote": false,
       "salary": "$120k–$190k",
-      "description": "We’re a venture-backed e-commerce marketplace and media network for youth and high school sports. We’ve moved from zero to one with real revenue and are now looking for a Senior Engineer to help us scale to serve the 65M American families in this space. Our Stack: Elixir/Phoenix (LiveView),...",
+      "description": "Youth Inc. ( https://youth.inc ) is hiring a Senior Software Engineer (Hybrid: Boston/Chicago). We’re a venture-backed e-commerce marketplace and media network for youth and high school sports. We’ve moved from zero to one with real revenue and are now looking for a Senior Engineer to help us scale...",
       "applyUrl": "https://news.ycombinator.com/item?id=48823535",
       "source": "HackerNews",
       "sourceUrl": "https://news.ycombinator.com/item?id=48823535",
