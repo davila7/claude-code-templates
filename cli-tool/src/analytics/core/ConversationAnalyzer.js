@@ -78,7 +78,13 @@ class ConversationAnalyzer {
 
         for (const item of items) {
           const itemPath = path.join(dir, item);
-          const stats = await fs.stat(itemPath);
+          let stats;
+          try {
+            stats = await fs.stat(itemPath);
+          } catch (error) {
+            console.warn(chalk.yellow(`Warning: Could not inspect ${itemPath}:`, error.message));
+            continue;
+          }
 
           if (stats.isDirectory()) {
             // Recursively search subdirectories
@@ -97,10 +103,11 @@ class ConversationAnalyzer {
       
 
       for (const filePath of jsonlFiles) {
-        const stats = await this.getFileStats(filePath);
         const filename = path.basename(filePath);
 
         try {
+          const stats = await this.getFileStats(filePath);
+
           // Extract project name from path
           const projectFromPath = await this.extractProjectFromPath(filePath);
 
