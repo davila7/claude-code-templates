@@ -9,6 +9,7 @@ const {
   needsQuoting,
   normaliseModel,
   isValidModel,
+  isDocumentationFile,
 } = require('../../src/validate-frontmatter');
 
 let tmpDir;
@@ -185,5 +186,20 @@ describe('repair', () => {
     for (const sample of samples) {
       expect(() => yaml.load(repair(sample).block)).not.toThrow();
     }
+  });
+});
+
+describe('isDocumentationFile', () => {
+  it('recognises the directory-level docs Claude Code never loads', () => {
+    expect(isDocumentationFile('cli-tool/components/agents/programming-languages/README.md')).toBe(true);
+    expect(isDocumentationFile('cli-tool/components/agents/deep-research-team/agent-overview.md')).toBe(true);
+    expect(isDocumentationFile('cli-tool/components/commands/git/index.md')).toBe(true);
+    expect(isDocumentationFile('cli-tool/components/commands/git/readme.md')).toBe(true);
+  });
+
+  it('leaves real components alone, even when the name contains a doc word', () => {
+    expect(isDocumentationFile('cli-tool/components/agents/git/commit-guardian.md')).toBe(false);
+    expect(isDocumentationFile('cli-tool/components/commands/docs/readme-generator.md')).toBe(false);
+    expect(isDocumentationFile('cli-tool/components/commands/search/index-codebase.md')).toBe(false);
   });
 });

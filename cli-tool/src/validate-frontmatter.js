@@ -78,13 +78,19 @@ function walk(dir, acc = []) {
   return acc;
 }
 
+// README.md / index-style files document a directory, they are not components
+// and Claude Code never loads them. Applied to discovered *and* explicit paths,
+// so CI passing a changed README through never trips FM_MISSING.
+function isDocumentationFile(file) {
+  return /^(README|index|agent-overview)\.md$/i.test(path.basename(file));
+}
+
 function discoverComponents() {
   const files = [];
   for (const type of SCANNED_TYPES) {
     walk(path.join(COMPONENTS_DIR, type), files);
   }
-  // README.md / index-style files document a directory, they are not components.
-  return files.filter((f) => !/^(README|index|agent-overview)\.md$/i.test(path.basename(f)));
+  return files.filter((f) => !isDocumentationFile(f));
 }
 
 // ---------------------------------------------------------------------------
@@ -326,7 +332,9 @@ function main() {
   const explicit = args.filter((a) => !a.startsWith('--'));
 
   const files = explicit.length
-    ? explicit.map((f) => path.resolve(f)).filter((f) => fs.existsSync(f) && f.endsWith('.md'))
+    ? explicit
+        .map((f) => path.resolve(f))
+        .filter((f) => fs.existsSync(f) && f.endsWith('.md') && !isDocumentationFile(f))
     : discoverComponents();
 
   if (!files.length) {
@@ -385,4 +393,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { validate, repair, needsQuoting, normaliseModel, isValidModel, MODEL_ALIASES };
+module.exports = { validate, repair, needsQuoting, normaliseModel, isValidModel, isDocumentationFile, MODEL_ALIASES };

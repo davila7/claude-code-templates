@@ -48,10 +48,15 @@ jobs:
         id: changed
         run: |
           git fetch --no-tags origin "${{ github.base_ref }}"
+          # git errors must fail the job: an empty list here would silently pass the gate.
           git diff --name-only --diff-filter=ACMR \
             "origin/${{ github.base_ref }}...HEAD" \
             -- cli-tool/components/agents cli-tool/components/commands \
-            | grep '\.md$' > changed.txt || true
+            > all-changed.txt
+          # Only grep may "fail" (no match). README/index/agent-overview document a
+          # directory and are never loaded by Claude Code — same exclusion as the validator.
+          grep -E '\.md$' all-changed.txt \
+            | grep -Eiv '(^|/)(README|index|agent-overview)\.md$' > changed.txt || true
           echo "count=$(wc -l < changed.txt)" >> "$GITHUB_OUTPUT"
           echo "Changed component files:"
           sed 's/^/  /' changed.txt
