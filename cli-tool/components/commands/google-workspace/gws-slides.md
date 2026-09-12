@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Slides: Read and write presentations.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Slides: Read and write presentations."
 ---
 
 # Google Workspace Slides

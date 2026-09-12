@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workflow: Cross-service productivity workflows.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workflow: Cross-service productivity workflows."
 ---
 
 # Google Workspace Workflow

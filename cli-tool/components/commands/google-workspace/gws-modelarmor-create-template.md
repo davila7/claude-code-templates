@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Model Armor: Create a new Model Armor template.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Model Armor: Create a new Model Armor template."
 ---
 
 # Google Workspace Modelarmor Create Template

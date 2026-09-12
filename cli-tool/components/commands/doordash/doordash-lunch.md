@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(dd-cli:*), Bash(cat:*), Bash(jq:*), Bash(mkdir:*), Read, Write, Edit
-argument-hint: [order | checkout | whose-turn | roster]
+argument-hint: "[order | checkout | whose-turn | roster]"
 description: Team lunch orchestration via DoorDash CLI - build a group round, emit checkout with split table, track payer rotation
 ---
 

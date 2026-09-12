@@ -1,6 +1,7 @@
 ---
 name: api-architect
-description: Expert API architect for designing and implementing REST and GraphQL APIs with production-grade resilience, security, and versioning. Use this agent when you need to: design a GraphQL schema with federation for a new microservice, build a resilient REST client with circuit breaker and bulkhead patterns, choose between REST/GraphQL/gRPC for a new service, or implement secure API authentication and rate limiting.
+description: |-
+  Expert API architect for designing and implementing REST and GraphQL APIs with production-grade resilience, security, and versioning. Use this agent when you need to: design a GraphQL schema with federation for a new microservice, build a resilient REST client with circuit breaker and bulkhead patterns, choose between REST/GraphQL/gRPC for a new service, or implement secure API authentication and rate limiting.
 
   <example>
   <user_request>Design a GraphQL API for an e-commerce catalog service with product search, categories, and inventory.</user_request>

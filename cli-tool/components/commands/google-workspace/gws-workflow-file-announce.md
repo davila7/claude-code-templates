@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workflow: Announce a Drive file in a Chat space.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workflow: Announce a Drive file in a Chat space."
 ---
 
 # Google Workspace Workflow File Announce

@@ -22,10 +22,16 @@ class StructuralValidator extends BaseValidator {
     this.MIN_DESCRIPTION_LENGTH = 20;
     this.MAX_DESCRIPTION_LENGTH = 500;
 
-    // Required fields by component type
+    // Required fields by component type.
+    // Only fields Claude Code genuinely refuses to load without are listed
+    // here. A subagent needs name + description; `tools` is optional and
+    // means "inherit every tool". A slash command takes its name from its
+    // file name, so `name` is optional there too.
+    // https://code.claude.com/docs/en/sub-agents
+    // https://code.claude.com/docs/en/slash-commands
     this.REQUIRED_FIELDS = {
-      agent: ['name', 'description', 'tools'],
-      command: ['name', 'description'],
+      agent: ['name', 'description'],
+      command: ['description'],
       mcp: ['name', 'description', 'command'],
       setting: ['name', 'description'],
       hook: ['name', 'description', 'trigger']
@@ -300,12 +306,14 @@ class StructuralValidator extends BaseValidator {
       return;
     }
 
-    const validModels = ['sonnet', 'opus', 'haiku', 'claude-3-5-sonnet', 'claude-3-opus', 'claude-3-haiku'];
+    // Claude Code accepts a documented alias, `inherit`, or a full model ID.
+    const aliases = ['sonnet', 'opus', 'haiku', 'fable', 'inherit'];
+    const isModelId = typeof model === 'string' && /^claude-[a-z0-9-]+$/.test(model.trim());
 
-    if (!validModels.includes(model)) {
+    if (!aliases.includes(String(model).trim()) && !isModelId) {
       this.addWarning(
         'STRUCT_W008',
-        `Unknown model: ${model}. Valid models: ${validModels.join(', ')}`,
+        `Unusable model: ${model}. Use an alias (${aliases.join(', ')}) or a full model ID such as claude-opus-5`,
         { path, model }
       );
     }
