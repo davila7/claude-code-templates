@@ -1,5 +1,8 @@
 ---
 description: "Scaffold new SvelteKit projects, features, or modules with best practices and optimal project structure."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # /svelte:scaffold

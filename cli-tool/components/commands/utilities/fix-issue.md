@@ -1,5 +1,8 @@
 ---
 description: "Identify and resolve code issues"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # Fix Issue Command

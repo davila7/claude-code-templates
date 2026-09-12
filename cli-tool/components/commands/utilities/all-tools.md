@@ -1,5 +1,8 @@
 ---
 description: "Display all available development tools"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # Display All Available Development Tools

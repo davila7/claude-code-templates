@@ -1,5 +1,8 @@
 ---
 description: "Create a new branch, commit changes, and submit a pull request."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # Create Pull Request Command

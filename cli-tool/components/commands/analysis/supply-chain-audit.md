@@ -1,5 +1,8 @@
 ---
 description: "Audit a project for software supply chain risk, including dependency vulnerabilities, lockfile issues, malicious package indicators, SBOM coverage, and license concerns."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # /supply-chain-audit

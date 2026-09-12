@@ -1,5 +1,8 @@
 ---
 description: "Optimize Svelte/SvelteKit applications for performance, including bundle size reduction, rendering optimization, and loading performance."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # /svelte:optimize

@@ -1,5 +1,8 @@
 ---
 description: "Clean up merged and stale git branches"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # Clean Branches Command

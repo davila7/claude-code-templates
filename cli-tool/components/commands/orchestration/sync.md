@@ -1,5 +1,8 @@
 ---
 description: "Synchronize task status with git commits, ensuring consistency between version control and task tracking."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # Orchestration Sync Command

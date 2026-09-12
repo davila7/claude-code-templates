@@ -1,1 +1,1 @@
-{"content": "---\ndescription: \"Fix all black, isort, flake8 and mypy issues in the entire codebase\"\n---\n\nFix all black, isort, flake8 and mypy issues in the entire codebase\n"}
+{"content": "---\ndescription: \"Fix all black, isort, flake8 and mypy issues in the entire codebase\"\nallowed-tools: Read, Write, Edit, Bash\nargument-hint: \"[arguments]\"\n\n---\n\nFix all black, isort, flake8 and mypy issues in the entire codebase\n"}

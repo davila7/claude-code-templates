@@ -1,5 +1,8 @@
 ---
 description: "Check the current status of tasks in the orchestration system with various filtering and reporting options."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
 ---
 
 # Task Status Command
