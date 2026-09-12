@@ -118,11 +118,18 @@ jobs:
             comment += `\n---\n`;
             comment += `📊 **[View Full Report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})** for detailed error messages and all components`;
 
+            await core.summary.addRaw(comment).write();
+
+            // Fork PR tokens are read-only; keep their results in the job summary.
+            if (context.payload.pull_request.head.repo?.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.info('Skipping PR comment for a fork; see the job summary and report artifact.');
+              return;
+            }
+
             // Post comment
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: comment
             });
-
