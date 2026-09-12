@@ -77,62 +77,112 @@ GH_CLI = shutil.which("gh") or "gh"
 # --- GitHub API helpers (uses gh CLI) ---
 
 _request_count = 0
+_rate_limited_events = 0
+
+
+def _is_rate_limited(stderr):
+    """Detect primary/secondary rate limit errors in gh CLI stderr."""
+    low = (stderr or "").lower()
+    return (
+        "rate limit" in low
+        or "abuse detection" in low
+        or "too many requests" in low
+    )
+
+
+def _rate_limit_reset_wait():
+    """Sleep until the primary rate limit window resets (capped at 15 min)."""
+    try:
+        result = subprocess.run(
+            [GH_CLI, "api", "rate_limit", "--jq", ".rate.reset"],
+            capture_output=True, text=True, timeout=10, env=_GH_ENV
+        )
+        if result.returncode == 0 and result.stdout.strip().isdigit():
+            wait = int(result.stdout.strip()) - int(time.time()) + 5
+            wait = max(1, min(wait, 900))
+            print(f"  ⏳ Rate limited. Waiting {wait}s for window reset...")
+            time.sleep(wait)
+            return
+    except (subprocess.TimeoutExpired, FileNotFoundError, ValueError):
+        pass
+    # Fallback: fixed escalating wait
+    global _rate_limited_events
+    wait = 30 * (_rate_limited_events + 1)
+    print(f"  ⏳ Rate limited. Waiting {wait}s...")
+    time.sleep(wait)
+
+
+def _run_gh_api(args, timeout=30):
+    """Run `gh api` and return (stdout_or_None, is_404, is_rate_limited)."""
+    global _request_count, _rate_limited_events
+    _request_count += 1
+    try:
+        result = subprocess.run(
+            [GH_CLI, "api"] + args,
+            capture_output=True, text=True, timeout=timeout, env=_GH_ENV
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+        print(f"  ⚠️  gh CLI failed: {e}")
+        return None, False, False
+
+    stderr = result.stderr or ""
+    if result.returncode == 0 and result.stdout.strip():
+        return result.stdout, False, False
+    if "Not Found" in stderr or "404" in stderr:
+        return None, True, False
+    if _is_rate_limited(stderr):
+        _rate_limited_events += 1
+        return None, False, True
+    return None, False, False
 
 
 def gh_api(endpoint, retries=3):
-    """Call GitHub API via gh CLI subprocess."""
-    global _request_count
-
+    """Call GitHub API via gh CLI, waiting out rate limits instead of
+    returning None (which callers would treat as 'not found')."""
+    endpoint = endpoint.lstrip("/")
     for attempt in range(retries):
-        _request_count += 1
         # Respect rate limits
-        if _request_count % 50 == 0:
+        if _request_count and _request_count % 50 == 0:
             time.sleep(1)
 
-        try:
-            cmd = [GH_CLI, "api", endpoint.lstrip("/")]
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=30, env=_GH_ENV
-            )
-            if result.returncode == 0 and result.stdout.strip():
-                return json.loads(result.stdout)
-            if "Not Found" in result.stderr or "404" in result.stderr:
+        stdout, is_404, is_rate_limited = _run_gh_api([endpoint])
+        if stdout is not None:
+            try:
+                return json.loads(stdout)
+            except json.JSONDecodeError:
                 return None
-            if "rate limit" in result.stderr.lower():
-                wait = 30 * (attempt + 1)
-                print(f"  ⏳ Rate limited. Waiting {wait}s...")
-                time.sleep(wait)
-                continue
-            if result.returncode != 0:
-                if attempt < retries - 1:
-                    time.sleep(2 ** attempt)
-                    continue
-                return None
-        except (subprocess.TimeoutExpired, FileNotFoundError) as e:
-            if attempt < retries - 1:
-                time.sleep(2 ** attempt)
-            else:
-                print(f"  ⚠️  gh CLI failed: {e}")
-                return None
+        if is_404:
+            return None
+        if is_rate_limited:
+            _rate_limit_reset_wait()
+            continue
+        if attempt < retries - 1:
+            time.sleep(2 ** attempt)
     return None
 
 
-def gh_file_content(repo, path):
-    """Fetch and decode a file from a GitHub repo using gh CLI."""
-    global _request_count
-    _request_count += 1
-
-    try:
-        result = subprocess.run(
-            [GH_CLI, "api", f"repos/{repo}/contents/{path}", "--jq", ".content"],
-            capture_output=True, text=True, timeout=30, env=_GH_ENV
+def gh_file_content(repo, path, retries=3):
+    """Fetch and decode a file from a GitHub repo using gh CLI.
+    Rate-limit failures are waited out and retried so they are never
+    confused with a missing file."""
+    import base64
+    for attempt in range(retries):
+        stdout, is_404, is_rate_limited = _run_gh_api(
+            [f"repos/{repo}/contents/{path}", "--jq", ".content"]
         )
-        if result.returncode != 0 or not result.stdout.strip():
+        if stdout is not None and stdout.strip():
+            try:
+                return base64.b64decode(stdout.strip()).decode("utf-8")
+            except Exception:
+                return None
+        if is_404:
             return None
-        import base64
-        return base64.b64decode(result.stdout.strip()).decode("utf-8")
-    except Exception:
-        return None
+        if is_rate_limited:
+            _rate_limit_reset_wait()
+            continue
+        if attempt < retries - 1:
+            time.sleep(2 ** attempt)
+    return None
 
 
 def gh_dir_listing(repo, path):
@@ -716,6 +766,24 @@ def main():
             print(f"  ❌ Error processing {repo_full}: {e}")
             errors.append(repo_full)
 
+    # Retry repos that failed on the first pass (e.g. transient or rate-limit
+    # failures) so a single rate-limited window doesn't silently drop plugins.
+    if errors:
+        print(f"\n🔁 Retrying {len(errors)} failed repo(s): {errors}")
+        still_failed = []
+        website_by_repo = dict(REPOS)
+        for repo_full in errors:
+            try:
+                data = process_repo(repo_full, website_by_repo.get(repo_full))
+                if data:
+                    results.append(data)
+                else:
+                    still_failed.append(repo_full)
+            except Exception as e:
+                print(f"  ❌ Error processing {repo_full}: {e}")
+                still_failed.append(repo_full)
+        errors = still_failed
+
     # Sort by stars descending
     results.sort(key=lambda x: x["stars"], reverse=True)
 
@@ -737,6 +805,14 @@ def main():
     print(f"\n   📊 {len(marketplaces)} marketplaces | {len(plugins)} individual plugins")
     total_stars = sum(r["stars"] for r in results)
     print(f"   ⭐ {total_stars:,} total stars across all repos")
+
+    # Refuse to silently publish a partial plugins.json: fail the run so CI
+    # keeps the previous (complete) file instead of committing stale data.
+    if errors:
+        print(f"\n❌ {len(errors)} repo(s) failed even after retry: {errors}")
+        print("   Not all plugins could be fetched; exiting with error to avoid")
+        print("   writing an incomplete plugins.json.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
