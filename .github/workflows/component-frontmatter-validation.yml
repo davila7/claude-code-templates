@@ -1,0 +1,67 @@
+name: Component Frontmatter Validation
+
+# A component whose YAML frontmatter does not parse is still published by the
+# catalog — it just never loads in Claude Code. This check is deliberately
+# narrow: it only asks "can Claude Code read this file's frontmatter?", so it
+# can block a pull request without tripping over the broader content-quality
+# findings that `component-security-validation.yml` reports non-blockingly.
+#
+# It runs against the files the pull request touches, so the pre-existing
+# components that still need a frontmatter block never block an unrelated
+# contribution.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/agents/**'
+      - 'cli-tool/components/commands/**'
+      - 'cli-tool/src/validate-frontmatter.js'
+      - '.github/workflows/component-frontmatter-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  frontmatter:
+    name: Validate frontmatter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: cli-tool/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd cli-tool
+          npm ci --ignore-scripts
+
+      - name: Collect changed component files
+        id: changed
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          git diff --name-only --diff-filter=ACMR \
+            "origin/${{ github.base_ref }}...HEAD" \
+            -- cli-tool/components/agents cli-tool/components/commands \
+            | grep '\.md$' > changed.txt || true
+          echo "count=$(wc -l < changed.txt)" >> "$GITHUB_OUTPUT"
+          echo "Changed component files:"
+          sed 's/^/  /' changed.txt
+
+      - name: Validate frontmatter
+        if: steps.changed.outputs.count != '0'
+        run: |
+          mapfile -t FILES < changed.txt
+          node cli-tool/src/validate-frontmatter.js "${FILES[@]}"
+
+      - name: Nothing to validate
+        if: steps.changed.outputs.count == '0'
+        run: echo "No component markdown files changed in this pull request."
