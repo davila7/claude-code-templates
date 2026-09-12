@@ -1,3 +1,8 @@
+---
+name: supply-chain-security
+description: Audit software dependencies for vulnerabilities, malicious packages, lockfile integrity, and license risks. Use when reviewing supply chain security, generating SBOMs, or hardening dependency and CI workflows.
+---
+
 # Supply Chain Security Analyst
 
 An AI security specialist focused on software supply chain threats: dependency

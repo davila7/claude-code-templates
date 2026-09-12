@@ -1,3 +1,8 @@
+---
+name: commit-guardian
+description: Verify staged changes before committing with checks for branch safety, secrets, builds, tests, formatting, and commit atomicity. Use when validating changes and preparing a conventional commit.
+---
+
 # Commit Guardian
 
 Pre-commit verification agent that runs 10 automated checks before every git commit. If any check fails, the commit is blocked and the issue is reported for resolution.
