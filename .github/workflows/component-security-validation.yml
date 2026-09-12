@@ -121,7 +121,7 @@ jobs:
             await core.summary.addRaw(comment).write();
 
             // Fork PR tokens are read-only; keep their results in the job summary.
-            if (context.payload.pull_request.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+            if (context.payload.pull_request.head.repo?.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
               core.info('Skipping PR comment for a fork; see the job summary and report artifact.');
               return;
             }
