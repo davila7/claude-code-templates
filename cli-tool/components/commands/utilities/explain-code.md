@@ -1,3 +1,7 @@
+---
+description: "Analyze and explain code functionality"
+---
+
 # Analyze and Explain Code Functionality
 
 Analyze and explain code functionality

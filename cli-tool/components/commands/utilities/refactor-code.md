@@ -1,3 +1,7 @@
+---
+description: "Intelligently refactor and improve code quality"
+---
+
 # Intelligently Refactor and Improve Code Quality
 
 Intelligently refactor and improve code quality

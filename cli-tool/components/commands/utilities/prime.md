@@ -1,3 +1,7 @@
+---
+description: "Enhanced AI mode for complex tasks"
+---
+
 # Enhanced AI Mode for Complex Tasks
 
 Enhanced AI mode for complex tasks

@@ -1,3 +1,7 @@
+---
+description: "Systematically debug and fix errors"
+---
+
 # Systematically Debug and Fix Errors
 
 Systematically debug and fix errors

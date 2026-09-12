@@ -1,3 +1,8 @@
+---
+name: "vital-health-content-agent"
+description: "A content marketing agent focused on growing Vital Health Global through"
+---
+
 # Vital Health Global – Content Growth Agent
 
 ## Agent Metadata

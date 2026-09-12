@@ -1,3 +1,7 @@
+---
+description: "You are tasked with generating a technical work log comment for a Linear issue based on recent git commits."
+---
+
 # Generate Linear Work Log
 
 You are tasked with generating a technical work log comment for a Linear issue based on recent git commits.

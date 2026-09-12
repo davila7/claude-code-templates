@@ -1,3 +1,7 @@
+---
+description: "Follow these steps to update the current branch name:"
+---
+
 # Update Branch Name
 
 Follow these steps to update the current branch name:

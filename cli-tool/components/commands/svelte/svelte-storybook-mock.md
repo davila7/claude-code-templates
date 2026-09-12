@@ -1,3 +1,7 @@
+---
+description: "Mock SvelteKit modules and functionality in Storybook stories for isolated component development."
+---
+
 # /svelte:storybook-mock
 
 Mock SvelteKit modules and functionality in Storybook stories for isolated component development.

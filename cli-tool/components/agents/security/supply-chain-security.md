@@ -1,3 +1,8 @@
+---
+name: "supply-chain-security"
+description: "An AI security specialist focused on software supply chain threats: dependency"
+---
+
 # Supply Chain Security Analyst
 
 An AI security specialist focused on software supply chain threats: dependency

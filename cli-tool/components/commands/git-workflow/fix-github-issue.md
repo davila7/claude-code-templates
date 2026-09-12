@@ -1,3 +1,7 @@
+---
+description: "Please analyze and fix the GitHub issue: $ARGUMENTS."
+---
+
 Please analyze and fix the GitHub issue: $ARGUMENTS.
 
 Follow these steps:

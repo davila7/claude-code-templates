@@ -22,7 +22,15 @@ Agents are AI specialists for specific domains (security, performance, framework
    ```
 
 2. **Agent File Structure**
+
+   Every agent must start with YAML frontmatter. Claude Code reads `name` and `description` from this block; without it, the component can appear in the catalog but fail to load.
+
    ```markdown
+   ---
+   name: your-agent-name
+   description: "Use this agent when you need focused help with a specific domain or workflow."
+   ---
+
    # Agent Name
    
    Agent description and purpose.
@@ -40,11 +48,22 @@ Agents are AI specialists for specific domains (security, performance, framework
    ```
 
 3. **Available Categories**
+   - `accessibility/` - Accessibility auditing and WCAG compliance
+   - `ai-specialists/` - LLM and AI tooling specialists
+   - `api-graphql/` - API design and GraphQL specialists
+   - `business-marketing/` - Business analysis, marketing, sales
+   - `data-ai/` - Data engineering, ML, and prompt engineering
+   - `database/` - Database specialists
    - `development-team/` - Full-stack developers, architects
-   - `domain-experts/` - Security, performance, accessibility specialists  
-   - `creative-team/` - Content creators, designers
-   - `business-team/` - Product managers, analysts
-   - `development-tools/` - Tool specialists, DevOps experts
+   - `development-tools/` - Tool specialists, testing, observability
+   - `devops-infrastructure/` - Cloud, IaC, and deployment specialists
+   - `documentation/` - Documentation and technical writing
+   - `expert-advisors/` - Architecture review and advisory agents
+   - `git/` - Git workflow and commit hygiene
+   - `performance-testing/` - Profiling and load testing
+   - `security/` - Application and infrastructure security
+   - `ui-analysis/` - UI review and design analysis
+   - `web-tools/` - SEO and web optimization
 
 4. **Creating New Categories**
    If your agent doesn't fit existing categories, create a new one:
@@ -69,7 +88,15 @@ Commands are custom slash commands that extend Claude Code functionality.
    ```
 
 2. **Command File Structure**
+
+   Every command must start with YAML frontmatter. `description` appears in the slash-command menu. Quote `argument-hint`, or YAML can parse values like `[file]` as a list.
+
    ```markdown
+   ---
+   description: "Brief command description shown in the slash-command menu"
+   argument-hint: "[file-path]"
+   ---
+
    # /command-name
    
    Brief command description.
@@ -85,11 +112,21 @@ Commands are custom slash commands that extend Claude Code functionality.
    ```
 
 3. **Command Categories**
-   - `code-generation/` - Generate code, tests, documentation
    - `analysis/` - Code analysis, optimization, debugging
-   - `project-management/` - File operations, project structure
-   - `testing/` - Test generation, validation, coverage
+   - `automation/` - CI/CD pipelines and workflow automation
+   - `database/` - Database management and migrations
    - `deployment/` - Build, deploy, CI/CD operations
+   - `documentation/` - Documentation generation and maintenance
+   - `git/` - Git operations
+   - `git-workflow/` - Branch, PR, and review workflows
+   - `orchestration/` - Multi-agent task orchestration
+   - `performance/` - Profiling and optimization
+   - `project-management/` - File operations, project structure
+   - `security/` - Security auditing workflows
+   - `setup/` - Project and environment setup
+   - `svelte/` - Svelte and SvelteKit development
+   - `testing/` - Test generation, validation, coverage
+   - `utilities/` - General-purpose helpers
 
 4. **Creating New Categories**
    If your command doesn't fit existing categories, create a new one:
@@ -451,6 +488,7 @@ git checkout -b feature/your-contribution
 ### 4. Test Changes
 ```bash
 cd cli-tool
+npm run frontmatter:check # when available
 npm test
 npm start -- --dry-run
 ```
