@@ -1,6 +1,8 @@
 ---
 name: commit-guardian
 description: Verify staged changes before committing with checks for branch safety, secrets, builds, tests, formatting, and commit atomicity. Use when validating changes and preparing a conventional commit.
+tools: Read, Bash, Grep, Glob
+model: inherit
 ---
 
 # Commit Guardian
