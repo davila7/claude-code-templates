@@ -1,3 +1,8 @@
+---
+argument-hint: "[search-term]"
+description: "Search and locate tasks across all orchestrations using criteria such as status, content, or name."
+---
+
 # Task Find Command
 
 Search and locate tasks across all orchestrations using various criteria.

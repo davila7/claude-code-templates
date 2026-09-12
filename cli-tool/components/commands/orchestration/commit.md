@@ -1,3 +1,8 @@
+---
+argument-hint: "[task-id]"
+description: "Create git commits aligned with task completion, using task metadata to generate Conventional Commits messages and keeping version control synchronized with task progress."
+---
+
 # Orchestration Commit Command
 
 Create git commits aligned with task completion, maintaining clean version control synchronized with task progress.

@@ -1,3 +1,7 @@
+---
+description: "Fetch all open pull requests with the GitHub CLI and create a git worktree for each PR branch under ./tree/<BRANCH_NAME> so they can be reviewed or built in parallel."
+---
+
 # Git Worktree Commands
 
 ## Create Worktrees for All Open PRs

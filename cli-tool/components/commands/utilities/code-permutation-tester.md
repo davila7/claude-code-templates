@@ -1,3 +1,8 @@
+---
+argument-hint: "[approaches-or-context]"
+description: "Test multiple code implementation approaches through simulation before actual development, with quality gates and performance prediction."
+---
+
 # Code Permutation Tester
 
 Test multiple code variations through simulation before implementation with quality gates and performance prediction.

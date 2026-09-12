@@ -1,3 +1,8 @@
+---
+argument-hint: "[issue-number]"
+description: "Analyze and fix a GitHub issue: fetch the issue details with gh, locate the relevant code, implement and test a fix, and prepare a commit that references the issue."
+---
+
 Please analyze and fix the GitHub issue: $ARGUMENTS.
 
 Follow these steps:

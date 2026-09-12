@@ -1,3 +1,7 @@
+---
+description: "Initialize a new session with comprehensive project context: file organization, technology stack, key directories, and conventions."
+---
+
 # Enhanced AI Mode for Complex Tasks
 
 Enhanced AI mode for complex tasks

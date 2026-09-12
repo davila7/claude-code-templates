@@ -1,3 +1,7 @@
+---
+description: "Rename the current branch to match the work it contains: diff against main, analyze the changed files, derive a conventional branch name, and update it."
+---
+
 # Update Branch Name
 
 Follow these steps to update the current branch name:

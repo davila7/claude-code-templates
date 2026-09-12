@@ -1,3 +1,7 @@
+---
+description: "Synchronize task status with git commits, keeping version control and task tracking consistent."
+---
+
 # Orchestration Sync Command
 
 Synchronize task status with git commits, ensuring consistency between version control and task tracking.

@@ -1,3 +1,8 @@
+---
+argument-hint: "[task-id] [new-status]"
+description: "Move a task between status folders following the task management protocol, updating metadata and references."
+---
+
 # Task Move Command
 
 Move tasks between status folders following the task management protocol.

@@ -22,7 +22,14 @@ Agents are AI specialists for specific domains (security, performance, framework
    ```
 
 2. **Agent File Structure**
+
+   Every agent starts with a YAML frontmatter block — Claude Code reads `name` and `description` from it, and an agent without one is listed in the catalog but never loads. Quote the values exactly as shown:
    ```markdown
+   ---
+   name: your-agent-name
+   description: "Use this agent when you need to… (one or two sentences describing when Claude should pick this agent)"
+   ---
+
    # Agent Name
    
    Agent description and purpose.
@@ -39,12 +46,39 @@ Agents are AI specialists for specific domains (security, performance, framework
    Practical examples of agent usage.
    ```
 
+   Optionally add `tools: Read, Grep, Bash, …` to restrict which tools the agent can use, and `model: sonnet` (a documented alias) to pin its model.
+
+   Run `npm run frontmatter:check` from `cli-tool/` before submitting — it verifies that the YAML frontmatter parses the way Claude Code expects.
+
 3. **Available Categories**
+   - `accessibility/` - Accessibility auditing and WCAG compliance
+   - `ai-specialists/` - LLM and AI tooling specialists
+   - `api-graphql/` - API design and GraphQL specialists
+   - `blockchain-web3/` - Smart contracts and web3 integration
+   - `business-marketing/` - Business analysis, marketing, sales
+   - `data-ai/` - Data engineering, ML, and prompt engineering
+   - `database/` - Database specialists
+   - `deep-research-team/` - Multi-agent research workflows
    - `development-team/` - Full-stack developers, architects
-   - `domain-experts/` - Security, performance, accessibility specialists  
-   - `creative-team/` - Content creators, designers
-   - `business-team/` - Product managers, analysts
-   - `development-tools/` - Tool specialists, DevOps experts
+   - `development-tools/` - Tool specialists, testing, observability
+   - `devops-infrastructure/` - Cloud, IaC, and deployment specialists
+   - `documentation/` - Documentation and technical writing
+   - `expert-advisors/` - Architecture review and advisory agents
+   - `ffmpeg-clip-team/` - Media clipping and processing workflows
+   - `finance/` - Financial analysis and compliance
+   - `game-development/` - Game engines and game tooling
+   - `git/` - Git workflow and commit hygiene
+   - `mcp-dev-team/` - MCP server development
+   - `modernization/` - Legacy migration and refactoring
+   - `obsidian-ops-team/` - Obsidian vault automation
+   - `ocr-extraction-team/` - Document and OCR extraction
+   - `performance-testing/` - Profiling and load testing
+   - `podcast-creator-team/` - Podcast production workflows
+   - `programming-languages/` - Language-specific specialists
+   - `realtime/` - Real-time systems and WebRTC
+   - `security/` - Application and infrastructure security
+   - `ui-analysis/` - UI review and design analysis
+   - `web-tools/` - SEO and web optimization
 
 4. **Creating New Categories**
    If your agent doesn't fit existing categories, create a new one:
@@ -69,7 +103,14 @@ Commands are custom slash commands that extend Claude Code functionality.
    ```
 
 2. **Command File Structure**
+
+   Every command starts with a YAML frontmatter block. `description` is what the user sees in the slash-command menu, and `argument-hint` shows how to pass arguments (quote it, or YAML reads `[file]` as a list):
    ```markdown
+   ---
+   description: "Brief command description shown in the slash-command menu"
+   argument-hint: "[file-path]"
+   ---
+
    # /command-name
    
    Brief command description.
@@ -84,12 +125,36 @@ Commands are custom slash commands that extend Claude Code functionality.
    Technical details of what the command does.
    ```
 
+   Optionally add `allowed-tools: Read, Write, Bash, …` to restrict which tools the command can use. Omit `argument-hint` if the command takes no arguments.
+
+   Run `npm run frontmatter:check` from `cli-tool/` before submitting — it verifies that the YAML frontmatter parses the way Claude Code expects.
+
 3. **Command Categories**
-   - `code-generation/` - Generate code, tests, documentation
    - `analysis/` - Code analysis, optimization, debugging
-   - `project-management/` - File operations, project structure
-   - `testing/` - Test generation, validation, coverage
+   - `automation/` - CI/CD pipelines and workflow automation
+   - `azure/` - Azure cloud operations
+   - `database/` - Database management and migrations
    - `deployment/` - Build, deploy, CI/CD operations
+   - `design/` - UI/UX design workflows
+   - `documentation/` - Documentation generation and maintenance
+   - `doordash/` - Doordash integrations
+   - `game-development/` - Game development workflows
+   - `git/` - Git operations
+   - `git-workflow/` - Branch, PR, and review workflows
+   - `google-workspace/` - Google Workspace integrations
+   - `marketing/` - Marketing workflows
+   - `nextjs-vercel/` - Next.js and Vercel deployments
+   - `orchestration/` - Multi-agent task orchestration
+   - `performance/` - Profiling and optimization
+   - `project-management/` - File operations, project structure
+   - `security/` - Security auditing workflows
+   - `setup/` - Project and environment setup
+   - `simulation/` - System and behavior simulation
+   - `svelte/` - Svelte and SvelteKit development
+   - `sync/` - Data synchronization
+   - `team/` - Team collaboration workflows
+   - `testing/` - Test generation, validation, coverage
+   - `utilities/` - General-purpose helpers
 
 4. **Creating New Categories**
    If your command doesn't fit existing categories, create a new one:

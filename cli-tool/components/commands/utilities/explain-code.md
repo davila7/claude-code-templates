@@ -1,3 +1,8 @@
+---
+argument-hint: "[code-or-file-path]"
+description: "Analyze and explain the functionality of a piece of code, covering inputs, outputs, and how it fits into the larger system."
+---
+
 # Analyze and Explain Code Functionality
 
 Analyze and explain code functionality
