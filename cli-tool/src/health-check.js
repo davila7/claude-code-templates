@@ -644,6 +644,155 @@ class HealthChecker {
     }
   }
 
+  /**
+   * Scan a string for Claude Code environment-variable templates
+   * (`${VAR}` and `${VAR:-default}`, see "Environment variable expansion in
+   * .mcp.json"). This is a syntax check only: process.env is never read, so
+   * no secret or machine-specific value is resolved or exposed.
+   *
+   * Returns { malformed, unresolved, expanded } where `expanded` is the
+   * string with every `${VAR:-default}` replaced by its default and every
+   * bare `${VAR}` replaced by an empty string, and `unresolved` lists the
+   * variables that have no default (their real value is unknown here).
+   */
+  inspectEnvTemplates(value) {
+    const unresolved = [];
+    let expanded = '';
+    let rest = value;
+
+    for (;;) {
+      const open = rest.indexOf('${');
+      if (open === -1) {
+        expanded += rest;
+        break;
+      }
+      const close = rest.indexOf('}', open);
+      if (close === -1) {
+        return { malformed: true, unresolved, expanded: value };
+      }
+      const match = /^([A-Za-z_][A-Za-z0-9_]*)(?::-(.*))?$/s.exec(rest.slice(open + 2, close));
+      if (!match) {
+        return { malformed: true, unresolved, expanded: value };
+      }
+      expanded += rest.slice(0, open);
+      if (match[2] !== undefined) {
+        expanded += match[2];
+      } else {
+        unresolved.push(match[1]);
+      }
+      rest = rest.slice(close + 1);
+    }
+
+    return { malformed: false, unresolved, expanded };
+  }
+
+  /**
+   * Validate the transport shape of one MCP server entry against the shapes
+   * Claude Code documents for `.mcp.json`:
+   *   - local stdio servers: `command` (+ optional `args`/`env`);
+   *   - remote servers: `url` with `type` "http" (alias "streamable-http"),
+   *     "sse" or "ws", optional `headers`.
+   * A `url` entry without `type` is a documented configuration error (Claude
+   * Code reads it as stdio and skips it), so it is reported as an issue.
+   *
+   * Returns null when the entry is valid, `{ issue }` when it is invalid, or
+   * `{ warning }` when it is syntactically valid but its url depends on an
+   * environment variable without a default and therefore cannot be verified
+   * here.
+   */
+  validateMCPServerTransport(serverConfig) {
+    const hasCommand = typeof serverConfig.command === 'string' && serverConfig.command.trim() !== '';
+    const hasUrl = typeof serverConfig.url === 'string' && serverConfig.url.trim() !== '';
+    const remoteSchemes = {
+      http: ['http:', 'https:'],
+      sse: ['http:', 'https:'],
+      ws: ['ws:', 'wss:']
+    };
+    const typeAliases = { 'streamable-http': 'http' };
+
+    let type = serverConfig.type;
+    if (type !== undefined) {
+      if (typeof type !== 'string') {
+        // Never interpolate a non-string value: an object such as
+        // {toString: null} would throw inside the template string.
+        return { issue: 'Unsupported transport type (must be a string)' };
+      }
+      type = typeAliases[type] || type;
+      if (type !== 'stdio' && !remoteSchemes[type]) {
+        return { issue: `Unsupported transport type "${serverConfig.type}"` };
+      }
+    }
+
+    if (type === undefined) {
+      if (hasUrl) {
+        return { issue: 'Missing type for url server (add "type": "http", "sse" or "ws")' };
+      }
+      if (!hasCommand) {
+        return { issue: 'Missing command' };
+      }
+      return null;
+    }
+
+    if (type === 'stdio') {
+      if (!hasCommand) {
+        return { issue: 'Missing command for stdio transport' };
+      }
+      return null;
+    }
+
+    // Remote transport (http / sse / ws)
+    if (!hasUrl) {
+      return { issue: `Missing url for ${serverConfig.type} transport` };
+    }
+    if (serverConfig.headers !== undefined) {
+      const headers = serverConfig.headers;
+      if (headers === null || typeof headers !== 'object' || Array.isArray(headers)) {
+        return { issue: 'Invalid headers format' };
+      }
+      // Header values are literal strings or `${VAR}` templates; anything
+      // else (object, array, number, null) is not a header value.
+      for (const [headerName, headerValue] of Object.entries(headers)) {
+        if (typeof headerValue !== 'string') {
+          return { issue: `Invalid headers format (value of "${headerName}" must be a string)` };
+        }
+      }
+    }
+
+    const templates = this.inspectEnvTemplates(serverConfig.url);
+    if (templates.malformed) {
+      return { issue: 'Invalid url (malformed ${VAR} template)' };
+    }
+
+    const allowedSchemes = remoteSchemes[type];
+    const schemeList = allowedSchemes.map(scheme => scheme.slice(0, -1)).join(' or ');
+
+    if (templates.unresolved.length === 0) {
+      // Literal url, or every template has a default: validate the resolved form.
+      let parsed;
+      try {
+        parsed = new URL(templates.expanded);
+      } catch (error) {
+        return { issue: 'Invalid url' };
+      }
+      if (!allowedSchemes.includes(parsed.protocol)) {
+        return { issue: `Invalid url (must be ${schemeList})` };
+      }
+      return null;
+    }
+
+    // The url depends on an environment variable with no default. Only the
+    // part that is literal can be checked: when a scheme appears before the
+    // first template (or in a leading default), it must match the transport.
+    const literalScheme = /^([A-Za-z][A-Za-z0-9+.-]*):/.exec(templates.expanded);
+    if (literalScheme && !allowedSchemes.includes(`${literalScheme[1].toLowerCase()}:`)) {
+      return { issue: `Invalid url (must be ${schemeList})` };
+    }
+    return {
+      warning: `url depends on environment variable${templates.unresolved.length > 1 ? 's' : ''} ` +
+        `${templates.unresolved.map(name => '${' + name + '}').join(', ')} (not verified)`
+    };
+  }
+
   checkMCPConfigurationSyntax() {
     const configPaths = [
       path.join(process.cwd(), '.mcp.json')
@@ -652,7 +801,9 @@ class HealthChecker {
     let totalServers = 0;
     let validServers = 0;
     let invalidServers = 0;
+    let unverifiedServers = 0;
     const issues = [];
+    const warnings = [];
     
     for (const configPath of configPaths) {
       if (fs.existsSync(configPath)) {
@@ -672,11 +823,19 @@ class HealthChecker {
                 continue;
               }
               
-              // Check required fields
-              if (!serverConfig.command) {
+              // Check required fields. Claude Code supports local stdio servers
+              // (`command` + optional `args`/`env`) and remote servers
+              // (`url` with `type` "http"/"streamable-http", "sse" or "ws",
+              // optional `headers`).
+              const transport = this.validateMCPServerTransport(serverConfig);
+              if (transport && transport.issue) {
                 invalidServers++;
-                issues.push(`Missing command for ${serverName} in ${path.basename(configPath)}`);
+                issues.push(`${transport.issue} for ${serverName} in ${path.basename(configPath)}`);
                 continue;
+              }
+              if (transport && transport.warning) {
+                unverifiedServers++;
+                warnings.push(`${transport.warning} for ${serverName} in ${path.basename(configPath)}`);
               }
               
               // Optional: Check if args is array when present
@@ -709,7 +868,13 @@ class HealthChecker {
       };
     }
     
-    if (invalidServers === 0) {
+    const warningDetails = warnings.length > 0 ? `; ${warnings.join('; ')}` : '';
+    if (invalidServers === 0 && unverifiedServers > 0) {
+      return {
+        status: 'warn',
+        message: `All ${totalServers} MCP server configurations are valid; ${unverifiedServers} use unresolved environment variables in url (not verified)${warningDetails}`
+      };
+    } else if (invalidServers === 0) {
       return {
         status: 'pass',
         message: `All ${totalServers} MCP server configurations are valid`
@@ -717,12 +882,12 @@ class HealthChecker {
     } else if (validServers > 0) {
       return {
         status: 'warn',
-        message: `${validServers}/${totalServers} MCP servers valid, ${invalidServers} issues found`
+        message: `${validServers}/${totalServers} MCP servers valid, ${invalidServers} issues found${warningDetails}`
       };
     } else {
       return {
         status: 'fail',
-        message: `All ${totalServers} MCP server configurations have issues`
+        message: `All ${totalServers} MCP server configurations have issues${warningDetails}`
       };
     }
   }
@@ -1361,7 +1526,7 @@ class HealthChecker {
         } else if (result.check === 'MCP Config Syntax' && result.message.includes('Invalid JSON')) {
           recommendations.push('Fix JSON syntax errors in MCP configuration files');
         } else if (result.check === 'MCP Config Syntax' && result.message.includes('Missing command')) {
-          recommendations.push('Add missing command fields to MCP server configurations');
+          recommendations.push('Add a command (stdio) or url with type http, sse or ws to each MCP server configuration');
         } else if (result.check === 'Local Hooks' && result.message.includes('Invalid JSON')) {
           recommendations.push('Fix JSON syntax error in .claude/settings.local.json');
         }
