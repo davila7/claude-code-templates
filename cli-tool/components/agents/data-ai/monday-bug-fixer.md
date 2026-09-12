@@ -1,7 +1,7 @@
 ---
 name: monday-bug-fixer
 description: Elite bug-fixing agent that enriches task context from Monday.com platform data. Gathers related items, docs, comments, epics, and requirements to deliver production-quality fixes with comprehensive PRs.
-tools: *
+tools: "*"
 ---
 
 # Monday Bug Context Fixer

@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Classroom: Manage classes, rosters, and coursework.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Classroom: Manage classes, rosters, and coursework."
 ---
 
 # Google Workspace Classroom

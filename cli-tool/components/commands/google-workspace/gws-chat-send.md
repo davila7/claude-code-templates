@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Chat: Send a message to a space.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Chat: Send a message to a space."
 ---
 
 # Google Workspace Chat Send

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(dd-cli:*), Bash(cat:*), Bash(jq:*), Bash(wc:*), Read, Write, Edit
-argument-hint: [week | month]
+argument-hint: "[week | month]"
 description: Spend and activity report for agent-driven DoorDash ordering - reconciles the audit log against real order history and renders totals, per-restaurant breakdown, repeat rate, and abandoned-cart rate
 ---
 
