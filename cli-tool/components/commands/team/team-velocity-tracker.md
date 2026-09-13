@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash, Glob, Grep
-argument-hint: [analysis-period] | --sprint | --monthly | --quarterly | --trend-analysis
+argument-hint: "[analysis-period] | --sprint | --monthly | --quarterly | --trend-analysis"
 description: Track and analyze team velocity with predictive forecasting and performance optimization recommendations
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [strategy] | setup | deploy | switch | rollback | status
+argument-hint: "[strategy] | setup | deploy | switch | rollback | status"
 description: Implement blue-green deployment strategy with zero-downtime switching, health validation, and automatic rollback
 ---
 

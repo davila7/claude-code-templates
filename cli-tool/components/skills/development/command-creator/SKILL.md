@@ -43,7 +43,7 @@ Every slash command is a markdown file with:
 ```markdown
 ---
 description: Brief description shown in /help (required)
-argument-hint: <placeholder> (optional, if command takes arguments)
+argument-hint: "<placeholder>"  # optional — include only if command takes arguments
 ---
 
 # Command Title
@@ -107,7 +107,7 @@ Ask:
 
 If command takes arguments:
 
-- Add `argument-hint: <placeholder>` to frontmatter
+- Add `argument-hint: "<placeholder>"` to frontmatter (always wrap the value in double quotes — bare `[...]` is a YAML flow sequence, which Copilot CLI ≥1.0.65 rejects)
 - Use `<angle-brackets>` for required arguments
 - Use `[square-brackets]` for optional arguments
 

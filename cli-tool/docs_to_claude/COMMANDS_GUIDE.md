@@ -45,7 +45,7 @@ Each command is defined in a Markdown file with this structure:
 ```markdown
 ---
 allowed-tools: Read, Edit, Bash
-argument-hint: [optional-arg]
+argument-hint: "[optional-arg]"
 description: Brief description of the command
 model: sonnet
 ---
@@ -107,8 +107,8 @@ allowed-tools: Read, Edit, Bash(git add:*), Bash(git status:*)
 Provides autocomplete guidance for command arguments:
 ```yaml
 argument-hint: add [tagId] | remove [tagId] | list
-argument-hint: [issue-number]
-argument-hint: [component-name] [directory]
+argument-hint: "[issue-number]"
+argument-hint: "[component-name] [directory]"
 ```
 
 ### `description` (Optional)
@@ -147,7 +147,7 @@ Capture all arguments passed to the command:
 
 ```markdown
 ---
-argument-hint: [issue-number]
+argument-hint: "[issue-number]"
 description: Fix GitHub issue following coding standards
 ---
 
@@ -166,7 +166,7 @@ Access specific arguments individually (similar to shell scripts):
 
 ```markdown
 ---
-argument-hint: [pr-number] [priority] [assignee]
+argument-hint: "[pr-number] [priority] [assignee]"
 description: Review pull request with specific priority and assignee
 ---
 
@@ -259,7 +259,7 @@ Analyze the architectural implications of @src/config/architecture.md and provid
 ```markdown
 ---
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git log:*)
-argument-hint: [optional-commit-message]
+argument-hint: "[optional-commit-message]"
 description: Create a well-formatted git commit
 model: claude-sonnet-4-6
 ---
@@ -293,7 +293,7 @@ Commit message should be:
 ```markdown
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [component-name] [directory]
+argument-hint: "[component-name] [directory]"
 description: Generate React component with TypeScript and tests
 model: claude-sonnet-4-6
 ---
@@ -348,7 +348,7 @@ Follow the existing code patterns from: @src/components/
 ```markdown
 ---
 allowed-tools: Read, Edit, Bash, WebFetch
-argument-hint: [endpoint-path]
+argument-hint: "[endpoint-path]"
 description: Generate comprehensive API tests
 model: claude-sonnet-4-6
 ---
@@ -546,7 +546,7 @@ model: claude-sonnet-4-6
 ```markdown
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [migration-name]
+argument-hint: "[migration-name]"
 description: Create database migration with rollback
 model: claude-sonnet-4-6
 ---
@@ -803,10 +803,10 @@ allowed-tools: Read, Write, Edit, Bash, WebFetch, WebSearch, Grep, Glob
 ### 4. Argument Design
 ```yaml
 # ✅ Clear argument guidance
-argument-hint: [component-name] [directory] [--typescript]
+argument-hint: "[component-name] [directory] [--typescript]"
 
 # ❌ Vague guidance  
-argument-hint: [options]
+argument-hint: "[options]"
 ```
 
 ### 5. Command Testing
