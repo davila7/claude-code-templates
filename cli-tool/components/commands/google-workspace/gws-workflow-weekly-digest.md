@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workflow: Weekly summary: this week's meetings + unread email count.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workflow: Weekly summary: this week's meetings + unread email count."
 ---
 
 # Google Workspace Workflow Weekly Digest

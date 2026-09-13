@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workflow: Convert a Gmail message into a Google Tasks entry.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workflow: Convert a Gmail message into a Google Tasks entry."
 ---
 
 # Google Workspace Workflow Email To Task

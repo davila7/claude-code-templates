@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Vault: Manage eDiscovery holds and exports.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Vault: Manage eDiscovery holds and exports."
 ---
 
 # Google Workspace Vault

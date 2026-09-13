@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Sheets: Append a row to a spreadsheet.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Sheets: Append a row to a spreadsheet."
 ---
 
 # Google Workspace Sheets Append

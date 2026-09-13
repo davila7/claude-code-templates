@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(cat:*), Bash(mkdir:*), Bash(jq:*), Read, Write, Edit
-argument-hint: [show | add <person> | edit <person> | rm <person>]
+argument-hint: "[show | add <person> | edit <person> | rm <person>]"
 description: Manage the dietary profile (allergens with severity tiers, diets, dislikes) used by doordash-allergy-shield to vet DoorDash carts
 ---
 

@@ -1,6 +1,6 @@
 ---
-description: Multi-framework structured analysis: surfaces hidden assumptions, generates competing solutions, stress-tests each with adversarial reasoning, and delivers confidence-calibrated recommendations
-argument-hint: [problem or question to analyze]
+description: "Multi-framework structured analysis: surfaces hidden assumptions, generates competing solutions, stress-tests each with adversarial reasoning, and delivers confidence-calibrated recommendations"
+argument-hint: "[problem or question to analyze]"
 ---
 
 # Deep Analysis and Problem Solving Mode

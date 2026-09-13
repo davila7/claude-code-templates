@@ -36,6 +36,8 @@
     "pretest:commands": "npm run dev:link",
     "analytics:start": "node src/analytics.js",
     "analytics:test": "npm run test:analytics",
+    "frontmatter:check": "node src/validate-frontmatter.js",
+    "frontmatter:fix": "node src/validate-frontmatter.js --fix",
     "security-audit": "node src/security-audit.js",
     "security-audit:ci": "node src/security-audit.js --ci",
     "security-audit:verbose": "node src/security-audit.js --verbose",

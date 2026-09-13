@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Apps Script: Manage and execute Apps Script projects.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Apps Script: Manage and execute Apps Script projects."
 ---
 
 # Google Workspace Apps Script

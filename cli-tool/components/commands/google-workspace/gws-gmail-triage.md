@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Gmail: Show unread inbox summary (sender, subject, date).
+argument-hint: "[resource] [method] [flags]"
+description: "Gmail: Show unread inbox summary (sender, subject, date)."
 ---
 
 # Google Workspace Gmail Triage

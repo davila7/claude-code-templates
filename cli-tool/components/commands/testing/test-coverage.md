@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [coverage-type] | --line | --branch | --function | --statement | --report
+argument-hint: "[coverage-type] | --line | --branch | --function | --statement | --report"
 description: Analyze and improve test coverage with comprehensive reporting and gap identification
 ---
 
