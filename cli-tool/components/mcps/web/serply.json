@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "serply": {
+      "description": "Serply MCP Server - Google web, news, scholar, maps, jobs and video search, Bing search, Amazon product search and URL scraping through the Serply.io API. Hosted Streamable HTTP endpoint, no local install required; get an API key at https://serply.io and see https://serply.io/docs for the API reference.",
+      "type": "http",
+      "url": "https://api.serply.io/mcp",
+      "headers": {
+        "X-Api-Key": "<your-serply-api-key>"
+      }
+    }
+  }
+}
