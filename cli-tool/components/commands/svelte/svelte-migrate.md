@@ -1,3 +1,10 @@
+---
+description: "Migrate Svelte/SvelteKit projects between versions, adopt new features like runes, and handle breaking changes."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # /svelte:migrate
 
 Migrate Svelte/SvelteKit projects between versions, adopt new features like runes, and handle breaking changes.

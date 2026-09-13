@@ -1,3 +1,10 @@
+---
+description: "Search and locate tasks across all orchestrations using various criteria."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Task Find Command
 
 Search and locate tasks across all orchestrations using various criteria.

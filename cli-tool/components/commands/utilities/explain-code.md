@@ -1,3 +1,10 @@
+---
+description: "Analyze and explain code functionality"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Analyze and Explain Code Functionality
 
 Analyze and explain code functionality

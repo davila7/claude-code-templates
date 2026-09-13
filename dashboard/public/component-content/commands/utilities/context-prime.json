@@ -1,1 +1,1 @@
-{"content": "Read README.md, THEN run `git ls-files | grep -v -f (sed 's|^|^|; s|$|/|' .cursorignore | psub)` to understand the context of the project\n"}
+{"content": "---\ndescription: \"Read README.md, THEN run git ls-files | grep -v -f (sed 's|^|^|; s|$|/|' .cursorignore | psub) to understand the context of the project\"\nallowed-tools: Read, Write, Edit, Bash\nargument-hint: \"[arguments]\"\n\n---\n\nRead README.md, THEN run `git ls-files | grep -v -f (sed 's|^|^|; s|$|/|' .cursorignore | psub)` to understand the context of the project\n"}

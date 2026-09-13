@@ -1,3 +1,10 @@
+---
+description: "Safely remove a task from the orchestration system, updating all references and dependencies."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Orchestration Remove Command
 
 Safely remove a task from the orchestration system, updating all references and dependencies.

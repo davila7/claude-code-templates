@@ -1,3 +1,10 @@
+---
+description: "Explore architectural decisions through systematic scenario analysis with trade-off evaluation and future-proofing assessment."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Architecture Scenario Explorer
 
 Explore architectural decisions through systematic scenario analysis with trade-off evaluation and future-proofing assessment.

@@ -1,3 +1,10 @@
+---
+description: "Resume work on existing task orchestrations after session loss or context switch."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Orchestration Resume Command
 
 Resume work on existing task orchestrations after session loss or context switch.

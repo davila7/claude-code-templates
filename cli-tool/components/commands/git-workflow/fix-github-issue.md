@@ -1,3 +1,10 @@
+---
+description: "Please analyze and fix the GitHub issue: $ARGUMENTS."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 Please analyze and fix the GitHub issue: $ARGUMENTS.
 
 Follow these steps:
