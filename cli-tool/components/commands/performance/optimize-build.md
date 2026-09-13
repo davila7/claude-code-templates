@@ -1,3 +1,8 @@
+---
+argument-hint: "[build-target-or-context]"
+description: "Optimize build processes and speed: analyze the current build pipeline, identify bottlenecks, and apply caching, parallelization, and configuration improvements."
+---
+
 # Optimize Build Command
 
 Optimize build processes and speed

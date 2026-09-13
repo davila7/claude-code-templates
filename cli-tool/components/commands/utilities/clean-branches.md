@@ -1,3 +1,8 @@
+---
+argument-hint: "[options]"
+description: "Clean up merged and stale git branches after verifying their merge status, keeping the current branch intact."
+---
+
 # Clean Branches Command
 
 Clean up merged and stale git branches

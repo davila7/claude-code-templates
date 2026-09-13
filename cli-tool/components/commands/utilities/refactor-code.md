@@ -1,3 +1,8 @@
+---
+argument-hint: "[scope]"
+description: "Intelligently refactor code to improve quality, following a systematic approach across the requested scope."
+---
+
 # Intelligently Refactor and Improve Code Quality
 
 Intelligently refactor and improve code quality

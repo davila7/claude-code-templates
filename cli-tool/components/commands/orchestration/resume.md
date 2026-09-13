@@ -1,3 +1,7 @@
+---
+description: "Resume work on an existing task orchestration after a session loss or context switch, rebuilding state from task folders and logs."
+---
+
 # Orchestration Resume Command
 
 Resume work on existing task orchestrations after session loss or context switch.

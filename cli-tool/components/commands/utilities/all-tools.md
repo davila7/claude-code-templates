@@ -1,3 +1,7 @@
+---
+description: "Display all available development tools for the current session or project setup."
+---
+
 # Display All Available Development Tools
 
 Display all available development tools

@@ -1,1 +1,1 @@
-{"content": "Fix all black, isort, flake8 and mypy issues in the entire codebase\n"}
+{"content": "---\ndescription: \"Fix all black, isort, flake8, and mypy issues across the entire codebase.\"\n---\n\nFix all black, isort, flake8 and mypy issues in the entire codebase\n"}

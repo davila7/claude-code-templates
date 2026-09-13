@@ -1,3 +1,7 @@
+---
+description: "Step-by-step guide for creating a pull request using the GitHub CLI: branch preparation, committing, and opening the PR against the correct base branch."
+---
+
 # How to Create a Pull Request Using GitHub CLI
 
 This guide explains how to create pull requests using GitHub CLI in our project.

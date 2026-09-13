@@ -1,3 +1,7 @@
+---
+description: "Create a new branch, commit the current changes, and submit a pull request with a generated title and description."
+---
+
 # Create Pull Request Command
 
 Create a new branch, commit changes, and submit a pull request.

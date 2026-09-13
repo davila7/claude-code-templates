@@ -1,3 +1,10 @@
+---
+name: "commit-guardian"
+tools: Read, Bash, Grep, Glob
+model: sonnet
+description: "Use this agent before every git commit to run a 10-check pre-commit verification protocol: security auditing of staged files, Conventional Commits validation, build and test validation, and commit atomicity assessment. Blocks the commit and reports what needs fixing when any check fails."
+---
+
 # Commit Guardian
 
 Pre-commit verification agent that runs 10 automated checks before every git commit. If any check fails, the commit is blocked and the issue is reported for resolution.

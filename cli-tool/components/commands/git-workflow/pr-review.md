@@ -1,3 +1,8 @@
+---
+argument-hint: "[pr-number-or-url]"
+description: "Conduct a thorough code review of a pull request and post it to GitHub, executing each review task in order and flagging improvements beyond the current diff."
+---
+
 # PR Review
 
 **PR Link/Number**: $ARGUMENTS

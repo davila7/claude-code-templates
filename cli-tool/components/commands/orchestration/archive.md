@@ -1,3 +1,7 @@
+---
+description: "Archive a completed orchestration while preserving its data, metrics, and lessons learned for future reference."
+---
+
 # Orchestration Archive Command
 
 Properly archive completed orchestrations while preserving valuable data, metrics, and lessons learned for future reference.

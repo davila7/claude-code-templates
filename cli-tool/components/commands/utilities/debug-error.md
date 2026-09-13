@@ -1,3 +1,8 @@
+---
+argument-hint: "[error-or-log-output]"
+description: "Systematically debug and fix an error: reproduce it, isolate the root cause, apply a minimal fix, and verify the resolution."
+---
+
 # Systematically Debug and Fix Errors
 
 Systematically debug and fix errors

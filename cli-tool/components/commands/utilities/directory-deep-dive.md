@@ -1,3 +1,8 @@
+---
+argument-hint: "[directory-path]"
+description: "Analyze the structure and purpose of a directory, summarizing each file's role and how the pieces fit together. Defaults to the current working directory."
+---
+
 # Directory Deep Dive
 
 Analyze directory structure and purpose

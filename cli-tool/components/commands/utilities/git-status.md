@@ -1,3 +1,8 @@
+---
+argument-hint: "[options]"
+description: "Show detailed git repository status, including branch state, staged and unstaged changes, and recent activity."
+---
+
 # Git Status Command
 
 Show detailed git repository status

@@ -1,3 +1,7 @@
+---
+description: "Audit the project for software supply chain risk, including dependency vulnerabilities, lockfile issues, malicious package indicators, SBOM coverage, and license concerns. Produces a prioritized findings report with remediation steps."
+---
+
 # /supply-chain-audit
 
 Audit a project for software supply chain risk, including dependency vulnerabilities, lockfile issues, malicious package indicators, SBOM coverage, and license concerns.

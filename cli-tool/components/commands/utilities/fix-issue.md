@@ -1,3 +1,8 @@
+---
+argument-hint: "[issue-description]"
+description: "Identify and resolve a code issue following a structured analysis and fix workflow."
+---
+
 # Fix Issue Command
 
 Identify and resolve code issues

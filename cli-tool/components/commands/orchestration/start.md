@@ -1,3 +1,7 @@
+---
+description: "Start the task orchestration workflow using the three-agent system (task-orchestrator, task-decomposer, dependency-analyzer) to produce a comprehensive execution plan."
+---
+
 # Orchestrate Tasks Command
 
 Initiates the task orchestration workflow using the three-agent system (task-orchestrator, task-decomposer, and dependency-analyzer) to create a comprehensive execution plan.

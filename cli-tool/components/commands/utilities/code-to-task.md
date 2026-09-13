@@ -1,3 +1,7 @@
+---
+description: "Convert code analysis findings into actionable Linear tasks."
+---
+
 # Convert Code Analysis to Linear Tasks
 
 Convert code analysis to Linear tasks
