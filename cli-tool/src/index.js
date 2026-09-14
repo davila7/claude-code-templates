@@ -23,6 +23,7 @@ const { trackingService } = require('./tracking-service');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 /**
  * Get platform-appropriate Python command candidates
@@ -276,7 +277,7 @@ async function createClaudeConfig(options = {}) {
     try {
       const os = require('os');
       const homeDir = os.homedir();
-      const claudeDir = path.join(homeDir, '.claude');
+      const claudeDir = getClaudeConfigDir(homeDir);
 
       // Initialize ConversationAnalyzer and SessionSharing
       const conversationAnalyzer = new ConversationAnalyzer(claudeDir);

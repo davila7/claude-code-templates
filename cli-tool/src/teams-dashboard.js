@@ -5,6 +5,7 @@ const express = require('express');
 const open = require('open');
 const os = require('os');
 const readline = require('readline');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 class TeamsDashboard {
   constructor(options = {}) {
@@ -13,7 +14,7 @@ class TeamsDashboard {
     this.port = 3338;
     this.httpServer = null;
     this.homeDir = os.homedir();
-    this.claudeDir = path.join(this.homeDir, '.claude');
+    this.claudeDir = getClaudeConfigDir(this.homeDir);
     this.projectsDir = path.join(this.claudeDir, 'projects');
     this.sessionCache = new Map();
   }
