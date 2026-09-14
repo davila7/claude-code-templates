@@ -185,21 +185,38 @@ class ClaudeAnalytics {
   }
 
   calculateRealTokenUsage(parsedMessages) {
+    // Claude Code writes a single assistant message as several JSONL records —
+    // one per content block (thinking / text / tool_use) — and every one of
+    // those records repeats the same `message.id` and an identical `usage`
+    // object. Collapse by message id before summing, otherwise each message's
+    // tokens are counted once per content block.
+    const usageByMessage = new Map();
+    parsedMessages.forEach((message, index) => {
+      if (!message.usage) return;
+      // Namespace each identifier source so a value that happens to appear as
+      // both an `id` and a `uuid` — or an id that looks like a generated key —
+      // cannot collapse two distinct records into one.
+      const key = message.id
+        ? `id:${message.id}`
+        : message.uuid
+          ? `uuid:${message.uuid}`
+          : `idx:${index}`;
+      usageByMessage.set(key, message.usage);
+    });
+
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
     let totalCacheCreationTokens = 0;
     let totalCacheReadTokens = 0;
-    let messagesWithUsage = 0;
 
-    parsedMessages.forEach(message => {
-      if (message.usage) {
-        totalInputTokens += message.usage.input_tokens || 0;
-        totalOutputTokens += message.usage.output_tokens || 0;
-        totalCacheCreationTokens += message.usage.cache_creation_input_tokens || 0;
-        totalCacheReadTokens += message.usage.cache_read_input_tokens || 0;
-        messagesWithUsage++;
-      }
+    usageByMessage.forEach(usage => {
+      totalInputTokens += usage.input_tokens || 0;
+      totalOutputTokens += usage.output_tokens || 0;
+      totalCacheCreationTokens += usage.cache_creation_input_tokens || 0;
+      totalCacheReadTokens += usage.cache_read_input_tokens || 0;
     });
+
+    const messagesWithUsage = usageByMessage.size;
 
     return {
       total: totalInputTokens + totalOutputTokens + totalCacheCreationTokens + totalCacheReadTokens,
