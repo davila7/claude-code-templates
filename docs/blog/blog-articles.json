@@ -1,6 +1,25 @@
 {
   "articles": [
     {
+      "id": "tdd-guardrail-workflow",
+      "title": "TDD Guardrail for Claude Code: TDD Gate + Test Runner Hooks",
+      "description": "Combine the TDD Gate and Test Runner hooks in Claude Code to enforce write-tests-first development and auto-run your suite after every edit. Full setup guide.",
+      "url": "tdd-guardrail-workflow/",
+      "image": "assets/tdd-guardrail-workflow-cover.png",
+      "category": "Automation",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "TDD",
+        "Testing",
+        "Automation"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 24
+    },
+    {
       "id": "performance-budget-guard-hook",
       "title": "Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships",
       "description": "Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.",
@@ -470,11 +489,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-09-01",
-    "totalArticles": 25,
+    "lastUpdated": "2026-09-08",
+    "totalArticles": 26,
     "difficultyLevels": {
       "basic": 10,
-      "intermediate": 8,
+      "intermediate": 9,
       "advanced": 5
     }
   }
