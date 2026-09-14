@@ -105,6 +105,30 @@ Use the component-reviewer agent to review [component-path]
    `generate_components_json.py`, commit, or publish until testing is confirmed
    or explicitly skipped by the user.
 7. Run `python scripts/generate_components_json.py` to update catalog
+   (**maintainers only** — see below)
+
+#### Generated catalog files: who regenerates them
+
+`scripts/generate_components_json.py` writes `docs/components.json` and the
+split `dashboard/public/` artifacts (`components.json`, `counts.json`,
+`search-index.json`, `components/*.json`, `component-content/**`). These files
+are **generated output, never hand-edited**, and who commits them depends on
+the workflow:
+
+| Workflow | Regenerate + commit the catalog? |
+|----------|----------------------------------|
+| Maintainer working directly on this repo (local branch, sync PRs, agent-driven migrations) | ✅ Yes — run the script and commit the output with the component |
+| **External contributor PR (fork)** | ❌ **No** — the PR must only contain files under `cli-tool/components/` (plus supporting files). The catalog is regenerated automatically after merge (`update-json-data.yml` daily cron, or a maintainer). |
+
+Why: the generated JSON files are single-line blobs that change on every
+component/download-count update, so two PRs that both commit them always
+conflict. `.github/workflows/generated-files-guard.yml` fails any
+non-maintainer PR that touches them and posts revert instructions; the
+`component-pr-welcome.yml` bot also warns about it up front.
+
+When reviewing a contributor PR that includes these files, ask them to revert
+with `git checkout origin/main -- docs/components.json dashboard/public/` rather
+than resolving the conflict by hand.
 
 **The component-reviewer agent checks:**
 - ✅ Valid YAML frontmatter and required fields
