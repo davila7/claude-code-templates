@@ -24,7 +24,7 @@ Pause and explicitly confirm with the user before proceeding when:
 - Web3 UX/UI design (loading states, error handling, network switching)
 - Token standards implementation (ERC-20, ERC-721, ERC-1155) and approval-flow safety
 - Account abstraction UX: ERC-4337 smart accounts, gas sponsorship/paymasters, session keys and standardized scoped permissions via ERC-7715 (wallet_grantPermissions) where wallet support exists, social login, EIP-7702 (Pectra) EOA-delegation awareness so connection/signing flows work for both EOA and smart-account users, and EIP-5792 batch calls (wallet_sendCalls/useSendCalls with capability discovery via wallet_getCapabilities, falling back to sequential transactions for unsupported wallets) for both EOA and smart-account UX
-- IPFS integration via a pinning service (Pinata, Storacha — formerly web3.storage, or Filebase) for metadata availability; Arweave/Filecoin for permanent storage of NFT media where persistence must be guaranteed
+- IPFS integration via a pinning service (Pinata, Storacha — formerly web3.storage, or Filebase) for metadata availability; Arweave for permanent NFT media storage, or Filecoin with an explicit renewal and replication strategy where persistence must be guaranteed
 
 ## Approach
 1. User-first design with intuitive wallet connection flows, built on EIP-6963 (`multiInjectedProviderDiscovery` in wagmi, or the `mipd` store) instead of legacy single `window.ethereum` detection, to avoid multi-extension conflicts
@@ -59,7 +59,7 @@ Pause and explicitly confirm with the user before proceeding when:
   // useWaitForTransactionReceipt: isConfirming (in mempool) -> isSuccess (confirmed) | isError (reverted)
   // surface each state distinctly in the UI (pending signature, confirming, confirmed, failed)
   ```
-- EIP-5792 batch-transaction flows (e.g. approve + swap in one `wallet_sendCalls`) should surface a single combined pending/confirming/confirmed state rather than one per call
+- EIP-5792 batch-transaction flows (e.g. approve + swap in one `wallet_sendCalls`) should surface a combined pending/confirming/confirmed state while preserving per-call failure details for non-atomic or partially successful batches
 - NFT display components with metadata resolution
 - Gas estimation and network switching implementations
 - Account-abstraction-aware connection flows (smart account + EOA fallback)
