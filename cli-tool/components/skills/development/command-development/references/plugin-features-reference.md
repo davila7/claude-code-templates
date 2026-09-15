@@ -249,7 +249,7 @@ Commands that use plugin templates:
 ```markdown
 ---
 description: Generate documentation from template
-argument-hint: [component-name]
+argument-hint: "[component-name]"
 ---
 
 Template: @${CLAUDE_PLUGIN_ROOT}/templates/component-docs.md
@@ -294,7 +294,7 @@ Commands that adapt to environment:
 ```markdown
 ---
 description: Deploy based on environment
-argument-hint: [dev|staging|prod]
+argument-hint: "[dev|staging|prod]"
 ---
 
 Environment config: @${CLAUDE_PLUGIN_ROOT}/config/$1.json
@@ -336,7 +336,7 @@ Commands can trigger plugin agents using the Task tool:
 ```markdown
 ---
 description: Deep analysis using plugin agent
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 ---
 
 Initiate deep code analysis of @$1 using the code-analyzer agent.
@@ -362,7 +362,7 @@ Commands can reference plugin skills for specialized knowledge:
 ```markdown
 ---
 description: API documentation with best practices
-argument-hint: [api-file]
+argument-hint: "[api-file]"
 ---
 
 Document the API in @$1 following our API documentation standards.
@@ -412,7 +412,7 @@ Commands that coordinate multiple plugin components:
 ```markdown
 ---
 description: Comprehensive code review workflow
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 ---
 
 File to review: @$1
@@ -445,7 +445,7 @@ Commands should validate inputs before processing:
 ```markdown
 ---
 description: Deploy to environment with validation
-argument-hint: [environment]
+argument-hint: "[environment]"
 ---
 
 Validate environment: !`echo "$1" | grep -E "^(dev|staging|prod)$" || echo "INVALID"`
@@ -468,7 +468,7 @@ Verify required files exist:
 ```markdown
 ---
 description: Process configuration file
-argument-hint: [config-file]
+argument-hint: "[config-file]"
 ---
 
 Check file: !`test -f $1 && echo "EXISTS" || echo "MISSING"`
@@ -488,7 +488,7 @@ Validate required arguments provided:
 ```markdown
 ---
 description: Create deployment with version
-argument-hint: [environment] [version]
+argument-hint: "[environment] [version]"
 ---
 
 Validate inputs: !`test -n "$1" -a -n "$2" && echo "OK" || echo "MISSING"`
@@ -545,7 +545,7 @@ Handle errors gracefully with helpful messages:
 ```markdown
 ---
 description: Process file with error handling
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 ---
 
 Try processing: !`node ${CLAUDE_PLUGIN_ROOT}/scripts/process.js $1 2>&1 || echo "ERROR: $?"`
