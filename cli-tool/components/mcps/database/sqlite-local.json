@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "sqlite-local": {
+      "description": "Local SQLite database MCP server for zero-config database inspection, schema analysis, and SQL query execution.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "--db-path",
+        "<path-to-sqlite-db-file>"
+      ],
+      "env": {}
+    }
+  }
+}
