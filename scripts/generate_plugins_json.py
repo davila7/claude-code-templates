@@ -65,6 +65,8 @@ REPOS = [
     ("krasserm/ml-plugins", None),
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
+    ("crisandrews/ClawCode", None),
+    ("crisandrews/claude-whatsapp", None),
 ]
 
 DESCRIPTION_OVERRIDES = {
