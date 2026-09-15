@@ -1,3 +1,10 @@
+---
+description: "Test multiple code variations through simulation before implementation with quality gates and performance prediction."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Code Permutation Tester
 
 Test multiple code variations through simulation before implementation with quality gates and performance prediction.

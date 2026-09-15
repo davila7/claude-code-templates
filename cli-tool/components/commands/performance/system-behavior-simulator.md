@@ -1,3 +1,10 @@
+---
+description: "Simulate system performance under various loads with capacity planning, bottleneck identification, and optimization strategies."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # System Behavior Simulator
 
 Simulate system performance under various loads with capacity planning, bottleneck identification, and optimization strategies.

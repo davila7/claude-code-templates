@@ -1,3 +1,10 @@
+---
+description: "Properly archive completed orchestrations while preserving valuable data, metrics, and lessons learned for future reference."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Orchestration Archive Command
 
 Properly archive completed orchestrations while preserving valuable data, metrics, and lessons learned for future reference.

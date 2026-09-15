@@ -1,3 +1,10 @@
+---
+description: "Analyze test coverage, identify testing gaps, and provide recommendations for improving test coverage in Svelte/SvelteKit projects."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # /svelte:test-coverage
 
 Analyze test coverage, identify testing gaps, and provide recommendations for improving test coverage in Svelte/SvelteKit projects.
