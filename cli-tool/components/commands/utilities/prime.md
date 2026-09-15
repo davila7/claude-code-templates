@@ -1,3 +1,10 @@
+---
+description: "Enhanced AI mode for complex tasks"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Enhanced AI Mode for Complex Tasks
 
 Enhanced AI mode for complex tasks

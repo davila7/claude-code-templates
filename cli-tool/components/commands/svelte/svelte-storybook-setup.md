@@ -1,3 +1,10 @@
+---
+description: "Initialize and configure Storybook for SvelteKit projects with optimal settings and structure."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # /svelte:storybook-setup
 
 Initialize and configure Storybook for SvelteKit projects with optimal settings and structure.

@@ -1,3 +1,10 @@
+---
+description: "Show detailed git repository status"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Git Status Command
 
 Show detailed git repository status

@@ -1,3 +1,10 @@
+---
+description: "Generate comprehensive reports on task execution, progress, and metrics."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Task Report Command
 
 Generate comprehensive reports on task execution, progress, and metrics.
