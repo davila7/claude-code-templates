@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git:*), Bash(npm test:*), Bash(npm run:*), Bash(pnpm test:*), Bash(yarn test:*)
+allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(npm test:*), Bash(npm run:*), Bash(pnpm test:*), Bash(yarn test:*)
 argument-hint: <failing-test-or-issue>
 description: Triage a regression by comparing the failing path against the last known good commit
 ---
