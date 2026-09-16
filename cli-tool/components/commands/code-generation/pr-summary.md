@@ -1,7 +1,7 @@
 ---
 name: pr-summary
 description: Generate comprehensive pull request descriptions, changelogs, and commit diff reviews
-allowed-tools: Bash(git:*), Bash(gh:*), Read, Glob, Grep
+allowed-tools: Bash, Read, Glob, Grep
 argument-hint: "[branch-or-range] [--detailed|--changelog|--json|--breaking-only]"
 ---
 
@@ -9,8 +9,7 @@ argument-hint: "[branch-or-range] [--detailed|--changelog|--json|--breaking-only
 
 Generate comprehensive, production-ready pull request descriptions, categorized changelogs, and semantic commit diff reviews from the active Git workspace or branch comparison.
 
-**Arguments**: `$ARGUMENTS` (e.g., `main`, `upstream/main`, `HEAD~3`, `--detailed`, `--changelog`, `--json`, `--breaking-only`)
-
+**Arguments**: `$ARGUMENTS` — an optional Git revision followed by any of `--detailed`, `--changelog`, `--json`, or `--breaking-only` (for example, `main --json`).
 ---
 
 ## Workspace & Git Context
@@ -30,8 +29,10 @@ When invoked, execute the following systematic process:
 ### Step 1: Analyze Changes & Diff
 1. Detect base reference & parse flags:
    - Extract any options specified in `$ARGUMENTS`: `--detailed`, `--changelog`, `--json`, `--breaking-only`.
-   - Separate the Git target revision from the flags (e.g. `main...HEAD`, `v1.2.0..HEAD`, or `main`).
-   - If no revision is given, default the comparison target `TARGET_REF` to `origin/main...HEAD` (or `main...HEAD`). Do not pass mode flags as arguments to Git commands.
+   - Treat the first non-flag argument as the Git target revision; reject unknown flags instead of passing them to Git.
+   - Remove all mode flags before constructing `TARGET_REF`; append `...HEAD` when the target is a branch or revision that is not already a range.
+   - If no revision is given, default the comparison target `TARGET_REF` to `origin/main...HEAD` (or `main...HEAD`). Never pass mode flags as arguments to Git commands.
+   - Keep `--breaking-only` in sync with the Arguments and Advanced Flags lists; it emits only the Breaking Changes & Migrations section and checklist.
 2. Inspect diff statistics:
    ```bash
    git diff --stat "${TARGET_REF:-origin/main...HEAD}"

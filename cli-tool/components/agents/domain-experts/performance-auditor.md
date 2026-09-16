@@ -74,7 +74,10 @@ You adhere strictly to the fundamental rule of systems engineering: **Never opti
 ```javascript
 // Diagnosing retention with heap statistics (run node with --expose-gc)
 const v8 = require('v8');
-if (global.gc) global.gc();
+if (typeof global.gc !== 'function') {
+  throw new Error('Run Node.js with --expose-gc for consistent heap measurements');
+}
+global.gc();
 const initialHeap = v8.getHeapStatistics().used_heap_size;
 
 // Execute suspect workload
