@@ -25,7 +25,7 @@
  *   path:       string    JSONL file, relative to the working directory (default ".claude/logs/mods-audit.jsonl")
  *   skipEvents: string    events not to record, comma-separated (default: the render / log chatter)
  *   flushEvery: number    flush after this many buffered lines (default 50)
- *   maxBytes:   number    keep the file under this size, dropping the oldest lines (default 2 MiB)
+ *   maxBytes:   number    keep the file under this many UTF-8 bytes, dropping the oldest lines (default 2 MiB)
  */
 import type { Register } from 'claude-code'
 
@@ -40,6 +40,8 @@ function strings(value: unknown): string[] | undefined {
 }
 
 const MAX_FIELD = 200
+const encoder = new TextEncoder()
+const bytes = (text: string) => encoder.encode(text).length
 
 function summarize(e: unknown): Record<string, unknown> {
   if (!e || typeof e !== 'object') return { value: String(e).slice(0, MAX_FIELD) }
@@ -84,7 +86,7 @@ export const register: Register = (on, options) => {
       outcome = `threw: ${err instanceof Error ? err.message : String(err)}`
       throw err
     } finally {
-      buffer.push(
+      const line =
         JSON.stringify({
           ts: new Date(startedAt).toISOString(),
           event: next.event,
@@ -92,8 +94,9 @@ export const register: Register = (on, options) => {
           durationMs: Date.now() - startedAt,
           outcome,
           input: summarize(e),
-        }) + '\n',
-      )
+        }) + '\n'
+      // a record that alone would not fit the file is dropped rather than kept forever
+      if (bytes(line) <= maxBytes) buffer.push(line)
 
       if (next.event === 'turn.complete' || buffer.length >= flushEvery) {
         const pending = buffer.splice(0, buffer.length).join('')
@@ -105,10 +108,11 @@ export const register: Register = (on, options) => {
             // First write: the file does not exist yet.
           }
           let text = prior + pending
-          if (text.length > maxBytes) {
-            // Drop whole lines from the front until the tail fits.
-            const cut = text.indexOf('\n', text.length - maxBytes)
-            text = cut === -1 ? pending : text.slice(cut + 1)
+          // The limit is UTF-8 bytes, the size on disk: drop whole lines from the front until the tail fits.
+          while (bytes(text) > maxBytes) {
+            const cut = text.indexOf('\n')
+            if (cut === -1) { text = ''; break }
+            text = text.slice(cut + 1)
           }
           await $.fs.write(logPath, text)
         } catch (err) {
