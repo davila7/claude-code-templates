@@ -65,7 +65,24 @@ describe('Analytics System Integration', () => {
         expect(conv.messages).toBeGreaterThan(0);
       });
     });
+    it('skips inaccessible plugin files while loading conversations', async () => {
+      const StateCalculator = require('../../src/analytics/core/StateCalculator');
+      const ConversationAnalyzer = require('../../src/analytics/core/ConversationAnalyzer');
+      const pluginDir = path.join(testDataDir, 'plugins', 'dev-browser');
+      const brokenFile = path.join(pluginDir, 'SingletonCookie');
 
+      await fs.ensureDir(pluginDir);
+      await fs.symlink('missing-cookie', brokenFile);
+
+      try {
+        const analyzer = new ConversationAnalyzer(testDataDir);
+        const conversations = await analyzer.loadConversations(new StateCalculator());
+
+        expect(conversations.length).toBeGreaterThan(0);
+      } finally {
+        await fs.remove(path.join(testDataDir, 'plugins'));
+      }
+    });
     it('should cache data efficiently', async () => {
       const DataCache = require('../../src/analytics/data/DataCache');
       

@@ -74,11 +74,25 @@ class ConversationAnalyzer {
       // Search for .jsonl files recursively in all subdirectories
       const findJsonlFiles = async (dir) => {
         const files = [];
-        const items = await fs.readdir(dir);
+        let items;
+        try {
+          items = await fs.readdir(dir);
+        } catch {
+          return files;
+        }
 
         for (const item of items) {
+          if (item === 'plugins' || item.startsWith('.')) {
+            continue;
+          }
+
           const itemPath = path.join(dir, item);
-          const stats = await fs.stat(itemPath);
+          let stats;
+          try {
+            stats = await fs.stat(itemPath);
+          } catch {
+            continue;
+          }
 
           if (stats.isDirectory()) {
             // Recursively search subdirectories
