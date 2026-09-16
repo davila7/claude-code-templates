@@ -1,6 +1,8 @@
 ---
 name: "vital-health-content-agent"
 description: "A content marketing agent focused on growing Vital Health Global through"
+tools: Read, Write, Edit, Glob, Grep
+model: sonnet
 ---
 
 # Vital Health Global – Content Growth Agent

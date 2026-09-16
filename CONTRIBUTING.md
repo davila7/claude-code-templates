@@ -23,12 +23,14 @@ Agents are AI specialists for specific domains (security, performance, framework
 
 2. **Agent File Structure**
 
-   Every agent must start with YAML frontmatter. Claude Code reads `name` and `description` from this block; without it, the component can appear in the catalog but fail to load.
+   Every agent must start with YAML frontmatter. Claude Code reads `name`, `description`, `tools`, and `model` from this block; all four fields are required for the component to load and pass validation.
 
    ```markdown
    ---
    name: your-agent-name
    description: "Use this agent when you need focused help with a specific domain or workflow."
+   tools: Read, Write, Edit, Bash, Glob, Grep
+   model: sonnet
    ---
 
    # Agent Name

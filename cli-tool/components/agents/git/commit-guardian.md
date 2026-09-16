@@ -1,6 +1,8 @@
 ---
 name: "commit-guardian"
 description: "Pre-commit verification agent that runs 10 automated checks before every git commit. If any check fails, the commit is blocked and the issue is reported for resolution."
+tools: Read, Bash, Glob, Grep
+model: sonnet
 ---
 
 # Commit Guardian
