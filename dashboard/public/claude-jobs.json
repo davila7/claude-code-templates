@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-15T03:10:42.424887+00:00",
-  "totalJobs": 93,
+  "lastUpdated": "2026-09-12T03:11:25.942121+00:00",
+  "totalJobs": 96,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -572,27 +572,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "wwr-huzzle-full-stack-developer-python-react-ai",
-      "company": "Huzzle",
-      "position": "Full-Stack Developer (Python, React, AI)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Mexico About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We match...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai",
-      "postedAt": "2026-08-18T20:34:05+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "AWS",
-        "Claude Code",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "wwr-happyco-senior-product-designer-mobile-experience",
       "company": "Happyco",
       "position": "Senior Product Designer, Mobile Experience",
@@ -730,6 +709,26 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-zoominfo-technologies-llc-principal-business-intelligence-analyst",
+      "company": "ZoomInfo Technologies LLC",
+      "position": "Principal Business Intelligence Analyst",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote ZoomInfo is where careers accelerate. We move fast, think boldly, and empower you to do the best work of your life. You’ll be surrounded by teammates who care deeply, challenge each other, and celebrate wins. With tools that amplify your impact and a culture that backs your...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/zoominfo-technologies-llc-principal-business-intelligence-analyst",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/zoominfo-technologies-llc-principal-business-intelligence-analyst",
+      "postedAt": "2026-08-15T07:31:27+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5391151008",
       "company": "Anthropic",
       "position": "AI Operations Engineer, Partnerships",
@@ -818,6 +817,26 @@
         "AWS"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5383596008",
+      "company": "Anthropic",
+      "position": "Developer Relations",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As Developer Relations at Anthropic, you will help developers discover, onboard, and get the most out of Claude Code, Claude Tag, and future developer products. This role is pivotal in helping developers adopt Claude-powered products, growing our developer ecosystem, gathering crucial feedback to...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "postedAt": "2026-08-10T15:57:04-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-49215237",
@@ -1602,6 +1621,26 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5277834008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "postedAt": "2026-06-24T13:51:42-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
@@ -1747,6 +1786,27 @@
       "tags": [
         "React",
         "TypeScript",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5174755008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Backend",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is looking for experienced, product-minded engineers to own the backend systems that power user experiences across our API, Claude Code, and Claude.ai. You'll independently scope complex, multi-month projects through ambiguous problem spaces and lead peers through technical and product...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "postedAt": "2026-04-08T14:57:22-04:00",
+      "tags": [
         "Rust",
         "AWS",
         "Claude Code",

@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-sqlite",
+        "mcp-server-sqlite@latest",
         "--db-path",
         "<path-to-sqlite-db-file>"
       ],
