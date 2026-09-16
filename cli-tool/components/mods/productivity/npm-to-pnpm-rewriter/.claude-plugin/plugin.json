@@ -1,0 +1,29 @@
+{
+  "name": "npm-to-pnpm-rewriter",
+  "version": "0.2.0",
+  "description": "Rewrites npm and npx invocations to pnpm (or yarn / bun) before the Bash tool runs them and tells the model what ran through context. A tool.call hook that forwards a modified event (the modifying placement).",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity"
+  ],
+  "userConfig": {
+    "manager": {
+      "type": "string",
+      "title": "Package manager",
+      "description": "The package manager npm and npx calls are rewritten to",
+      "default": "pnpm",
+      "options": [
+        "pnpm",
+        "yarn",
+        "bun"
+      ]
+    }
+  }
+}

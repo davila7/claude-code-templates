@@ -1,0 +1,20 @@
+{
+  "name": "diff-invaders",
+  "version": "0.1.0",
+  "description": "Space Invaders above the Claude Code prompt where every wave is the code Claude just wrote: each line an Edit or Write added becomes a row of the formation and every two characters one alien, so you shoot your own diff. Ship, one shot at a time, bombs, three lives, best score. Zero tokens. Needs function hooks (early access) and an interactive terminal.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "space-invaders",
+    "arcade",
+    "game",
+    "terminal",
+    "tui",
+    "diff",
+    "function-hooks"
+  ]
+}

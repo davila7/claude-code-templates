@@ -1,0 +1,6 @@
+{
+  "description": "Typing test above the prompt: /typing opens it, the board draws on AbovePrompt, turn.complete pauses it, ui.message keeps the best score in $.store",
+  "modules": [
+    "./register.tsx"
+  ]
+}

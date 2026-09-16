@@ -44,7 +44,7 @@ const COMPONENT_TYPES = [
   'hook',
   'skill',
   'loop',
-  'function-hook',
+  'mod',
   'template',
 ] as const;
 
@@ -110,7 +110,7 @@ function buildTools(): ModelContextToolDef[] {
       name: 'search-components',
       title: 'Search components',
       description:
-        'Searches the aitmpl.com catalog of Claude Code components (agents, commands, MCPs, settings, hooks, skills, loops, templates) by free-text query. Returns up to 20 matches with name, type, category, description and the npx install command.',
+        'Searches the aitmpl.com catalog of Claude Code components (agents, commands, MCPs, settings, hooks, skills, loops, mods, templates) by free-text query. Returns up to 20 matches with name, type, category, description and the npx install command.',
       inputSchema: {
         type: 'object',
         properties: {
