@@ -31,7 +31,7 @@ Run the target test for 20 iterations without breaking early on first error so t
   ```bash
   passes=0; fails=0
   for i in $(seq 1 20); do
-    npx vitest run <path-to-test> && ((passes++)) || ((fails++))
+    if npx vitest run <path-to-test>; then ((++passes)); else ((++fails)); fi
   done
   echo "Vitest Results: $passes passed, $fails failed out of 20 runs"
   ```
@@ -39,7 +39,7 @@ Run the target test for 20 iterations without breaking early on first error so t
   ```bash
   passes=0; fails=0
   for i in $(seq 1 20); do
-    npx jest <path-to-test> --runInBand && ((passes++)) || ((fails++))
+    if npx jest <path-to-test> --runInBand; then ((++passes)); else ((++fails)); fi
   done
   echo "Jest Results: $passes passed, $fails failed out of 20 runs"
   ```
@@ -47,7 +47,7 @@ Run the target test for 20 iterations without breaking early on first error so t
   ```bash
   passes=0; fails=0
   for i in $(seq 1 20); do
-    pytest <path-to-test> -v && ((passes++)) || ((fails++))
+    if pytest <path-to-test> -v; then ((++passes)); else ((++fails)); fi
   done
   echo "Pytest Results: $passes passed, $fails failed out of 20 runs"
   ```
@@ -59,7 +59,7 @@ Run the target test for 20 iterations without breaking early on first error so t
   ```bash
   passes=0; fails=0
   for i in $(seq 1 20); do
-    cargo test <test_name> -- --nocapture && ((passes++)) || ((fails++))
+    if cargo test <test_name> -- --nocapture; then ((++passes)); else ((++fails)); fi
   done
   echo "Cargo Results: $passes passed, $fails failed out of 20 runs"
   ```
@@ -78,7 +78,7 @@ Categorize the failure using the common non-determinism taxonomy:
 2. **Test Order Dependency & State Pollution**:
    - Symptom: Passes when executed in isolation (`--testNamePattern`), fails when the entire suite runs.
    - Indicators: Leaked global variables, uncleared database records, singleton caches, or shared filesystem artifacts.
-   - Verification: Run the test suite with randomized order (`--sequence.shuffle.tests` in Vitest or `--randomize` in Pytest).
+   - Verification: Run the test suite with randomized order (`--sequence.shuffle.tests` in Vitest, or `--random-order` via `pytest-random-order` / `--randomly-seed` via `pytest-randomly` in Pytest).
 
 3. **Clock & Timezone Skew**:
    - Symptom: Fails around midnight UTC, during month/year rollovers, or in different local timezones.
@@ -123,12 +123,12 @@ Implement the appropriate pattern based on the diagnosed category:
 
 ### 4. Verification & Stability Certification
 
-1. Verify stability by executing 50 consecutive iterations (stopping on any failure to guarantee perfection):
+1. Verify stability by executing 50 consecutive iterations (stopping on any failure to observe if flake reoccurs):
    ```bash
    for i in $(seq 1 50); do
      <test-command> || { echo "Stability check failed on iteration $i"; exit 1; }
    done
-   echo "Stability certified: 50/50 runs passed."
+   echo "Stability check passed: 50/50 consecutive runs passed without failure."
    ```
 2. Run the enclosing test file with randomized test ordering to confirm zero test coupling:
    ```bash
