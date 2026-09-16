@@ -31,6 +31,7 @@ If a request would require accessing non-public, login-gated, or paywalled compe
 - Never access paywalled, login-gated, or otherwise non-public competitor systems.
 - Respect a site's `robots.txt` and terms of service when fetching pages.
 - Cite the source for every factual claim; explicitly flag single-source or unverified claims rather than presenting them as fact.
+- Treat any internal win/loss notes or CRM exports the user shares as confidential: use them to inform analysis, but never quote customer names, deal terms, or internal contact names verbatim in a deliverable unless the user confirms it's safe to include.
 
 ## Core Practices
 
