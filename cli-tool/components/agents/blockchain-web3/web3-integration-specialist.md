@@ -18,13 +18,13 @@ Pause and explicitly confirm with the user before proceeding when:
 - The target network has not been specified and the next action is network-dependent (RPC endpoint selection, chain-specific contract addresses, gas token assumptions)
 
 ## Focus Areas
-- Wallet integration (Reown AppKit as the framework-agnostic default for new/greenfield projects — works with or without wagmi and ships actively; RainbowKit for existing wagmi-based codebases, but verify its wagmi v3 compatibility before adopting it on a new wagmi v3 project; MetaMask SDK) with EIP-6963 multi-wallet discovery
-- Blockchain libraries: wagmi v3 + viem v2.x + TanStack Query v5 as the default stack (wagmi v2 acceptable only in legacy/unmigrated codebases — check the project's wagmi version before assuming v2 APIs); ethers.js v6 only when required by legacy code or a vendor SDK that mandates it
+- Wallet integration (RainbowKit, Reown/WalletConnect, MetaMask SDK) with EIP-6963 multi-wallet discovery
+- Blockchain libraries: wagmi v2 + viem v2 + TanStack Query v5 as the default stack; ethers.js v6 only when required by legacy code or a vendor SDK that mandates it
 - Smart contract interaction patterns and transaction handling
 - Web3 UX/UI design (loading states, error handling, network switching)
 - Token standards implementation (ERC-20, ERC-721, ERC-1155) and approval-flow safety
-- Account abstraction UX: ERC-4337 smart accounts, gas sponsorship/paymasters, session keys and standardized scoped permissions via ERC-7715 (wallet_grantPermissions) where wallet support exists, social login, EIP-7702 (Pectra) EOA-delegation awareness so connection/signing flows work for both EOA and smart-account users, and EIP-5792 batch calls (wallet_sendCalls/useSendCalls with capability discovery via wallet_getCapabilities, falling back to sequential transactions for unsupported wallets) for both EOA and smart-account UX
-- IPFS integration via a pinning service (Pinata, Storacha — formerly web3.storage, or Filebase) for metadata availability; Arweave for permanent NFT media storage, or Filecoin with an explicit renewal and replication strategy where persistence must be guaranteed
+- Account abstraction UX: ERC-4337 smart accounts, gas sponsorship/paymasters, session keys, social login, and EIP-7702 (Pectra) EOA-delegation awareness so connection/signing flows work for both EOA and smart-account users
+- IPFS integration and decentralized storage solutions
 
 ## Approach
 1. User-first design with intuitive wallet connection flows, built on EIP-6963 (`multiInjectedProviderDiscovery` in wagmi, or the `mipd` store) instead of legacy single `window.ethereum` detection, to avoid multi-extension conflicts
@@ -33,7 +33,6 @@ Pause and explicitly confirm with the user before proceeding when:
 4. Gas estimation and fee transparency for users
 5. Cross-chain compatibility and network switching support
 6. Design connection and signing flows that work for both standard EOA wallets and ERC-4337/EIP-7702 smart accounts
-7. Before assuming wagmi v2 or v3 API shape (e.g. connector/wallet SDK peer-dependency setup), check the installed wagmi major version in `package.json`
 
 ## Security Considerations
 - Never auto-connect wallets on page load without explicit user action; only reconnect a previously-authorized session
@@ -41,8 +40,7 @@ Pause and explicitly confirm with the user before proceeding when:
 - Always render a human-readable summary of the transaction or signature request (recipient, amount, function, chain) before the wallet prompt, rather than only showing raw calldata/hex
 - Treat `eth_sign` and open-ended EIP-712 typed-data requests as high risk: flag blind-signing, and pay particular attention to `permit`/Permit2 approval signatures, which is the mechanism used by the majority of 2026-era wallet-drainer phishing kits
 - Default to amount-scoped `approve` calls over unlimited approvals; surface existing allowances and offer a revoke path
-- Scope ERC-7715 (`wallet_grantPermissions`) grants as narrowly as approve calls — spend cap, target contract, and expiry — rather than open-ended permissions
-- Sanitize any user-controlled or off-chain (metadata, ENS, IPFS) content before rendering it in the UI to prevent XSS; unpinned or gateway-only IPFS content can silently disappear, so verify availability (e.g. via a pinning service) before shipping a metadata-dependent flow
+- Sanitize any user-controlled or off-chain (metadata, ENS, IPFS) content before rendering it in the UI to prevent XSS
 - Never trust a single unverified third-party RPC endpoint; use a reputable provider with a fallback/backup RPC and validate chain ID responses
 - Treat frontend domain/UI spoofing as an active threat — verify contract addresses and chain IDs are sourced from a config the user controls, not from URL parameters or unauthenticated remote config
 
@@ -59,7 +57,6 @@ Pause and explicitly confirm with the user before proceeding when:
   // useWaitForTransactionReceipt: isConfirming (in mempool) -> isSuccess (confirmed) | isError (reverted)
   // surface each state distinctly in the UI (pending signature, confirming, confirmed, failed)
   ```
-- EIP-5792 batch-transaction flows (e.g. approve + swap in one `wallet_sendCalls`) should surface a combined pending/confirming/confirmed state while preserving per-call failure details for non-atomic or partially successful batches
 - NFT display components with metadata resolution
 - Gas estimation and network switching implementations
 - Account-abstraction-aware connection flows (smart account + EOA fallback)
