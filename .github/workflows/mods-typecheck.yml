@@ -50,8 +50,17 @@ jobs:
               echo "::error::$dir is not a plugin directory (.claude-plugin/plugin.json + hooks/hooks.json required)"
               status=1; continue
             fi
-            # the directory name is contributor-controlled: pass it as an argument, never inside the JS source
-            for mod in $(node -e "console.log((require(process.argv[1]).modules||[]).join(' '))" "./$dir/hooks/hooks.json"); do
+            # the directory name is contributor-controlled: paths reach node as arguments, never inside the JS source.
+            # The manifest must parse and name the plugin; hooks.json must name at least one module (the CLI refuses both otherwise).
+            if ! node -e "const m=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')); if(typeof m.name!=='string'||!m.name) process.exit(1)" "./$dir/.claude-plugin/plugin.json"; then
+              echo "::error file=$dir/.claude-plugin/plugin.json::plugin.json must be valid JSON with a \"name\""
+              status=1; continue
+            fi
+            if ! node -e "const h=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')); if(!Array.isArray(h.modules)||h.modules.length===0||!h.modules.every(m=>typeof m==='string'&&m)) process.exit(1)" "./$dir/hooks/hooks.json"; then
+              echo "::error file=$dir/hooks/hooks.json::hooks.json must name at least one module in \"modules\""
+              status=1; continue
+            fi
+            for mod in $(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).modules.join(' '))" "./$dir/hooks/hooks.json"); do
               file="$dir/hooks/${mod#./}"
               if [ ! -f "$file" ]; then
                 echo "::error file=$dir/hooks/hooks.json::modules entry '$mod' not found ($file)"

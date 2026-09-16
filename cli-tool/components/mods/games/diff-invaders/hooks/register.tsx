@@ -2,7 +2,7 @@
 import type { Register } from 'claude-code'
 
 // Diff Invaders above the Claude Code prompt: Space Invaders where every wave is the code Claude
-// just wrote. `/invaders` opens it, `/invaders stop` closes it. This module watches Edit and Write,
+// just wrote. `/diff-invaders` opens it, `/diff-invaders stop` closes it. This module watches Edit and Write,
 // turns the added lines into a wave the board queues (with a running number, so nothing repeats),
 // keeps the best score in $.store and tells the board when a turn ends. Zero tokens.
 
@@ -32,15 +32,15 @@ export const register: Register = on => {
     const score = Number(await $.store.get('best').catch(() => undefined))
     if (score) best = score
     await $.command.register({
-      name: 'invaders',
+      name: 'diff-invaders',
       description: 'Diff Invaders above the prompt: shoot the code Claude just wrote (stop closes)',
       argumentHint: '[stop]',
       immediate: true,
-    }).catch(err => $.ui.log(`diff-invaders: /invaders not registered: ${err}`))
+    }).catch(err => $.ui.log(`diff-invaders: /diff-invaders not registered: ${err}`))
     return r
   })
 
-  on('command.run', { command: 'invaders' }, async ($, e) => {
+  on('command.run', { command: 'diff-invaders' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
     if (arg === 'stop' || arg === 'close') {
       open = false
@@ -49,7 +49,7 @@ export const register: Register = on => {
     }
     open = true
     $.ui.invalidate('ui.render')
-    return { text: `${TITLE} · click the board, ← → move, space fires · every Edit or Write Claude makes is a wave · /invaders stop closes${best ? ` · best ${best}` : ''}` }
+    return { text: `${TITLE} · click the board, ← → move, space fires · every Edit or Write Claude makes is a wave · /diff-invaders stop closes${best ? ` · best ${best}` : ''}` }
   })
 
   // an edit that went through becomes a wave: its added lines, one row each
@@ -67,6 +67,8 @@ export const register: Register = on => {
 
   on('turn.complete', async ($, e, next) => {
     const r = await next(e)
+    // a subagent's turn is not the one the person is waiting for
+    if (e.agentId) return r
     if (open) {
       turnsDone++
       $.ui.invalidate('ui.render')
@@ -88,7 +90,8 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (!open || e.props.hasSurvey || e.surface !== 'terminal') return next(e)
     const { Box, Button, Client } = $.ui.resolve(e)
-    const cols = e.viewport?.columns ?? 80
+    // the band's own width: the transcript column's while a Pane is docked beside it
+    const cols = e.props.bodyColumns || (e.viewport?.columns ?? 80)
     // the board is 14 rows + border, plus the status line
     const rows = Math.max(8, Math.min(e.props.maxRows - 2, 18))
     const close = () => {

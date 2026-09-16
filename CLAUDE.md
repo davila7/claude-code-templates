@@ -131,6 +131,15 @@ When reviewing a contributor PR that includes these files, ask them to revert
 with `git checkout origin/main -- docs/components.json dashboard/public/` rather
 than resolving the conflict by hand.
 
+**Mods (`cli-tool/components/mods/`) are plugin directories, not `.md` files.** Creating one: `mods/{category}/{name}/` with `.claude-plugin/plugin.json`, `hooks/hooks.json`, the hooks-modules under `hooks/`, a `README.md`, optionally `types/` and `tests/`. Before review: `cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json` and `claude plugin validate cli-tool/components/mods/{category}/{name}`. The component-reviewer applies this checklist to a mod:
+- ✅ `plugin.json` parses, has `name` (= directory name), `description`, `license`, and `author`/`repository` (attribution for vendored code)
+- ✅ `hooks/hooks.json` has a non-empty `modules` list and every entry exists under `hooks/`
+- ✅ Modules import types only from `'claude-code'`, use relative imports, spell `$` as `$.noun.event(...)`, never shadow `h` in a surface module
+- ✅ Options are declared in `plugin.json` `userConfig` (string/number/boolean/directory/file; lists as comma-separated strings)
+- ✅ Guards deny with `{ deny }` without calling `next`; `.catch` where fail-closed matters
+- ✅ No secrets (keys only via options), no absolute paths, no `$.process.run` with a shell
+- ✅ README states the command, controls/options, the early-access flag and (for `games/`) the attribution
+
 **The component-reviewer agent checks:**
 - ✅ Valid YAML frontmatter and required fields
 - ✅ Proper kebab-case naming conventions

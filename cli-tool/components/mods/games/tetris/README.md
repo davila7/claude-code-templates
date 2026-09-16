@@ -19,7 +19,7 @@ npx claude-code-templates@latest --mod games/tetris
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/tetris/`, which Claude Code auto-loads as `tetris@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/tetris`.
+It is written to `.claude/skills/tetris/`, which Claude Code auto-loads as `tetris@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/tetris`.
 
 ## Requirements
 

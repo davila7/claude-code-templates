@@ -19,7 +19,7 @@ npx claude-code-templates@latest --mod games/typing-test
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/typing-test/`, which Claude Code auto-loads as `typing-test@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/typing-test`.
+It is written to `.claude/skills/typing-test/`, which Claude Code auto-loads as `typing-test@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/typing-test`.
 
 ## Requirements
 

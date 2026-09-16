@@ -29,21 +29,28 @@ interface Rule { pattern: RegExp; reason: string }
 const DEFAULT_RULES: readonly Rule[] = [
   // rm with a recursive flag anywhere in its arguments (-r, -rf, -r -f, --recursive, -fR ...)
   // and a root/home/cwd target, optionally quoted or with a trailing slash ("~/", "$HOME/", "/").
-  { pattern: /\brm\s+(?=(?:\S+\s+)*?(?:-[a-z]*r[a-z]*|--recursive)\b)(?:\S+\s+)*?["']?(?:\/|~|\$HOME|\$\{HOME\}|\.\.?)\/?["']?(?:\s|$|;|&|\|)/i, reason: 'recursive delete of a root, home or working directory' },
+  // The target may be quoted in whole or in part ("$HOME"/., '~'/) and end in "/" or "/.".
+  { pattern: /\brm\s+(?=(?:\S+\s+)*?(?:-[a-z]*r[a-z]*|--recursive)\b)(?:\S+\s+)*?["']?(?:\/|~|\$HOME|\$\{HOME\}|\.\.?)["']?(?:\/\.?)?["']?(?:\s|$|;|&|\|)/i, reason: 'recursive delete of a root, home or working directory' },
   { pattern: /\brm\s+.*--no-preserve-root\b/i, reason: 'rm with --no-preserve-root' },
-  { pattern: /\bgit\s+push\b(?!.*--force-with-lease).*(--force\b|\s-f\b)/, reason: 'force push' },
-  { pattern: /\bgit\s+(reset\s+--hard|clean\s+-[a-z]*f)/, reason: 'history or working-tree destruction' },
+  // -f alone or inside a short-option cluster (-fu, -uf); --force-with-lease is the safe form
+  { pattern: /\bgit\s+push\b(?!.*--force-with-lease).*(--force\b|\s-[a-zA-Z]*f[a-zA-Z]*\b)/, reason: 'force push' },
+  { pattern: /\bgit\s+(reset\s+--hard|clean\s+(?:-[a-zA-Z]*f|.*--force\b))/, reason: 'history or working-tree destruction' },
   { pattern: /\b(DROP|TRUNCATE)\s+(TABLE|DATABASE|SCHEMA)\b/i, reason: 'destructive SQL' },
   { pattern: /\bmkfs(\.|\s)/, reason: 'filesystem format' },
-  { pattern: /\bdd\s+.*\bof=\/dev\//, reason: 'raw disk write' },
+  { pattern: /\bdd\s+.*\bof=["']?\/dev\//, reason: 'raw disk write' },
   { pattern: /\bchmod\s+(-R\s+)?777\b/, reason: 'world-writable permissions' },
 ]
 
 export const register: Register = (on, options) => {
-  const custom: Rule[] = (strings(options.patterns) ?? []).map((p) => ({
-    pattern: new RegExp(p),
-    reason: `custom pattern ${p}`,
-  }))
+  // a custom pattern that does not compile is skipped, never a reason to lose the built-in rules
+  const custom: Rule[] = []
+  for (const p of strings(options.patterns) ?? []) {
+    try {
+      custom.push({ pattern: new RegExp(p), reason: `custom pattern ${p}` })
+    } catch {
+      // ignored: the defaults still apply
+    }
+  }
   const rules = [...DEFAULT_RULES, ...custom]
 
   on('tool.call', { tool: 'Bash' }, ($, e, next) => {

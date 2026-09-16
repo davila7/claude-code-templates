@@ -30,7 +30,7 @@ npx claude-code-templates@latest --mod games/tool-defense
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/tool-defense/`, which Claude Code auto-loads as `tool-defense@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/tool-defense`. `claude plugin validate .claude/skills/tool-defense` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/tool-defense/`, which Claude Code auto-loads as `tool-defense@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/tool-defense`. `claude plugin validate .claude/skills/tool-defense` prints every event it hooks and every `$` call it makes.
 
 ## How it is built
 

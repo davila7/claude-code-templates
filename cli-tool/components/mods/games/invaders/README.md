@@ -19,7 +19,7 @@ npx claude-code-templates@latest --mod games/invaders
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/invaders/`, which Claude Code auto-loads as `invaders@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/invaders`.
+It is written to `.claude/skills/invaders/`, which Claude Code auto-loads as `invaders@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/invaders`.
 
 ## Requirements
 

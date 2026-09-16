@@ -40,9 +40,16 @@ export const register: Register = (on, options) => {
     const original = e.command
     if (!/\bnp[mx]\b/.test(original)) return next(e)
 
-    let rewritten = original
-    for (const [re, byManager] of REWRITES) rewritten = rewritten.replace(re, byManager[manager])
-    rewritten = fixBareAdd(rewritten, manager)
+    // rewrite only outside single- and double-quoted strings: `echo '&& npm test'` is text, not a call
+    const rewritten = original
+      .split(/("[^"]*"|'[^']*')/)
+      .map((part, i) => {
+        if (i % 2 === 1) return part
+        let out = part
+        for (const [re, byManager] of REWRITES) out = out.replace(re, byManager[manager])
+        return fixBareAdd(out, manager)
+      })
+      .join('')
 
     if (rewritten === original) return next(e)
 

@@ -35,6 +35,6 @@ npx claude-code-templates@latest --mod security/secret-redactor
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/secret-redactor/`, which Claude Code auto-loads as `secret-redactor@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/secret-redactor`. `claude plugin validate .claude/skills/secret-redactor` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/secret-redactor/`, which Claude Code auto-loads as `secret-redactor@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/secret-redactor`. `claude plugin validate .claude/skills/secret-redactor` prints every event it hooks and every `$` call it makes.
 
 **Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

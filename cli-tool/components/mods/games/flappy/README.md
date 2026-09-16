@@ -19,7 +19,7 @@ npx claude-code-templates@latest --mod games/flappy
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/flappy/`, which Claude Code auto-loads as `flappy@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/flappy`.
+It is written to `.claude/skills/flappy/`, which Claude Code auto-loads as `flappy@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/flappy`.
 
 ## Requirements
 

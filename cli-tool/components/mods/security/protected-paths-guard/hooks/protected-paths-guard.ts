@@ -15,14 +15,13 @@
  */
 import type { Register } from 'claude-code'
 
-// Minimal glob support: "**" = any depth, "*" = any chars except "/".
+// Minimal glob support: "**" = any depth, "*" = any chars except "/". One pass over the glob, so
+// the regex a wildcard produces is never rewritten by a later replacement.
 function globToRegExp(glob: string): RegExp {
-  const escaped = glob
-    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-    .replace(/\*\*\//g, '(?:.*/)?')
-    .replace(/\*\*/g, '.*')
-    .replace(/\*/g, '[^/]*')
-  return new RegExp(`(^|/)${escaped}$`)
+  const source = glob.replace(/\*\*\/|\*\*|\*|[.+^${}()|[\]\\]/g, (m) =>
+    m === '**/' ? '(?:.*/)?' : m === '**' ? '.*' : m === '*' ? '[^/]*' : `\\${m}`,
+  )
+  return new RegExp(`(^|/)${source}$`)
 }
 
 const DEFAULT_PROTECTED: readonly string[] = [

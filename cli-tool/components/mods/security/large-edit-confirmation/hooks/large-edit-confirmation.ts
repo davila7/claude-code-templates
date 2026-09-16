@@ -24,18 +24,33 @@ const DENY = 'Deny'
 export const register: Register = (on, options) => {
   const threshold = typeof options.maxLines === 'number' ? options.maxLines : 1000
   const headless = options.headless === 'allow' ? 'allow' : 'deny'
+  // whether a person is at the prompt: a dismissed dialog is a refusal; only a -p run has nobody to ask
+  let interactive = true
+
+  on('session.start', ($, e, next) => {
+    interactive = e.isInteractive
+    return next(e)
+  })
 
   on('tool.call', { tool: ['Edit', 'Write'] }, async ($, e, next) => {
     const filePath = e.file_path
     if (!filePath) return next(e)
 
-    let lineCount = 0
+    // A new file has nothing to protect. An existing one that cannot be read (over $.fs's 4 MiB
+    // limit, or $.fs withheld) is treated as large: this mod fails closed.
+    let exists = true
+    try {
+      exists = await $.fs.exists(filePath)
+    } catch {
+      // $.fs withheld: assume the file exists and ask
+    }
+    if (!exists) return next(e)
+    let lineCount = Infinity
     try {
       const current = await $.fs.read(filePath)
       lineCount = current.split('\n').length
     } catch {
-      // New file, unreadable, or $.fs withheld by an admin plugin: nothing to protect.
-      return next(e)
+      // unreadable: keep Infinity and ask
     }
 
     if (lineCount <= threshold) return next(e)
@@ -43,14 +58,16 @@ export const register: Register = (on, options) => {
     let answer: string
     try {
       answer = await $.ui.ask(
-        `${filePath} has ${lineCount} lines (limit ${threshold}). Allow ${e.tool} to modify it?`,
+        `${filePath} has ${Number.isFinite(lineCount) ? lineCount : 'more than the readable'} lines (limit ${threshold}). Allow ${e.tool} to modify it?`,
         [ALLOW, DENY],
       )
     } catch {
-      // Dismissed, or a -p run with no one to ask.
-      if (headless === 'allow') return next(e)
+      // Dismissed by the person, or a -p run with no one to ask: only the latter may allow.
+      if (!interactive && headless === 'allow') return next(e)
       return {
-        deny: `${e.tool} on ${filePath} (${lineCount} lines) needs the user's confirmation and nobody could answer. Propose a smaller, targeted change.`,
+        deny: interactive
+          ? `The user dismissed the confirmation for ${e.tool} on ${filePath} (${lineCount} lines). Propose a smaller, targeted change.`
+          : `${e.tool} on ${filePath} (${lineCount} lines) needs the user's confirmation and nobody could answer. Propose a smaller, targeted change.`,
       }
     }
 

@@ -62,6 +62,8 @@ export const register: Register = on => {
 
   on('turn.complete', async ($, e, next) => {
     const r = await next(e)
+    // a subagent's turn is not the one the person is waiting for
+    if (e.agentId) return r
     working = false
     if (open) {
       turnsDone++
@@ -84,7 +86,8 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (!open || e.props.hasSurvey || e.surface !== 'terminal') return next(e)
     const { Box, Button, Client } = $.ui.resolve(e)
-    const cols = e.viewport?.columns ?? 80
+    // the band's own width: the transcript column's while a Pane is docked beside it
+    const cols = e.props.bodyColumns || (e.viewport?.columns ?? 80)
     // the grid is 10 rows + border, plus two status lines
     const rows = Math.max(8, Math.min(e.props.maxRows - 2, 15))
     const close = () => {

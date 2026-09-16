@@ -123,6 +123,7 @@ export const register: Register = on => {
 
   on('turn.complete', async ($, e, next) => {
     const r = await next(e)
+    if (e.agentId) return r
     turnStartedAt = undefined
     if (active && active !== PICKER) {
       turnsDone++
@@ -200,7 +201,8 @@ export const register: Register = on => {
       )
     }
 
-    const cols = e.viewport?.columns ?? 80
+    // the band's own width: the transcript column's while a Pane is docked beside it
+    const cols = e.props.bodyColumns || (e.viewport?.columns ?? 80)
     // $.clock.now() is a dispatch (a Promise): resolve it before the pet board reads it as a number
     const now = await $.clock.now()
     // one row for the back and close buttons, one for whatever else draws in the band

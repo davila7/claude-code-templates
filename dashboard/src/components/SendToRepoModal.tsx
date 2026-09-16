@@ -21,6 +21,12 @@ function cleanPath(path: string): string {
   return path?.replace(/\.(md|json)$/, '') ?? '';
 }
 
+// A path inside a plugin directory: relative, forward slashes, no "." / ".." segments, no control chars.
+function isSafeRelativePath(rel: string): boolean {
+  if (!rel || rel.length > 512 || rel.startsWith('/') || rel.includes('\\') || /[\u0000-\u001f]/.test(rel)) return false;
+  return rel.split('/').every((seg) => seg !== '' && seg !== '.' && seg !== '..');
+}
+
 // Map collection items to file paths + content.
 // Content lives in per-component files (/component-content/{type}/{slug}.json),
 // not in the index, so we fetch each item's content on demand.
@@ -31,10 +37,12 @@ async function buildFileMap(
 
   await Promise.all(
     items.map(async (item) => {
-      const type = pluralType(item.component_type);
+      // "function-hook" was renamed to "mod" (same slugs), so a collection saved before the rename still sends
+      const componentType = item.component_type === 'function-hook' || item.component_type === 'function-hooks' ? 'mod' : item.component_type;
+      const type = pluralType(componentType);
       const cleanItemPath = cleanPath(item.component_path);
 
-      const contentData = await fetchComponentContentData(item.component_type, cleanItemPath);
+      const contentData = await fetchComponentContentData(componentType, cleanItemPath);
       const content = contentData.content;
       if (!content) return;
 
@@ -49,6 +57,8 @@ async function buildFileMap(
           // content file carries every text file of it, written verbatim under
           // .claude/skills/<name>/ — the same place the CLI installs it.
           for (const [rel, text] of Object.entries(contentData.files ?? {})) {
+            // only a plain relative path may land in the plugin directory: no traversal, no absolute paths
+            if (!isSafeRelativePath(rel)) throw new Error(`mod ${name}: refusing file path "${rel}"`);
             files[`.claude/skills/${name}/${rel}`] = text;
           }
           files[`.claude/skills/${name}/README.md`] = content;

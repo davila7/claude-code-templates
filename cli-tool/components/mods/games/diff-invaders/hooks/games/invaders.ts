@@ -103,10 +103,11 @@ export function step(g: InvadersGame, rnd: () => number = Math.random): Invaders
     out = { ...out, aliens, dir: atEdge ? (out.dir === 1 ? -1 : 1) : out.dir }
     // a landed formation ends the game
     if (aliens.some(a => a.alive && a.pos[1] >= H - 2)) return { ...out, over: true }
-    // the lowest alien of a random column drops a bomb
-    if (rnd() < 0.35) {
-      const col = alive[Math.floor(rnd() * alive.length)]!.pos[0]
-      const lowest = alive.filter(a => a.pos[0] === col).sort((a, b) => b.pos[1] - a.pos[1])[0]!
+    // the lowest alien of a random column drops a bomb, from where the formation now stands
+    const moved = aliens.filter(a => a.alive)
+    if (rnd() < 0.35 && moved.length > 0) {
+      const col = moved[Math.floor(rnd() * moved.length)]!.pos[0]
+      const lowest = moved.filter(a => a.pos[0] === col).sort((a, b) => b.pos[1] - a.pos[1])[0]!
       out = { ...out, bombs: [...out.bombs, [lowest.pos[0], lowest.pos[1] + 1]] }
     }
   }

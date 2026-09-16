@@ -29,16 +29,24 @@ export default function CartSidebar() {
 
   // Load cart
   useEffect(() => {
+    // "function-hooks" became "mods": a cart saved before the rename keeps its items under the new key
+    function migrate(saved: Record<string, unknown>): Cart {
+      const { 'function-hooks': legacy, ...rest } = saved as Record<string, unknown> & { 'function-hooks'?: unknown };
+      const cart = { ...EMPTY_CART, ...rest } as Cart;
+      if (Array.isArray(legacy) && legacy.length > 0) cart.mods = [...(cart.mods ?? []), ...legacy];
+      return cart;
+    }
+
     function loadCart() {
       try {
         const saved = localStorage.getItem('claudeCodeCart');
-        if (saved) setCart({ ...EMPTY_CART, ...JSON.parse(saved) });
+        if (saved) setCart(migrate(JSON.parse(saved)));
       } catch {}
     }
 
     loadCart();
     window.addEventListener('cart-updated', ((e: CustomEvent) => {
-      setCart({ ...EMPTY_CART, ...e.detail });
+      setCart(migrate(e.detail));
     }) as EventListener);
     window.addEventListener('storage', loadCart);
 

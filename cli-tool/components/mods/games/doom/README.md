@@ -19,7 +19,7 @@ npx claude-code-templates@latest --mod games/doom
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/doom/`, which Claude Code auto-loads as `doom@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/doom`.
+It is written to `.claude/skills/doom/`, which Claude Code auto-loads as `doom@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/doom`.
 
 ## Requirements
 

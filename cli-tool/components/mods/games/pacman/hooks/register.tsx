@@ -42,6 +42,8 @@ export const register: Register = on => {
 
   on('turn.complete', async ($, e, next) => {
     const r = await next(e)
+    // a subagent's turn is not the one the person is waiting for
+    if (e.agentId) return r
     if (open) {
       turnsDone++
       $.ui.invalidate('ui.render')
@@ -65,7 +67,8 @@ export const register: Register = on => {
     // the board needs a terminal's keys; the desktop and mobile surfaces draw their own band
     if (!open || e.props.hasSurvey || e.surface !== 'terminal') return next(e)
     const { Box, Button, Client } = $.ui.resolve(e)
-    const cols = e.viewport?.columns ?? 80
+    // the band's own width: the transcript column's while a Pane is docked beside it
+    const cols = e.props.bodyColumns || (e.viewport?.columns ?? 80)
     // one row for the close button, one for whatever else draws in the band; the maze is 15 rows + border
     const rows = Math.max(8, Math.min(e.props.maxRows - 2, 18))
     const close = () => {

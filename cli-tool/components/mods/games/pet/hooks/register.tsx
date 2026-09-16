@@ -60,7 +60,8 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (!open || e.props.hasSurvey || e.surface !== 'terminal') return next(e)
     const { Box, Button, Client } = $.ui.resolve(e)
-    const cols = e.viewport?.columns ?? 80
+    // the band's own width: the transcript column's while a Pane is docked beside it
+    const cols = e.props.bodyColumns || (e.viewport?.columns ?? 80)
     // $.clock.now() is a dispatch (a Promise): resolve it before it becomes a prop
     const now = await $.clock.now()
     const close = () => {

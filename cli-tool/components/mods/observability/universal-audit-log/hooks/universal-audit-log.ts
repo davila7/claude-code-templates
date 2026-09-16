@@ -25,7 +25,7 @@
  *   path:       string    JSONL file, relative to the working directory (default ".claude/logs/mods-audit.jsonl")
  *   skipEvents: string    events not to record, comma-separated (default: the render / log chatter)
  *   flushEvery: number    flush after this many buffered lines (default 50)
- *   maxBytes:   number    keep the file under this many UTF-8 bytes, dropping the oldest lines (default 2 MiB)
+ *   maxBytes:   number    keep the file under this many UTF-8 bytes, dropping the oldest lines (default 2 MiB, at most 3 MiB)
  */
 import type { Register } from 'claude-code'
 
@@ -68,9 +68,12 @@ export const register: Register = (on, options) => {
       ['ui.log', 'ui.render', 'ui.resolve', 'ui.invalidate', 'ui.status', 'clock.now', 'turn.step'],
   )
   const flushEvery = typeof options.flushEvery === 'number' ? options.flushEvery : 50
-  const maxBytes = typeof options.maxBytes === 'number' ? options.maxBytes : 2 * 1024 * 1024
+  // $.fs.read stops at 4 MiB: the file must stay under that or the next flush could not read it back
+  const maxBytes = Math.min(typeof options.maxBytes === 'number' ? options.maxBytes : 2 * 1024 * 1024, 3 * 1024 * 1024)
 
   const buffer: string[] = []
+  // flushes are read-modify-write: run them one after another, never two at once
+  let flushing: Promise<void> = Promise.resolve()
 
   on('*', async ($, e, next) => {
     if (skip.has(next.event)) return next(e)
@@ -100,26 +103,32 @@ export const register: Register = (on, options) => {
 
       if (next.event === 'turn.complete' || buffer.length >= flushEvery) {
         const pending = buffer.splice(0, buffer.length).join('')
-        try {
-          let prior = ''
+        flushing = flushing.then(async () => {
           try {
-            prior = await $.fs.read(logPath)
-          } catch {
-            // First write: the file does not exist yet.
+            let prior = ''
+            if (await $.fs.exists(logPath)) {
+              try {
+                prior = await $.fs.read(logPath)
+              } catch (err) {
+                // an existing file that cannot be read back is replaced, and the replacement says so
+                $.ui.log(`[universal-audit-log] ${logPath} could not be read back, starting it over: ${err instanceof Error ? err.message : String(err)}`)
+              }
+            }
+            let text = prior + pending
+            // The limit is UTF-8 bytes, the size on disk: drop whole lines from the front until the tail fits.
+            while (bytes(text) > maxBytes) {
+              const cut = text.indexOf('\n')
+              if (cut === -1) { text = ''; break }
+              text = text.slice(cut + 1)
+            }
+            await $.fs.write(logPath, text)
+          } catch (err) {
+            // $.fs withheld by an admin plugin, or the path unwritable: keep the lines for the next flush.
+            buffer.unshift(pending)
+            $.ui.log(`[universal-audit-log] could not write ${logPath}: ${err instanceof Error ? err.message : String(err)}`)
           }
-          let text = prior + pending
-          // The limit is UTF-8 bytes, the size on disk: drop whole lines from the front until the tail fits.
-          while (bytes(text) > maxBytes) {
-            const cut = text.indexOf('\n')
-            if (cut === -1) { text = ''; break }
-            text = text.slice(cut + 1)
-          }
-          await $.fs.write(logPath, text)
-        } catch (err) {
-          // $.fs withheld by an admin plugin, or the path unwritable: keep the lines for the next flush.
-          buffer.unshift(pending)
-          $.ui.log(`[universal-audit-log] could not write ${logPath}: ${err instanceof Error ? err.message : String(err)}`)
-        }
+        })
+        await flushing
       }
     }
   })

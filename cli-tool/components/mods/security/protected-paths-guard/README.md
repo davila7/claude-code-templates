@@ -26,6 +26,6 @@ npx claude-code-templates@latest --mod security/protected-paths-guard
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/protected-paths-guard/`, which Claude Code auto-loads as `protected-paths-guard@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/protected-paths-guard`. `claude plugin validate .claude/skills/protected-paths-guard` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/protected-paths-guard/`, which Claude Code auto-loads as `protected-paths-guard@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/protected-paths-guard`. `claude plugin validate .claude/skills/protected-paths-guard` prints every event it hooks and every `$` call it makes.
 
 **Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
