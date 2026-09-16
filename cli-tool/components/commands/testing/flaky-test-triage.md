@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(npm test:*), Bash(npm run:*), Bash(pnpm test:*), Bash(yarn test:*), Bash(pytest:*), Bash(cargo test:*)
+allowed-tools: Read, Write, Edit, Bash
 argument-hint: <test-file-or-test-name>
 description: Detect, isolate, and remediate non-deterministic or flaky tests through stress-repetition and root-cause analysis
 ---
@@ -37,6 +37,9 @@ Run the specific test in a tight loop to calculate an empirical failure rate. Ch
   ```
 - **Pytest**:
   ```bash
+  # Core pytest repetition loop:
+  for i in $(seq 1 20); do pytest <path-to-test> -v || break; done
+  # Or if pytest-repeat plugin is installed:
   pytest <path-to-test> --count=20 -v
   ```
 - **Go**:
