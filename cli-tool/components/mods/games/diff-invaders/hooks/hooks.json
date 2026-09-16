@@ -1,0 +1,6 @@
+{
+  "description": "Diff Invaders above the prompt: /invaders opens it, tool.call on Edit and Write turns the added lines into a wave, turn.complete tells the board, ui.message keeps the best score",
+  "modules": [
+    "./register.tsx"
+  ]
+}

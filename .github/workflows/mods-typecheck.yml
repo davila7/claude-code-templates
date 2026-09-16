@@ -1,0 +1,61 @@
+name: Mods Typecheck
+
+# Claude Mods (cli-tool/components/mods) are TypeScript hooks modules written
+# against Anthropic's function-hooks declarations (types/claude-code.d.ts, as
+# /plugin-types writes them). This job runs tsc over every module so a mod
+# that names a `$` call or event shape the engine does not have fails here,
+# not on a user's machine after install.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/mods/**'
+      - '.github/workflows/mods-typecheck.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'cli-tool/components/mods/**'
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: tsc over cli-tool/components/mods
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Typecheck mods against claude-code.d.ts
+        run: |
+          cd cli-tool/components/mods
+          npx -y -p typescript@5 tsc -p tsconfig.json
+
+      - name: Every mod is a plugin directory whose hooks.json modules exist
+        run: |
+          cd cli-tool/components/mods
+          status=0
+          for dir in */*/; do
+            [ -d "$dir" ] || continue
+            case "$dir" in types/*) continue;; esac
+            if [ ! -f "$dir/.claude-plugin/plugin.json" ] || [ ! -f "$dir/hooks/hooks.json" ]; then
+              echo "::error::$dir is not a plugin directory (.claude-plugin/plugin.json + hooks/hooks.json required)"
+              status=1; continue
+            fi
+            for mod in $(node -e "console.log((require('./$dir/hooks/hooks.json').modules||[]).join(' '))"); do
+              file="$dir/hooks/${mod#./}"
+              if [ ! -f "$file" ]; then
+                echo "::error file=$dir/hooks/hooks.json::modules entry '$mod' not found ($file)"
+                status=1
+              fi
+            done
+          done
+          exit $status

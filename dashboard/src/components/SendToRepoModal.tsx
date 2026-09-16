@@ -44,21 +44,14 @@ async function buildFileMap(
         case 'loops':
           files[`.claude/loops/${name}.md`] = content;
           break;
-        case 'function-hooks': {
-          // Same layout the CLI writes: a plugin under .claude/skills/<name>/
-          // with hooks/hooks.json plus the hooks-module it names.
-          let hooksJson = content;
-          try {
-            const parsed = JSON.parse(content);
-            delete parsed.description; // catalog-only field
-            hooksJson = JSON.stringify(parsed, null, 2) + '\n';
-          } catch { /* keep raw content */ }
-          files[`.claude/skills/${name}/.claude-plugin/plugin.json`] =
-            JSON.stringify({ name, version: '0.1.0' }, null, 2) + '\n';
-          files[`.claude/skills/${name}/hooks/hooks.json`] = hooksJson;
-          if (contentData.module && contentData.moduleSource) {
-            files[`.claude/skills/${name}/hooks/${contentData.module}`] = contentData.moduleSource;
+        case 'mods': {
+          // A mod is a complete plugin directory (Anthropic's mods/ layout); the
+          // content file carries every text file of it, written verbatim under
+          // .claude/skills/<name>/ — the same place the CLI installs it.
+          for (const [rel, text] of Object.entries(contentData.files ?? {})) {
+            files[`.claude/skills/${name}/${rel}`] = text;
           }
+          files[`.claude/skills/${name}/README.md`] = content;
           break;
         }
         case 'agents':

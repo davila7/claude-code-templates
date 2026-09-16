@@ -18,7 +18,7 @@ export interface ComponentsData {
   hooks: Component[];
   skills: Component[];
   loops: Component[];
-  'function-hooks': Component[];
+  mods: Component[];
   templates: Component[];
 }
 
@@ -40,7 +40,7 @@ export interface Cart {
   mcps: CartItem[];
   skills: CartItem[];
   loops: CartItem[];
-  'function-hooks': CartItem[];
+  mods: CartItem[];
   templates: CartItem[];
 }
 
