@@ -1,7 +1,8 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
-import FeaturedSection from '../components/FeaturedSection.astro';
+// Featured section hidden — re-enable by uncommenting this import and <FeaturedSection /> below.
+// import FeaturedSection from '../components/FeaturedSection.astro';
 import JobsPreview from '../components/JobsPreview.tsx';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
@@ -56,7 +57,7 @@ export const prerender = true;
         </div>
       </div>
 
-      <FeaturedSection />
+      {/* <FeaturedSection /> */}
       <ComponentGrid client:load initialType="skills" />
     </div>
 
