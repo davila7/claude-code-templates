@@ -78,8 +78,8 @@ GH_CLI = shutil.which("gh") or "gh"
 
 _request_count = 0
 _rate_limited_events = 0
-
-
+class GitHubFetchError(RuntimeError):
+    """A GitHub request failed after retries and must not look like a 404."""
 def _is_rate_limited(stderr):
     """Detect primary/secondary rate limit errors in gh CLI stderr."""
     low = (stderr or "").lower()
@@ -107,7 +107,7 @@ def _rate_limit_reset_wait():
         pass
     # Fallback: fixed escalating wait
     global _rate_limited_events
-    wait = 30 * (_rate_limited_events + 1)
+    wait = min(30 * (_rate_limited_events + 1), 900)
     print(f"  ⏳ Rate limited. Waiting {wait}s...")
     time.sleep(wait)
 
@@ -149,8 +149,8 @@ def gh_api(endpoint, retries=3):
         if stdout is not None:
             try:
                 return json.loads(stdout)
-            except json.JSONDecodeError:
-                return None
+            except json.JSONDecodeError as exc:
+                raise GitHubFetchError(f"Invalid JSON from GitHub: {endpoint}") from exc
         if is_404:
             return None
         if is_rate_limited:
@@ -158,7 +158,7 @@ def gh_api(endpoint, retries=3):
             continue
         if attempt < retries - 1:
             time.sleep(2 ** attempt)
-    return None
+    raise GitHubFetchError(f"GitHub request failed: {endpoint}")
 
 
 def gh_file_content(repo, path, retries=3):
@@ -173,8 +173,10 @@ def gh_file_content(repo, path, retries=3):
         if stdout is not None and stdout.strip():
             try:
                 return base64.b64decode(stdout.strip()).decode("utf-8")
-            except Exception:
-                return None
+            except Exception as exc:
+                raise GitHubFetchError(
+                    f"Invalid file content from GitHub: {repo}/{path}"
+                ) from exc
         if is_404:
             return None
         if is_rate_limited:
@@ -182,7 +184,7 @@ def gh_file_content(repo, path, retries=3):
             continue
         if attempt < retries - 1:
             time.sleep(2 ** attempt)
-    return None
+    raise GitHubFetchError(f"GitHub file request failed: {repo}/{path}")
 
 
 def gh_dir_listing(repo, path):
@@ -784,6 +786,13 @@ def main():
                 still_failed.append(repo_full)
         errors = still_failed
 
+    # Refuse to publish a partial plugins.json. Check before opening the
+    # existing output so a failed run leaves the last complete artifact intact.
+    if errors:
+        print(f"\n❌ {len(errors)} repo(s) failed even after retry: {errors}")
+        print("   Not all plugins could be fetched; leaving the existing output unchanged.")
+        sys.exit(1)
+
     # Sort by stars descending
     results.sort(key=lambda x: x["stars"], reverse=True)
 
@@ -806,13 +815,6 @@ def main():
     total_stars = sum(r["stars"] for r in results)
     print(f"   ⭐ {total_stars:,} total stars across all repos")
 
-    # Refuse to silently publish a partial plugins.json: fail the run so CI
-    # keeps the previous (complete) file instead of committing stale data.
-    if errors:
-        print(f"\n❌ {len(errors)} repo(s) failed even after retry: {errors}")
-        print("   Not all plugins could be fetched; exiting with error to avoid")
-        print("   writing an incomplete plugins.json.")
-        sys.exit(1)
 
 
 if __name__ == "__main__":
