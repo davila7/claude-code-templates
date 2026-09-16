@@ -131,7 +131,7 @@ When reviewing a contributor PR that includes these files, ask them to revert
 with `git checkout origin/main -- docs/components.json dashboard/public/` rather
 than resolving the conflict by hand.
 
-**Mods (`cli-tool/components/mods/`) are plugin directories, not `.md` files.** Creating one: `mods/{category}/{name}/` with `.claude-plugin/plugin.json`, `hooks/hooks.json`, the hooks-modules under `hooks/`, a `README.md`, optionally `types/` and `tests/`. Before review: `cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json` and `claude plugin validate cli-tool/components/mods/{category}/{name}`. The component-reviewer applies this checklist to a mod:
+**Mods (`cli-tool/components/mods/`) are plugin directories, not `.md` files.** Creating one: `mods/{category}/{name}/` with `.claude-plugin/plugin.json`, `hooks/hooks.json`, the hooks-modules under `hooks/`, a `README.md`, optionally `types/` and `tests/`. Before review, from the repository root: `(cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json)` and `claude plugin validate cli-tool/components/mods/{category}/{name}`. The component-reviewer applies this checklist to a mod:
 - ✅ `plugin.json` parses, has `name` (= directory name), `description`, `license`, and `author`/`repository` (attribution for vendored code)
 - ✅ `hooks/hooks.json` has a non-empty `modules` list and every entry exists under `hooks/`
 - ✅ Modules import types only from `'claude-code'`, use relative imports, spell `$` as `$.noun.event(...)`, never shadow `h` in a surface module

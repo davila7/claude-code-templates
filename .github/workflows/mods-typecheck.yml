@@ -61,6 +61,8 @@ jobs:
               status=1; continue
             fi
             for mod in $(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).modules.join(' '))" "./$dir/hooks/hooks.json"); do
+              # a module lives under hooks/: a relative path with no ".." segment and no leading slash (what the CLI installs)
+              case "$mod" in /*|*..*|*\\*) echo "::error file=$dir/hooks/hooks.json::modules entry '$mod' must be a relative path under hooks/"; status=1; continue;; esac
               file="$dir/hooks/${mod#./}"
               if [ ! -f "$file" ]; then
                 echo "::error file=$dir/hooks/hooks.json::modules entry '$mod' not found ($file)"

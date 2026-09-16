@@ -56,6 +56,8 @@ async function buildFileMap(
           // A mod is a complete plugin directory (Anthropic's mods/ layout); the
           // content file carries every text file of it, written verbatim under
           // .claude/skills/<name>/ — the same place the CLI installs it.
+          // the plugin directory is named by the item: one kebab-case segment, nothing path-like
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(name)) throw new Error(`mod: refusing plugin name "${name}"`);
           for (const [rel, text] of Object.entries(contentData.files ?? {})) {
             // only a plain relative path may land in the plugin directory: no traversal, no absolute paths
             if (!isSafeRelativePath(rel)) throw new Error(`mod ${name}: refusing file path "${rel}"`);
