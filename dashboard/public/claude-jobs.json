@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-12T03:11:25.942121+00:00",
-  "totalJobs": 96,
+  "lastUpdated": "2026-09-16T03:17:25.177626+00:00",
+  "totalJobs": 93,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -40,26 +40,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
       "postedAt": "2026-09-11T10:35:46-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5413642008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Beneficial Deployments (Life Sciences)",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5413642008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5413642008",
-      "postedAt": "2026-09-09T11:29:27-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -572,6 +552,48 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-huzzle-full-stack-developer-python-react-ai-1",
+      "company": "Huzzle",
+      "position": "Full-Stack Developer (Python, React, AI)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Colombia About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
+      "postedAt": "2026-08-18T20:34:11+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "AWS",
+        "Claude Code",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-huzzle-full-stack-developer-python-react-ai",
+      "company": "Huzzle",
+      "position": "Full-Stack Developer (Python, React, AI)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Mexico About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We match...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai",
+      "postedAt": "2026-08-18T20:34:05+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "AWS",
+        "Claude Code",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "wwr-happyco-senior-product-designer-mobile-experience",
       "company": "Happyco",
       "position": "Senior Product Designer, Mobile Experience",
@@ -704,26 +726,6 @@
         "AWS",
         "Docker",
         "Kubernetes",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-zoominfo-technologies-llc-principal-business-intelligence-analyst",
-      "company": "ZoomInfo Technologies LLC",
-      "position": "Principal Business Intelligence Analyst",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote ZoomInfo is where careers accelerate. We move fast, think boldly, and empower you to do the best work of your life. You’ll be surrounded by teammates who care deeply, challenge each other, and celebrate wins. With tools that amplify your impact and a culture that backs your...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/zoominfo-technologies-llc-principal-business-intelligence-analyst",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/zoominfo-technologies-llc-principal-business-intelligence-analyst",
-      "postedAt": "2026-08-15T07:31:27+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Rust",
         "Claude Code"
       ],
       "companyIcon": ""
@@ -1150,27 +1152,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5342935008",
-      "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Safeguards Human Review Tooling",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "The Safeguards team is responsible for ensuring our models and products are developed and deployed safely. We're looking for engineers for our Review Tooling team, which builds the systems that humans — and increasingly Claude — use to investigate potential harms and take enforcement actions across...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
-      "postedAt": "2026-07-13T12:57:38-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5311465008",
@@ -1795,27 +1776,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5174755008",
-      "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Backend",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "Anthropic is looking for experienced, product-minded engineers to own the backend systems that power user experiences across our API, Claude Code, and Claude.ai. You'll independently scope complex, multi-month projects through ambiguous problem spaces and lead peers through technical and product...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
-      "postedAt": "2026-04-08T14:57:22-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5157847008",
       "company": "Anthropic",
       "position": "Staff+ Software Engineer, Platform",
@@ -1904,28 +1864,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5075093008",
-      "company": "Anthropic",
-      "position": "Strategic Account Executive, Cybersecurity",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Strategic Account Executive focused on cybersecurity, you'll own some of Anthropic's most strategic cybersecurity relationships—companies building the next generation of AI-powered security products. These aren't typical enterprise accounts; they're partners shaping how AI transforms the...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "postedAt": "2026-01-27T23:00:33-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Copilot",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
