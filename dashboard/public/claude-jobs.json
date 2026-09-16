@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-15T03:10:42.424887+00:00",
+  "lastUpdated": "2026-09-16T03:17:25.177626+00:00",
   "totalJobs": 93,
   "sources": [
     "Anthropic",
@@ -40,26 +40,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
       "postedAt": "2026-09-11T10:35:46-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5413642008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Beneficial Deployments (Life Sciences)",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5413642008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5413642008",
-      "postedAt": "2026-09-09T11:29:27-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -572,6 +552,27 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-huzzle-full-stack-developer-python-react-ai-1",
+      "company": "Huzzle",
+      "position": "Full-Stack Developer (Python, React, AI)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Colombia About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
+      "postedAt": "2026-08-18T20:34:11+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "AWS",
+        "Claude Code",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "wwr-huzzle-full-stack-developer-python-react-ai",
       "company": "Huzzle",
       "position": "Full-Stack Developer (Python, React, AI)",
@@ -818,6 +819,26 @@
         "AWS"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5383596008",
+      "company": "Anthropic",
+      "position": "Developer Relations",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As Developer Relations at Anthropic, you will help developers discover, onboard, and get the most out of Claude Code, Claude Tag, and future developer products. This role is pivotal in helping developers adopt Claude-powered products, growing our developer ecosystem, gathering crucial feedback to...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "postedAt": "2026-08-10T15:57:04-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-49215237",
@@ -1131,27 +1152,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5342935008",
-      "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Safeguards Human Review Tooling",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "The Safeguards team is responsible for ensuring our models and products are developed and deployed safely. We're looking for engineers for our Review Tooling team, which builds the systems that humans — and increasingly Claude — use to investigate potential harms and take enforcement actions across...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
-      "postedAt": "2026-07-13T12:57:38-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5311465008",
@@ -1602,6 +1602,26 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5277834008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "postedAt": "2026-06-24T13:51:42-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
@@ -1844,28 +1864,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5075093008",
-      "company": "Anthropic",
-      "position": "Strategic Account Executive, Cybersecurity",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Strategic Account Executive focused on cybersecurity, you'll own some of Anthropic's most strategic cybersecurity relationships—companies building the next generation of AI-powered security products. These aren't typical enterprise accounts; they're partners shaping how AI transforms the...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "postedAt": "2026-01-27T23:00:33-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Copilot",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
