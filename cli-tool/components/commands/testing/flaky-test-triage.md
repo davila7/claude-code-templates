@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Write, Edit, Bash
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash
 argument-hint: <test-file-or-test-name>
 description: Detect, isolate, and remediate non-deterministic or flaky tests through stress-repetition and root-cause analysis
 ---
@@ -25,22 +25,31 @@ Isolate tests that pass and fail intermittently without code changes, determine 
 
 ### 1. Stress Repetition to Measure Flake Frequency
 
-Run the specific test in a tight loop to calculate an empirical failure rate. Choose the appropriate repetition method based on the framework:
+Run the target test for 20 iterations without breaking early on first error so the full pass/fail ratio and flake frequency can be accurately quantified:
 
 - **Vitest**:
   ```bash
-  npx vitest run <path-to-test> --repeat=20
+  passes=0; fails=0
+  for i in $(seq 1 20); do
+    npx vitest run <path-to-test> && ((passes++)) || ((fails++))
+  done
+  echo "Vitest Results: $passes passed, $fails failed out of 20 runs"
   ```
 - **Jest**:
   ```bash
-  for i in $(seq 1 20); do npx jest <path-to-test> --runInBand || break; done
+  passes=0; fails=0
+  for i in $(seq 1 20); do
+    npx jest <path-to-test> --runInBand && ((passes++)) || ((fails++))
+  done
+  echo "Jest Results: $passes passed, $fails failed out of 20 runs"
   ```
 - **Pytest**:
   ```bash
-  # Core pytest repetition loop:
-  for i in $(seq 1 20); do pytest <path-to-test> -v || break; done
-  # Or if pytest-repeat plugin is installed:
-  pytest <path-to-test> --count=20 -v
+  passes=0; fails=0
+  for i in $(seq 1 20); do
+    pytest <path-to-test> -v && ((passes++)) || ((fails++))
+  done
+  echo "Pytest Results: $passes passed, $fails failed out of 20 runs"
   ```
 - **Go**:
   ```bash
@@ -48,7 +57,11 @@ Run the specific test in a tight loop to calculate an empirical failure rate. Ch
   ```
 - **Cargo**:
   ```bash
-  for i in $(seq 1 20); do cargo test <test_name> -- --nocapture || break; done
+  passes=0; fails=0
+  for i in $(seq 1 20); do
+    cargo test <test_name> -- --nocapture && ((passes++)) || ((fails++))
+  done
+  echo "Cargo Results: $passes passed, $fails failed out of 20 runs"
   ```
 
 Record the pass/fail ratio and capture stdout/stderr from failed iterations.
@@ -65,7 +78,7 @@ Categorize the failure using the common non-determinism taxonomy:
 2. **Test Order Dependency & State Pollution**:
    - Symptom: Passes when executed in isolation (`--testNamePattern`), fails when the entire suite runs.
    - Indicators: Leaked global variables, uncleared database records, singleton caches, or shared filesystem artifacts.
-   - Verification: Run the test suite with randomized order (`--shuffle` or `--randomize`).
+   - Verification: Run the test suite with randomized order (`--sequence.shuffle.tests` in Vitest or `--randomize` in Pytest).
 
 3. **Clock & Timezone Skew**:
    - Symptom: Fails around midnight UTC, during month/year rollovers, or in different local timezones.
@@ -110,10 +123,17 @@ Implement the appropriate pattern based on the diagnosed category:
 
 ### 4. Verification & Stability Certification
 
-1. Re-run the target test 50 consecutive times using the stress runner.
-2. Run the entire enclosing test file with shuffle/randomized order to prove absence of order coupling:
+1. Verify stability by executing 50 consecutive iterations (stopping on any failure to guarantee perfection):
    ```bash
-   npx vitest run <path-to-test> --shuffle
+   for i in $(seq 1 50); do
+     <test-command> || { echo "Stability check failed on iteration $i"; exit 1; }
+   done
+   echo "Stability certified: 50/50 runs passed."
+   ```
+2. Run the enclosing test file with randomized test ordering to confirm zero test coupling:
+   ```bash
+   # Vitest:
+   npx vitest run <path-to-test> --sequence.shuffle.tests
    ```
 3. Run the complete project test suite to guarantee zero regressions:
    ```bash
