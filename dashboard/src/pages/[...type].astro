@@ -101,9 +101,16 @@ export function getStaticPaths() {
         </div>
         
         <div class="flex-1">
-          <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-2 tracking-tight">
-            {config?.label ?? activeType}
-          </h1>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
+            <h1 class="text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+              {config?.label ?? activeType}
+            </h1>
+            {activeType === 'mods' && (
+              <span class="inline-flex items-center rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 font-ui-mono text-[11px] font-semibold uppercase tracking-wide text-amber-400">
+                Beta
+              </span>
+            )}
+          </div>
           <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
             {meta?.tagline ?? meta?.description}
           </p>
