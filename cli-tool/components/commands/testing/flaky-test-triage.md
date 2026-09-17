@@ -76,9 +76,20 @@ Categorize the failure using the common non-determinism taxonomy:
    - Root cause: Test asserts before an asynchronous background operation resolves.
 
 2. **Test Order Dependency & State Pollution**:
-   - Symptom: Passes when executed in isolation (`--testNamePattern`), fails when the entire suite runs.
-   - Indicators: Leaked global variables, uncleared database records, singleton caches, or shared filesystem artifacts.
-   - Verification: Run the test suite with randomized order (`--sequence.shuffle.tests` in Vitest, or `--random-order` via `pytest-random-order` / `--randomly-seed` via `pytest-randomly` in Pytest).
+   - **Symptom**: Passes when executed in isolation (`--testNamePattern`), fails when the entire suite runs.
+   - **Indicators**: Leaked global variables, uncleared database records, singleton caches, or shared filesystem artifacts.
+   - **Verification**: Use the framework's shuffle support when it is installed. For Pytest, detect optional plugins before passing their flags:
+     ```bash
+     if pytest --help 2>/dev/null | grep -q -- '--random-order'; then
+       pytest <path-to-test> --random-order
+     elif pytest --help 2>/dev/null | grep -q -- '--randomly-seed'; then
+       pytest <path-to-test> --randomly-seed=random
+     else
+       echo 'No Pytest randomization plugin detected; record order-randomization as unavailable.'
+       pytest <path-to-test> -v
+     fi
+     ```
+     Do not pass `--random-order` or `--randomly-seed` unless the corresponding plugin advertises the option.
 
 3. **Clock & Timezone Skew**:
    - Symptom: Fails around midnight UTC, during month/year rollovers, or in different local timezones.
@@ -130,10 +141,20 @@ Implement the appropriate pattern based on the diagnosed category:
    done
    echo "Stability check passed: 50/50 consecutive runs passed without failure."
    ```
-2. Run the enclosing test file with randomized test ordering to confirm zero test coupling:
+2. Run the enclosing test file with randomized test ordering when the framework supports it. Do not assume optional Pytest plugins are installed:
    ```bash
    # Vitest:
    npx vitest run <path-to-test> --sequence.shuffle.tests
+
+   # Pytest:
+   if pytest --help 2>/dev/null | grep -q -- '--random-order'; then
+     pytest <path-to-test> --random-order
+   elif pytest --help 2>/dev/null | grep -q -- '--randomly-seed'; then
+     pytest <path-to-test> --randomly-seed=random
+   else
+     echo 'Pytest shuffle check unavailable: install pytest-random-order or pytest-randomly to enable it.'
+     pytest <path-to-test> -v
+   fi
    ```
 3. Run the complete project test suite to guarantee zero regressions:
    ```bash
