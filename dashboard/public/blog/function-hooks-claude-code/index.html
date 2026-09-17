@@ -182,11 +182,8 @@
             <img src="../assets/function-hooks-claude-code-cover.svg" alt="Claude Code Function Hooks: TypeScript middleware for Claude Code" class="article-cover" loading="lazy">
 
             <div class="article-content-full">
-                <div class="info-box">
-                    <strong>Update, September 15, 2026: this is now "Claude Mods", and it is shipping.</strong> On September 9 Anthropic committed to shipping function hooks "on the scale of weeks", renamed the product to <strong>Claude Mods</strong> (a mod is a plugin built on function hooks; the engineering term stays), published the source of its three built-in mods and the full TypeScript declarations at <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener">anthropics/claude-code/mods</a>, and acknowledged the flag: <code>CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude</code> on Claude Code 2.1.259 or newer. The API is early access and may change between releases. Our catalog section moved from <code>/function-hooks</code> to <a href="/mods">/mods</a>, the CLI flag is now <code>--mod</code> (<code>--function-hook</code> still works), and all ten mods below were rewritten and typechecked against Anthropic's published <code>claude-code.d.ts</code>. The rest of this article is the original explainer from September 4; where a code sample below differs from the shipped API, the catalog entry is the one to trust.
-                </div>
                 <div class="warning-box">
-                    <strong>⚠️ Early access.</strong> Function hooks began as an internal Anthropic proposal published as a GitHub issue on September 3, 2026, asking the community for feedback in <a href="https://github.com/anthropics/claude-code/issues/91870" target="_blank" rel="noopener">anthropics/claude-code#91870</a>. The demos run on real binaries behind the flag above; documentation on code.claude.com is still pending. Read the issue's community updates for the current state of the design.
+                    <strong>⚠️ Experimental. Read this first.</strong> Function hooks are <em>not</em> a shipped Claude Code feature. They are an internal Anthropic proposal published as a GitHub issue on September 3, 2026, asking the community for feedback. The author says the community's response "likely dictates whether this ships or not". There is no documentation on code.claude.com. The demos run on real binaries behind an experimental flag. Every API name in this article is provisional and comes from the architecture PDF and the videos attached to <a href="https://github.com/anthropics/claude-code/issues/91870" target="_blank" rel="noopener">anthropics/claude-code#91870</a>. If you want this to exist, that issue is where to say so.
                 </div>
 
                 <h2>What Function Hooks Are</h2>
@@ -410,31 +407,29 @@ on("tool.call", { tool: "WebFetch" }, async ($, e, next) => {
                 <h3>3. Draw: a duration badge on every ToolUse</h3>
 
                 <pre><code class="language-typescript">on("ui.render", { component: "ToolUse" }, async ($, e, next) => {
-  const { Box, Text } = $.ui.resolve(e)    // the surface's own element table
-  const drawn = await next(e)              // whatever the engine drew
-  const ms = durations.get(e.props.tool_use_id)
-  if (e.props.isRunning || ms === undefined) return drawn
+  const { Row, Badge } = $.ui.resolve(e)   // the surface's own elements
+  const rendered = await next(e)           // whatever the engine drew
   return (
-    &lt;Box flexDirection="row" gap={1}&gt;
-      {drawn}
-      &lt;Text color="green"&gt;{`${ms} ms`}&lt;/Text&gt;
-    &lt;/Box&gt;
+    &lt;Row&gt;
+      {rendered}
+      &lt;Badge text={`${durationFor(e.props)} ms`} /&gt;
+    &lt;/Row&gt;
   )
 })</code></pre>
 
-                <p>The same JSX renders on the terminal, on Desktop and on mobile; the shipped element table is <code>Box</code>, <code>Text</code>, <code>Button</code>, <code>Input</code>, <code>Select</code>, <code>Link</code>, <code>Code</code>, <code>Client</code> and (terminal only) <code>Raster</code>. A hook never receives rendered state, only props and the component to render, so the component names and props are public API in the declarations, on the same footing as a tool's input schema.</p>
+                <p>The same JSX renders through Ink on the terminal and through the DOM on Desktop. A hook never receives rendered state, only props and the component to render, so the component names and props are declared public API in the doc, on the same footing as a tool's input schema.</p>
 
-                <h2>10 Mods in the Catalog</h2>
+                <h2>10 Function Hooks in the Catalog</h2>
 
-                <p>We wrote ten mods, one per pattern the design demonstrates, and rewrote them against Anthropic's published declarations once those landed. Each catalog entry is the real thing: the <code>hooks.json</code> with its <code>modules</code> key, and the TypeScript hooks-module it names, typechecked with <code>tsc</code> against <code>claude-code.d.ts</code>. Install any of them with the <code>--mod</code> flag (<code>--function-hook</code> is kept as an alias):</p>
+                <p>We wrote ten hooks against the API described in the architecture doc, one per pattern the proposal demonstrates. Each catalog entry is the real thing: the <code>hooks.json</code> with its <code>modules</code> key, and the TypeScript hooks-module it names, with a header comment that lists exactly which parts of <code>$</code> are assumptions. Install any of them with the <code>--function-hook</code> flag, which needs <strong>claude-code-templates 1.29.5 or newer</strong>:</p>
 
-                <pre><code class="language-bash">npx claude-code-templates@latest --mod security/block-destructive-commands</code></pre>
+                <pre><code class="language-bash">npx claude-code-templates@latest --function-hook security/block-destructive-commands</code></pre>
 
                 <p>It writes the plugin layout above to <code>.claude/skills/&lt;name&gt;/</code>. Then start Claude Code with the flag. Pointing <code>--plugin-dir</code> at the directory is the path we tested and the one we recommend:</p>
 
                 <pre><code class="language-bash">CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/block-destructive-commands</code></pre>
 
-                <p>Claude Code also picks the directory up on its own as <code>&lt;name&gt;@skills-dir</code> on the next session, once you trust the workspace. Two differences worth knowing: a mod loaded from the skills directory does not hot-reload on edit (<code>--plugin-dir</code> does), and <code>claude plugin validate .claude/skills/&lt;name&gt;</code> prints every event the module hooks and every <code>$</code> call it makes before anything runs.</p>
+                <p>Claude Code should also pick the directory up on its own as <code>&lt;name&gt;@skills-dir</code> on the next session, once you trust the workspace — but that auto-load is the one part of this flow we have not confirmed on a real binary, so reach for <code>--plugin-dir</code> if the hook does not fire.</p>
 
                 <div class="info-box">
                     <strong>Older CLI, or no CLI at all?</strong> The layout is four lines of shell. This is exactly what we tested, and the catalog's <code>.ts</code> file runs in it without a single edit:
@@ -457,61 +452,61 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/plugins/secret-r
                     </thead>
                     <tbody>
                         <tr>
-                            <td><a href="/component/mod/security/block-destructive-commands"><code>security/block-destructive-commands</code></a></td>
+                            <td><a href="/component/function-hook/security/block-destructive-commands"><code>security/block-destructive-commands</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>instead</td>
                             <td>Denies <code>rm -rf /</code>, force push, hard reset, destructive SQL, disk formatting</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/security/secret-redactor"><code>security/secret-redactor</code></a></td>
+                            <td><a href="/component/function-hook/security/secret-redactor"><code>security/secret-redactor</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>after</td>
                             <td>Replaces keys, tokens, JWTs and connection strings in tool output before the model reads them</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/security/protected-paths-guard"><code>security/protected-paths-guard</code></a></td>
+                            <td><a href="/component/function-hook/security/protected-paths-guard"><code>security/protected-paths-guard</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>instead</td>
                             <td>Denies edits to .env, lockfiles, CI workflows and private keys, with an allow list</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/security/large-edit-confirmation"><code>security/large-edit-confirmation</code></a></td>
+                            <td><a href="/component/function-hook/security/large-edit-confirmation"><code>security/large-edit-confirmation</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>before</td>
                             <td>Asks the user before editing a file over N lines, via the permissions primitive</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/productivity/npm-to-pnpm-rewriter"><code>productivity/npm-to-pnpm-rewriter</code></a></td>
+                            <td><a href="/component/function-hook/productivity/npm-to-pnpm-rewriter"><code>productivity/npm-to-pnpm-rewriter</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>modifying</td>
                             <td>Rewrites npm/npx to pnpm, yarn or bun</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/productivity/webfetch-cache"><code>productivity/webfetch-cache</code></a></td>
+                            <td><a href="/component/function-hook/productivity/webfetch-cache"><code>productivity/webfetch-cache</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>instead / after</td>
                             <td>Serves repeated WebFetch calls from a session cache with TTL</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/observability/universal-audit-log"><code>observability/universal-audit-log</code></a></td>
+                            <td><a href="/component/function-hook/observability/universal-audit-log"><code>observability/universal-audit-log</code></a></td>
                             <td><code>*</code></td>
                             <td>after</td>
                             <td>JSON line per event with origin, duration and outcome, including denials</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/ui/tool-timing-badge"><code>ui/tool-timing-badge</code></a></td>
+                            <td><a href="/component/function-hook/ui/tool-timing-badge"><code>ui/tool-timing-badge</code></a></td>
                             <td><code>tool.call</code>, <code>ui.render</code></td>
                             <td>after</td>
                             <td>Times every tool call and draws a colored badge next to the ToolUse row</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/integrations/websearch-to-exa"><code>integrations/websearch-to-exa</code></a></td>
+                            <td><a href="/component/function-hook/integrations/websearch-to-exa"><code>integrations/websearch-to-exa</code></a></td>
                             <td><code>tool.call</code></td>
                             <td>instead</td>
                             <td>Replaces the built-in WebSearch with Exa through <code>$.http</code>, with fallback</td>
                         </tr>
                         <tr>
-                            <td><a href="/component/mod/enterprise/admin-capability-lockdown"><code>enterprise/admin-capability-lockdown</code></a></td>
+                            <td><a href="/component/function-hook/enterprise/admin-capability-lockdown"><code>enterprise/admin-capability-lockdown</code></a></td>
                             <td><code>engine.create</code>, <code>plugin.register</code>, <code>tool.call</code></td>
                             <td>after / instead</td>
                             <td>Withholds <code>http</code> and <code>process</code> from <code>$</code>, allowlists plugins, denies shell network commands</td>
@@ -519,7 +514,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/plugins/secret-r
                     </tbody>
                 </table>
 
-                <p>Browse them all at <a href="/mods">aitmpl.com/mods</a>. The listing carries the same early-access banner as this article.</p>
+                <p>Browse them all at <a href="/function-hooks">aitmpl.com/function-hooks</a>. The listing carries the same experimental banner as this article.</p>
 
                 <div class="warning-box">
                     <strong>Two things testing turned up that the table does not tell you.</strong>

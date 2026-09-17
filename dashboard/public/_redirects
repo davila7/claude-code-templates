@@ -1,4 +1,0 @@
-# "Function hooks" became "Mods" (Anthropic's product name); keep the old URLs alive.
-/function-hooks                /mods                    301
-/component/function-hook/*     /component/mod/:splat    301
-/component/function-hooks/*    /component/mod/:splat    301
