@@ -16,10 +16,9 @@ const { type, slug } = Astro.params;
 
 let component: Component | null = null;
 let error: string | null = null;
-// Function hooks (experimental): the hooks.json names a TypeScript hooks-module
-// that the content file carries alongside the JSON.
-let moduleFile = '';
-let moduleSource = '';
+// Mods (function hooks, early access): a complete plugin directory; the
+// content file carries README.md as content plus every text file of it.
+let modFiles: Record<string, string> = {};
 
 try {
   const data = await fetchComponents();
@@ -39,8 +38,7 @@ try {
     const cleanSlug = component.path?.replace(/\.(md|json)$/, '') ?? component.name;
     const contentData = await fetchComponentContentData(component.type, cleanSlug);
     component = { ...component, content: contentData.content };
-    moduleFile = contentData.module ?? '';
-    moduleSource = contentData.moduleSource ?? '';
+    modFiles = contentData.files ?? {};
   }
 } catch (e: any) {
   error = e.message;
@@ -56,17 +54,10 @@ function parseFrontmatter(content: string, componentType: string): Record<string
   if (!content) return {};
 
   // JSON-based components (MCPs, Settings, Hooks)
-  if (componentType === 'mcps' || componentType === 'settings' || componentType === 'hooks' || componentType === 'function-hooks') {
+  if (componentType === 'mcps' || componentType === 'settings' || componentType === 'hooks') {
     try {
       const json = JSON.parse(content);
       const fields: Record<string, string> = {};
-
-      // Function hooks: hooks.json names the TypeScript hooks-module(s)
-      if (componentType === 'function-hooks') {
-        if (json.description) fields['description'] = json.description;
-        if (Array.isArray(json.modules)) fields['module'] = json.modules.map((m: string) => m.replace(/^\.\//, '')).join(', ');
-        return fields;
-      }
 
       // MCP: extract from mcpServers object
       if (componentType === 'mcps') {
@@ -175,11 +166,11 @@ if (typePlural === 'loops' && frontmatter.components) {
 }
 
 // JSON-based types use JsonViewer instead of MarkdownViewer
-const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps' || typePlural === 'function-hooks';
+const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps';
 
-// Function hooks: render the hooks-module as a fenced code block under the JSON.
-const moduleLang = moduleFile.endsWith('.tsx') ? 'tsx' : moduleFile.endsWith('.jsx') ? 'jsx' : moduleFile.endsWith('.js') ? 'js' : 'ts';
-const moduleMarkdown = moduleSource ? '```' + moduleLang + '\n' + moduleSource.replace(/```/g, '` ` `') + '\n```' : '';
+// Mods: plugin metadata shown in the sidebar (modules hooked, options declared).
+const modModules: string[] = typePlural === 'mods' ? ((component as any)?.modules ?? []) : [];
+const modOptions: string[] = typePlural === 'mods' ? Object.keys((component as any)?.userConfig ?? {}) : [];
 
 // Extract headings from markdown content for TOC
 const contentHeadings: { level: number; text: string; id: string }[] = [];
@@ -451,6 +442,14 @@ const componentSchema = component
         {/* Content area with optional file tree sidebar */}
         {/* Content viewer */}
         <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
+        {typePlural === 'mods' && (
+          <div class="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
+            <strong class="text-amber-400">Early access.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-amber-300">mods/</a> layout); it loads in Claude Code 2.1.259+ with <code>CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1</code> and the <code>$</code> API may still change between releases.
+            {modModules.length > 0 && <span> Hooks module{modModules.length > 1 ? 's' : ''}: <code>hooks/{modModules.join('</code>, <code>hooks/')}</code>.</span>}
+            {modOptions.length > 0 && <span> Options: <code>{modOptions.join('</code>, <code>')}</code> (set in user or managed settings <code>pluginConfigs</code>, or <code>/config</code>).</span>}
+            {' '}Run <code>claude plugin validate</code> on the installed folder to see every event it hooks and every <code>$</code> call it makes.
+          </div>
+        )}
         {refs.length > 0 ? (
           <SkillExplorer
             client:load
@@ -459,6 +458,9 @@ const componentSchema = component
             skillPath={component.path}
             references={refs}
             headings={contentHeadings}
+            componentType={typePlural === 'mods' ? 'mods' : 'skills'}
+            mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
+            files={typePlural === 'mods' ? modFiles : undefined}
           />
         ) : isJsonType ? (
           <JsonViewer client:load content={component.content || ''} />
@@ -468,21 +470,6 @@ const componentSchema = component
             content={component.content || ''}
             headings={contentHeadings}
           />
-        )}
-
-        {/* Function hooks: the TypeScript hooks-module named by hooks.json "modules" */}
-        {typePlural === 'function-hooks' && moduleMarkdown && (
-          <div class="mt-8">
-            <div class="mb-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
-              <strong class="text-amber-400">Experimental.</strong> Function hooks are an Anthropic proposal under community review
-              (<a href="https://github.com/anthropics/claude-code/issues/91870" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-amber-300">anthropics/claude-code#91870</a>),
-              not a shipped feature. The <code>modules</code> key and every <code>$</code> API name are provisional.
-            </div>
-            <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">
-              Module: hooks/{moduleFile}
-            </h3>
-            <MarkdownViewer client:load content={moduleMarkdown} headings={[]} />
-          </div>
         )}
 
         {/* Action buttons */}

@@ -381,14 +381,14 @@ def generate_components_json():
     templates_base_path = 'cli-tool/templates'
     plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
-    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'function-hooks': [], 'templates': [], 'plugins': []}
+    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'mods': [], 'templates': [], 'plugins': []}
 
     # Run security validation
     security_metadata = run_security_validation()
 
     # Fetch download statistics
     download_stats = fetch_download_stats()
-    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'function-hooks']
+    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -495,6 +495,87 @@ def generate_components_json():
                                 print(f"  Processed skill: {category}/{name}")
             continue  # Skip the normal file scanning for skills
 
+        # Mods: one directory per plugin, exactly Anthropic's mods/ layout
+        # (.claude-plugin/plugin.json + hooks/hooks.json + hooks/** + optional
+        # types/, tests/, README.md). The README is the content shown on the
+        # site; every text file travels in the content file so the site's
+        # explorer and the "send to repo" flow have the whole plugin.
+        if component_type == 'mods':
+            MOD_TEXT_EXT = ('.ts', '.tsx', '.js', '.jsx', '.mjs', '.json', '.md', '.d.ts', '.txt', '.css', '.yml', '.yaml', 'LICENSE')
+            for category in sorted(os.listdir(type_path)):
+                category_path = os.path.join(type_path, category)
+                if not os.path.isdir(category_path) or category in ('types',):
+                    continue
+                for mod_dir in sorted(os.listdir(category_path)):
+                    mod_path = os.path.join(category_path, mod_dir)
+                    manifest_path = os.path.join(mod_path, '.claude-plugin', 'plugin.json')
+                    hooks_path = os.path.join(mod_path, 'hooks', 'hooks.json')
+                    if not (os.path.isdir(mod_path) and os.path.isfile(manifest_path) and os.path.isfile(hooks_path)):
+                        continue
+                    try:
+                        with open(manifest_path, 'r', encoding='utf-8') as f:
+                            manifest = json.load(f)
+                        with open(hooks_path, 'r', encoding='utf-8') as f:
+                            hooks_json = json.load(f)
+                    except (OSError, ValueError) as e:
+                        print(f"Warning: skipping mod {category}/{mod_dir}: {e}")
+                        continue
+                    name = manifest.get('name') or mod_dir
+                    description = manifest.get('description') or hooks_json.get('description', '')
+                    author_field = manifest.get('author', '')
+                    author = author_field.get('name', '') if isinstance(author_field, dict) else str(author_field)
+                    repo = manifest.get('repository') or manifest.get('homepage') or ''
+                    modules = [str(m).lstrip('./') for m in (hooks_json.get('modules') or [])]
+
+                    readme_path = os.path.join(mod_path, 'README.md')
+                    content = ''
+                    if os.path.isfile(readme_path):
+                        with open(readme_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                    if not content:
+                        content = f"# {name}\n\n{description}\n"
+
+                    files = {}
+                    references = []
+                    for rel in sorted(scan_directory_recursively(mod_path, mod_path)):
+                        if rel == 'README.md' or '/node_modules/' in rel or rel.startswith('.git/'):
+                            continue
+                        references.append(rel)
+                        if rel.endswith(MOD_TEXT_EXT) or os.path.basename(rel) == 'LICENSE':
+                            try:
+                                with open(os.path.join(mod_path, rel), 'r', encoding='utf-8') as f:
+                                    files[rel] = f.read()
+                            except (OSError, UnicodeDecodeError):
+                                pass
+
+                    download_key = f"{component_type}/{category}/{name}"
+                    downloads = download_stats.get(download_key, 0)
+                    security = security_metadata.get(download_key, {
+                        'validated': False, 'valid': None, 'score': None,
+                        'errorCount': 0, 'warningCount': 0, 'lastValidated': None
+                    })
+                    components_data[component_type].append({
+                        'name': name,
+                        'path': f"{category}/{mod_dir}",
+                        'category': category,
+                        'type': 'mod',
+                        'content': content,
+                        'description': description,
+                        'author': author,
+                        'repo': repo,
+                        'version': manifest.get('version', ''),
+                        'license': manifest.get('license', ''),
+                        'keywords': manifest.get('keywords', []) if isinstance(manifest.get('keywords'), list) else [],
+                        'downloads': downloads,
+                        'security': security,
+                        'modules': modules,
+                        'userConfig': manifest.get('userConfig', {}),
+                        'references': references,
+                        'files': files,
+                    })
+                    print(f"  Processed mod: {category}/{mod_dir} ({len(references)} files)")
+            continue
+
         # Normal scanning for other component types
         for category in os.listdir(type_path):
             category_path = os.path.join(type_path, category)
@@ -512,8 +593,6 @@ def generate_components_json():
                         version = ''
                         license_field = ''
                         keywords = []
-                        module_file = ''
-                        module_source = ''
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
@@ -531,23 +610,10 @@ def generate_components_json():
                                                 if isinstance(server_config, dict) and 'description' in server_config:
                                                     description = server_config['description']
                                                     break  # Use the first description found
-                                    elif component_type in ['settings', 'hooks', 'function-hooks']:
+                                    elif component_type in ['settings', 'hooks']:
                                         # Extract metadata from settings/hooks JSON files
                                         if 'description' in json_data:
                                             description = json_data['description']
-                                        # Function hooks (experimental): hooks.json names a TypeScript
-                                        # hooks-module beside it via "modules". Read it so the site can
-                                        # show the code and the CLI can install it.
-                                        if component_type == 'function-hooks':
-                                            modules = json_data.get('modules') or []
-                                            if modules:
-                                                module_file = modules[0].lstrip('./')
-                                                module_path = os.path.join(category_path, module_file)
-                                                try:
-                                                    with open(module_path, 'r', encoding='utf-8') as mf:
-                                                        module_source = mf.read()
-                                                except OSError:
-                                                    print(f"Warning: module {module_file} not found for {file_path}")
                                         if 'author' in json_data:
                                             author = json_data['author']
                                         if 'repo' in json_data:
@@ -620,9 +686,6 @@ def generate_components_json():
                             'downloads': downloads,  # Add download count
                             'security': security  # Add security metadata
                         }
-                        if module_file:
-                            component['module'] = module_file          # e.g. "secret-redactor.ts"
-                            component['moduleSource'] = module_source  # stripped from indexes, kept in content files
                         components_data[component_type].append(component)
 
     # Scan templates (new logic)
@@ -827,7 +890,7 @@ def generate_components_json():
     dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
 
     # Component types that carry a 'content' field
-    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'function-hooks']
+    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
 
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
@@ -842,9 +905,9 @@ def generate_components_json():
             content_file_path = os.path.join(dashboard_content_dir, ctype, slug + '.json')
             os.makedirs(os.path.dirname(content_file_path), exist_ok=True)
             content_payload = {'content': raw_content}
-            if component.get('module'):
-                content_payload['module'] = component['module']
-                content_payload['moduleSource'] = component.get('moduleSource', '')
+            if component.get('files'):
+                # Mods: the whole plugin (every text file) rides in the content file
+                content_payload['files'] = component['files']
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
                     json.dump(content_payload, f, ensure_ascii=False)
@@ -860,7 +923,7 @@ def generate_components_json():
     index_data = {}
     for k, v in components_data.items():
         if k in content_bearing_types:
-            index_data[k] = [{key: val for key, val in c.items() if key not in ('content', 'moduleSource')} for c in v]
+            index_data[k] = [{key: val for key, val in c.items() if key not in ('content', 'files')} for c in v]
         else:
             index_data[k] = v
 
@@ -884,7 +947,7 @@ def generate_components_json():
     #   components/{type}.json   → per-type slice (grid loads only active type)
     #   search-index.json        → flat [{type,name,path,description,category}]
     # ---------------------------------------------------------------------------
-    STRIP_KEYS = {'content', 'security', 'moduleSource'}
+    STRIP_KEYS = {'content', 'security', 'files'}
 
     def strip_for_dashboard(component):
         return {key: val for key, val in component.items() if key not in STRIP_KEYS}

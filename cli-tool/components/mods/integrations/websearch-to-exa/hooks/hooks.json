@@ -1,0 +1,6 @@
+{
+  "description": "Overrides the built-in WebSearch tool and routes queries to the Exa search API through $.http.fetch, answering in WebSearch's own result shape, with automatic fallback to the built-in search. A tool.call hook that replaces a core tool.",
+  "modules": [
+    "./websearch-to-exa.ts"
+  ]
+}

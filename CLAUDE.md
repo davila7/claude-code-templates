@@ -62,7 +62,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **Settings** (60+) - Claude Code configuration files
 **Hooks** (39+) - Automation triggers
 **Loops** (18+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
-**Function Hooks** (10, EXPERIMENTAL) - TypeScript hooks-modules written against the proposed `$` engine interface (Anthropic proposal [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870), not a shipped feature). Stored exactly like shell hooks: `cli-tool/components/function-hooks/{category}/{name}.json` is the plugin's `hooks/hooks.json` (a catalog-only `description` plus the proposal's `modules` key) and `{name}.ts`/`{name}.tsx` beside it is the hooks-module it names. The generator reads the module into the per-component content file so the site shows both. `--function-hook` downloads both and writes a plugin at `.claude/skills/{name}/` (`.claude-plugin/plugin.json`, `hooks/hooks.json`, `hooks/{name}.ts`), which Claude Code auto-loads as `{name}@skills-dir`; it prints the experimental warning. Keep the experimental banner (listing page, detail page, blog) until Anthropic ships the feature.
+**Mods** (10, EARLY ACCESS) - Claude Mods: plugins whose behaviour lives in a function-hooks module (`register(on, options)` hooking engine events as `($, e, next)` middleware). Anthropic's reference is [anthropics/claude-code/mods](https://github.com/anthropics/claude-code/tree/main/mods) (three built-in mods + `mods/types/claude-code.d.ts`); discussion in [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870). Mods load in Claude Code >= 2.1.259 with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Each mod is a complete plugin directory in Anthropic's `mods/` layout: `cli-tool/components/mods/{category}/{name}/` with `.claude-plugin/plugin.json` (name, description, `userConfig` — options are read from user/managed settings `pluginConfigs[name].options`, never project settings), `hooks/hooks.json` (`modules`), any number of hooks-modules under `hooks/` (relative imports allowed), optional `types/`, `tests/`, and a `README.md` the site shows. The generator uses README.md as content and ships every text file in the per-component content file (`files`), so the site explorer and the send-to-repo flow have the whole plugin. `--mod` (alias `--function-hook`) downloads the directory recursively (like a skill) and writes it verbatim to `.claude/skills/{name}/`, which Claude Code auto-loads as `{name}@skills-dir`. Third-party mods are vendored as-is with LICENSE + attribution (e.g. `games/cc-arcade`). **Every module must typecheck against `cli-tool/components/mods/types/claude-code.d.ts`** (`cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json`; CI runs it in `mods-typecheck.yml`). Rules from the engine: import types only from `'claude-code'`, spell `$` as `$.noun.event(...)` at the call site (never pass `$` to a helper), treat `e` as frozen, deny with `{ deny }` without calling `next` (returning `{}` is fail-open). When Anthropic bumps the API, regenerate the d.ts with `/plugin-types` on a current Claude Code and re-run tsc. Keep the early-access banner (listing page, detail page, blog) until the flag is gone. Old URLs (`/function-hooks`, `/component/function-hook/*`) redirect via `dashboard/public/_redirects`.
 **Templates** (14+) - Complete project configurations
 
 ### Installation Patterns
@@ -73,6 +73,7 @@ npx claude-code-templates@latest --agent frontend-developer
 npx claude-code-templates@latest --command setup-testing
 npx claude-code-templates@latest --hook automation/simple-notifications
 npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the loop's referenced components
+npx claude-code-templates@latest --mod security/secret-redactor          # Claude Mod: plugin at .claude/skills/secret-redactor/
 
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
@@ -129,6 +130,15 @@ non-maintainer PR that touches them and posts revert instructions; the
 When reviewing a contributor PR that includes these files, ask them to revert
 with `git checkout origin/main -- docs/components.json dashboard/public/` rather
 than resolving the conflict by hand.
+
+**Mods (`cli-tool/components/mods/`) are plugin directories, not `.md` files.** Creating one: `mods/{category}/{name}/` with `.claude-plugin/plugin.json`, `hooks/hooks.json`, the hooks-modules under `hooks/`, a `README.md`, optionally `types/` and `tests/`. Before review: `cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json` and `claude plugin validate cli-tool/components/mods/{category}/{name}`. The component-reviewer applies this checklist to a mod:
+- ✅ `plugin.json` parses, has `name` (= directory name), `description`, `license`, and `author`/`repository` (attribution for vendored code)
+- ✅ `hooks/hooks.json` has a non-empty `modules` list and every entry exists under `hooks/`
+- ✅ Modules import types only from `'claude-code'`, use relative imports, spell `$` as `$.noun.event(...)`, never shadow `h` in a surface module
+- ✅ Options are declared in `plugin.json` `userConfig` (string/number/boolean/directory/file; lists as comma-separated strings)
+- ✅ Guards deny with `{ deny }` without calling `next`; `.catch` where fail-closed matters
+- ✅ No secrets (keys only via options), no absolute paths, no `$.process.run` with a shell
+- ✅ README states the command, controls/options, the early-access flag and (for `games/`) the attribution
 
 **The component-reviewer agent checks:**
 - ✅ Valid YAML frontmatter and required fields
