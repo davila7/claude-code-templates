@@ -1,7 +1,6 @@
 ---
 description: "This guide explains how to create pull requests using GitHub CLI in our project."
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
 
 ---
 

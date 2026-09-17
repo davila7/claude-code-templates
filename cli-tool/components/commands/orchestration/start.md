@@ -1,7 +1,6 @@
 ---
-description: "Initiates the task orchestration workflow using the three-agent system (task-orchestrator, task-decomposer, and dependency-analyzer) to create a comprehensive execution plan."
-allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
+description: Start the task orchestration workflow.
+allowed-tools: Read, Write, Edit, Bash, Task
 
 ---
 

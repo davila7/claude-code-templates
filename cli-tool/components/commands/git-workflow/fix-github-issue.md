@@ -1,7 +1,7 @@
 ---
 description: "Please analyze and fix the GitHub issue: $ARGUMENTS."
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
+argument-hint: "[issue-number-or-url]"
 
 ---
 

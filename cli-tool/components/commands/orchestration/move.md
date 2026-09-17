@@ -1,7 +1,7 @@
 ---
 description: "Move tasks between status folders following the task management protocol."
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
+argument-hint: "TASK-ID new-status [reason]"
 
 ---
 

@@ -1,7 +1,6 @@
 ---
 description: "Follow these steps to update the current branch name:"
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
 
 ---
 

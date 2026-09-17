@@ -1,7 +1,7 @@
 ---
-description: "Perform comprehensive analysis of $ARGUMENTS to identify code quality issues, security vulnerabilities, and optimization opportunities."
-allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
+description: Analyze a file for quality and security issues.
+allowed-tools: Read, Bash, Bash(grep:*), Bash(sed:*), Bash(awk:*)
+argument-hint: "[file-path]"
 
 ---
 

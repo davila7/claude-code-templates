@@ -1,7 +1,6 @@
 ---
 description: "Help debug Svelte and SvelteKit issues by analyzing error messages, stack traces, and common problems."
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
 
 ---
 

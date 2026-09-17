@@ -1,7 +1,6 @@
 ---
 description: "Convert code analysis to Linear tasks"
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
 
 ---
 
