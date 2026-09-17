@@ -112,7 +112,9 @@ export const register: Register = (on, options) => {
     if (!open || e.props.hasSurvey || e.surface === 'mobile') return next(e)
     const { Box, Text, Button, Input } = $.ui.resolve(e)
     const cols = e.props.bodyColumns || (e.viewport?.columns ?? 80)
-    const rows = Math.max(6, e.props.maxRows - 1)
+    // the rows the band grants: a tree taller than this scrolls and loses its bare-digit hotkeys,
+    // so every view sizes its variable part to what is left after its fixed rows
+    const maxRows = Math.max(1, e.props.maxRows)
     const repaint = () => $.ui.invalidate('ui.render')
 
     // --- data: fetched from the hook's own closures, once per file, cached for the session
@@ -192,6 +194,7 @@ export const register: Register = (on, options) => {
     }
 
     // --- the frame every view shares: one header row, a dim context row, the body, a dim help row
+    const frameRows = 3 + (error ? 1 : 0)
     const beneath = await next(e)
     const badge = (
       <Box flexShrink={0}>
@@ -234,7 +237,12 @@ export const register: Register = (on, options) => {
       const twoColumns = cols >= 78
       const leftWidth = 22
       const rightWidth = twoColumns ? cols - leftWidth - 3 : cols
-      const trendRows = trending?.rows ?? []
+      // fixed body rows: the Browse title, the 8 types, the search field; trending sits beside them in two
+      // columns and is only stacked beneath when the band has the rows for it
+      const homeRows = frameRows + 1 + TYPES.length + 1
+      const spare = maxRows - homeRows
+      const trendRows = (trending?.rows ?? []).slice(0, twoColumns ? TYPES.length : Math.max(0, spare - 1))
+      const showTrending = twoColumns || trendRows.length > 0
 
       const typesColumn = (
         <Box flexDirection="column" width={leftWidth}>
@@ -301,7 +309,7 @@ export const register: Register = (on, options) => {
             ) : (
               <Box flexDirection="column">
                 {typesColumn}
-                {trendingColumn}
+                {showTrending ? trendingColumn : null}
               </Box>
             )}
             <Input
@@ -348,7 +356,9 @@ export const register: Register = (on, options) => {
       const { type, query } = view
       const items = cache.get(type.key)
       if (!items) loadType(type)
-      const size = Math.min(pageSize, Math.max(3, rows - 6))
+      // fixed body rows: the type row, the filter field, the table header (+ the empty-match line)
+      const listRows = frameRows + 3
+      const size = Math.max(1, Math.min(pageSize, maxRows - listRows))
       const matches = items ? filterItems(items, query) : []
       const { slice, page, pages } = pageOf(matches, view.page, size)
       const current = view
