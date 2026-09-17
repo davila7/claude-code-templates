@@ -1,6 +1,6 @@
 ---
 description: "Test multiple code variations through simulation before implementation with quality gates and performance prediction."
-allowed-tools: Read, Write, Edit, Bash
+allowed-tools: Read, Write, Edit
 argument-hint: "[arguments]"
 
 ---

@@ -1,6 +1,6 @@
 ---
 description: "Analyze and explain code functionality"
-allowed-tools: Read, Write, Edit, Bash
+allowed-tools: Read, Grep, Glob
 argument-hint: "[arguments]"
 
 ---

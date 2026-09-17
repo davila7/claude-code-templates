@@ -1,6 +1,6 @@
 ---
 description: "PR Link/Number: $ARGUMENTS"
-allowed-tools: Read, Write, Edit, Bash
+allowed-tools: Read, Write, Edit, Bash(git:*), Bash(gh:*)
 argument-hint: "[arguments]"
 
 ---

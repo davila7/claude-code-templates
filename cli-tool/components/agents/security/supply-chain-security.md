@@ -1,6 +1,6 @@
 ---
 name: "supply-chain-security"
-description: "An AI security specialist focused on software supply chain threats: dependency"
+description: "An AI security specialist focused on software supply chain threats: dependency vulnerabilities, malicious packages, SBOM generation, license compliance, and third-party risk management."
 tools: Read, Bash, Glob, Grep
 model: sonnet
 ---

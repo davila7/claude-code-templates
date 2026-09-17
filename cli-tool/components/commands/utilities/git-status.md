@@ -1,6 +1,6 @@
 ---
 description: "Show detailed git repository status"
-allowed-tools: Read, Write, Edit, Bash
+allowed-tools: Read, Bash(git status:*), Bash(git diff:*), Bash(git branch:*)
 argument-hint: "[arguments]"
 
 ---

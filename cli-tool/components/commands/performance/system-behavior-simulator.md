@@ -1,6 +1,6 @@
 ---
 description: "Simulate system performance under various loads with capacity planning, bottleneck identification, and optimization strategies."
-allowed-tools: Read, Write, Edit, Bash
+allowed-tools: Read, Write, Edit
 argument-hint: "[arguments]"
 
 ---

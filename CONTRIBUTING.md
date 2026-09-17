@@ -96,6 +96,7 @@ Commands are custom slash commands that extend Claude Code functionality.
    ```markdown
    ---
    description: "Brief command description shown in the slash-command menu"
+   allowed-tools: Read, Write, Edit, Bash(command:*)
    argument-hint: "[file-path]"
    ---
 
