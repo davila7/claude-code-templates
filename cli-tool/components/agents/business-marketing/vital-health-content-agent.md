@@ -10,7 +10,7 @@ model: sonnet
 ## Agent Metadata
 - **name:** vital-health-content-agent
 - **category:** business-marketing
-- **description:**  
+- **description:**
   A content marketing agent focused on growing Vital Health Global through
   short-form and long-form content, affiliate education, and agent recruitment.
 - **color:** green
