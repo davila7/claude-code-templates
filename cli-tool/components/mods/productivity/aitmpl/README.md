@@ -33,10 +33,13 @@ Three views:
   to open a row. Templates are retired on the site and are not listed.
 - **detail** — description, category, downloads, the install command, and
   three actions: `i` **install here** runs the CLI on the host
-  (`$.process.run(["npx", "claude-code-templates@latest", "--agent", "…", "--yes"])`,
-  an argv, never a shell), `c` **put command in prompt** writes an install
-  request into the prompt box for Claude (`$.prompt.fill`, nothing is
-  submitted), and a link to the component's page on aitmpl.com.
+  (`$.process.run(["npx", "claude-code-templates@latest", "--agent", "…", "--yes"])`:
+  always the fixed CLI, the type's own flag and a validated path — never a
+  command string from the catalog, never a shell), `c` **put command in
+  prompt** writes an install request into the prompt box for Claude
+  (`$.prompt.fill`, nothing is submitted), and `o` **open on aitmpl.com**
+  opens the component's page in your browser (`open` on macOS, `xdg-open` on
+  Linux, `explorer.exe` on Windows, each an argv; the URL is http(s) only).
 
 ## Command
 
@@ -57,12 +60,14 @@ survey and on the mobile surface (no `Input` element there yet).
 |---|---|
 | `session.start` | registers `/aitmpl` (`$.command.register`) |
 | `command.run` `{ command: "aitmpl" }` | opens the home, a type or a search; `stop` closes |
-| `ui.render` `{ component: "AbovePrompt" }` | draws the view from `$.ui.resolve(e)` (Box, Text, Button, Input, Link); the fetches start from its closures and `$.ui.invalidate("ui.render")` repaints when they land |
+| `ui.render` `{ component: "AbovePrompt" }` | draws the view from `$.ui.resolve(e)` (Box, Text, Button, Input); the fetches start from its closures and `$.ui.invalidate("ui.render")` repaints when they land; a fetch that failed is retried only by `r` refresh, never by a repaint |
 
-The mod calls `$.http.fetch` (the site's JSON), `$.process.run` (only from the
-install button), `$.prompt.fill`, `$.ui.toast`, `$.ui.status` and `$.ui.log`.
-An `admin-capability-lockdown` mod that withholds `http` or `process` refuses
-it at `plugin.register`, by design.
+The mod calls `$.http.fetch` (the site's JSON), `$.process.run` (from the
+install button, with the fixed CLI argv, and from the open-in-browser button,
+with the platform's URL opener), `$.prompt.fill`, `$.env.get("OS")`,
+`$.ui.toast`, `$.ui.status` and `$.ui.log`. An `admin-capability-lockdown`
+mod that withholds `http` or `process` refuses it at `plugin.register`, by
+design.
 
 ## Options
 

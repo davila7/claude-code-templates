@@ -5,6 +5,7 @@ import {
   filterItems,
   installArgv,
   installCommandFor,
+  isSafePath,
   pageOf,
   parseCounts,
   parseItems,
@@ -41,12 +42,13 @@ test('parseItems keeps the fields the browser draws and skips bad rows', () => {
       { name: 'a', path: 'cat/a.md', category: 'cat', description: 'first', downloads: 3 },
       { name: '', path: 'x' },
       'junk',
-      { name: 'tpl', installCommand: 'npx claude-code-templates@latest --template x', downloads: 1 },
+      { name: 'b', downloads: 1 },
     ]),
   )
-  expect(items.map(i => i.name)).toEqual(['a', 'tpl'])
+  expect(items.map(i => i.name)).toEqual(['a', 'b'])
   expect(items[1]!.category).toBe('')
   expect(() => parseItems('not json')).toThrow()
+  expect(() => parseItems('{"components": []}')).toThrow()
   expect(parseCounts('{"agents": 2, "x": "no"}')).toEqual({ agents: 2 })
 })
 
@@ -70,13 +72,21 @@ test('pages clamp to the range', () => {
   expect(pageOf([], 0, 2)).toEqual({ slice: [], page: 0, pages: 1 })
 })
 
-test('install command and URL drop the file extension; the argv adds --yes once', () => {
+test('install argv is always the fixed CLI with a validated path; the shown command drops --yes', () => {
   const item = parseItems(JSON.stringify([{ name: 'x', path: 'cat/x.md', downloads: 0 }]))[0]!
-  expect(installCommandFor(item, agents)).toBe('npx claude-code-templates@latest --agent cat/x')
   expect(installArgv(item, agents)).toEqual(['npx', 'claude-code-templates@latest', '--agent', 'cat/x', '--yes'])
+  expect(installCommandFor(item, agents)).toBe('npx claude-code-templates@latest --agent cat/x')
   expect(webUrlFor('https://www.aitmpl.com/', item, agents)).toBe('https://www.aitmpl.com/component/agents/cat/x')
-  const own = parseItems(JSON.stringify([{ name: 't', installCommand: 'npx claude-code-templates@latest --agent t --yes' }]))[0]!
-  expect(installArgv(own, agents).filter(a => a === '--yes').length).toBe(1)
+  // live catalog rows are data: a path that is an option, a traversal or a shell fragment never reaches the CLI
+  for (const bad of ['--version', 'cat/../x', 'cat/x; rm -rf ~', 'a b', '', 'cat//x', '$(id)']) {
+    expect(isSafePath(bad)).toBe(false)
+    const row = parseItems(JSON.stringify([{ name: 'n', path: bad }]))[0]!
+    expect(installArgv(row, agents)).toBeUndefined()
+    expect(webUrlFor('https://www.aitmpl.com', row, agents)).toBeUndefined()
+  }
+  expect(isSafePath('web-data/bright-data-mcp')).toBe(true)
+  expect(webUrlFor('ftp://x', item, agents)).toBeUndefined()
+  expect(webUrlFor('https://evil.com/?q=', item, agents)).toBeUndefined()
 })
 
 test('trending rows resolve their type from the id prefix and skip retired types', () => {

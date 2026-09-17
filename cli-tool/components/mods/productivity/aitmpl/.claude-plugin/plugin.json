@@ -1,7 +1,7 @@
 {
   "name": "aitmpl",
-  "version": "0.1.0",
-  "description": "/aitmpl opens a component browser above the prompt: the aitmpl.com catalog (agents, commands, MCPs, settings, hooks, skills, loops, mods, templates) read live from the site's public JSON through $.http.fetch. Pick a type, filter, page, open a component and install it from there ($.process.run with the CLI's argv, no shell) or drop its install command into the prompt. Hooks session.start, command.run and ui.render on AbovePrompt; browsing costs no tokens.",
+  "version": "0.1.1",
+  "description": "/aitmpl opens a component browser above the prompt: the aitmpl.com catalog (agents, commands, MCPs, settings, hooks, skills, loops, mods) read live from the site's public JSON through $.http.fetch. Pick a type or a trending component, filter, page, open a component and install it from there ($.process.run with the fixed CLI argv and a validated path, no shell), drop its install command into the prompt, or open its page in your browser. Hooks session.start, command.run and ui.render on AbovePrompt; browsing costs no tokens.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"

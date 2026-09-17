@@ -1,5 +1,5 @@
 {
-  "description": "/aitmpl browses the aitmpl.com catalog above the prompt: session.start registers the command, command.run opens or closes it, ui.render on AbovePrompt draws the type list, the filtered pages and the component detail with install and put-in-prompt buttons; the catalog JSON is fetched live through $.http.fetch and cached for the session",
+  "description": "/aitmpl browses the aitmpl.com catalog above the prompt: session.start registers the command, command.run opens or closes it, ui.render on AbovePrompt draws the type list with trending, the filtered pages and the component detail with install, put-in-prompt and open-in-browser buttons; the catalog JSON is fetched live through $.http.fetch and cached for the session",
   "modules": [
     "./register.tsx"
   ]

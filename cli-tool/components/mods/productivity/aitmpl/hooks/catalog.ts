@@ -37,13 +37,11 @@ export function typeByKey(key: string): TypeInfo | undefined {
 
 export type Item = {
   name: string
-  /** `category/name.md` for most types; absent on templates */
+  /** `category/name.md`, or `category/name` for a directory component */
   path?: string
   category: string
   description: string
   downloads: number
-  /** a row that carries its own install command uses it as is */
-  installCommand?: string
 }
 
 export type Trending = {
@@ -108,10 +106,12 @@ export function cleanDescription(raw: unknown): string {
   return s
 }
 
-// One `components/{type}.json` body: an array of components; a bad row is skipped, a bad body throws.
+// One `components/{type}.json` body: an array of components; a bad row is skipped, a body that is
+// not an array throws so the fetch's error path reports it instead of caching an empty catalog.
 export function parseItems(text: string): Item[] {
   const data: unknown = JSON.parse(text)
-  const rows = Array.isArray(data) ? data : []
+  if (!Array.isArray(data)) throw new Error('catalog body is not an array')
+  const rows = data
   const items: Item[] = []
   for (const row of rows) {
     if (!row || typeof row !== 'object') continue
@@ -123,7 +123,6 @@ export function parseItems(text: string): Item[] {
       category: typeof r.category === 'string' ? r.category : '',
       description: cleanDescription(r.description),
       downloads: typeof r.downloads === 'number' ? r.downloads : 0,
-      installCommand: typeof r.installCommand === 'string' ? r.installCommand : undefined,
     })
   }
   return items
@@ -164,19 +163,34 @@ export function cleanPath(item: Item): string {
   return item.path?.replace(/\.(md|json)$/, '') ?? item.name
 }
 
+// A component path the CLI may be handed: path segments of letters, digits, `.`, `_` and `-`, none
+// empty, none starting with `-` (never an option) or `.` (never `..`). Catalog rows are live data.
+const SAFE_SEGMENT = /^[A-Za-z0-9_][A-Za-z0-9._-]*$/
+export function isSafePath(path: string): boolean {
+  const segments = path.split('/')
+  return segments.length > 0 && segments.every(seg => SAFE_SEGMENT.test(seg))
+}
+
+// The argv `$.process.run` takes for the install: always the fixed CLI, the type's own flag and a
+// validated path, never a command string from the catalog. `undefined` when the path is not safe.
+export function installArgv(item: Item, type: TypeInfo): string[] | undefined {
+  const path = cleanPath(item)
+  if (!isSafePath(path)) return undefined
+  return ['npx', 'claude-code-templates@latest', type.flag, path, '--yes']
+}
+
 export function installCommandFor(item: Item, type: TypeInfo): string {
-  if (item.installCommand) return item.installCommand
-  return `npx claude-code-templates@latest ${type.flag} ${cleanPath(item)}`
+  const argv = installArgv(item, type)
+  return argv ? argv.slice(0, -1).join(' ') : `(unsafe component path: ${JSON.stringify(cleanPath(item))})`
 }
 
-// The argv `$.process.run` takes for the install: no shell, so the command is never a string
-export function installArgv(item: Item, type: TypeInfo): string[] {
-  const argv = installCommandFor(item, type).split(/\s+/).filter(Boolean)
-  return argv.includes('--yes') || argv.includes('-y') ? argv : [...argv, '--yes']
-}
-
-export function webUrlFor(site: string, item: Item, type: TypeInfo): string {
-  return `${site.replace(/\/+$/, '')}/component/${type.key}/${cleanPath(item)}`
+// The component's page on the site, only ever http(s); `undefined` otherwise so no opener runs.
+export function webUrlFor(site: string, item: Item, type: TypeInfo): string | undefined {
+  const path = cleanPath(item)
+  if (!isSafePath(path)) return undefined
+  const base = site.replace(/\/+$/, '')
+  if (!/^https?:\/\/[^\s/?#]+$/i.test(base)) return undefined
+  return `${base}/component/${type.key}/${path}`
 }
 
 export function truncate(text: string, width: number): string {

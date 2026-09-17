@@ -59,6 +59,8 @@ let counts: Record<string, number> | undefined
 let trending: { rows: Trending[]; stats: GlobalStats } | undefined
 const cache = new Map<TypeKey, Item[]>()
 const loading = new Set<string>()
+// a fetch that failed is not retried by a repaint: only refresh (or a new /aitmpl) clears it
+const failed = new Set<string>()
 let error: string | undefined
 // what the last action did (install, open), drawn under the detail
 let notice: { text: string; tone: 'info' | 'ok' | 'bad' } | undefined
@@ -94,6 +96,7 @@ export const register: Register = (on, options) => {
     open = true
     error = undefined
     notice = undefined
+    failed.clear()
     const type = arg ? typeByKey(arg.toLowerCase()) : undefined
     if (type) view = { kind: 'list', type, query: '', page: 0 }
     else if (arg) view = { kind: 'list', type: TYPES[0]!, query: arg, page: 0 }
@@ -114,7 +117,7 @@ export const register: Register = (on, options) => {
 
     // --- data: fetched from the hook's own closures, once per file, cached for the session
     const loadCounts = () => {
-      if (counts || loading.has('counts')) return
+      if (counts || loading.has('counts') || failed.has('counts')) return
       loading.add('counts')
       $.http
         .fetch(dataUrl('counts.json'))
@@ -123,7 +126,8 @@ export const register: Register = (on, options) => {
           counts = parseCounts(res.text)
         })
         .catch(err => {
-          error = `counts.json: ${err instanceof Error ? err.message : String(err)}`
+          failed.add('counts')
+          error = `counts.json: ${err instanceof Error ? err.message : String(err)} · refresh retries`
         })
         .finally(() => {
           loading.delete('counts')
@@ -131,7 +135,7 @@ export const register: Register = (on, options) => {
         })
     }
     const loadTrending = () => {
-      if (trending || loading.has('trending')) return
+      if (trending || loading.has('trending') || failed.has('trending')) return
       loading.add('trending')
       $.http
         .fetch(dataUrl('trending-data.json'))
@@ -142,6 +146,7 @@ export const register: Register = (on, options) => {
         .catch(err => {
           // the home stands without its trending column
           $.ui.log(`aitmpl: trending-data.json: ${err instanceof Error ? err.message : String(err)}`)
+          failed.add('trending')
           trending = { rows: [], stats: {} }
         })
         .finally(() => {
@@ -150,7 +155,7 @@ export const register: Register = (on, options) => {
         })
     }
     const loadType = (type: TypeInfo) => {
-      if (cache.has(type.key) || loading.has(type.key)) return
+      if (cache.has(type.key) || loading.has(type.key) || failed.has(type.key)) return
       loading.add(type.key)
       $.http
         .fetch(dataUrl(`components/${type.key}.json`))
@@ -160,7 +165,8 @@ export const register: Register = (on, options) => {
           error = undefined
         })
         .catch(err => {
-          error = `${type.key}.json: ${err instanceof Error ? err.message : String(err)}`
+          failed.add(type.key)
+          error = `${type.key}.json: ${err instanceof Error ? err.message : String(err)} · refresh retries`
         })
         .finally(() => {
           loading.delete(type.key)
@@ -277,6 +283,7 @@ export const register: Register = (on, options) => {
             counts = undefined
             trending = undefined
             cache.clear()
+            failed.clear()
             error = undefined
             loadCounts()
             loadTrending()
@@ -320,6 +327,9 @@ export const register: Register = (on, options) => {
       if (items) {
         const item = items.find(it => it.name === name || it.path?.replace(/\.(md|json)$/, '') === name)
         view = item ? { kind: 'detail', type, item, query: '', page: 0 } : { kind: 'list', type, query: name, page: 0 }
+        repaint()
+      } else if (failed.has(type.key)) {
+        view = { kind: 'list', type, query: name, page: 0 }
         repaint()
       } else if (!loading.has(type.key)) {
         loadType(type)
@@ -389,6 +399,13 @@ export const register: Register = (on, options) => {
             ? 'loading…'
             : '',
         nav: [
+          <Button key="aitmpl:refresh" label="refresh" hotkey="r" dimColor onPress={() => {
+            cache.delete(type.key)
+            failed.delete(type.key)
+            error = undefined
+            loadType(type)
+            repaint()
+          }} />,
           <Button key="aitmpl:prev" label="◀ prev" hotkey="p" dimColor onPress={() => {
             view = { ...current, page: Math.max(0, page - 1) }
             repaint()
@@ -419,12 +436,14 @@ export const register: Register = (on, options) => {
             {tableRows}
           </Box>
         ),
-        help: '1-9 open a row · p / n page · click a type to switch · h home · q closes',
+        help: '1-9 open a row · p / n page · click a type to switch · r reloads the type · h home · q closes',
       })
     }
 
     // -------------------------------------------------------------- detail
     const { type, item, query, page } = view
+    // the catalog is live data: the argv is the fixed CLI with a validated path, the URL http(s) only
+    const argv = installArgv(item, type)
     const command = installCommandFor(item, type)
     const url = webUrlFor(siteUrl, item, type)
     const back = () => goList(type, query, page)
@@ -435,11 +454,12 @@ export const register: Register = (on, options) => {
 
     const install = () => {
       if (installing) return
+      if (!argv) return say('✗ this component has an unsafe path in the catalog; not installing it', 'bad')
       installing = true
       say(`installing ${item.name}…`, 'info')
       $.ui.status(`aitmpl: installing ${item.name}…`)
       $.process
-        .run(installArgv(item, type), { timeoutMs: 180_000 })
+        .run(argv, { timeoutMs: 180_000 })
         .then(res => {
           if (res.exitCode === 0) {
             say(`✓ installed ${item.name} into this project`, 'ok')
@@ -462,13 +482,15 @@ export const register: Register = (on, options) => {
         .then(r => say(r.isFilled ? '✓ install request written into the prompt: Enter sends it' : 'the prompt box is busy, try again', r.isFilled ? 'ok' : 'bad'))
         .catch(err => say(`✗ prompt.fill failed: ${err instanceof Error ? err.message : String(err)}`, 'bad'))
     }
-    // the platform's opener: Windows by its OS variable, else `open` (macOS) then `xdg-open` (Linux)
+    // the platform's URL opener, each an argv without a shell: `explorer.exe` on Windows (by its OS
+    // variable), else `open` (macOS) then `xdg-open` (Linux); the URL was validated as http(s) above
     const openInBrowser = () => {
+      if (!url) return say('✗ this component has no valid page URL', 'bad')
       say('opening in the browser…', 'info')
       $.env
         .get('OS')
         .then(os => {
-          const openers: string[][] = /windows/i.test(os ?? '') ? [['cmd', '/c', 'start', '', url]] : [['open', url], ['xdg-open', url]]
+          const openers: string[][] = /windows/i.test(os ?? '') ? [['explorer.exe', url]] : [['open', url], ['xdg-open', url]]
           return openers.reduce<Promise<void>>(
             (chain, argv) =>
               chain.catch(() =>
@@ -486,7 +508,7 @@ export const register: Register = (on, options) => {
     const tone = notice?.tone === 'ok' ? 'green' : notice?.tone === 'bad' ? 'red' : 'yellow'
     return frame({
       title: item.name,
-      context: `${singular(type)} · ${item.category || 'uncategorized'} · ${formatCount(item.downloads)} downloads · ${url}`,
+      context: `${singular(type)} · ${item.category || 'uncategorized'} · ${formatCount(item.downloads)} downloads${url ? ` · ${url}` : ''}`,
       nav: [<Button key="aitmpl:back" label="◀ back" hotkey="b" dimColor onPress={back} />, navHome, navClose],
       body: (
         <Box flexDirection="column">
@@ -500,12 +522,12 @@ export const register: Register = (on, options) => {
           <Box flexDirection="row" columnGap={2}>
             <Button key="aitmpl:install" label={installing ? 'installing…' : 'install here'} hotkey="i" onPress={install} />
             <Button key="aitmpl:prompt" label="put command in prompt" hotkey="c" onPress={toPrompt} />
-            <Button key="aitmpl:open" label="open on aitmpl.com" hotkey="o" onPress={openInBrowser} />
+            {url ? <Button key="aitmpl:open" label="open on aitmpl.com" hotkey="o" onPress={openInBrowser} /> : null}
           </Box>
           {notice ? <Text color={tone} wrap="truncate-end">{truncate(notice.text, cols)}</Text> : null}
         </Box>
       ),
-      help: 'i installs into this project · c writes the install request into the prompt · o opens the page · b back · q closes',
+      help: 'i installs into this project · c writes the install request into the prompt · o opens the page in your browser · b back · q closes',
     })
   })
 }
