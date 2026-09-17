@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "mcp-server-sqlite@latest",
+        "mcp-server-sqlite@0.0.2",
         "--db-path",
         "<path-to-sqlite-db-file>"
       ],
