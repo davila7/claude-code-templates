@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-15T03:10:42.424887+00:00",
+  "lastUpdated": "2026-09-17T08:15:51.412991+00:00",
   "totalJobs": 93,
   "sources": [
     "Anthropic",
@@ -7,6 +7,46 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5423931008",
+      "company": "Anthropic",
+      "position": "Copywriter, Developer",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As a Copywriter, Developer at Anthropic, you will shape how our brand speaks to developers, an audience that is notoriously allergic to being marketed to and quick to spot anything that doesn't ring true. Developers who stay sharp, curious, and direct AI tools with their own judgment are the ones...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5423931008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5423931008",
+      "postedAt": "2026-09-16T15:39:40-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5425724008",
+      "company": "Anthropic",
+      "position": "Associate Solutions Architect",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "We're looking for an Associate Solutions Architect to join our Applied AI team and help drive the adoption of Claude Code across our enterprise customers. As an Associate SA specializing in Claude Code, you'll be the technical bridge between our cutting-edge AI coding assistant and the engineering...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5425724008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5425724008",
+      "postedAt": "2026-09-16T12:20:01-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5421566008",
       "company": "Anthropic",
@@ -40,26 +80,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
       "postedAt": "2026-09-11T10:35:46-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5413642008",
-      "company": "Anthropic",
-      "position": "Applied AI Architect, Beneficial Deployments (Life Sciences)",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5413642008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5413642008",
-      "postedAt": "2026-09-09T11:29:27-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -402,11 +422,11 @@
     {
       "id": "anth-5390966008",
       "company": "Anthropic",
-      "position": "Staff AI Engineer, GTM Claudification ",
+      "position": "Staff Software Engineer, GTM AI Engineering ",
       "location": "Remote-Friendly (Travel-Required) | San Francisco, CA | Seattle, WA",
       "remote": true,
       "salary": "",
-      "description": "As a Staff AI Engineer on the GTM Claudification team, you will build the agents and AI systems that run Anthropic's own go-to-market work. Our sellers already work alongside agents every day. You will take things to the next step and build agents that run complete autonomous motions across areas...",
+      "description": "As a Staff Software Engineer on the GTM AI Engineering (Claudification) team, you will build the agents and AI systems that run Anthropic's own go-to-market work. Our sellers already work alongside agents every day. You will take things to the next step and build agents that run complete autonomous...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390966008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390966008",
@@ -572,6 +592,27 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-huzzle-full-stack-developer-python-react-ai-1",
+      "company": "Huzzle",
+      "position": "Full-Stack Developer (Python, React, AI)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Colombia About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
+      "postedAt": "2026-08-18T20:34:11+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "AWS",
+        "Claude Code",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "wwr-huzzle-full-stack-developer-python-react-ai",
       "company": "Huzzle",
       "position": "Full-Stack Developer (Python, React, AI)",
@@ -678,58 +719,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "wwr-collaboration-ai-senior-software-ai-engineer",
-      "company": "Collaboration.Ai",
-      "position": "Senior Software AI Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Minneapolis, MN URL: http://collaboration.ai Who We Are Collaboration.Ai is a mission-focused, AI-powered software and services company based in Minnesota, with employees, partners, and customers around the world. We unite people, technology, and purpose to accelerate breakthroughs...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-ai-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-ai-engineer",
-      "postedAt": "2026-08-17T11:57:38+00:00",
-      "tags": [
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Claude Code",
-        "Kotlin"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-collaboration-ai-senior-software-engineer",
-      "company": "Collaboration.Ai",
-      "position": "Senior Software Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Minneapolis, MN URL: http://collaboration.ai Who We Are Collaboration.Ai is a mission-focused, AI-powered software and services company based in Minnesota, with employees, partners, and customers around the world. We unite people, technology, and purpose to accelerate breakthroughs...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/collaboration-ai-senior-software-engineer",
-      "postedAt": "2026-08-17T11:51:08+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "PostgreSQL",
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5391151008",
       "company": "Anthropic",
       "position": "AI Operations Engineer, Partnerships",
@@ -818,6 +807,26 @@
         "AWS"
       ],
       "companyIcon": ""
+    },
+    {
+      "id": "anth-5383596008",
+      "company": "Anthropic",
+      "position": "Developer Relations",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As Developer Relations at Anthropic, you will help developers discover, onboard, and get the most out of Claude Code, Claude Tag, and future developer products. This role is pivotal in helping developers adopt Claude-powered products, growing our developer ecosystem, gathering crucial feedback to...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5383596008",
+      "postedAt": "2026-08-10T15:57:04-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "hn-49215237",
@@ -1131,27 +1140,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5342935008",
-      "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Safeguards Human Review Tooling",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "The Safeguards team is responsible for ensuring our models and products are developed and deployed safely. We're looking for engineers for our Review Tooling team, which builds the systems that humans — and increasingly Claude — use to investigate potential harms and take enforcement actions across...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5342935008",
-      "postedAt": "2026-07-13T12:57:38-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Rails",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5311465008",
@@ -1602,6 +1590,26 @@
       "companyIcon": ""
     },
     {
+      "id": "anth-5277834008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
+      "postedAt": "2026-06-24T13:51:42-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
@@ -1844,28 +1852,6 @@
         "Rust",
         "AWS",
         "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5075093008",
-      "company": "Anthropic",
-      "position": "Strategic Account Executive, Cybersecurity",
-      "location": "San Francisco, CA",
-      "remote": false,
-      "salary": "",
-      "description": "As a Strategic Account Executive focused on cybersecurity, you'll own some of Anthropic's most strategic cybersecurity relationships—companies building the next generation of AI-powered security products. These aren't typical enterprise accounts; they're partners shaping how AI transforms the...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5075093008",
-      "postedAt": "2026-01-27T23:00:33-05:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Copilot",
-        "Rails",
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
