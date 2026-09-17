@@ -1,7 +1,7 @@
 ---
-description: "PR Link/Number: $ARGUMENTS"
+description: "Run a multi-role code review and post results to GitHub: $ARGUMENTS"
 allowed-tools: Read, Write, Edit, Bash(git:*), Bash(gh:*)
-argument-hint: "[arguments]"
+argument-hint: "<PR-link-or-number>"
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 description: "Safely remove a task from the orchestration system, updating all references and dependencies."
 allowed-tools: Read, Write, Edit
-argument-hint: "[arguments]"
+argument-hint: "TASK-ID [options]"
 
 ---
 

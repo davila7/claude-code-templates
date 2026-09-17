@@ -1,7 +1,7 @@
 ---
 description: "Analyze and explain code functionality"
 allowed-tools: Read, Grep, Glob
-argument-hint: "[arguments]"
+argument-hint: "[code-or-file-path]"
 
 ---
 

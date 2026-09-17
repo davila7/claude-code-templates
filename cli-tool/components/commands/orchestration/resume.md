@@ -1,7 +1,7 @@
 ---
 description: "Resume work on existing task orchestrations after session loss or context switch."
-allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
+allowed-tools: Read, Write, Edit, Bash(git:*)
+argument-hint: "[options] | --date <date> --project <project> | --latest"
 
 ---
 

@@ -53,16 +53,28 @@ Agents are AI specialists for specific domains (security, performance, framework
    - `accessibility/` - Accessibility auditing and WCAG compliance
    - `ai-specialists/` - LLM and AI tooling specialists
    - `api-graphql/` - API design and GraphQL specialists
+   - `blockchain-web3/` - Blockchain and Web3 development
    - `business-marketing/` - Business analysis, marketing, sales
    - `data-ai/` - Data engineering, ML, and prompt engineering
    - `database/` - Database specialists
+   - `deep-research-team/` - Deep research and investigation
    - `development-team/` - Full-stack developers, architects
    - `development-tools/` - Tool specialists, testing, observability
    - `devops-infrastructure/` - Cloud, IaC, and deployment specialists
    - `documentation/` - Documentation and technical writing
    - `expert-advisors/` - Architecture review and advisory agents
+   - `ffmpeg-clip-team/` - FFmpeg and media clipping
+   - `finance/` - Financial analysis and workflows
+   - `game-development/` - Game development specialists
    - `git/` - Git workflow and commit hygiene
+   - `mcp-dev-team/` - MCP server development
+   - `modernization/` - Legacy modernization
+   - `obsidian-ops-team/` - Obsidian operations
+   - `ocr-extraction-team/` - OCR and document extraction
    - `performance-testing/` - Profiling and load testing
+   - `podcast-creator-team/` - Podcast production
+   - `programming-languages/` - Programming language specialists
+   - `realtime/` - Real-time systems
    - `security/` - Application and infrastructure security
    - `ui-analysis/` - UI review and design analysis
    - `web-tools/` - SEO and web optimization
@@ -117,17 +129,27 @@ Commands are custom slash commands that extend Claude Code functionality.
 3. **Command Categories**
    - `analysis/` - Code analysis, optimization, debugging
    - `automation/` - CI/CD pipelines and workflow automation
+   - `azure/` - Azure development and operations
    - `database/` - Database management and migrations
    - `deployment/` - Build, deploy, CI/CD operations
+   - `design/` - Design and user experience
    - `documentation/` - Documentation generation and maintenance
+   - `doordash/` - DoorDash integrations
+   - `game-development/` - Game development workflows
    - `git/` - Git operations
    - `git-workflow/` - Branch, PR, and review workflows
+   - `google-workspace/` - Google Workspace workflows
+   - `marketing/` - Marketing and content workflows
+   - `nextjs-vercel/` - Next.js and Vercel workflows
    - `orchestration/` - Multi-agent task orchestration
    - `performance/` - Profiling and optimization
    - `project-management/` - File operations, project structure
    - `security/` - Security auditing workflows
    - `setup/` - Project and environment setup
+   - `simulation/` - Simulation and scenario analysis
    - `svelte/` - Svelte and SvelteKit development
+   - `sync/` - Synchronization workflows
+   - `team/` - Team collaboration workflows
    - `testing/` - Test generation, validation, coverage
    - `utilities/` - General-purpose helpers
 
@@ -491,7 +513,6 @@ git checkout -b feature/your-contribution
 ### 4. Test Changes
 ```bash
 cd cli-tool
-npm run frontmatter:check # when available
 npm test
 npm start -- --dry-run
 ```

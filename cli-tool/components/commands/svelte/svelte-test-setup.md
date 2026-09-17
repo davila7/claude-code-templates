@@ -1,7 +1,7 @@
 ---
-description: "Set up comprehensive testing infrastructure for Svelte/SvelteKit projects, including unit testing, component testing, and E2E testing frameworks."
-allowed-tools: Read, Write, Edit, Bash
-argument-hint: "[arguments]"
+description: "Set up unit, component, and E2E testing for Svelte projects."
+allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(npx:*)
+argument-hint: "[test-framework] [options]"
 
 ---
 
