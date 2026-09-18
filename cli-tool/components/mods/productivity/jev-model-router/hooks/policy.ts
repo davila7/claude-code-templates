@@ -356,3 +356,37 @@ export function route(
   const said = decision.confidence === null ? 'confidence n/d' : `confidence ${decision.confidence.toFixed(2)}`
   return { model, effort, reason: forced ? `${tier}, forced by risk` : `${tier} (${said})` }
 }
+
+/**
+ * Holds a prompt's classification until the turn that reads that prompt
+ * starts.
+ *
+ * Nothing ties a decision to the turn it belongs to. Prompts can be queued
+ * while the model is busy, a peer session's message can be delivered inside a
+ * running turn, and `prompt.submit` carries no turn id at all while the
+ * session is idle. So when more than one prompt is waiting, `take` reports
+ * none: running a turn on another prompt's decision is a worse outcome than
+ * not routing it, and not routing is what every other failure path here does.
+ */
+export function pendingDecisions(): {
+  put(decision: Decision | null): void
+  take(): Decision | null
+} {
+  let held: Decision | null = null
+  let waiting = 0
+
+  return {
+    put(decision) {
+      waiting += 1
+      // Past the first, which prompt a turn will read is unknowable, so the
+      // slot is emptied instead of holding a decision that may not fit.
+      held = waiting === 1 ? decision : null
+    },
+    take() {
+      const decision = waiting === 1 ? held : null
+      held = null
+      waiting = 0
+      return decision
+    },
+  }
+}

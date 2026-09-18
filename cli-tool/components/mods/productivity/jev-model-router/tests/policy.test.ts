@@ -4,6 +4,7 @@ import {
   effortRank,
   endpoint,
   questions,
+  pendingDecisions,
   rankOf,
   readDecision,
   requestBody,
@@ -11,7 +12,7 @@ import {
   route,
   selectProvider,
 } from '../hooks/policy.ts'
-import type { PolicyConfig } from '../hooks/policy.ts'
+import type { Decision, PolicyConfig } from '../hooks/policy.ts'
 
 const config: PolicyConfig = {
   tiers: { fast: 'haiku', balanced: 'sonnet', deep: 'opus' },
@@ -225,4 +226,51 @@ test('max ranks above every rung the rubric can produce', () => {
 
   const sure = { ...(decision as NonNullable<typeof decision>), effortConfidence: 0.8 }
   expect(route(sure, on('claude-sonnet-5', 'max'), config).effort).toBe('low')
+})
+
+// A prompt classified while another one is still waiting: the turn that
+// starts next cannot be tied to either, so neither decision is applied.
+const deepDecision: Decision = {
+  tier: 'deep',
+  confidence: 0.99,
+  risky: null,
+  effort: null,
+  effortConfidence: null,
+}
+const fastDecision: Decision = { ...deepDecision, tier: 'fast' }
+
+test('a decision is handed to the turn that follows its prompt', () => {
+  const pending = pendingDecisions()
+  pending.put(deepDecision)
+  expect(pending.take()).toEqual(deepDecision)
+})
+
+test('two prompts waiting at once yield no decision instead of the wrong one', () => {
+  const pending = pendingDecisions()
+  pending.put(fastDecision)
+  pending.put(deepDecision)
+  expect(pending.take()).toBeNull()
+})
+
+test('a prompt that failed to classify still shields the next prompt', () => {
+  const pending = pendingDecisions()
+  pending.put(null)
+  pending.put(deepDecision)
+  expect(pending.take()).toBeNull()
+})
+
+test('the slot empties on take, so a later turn never reuses a decision', () => {
+  const pending = pendingDecisions()
+  pending.put(deepDecision)
+  pending.take()
+  expect(pending.take()).toBeNull()
+})
+
+test('the slot recovers after an ambiguous round', () => {
+  const pending = pendingDecisions()
+  pending.put(fastDecision)
+  pending.put(deepDecision)
+  expect(pending.take()).toBeNull()
+  pending.put(deepDecision)
+  expect(pending.take()).toEqual(deepDecision)
 })

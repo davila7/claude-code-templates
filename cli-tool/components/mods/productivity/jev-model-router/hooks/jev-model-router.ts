@@ -46,6 +46,7 @@ import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
   endpoint,
+  pendingDecisions,
   readDecision,
   selectProvider,
   requestBody,
@@ -106,11 +107,12 @@ export const register: Register = (on, options) => {
     minDowngradeConfidence: number('minDowngradeConfidence', 0.6),
   }
 
-  // The most recent classification, and the model the current turn settled on.
-  // Main-loop turns run one at a time, so two slots are enough and nothing
-  // accumulates over a long session. A prompt submitted mid-turn classifies
-  // for the turn that reads it next, which is the turn it starts.
-  let latest: Decision | null | undefined
+  // The classification waiting for the turn that reads its prompt, and what
+  // the current turn settled on. Both are single slots: main-loop turns run
+  // one at a time, so nothing accumulates over a long session. `pending`
+  // reports no decision when two prompts are waiting at once, rather than
+  // routing a turn on a decision made for a different prompt.
+  const pending = pendingDecisions()
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
 
@@ -157,7 +159,7 @@ export const register: Register = (on, options) => {
       }
     }
 
-    latest = decision
+    pending.put(decision)
     return next(e)
   })
 
@@ -170,10 +172,7 @@ export const register: Register = (on, options) => {
       return yield* next(applied ? { ...e, ...applied } : e)
     }
 
-    const decision = latest ?? null
-    latest = undefined
-
-    const routing = route(decision, { model: e.model, effort: e.effort }, policy)
+    const routing = route(pending.take(), { model: e.model, effort: e.effort }, policy)
     const change: { model?: string; effort?: Effort } = {}
     if (routeMainModel && routing.model) change.model = routing.model
     if (routeMainEffort && routing.effort) change.effort = routing.effort
