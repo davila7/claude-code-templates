@@ -1,12 +1,33 @@
 {
-  "lastUpdated": "2026-09-17T08:30:53.181670+00:00",
-  "totalJobs": 93,
+  "lastUpdated": "2026-09-18T08:05:36.558631+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
+    "RemoteOK",
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5369102008",
+      "company": "Anthropic",
+      "position": "Engineering Manager, Labs",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Anthropic...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5369102008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5369102008",
+      "postedAt": "2026-09-17T20:13:04-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5423931008",
       "company": "Anthropic",
@@ -26,6 +47,28 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-ai-agent-engineer-sticker-mule-1137399",
+      "company": "Sticker Mule",
+      "position": "AI agent engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and AI in one stack. We're hiring an engineer to build, run and manage a team of AI agents to help us innovate faster, improve performance, and better serve customers. Work performed...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ai-agent-engineer-sticker-mule-1137399",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ai-agent-engineer-sticker-mule-1137399",
+      "postedAt": "2026-09-16T12:44:27+00:00",
+      "tags": [
+        "TypeScript",
+        "JavaScript",
+        "Go",
+        "PostgreSQL",
+        "GCP",
+        "GraphQL"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5425724008",
@@ -570,6 +613,47 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-base-com-full-stack-developer-bl-paczka",
+      "company": "Base.com",
+      "position": "Full-stack Developer (BL paczka)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Gdańsk, Pomeranian Voivodeship, Poland BLPaczka działa jako integrator logistyczny dedykowany użytkownikom platformy Base i nie tylko. Specjalizujemy się w obsłudze przesyłek e-commerce o różnych gabarytach, zarówno w kraju, jak i zagranicą. Współpracujemy wyłącznie z zaufanymi...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/base-com-full-stack-developer-bl-paczka",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/base-com-full-stack-developer-bl-paczka",
+      "postedAt": "2026-08-19T20:36:38+00:00",
+      "tags": [
+        "JavaScript",
+        "Go",
+        "AWS",
+        "Docker",
+        "Copilot",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-kota-senior-product-designer",
+      "company": "Kota",
+      "position": "Senior Product Designer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote About the job Kota is reimagining insurance and retirement benefits for the modern workforce. Through our two flagship products—Kota Platform, the first fully integrated benefits platform, and Kota Embed, our embedded insurance solution—we're making benefits more accessible,...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/kota-senior-product-designer",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/kota-senior-product-designer",
+      "postedAt": "2026-08-19T20:36:07+00:00",
+      "tags": [
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5394948008",
       "company": "Anthropic",
       "position": "Staff+ Software Engineer, Platform Connectivity",
@@ -590,112 +674,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-huzzle-full-stack-developer-python-react-ai-1",
-      "company": "Huzzle",
-      "position": "Full-Stack Developer (Python, React, AI)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Colombia About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai-1",
-      "postedAt": "2026-08-18T20:34:11+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "AWS",
-        "Claude Code",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-huzzle-full-stack-developer-python-react-ai",
-      "company": "Huzzle",
-      "position": "Full-Stack Developer (Python, React, AI)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Mexico About Huzzle At Huzzle, we connect high-performing B2B sales professionals with global companies across the UK, US, Canada, Europe, and Australia. Our clients include startups, digital agencies, and tech platforms in industries like SaaS, MarTech, FinTech, and EdTech. We match...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/huzzle-full-stack-developer-python-react-ai",
-      "postedAt": "2026-08-18T20:34:05+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "AWS",
-        "Claude Code",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-happyco-senior-product-designer-mobile-experience",
-      "company": "Happyco",
-      "position": "Senior Product Designer, Mobile Experience",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote (AU) HappyCo is a company where people can grow their careers and work with like minded people, with no egos or politics. HappyCo is values driven and offers a flexible, supportive culture. Join HappyCo and Make Work Happy ! Sitting within HappyCo’s mobile product team, the...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/happyco-senior-product-designer-mobile-experience",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/happyco-senior-product-designer-mobile-experience",
-      "postedAt": "2026-08-18T20:32:33+00:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-zeta-global-senior-product-designer-ai",
-      "company": "Zeta Global",
-      "position": "Senior Product Designer, AI",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$160,000 - $180,000",
-      "description": "Headquarters: Remote - United States WHO WE ARE Zeta Global (NYSE: ZETA) is the AI-Powered Marketing Cloud that leverages advanced artificial intelligence (AI) and trillions of consumer signals to make it easier for marketers to acquire, grow, and retain customers more efficiently. Through the Zeta...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-ai",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-ai",
-      "postedAt": "2026-08-18T20:32:19+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "Rust",
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-zeta-global-senior-product-designer-agentic-ai-applications",
-      "company": "Zeta Global",
-      "position": "Senior Product Designer, Agentic AI Applications",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$160,000 - $180,000",
-      "description": "Headquarters: Remote - United States WHO WE ARE Zeta Global (NYSE: ZETA) is the AI-Powered Marketing Cloud that leverages advanced artificial intelligence (AI) and trillions of consumer signals to make it easier for marketers to acquire, grow, and retain customers more efficiently. Through the Zeta...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-agentic-ai-applications",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/zeta-global-senior-product-designer-agentic-ai-applications",
-      "postedAt": "2026-08-18T20:32:19+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "Rust",
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5390877008",
