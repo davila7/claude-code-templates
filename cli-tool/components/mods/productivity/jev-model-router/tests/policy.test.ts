@@ -1,5 +1,14 @@
 import { expect, test } from 'bun:test'
-import { rankOf, readDecision, requestHeaders, route } from '../hooks/policy.ts'
+import {
+  endpoint,
+  questions,
+  rankOf,
+  readDecision,
+  requestBody,
+  requestHeaders,
+  route,
+  selectProvider,
+} from '../hooks/policy.ts'
 import type { PolicyConfig } from '../hooks/policy.ts'
 
 const config: PolicyConfig = {
@@ -68,9 +77,76 @@ test('an unrecognised model id disables the floor instead of guessing its tier',
   expect(route(down, 'some-other-vendor-model', config).model).toBe('haiku')
 })
 
-test('the request carries the model id and spec version the Gateway matches on', () => {
-  const headers = requestHeaders('key-under-test', 'typesafe-ai/jev')
+test('the Gateway request carries the model id and spec version it matches on', () => {
+  const headers = requestHeaders('gateway', 'key-under-test', 'typesafe-ai/jev')
   expect(headers['ai-model-id']).toBe('typesafe-ai/jev')
   expect(headers['ai-evaluation-model-specification-version']).toBe('4')
   expect(headers.authorization).toBe('Bearer key-under-test')
+})
+
+// --- TypeSafe's own API ------------------------------------------------------
+//
+// Same model, different wire shape: a yes/no question is a `noul` rather than a
+// `boolean`, every answer reports its own `confidence`, and the model rides in
+// the body instead of a header.
+
+const typesafeAnswer = (tier: string, confidence: number, noul = 0.01) =>
+  JSON.stringify({
+    model: 'jev-1.13',
+    answers: {
+      tier: { type: 'choice', choice: tier, confidence, probabilities: { [tier]: confidence } },
+      effort: { type: 'score', score: 2.1, confidence: 0.8 },
+      risky: { type: 'noul', noul },
+    },
+    usage: { input_tokens: 120, output_tokens: 0 },
+  })
+
+test('a TypeSafe answer is read from its own confidence and noul fields', () => {
+  const decision = readDecision(typesafeAnswer('deep', 0.91, 0.04))
+  expect(decision?.tier).toBe('deep')
+  expect(decision?.confidence).toBeCloseTo(0.91)
+  expect(decision?.effort).toBeCloseTo(2.1)
+  expect(decision?.risky).toBeCloseTo(0.04)
+})
+
+test('a low-confidence TypeSafe answer leaves the model alone, like the Gateway path', () => {
+  expect(route(readDecision(typesafeAnswer('fast', 0.42)), 'claude-sonnet-5', config).model).toBeNull()
+})
+
+test('a risky TypeSafe answer forces the deep tier through the noul field', () => {
+  const decision = readDecision(typesafeAnswer('fast', 0.98, 0.88))
+  expect(route(decision, 'claude-sonnet-5', { ...config, pinModelFloor: false }).model).toBe('opus')
+})
+
+test('each backend gets its own endpoint, question type and model placement', () => {
+  expect(endpoint('typesafe', 'https://api.typesafe.ai/')).toBe('https://api.typesafe.ai/v1/systemone')
+  expect(endpoint('gateway', 'https://ai-gateway.vercel.sh/v4/ai')).toBe(
+    'https://ai-gateway.vercel.sh/v4/ai/evaluation-model',
+  )
+
+  expect((questions('typesafe').risky as { type: string }).type).toBe('noul')
+  expect((questions('gateway').risky as { type: string }).type).toBe('boolean')
+
+  const typesafeBody = JSON.parse(requestBody('typesafe', { prompt: 'x' }, 'jev-latest'))
+  expect(typesafeBody.model).toBe('jev-latest')
+  expect(JSON.parse(requestBody('gateway', { prompt: 'x' }, 'typesafe-ai/jev')).model).toBeUndefined()
+
+  expect(requestHeaders('typesafe', 'k', 'jev-latest')['ai-model-id']).toBeUndefined()
+})
+
+// --- backend selection -------------------------------------------------------
+
+test('auto prefers TypeSafe, since it is the only backend that reports a confidence', () => {
+  expect(selectProvider('auto', 'ts-key', 'gw-key')).toBe('typesafe')
+  expect(selectProvider('auto', '', 'gw-key')).toBe('gateway')
+  expect(selectProvider('auto', '', '')).toBeNull()
+})
+
+test('a forced backend without its own key falls back to the built-in classifier, never to the other key', () => {
+  expect(selectProvider('typesafe', '', 'gw-key')).toBeNull()
+  expect(selectProvider('gateway', 'ts-key', '')).toBeNull()
+})
+
+test('builtin ignores both keys', () => {
+  expect(selectProvider('builtin', 'ts-key', 'gw-key')).toBeNull()
 })

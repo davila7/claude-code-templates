@@ -1,7 +1,7 @@
 {
   "name": "jev-model-router",
-  "version": "0.1.0",
-  "description": "Picks the model for each task with TypeSafe's Jev, a System One decision model reached through the Vercel AI Gateway. Routes subagents at agent.spawn and, opt-in, the main loop at turn.step, falling back to the engine's built-in classifier when no key is set.",
+  "version": "0.2.0",
+  "description": "Picks the model for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagents at agent.spawn and, opt-in, the main loop at turn.step, falling back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -15,6 +15,13 @@
     "routing"
   ],
   "userConfig": {
+    "typesafeApiKey": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for TypeSafe's own API; preferred over the Gateway, since only it reports a calibrated confidence",
+      "default": "",
+      "sensitive": true
+    },
     "gatewayApiKey": {
       "type": "string",
       "title": "Vercel AI Gateway API key",
@@ -22,17 +29,41 @@
       "default": "",
       "sensitive": true
     },
-    "baseUrl": {
+    "provider": {
+      "type": "string",
+      "title": "Backend",
+      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+      "default": "auto",
+      "options": [
+        "auto",
+        "typesafe",
+        "gateway",
+        "builtin"
+      ]
+    },
+    "typesafeBaseUrl": {
+      "type": "string",
+      "title": "TypeSafe base URL",
+      "description": "Base URL of TypeSafe's own API; empty uses https://api.typesafe.ai",
+      "default": ""
+    },
+    "typesafeModel": {
+      "type": "string",
+      "title": "TypeSafe model",
+      "description": "Decision model on TypeSafe's own API; empty uses jev-latest",
+      "default": ""
+    },
+    "gatewayBaseUrl": {
       "type": "string",
       "title": "AI Gateway base URL",
-      "description": "Base URL of the AI Gateway evaluation API",
-      "default": "https://ai-gateway.vercel.sh/v4/ai"
+      "description": "Base URL of the AI Gateway; empty uses https://ai-gateway.vercel.sh/v4/ai",
+      "default": ""
     },
-    "modelId": {
+    "gatewayModel": {
       "type": "string",
-      "title": "Decision model id",
-      "description": "The evaluation model the Gateway routes to",
-      "default": "typesafe-ai/jev"
+      "title": "AI Gateway model",
+      "description": "Decision model on the AI Gateway; empty uses typesafe-ai/jev",
+      "default": ""
     },
     "fastModel": {
       "type": "string",
@@ -55,7 +86,7 @@
     "minConfidence": {
       "type": "number",
       "title": "Minimum confidence",
-      "description": "Below this the session's own model is kept; the Gateway reports a distribution, not a confidence, so this reads its highest probability",
+      "description": "Below this the session's own model is kept; TypeSafe reports a confidence, the Gateway a distribution whose highest probability is read instead",
       "default": 0.6
     },
     "routeSubagents": {
