@@ -1,7 +1,7 @@
 {
   "name": "jev-model-router",
-  "version": "0.2.0",
-  "description": "Picks the model for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagents at agent.spawn and, opt-in, the main loop at turn.step, falling back to the engine's built-in classifier when no key is set.",
+  "version": "0.3.0",
+  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -83,29 +83,35 @@
       "description": "Model alias or id for hard or high-stakes work",
       "default": "opus"
     },
-    "minConfidence": {
+    "minUpgradeConfidence": {
       "type": "number",
-      "title": "Minimum confidence",
-      "description": "Below this the session's own model is kept; TypeSafe reports a confidence, the Gateway a distribution whose highest probability is read instead",
+      "title": "Confidence to spend more",
+      "description": "How sure the decision must be to raise the model or the effort; being wrong here costs money, so the bar is low",
+      "default": 0.3
+    },
+    "minDowngradeConfidence": {
+      "type": "number",
+      "title": "Confidence to spend less",
+      "description": "How sure it must be to lower the model or the effort; being wrong here means a task gets too little, so the bar is high",
       "default": 0.6
     },
-    "routeSubagents": {
+    "routeSubagentModel": {
       "type": "boolean",
-      "title": "Route subagents",
-      "description": "Pick the model for each subagent at agent.spawn",
+      "title": "Route subagent models",
+      "description": "Pick the model of each subagent at agent.spawn (the Agent tool takes no effort)",
       "default": true
     },
-    "routeMainLoop": {
+    "routeMainEffort": {
       "type": "boolean",
-      "title": "Route the main loop",
-      "description": "Pick the model for the main conversation too; off by default because switching models mid-session invalidates the prompt cache",
+      "title": "Route the main loop's effort",
+      "description": "Raise or lower the reasoning effort of the main conversation",
+      "default": true
+    },
+    "routeMainModel": {
+      "type": "boolean",
+      "title": "Route the main loop's model",
+      "description": "Change the model of the main conversation; off by default because switching models mid-session invalidates the prompt cache",
       "default": false
-    },
-    "pinModelFloor": {
-      "type": "boolean",
-      "title": "Never downgrade",
-      "description": "Never route below the model the session is already on; only upgrades are applied",
-      "default": true
     },
     "timeoutMs": {
       "type": "number",

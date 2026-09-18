@@ -1,5 +1,5 @@
 {
-  "description": "Picks the model for each task with TypeSafe's Jev, through TypeSafe's own API or the Vercel AI Gateway, falling back to the engine's built-in classifier when no key is set: agent.spawn for subagents, prompt.submit + turn.step for the main loop.",
+  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, through TypeSafe's own API or the Vercel AI Gateway, in both directions: agent.spawn for subagent models, prompt.submit + turn.step for the main loop's effort and model.",
   "modules": [
     "./jev-model-router.ts"
   ]

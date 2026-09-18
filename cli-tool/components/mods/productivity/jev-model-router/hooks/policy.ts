@@ -31,13 +31,20 @@ export interface Tiers {
 
 export interface Decision {
   tier: Tier
-  /** Highest probability in the distribution, or null when none was sent. */
+  /** Confidence in the tier, or null when the backend reported none. */
   confidence: number | null
-  /** P(true) that the task touches production, money or irreversible state. */
+  /** P(true) that carrying the task out would itself be costly or final. */
   risky: number | null
   /** 0..3 along the effort rubric, or null when absent. */
   effort: number | null
+  /** Confidence in the effort, or null when the backend reported none. */
+  effortConfidence: number | null
 }
+
+/** The reasoning levels a turn can ask for, cheapest first. */
+export const EFFORT_ORDER = ['low', 'medium', 'high', 'xhigh'] as const
+
+export type Effort = (typeof EFFORT_ORDER)[number]
 
 export const TIER_ORDER: readonly Tier[] = ['fast', 'balanced', 'deep']
 
@@ -172,15 +179,6 @@ export function readDecision(responseText: string): Decision | null {
   const tierAnswer = answers.tier
   if (!tierAnswer || !isTier(tierAnswer.choice)) return null
 
-  let confidence: number | null = null
-  if (typeof tierAnswer.confidence === 'number') {
-    confidence = tierAnswer.confidence
-  } else {
-    const probabilities = tierAnswer.probabilities as Record<string, number> | undefined
-    const values = probabilities ? Object.values(probabilities) : []
-    if (values.length > 0) confidence = Math.max(...values)
-  }
-
   const effortAnswer = answers.effort
   const riskyAnswer = answers.risky
   const risky =
@@ -192,16 +190,42 @@ export function readDecision(responseText: string): Decision | null {
 
   return {
     tier: tierAnswer.choice,
-    confidence,
+    confidence: confidenceOf(tierAnswer),
     effort: typeof effortAnswer?.score === 'number' ? effortAnswer.score : null,
+    effortConfidence: effortAnswer ? confidenceOf(effortAnswer) : null,
     risky,
   }
 }
 
 /**
+ * How sure an answer is. TypeSafe reports it; the Gateway does not, so there
+ * it is the highest probability of a distribution that is itself optional.
+ */
+function confidenceOf(answer: Record<string, unknown>): number | null {
+  if (typeof answer.confidence === 'number') return answer.confidence
+  const probabilities = answer.probabilities as Record<string, number> | undefined
+  const values = probabilities ? Object.values(probabilities) : []
+  return values.length > 0 ? Math.max(...values) : null
+}
+
+/** The rubric score (0..3) as a reasoning level. */
+export function effortLevel(score: number): Effort {
+  const index = Math.min(EFFORT_ORDER.length - 1, Math.max(0, Math.round(score)))
+  return EFFORT_ORDER[index] as Effort
+}
+
+/** Where a reasoning level sits on the ladder, or null if it is not one. */
+export function effortRank(effort: string | number | undefined): number | null {
+  if (typeof effort !== 'string') return null
+  const index = EFFORT_ORDER.indexOf(effort as Effort)
+  return index === -1 ? null : index
+}
+
+/**
  * Where a model id sits on the tier ladder, by matching it against the
  * configured tier names first and then the family words. Null when it matches
- * none, which disables the no-downgrade floor rather than guessing.
+ * none, in which case the change is treated as an upgrade rather than guessed
+ * at: an unrecognised id gets the gentler threshold, never the strict one.
  */
 export function rankOf(model: string, tiers: Tiers): number | null {
   const lowered = model.toLowerCase()
@@ -218,50 +242,103 @@ export function rankOf(model: string, tiers: Tiers): number | null {
 
 export interface PolicyConfig {
   tiers: Tiers
-  minConfidence: number
-  pinModelFloor: boolean
+  /**
+   * How sure the decision must be to spend more (a bigger model, more
+   * reasoning). Being wrong here costs money, so the bar is low.
+   */
+  minUpgradeConfidence: number
+  /**
+   * How sure it must be to spend less. Being wrong here means a task handled
+   * by too small a model or too little thought, so the bar is high.
+   */
+  minDowngradeConfidence: number
 }
 
 export interface Routing {
   /** The model to run on, or null to leave the request as it is. */
   model: string | null
+  /** The reasoning level to ask for, or null to leave it as it is. */
+  effort: Effort | null
   /** Why, for the log line. */
   reason: string
 }
 
+const NOTHING: Routing = { model: null, effort: null, reason: 'no decision' }
+
 /**
- * Turns a decision into a model, or into nothing. Every path that is not a
- * confident, allowed change leaves the caller's model alone.
+ * Whether a change of rank passes its threshold. Both directions are allowed;
+ * they just do not have to clear the same bar, because the two mistakes do not
+ * cost the same. A move whose direction cannot be told (an unrecognised
+ * current value) is treated as an upgrade.
+ */
+function allowed(
+  wanted: number,
+  current: number | null,
+  confidence: number | null,
+  config: PolicyConfig,
+): boolean {
+  if (current !== null && wanted === current) return false
+  const isDowngrade = current !== null && wanted < current
+  const bar = isDowngrade ? config.minDowngradeConfidence : config.minUpgradeConfidence
+  // A backend that reports no confidence (the Gateway without a distribution,
+  // or the built-in classifier) clears the upgrade bar but never the
+  // downgrade one: spending less on an unmeasured hunch is the bad trade.
+  if (confidence === null) return !isDowngrade
+  return confidence >= bar
+}
+
+/**
+ * Turns a decision into a model and a reasoning level, either of which may be
+ * null to leave the request as it is. Both can move in either direction.
  */
 export function route(
   decision: Decision | null,
-  currentModel: string,
+  current: { model: string; effort?: string | number },
   config: PolicyConfig,
 ): Routing {
-  if (!decision) return { model: null, reason: 'no decision' }
+  if (!decision) return NOTHING
 
   let tier = decision.tier
+  let effortScore = decision.effort
+  let forced = false
 
-  // A task that touches production or money is never worth the saving.
-  if (decision.risky !== null && decision.risky > 0.7 && tier !== 'deep') {
+  // Carrying out something final is never worth the saving: take the deep
+  // tier and real reasoning, whatever the cheaper answer said, and skip the
+  // thresholds — this is the one case that is not a confidence question.
+  if (decision.risky !== null && decision.risky > 0.7) {
     tier = 'deep'
-  } else if (decision.confidence !== null && decision.confidence < config.minConfidence) {
-    return {
-      model: null,
-      reason: `confidence ${decision.confidence.toFixed(2)} below ${config.minConfidence}`,
+    effortScore = Math.max(effortScore ?? 0, 2)
+    forced = true
+  }
+
+  const wantedTier = TIER_ORDER.indexOf(tier)
+  const currentTier = rankOf(current.model, config.tiers)
+  const wantedModel = config.tiers[tier]
+
+  const model =
+    wantedModel &&
+    wantedModel !== current.model &&
+    (forced || allowed(wantedTier, currentTier, decision.confidence, config))
+      ? wantedModel
+      : null
+
+  let effort: Effort | null = null
+  if (effortScore !== null) {
+    const wanted = effortLevel(effortScore)
+    const wantedRank = EFFORT_ORDER.indexOf(wanted)
+    const currentRank = effortRank(current.effort)
+    // A numeric effort is the caller's own scale, not this ladder; leave it.
+    const comparable = typeof current.effort !== 'number'
+    if (
+      comparable &&
+      (forced || allowed(wantedRank, currentRank, decision.effortConfidence, config))
+    ) {
+      effort = wanted
     }
   }
 
-  const wanted = TIER_ORDER.indexOf(tier)
-  const current = rankOf(currentModel, config.tiers)
+  if (!model && !effort) return { model: null, effort: null, reason: 'nothing to change' }
 
-  if (config.pinModelFloor && current !== null && wanted < current) {
-    return { model: null, reason: `would downgrade below ${currentModel}` }
-  }
-
-  const model = config.tiers[tier]
-  if (!model || model === currentModel) return { model: null, reason: 'already on that model' }
-
-  const confidence = decision.confidence === null ? 'n/d' : decision.confidence.toFixed(2)
-  return { model, reason: `${tier} (confidence ${confidence})` }
+  const said = decision.confidence === null ? 'confidence n/d' : `confidence ${decision.confidence.toFixed(2)}`
+  return { model, effort, reason: forced ? `${tier}, forced by risk` : `${tier} (${said})` }
 }

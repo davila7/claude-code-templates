@@ -145,6 +145,9 @@ const SAMPLE = [
   { prompt: 'Migra la tabla sponsored_ads a un esquema con multiples slots sin downtime', expected: 'opus' },
 ]
 
+/** El mismo mapeo que usa el mod: score 0..3 -> nivel de razonamiento. */
+const EFFORT_LEVELS = ['low', 'medium', 'high', 'xhigh']
+
 function percentile(values, p) {
   const sorted = [...values].sort((a, b) => a - b)
   return sorted[Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length))]
@@ -172,6 +175,7 @@ for (const row of dataset) {
     const ok = tier.choice === row.expected
     if (ok) hits++
 
+    const effortScore = body.answers.effort.score
     console.log(
       [
         ok ? 'OK  ' : 'MISS',
@@ -179,7 +183,7 @@ for (const row of dataset) {
         tier.choice.padEnd(7),
         `(esperado ${row.expected})`.padEnd(20),
         confidence === null ? 'conf n/d ' : `conf ${confidence.toFixed(2)}`,
-        `effort ${body.answers.effort.score.toFixed(2)}`,
+        `effort ${effortScore.toFixed(2)} ${EFFORT_LEVELS[Math.min(3, Math.max(0, Math.round(effortScore)))].padEnd(6)}`,
         `risky ${(riskOf(body.answers.risky) ?? NaN).toFixed(2)}`,
         row.prompt.slice(0, 60),
       ].join('  '),

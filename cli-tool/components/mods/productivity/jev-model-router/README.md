@@ -1,6 +1,6 @@
 # jev-model-router
 
-Picks the model each task runs on with [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model: unstructured state in, a typed choice with a probability distribution out, no free-form text.
+Picks the model and the reasoning effort each task runs with, using [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model: unstructured state in, a typed choice with a probability distribution out, no free-form text.
 
 Two backends, chosen by whichever key is set:
 
@@ -11,10 +11,19 @@ Two backends, chosen by whichever key is set:
 
 TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the `minConfidence` threshold reads. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
 
-Two hook points, and they are not equally safe:
+Three switches, and they are not equally safe:
 
-- **`agent.spawn`** picks the model of each subagent. On by default. A subagent starts with its own context, so routing it costs nothing beyond the classification.
-- **`turn.step`** picks the model of the main conversation. **Off by default.** Switching models mid-session invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
+| Switch | What it sets | Default |
+|---|---|---|
+| `routeSubagentModel` | the model of each subagent, at `agent.spawn` | on |
+| `routeMainEffort` | the reasoning effort of the main conversation, at `turn.step` | on |
+| `routeMainModel` | the model of the main conversation, at `turn.step` | **off** |
+
+A subagent starts with its own context, so routing its model costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
+
+The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set.
+
+**Both directions, both dimensions.** A task read as mechanical is routed down; one read as hard is routed up — model and effort alike.
 
 The prompt is classified at `prompt.submit`, which runs before the turn starts, and the decision is applied to the turn's first model request and reused by the rest of that turn.
 
@@ -32,10 +41,13 @@ One request, three questions evaluated in parallel:
 
 TypeSafe's API reports a `confidence` per answer. The Gateway's answer shape carries **no `confidence` field**, so on that backend confidence is read as the highest probability in the distribution — and that distribution is itself optional in the schema, in which case confidence is absent and the threshold does not fire.
 
-- `risky` above 0.7 forces the deep tier, whatever the cheaper answer said.
-- Confidence below `minConfidence` leaves the model alone.
-- With `pinModelFloor` on, a decision that would run *below* the model the session is already on is dropped; only upgrades apply.
-- A model id that matches no tier disables the floor instead of guessing.
+The two mistakes do not cost the same, so they do not clear the same bar:
+
+- Spending **more** (a bigger model, more reasoning) needs `minUpgradeConfidence`, 0.3 by default. Being wrong costs money.
+- Spending **less** needs `minDowngradeConfidence`, 0.6 by default. Being wrong means a task handled by too small a model or too little thought.
+- `risky` above 0.7 takes the deep tier and real reasoning, past both bars. That one is not a confidence question.
+- A backend that reports no confidence at all — the Gateway without a distribution, or the built-in classifier — may only move a request **up**. Spending less on an unmeasured hunch is the bad trade.
+- A model id matching no tier, or a numeric effort (the caller's own scale), has no knowable direction: the model gets the gentler upgrade bar, and a numeric effort is left alone.
 
 Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
 
@@ -46,16 +58,16 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
 ## Options
 
 ```
-  typesafeApiKey: string   TypeSafe API key (preferred: it reports a confidence)
-  gatewayApiKey:  string   Vercel AI Gateway key
-  provider:        string  "auto" | "typesafe" | "gateway" | "builtin" (default "auto")
-  typesafeBaseUrl: string  empty uses https://api.typesafe.ai
-  typesafeModel:   string  empty uses jev-latest
-  gatewayBaseUrl:  string  empty uses https://ai-gateway.vercel.sh/v4/ai
-  gatewayModel:    string  empty uses typesafe-ai/jev
-  fastModel:      string   fast tier (default "haiku")
-  balancedModel:  string   balanced tier (default "sonnet")
-  deepModel:      string   deep tier (default "opus")
+  typesafeApiKey:         string  TypeSafe API key (preferred: it reports a confidence)
+  gatewayApiKey:          string  Vercel AI Gateway key
+  provider:               string  "auto" | "typesafe" | "gateway" | "builtin"
+  typesafeBaseUrl:        string  empty uses https://api.typesafe.ai
+  typesafeModel:          string  empty uses jev-latest
+  gatewayBaseUrl:         string  empty uses https://ai-gateway.vercel.sh/v4/ai
+  gatewayModel:           string  empty uses typesafe-ai/jev
+  fastModel:              string  fast tier (default "haiku")
+  balancedModel:          string  balanced tier (default "sonnet")
+  deepModel:              string  deep tier (default "opus")
   minConfidence:  number   below this the session's model is kept (default 0.6)
   routeSubagents: boolean  route agent.spawn (default true)
   routeMainLoop:  boolean  route the main loop (default false)

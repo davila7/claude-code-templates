@@ -11,11 +11,20 @@
  * neither, the engine's own `$.model.classify` stands in, so the mod is
  * useful without any account.
  *
- * Two hook points:
+ * Three things it can set, each on its own switch:
  *   agent.spawn  — the model of each subagent (on by default)
+ *   turn.step    — the reasoning effort of the main loop (on by default)
  *   turn.step    — the model of the main loop (off by default: switching
  *                  models mid-session invalidates the prompt cache, which can
  *                  cost more than the cheaper tier saves)
+ *
+ * Every one of them moves in both directions: a task the decision model reads
+ * as mechanical is routed down, one it reads as hard is routed up. The two
+ * mistakes do not cost the same, so they do not clear the same confidence bar
+ * (see `minUpgradeConfidence` / `minDowngradeConfidence` in policy.ts).
+ *
+ * The Agent tool has no effort parameter, so a subagent's effort is not ours
+ * to set; only its model is.
  *
  * The prompt is classified at `prompt.submit`, which runs before the turn
  * starts, and the decision is applied at the turn's first request.
@@ -44,7 +53,7 @@ import {
   route,
   TIER_ORDER,
 } from './policy.ts'
-import type { Decision, PolicyConfig, Provider, Tier } from './policy.ts'
+import type { Decision, Effort, PolicyConfig, Provider, Tier } from './policy.ts'
 
 export const register: Register = (on, options) => {
   const text = (key: string, fallback: string) =>
@@ -81,8 +90,10 @@ export const register: Register = (on, options) => {
   let unusableReported = forced === 'auto' || forced === 'builtin' || active !== null
 
   const timeoutMs = number('timeoutMs', 800)
-  const routeSubagents = flag('routeSubagents', true)
-  const routeMainLoop = flag('routeMainLoop', false)
+  const routeSubagentModel = flag('routeSubagentModel', true)
+  const routeMainEffort = flag('routeMainEffort', true)
+  const routeMainModel = flag('routeMainModel', false)
+  const routeMainLoop = routeMainEffort || routeMainModel
   const logDecisions = flag('logDecisions', true)
 
   const policy: PolicyConfig = {
@@ -91,8 +102,8 @@ export const register: Register = (on, options) => {
       balanced: text('balancedModel', 'sonnet'),
       deep: text('deepModel', 'opus'),
     },
-    minConfidence: number('minConfidence', 0.6),
-    pinModelFloor: flag('pinModelFloor', true),
+    minUpgradeConfidence: number('minUpgradeConfidence', 0.3),
+    minDowngradeConfidence: number('minDowngradeConfidence', 0.6),
   }
 
   // The most recent classification, and the model the current turn settled on.
@@ -101,7 +112,7 @@ export const register: Register = (on, options) => {
   // for the turn that reads it next, which is the turn it starts.
   let latest: Decision | null | undefined
   let appliedTurnId: string | undefined
-  let appliedModel: string | null = null
+  let applied: { model?: string; effort?: Effort } | null = null
 
   on('prompt.submit', async ($, e, next) => {
     if (!routeMainLoop) return next(e)
@@ -132,7 +143,15 @@ export const register: Register = (on, options) => {
       // question, without the confidence the policy's threshold reads.
       try {
         const label = await $.model.classify(e.text, TIER_ORDER)
-        if (label) decision = { tier: label as Tier, confidence: null, risky: null, effort: null }
+        if (label) {
+          decision = {
+            tier: label as Tier,
+            confidence: null,
+            risky: null,
+            effort: null,
+            effortConfidence: null,
+          }
+        }
       } catch (error) {
         $.ui.log(`[jev-model-router] built-in classifier failed: ${String(error)}`)
       }
@@ -145,27 +164,36 @@ export const register: Register = (on, options) => {
   on('turn.step', async function* ($, e, next) {
     if (!routeMainLoop || e.agentId) return yield* next(e)
 
-    // Every request after the first reuses what the turn settled on, so the
-    // model does not change under the model's own tool loop.
+    // Every request after the first reuses what the turn settled on, so
+    // neither the model nor the effort changes under its own tool loop.
     if (e.index > 0 && e.turnId === appliedTurnId) {
-      return yield* next(appliedModel ? { ...e, model: appliedModel } : e)
+      return yield* next(applied ? { ...e, ...applied } : e)
     }
 
     const decision = latest ?? null
     latest = undefined
 
-    const { model, reason } = route(decision, e.model, policy)
-    appliedTurnId = e.turnId
-    appliedModel = model
+    const routing = route(decision, { model: e.model, effort: e.effort }, policy)
+    const change: { model?: string; effort?: Effort } = {}
+    if (routeMainModel && routing.model) change.model = routing.model
+    if (routeMainEffort && routing.effort) change.effort = routing.effort
 
-    if (!model) return yield* next(e)
-    if (logDecisions) $.ui.log(`[jev-model-router] main loop → ${model}: ${reason}`)
-    return yield* next({ ...e, model })
+    appliedTurnId = e.turnId
+    applied = Object.keys(change).length > 0 ? change : null
+
+    if (!applied) return yield* next(e)
+    if (logDecisions) {
+      const what = [change.model, change.effort && `effort ${change.effort}`]
+        .filter(Boolean)
+        .join(', ')
+      $.ui.log(`[jev-model-router] main loop → ${what}: ${routing.reason}`)
+    }
+    return yield* next({ ...e, ...change })
   })
 
   on('agent.spawn', async ($, e, next) => {
     // A fork inherits its parent's model; `model` is ignored for it.
-    if (!routeSubagents || e.fork) return next(e)
+    if (!routeSubagentModel || e.fork) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
@@ -195,16 +223,25 @@ export const register: Register = (on, options) => {
     } else {
       try {
         const label = await $.model.classify(e.prompt, TIER_ORDER)
-        if (label) decision = { tier: label as Tier, confidence: null, risky: null, effort: null }
+        if (label) {
+          decision = {
+            tier: label as Tier,
+            confidence: null,
+            risky: null,
+            effort: null,
+            effortConfidence: null,
+          }
+        }
       } catch (error) {
         $.ui.log(`[jev-model-router] built-in classifier failed: ${String(error)}`)
       }
     }
 
-    // The subagent's own model wins when the caller named one; otherwise the
-    // parent's is what it would inherit, so that is what the floor compares to.
+    // The subagent's own model wins when the caller named one; otherwise it
+    // would inherit the parent's, so that is what a change is measured from.
+    // The Agent tool takes no effort, so only the model is ours to set here.
     const current = e.model ?? e.parentModel
-    const { model, reason } = route(decision, current, policy)
+    const { model, reason } = route(decision, { model: current }, policy)
     if (!model) return next(e)
     if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType} → ${model}: ${reason}`)
     return next({ ...e, model })
