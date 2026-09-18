@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "agent-guild": {
+      "description": "Vet AI agents and endpoints before delegating work or money with live preflight checks, evidence-backed reputation, and signed payment-safety decisions. Hosted remote server; no API key required; optional paid operations use x402.",
+      "type": "http",
+      "url": "https://agent-guild-5d5r.onrender.com/mcp"
+    }
+  }
+}
