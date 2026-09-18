@@ -106,8 +106,13 @@ export function questions(provider: Provider): Record<string, unknown> {
       // The same question under two names: `noul` on TypeSafe's own API,
       // `boolean` in the AI SDK's evaluation schema.
       type: provider === 'typesafe' ? 'noul' : 'boolean',
+      // Asked about the act, not the subject. The first wording ("the task
+      // touches production, money, credentials") scored 0.96 on "add a
+      // refund endpoint that calls Stripe" — ordinary code that happens to be
+      // about money — and would have escalated it past a 0.98-confidence
+      // answer of the balanced tier.
       instructions:
-        'The task touches production, money, credentials, or state that cannot be undone.',
+        'Carrying out this task would itself change production, move real money, or alter data that cannot be restored. Writing or testing code that deals with such things, without running it against the real system, does not count.',
     },
   }
 }

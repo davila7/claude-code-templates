@@ -99,7 +99,11 @@ const QUESTIONS = {
   },
   risky: {
     type: backend.yesNo,
-    instructions: 'The task touches production, money, credentials, or irreversible state.',
+    // Debe preguntar por el acto, no por el tema. La primera version ("the
+    // task touches production, money, credentials") daba 0.96 en "agrega un
+    // endpoint de refund que llame a Stripe", que es codigo normal.
+    instructions:
+      'Carrying out this task would itself change production, move real money, or alter data that cannot be restored. Writing or testing code that deals with such things, without running it against the real system, does not count.',
   },
 }
 
