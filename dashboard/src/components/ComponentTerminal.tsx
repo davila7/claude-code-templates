@@ -62,6 +62,25 @@ export interface ComponentTerminalProps {
   fileCount?: number;
 }
 
+/** The Claude Code startup mascot, as pixel blocks. */
+function Mascot() {
+  return (
+    <svg width="32" height="23" viewBox="0 0 21 15" aria-hidden="true" className="mt-0.5 shrink-0">
+      <g fill="#cd8a6d">
+        <rect x="0" y="0" width="21" height="10" rx="1" />
+        <rect x="1" y="9.5" width="2.2" height="4.8" rx="0.5" />
+        <rect x="6.2" y="9.5" width="2.2" height="4.2" rx="0.5" />
+        <rect x="11.9" y="9.5" width="2.2" height="4.2" rx="0.5" />
+        <rect x="16.9" y="9.5" width="2.2" height="4.8" rx="0.5" />
+      </g>
+      <g fill="#14100e">
+        <rect x="5" y="3" width="2" height="5" rx="0.4" />
+        <rect x="13.2" y="3" width="2" height="5" rx="0.4" />
+      </g>
+    </svg>
+  );
+}
+
 function baseName(path: string): string {
   return path.split('/').pop() ?? path;
 }
@@ -342,7 +361,7 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
       const all: Rendered[] = [];
       for (const step of script) {
         if (step.kind === 'cmd') all.push({ type: 'line', text: `$ ${step.text}`, tone: 'default' });
-        else if (step.kind === 'ask') all.push({ type: 'line', text: `> ${step.text}`, tone: 'default' });
+        else if (step.kind === 'ask') all.push({ type: 'line', text: `\u276f ${step.text}`, tone: 'default' });
         else if (step.kind === 'out') all.push({ type: 'line', text: step.text, tone: step.tone ?? 'default' });
         else if (step.kind === 'work') all.push({ type: 'line', text: step.done, tone: step.tone ?? 'default' });
         else if (step.kind === 'welcome') all.push({ type: 'welcome', cwd: step.cwd });
@@ -409,7 +428,7 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
           await typeText('$ ', step.text);
           await sleep(400);
         } else if (step.kind === 'ask') {
-          await typeText('> ', step.text);
+          await typeText('\u276f ', step.text);
           await sleep(500);
         } else if (step.kind === 'out') {
           setLines((prev) => [...prev, { type: 'line', text: step.text, tone: step.tone ?? 'default' }]);
@@ -433,6 +452,12 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
       intervals.forEach(clearInterval);
     };
   }, [script, runId, started]);
+
+  // Once Claude Code's startup screen has printed, the terminal wears its
+  // status bar and prompt character instead of the shell's.
+  const welcomeLine = lines.find((l): l is Extract<Rendered, { type: 'welcome' }> => l.type === 'welcome');
+  const sessionOpen = welcomeLine !== undefined;
+  const cwd = welcomeLine?.cwd ?? '';
 
   // Keep the newest line visible.
   useEffect(() => {
@@ -479,13 +504,12 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
       >
         {lines.map((item, i) =>
           item.type === 'welcome' ? (
-            <div
-              key={i}
-              className="my-2 rounded-lg px-3 py-2"
-              style={{ border: '1px solid rgba(213, 116, 85, 0.5)', background: 'rgba(213, 116, 85, 0.07)' }}
-            >
-              <div style={{ color: TONE_COLOR.orange }}>&#10043; Welcome to Claude Code</div>
-              <div className="mt-1.5" style={{ color: TONE_COLOR.gray }}>cwd: {item.cwd}</div>
+            <div key={i} className="my-2 flex items-start gap-3">
+              <Mascot />
+              <div className="min-w-0">
+                <div className="font-bold text-[#e6edf3]">Claude Code</div>
+                <div style={{ color: TONE_COLOR.gray }}>{item.cwd}</div>
+              </div>
             </div>
           ) : (
             <div key={i} className="whitespace-pre-wrap break-words" style={{ color: TONE_COLOR[item.tone] }}>
@@ -495,7 +519,7 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
         )}
         {typing && (
           <div className="whitespace-pre-wrap break-words text-[#c9d1d9]">
-            <span style={{ color: typing.prefix === '> ' ? TONE_COLOR.orange : TONE_COLOR.green }}>
+            <span style={{ color: typing.prefix.startsWith('\u276f') ? TONE_COLOR.orange : TONE_COLOR.green }}>
               {typing.prefix}
             </span>
             {typing.text}
@@ -504,11 +528,25 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
         )}
         {finished && (
           <div className="text-[#c9d1d9]">
-            <span style={{ color: TONE_COLOR.green }}>$ </span>
+            <span style={{ color: sessionOpen ? TONE_COLOR.orange : TONE_COLOR.green }}>
+              {sessionOpen ? '\u276f ' : '$ '}
+            </span>
             <span className="cct-caret">▋</span>
           </div>
         )}
       </div>
+
+      {/* Claude Code's status bar, as the CLI shows it at the bottom */}
+      {sessionOpen && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[#30363d] bg-[#0d1117] px-4 py-2 font-mono text-[11px]">
+          <span style={{ color: TONE_COLOR.gray }}>&#128193; {baseName(cwd)}</span>
+          <span style={{ color: '#30363d' }}>|</span>
+          <span style={{ color: TONE_COLOR.gray }}>&#127807; main</span>
+          <span className="ml-auto" style={{ color: TONE_COLOR.orange }}>
+            &#9654;&#9654; auto mode on
+          </span>
+        </div>
+      )}
 
       <style>{`
         @keyframes cct-caret-blink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
