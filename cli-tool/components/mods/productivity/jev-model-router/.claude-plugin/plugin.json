@@ -1,0 +1,92 @@
+{
+  "name": "jev-model-router",
+  "version": "0.1.0",
+  "description": "Picks the model for each task with TypeSafe's Jev, a System One decision model reached through the Vercel AI Gateway. Routes subagents at agent.spawn and, opt-in, the main loop at turn.step, falling back to the engine's built-in classifier when no key is set.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity",
+    "routing"
+  ],
+  "userConfig": {
+    "gatewayApiKey": {
+      "type": "string",
+      "title": "Vercel AI Gateway API key",
+      "description": "Key for the AI Gateway; with none set the engine's built-in classifier is used instead",
+      "default": "",
+      "sensitive": true
+    },
+    "baseUrl": {
+      "type": "string",
+      "title": "AI Gateway base URL",
+      "description": "Base URL of the AI Gateway evaluation API",
+      "default": "https://ai-gateway.vercel.sh/v4/ai"
+    },
+    "modelId": {
+      "type": "string",
+      "title": "Decision model id",
+      "description": "The evaluation model the Gateway routes to",
+      "default": "typesafe-ai/jev"
+    },
+    "fastModel": {
+      "type": "string",
+      "title": "Fast tier",
+      "description": "Model alias or id for mechanical, local tasks",
+      "default": "haiku"
+    },
+    "balancedModel": {
+      "type": "string",
+      "title": "Balanced tier",
+      "description": "Model alias or id for ordinary engineering work",
+      "default": "sonnet"
+    },
+    "deepModel": {
+      "type": "string",
+      "title": "Deep tier",
+      "description": "Model alias or id for hard or high-stakes work",
+      "default": "opus"
+    },
+    "minConfidence": {
+      "type": "number",
+      "title": "Minimum confidence",
+      "description": "Below this the session's own model is kept; the Gateway reports a distribution, not a confidence, so this reads its highest probability",
+      "default": 0.6
+    },
+    "routeSubagents": {
+      "type": "boolean",
+      "title": "Route subagents",
+      "description": "Pick the model for each subagent at agent.spawn",
+      "default": true
+    },
+    "routeMainLoop": {
+      "type": "boolean",
+      "title": "Route the main loop",
+      "description": "Pick the model for the main conversation too; off by default because switching models mid-session invalidates the prompt cache",
+      "default": false
+    },
+    "pinModelFloor": {
+      "type": "boolean",
+      "title": "Never downgrade",
+      "description": "Never route below the model the session is already on; only upgrades are applied",
+      "default": true
+    },
+    "timeoutMs": {
+      "type": "number",
+      "title": "Latency budget (ms)",
+      "description": "How long to wait for a decision before letting the request through unchanged",
+      "default": 800
+    },
+    "logDecisions": {
+      "type": "boolean",
+      "title": "Log decisions",
+      "description": "Write each routing decision to the session log",
+      "default": true
+    }
+  }
+}
