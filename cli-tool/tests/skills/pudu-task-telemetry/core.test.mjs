@@ -105,8 +105,11 @@ test('Pudu missing executable, bad JSON and timeout are stable errors', async ()
   await rejectsCode(() => processJson(process.execPath, ['-e', 'console.log("not json")']), 'unsupported_contract');
   await rejectsCode(() => processJson(process.execPath, ['-e', 'setInterval(()=>{},100)'], { timeoutMs: 20 }), 'timeout');
 });
-test('Pudu timeout and non-integer memory fail as invalid or unsupported contracts', async () => {
+test('Pudu timeout and non-integer memory fail as invalid or unsupported contracts', async t => {
   await rejectsCode(() => inventory({ command: process.execPath, args: ['-e', 'console.log("{}")'], timeoutMs: -1 }), 'invalid_input');
+  const fakePudu = path.join(await temp(t), 'pudu-fractional.mjs');
+  await fs.writeFile(fakePudu, `console.log(JSON.stringify(process.argv.includes('hardware') ? {os:'test',arch:'test',memory:{totalBytes:16.5}} : [{local:{id:'x',source:'ollama'}}]));`);
+  await rejectsCode(() => inventory({ command: process.execPath, args: [fakePudu] }), 'unsupported_contract');
 });
 test('inventory distinguishes installed Ollama models from other sources and omits paths', async t => {
   const repo = await temp(t);
