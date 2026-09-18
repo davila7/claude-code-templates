@@ -6,6 +6,7 @@ const { exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
 const QRCode = require('qrcode');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 /**
  * SessionSharing - Handles exporting Claude Code sessions as downloadable context
@@ -355,7 +356,7 @@ class SessionSharing {
    */
   async installSession(sessionData, options = {}) {
     const homeDir = os.homedir();
-    const claudeDir = path.join(homeDir, '.claude');
+    const claudeDir = getClaudeConfigDir(homeDir);
 
     // Determine project directory
     const projectName = sessionData.conversation.project || 'shared-session';
