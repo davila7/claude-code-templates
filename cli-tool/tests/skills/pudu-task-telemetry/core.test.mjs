@@ -35,6 +35,7 @@ test('runtime conversions preserve unavailable and measured zero', () => {
   assert.equal(metrics.generation_tps.value, 20);
   assert.equal(metrics.runtime_total_ms.value, 200);
   assert.equal(runtimeMetrics({ eval_count: 0, eval_duration: 0 }).generation_tps.value, null);
+  assert.equal(runtimeMetrics({ eval_count: 2, eval_duration: Infinity }).generation_tps.value, null);
   assert.equal(runtimeMetrics({ eval_count: 0 }).completion_tokens.value, 0);
   assert.equal(runtimeMetrics({ prompt_eval_count: 1.5 }).prompt_tokens.value, null);
   assert.equal(metric(NaN, 'ms', 'test').origin, 'unavailable');
@@ -52,7 +53,7 @@ test('endpoint validation rejects credentials, paths and remote destinations', (
   assert.equal(baseUrl('http://localhost:1234'), 'http://127.0.0.1:1234');
 });
 test('request validation rejects tools, context overflow, traversal and invalid limits', () => {
-  for (const extra of [{ tools: [] }, { options: { num_predict: -1 } }, { messages: [{ role: 'user', content: 'a'.repeat(10000) }] }, { contextManifest: [{ path: '../secret', sha256: 'a'.repeat(64), startLine: 1, endLine: 2 }] }, { limits: { timeoutMs: -1 } }]) assert.throws(() => request(extra));
+  for (const extra of [{ tools: [] }, { options: { num_predict: -1 } }, { messages: [{ role: 'user', content: 'a'.repeat(10000) }] }, { contextManifest: [{ path: '../secret', sha256: 'a'.repeat(64), startLine: 1, endLine: 2 }] }, { limits: { timeoutMs: -1 } }, { verification: false }]) assert.throws(() => request(extra));
   assert.equal(request().options.num_ctx, 4096);
 });
 test('stream parser supports byte-fragmented UTF-8, blank lines and terminal without newline', async t => {
@@ -104,6 +105,9 @@ test('Pudu missing executable, bad JSON and timeout are stable errors', async ()
   await rejectsCode(() => processJson(process.execPath, ['-e', 'console.log("not json")']), 'unsupported_contract');
   await rejectsCode(() => processJson(process.execPath, ['-e', 'setInterval(()=>{},100)'], { timeoutMs: 20 }), 'timeout');
 });
+test('Pudu timeout and non-integer memory fail as invalid or unsupported contracts', async () => {
+  await rejectsCode(() => inventory({ command: process.execPath, args: ['-e', 'console.log("{}")'], timeoutMs: -1 }), 'invalid_input');
+});
 test('inventory distinguishes installed Ollama models from other sources and omits paths', async t => {
   const repo = await temp(t);
   const fakePudu = path.join(repo, 'pudu-fixture.mjs');
@@ -150,6 +154,7 @@ test('output never overwrites or follows external directory symlinks', async t =
   await store.writeOutput('result.txt', 'one');
   await rejectsCode(() => store.writeOutput('result.txt', 'two'), 'output_error');
   await rejectsCode(() => store.writeOutput('../outside.txt', 'two'), 'invalid_input');
+  await rejectsCode(() => store.writeOutput('nested/.git/hooks.txt', 'two'), 'invalid_input');
   await fs.symlink(outside, path.join(repo, 'escape'));
   await rejectsCode(() => store.writeOutput('escape/secret.txt', 'two'), 'storage_error');
 });
@@ -176,6 +181,7 @@ test('external verification cannot impersonate runner or contradict checks', () 
   assert.throws(() => verificationInput({ ...v, source: 'runner' }));
   assert.throws(() => verificationInput({ ...v, status: 'failed' }));
   assert.throws(() => verificationInput({ ...v, checks: [] }));
+  assert.throws(() => verificationInput({ ...v, checks: [null] }));
 });
 test('finish is idempotent, conflicts fail and missing verification stays unknown', async t => {
   const repo = await temp(t); const store = new TaskStore(repo); const task = await store.create('task');
@@ -190,6 +196,11 @@ test('comparison labels non-equivalence and never invents costs', async t => {
   const store = new TaskStore(await temp(t)); const a = await store.create('a'); const b = await store.create('b');
   assert.equal(compare([a, b]).equivalent, false);
   assert.equal(buildReport(a).summary.cost, null);
+});
+test('git state does not inflate the automatic-selection suite', () => {
+  const rows = [];
+  for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) rows.push({ taskId: randomUUID(), taskHash: 'same', git: { commit: `c${i}` }, status: 'completed', attempts: [{ status: 'completed', verification: { status: 'passed', source: 'runner' }, model: { digest: 'a' }, hardwareHash: 'h', runtime: { version: 'v' }, taskKind: 'code', options: { num_ctx: 4096 }, loadPolicy: 'warm', requestHash: 'r', rubricHash: 's', metrics: { request_wall_ms: { value: 100 } } }] });
+  assert.equal(recommend([{ name: 'a', digest: 'a', autoEligible: true }], rows, { hardwareHash: 'h', runtimeVersion: 'v', taskKind: 'code', contextBudget: 4096 }).status, 'needs_selection');
 });
 test('auto selection needs task quality rather than benchmark speed', () => {
   const models = [{ name: 'fast', digest: 'a', autoEligible: true, benchmark: { generationTps: 10000 } }];

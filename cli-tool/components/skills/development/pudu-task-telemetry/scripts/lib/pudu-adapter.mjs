@@ -61,9 +61,11 @@ export async function inventory(config = {}, signal) {
   const command = config.command ?? 'pudu-ai';
   const prefix = config.args ?? [];
   check(typeof command === 'string' && Array.isArray(prefix) && prefix.every(x => typeof x === 'string'), 'Invalid Pudu executable configuration.');
-  const invoke = cmd => processJson(command, [...prefix, cmd, '--json', '--no-network', '--no-color'], { signal, timeoutMs: config.timeoutMs ?? 30000 });
+  const timeoutMs = config.timeoutMs ?? 30000;
+  check(Number.isInteger(timeoutMs) && timeoutMs >= 10 && timeoutMs <= 1800000, 'Invalid Pudu timeoutMs.');
+  const invoke = cmd => processJson(command, [...prefix, cmd, '--json', '--no-network', '--no-color'], { signal, timeoutMs });
   const [hardware, rows, version] = await Promise.all([invoke('hardware'), invoke('models'), versionOf(command)]);
-  check(hardware?.memory?.totalBytes > 0 && typeof hardware.os === 'string' && typeof hardware.arch === 'string', 'Unsupported Pudu hardware contract.', 'unsupported_contract', 4);
+  check(Number.isSafeInteger(hardware?.memory?.totalBytes) && hardware.memory.totalBytes > 0 && typeof hardware.os === 'string' && typeof hardware.arch === 'string', 'Unsupported Pudu hardware contract.', 'unsupported_contract', 4);
   check(Array.isArray(rows) && rows.every(row => typeof row?.local?.id === 'string' && typeof row.local.source === 'string'), 'Unsupported Pudu models contract.', 'unsupported_contract', 4);
   // No paths, machine identifiers, raw benchmark command lines, or raw catalog text leave this adapter.
   const profile = { os: hardware.os, arch: hardware.arch, cpu: hardware.cpu?.name ?? null, memoryBytes: hardware.memory.totalBytes, unified: hardware.memory.unified === true };

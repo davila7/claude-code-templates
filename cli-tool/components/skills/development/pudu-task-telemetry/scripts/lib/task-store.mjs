@@ -2,7 +2,7 @@ import * as fs from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { check, TaskError, hash } from './common.mjs';
+import { check, object, TaskError, hash } from './common.mjs';
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 const storageError = () => new TaskError('storage_error', 'Task storage could not be accessed safely.', 7);
@@ -81,7 +81,7 @@ export class TaskStore {
       owned = true;
       await handle.writeFile(JSON.stringify({ pid: process.pid }));
       await handle.close();
-      check(!await fs.lstat(path.join(dir, '.recovering')).then(() => true, () => false), 'Recovery is in progress.', 'task_busy', 4);
+      check(!await fs.lstat(path.join(dir, '.recovering')).then(() => true, e => { if (e.code === 'ENOENT') return false; throw e; }), 'Recovery is in progress.', 'task_busy', 4);
       return await fn(dir);
     } finally { if (owned) await fs.unlink(lockPath).catch(() => {}); }
   }
@@ -99,6 +99,7 @@ export class TaskStore {
         const event = JSON.parse(line);
         check(event.task?.taskId === id && event.task.schemaVersion === 'pudu-task-telemetry/v1', 'Invalid task event.', 'storage_error', 7);
         task = event.task;
+        check(object(task) && Array.isArray(task.attempts) && object(task.verification) && ['running', 'completed', 'failed', 'cancelled', 'interrupted'].includes(task.status) && typeof task.taskHash === 'string', 'Invalid task event.', 'storage_error', 7);
       }
       return task;
     } catch (e) { throw e instanceof TaskError ? e : storageError(); }
@@ -153,7 +154,7 @@ export class TaskStore {
   async writeOutput(relative, content) {
     check(typeof relative === 'string' && relative.length > 0 && !path.isAbsolute(relative) && !relative.includes('\\') && !relative.split('/').some(p => p === '..' || p === '' || p === '.'), 'Output must be a relative path inside the repository.');
     const parts = relative.split('/');
-    check(parts[0] !== '.pudu-ai' && parts[0] !== '.git', 'Output cannot target task storage or Git internals.');
+    check(!parts.some(part => ['.pudu-ai', '.git'].includes(part.toLowerCase())), 'Output cannot target task storage or Git internals.');
     let dir = await fs.realpath(this.repo);
     for (const part of parts.slice(0, -1)) dir = await safeDir(dir, part);
     const handle = await fs.open(path.join(dir, parts.at(-1)), 'wx', 0o600).catch(() => { throw new TaskError('output_error', 'Output must be a new file in an existing safe directory.', 7); });

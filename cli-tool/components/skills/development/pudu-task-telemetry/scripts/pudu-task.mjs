@@ -163,7 +163,6 @@ export async function main(argv = process.argv.slice(2), { signal } = {}) {
           const passed = content.trim() === request.verification.expected.trim();
           attempt.verification = { source: 'runner', status: passed ? 'passed' : 'failed', checks: [{ id: 'exact-text', passed }] };
         }
-        if (values.output) await store.writeOutput(values.output, content);
       } catch (e) {
         error = e instanceof TaskError ? e : new TaskError('runtime_error', 'Local attempt failed.', 4);
         attempt.metrics = error.metrics ?? attempt.metrics;
@@ -174,10 +173,19 @@ export async function main(argv = process.argv.slice(2), { signal } = {}) {
         attempt.samples = samples.samples; attempt.sampleCoverageMs = samples.sampleCoverageMs;
         attempt.endedAt = new Date().toISOString();
       }
+      let outputWritten = false;
+      if (!error && values.output) {
+        try {
+          await store.writeOutput(values.output, content);
+          outputWritten = true;
+        } catch (e) {
+          error = e instanceof TaskError ? e : new TaskError('output_error', 'Output must be a new file in an existing safe directory.', 7);
+        }
+      }
       try { await store.save(dir, task, 'attempt_finished'); }
       catch (e) { return { result: { ok: false, error: publicError(e), persisted: false, attempt }, exitCode: 7 }; }
       const failedVerification = attempt.verification.status === 'failed';
-      return { result: { ok: !error && !failedVerification, taskId: id, attempt, outputWritten: Boolean(values.output && !error) }, exitCode: error?.exitCode ?? (failedVerification ? 6 : 0) };
+      return { result: { ok: !error && !failedVerification, taskId: id, attempt, outputWritten }, exitCode: error?.exitCode ?? (failedVerification ? 6 : 0) };
     });
   }
 }

@@ -6,7 +6,7 @@ export function verificationInput(value) {
   identifier(value.rubricId, 'rubricId');
   check(Array.isArray(value.checks) && value.checks.length <= 100, 'Invalid verification checks.');
   const checks = value.checks.map(c => {
-    identifier(c.id, 'check ID'); check(typeof c.passed === 'boolean', 'Check result must be boolean.');
+    check(object(c), 'Invalid verification check.'); identifier(c.id, 'check ID'); check(typeof c.passed === 'boolean', 'Check result must be boolean.');
     return { id: c.id, passed: c.passed };
   });
   check(new Set(checks.map(c => c.id)).size === checks.length, 'Duplicate check IDs.');

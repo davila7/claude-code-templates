@@ -36,7 +36,7 @@ export function recommend(models, evidence, { hardwareHash, runtimeVersion, task
         total++;
         const valid = task.status === 'completed' && task.attempts.length === 1 && a.status === 'completed' && a.verification?.source === 'runner' && a.verification?.status === 'passed' && Number.isFinite(a.metrics?.request_wall_ms?.value);
         if (valid) passed++;
-        const key = hash({ task: task.taskHash, request: a.requestHash, rubric: a.rubricHash, options: a.options, git: task.git });
+        const key = hash({ task: task.taskHash, request: a.requestHash, rubric: a.rubricHash, options: a.options });
         const samples = groups.get(key) ?? [];
         samples.push(valid ? a.metrics.request_wall_ms.value : null);
         groups.set(key, samples);

@@ -38,16 +38,17 @@ export async function jsonRequest(base, route, body, signal) {
 export async function ollamaInventory(config = {}, signal) {
   const base = baseUrl(config.baseUrl);
   const [tags, version] = await Promise.all([jsonRequest(base, '/api/tags', null, signal), jsonRequest(base, '/api/version', null, signal)]);
-  check(Array.isArray(tags.models) && tags.models.every(m => typeof m.name === 'string' && typeof m.digest === 'string') && typeof version.version === 'string', 'Unsupported Ollama inventory contract.', 'unsupported_contract', 4);
+  check(object(tags) && Array.isArray(tags.models) && tags.models.every(m => object(m) && typeof m.name === 'string' && typeof m.digest === 'string') && object(version) && typeof version.version === 'string', 'Unsupported Ollama inventory contract.', 'unsupported_contract', 4);
   return { base, version: version.version, models: tags.models };
 }
 export async function inspectModel(server, modelName, signal) {
   const model = server.models.find(m => m.name === modelName || m.model === modelName);
   check(model, 'Model is not installed in Ollama.', 'model_missing', 3);
   const show = await jsonRequest(server.base, '/api/show', { model: model.name }, signal);
+  check(object(show) && (show.capabilities === undefined || Array.isArray(show.capabilities)), 'Unsupported Ollama model contract.', 'unsupported_contract', 4);
   const remote = model.remote_host || model.remote_model || show.remote_host || show.remote_model || /(?:^|[:/-])cloud(?:$|[:/-])/i.test(model.name);
   check(!remote && model.size > 0 && /^[a-f0-9]{64}$/i.test(model.digest) && show.model_info?.['general.parameter_count'] > 0, 'Model is remote or its local provenance is unknown.', 'model_not_local', 4);
-  check(show.capabilities?.includes('completion'), 'Model does not advertise text completion.', 'unsupported_model', 4);
+  check(Array.isArray(show.capabilities) && show.capabilities.includes('completion'), 'Model does not advertise text completion.', 'unsupported_model', 4);
   const architecture = show.model_info?.['general.architecture'];
   const context = show.model_info?.[`${architecture}.context_length`];
   check(Number.isInteger(context) && context > 0, 'Model context capacity is unknown.', 'unsupported_model', 4);
@@ -78,8 +79,8 @@ export function validateRequest(request) {
   for (const item of manifest) {
     check(object(item) && typeof item.path === 'string' && !item.path.startsWith('/') && !item.path.includes('\\') && !item.path.split('/').includes('..') && /^[a-f0-9]{64}$/.test(item.sha256) && Number.isInteger(item.startLine) && item.startLine > 0 && Number.isInteger(item.endLine) && item.endLine >= item.startLine, 'Invalid context manifest entry.');
   }
-  const verification = request.verification ?? null;
-  if (verification) check(object(verification) && verification.type === 'exact-text' && typeof verification.expected === 'string' && verification.expected.length > 0 && Object.keys(verification).every(k => ['type', 'expected'].includes(k)), 'Only exact-text runner verification is supported.');
+  const verification = request.verification === undefined ? null : request.verification;
+  check(verification === null || (object(verification) && verification.type === 'exact-text' && typeof verification.expected === 'string' && verification.expected.length > 0 && Object.keys(verification).every(k => ['type', 'expected'].includes(k))), 'Only exact-text runner verification is supported.');
   const loadPolicy = request.loadPolicy ?? 'uncontrolled';
   check(['warm', 'cold', 'uncontrolled'].includes(loadPolicy), 'Invalid loadPolicy.');
   return { messages: request.messages, options, limits, verification, manifest, loadPolicy,
@@ -117,8 +118,9 @@ export async function chat(server, model, request, signal) {
       let value;
       try { value = JSON.parse(line); } catch { fail('unsupported_contract', 'Invalid NDJSON response.', 4); }
       check(object(value) && !value.error, 'Ollama stream returned an error.', 'runtime_error', 4);
-      check(!value.message?.tool_calls?.length, 'Tool calls are not supported by this runner.', 'unsupported_contract', 4);
-      const text = value.message?.content;
+      check(object(value.message), 'Invalid message object.', 'unsupported_contract', 4);
+      check(!value.message.tool_calls?.length, 'Tool calls are not supported by this runner.', 'unsupported_contract', 4);
+      const text = value.message.content;
       check(text === undefined || typeof text === 'string', 'Invalid message content.', 'unsupported_contract', 4);
       if (text) {
         firstContent ??= performance.now() - started;

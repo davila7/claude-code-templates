@@ -9,7 +9,7 @@ export function runtimeMetrics(final = {}) {
   const duration = key => Number.isFinite(final[key]) && final[key] >= 0 ? final[key] / 1e6 : null;
   const count = key => Number.isSafeInteger(final[key]) && final[key] >= 0 ? final[key] : null;
   const tokens = count('eval_count');
-  const tps = tokens !== null && final.eval_duration > 0 ? tokens / (final.eval_duration / 1e9) : null;
+  const tps = tokens !== null && Number.isFinite(final.eval_duration) && final.eval_duration > 0 ? tokens / (final.eval_duration / 1e9) : null;
   return {
     prompt_tokens: metric(count('prompt_eval_count'), 'tokens', 'ollama.final'),
     completion_tokens: metric(tokens, 'tokens', 'ollama.final'),
