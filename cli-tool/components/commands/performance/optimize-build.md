@@ -1,3 +1,10 @@
+---
+description: "Optimize build processes and speed"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Optimize Build Command
 
 Optimize build processes and speed
