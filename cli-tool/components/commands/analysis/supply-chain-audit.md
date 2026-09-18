@@ -1,6 +1,6 @@
 ---
 description: Audit software supply-chain risks.
-allowed-tools: Read, Bash, Bash(git:*)
+allowed-tools: Read, Bash
 
 ---
 
