@@ -1,6 +1,7 @@
 import { expect, test } from 'bun:test'
 import {
   effortLevel,
+  effortRank,
   endpoint,
   questions,
   rankOf,
@@ -200,4 +201,28 @@ test('a forced backend without its own key falls back to the built-in classifier
 
 test('builtin ignores both keys', () => {
   expect(selectProvider('builtin', 'ts-key', 'gw-key')).toBeNull()
+})
+
+// --- the two ways a downgrade could have slipped the bar ---------------------
+
+test('risk raises the effort floor but never lowers one', () => {
+  // A prod deletion: risky, but mechanically simple, so its own effort is low.
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.99 }, 0.95, 0))
+  // Forcing skips the thresholds, so without a clamp this would pull xhigh
+  // down to high with no confidence check at all.
+  expect(route(decision, on('claude-opus-5', 'xhigh'), config).effort).toBeNull()
+  expect(route(decision, on('claude-opus-5', 'max'), config).effort).toBeNull()
+  // It still raises a session that is below the floor.
+  expect(route(decision, on('claude-opus-5', 'low'), config).effort).toBe('high')
+})
+
+test('max ranks above every rung the rubric can produce', () => {
+  expect(effortRank('max')).toBeGreaterThan(effortRank('xhigh') as number)
+  // Leaving max is a downgrade, so it needs the high bar, not the lenient one.
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.9 }, 0.01, 0))
+  const barelyConfident = { ...(decision as NonNullable<typeof decision>), effortConfidence: 0.35 }
+  expect(route(barelyConfident, on('claude-sonnet-5', 'max'), config).effort).toBeNull()
+
+  const sure = { ...(decision as NonNullable<typeof decision>), effortConfidence: 0.8 }
+  expect(route(sure, on('claude-sonnet-5', 'max'), config).effort).toBe('low')
 })

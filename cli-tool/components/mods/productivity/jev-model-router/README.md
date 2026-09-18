@@ -9,7 +9,7 @@ Two backends, chosen by whichever key is set:
 | `typesafe` | `POST api.typesafe.ai/v1/systemone` | `jev-latest` | reported per answer |
 | `gateway` | `POST ai-gateway.vercel.sh/v4/ai/evaluation-model` | `typesafe-ai/jev` | derived from an optional distribution |
 
-TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the `minConfidence` threshold reads. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
+TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the confidence bars below read. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
 
 Three switches, and they are not equally safe:
 
@@ -68,12 +68,13 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   fastModel:              string  fast tier (default "haiku")
   balancedModel:          string  balanced tier (default "sonnet")
   deepModel:              string  deep tier (default "opus")
-  minConfidence:  number   below this the session's model is kept (default 0.6)
-  routeSubagents: boolean  route agent.spawn (default true)
-  routeMainLoop:  boolean  route the main loop (default false)
-  pinModelFloor:  boolean  never route below the current model (default true)
-  timeoutMs:      number   latency budget per classification (default 800)
-  logDecisions:   boolean  log each decision (default true)
+  minUpgradeConfidence:   number  bar to spend more (default 0.3)
+  minDowngradeConfidence: number  bar to spend less (default 0.6)
+  routeSubagentModel:     boolean model of each subagent (default true)
+  routeMainEffort:        boolean effort of the main loop (default true)
+  routeMainModel:         boolean model of the main loop (default false)
+  timeoutMs:              number  latency budget per classification (default 800)
+  logDecisions:           boolean log each decision (default true)
 ```
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:

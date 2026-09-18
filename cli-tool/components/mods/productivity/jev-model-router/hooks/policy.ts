@@ -214,9 +214,15 @@ export function effortLevel(score: number): Effort {
   return EFFORT_ORDER[index] as Effort
 }
 
-/** Where a reasoning level sits on the ladder, or null if it is not one. */
+/**
+ * Where a reasoning level sits on the ladder, or null when its place cannot
+ * be known. `max` is above every rung the rubric can produce, so it ranks
+ * above them without joining EFFORT_ORDER, which is also the set of values
+ * this router is allowed to ask for.
+ */
 export function effortRank(effort: string | number | undefined): number | null {
   if (typeof effort !== 'string') return null
+  if (effort === 'max') return EFFORT_ORDER.length
   const index = EFFORT_ORDER.indexOf(effort as Effort)
   return index === -1 ? null : index
 }
@@ -324,13 +330,21 @@ export function route(
 
   let effort: Effort | null = null
   if (effortScore !== null) {
-    const wanted = effortLevel(effortScore)
-    const wantedRank = EFFORT_ORDER.indexOf(wanted)
     const currentRank = effortRank(current.effort)
+    let wantedRank = EFFORT_ORDER.indexOf(effortLevel(effortScore))
+
+    // Risk raises the floor; it must never lower one. Forcing only skips the
+    // thresholds, so without this clamp a task already at `xhigh` or `max`
+    // and rated mechanically simple would be pulled down to `high` with no
+    // confidence check at all — the opposite of what the rule is for.
+    if (forced && currentRank !== null) wantedRank = Math.max(wantedRank, currentRank)
+
     // A numeric effort is the caller's own scale, not this ladder; leave it.
     const comparable = typeof current.effort !== 'number'
+    const wanted = EFFORT_ORDER[Math.min(EFFORT_ORDER.length - 1, wantedRank)] as Effort
     if (
       comparable &&
+      wantedRank !== currentRank &&
       (forced || allowed(wantedRank, currentRank, decision.effortConfidence, config))
     ) {
       effort = wanted
