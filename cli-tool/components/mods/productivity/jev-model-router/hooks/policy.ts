@@ -66,6 +66,12 @@ export const DEFAULT_BASE_URL: Record<Provider, string> = {
   gateway: 'https://ai-gateway.vercel.sh/v4/ai',
 }
 
+/**
+ * The Gateway's own protocol version, sent as `ai-gateway-protocol-version`.
+ * Tracks the `AI_GATEWAY_PROTOCOL_VERSION` of `@ai-sdk/gateway` (4.0.87).
+ */
+const AI_GATEWAY_PROTOCOL_VERSION = '0.0.1'
+
 export const DEFAULT_MODEL: Record<Provider, string> = {
   typesafe: 'jev-latest',
   gateway: 'typesafe-ai/jev',
@@ -149,6 +155,10 @@ export function requestHeaders(
     ...common,
     'ai-gateway-auth-method': 'api-key',
     'ai-model-id': model,
+    // The Gateway rejects any request that does not name the protocol it
+    // speaks: 400 "Unsupported gateway protocol version". Every other header
+    // here is accepted without it, so the omission fails the whole backend.
+    'ai-gateway-protocol-version': AI_GATEWAY_PROTOCOL_VERSION,
     'ai-evaluation-model-specification-version': '4',
   }
 }

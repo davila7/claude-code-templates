@@ -141,6 +141,20 @@ test('the Gateway request carries the model id and spec version it matches on', 
   expect(headers.authorization).toBe('Bearer key-under-test')
 })
 
+// Omitting this one is not a degraded request, it is a rejected one: the
+// Gateway answers 400 "Unsupported gateway protocol version" before it looks
+// at anything else, so the whole backend silently falls back to routing
+// nothing.
+test('the Gateway request names the protocol version, without which it is refused', () => {
+  const headers = requestHeaders('gateway', 'k', 'typesafe-ai/jev')
+  expect(headers['ai-gateway-protocol-version']).toBe('0.0.1')
+})
+
+test('the protocol version is a Gateway header and is never sent to TypeSafe', () => {
+  const headers = requestHeaders('typesafe', 'k', 'jev-latest')
+  expect(headers['ai-gateway-protocol-version']).toBeUndefined()
+})
+
 // --- TypeSafe's own API ------------------------------------------------------
 //
 // Same model, different wire shape: a yes/no question is a `noul` rather than a
