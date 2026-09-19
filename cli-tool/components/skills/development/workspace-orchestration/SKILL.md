@@ -1,8 +1,6 @@
 ---
 name: workspace-orchestration
-description: |
-  Use when working in a persistent-slot workspace that uses docko. Covers slot claims,
-  delegated teammate inheritance, and the rule that code edits inside slots/ require an active claim.
+description: Use when working in a persistent-slot workspace that uses docko. Covers slot claims, delegated teammate inheritance, and the rule that code edits inside slots/ require an active claim.
 ---
 
 # docko Workspace Orchestration
@@ -18,7 +16,8 @@ Use this skill whenever work touches files in `slots/` or when the user asks abo
 5. Add `--prefer <slot-id>` when a specific slot is the right one (it already has the branch, say). docko takes it when free and rotates normally when it is not.
 6. If every slot is busy and docko asks whether it should create a fresh managed clone, answer explicitly.
 7. Use `docko claim --session "$DOCKO_SESSION_ID" --resource slot --id <slot> --branch <branch> --task "<task>"` only when you already know the exact slot.
-8. Do the work inside that slot.
+8. Do the work inside that slot. On long-running work, keep the claim fresh:
+   `docko heartbeat --session "$DOCKO_SESSION_ID" --resource slot --id <slot>`
 9. Release the slot when done:
    `docko release --session "$DOCKO_SESSION_ID" --resource slot --id <slot>`
 
@@ -33,6 +32,7 @@ Prefer slash commands when installed:
 ## Rules
 
 - Work from the root. Edit code in `slots/*`.
+- If `$DOCKO_SESSION_ID` is empty (plugin hooks not installed, or a different runtime), stop before the first claim and resolve a real session id — never run claim or heartbeat with an empty `--session`. Use `docko session list --brief` or `docko session current` to pick one.
 - Never invent a session id. The PreToolUse hook checks the runtime's own session, so a made-up id claims a slot that then blocks your own writes. Use `$DOCKO_SESSION_ID`, or an id from `docko session list --brief`.
 - `branch` is claim metadata. docko records it and never runs `git checkout`.
 - Claims are slot-scoped. Two sessions cannot share a slot, and one claim does not reserve a branch, a PR, or a file.
