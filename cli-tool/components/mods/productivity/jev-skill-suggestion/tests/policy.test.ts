@@ -11,6 +11,7 @@ import {
   describeStatus,
   describeWide,
   detailOf,
+  modelInvocable,
   endpoint,
   installPathsOf,
   parseListing,
@@ -66,7 +67,8 @@ const wideAnswer = (
 /** A Gateway-shaped answer to the second request: `boolean` + `probability`. */
 const rerankAnswer = (winner: string, fits: Record<string, number>) => {
   const answers: Record<string, unknown> = { which: { type: 'choice', choice: winner } }
-  for (const [name, value] of Object.entries(fits)) answers[`fits::${name}`] = { type: 'boolean', probability: value }
+  for (const [name, value] of Object.entries(fits))
+    answers[`fits::${name}`] = { type: 'boolean', probability: value }
   return JSON.stringify({ answers })
 }
 
@@ -76,7 +78,12 @@ const PROSE = { acts_on_user_system: 0.05, would_follow_documented_procedure: 0.
 
 test('the listing parses one skill per entry, keeps a name with a colon whole, and joins wrapped lines', () => {
   const parsed = parseListing(LISTING)
-  expect(parsed.map((skill) => skill.name)).toEqual(['commit', 'engineering:code-review', 'pdf', 'deploy-checklist'])
+  expect(parsed.map((skill) => skill.name)).toEqual([
+    'commit',
+    'engineering:code-review',
+    'pdf',
+    'deploy-checklist',
+  ])
   expect(parsed[1]?.description).toBe(
     'Review code changes for security, performance, and correctness. Trigger with a PR URL or diff.',
   )
@@ -109,7 +116,10 @@ test('the catalog drops built-ins and excluded names, and narrows to the listing
 })
 
 test('the first request ranks every skill and asks the three gate nouls, boolean on the Gateway', () => {
-  const typesafe = wideQuestions('typesafe', skills) as Record<string, { type: string; criteria?: Record<string, string> }>
+  const typesafe = wideQuestions('typesafe', skills) as Record<
+    string,
+    { type: string; criteria?: Record<string, string> }
+  >
   expect(Object.keys(typesafe)).toEqual([
     'which',
     'gate::acts_on_user_system',
@@ -146,9 +156,16 @@ test('the ranking is the distribution, surest first; without one the named choic
 
 test('the rerank can flip the winner, and its fits nouls can reject the whole shortlist', () => {
   const wide = readWide(wideAnswer('powerpoint', DECK, ACTION))
-  const flipped = readRerank(rerankAnswer('pptx-author', { powerpoint: 0.73, 'pptx-author': 0.38, commit: 0.02 }))
-  expect(decide(wide, flipped, skills, config)).toEqual({ name: 'pptx-author', reason: 'rerank of 3, fits 0.38' })
-  const rejected = readRerank(rerankAnswer('powerpoint', { powerpoint: 0.2, 'pptx-author': 0.1, commit: 0.0 }))
+  const flipped = readRerank(
+    rerankAnswer('pptx-author', { powerpoint: 0.73, 'pptx-author': 0.38, commit: 0.02 }),
+  )
+  expect(decide(wide, flipped, skills, config)).toEqual({
+    name: 'pptx-author',
+    reason: 'rerank of 3, fits 0.38',
+  })
+  const rejected = readRerank(
+    rerankAnswer('powerpoint', { powerpoint: 0.2, 'pptx-author': 0.1, commit: 0.0 }),
+  )
   expect(decide(wide, rejected, skills, config)).toEqual({
     name: null,
     reason: 'nothing fits, best 0.20 < 0.3',
@@ -158,9 +175,16 @@ test('the rerank can flip the winner, and its fits nouls can reject the whole sh
   expect(decide(wide, stray, skills, config).name).toBeNull()
 })
 
-test('without a rerank the top of the ranking is suggested', () => {
+test('with the rerank off the top of the ranking is suggested; with it attempted and failed, nothing is', () => {
   const wide = readWide(wideAnswer('powerpoint', DECK, ACTION))
-  expect(decide(wide, null, skills, config)).toEqual({ name: 'powerpoint', reason: 'top of 4 (0.70), no rerank' })
+  expect(decide(wide, null, skills, config)).toEqual({
+    name: 'powerpoint',
+    reason: 'top of 4 (0.70), no rerank',
+  })
+  expect(decide(wide, null, skills, config, true)).toEqual({
+    name: null,
+    reason: 'rerank gave no answer; no suggestion',
+  })
   expect(decide(null, null, skills, config)).toEqual({ name: null, reason: 'no answer' })
 })
 
@@ -173,20 +197,28 @@ test('the built-in classifier gives one label and no gate; none means nothing', 
   expect(asked).toContain(`- ${NONE}:`)
 })
 
-test('the second request reads each candidate\'s detail and asks one fits noul per candidate', () => {
+test("the second request reads each candidate's detail and asks one fits noul per candidate", () => {
   const candidates: Candidate[] = [
-    { name: 'powerpoint', description: 'Create, read, edit .pptx', detail: 'Create, read, edit .pptx — # PowerPoint\nEdit decks…' },
+    {
+      name: 'powerpoint',
+      description: 'Create, read, edit .pptx',
+      detail: 'Create, read, edit .pptx — # PowerPoint\nEdit decks…',
+    },
     { name: 'pptx-author', description: 'Build decks', detail: 'Build decks — # Author\nHeadless…' },
   ]
-  const questions = rerankQuestions('typesafe', candidates) as Record<string, { type: string; instructions: string; criteria?: Record<string, string> }>
+  const questions = rerankQuestions('typesafe', candidates) as Record<
+    string,
+    { type: string; instructions: string; criteria?: Record<string, string> }
+  >
   expect(Object.keys(questions)).toEqual(['which', 'fits::powerpoint', 'fits::pptx-author'])
   expect(questions.which?.criteria?.powerpoint).toBe(candidates[0]?.detail)
   expect(questions['fits::pptx-author']?.instructions).toContain("'pptx-author'")
   expect(questions['fits::pptx-author']?.type).toBe('noul')
 })
 
-test('a skill\'s detail is its frontmatter description plus the opening of its body, frontmatter stripped', () => {
-  const markdown = '---\nname: pptx-author\ndescription: "Build PowerPoint decks headless with python-pptx, from an outline or a template"\n---\n# pptx-author\n\nUse python-pptx…'
+test("a skill's detail is its frontmatter description plus the opening of its body, frontmatter stripped", () => {
+  const markdown =
+    '---\nname: pptx-author\ndescription: "Build PowerPoint decks headless with python-pptx, from an outline or a template"\n---\n# pptx-author\n\nUse python-pptx…'
   const skill = skills[1] as Skill
   expect(detailOf(skill, markdown, 20)).toBe(
     'Build PowerPoint decks headless with python-pptx, from an outline or a template — # pptx-author\n\nUse p',
@@ -194,6 +226,14 @@ test('a skill\'s detail is its frontmatter description plus the opening of its b
   expect(detailOf(skill, null, 700)).toBe(skill.description)
   expect(detailOf({ name: 'pdf', description: '' }, null, 700)).toBe('A skill named pdf.')
   expect(detailOf({ name: 'pdf', description: '' }, 'no frontmatter here', 700)).toBe('no frontmatter here')
+})
+
+test('a skill whose frontmatter disables model invocation is never invocable; anything else is', () => {
+  expect(modelInvocable('---\nname: x\ndisable-model-invocation: true\n---\n# x')).toBe(false)
+  expect(modelInvocable('---\nname: x\ndisable-model-invocation: false\n---\n# x')).toBe(true)
+  expect(modelInvocable('---\nname: x\n---\ndisable-model-invocation: true')).toBe(true)
+  expect(modelInvocable('# no frontmatter')).toBe(true)
+  expect(modelInvocable(null)).toBe(true)
 })
 
 test('skill bodies are looked for where Claude Code lays skills out', () => {
@@ -205,7 +245,9 @@ test('skill bodies are looked for where Claude Code lays skills out', () => {
   expect(skillFileCandidates('engineering:code-review', 'engineering')).toContain(
     '.claude/skills/engineering/skills/code-review/SKILL.md',
   )
-  expect(pluginFileCandidates('/x/cache/engineering/1.0.0/', 'engineering:code-review', 'engineering')).toEqual([
+  expect(
+    pluginFileCandidates('/x/cache/engineering/1.0.0/', 'engineering:code-review', 'engineering'),
+  ).toEqual([
     '/x/cache/engineering/1.0.0/skills/code-review/SKILL.md',
     '/x/cache/engineering/1.0.0/commands/code-review.md',
   ])
@@ -259,7 +301,9 @@ test('the suggestion block uses the cookbook\'s words, and says "nothing" only w
 })
 
 test('the log lines name the backend, the gate, the ranking, the rerank and the pick', () => {
-  expect(describeSetup(null, '', true)).toBe('ready on the built-in classifier, no key set; withholding the skill listing')
+  expect(describeSetup(null, '', true)).toBe(
+    'ready on the built-in classifier, no key set; withholding the skill listing',
+  )
   expect(describeSetup(null, '', false, true)).toBe(
     'ready on the built-in classifier, by choice; leaving the skill listing in place',
   )
@@ -269,7 +313,9 @@ test('the log lines name the backend, the gate, the ranking, the rerank and the 
   )
   expect(describeWide(null, 4, null)).toBe('no answer from 4 candidates')
   const rerank = readRerank(rerankAnswer('pptx-author', { powerpoint: 0.73, 'pptx-author': 0.38 }))
-  expect(describeRerank(rerank, 90)).toBe('rerank → pptx-author (n/d) · fits powerpoint 0.73, pptx-author 0.38 · 90ms')
+  expect(describeRerank(rerank, 90)).toBe(
+    'rerank → pptx-author (n/d) · fits powerpoint 0.73, pptx-author 0.38 · 90ms',
+  )
   expect(describeStatus('pptx-author')).toBe('jev · skill: pptx-author')
   expect(describeStatus(null)).toBe('jev · no skill')
 })

@@ -66,7 +66,8 @@ This is where lookalikes separate — on one line the skill that *edits* `.pptx`
 The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session.
 
 - The Gateway answers a `noul` as a `boolean` with a `probability`; both shapes are read.
-- `rerank: false` skips the second request and suggests the top of the ranking, once the gate passes.
+- `rerank: false` skips the second request and suggests the top of the ranking, once the gate passes. A second request that was *attempted* and failed suggests nothing: the ranking's winner has not had its false-positive check.
+- A skill whose frontmatter says `disable-model-invocation: true` is never suggested, whichever path picked it: the engine leaves it out of the listing and the Skill tool refuses it. Before the first listing has been seen the candidates come from `$.command.list()`, which also names such skills, so their SKILL.md is the check (read for the shortlist and for the winner).
 - The built-in classifier answers one label from the descriptions, with no gate and no second request.
 
 Every failure — a non-2xx response, a timeout past `timeoutMs` on either request, a thrown error, a malformed body — lets the prompt through with no suggestion. The mod never blocks a prompt.

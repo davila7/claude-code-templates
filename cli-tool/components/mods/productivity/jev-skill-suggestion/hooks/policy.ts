@@ -84,11 +84,7 @@ export const DEFAULT_MODEL: Record<Provider, string> = {
  * a calibrated confidence; a forced backend whose key is missing resolves to
  * null rather than falling through to the other one's key.
  */
-export function selectProvider(
-  forced: string,
-  typesafeKey: string,
-  gatewayKey: string,
-): Provider | null {
+export function selectProvider(forced: string, typesafeKey: string, gatewayKey: string): Provider | null {
   if (forced === 'builtin') return null
   if (forced === 'typesafe') return typesafeKey ? 'typesafe' : null
   if (forced === 'gateway') return gatewayKey ? 'gateway' : null
@@ -266,6 +262,20 @@ export function detailOf(skill: Skill, markdown: string | null, excerptChars: nu
 }
 
 /**
+ * Whether a skill's own frontmatter lets the model invoke it. A skill with
+ * `disable-model-invocation: true` is left out of the engine's listing and
+ * refused by the Skill tool, so it must never be suggested; before the
+ * listing has been seen, this is the only way to tell. No file, or no such
+ * field, reads as invocable.
+ */
+export function modelInvocable(markdown: string | null): boolean {
+  if (!markdown) return true
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(markdown)
+  if (!frontmatter) return true
+  return !/^disable-model-invocation:\s*true\s*$/m.test(frontmatter[1] as string)
+}
+
+/**
  * The three questions about the request, each asking a different way whether
  * it wants an action taken rather than an explanation given. Questions about
  * subject matter would not separate "explain what a monad is" from a task
@@ -343,11 +353,7 @@ export function requestBody(
 }
 
 /** The request headers. */
-export function requestHeaders(
-  provider: Provider,
-  apiKey: string,
-  model: string,
-): Record<string, string> {
+export function requestHeaders(provider: Provider, apiKey: string, model: string): Record<string, string> {
   const common = { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` }
   if (provider === 'typesafe') return common
   return {
@@ -497,22 +503,34 @@ export interface Suggestion {
 }
 
 /**
- * At most one skill name for a request. Without a second request (rerank
- * off, or it failed), the top of the ranking stands, which is what the
- * first request alone can say.
+ * At most one skill name for a request. With the second request switched
+ * off, the top of the ranking stands, which is what the first request alone
+ * can say; a second request that was attempted and failed suggests nothing.
  */
 export function decide(
   wide: Wide | null,
   rerank: Rerank | null,
   skills: readonly Skill[],
   config: PolicyConfig,
+  /**
+   * Whether a second request was made: with one attempted and no answer,
+   * nothing is suggested, since the first request's winner has not had its
+   * false-positive check. Off means the second request was never meant to
+   * run, and the top of the ranking is the whole answer.
+   */
+  rerankAttempted = false,
 ): Suggestion {
   if (!wide) return { name: null, reason: 'no answer' }
   if (!passesGate(wide, config)) {
-    return { name: null, reason: `needs a skill ${(wide.gate as number).toFixed(2)} < ${config.gateThreshold}` }
+    return {
+      name: null,
+      reason: `needs a skill ${(wide.gate as number).toFixed(2)} < ${config.gateThreshold}`,
+    }
   }
   const shortlist = shortlistOf(wide, skills, config.shortlist)
   if (shortlist.length === 0) return { name: null, reason: 'nothing ranked' }
+
+  if (!rerank && rerankAttempted) return { name: null, reason: 'rerank gave no answer; no suggestion' }
 
   if (rerank) {
     const values = Object.values(rerank.fits)
@@ -545,12 +563,11 @@ export function decide(
  * sending nothing would leave "err on the side of loading" unopposed. With
  * the listing withheld there is nothing to oppose, so nothing is sent.
  */
-export function suggestionBlock(
-  suggested: Skill | null,
-  hidden: boolean,
-): string | null {
+export function suggestionBlock(suggested: Skill | null, hidden: boolean): string | null {
   if (!suggested) {
-    return hidden ? null : '<skill_relevance>\nNo skill in the roster appears relevant to this request.\n</skill_relevance>'
+    return hidden
+      ? null
+      : '<skill_relevance>\nNo skill in the roster appears relevant to this request.\n</skill_relevance>'
   }
   const lines = [
     '<skill_relevance>',
@@ -561,7 +578,9 @@ export function suggestionBlock(
     // have found there and the way to load it come along.
     lines.push(
       `${line(suggested)}`,
-      'Load it with the Skill tool (skill: "' + suggested.name + '") before you start. The full skill listing is withheld from your context; the user can invoke any skill by typing /name.',
+      'Load it with the Skill tool (skill: "' +
+        suggested.name +
+        '") before you start. The full skill listing is withheld from your context; the user can invoke any skill by typing /name.',
     )
   }
   lines.push('</skill_relevance>')

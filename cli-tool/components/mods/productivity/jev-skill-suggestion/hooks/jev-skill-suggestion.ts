@@ -82,6 +82,7 @@ import {
   passesGate,
   pluginFileCandidates,
   readRerank,
+  modelInvocable,
   readWide,
   rerankQuestions,
   requestBody,
@@ -316,15 +317,23 @@ export const register: Register = (on, options) => {
     // Request 2: re-read the shortlist with each skill's full text, and let
     // every candidate be rejected on its own.
     let rerank: Rerank | null = null
+    let rerankAttempted = false
+    // Before the listing has been seen, `$.command.list()` may name a skill
+    // the model is not allowed to invoke; its own frontmatter tells.
+    const barred: string[] = []
     if (active && rerankEnabled && wide && passesGate(wide, policy)) {
-      const shortlist = shortlistOf(wide, skills, policy.shortlist)
-      if (shortlist.length > 0) {
-        const rerankStartedAt = await $.clock.now()
-        const candidates: Candidate[] = []
-        for (const skill of shortlist) {
-          const body = await bodyOf(skill, pluginOf.get(skill.name))
-          candidates.push({ ...skill, detail: detailOf(skill, body, excerptChars) })
+      const candidates: Candidate[] = []
+      for (const skill of shortlistOf(wide, skills, policy.shortlist)) {
+        const body = await bodyOf(skill, pluginOf.get(skill.name))
+        if (!modelInvocable(body)) {
+          barred.push(skill.name)
+          continue
         }
+        candidates.push({ ...skill, detail: detailOf(skill, body, excerptChars) })
+      }
+      if (candidates.length > 0) {
+        const rerankStartedAt = await $.clock.now()
+        rerankAttempted = true
         const answer = await ask(e.text, rerankQuestions(active, candidates), 'rerank')
         if (answer) rerank = readRerank(answer)
         if (logDecisions) {
@@ -337,8 +346,20 @@ export const register: Register = (on, options) => {
       }
     }
 
-    const decision = decide(wide, rerank, skills, policy)
-    const pick = decision.name ? (skills.find((skill) => skill.name === decision.name) ?? null) : null
+    const offered = barred.length > 0 ? skills.filter((skill) => !barred.includes(skill.name)) : skills
+    let decision = decide(wide, rerank, offered, policy, rerankAttempted)
+    let pick = decision.name ? (skills.find((skill) => skill.name === decision.name) ?? null) : null
+    // The winner's own frontmatter has the last word, whichever path picked it.
+    if (pick && !barred.includes(pick.name) && !modelInvocable(await bodyOf(pick, pluginOf.get(pick.name)))) {
+      barred.push(pick.name)
+      decision = { name: null, reason: `/${pick.name} has disable-model-invocation` }
+      pick = null
+    }
+    if (logDecisions && barred.length > 0) {
+      $.ui.log(
+        `[jev-skill-suggestion] not model-invocable, left out: ${barred.map((name) => `/${name}`).join(', ')}`,
+      )
+    }
     // A row in the transcript scrolls away; this line stays on screen.
     if (logDecisions) $.ui.status(describeStatus(pick?.name ?? null))
     if (logDecisions) {
