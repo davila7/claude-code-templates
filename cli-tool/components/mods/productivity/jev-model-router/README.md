@@ -51,6 +51,65 @@ The two mistakes do not cost the same, so they do not clear the same bar:
 
 Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
 
+## What you see in the transcript
+
+With `logDecisions` on (the default), the router reports every step of its own
+work, because nothing else in Claude Code shows it: the model and effort it
+rewrites are parameters of each request, not the session's settings, so the
+status line, the header and the effort box never move whatever it decides.
+
+```
+[jev-model-router] ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, main effort
+[jev-model-router] jev: tier fast (0.87) · effort 0.4 → low (0.71) · risky 0.02 · 249ms
+[jev-model-router] main loop → effort low: fast (confidence 0.87)
+[jev-model-router] jev: tier fast (0.41) · effort 0.4 → low (0.38) · risky 0.01 · 210ms
+[jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
+```
+
+- The first line appears once per session, the first time a hook runs. It is
+  the proof the module loaded and which backend answers it.
+- A `jev:` line is what the decision model replied, before any policy is
+  applied — the tier, the effort score and the risk, each with its confidence,
+  and how long the call took.
+- The line under it is what the policy then did. The last pair above is a
+  working router declining to act: it wanted to spend less but did not clear
+  `minDowngradeConfidence`.
+
+It also keeps a one-line status on screen, replaced as it goes:
+
+```
+jev · fast 0.87 → haiku/low
+jev · fast 0.41 · unchanged
+```
+
+`confidence n/d` means the backend reported no confidence, which the built-in
+classifier never does and the Gateway does whenever its probability
+distribution is absent; the `ready on` line says which one answered.
+
+**No lines at all** has three causes, and only the last is the module failing
+to load. Check them in this order:
+
+1. **You ran `claude -p` (or the SDK).** A headless run has no transcript and
+   no status row: every line still goes to the debug log,
+   `~/.claude/debug/<session-id>.txt` (a `.txt`, not a `.log`; `latest` is a
+   symlink to the newest), and an SDK host receives each one as `ui_log`. The
+   router is working; look there.
+2. **The plugin was never loaded.** Claude Code does not adopt a plugin from
+   the project's `.claude/skills/`, which is where `--mod` writes it. Start
+   the session with `--plugin-dir` or move it to `~/.claude/skills/` (see
+   Install). `claude --debug` settles it: a loaded module prints
+   `hooks module jev-model-router@inline loaded (worker, …); events: prompt.submit,turn.step,agent.spawn`
+   (`@skills-dir` when loaded from `~/.claude/skills/`); no such line means
+   the plugin is not in the session.
+3. **Function hooks are off.** Without `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`
+   the debug log says `installed plugins' hooks modules not loaded: rollout
+   flag (tengu_plugin_hooks_modules) is off`. Set the flag; Claude Code must
+   be 2.1.259+.
+
+A `ready on the built-in classifier, no key set` line when you did set a key
+means the key sits under the wrong `pluginConfigs` entry: the key must match
+the plugin's id, which depends on how it was loaded (see Options).
+
 ## Privacy
 
 With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt; the subagent path sends the subagent's prompt, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.
@@ -83,14 +142,33 @@ Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, 
 { "pluginConfigs": { "jev-model-router": { "options": { "typesafeApiKey": "" } } } }
 ```
 
+The entry's key is the plugin's id, and the id follows how the plugin was
+loaded: `"jev-model-router"` with `--plugin-dir`, `"jev-model-router@skills-dir"`
+when auto-loaded from `~/.claude/skills/`. Under the wrong key every option
+stays at its default, and the `ready on` line reports `no key set`.
+
 ## Install
 
 ```sh
 npx claude-code-templates@latest --mod productivity/jev-model-router
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-model-router
+```
+
+`--mod` writes the plugin to `.claude/skills/jev-model-router/` in the project.
+Claude Code does not adopt plugins from a project's `.claude/skills/`, so it has
+to be named on the command line with `--plugin-dir` (per session, with hot
+reload; loaded as `jev-model-router@inline`). To have it load on its own in
+every session, put it in the user-level directory instead, which Claude Code
+scans at start:
+
+```sh
+mv .claude/skills/jev-model-router ~/.claude/skills/jev-model-router
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It is written to `.claude/skills/jev-model-router/`, which Claude Code auto-loads as `jev-model-router@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-model-router`. `claude plugin validate .claude/skills/jev-model-router` prints every event it hooks and every `$` call it makes.
+It then loads as `jev-model-router@skills-dir`, and its options go under that
+key in `pluginConfigs` (see Options). Either way, `claude plugin validate
+<dir>` prints every event it hooks and every `$` call it makes.
 
 ## Tests
 

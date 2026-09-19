@@ -45,6 +45,9 @@ import type { Register } from 'claude-code'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
+  describeDecision,
+  describeSetup,
+  describeStatus,
   endpoint,
   pendingDecisions,
   readDecision,
@@ -113,10 +116,33 @@ export const register: Register = (on, options) => {
   // reports no decision when two prompts are waiting at once, rather than
   // routing a turn on a decision made for a different prompt.
   const pending = pendingDecisions()
+  // Said once, the first time a hook runs. A router that loaded and one that
+  // never loaded are otherwise told apart only by the absence of later lines,
+  // and absence is not evidence: the policy leaves most turns alone anyway.
+  let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
 
   on('prompt.submit', async ($, e, next) => {
+    // Before the routing guards: a module whose switches are all off has still
+    // loaded, and that is exactly when its silence is most misleading.
+    if (!announced) {
+      announced = true
+      if (logDecisions) {
+        $.ui.log(
+          `[jev-model-router] ${describeSetup(
+            active,
+            url,
+            {
+              subagentModel: routeSubagentModel,
+              mainEffort: routeMainEffort,
+              mainModel: routeMainModel,
+            },
+            forced === 'builtin',
+          )}`,
+        )
+      }
+    }
     if (!routeMainLoop) return next(e)
 
     if (!unusableReported) {
@@ -124,6 +150,7 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
     }
 
+    const startedAt = await $.clock.now()
     let decision: Decision | null = null
     if (active) {
       try {
@@ -137,6 +164,7 @@ export const register: Register = (on, options) => {
         ])
         if (response && response.ok) decision = readDecision(response.text)
         else if (response) $.ui.log(`[jev-model-router] ${active} responded ${response.status}`)
+        else $.ui.log(`[jev-model-router] classification passed ${timeoutMs}ms; leaving the turn alone`)
       } catch (error) {
         $.ui.log(`[jev-model-router] classification failed: ${String(error)}`)
       }
@@ -159,6 +187,13 @@ export const register: Register = (on, options) => {
       }
     }
 
+    // What the decision model actually answered, whatever the policy then
+    // does with it. This is the line that proves the classification ran.
+    if (logDecisions) {
+      const ms = (await $.clock.now()) - startedAt
+      $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}`)
+    }
+
     pending.put(decision)
     return next(e)
   })
@@ -172,15 +207,26 @@ export const register: Register = (on, options) => {
       return yield* next(applied ? { ...e, ...applied } : e)
     }
 
-    const routing = route(pending.take(), { model: e.model, effort: e.effort }, policy)
+    const decision = pending.take()
+    const routing = route(decision, { model: e.model, effort: e.effort }, policy)
     const change: { model?: string; effort?: Effort } = {}
     if (routeMainModel && routing.model) change.model = routing.model
     if (routeMainEffort && routing.effort) change.effort = routing.effort
 
     appliedTurnId = e.turnId
     applied = Object.keys(change).length > 0 ? change : null
+    // A row in the transcript scrolls away; this line stays on screen.
+    if (logDecisions) $.ui.status(describeStatus(decision, applied))
 
-    if (!applied) return yield* next(e)
+    if (!applied) {
+      // A turn left alone is the common case, and it used to be silent, which
+      // made a working mod look like one that never loaded. Say what happened.
+      if (logDecisions) {
+        const suppressed = routing.model && !routeMainModel ? ' (main-loop model routing off)' : ''
+        $.ui.log(`[jev-model-router] main loop: ${routing.reason}${suppressed}`)
+      }
+      return yield* next(e)
+    }
     if (logDecisions) {
       const what = [change.model, change.effort && `effort ${change.effort}`]
         .filter(Boolean)
@@ -191,6 +237,26 @@ export const register: Register = (on, options) => {
   })
 
   on('agent.spawn', async ($, e, next) => {
+    // Before the routing guards: a module whose switches are all off has still
+    // loaded, and that is exactly when its silence is most misleading.
+    if (!announced) {
+      announced = true
+      if (logDecisions) {
+        $.ui.log(
+          `[jev-model-router] ${describeSetup(
+            active,
+            url,
+            {
+              subagentModel: routeSubagentModel,
+              mainEffort: routeMainEffort,
+              mainModel: routeMainModel,
+            },
+            forced === 'builtin',
+          )}`,
+        )
+      }
+    }
+
     // A fork inherits its parent's model; `model` is ignored for it.
     if (!routeSubagentModel || e.fork) return next(e)
 
@@ -199,6 +265,7 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
     }
 
+    const startedAt = await $.clock.now()
     let decision: Decision | null = null
     if (active) {
       try {
@@ -216,6 +283,7 @@ export const register: Register = (on, options) => {
         ])
         if (response && response.ok) decision = readDecision(response.text)
         else if (response) $.ui.log(`[jev-model-router] ${active} responded ${response.status}`)
+        else $.ui.log(`[jev-model-router] classification passed ${timeoutMs}ms; leaving the subagent alone`)
       } catch (error) {
         $.ui.log(`[jev-model-router] classification failed: ${String(error)}`)
       }
@@ -236,12 +304,20 @@ export const register: Register = (on, options) => {
       }
     }
 
+    if (logDecisions) {
+      const ms = (await $.clock.now()) - startedAt
+      $.ui.log(`[jev-model-router] jev (${e.subagentType}): ${describeDecision(decision, ms)}`)
+    }
+
     // The subagent's own model wins when the caller named one; otherwise it
     // would inherit the parent's, so that is what a change is measured from.
     // The Agent tool takes no effort, so only the model is ours to set here.
     const current = e.model ?? e.parentModel
     const { model, reason } = route(decision, { model: current }, policy)
-    if (!model) return next(e)
+    if (!model) {
+      if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType}: ${reason}`)
+      return next(e)
+    }
     if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType} → ${model}: ${reason}`)
     return next({ ...e, model })
   })

@@ -4,6 +4,9 @@ import {
   effortRank,
   endpoint,
   questions,
+  describeDecision,
+  describeSetup,
+  describeStatus,
   pendingDecisions,
   rankOf,
   readDecision,
@@ -273,4 +276,84 @@ test('the slot recovers after an ambiguous round', () => {
   expect(pending.take()).toBeNull()
   pending.put(deepDecision)
   expect(pending.take()).toEqual(deepDecision)
+})
+
+// A turn the router leaves alone still has to say so: a silent no-op and a mod
+// that never loaded look identical in the transcript otherwise.
+test('a no-change decision reports what it wanted and what it kept', () => {
+  const decision: Decision = {
+    tier: 'fast',
+    confidence: 0.41,
+    risky: null,
+    effort: 0,
+    effortConfidence: 0.41,
+  }
+  const routing = route(decision, { model: 'sonnet', effort: 'medium' }, config)
+  expect(routing.model).toBeNull()
+  expect(routing.effort).toBeNull()
+  expect(routing.reason).toBe('kept sonnet/medium, wanted haiku/low (confidence 0.41)')
+})
+
+test('a no-change decision without a confidence says so rather than going quiet', () => {
+  const decision: Decision = {
+    tier: 'fast',
+    confidence: null,
+    risky: null,
+    effort: 0,
+    effortConfidence: null,
+  }
+  const routing = route(decision, { model: 'sonnet', effort: 'medium' }, config)
+  expect(routing.reason).toBe('kept sonnet/medium, wanted haiku/low (confidence n/d)')
+})
+
+test('no classification at all is its own reason, not a no-change', () => {
+  expect(route(null, { model: 'sonnet', effort: 'medium' }, config).reason).toBe('no decision')
+})
+
+// The transcript is the only place a mod's work is visible, so the lines it
+// writes are a contract, not decoration.
+test('the setup line names the backend and which switches are on', () => {
+  expect(
+    describeSetup('typesafe', 'https://api.typesafe.ai/v1/systemone', {
+      subagentModel: true,
+      mainEffort: true,
+      mainModel: false,
+    }),
+  ).toBe(
+    'ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, main effort',
+  )
+})
+
+test('the setup line says so when there is no backend and when nothing routes', () => {
+  expect(
+    describeSetup(null, '', { subagentModel: false, mainEffort: false, mainModel: false }),
+  ).toBe('ready on the built-in classifier, no key set; routing nothing, every switch is off')
+})
+
+// `provider: "builtin"` is a deliberate choice; reporting it as a missing key
+// sends someone looking for a credential they meant to leave out.
+test('choosing the built-in classifier is not reported as a missing key', () => {
+  expect(
+    describeSetup(null, '', { subagentModel: true, mainEffort: true, mainModel: false }, true),
+  ).toBe('ready on the built-in classifier, by choice; routing subagent model, main effort')
+})
+
+test('the decision line carries every answer and the latency', () => {
+  const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2.8))
+  expect(describeDecision(decision, 249.4)).toBe(
+    'tier deep (0.95) · effort 2.8 → xhigh (0.90) · risky 0.01 · 249ms',
+  )
+})
+
+test('a classification that never answered says that, not nothing', () => {
+  expect(describeDecision(null, 800)).toBe('no answer · 800ms')
+})
+
+test('the status line distinguishes a change from a deliberate no-change', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.87 }))
+  expect(describeStatus(decision, { model: 'haiku', effort: 'low' })).toBe(
+    'jev · fast 0.87 → haiku/low',
+  )
+  expect(describeStatus(decision, null)).toBe('jev · fast 0.87 · unchanged')
+  expect(describeStatus(null, null)).toBe('jev · no answer')
 })

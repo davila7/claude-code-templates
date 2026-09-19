@@ -1,6 +1,6 @@
 {
   "name": "jev-model-router",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
