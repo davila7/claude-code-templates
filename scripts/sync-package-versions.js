@@ -14,7 +14,7 @@ if (requestedVersions.length > 1 || (checkOnly && requestedVersions.length > 0))
 
 const requestedVersion = requestedVersions[0];
 const semverPattern =
-  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:(?:[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)|0|[1-9]\d*)(?:\.(?:(?:[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)|0|[1-9]\d*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
 if (requestedVersion && !semverPattern.test(requestedVersion)) {
   throw new Error(`Invalid semantic version: ${requestedVersion}`);
@@ -72,7 +72,9 @@ if (mismatches.length > 0 && checkOnly) {
   for (const mismatch of mismatches) {
     console.error(`- ${mismatch}`);
   }
-  console.error('Run `node scripts/sync-package-versions.js` to synchronize them.');
+  console.error(
+    `Run \`npm run version:set -- ${expectedVersion}\` from the repository root to synchronize them.`
+  );
   process.exit(1);
 }
 
