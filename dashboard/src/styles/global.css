@@ -890,3 +890,142 @@ html.light .stat-today-active {
 .card-terminal:hover {
   border-color: var(--color-accent);
 }
+
+/* ---------------------------------------------------------------------------
+   Home hero counters (HomeStats.tsx)
+   Compact odometer strip sitting under the AI TEMPLATES banner.
+   --------------------------------------------------------------------------- */
+.hs-root {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 10px auto 0;
+  padding: 8px 6px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-1);
+}
+
+.hs-item {
+  display: flex;
+  align-items: stretch;
+}
+
+.hs-divider {
+  width: 1px;
+  margin: 4px 0;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.hs-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.hs-link:hover {
+  background: var(--color-card-hover);
+}
+
+.hs-link:hover .hs-value {
+  color: var(--color-accent);
+}
+
+.hs-value {
+  /* Height of one digit cell; the JS transform steps by this exact amount. */
+  --hs-cell-h: 1.15em;
+  display: inline-flex;
+  align-items: flex-start;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  transition: color 150ms ease;
+}
+
+.hs-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* One digit column: a 1em window over a strip of 0-9 repeated. */
+.hs-digit {
+  display: inline-block;
+  height: var(--hs-cell-h);
+  overflow: hidden;
+  vertical-align: top;
+  /* Fade the sliver of the neighbouring digit that shows mid-roll. The solid
+     band (16%-84%) is wider than a digit glyph, so a settled digit is intact. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 16%,
+    rgba(0, 0, 0, 1) 84%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 16%,
+    rgba(0, 0, 0, 1) 84%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hs-strip {
+  display: block;
+  will-change: transform;
+}
+
+.hs-cell {
+  display: block;
+  height: var(--hs-cell-h);
+  line-height: var(--hs-cell-h);
+  text-align: center;
+}
+
+.hs-sep {
+  display: inline-block;
+  height: var(--hs-cell-h);
+  line-height: var(--hs-cell-h);
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 640px) {
+  .hs-cell-wrap {
+    padding: 2px 10px;
+  }
+
+  .hs-value {
+    font-size: 16px;
+  }
+
+  .hs-label {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-strip {
+    transition: none !important;
+  }
+}

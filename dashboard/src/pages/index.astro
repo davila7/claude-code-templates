@@ -7,6 +7,7 @@ import JobsPreview from '../components/JobsPreview.tsx';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
+import HomeStats from '../components/HomeStats.tsx';
 
 export const prerender = true;
 ---
@@ -55,6 +56,7 @@ export const prerender = true;
           <span class="status-dot"></span>
           <span class="font-ui-mono text-[12px] text-[var(--color-text-secondary)]">Ready-to-use configurations for your Claude Code projects</span>
         </div>
+        <HomeStats client:load />
       </div>
 
       {/* <FeaturedSection /> */}
