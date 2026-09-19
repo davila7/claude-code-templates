@@ -45,6 +45,9 @@ import type { Register } from 'claude-code'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
+  describeDecision,
+  describeSetup,
+  describeStatus,
   endpoint,
   pendingDecisions,
   readDecision,
@@ -113,6 +116,10 @@ export const register: Register = (on, options) => {
   // reports no decision when two prompts are waiting at once, rather than
   // routing a turn on a decision made for a different prompt.
   const pending = pendingDecisions()
+  // Said once, the first time a hook runs. A router that loaded and one that
+  // never loaded are otherwise told apart only by the absence of later lines,
+  // and absence is not evidence: the policy leaves most turns alone anyway.
+  let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
 
@@ -123,7 +130,20 @@ export const register: Register = (on, options) => {
       unusableReported = true
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
     }
+    if (!announced) {
+      announced = true
+      if (logDecisions) {
+        $.ui.log(
+          `[jev-model-router] ${describeSetup(active, url, {
+            subagentModel: routeSubagentModel,
+            mainEffort: routeMainEffort,
+            mainModel: routeMainModel,
+          })}`,
+        )
+      }
+    }
 
+    const startedAt = await $.clock.now()
     let decision: Decision | null = null
     if (active) {
       try {
@@ -160,6 +180,13 @@ export const register: Register = (on, options) => {
       }
     }
 
+    // What the decision model actually answered, whatever the policy then
+    // does with it. This is the line that proves the classification ran.
+    if (logDecisions) {
+      const ms = (await $.clock.now()) - startedAt
+      $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}`)
+    }
+
     pending.put(decision)
     return next(e)
   })
@@ -173,13 +200,16 @@ export const register: Register = (on, options) => {
       return yield* next(applied ? { ...e, ...applied } : e)
     }
 
-    const routing = route(pending.take(), { model: e.model, effort: e.effort }, policy)
+    const decision = pending.take()
+    const routing = route(decision, { model: e.model, effort: e.effort }, policy)
     const change: { model?: string; effort?: Effort } = {}
     if (routeMainModel && routing.model) change.model = routing.model
     if (routeMainEffort && routing.effort) change.effort = routing.effort
 
     appliedTurnId = e.turnId
     applied = Object.keys(change).length > 0 ? change : null
+    // A row in the transcript scrolls away; this line stays on screen.
+    if (logDecisions) $.ui.status(describeStatus(decision, applied))
 
     if (!applied) {
       // A turn left alone is the common case, and it used to be silent, which
@@ -207,7 +237,20 @@ export const register: Register = (on, options) => {
       unusableReported = true
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
     }
+    if (!announced) {
+      announced = true
+      if (logDecisions) {
+        $.ui.log(
+          `[jev-model-router] ${describeSetup(active, url, {
+            subagentModel: routeSubagentModel,
+            mainEffort: routeMainEffort,
+            mainModel: routeMainModel,
+          })}`,
+        )
+      }
+    }
 
+    const startedAt = await $.clock.now()
     let decision: Decision | null = null
     if (active) {
       try {
@@ -244,6 +287,11 @@ export const register: Register = (on, options) => {
       } catch (error) {
         $.ui.log(`[jev-model-router] built-in classifier failed: ${String(error)}`)
       }
+    }
+
+    if (logDecisions) {
+      const ms = (await $.clock.now()) - startedAt
+      $.ui.log(`[jev-model-router] jev (${e.subagentType}): ${describeDecision(decision, ms)}`)
     }
 
     // The subagent's own model wins when the caller named one; otherwise it

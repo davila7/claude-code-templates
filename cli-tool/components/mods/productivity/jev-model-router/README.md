@@ -53,23 +53,40 @@ Every other failure — a non-2xx response, a timeout, a malformed body, a throw
 
 ## What you see in the transcript
 
-With `logDecisions` on (the default), the router writes one dim line per task
-it looked at — including the tasks it decided to leave alone, which are the
-common case:
+With `logDecisions` on (the default), the router reports every step of its own
+work, because nothing else in Claude Code shows it: the model and effort it
+rewrites are parameters of each request, not the session's settings, so the
+status line, the header and the effort box never move whatever it decides.
 
 ```
-[jev-model-router] Explore → haiku: fast (confidence 0.87)
-[jev-model-router] main loop → effort high: deep (confidence 0.91)
-[jev-model-router] main loop: kept sonnet/medium, wanted haiku/low (confidence 0.41)
-[jev-model-router] classification passed 800ms; leaving the turn alone
-[jev-model-router] api.typesafe.ai responded 401
+[jev-model-router] ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, main effort
+[jev-model-router] jev: tier fast (0.87) · effort 0.4 → low (0.71) · risky 0.02 · 249ms
+[jev-model-router] main loop → effort low: fast (confidence 0.87)
+[jev-model-router] jev: tier fast (0.41) · effort 0.6 → low (0.38) · risky 0.01 · 210ms
+[jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
 ```
 
-The third line is a working router declining to act: it wanted to spend less
-but did not clear `minDowngradeConfidence`. Reading `confidence n/d` in place
-of a number means no key reached the mod and the built-in classifier answered.
-Silence means the mod is not loaded at all — check
-`CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` and that Claude Code is 2.1.259+.
+- The first line appears once per session, the first time a hook runs. It is
+  the proof the module loaded and which backend answers it.
+- A `jev:` line is what the decision model replied, before any policy is
+  applied — the tier, the effort score and the risk, each with its confidence,
+  and how long the call took.
+- The line under it is what the policy then did. The last pair above is a
+  working router declining to act: it wanted to spend less but did not clear
+  `minDowngradeConfidence`.
+
+It also keeps a one-line status on screen, replaced as it goes:
+
+```
+jev · fast 0.87 → haiku/low
+jev · fast 0.41 · unchanged
+```
+
+`confidence n/d` in place of a number means no key reached the mod and the
+built-in classifier answered. **No lines at all** means the module is not
+loaded: check `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`, that Claude Code is
+2.1.259+, and run `claude --debug`, which prints
+`hooks module jev-model-router loaded … events: prompt.submit, turn.step, agent.spawn`.
 
 ## Privacy
 

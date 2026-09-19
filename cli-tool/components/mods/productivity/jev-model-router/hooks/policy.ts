@@ -399,3 +399,65 @@ export function pendingDecisions(): {
     },
   }
 }
+
+/** A number for the log, or `n/d` when the backend reported none. */
+function reported(value: number | null): string {
+  return value === null ? 'n/d' : value.toFixed(2)
+}
+
+/**
+ * The one-time line that says the router is alive, which backend answers it,
+ * and which of the three switches are on.
+ *
+ * Without this, a router that loaded and a router that never loaded are told
+ * apart only by the absence of later lines, which is not evidence of anything.
+ */
+export function describeSetup(
+  provider: Provider | null,
+  url: string,
+  switches: { subagentModel: boolean; mainEffort: boolean; mainModel: boolean },
+): string {
+  const backend = provider ? `${provider} (${url})` : 'the built-in classifier, no key set'
+  const on = [
+    switches.subagentModel && 'subagent model',
+    switches.mainEffort && 'main effort',
+    switches.mainModel && 'main model',
+  ].filter(Boolean)
+  return `ready on ${backend}; routing ${on.length > 0 ? on.join(', ') : 'nothing, every switch is off'}`
+}
+
+/**
+ * What the decision model answered, before any policy touches it: the raw
+ * tier, effort and risk with their confidences, and how long it took.
+ *
+ * This is the line that shows the classification happened at all, separately
+ * from whether the policy then decided to act on it.
+ */
+export function describeDecision(decision: Decision | null, ms: number | null): string {
+  const took = ms === null ? '' : ` · ${Math.round(ms)}ms`
+  if (!decision) return `no answer${took}`
+
+  const parts = [`tier ${decision.tier} (${reported(decision.confidence)})`]
+  if (decision.effort !== null) {
+    parts.push(
+      `effort ${decision.effort.toFixed(1)} → ${effortLevel(decision.effort)} (${reported(decision.effortConfidence)})`,
+    )
+  }
+  if (decision.risky !== null) parts.push(`risky ${reported(decision.risky)}`)
+  return parts.join(' · ') + took
+}
+
+/**
+ * The persistent status line: the last thing the router did, short enough to
+ * sit on screen beside the engine's own notices.
+ */
+export function describeStatus(
+  decision: Decision | null,
+  change: { model?: string; effort?: Effort } | null,
+): string {
+  if (!decision) return 'jev · no answer'
+  const asked = `${decision.tier} ${reported(decision.confidence)}`
+  if (!change) return `jev · ${asked} · unchanged`
+  const to = [change.model, change.effort].filter(Boolean).join('/')
+  return `jev · ${asked} → ${to}`
+}

@@ -4,6 +4,9 @@ import {
   effortRank,
   endpoint,
   questions,
+  describeDecision,
+  describeSetup,
+  describeStatus,
   pendingDecisions,
   rankOf,
   readDecision,
@@ -305,4 +308,44 @@ test('a no-change decision without a confidence says so rather than going quiet'
 
 test('no classification at all is its own reason, not a no-change', () => {
   expect(route(null, { model: 'sonnet', effort: 'medium' }, config).reason).toBe('no decision')
+})
+
+// The transcript is the only place a mod's work is visible, so the lines it
+// writes are a contract, not decoration.
+test('the setup line names the backend and which switches are on', () => {
+  expect(
+    describeSetup('typesafe', 'https://api.typesafe.ai/v1/systemone', {
+      subagentModel: true,
+      mainEffort: true,
+      mainModel: false,
+    }),
+  ).toBe(
+    'ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, main effort',
+  )
+})
+
+test('the setup line says so when there is no backend and when nothing routes', () => {
+  expect(
+    describeSetup(null, '', { subagentModel: false, mainEffort: false, mainModel: false }),
+  ).toBe('ready on the built-in classifier, no key set; routing nothing, every switch is off')
+})
+
+test('the decision line carries every answer and the latency', () => {
+  const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2.8))
+  expect(describeDecision(decision, 249.4)).toBe(
+    'tier deep (0.95) · effort 2.8 → xhigh (0.90) · risky 0.01 · 249ms',
+  )
+})
+
+test('a classification that never answered says that, not nothing', () => {
+  expect(describeDecision(null, 800)).toBe('no answer · 800ms')
+})
+
+test('the status line distinguishes a change from a deliberate no-change', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.87 }))
+  expect(describeStatus(decision, { model: 'haiku', effort: 'low' })).toBe(
+    'jev · fast 0.87 → haiku/low',
+  )
+  expect(describeStatus(decision, null)).toBe('jev · fast 0.87 · unchanged')
+  expect(describeStatus(null, null)).toBe('jev · no answer')
 })
