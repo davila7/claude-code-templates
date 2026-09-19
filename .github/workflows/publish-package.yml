@@ -24,15 +24,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify package versions
-        run: npm run check:version-sync
-
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@davila7'
+
+      - name: Verify package versions
+        run: npm run check:version-sync
 
       - name: Configure package for GitHub Packages
         working-directory: ./cli-tool

@@ -4,7 +4,21 @@ const fs = require('fs');
 const path = require('path');
 
 const repositoryRoot = path.resolve(__dirname, '..');
-const checkOnly = process.argv.includes('--check');
+const cliArguments = process.argv.slice(2);
+const checkOnly = cliArguments.includes('--check');
+const requestedVersions = cliArguments.filter((argument) => argument !== '--check');
+
+if (requestedVersions.length > 1 || (checkOnly && requestedVersions.length > 0)) {
+  throw new Error('Usage: sync-package-versions.js [--check | X.Y.Z]');
+}
+
+const requestedVersion = requestedVersions[0];
+const semverPattern =
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+
+if (requestedVersion && !semverPattern.test(requestedVersion)) {
+  throw new Error(`Invalid semantic version: ${requestedVersion}`);
+}
 
 function readJson(relativePath) {
   const absolutePath = path.join(repositoryRoot, relativePath);
@@ -16,8 +30,9 @@ function readJson(relativePath) {
 }
 
 const rootPackage = readJson('package.json');
-const expectedVersion = rootPackage.data.version;
+const expectedVersion = requestedVersion || rootPackage.data.version;
 const versionFiles = [
+  rootPackage,
   readJson('package-lock.json'),
   readJson('cli-tool/package.json'),
   readJson('cli-tool/package-lock.json'),

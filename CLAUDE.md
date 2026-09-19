@@ -12,7 +12,7 @@ Node.js CLI tool for managing Claude Code components (agents, commands, MCPs, ho
 # Development
 npm install                    # Install dependencies
 npm test                       # Run tests
-npm version patch|minor|major  # Bump version
+npm run version:set -- X.Y.Z   # Bump every package manifest and lockfile
 npm publish                    # Publish to npm
 
 # Component catalog
@@ -229,7 +229,7 @@ npm test
 
 # 3. Check current npm version and align both package manifests
 npm view claude-code-templates version  # check latest on registry
-npm version X.Y.Z --no-git-tag-version  # also syncs cli-tool/package*.json
+npm run version:set -- X.Y.Z   # X.Y.Z = one patch above the registry version
 npm run check:version-sync
 
 # 4. Commit version bump and push
