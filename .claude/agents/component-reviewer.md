@@ -78,7 +78,7 @@ You are a frontend developer specializing in modern React applications...
 ```markdown
 ---
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
-argument-hint: [message] | --no-verify | --amend
+argument-hint: "[message] | --no-verify | --amend"
 description: Create well-formatted commits with conventional commit format
 ---
 

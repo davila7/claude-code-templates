@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [analysis-type] | --coverage-quality | --test-effectiveness | --maintainability | --performance-analysis
+argument-hint: "[analysis-type] | --coverage-quality | --test-effectiveness | --maintainability | --performance-analysis"
 description: Analyze test suite quality with comprehensive metrics and improvement recommendations
 ---
 

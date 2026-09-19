@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Create a Google Docs post-mortem, schedule a Google Calendar review, and notify via Chat.
 ---
 
