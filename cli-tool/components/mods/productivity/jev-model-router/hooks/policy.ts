@@ -351,9 +351,18 @@ export function route(
     }
   }
 
-  if (!model && !effort) return { model: null, effort: null, reason: 'nothing to change' }
-
   const said = decision.confidence === null ? 'confidence n/d' : `confidence ${decision.confidence.toFixed(2)}`
+
+  if (!model && !effort) {
+    // Naming what it wanted and what it kept is the whole point of this line.
+    // Without it, a mod that classified and decided to leave the request alone
+    // is indistinguishable from one that never loaded.
+    const wantedEffort = effortScore === null ? null : effortLevel(effortScore)
+    const kept = `${current.model}${current.effort === undefined ? '' : `/${current.effort}`}`
+    const wanted = `${wantedModel}${wantedEffort ? `/${wantedEffort}` : ''}`
+    return { model: null, effort: null, reason: `kept ${kept}, wanted ${wanted} (${said})` }
+  }
+
   return { model, effort, reason: forced ? `${tier}, forced by risk` : `${tier} (${said})` }
 }
 

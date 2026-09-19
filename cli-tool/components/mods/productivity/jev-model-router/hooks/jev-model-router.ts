@@ -137,6 +137,7 @@ export const register: Register = (on, options) => {
         ])
         if (response && response.ok) decision = readDecision(response.text)
         else if (response) $.ui.log(`[jev-model-router] ${active} responded ${response.status}`)
+        else $.ui.log(`[jev-model-router] classification passed ${timeoutMs}ms; leaving the turn alone`)
       } catch (error) {
         $.ui.log(`[jev-model-router] classification failed: ${String(error)}`)
       }
@@ -180,7 +181,15 @@ export const register: Register = (on, options) => {
     appliedTurnId = e.turnId
     applied = Object.keys(change).length > 0 ? change : null
 
-    if (!applied) return yield* next(e)
+    if (!applied) {
+      // A turn left alone is the common case, and it used to be silent, which
+      // made a working mod look like one that never loaded. Say what happened.
+      if (logDecisions) {
+        const suppressed = routing.model && !routeMainModel ? ' (main-loop model routing off)' : ''
+        $.ui.log(`[jev-model-router] main loop: ${routing.reason}${suppressed}`)
+      }
+      return yield* next(e)
+    }
     if (logDecisions) {
       const what = [change.model, change.effort && `effort ${change.effort}`]
         .filter(Boolean)
@@ -216,6 +225,7 @@ export const register: Register = (on, options) => {
         ])
         if (response && response.ok) decision = readDecision(response.text)
         else if (response) $.ui.log(`[jev-model-router] ${active} responded ${response.status}`)
+        else $.ui.log(`[jev-model-router] classification passed ${timeoutMs}ms; leaving the subagent alone`)
       } catch (error) {
         $.ui.log(`[jev-model-router] classification failed: ${String(error)}`)
       }
@@ -241,7 +251,10 @@ export const register: Register = (on, options) => {
     // The Agent tool takes no effort, so only the model is ours to set here.
     const current = e.model ?? e.parentModel
     const { model, reason } = route(decision, { model: current }, policy)
-    if (!model) return next(e)
+    if (!model) {
+      if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType}: ${reason}`)
+      return next(e)
+    }
     if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType} → ${model}: ${reason}`)
     return next({ ...e, model })
   })

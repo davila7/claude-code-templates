@@ -51,6 +51,26 @@ The two mistakes do not cost the same, so they do not clear the same bar:
 
 Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
 
+## What you see in the transcript
+
+With `logDecisions` on (the default), the router writes one dim line per task
+it looked at — including the tasks it decided to leave alone, which are the
+common case:
+
+```
+[jev-model-router] Explore → haiku: fast (confidence 0.87)
+[jev-model-router] main loop → effort high: deep (confidence 0.91)
+[jev-model-router] main loop: kept sonnet/medium, wanted haiku/low (confidence 0.41)
+[jev-model-router] classification passed 800ms; leaving the turn alone
+[jev-model-router] api.typesafe.ai responded 401
+```
+
+The third line is a working router declining to act: it wanted to spend less
+but did not clear `minDowngradeConfidence`. Reading `confidence n/d` in place
+of a number means no key reached the mod and the built-in classifier answered.
+Silence means the mod is not loaded at all — check
+`CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` and that Claude Code is 2.1.259+.
+
 ## Privacy
 
 With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt; the subagent path sends the subagent's prompt, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.

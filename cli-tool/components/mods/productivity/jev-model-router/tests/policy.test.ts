@@ -274,3 +274,35 @@ test('the slot recovers after an ambiguous round', () => {
   pending.put(deepDecision)
   expect(pending.take()).toEqual(deepDecision)
 })
+
+// A turn the router leaves alone still has to say so: a silent no-op and a mod
+// that never loaded look identical in the transcript otherwise.
+test('a no-change decision reports what it wanted and what it kept', () => {
+  const decision: Decision = {
+    tier: 'fast',
+    confidence: 0.41,
+    risky: null,
+    effort: 0,
+    effortConfidence: 0.41,
+  }
+  const routing = route(decision, { model: 'sonnet', effort: 'medium' }, config)
+  expect(routing.model).toBeNull()
+  expect(routing.effort).toBeNull()
+  expect(routing.reason).toBe('kept sonnet/medium, wanted haiku/low (confidence 0.41)')
+})
+
+test('a no-change decision without a confidence says so rather than going quiet', () => {
+  const decision: Decision = {
+    tier: 'fast',
+    confidence: null,
+    risky: null,
+    effort: 0,
+    effortConfidence: null,
+  }
+  const routing = route(decision, { model: 'sonnet', effort: 'medium' }, config)
+  expect(routing.reason).toBe('kept sonnet/medium, wanted haiku/low (confidence n/d)')
+})
+
+test('no classification at all is its own reason, not a no-change', () => {
+  expect(route(null, { model: 'sonnet', effort: 'medium' }, config).reason).toBe('no decision')
+})
