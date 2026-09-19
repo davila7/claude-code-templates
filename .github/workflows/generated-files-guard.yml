@@ -1,0 +1,111 @@
+name: Generated Files Guard
+
+# Blocks external PRs that commit generated catalog artifacts. Those files are
+# produced by scripts/generate_components_json.py (run by maintainers and the
+# daily update-json-data workflow) and committing them from a fork causes merge
+# conflicts with every other catalog change.
+#
+# Uses pull_request_target so it can comment on fork PRs. It never checks out
+# or executes PR code — it only reads the changed-file list via the API.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'docs/components.json'
+      - 'dashboard/public/components.json'
+      - 'dashboard/public/counts.json'
+      - 'dashboard/public/search-index.json'
+      - 'dashboard/public/components/**'
+      - 'dashboard/public/component-content/**'
+
+permissions:
+  pull-requests: write
+
+jobs:
+  guard:
+    name: No generated catalog files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for generated catalog files in the PR
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const marker = '<!-- generated-files-guard:v1 -->';
+
+            // Maintainers regenerate the catalog on purpose (e.g. sync PRs).
+            const trusted = ['OWNER', 'MEMBER', 'COLLABORATOR'];
+            if (trusted.includes(pr.author_association)) {
+              core.info(`Author is ${pr.author_association} — skipping guard.`);
+              return;
+            }
+
+            const generatedPatterns = [
+              /^docs\/components\.json$/,
+              /^dashboard\/public\/components\.json$/,
+              /^dashboard\/public\/counts\.json$/,
+              /^dashboard\/public\/search-index\.json$/,
+              /^dashboard\/public\/components\//,
+              /^dashboard\/public\/component-content\//,
+            ];
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: prNumber, per_page: 100,
+            });
+            const offending = files
+              .map(f => f.filename)
+              .filter(name => generatedPatterns.some(re => re.test(name)));
+
+            const existing = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: prNumber, per_page: 100,
+            });
+            const previous = existing.find(c => c.body && c.body.includes(marker));
+
+            if (offending.length === 0) {
+              if (previous) {
+                await github.rest.issues.updateComment({
+                  owner, repo, comment_id: previous.id,
+                  body: `${marker}\n✅ Generated catalog files have been removed from this PR. Thanks!`,
+                });
+              }
+              core.info('No generated catalog files in this PR.');
+              return;
+            }
+
+            const list = offending.map(f => `- \`${f}\``).join('\n');
+            const body = [
+              marker,
+              `## ⚠️ Please remove generated catalog files from this PR`,
+              ``,
+              `This PR commits files that are **generated automatically** by \`scripts/generate_components_json.py\`. `,
+              `Committing them causes merge conflicts with every other PR that touches the catalog, so contributor PRs must not include them:`,
+              ``,
+              list,
+              ``,
+              `### How to fix`,
+              ``,
+              `From your branch, restore those files to their \`main\` version and push:`,
+              ``,
+              '```bash',
+              `git fetch origin main`,
+              `git checkout origin/main -- docs/components.json dashboard/public/`,
+              `git commit -m "chore: drop generated catalog files"`,
+              `git push`,
+              '```',
+              ``,
+              `Your PR should only contain changes under \`cli-tool/components/\` (plus any supporting files). `,
+              `The catalog and dashboard counts are regenerated automatically after merge — you don't need to run the script.`,
+              ``,
+              `_This check will pass automatically once the files above are no longer part of the PR._`,
+            ].join('\n');
+
+            if (previous) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+            }
+
+            core.setFailed(`PR includes ${offending.length} generated catalog file(s). See the PR comment for instructions.`);

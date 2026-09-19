@@ -1,0 +1,42 @@
+{
+  "name": "universal-audit-log",
+  "version": "0.2.0",
+  "description": "One hook on * that records every event on $ (tool calls, prompts, turns, other plugins' fs/http/process calls) as JSON lines with origin plugin and tier, duration and outcome, including denials. Buffered and flushed to a JSONL file through $.fs at the end of every turn.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "observability"
+  ],
+  "userConfig": {
+    "path": {
+      "type": "string",
+      "title": "Log file",
+      "description": "JSONL file the audit lines are written to, relative to the working directory",
+      "default": ".claude/logs/mods-audit.jsonl"
+    },
+    "skipEvents": {
+      "type": "string",
+      "title": "Skipped events",
+      "description": "Comma-separated events not to record (default: render and log chatter)",
+      "default": ""
+    },
+    "flushEvery": {
+      "type": "number",
+      "title": "Flush every",
+      "description": "Write the buffered lines after this many events",
+      "default": 50
+    },
+    "maxBytes": {
+      "type": "number",
+      "title": "Max file size",
+      "description": "Keep the file under this many bytes, dropping the oldest lines",
+      "default": 2097152
+    }
+  }
+}

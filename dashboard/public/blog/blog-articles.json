@@ -1,6 +1,20 @@
 {
   "articles": [
     {
+      "id": "function-hooks-claude-code",
+      "title": "Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook",
+      "description": "Claude Mods are Claude Code plugins built on function hooks: TypeScript middleware on a $ engine interface. How to turn the early-access flag on, how a hook composes, and 10 ready-made mods in the aitmpl.com catalog.",
+      "url": "function-hooks-claude-code/",
+      "image": "assets/function-hooks-claude-code-cover.svg",
+      "category": "Hooks",
+      "publishDate": "2026-09-04",
+      "readTime": "9 min read",
+      "tags": ["Claude Code", "Mods", "Function Hooks", "Hooks", "TypeScript", "Plugins", "Early Access"],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 23
+    },
+    {
       "id": "secure-git-workflow",
       "title": "Secure Your Git Workflow in Claude Code: Block Secrets & Enforce Commit Standards",
       "description": "Combine the secret-scanner and conventional-commits hooks with the secrets-management skill in Claude Code to block leaked credentials and enforce clean commit history automatically.",

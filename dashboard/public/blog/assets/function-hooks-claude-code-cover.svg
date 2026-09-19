@@ -1,0 +1,96 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="terminal-clip">
+      <rect x="60" y="80" width="560" height="400" rx="12"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#000000"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.04" stroke="#ffffff" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Experimental badge -->
+  <g transform="translate(60, 30)">
+    <rect width="160" height="30" rx="15" fill="#1a1400" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="80" y="20" text-anchor="middle" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#f59e0b">EXPERIMENTAL</text>
+  </g>
+
+  <!-- LEFT: Claude Code terminal -->
+  <g transform="translate(60, 80)">
+    <rect width="560" height="400" rx="12" fill="#0a0a0a" stroke="#333333" stroke-width="1.5"/>
+    <rect width="560" height="36" rx="12" fill="#1a1a1a"/>
+    <rect y="24" width="560" height="12" fill="#1a1a1a"/>
+    <circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+    <circle cx="40" cy="18" r="6" fill="#febc2e"/>
+    <circle cx="60" cy="18" r="6" fill="#28c840"/>
+    <text x="280" y="23" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#888888">hooks/my-hooks.ts</text>
+
+    <g font-family="'Courier New', monospace" font-size="17">
+      <text x="24" y="70" fill="#28c840">$ </text>
+      <text x="44" y="70" fill="#ffffff">CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude</text>
+
+      <text x="24" y="120" fill="#c084fc">export function</text>
+      <text x="204" y="120" fill="#60a5fa"> register</text>
+      <text x="300" y="120" fill="#ffffff">(on) {</text>
+
+      <text x="48" y="150" fill="#ffffff">on(</text>
+      <text x="80" y="150" fill="#fbbf24">"tool.call"</text>
+      <text x="196" y="150" fill="#ffffff">, { tool: </text>
+      <text x="300" y="150" fill="#fbbf24">"Bash"</text>
+      <text x="370" y="150" fill="#ffffff"> },</text>
+
+      <text x="72" y="180" fill="#ffffff">(</text>
+      <text x="84" y="180" fill="#a3e635">$</text>
+      <text x="96" y="180" fill="#ffffff">, e, next) =&gt; {</text>
+
+      <text x="96" y="210" fill="#c084fc">if</text>
+      <text x="120" y="210" fill="#ffffff"> (e.command == </text>
+      <text x="284" y="210" fill="#fbbf24">"rm -rf /"</text>
+      <text x="392" y="210" fill="#ffffff">)</text>
+
+      <text x="120" y="240" fill="#c084fc">return</text>
+      <text x="192" y="240" fill="#ffffff"> { deny: </text>
+      <text x="288" y="240" fill="#fbbf24">"Blocked"</text>
+      <text x="392" y="240" fill="#ffffff"> }</text>
+
+      <text x="96" y="270" fill="#c084fc">return</text>
+      <text x="168" y="270" fill="#ffffff"> next(e)</text>
+
+      <text x="72" y="300" fill="#ffffff">})</text>
+      <text x="24" y="330" fill="#ffffff">}</text>
+
+      <text x="24" y="375" fill="#888888">// hooks.json: { "modules": ["./my-hooks.ts"] }</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: $ sigil inside nested rings (order is nesting) -->
+  <g transform="translate(900, 280)">
+    <circle r="170" fill="none" stroke="#a3e635" stroke-width="2" opacity="0.25"/>
+    <circle r="130" fill="none" stroke="#a3e635" stroke-width="2" opacity="0.45"/>
+    <circle r="90" fill="none" stroke="#a3e635" stroke-width="2" opacity="0.7"/>
+    <circle r="52" fill="#0a0f00" stroke="#a3e635" stroke-width="3"/>
+    <text x="0" y="24" text-anchor="middle" font-family="'Courier New', monospace" font-size="72" font-weight="bold" fill="#a3e635">$</text>
+    <text x="0" y="-150" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#a3e635" opacity="0.8">admin plugin</text>
+    <text x="0" y="-110" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#a3e635" opacity="0.8">your plugin</text>
+    <text x="0" y="-70" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#a3e635" opacity="0.9">core</text>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="545" text-anchor="middle" font-family="'Courier New', monospace" font-size="36" font-weight="bold" fill="#ffffff">Claude Code Function Hooks</text>
+  <text x="600" y="580" text-anchor="middle" font-family="'Courier New', monospace" font-size="20" fill="#888888">TypeScript middleware for Claude Code: how to enable the proposal today</text>
+
+  <!-- Footer -->
+  <text x="600" y="612" text-anchor="middle" font-family="'Courier New', monospace" font-size="14" fill="#444444">Claude Code Templates  |  aitmpl.com</text>
+</svg>

@@ -143,7 +143,7 @@ async function createClaudeConfig(options = {}) {
   }
   
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -746,10 +746,16 @@ async function installIndividualSetting(settingName, targetDir, options) {
     // Check if there are additional files to download (e.g., Python scripts)
     const additionalFiles = {};
     
-    // For statusline settings, check if there's a corresponding Python file
-    if (settingName.includes('statusline/')) {
-      const pythonFileName = settingName.split('/')[1] + '.py';
-      const pythonUrl = githubUrl.replace('.json', '.py');
+    // For statusline settings, check if there's a corresponding Python file.
+    // Detect it from the command itself (".claude/scripts/<name>.py") so direct
+    // installs without the "statusline/" prefix also get the companion script.
+    const statusLineCommand = settingConfig?.statusLine?.command;
+    const scriptMatch = typeof statusLineCommand === 'string'
+      ? statusLineCommand.match(/\.claude\/scripts\/([\w.-]+\.py)/)
+      : null;
+    if (settingName.includes('statusline/') || scriptMatch) {
+      const pythonFileName = scriptMatch ? scriptMatch[1] : settingName.split('/').pop() + '.py';
+      const pythonUrl = githubUrl.replace(/[^/]+\.json$/, pythonFileName);
       
       try {
         console.log(chalk.gray(`📥 Downloading Python script: ${pythonFileName}...`));
@@ -935,10 +941,27 @@ async function installIndividualSetting(settingName, targetDir, options) {
         }
       }
       
+      // Statusline scripts are written under <currentTargetDir>/.claude/scripts/.
+      // A relative ".claude/scripts/..." command only resolves from the project
+      // root, so for user/enterprise scope point it at the absolute location.
+      let scopedSettingConfig = settingConfig;
+      if (installLocation !== 'project' && installLocation !== 'local'
+          && typeof settingConfig?.statusLine?.command === 'string'
+          && settingConfig.statusLine.command.includes('.claude/scripts/')) {
+        const scriptsDir = path.join(currentTargetDir, '.claude', 'scripts');
+        scopedSettingConfig = {
+          ...settingConfig,
+          statusLine: {
+            ...settingConfig.statusLine,
+            command: settingConfig.statusLine.command.replace(/\.claude\/scripts\//g, scriptsDir.replace(/\\/g, '/') + '/')
+          }
+        };
+      }
+
       // Deep merge configurations
       const mergedConfig = {
         ...existingConfig,
-        ...settingConfig
+        ...scopedSettingConfig
       };
       
       // Deep merge specific sections (only if no conflicts or user approved overwrite)
@@ -1684,6 +1707,128 @@ function parseLoopReferencedComponents(loopContent) {
  * Install a loop component (markdown) into .claude/loops/, then auto-install
  * every component it references (agents, skills, hooks, commands, settings, mcps).
  */
+/**
+ * Install a Claude Mod (EARLY ACCESS) as a local Claude Code plugin.
+ *
+ * A mod is a plugin whose behaviour lives in a function-hooks module
+ * (https://github.com/anthropics/claude-code/tree/main/mods). It loads in
+ * Claude Code >= 2.1.259 with CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; the API is
+ * early access and may change between releases.
+ *
+ * The catalog stores each mod as a complete plugin directory, exactly
+ * Anthropic's layout: cli-tool/components/mods/{category}/{name}/ holds
+ * .claude-plugin/plugin.json (name, description, userConfig, ...),
+ * hooks/hooks.json ("modules"), the hooks-modules under hooks/ (any number of
+ * files, relative imports allowed), and optional types/, tests/ and README.md.
+ * We download the whole directory (like a skill) and write it verbatim to
+ * .claude/skills/{name}/, which Claude Code auto-loads as "{name}@skills-dir"
+ * once the workspace is trusted.
+ */
+async function installIndividualMod(modName, targetDir, options = {}) {
+  console.log(chalk.blue(`ƒ  Installing mod: ${modName}`));
+  console.log(chalk.yellow('⚠️  Early access: mods need CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259); the API may change between releases.'));
+  const startTime = Date.now();
+
+  try {
+    // Only "category/name" in kebab-case: this string becomes both a URL and a directory name.
+    if (!/^[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/i.test(modName)) {
+      throw new Error('Invalid mod name. Expected "category/name" (letters, digits and hyphens only), e.g. security/secret-redactor.');
+    }
+    const baseName = modName.split('/').pop();
+    const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/mods/${modName}`;
+    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+
+    const downloadedFiles = {};
+    let notFound = false;
+
+    // Recursive download of the plugin directory (same approach as skills).
+    async function downloadDirectory(apiUrl, relativePath = '') {
+      const response = await fetch(apiUrl, {
+        headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'claude-code-templates' }
+      });
+      if (!response.ok) {
+        if (response.status === 404 && !relativePath) { notFound = true; return; }
+        throw new Error(`HTTP ${response.status}: ${response.statusText} (${relativePath || '/'})`);
+      }
+      const contents = await response.json();
+      for (const item of contents) {
+        const itemPath = relativePath ? `${relativePath}/${item.name}` : item.name;
+        // Plugin files only: no path tricks, no hidden dirs other than .claude-plugin.
+        if (item.name.includes('..') || (item.name.startsWith('.') && item.name !== '.claude-plugin')) continue;
+        if (item.type === 'file') {
+          const fileResponse = await fetch(item.download_url);
+          if (!fileResponse.ok) throw new Error(`Could not download ${itemPath} (HTTP ${fileResponse.status})`);
+          downloadedFiles[itemPath] = await fileResponse.text();
+          console.log(chalk.green(`✓ ${itemPath}`));
+        } else if (item.type === 'dir') {
+          await downloadDirectory(item.url, itemPath);
+        }
+      }
+    }
+
+    await downloadDirectory(githubApiUrl);
+    if (notFound) {
+      console.log(chalk.red(`❌ Mod "${modName}" not found`));
+      console.log(chalk.gray('   Browse available mods at https://www.aitmpl.com/mods'));
+      trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+      return false;
+    }
+
+    // A mod is a plugin: the manifest and hooks/hooks.json must be there, and
+    // every hooks-module hooks.json names must have come down with it.
+    if (!downloadedFiles['.claude-plugin/plugin.json']) throw new Error('.claude-plugin/plugin.json missing: not a plugin directory');
+    if (!downloadedFiles['hooks/hooks.json']) throw new Error('hooks/hooks.json missing: not a mod');
+    const manifest = JSON.parse(downloadedFiles['.claude-plugin/plugin.json']);
+    const hooksConfig = JSON.parse(downloadedFiles['hooks/hooks.json']);
+    const modules = Array.isArray(hooksConfig.modules) ? hooksConfig.modules : [];
+    if (modules.length === 0) throw new Error('hooks/hooks.json has no "modules" entry');
+    for (const modulePath of modules) {
+      const rel = `hooks/${String(modulePath).replace(/^\.\//, '')}`;
+      if (!downloadedFiles[rel]) throw new Error(`hooks-module ${rel} named by hooks.json was not downloaded`);
+    }
+
+    // Write the plugin verbatim into the project's skills directory.
+    const pluginDir = path.join(targetDir, '.claude', 'skills', baseName);
+    for (const [rel, content] of Object.entries(downloadedFiles)) {
+      const fullPath = path.join(pluginDir, rel);
+      await fs.ensureDir(path.dirname(fullPath));
+      await fs.writeFile(fullPath, content, 'utf8');
+    }
+
+    const relPluginDir = path.relative(targetDir, pluginDir);
+    const userConfig = manifest.userConfig && typeof manifest.userConfig === 'object' ? manifest.userConfig : undefined;
+    if (!options.silent) {
+      console.log(chalk.green(`✅ Mod "${modName}" installed successfully!`));
+    }
+    console.log(chalk.cyan(`📁 Installed to: ${relPluginDir}/  (${Object.keys(downloadedFiles).length} files)`));
+    console.log(chalk.gray(`   hooks/hooks.json  ->  { "modules": ${JSON.stringify(modules)} }`));
+    console.log(chalk.blue(`\n🧪 Claude Code loads it as "${manifest.name || baseName}@skills-dir" on the next session (after the workspace trust prompt).`));
+    console.log(chalk.gray('   Mods need the function-hooks flag (Claude Code >= 2.1.259):'));
+    console.log(chalk.white(`   CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`));
+    console.log(chalk.gray(`   Or load it for one session with hot reload: claude --plugin-dir ${relPluginDir}`));
+    console.log(chalk.gray(`   Validate / test it: claude plugin validate ${relPluginDir}  ·  claude plugin test ${relPluginDir}`));
+    if (userConfig) {
+      console.log(chalk.gray(`   Options (${Object.keys(userConfig).join(', ')}): set them in /config, or in ~/.claude/settings.json (user, not project):`));
+      console.log(chalk.gray(`   { "pluginConfigs": { "${manifest.name || baseName}": { "options": { ... } } } }`));
+    }
+    console.log(chalk.gray('   Early access: the $ API may change between releases. Reference: https://github.com/anthropics/claude-code/tree/main/mods\n'));
+
+    trackingService.trackDownload('mod', modName, {
+      installation_type: 'individual_mod',
+      target_directory: path.relative(process.cwd(), targetDir),
+      source: 'github_main',
+      total_files: Object.keys(downloadedFiles).length
+    });
+    trackingService.trackInstallationOutcome('mod', modName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
+    return true;
+  } catch (error) {
+    console.error(chalk.red(`❌ Error installing mod "${modName}":`), error.message);
+    trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'exception', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+}
+
 async function installIndividualLoop(loopName, targetDir, options = {}) {
   console.log(chalk.blue(`🔁 Installing loop: ${loopName}`));
   const startTime = Date.now();
@@ -1784,7 +1929,8 @@ async function installMultipleComponents(options, targetDir) {
       settings: [],
       hooks: [],
       skills: [],
-      loops: []
+      loops: [],
+      mods: []
     };
     
     // Parse comma-separated values for each component type
@@ -1823,7 +1969,13 @@ async function installMultipleComponents(options, targetDir) {
       components.loops = loopsInput.split(',').map(l => l.trim()).filter(l => l);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length;
+    // --mod, plus --function-hook kept as an alias of it
+    const modInputs = [options.mod, options.functionHook].filter(Boolean).flat();
+    if (modInputs.length > 0) {
+      components.mods = modInputs.join(',').split(',').map(m => m.trim()).filter(m => m);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.mods.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
@@ -1838,6 +1990,9 @@ async function installMultipleComponents(options, targetDir) {
     console.log(chalk.gray(`   Hooks: ${components.hooks.length}`));
     console.log(chalk.gray(`   Skills: ${components.skills.length}`));
     console.log(chalk.gray(`   Loops: ${components.loops.length}`));
+    if (components.mods.length > 0) {
+      console.log(chalk.gray(`   Mods (early access): ${components.mods.length}`));
+    }
 
     // Counter for successfully installed components
     let successfullyInstalled = 0;
@@ -1947,6 +2102,13 @@ async function installMultipleComponents(options, targetDir) {
         batchId
       });
       if (loopSuccess) successfullyInstalled++;
+    }
+
+    // Install mods (early access: local plugin with a TypeScript hooks-module)
+    for (const mod of components.mods) {
+      console.log(chalk.gray(`   Installing mod: ${mod}`));
+      const modSuccess = await installIndividualMod(mod, targetDir, { ...options, silent: true, batchId });
+      if (modSuccess) successfullyInstalled++;
     }
 
     // Handle YAML workflow if provided

@@ -1,6 +1,45 @@
 {
   "articles": [
     {
+      "id": "task-move-command",
+      "title": "Task Move Command for Claude Code: Automate Your Task Status Workflow",
+      "description": "Install the Task Move command for Claude Code to move tasks between status folders (todos, in progress, QA, completed) with validation, bulk operations, and a full audit trail.",
+      "url": "task-move-command/",
+      "image": "assets/task-move-command-cover.png",
+      "category": "Development",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Commands",
+        "Task Management",
+        "Automation",
+        "Workflow"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 24
+    },
+    {
+      "id": "performance-budget-guard-hook",
+      "title": "Performance Budget Guard for Claude Code: Stop Bundle Bloat Before It Ships",
+      "description": "Install the Performance Budget Guard hook for Claude Code to automatically block builds that exceed your bundle-size budget and flag risky imports as you edit.",
+      "url": "performance-budget-guard-hook/",
+      "image": "assets/performance-budget-guard-hook-cover.png",
+      "category": "Performance",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Performance",
+        "Next.js",
+        "Bundle Size",
+        "Automation"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 23
+    },
+    {
       "id": "technical-writer-agent",
       "title": "Technical Writer Agent for Claude Code: Auto-Generate API Docs & Guides",
       "description": "Install the Technical Writer agent for Claude Code to auto-generate API references, SDK docs, and user guides directly from your codebase.",
@@ -450,11 +489,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-08-25",
-    "totalArticles": 24,
+    "lastUpdated": "2026-09-15",
+    "totalArticles": 26,
     "difficultyLevels": {
-      "basic": 10,
-      "intermediate": 7,
+      "basic": 13,
+      "intermediate": 8,
       "advanced": 5
     }
   }

@@ -1,7 +1,6 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import TopBar from '../components/TopBar.astro';
-import FeaturedSection from '../components/FeaturedSection.astro';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
@@ -45,7 +44,15 @@ const TYPE_META: Record<string, { title: string; description: string; tagline: s
     description: 'Ready-to-run agentic loops for Claude Code. Each loop defines a goal, an interval, and a stop condition, and composes agents, skills and hooks. Install with a single npx command.',
     tagline: 'Autonomous agentic workflows that run until the job is done'
   },
+  mods: {
+    title: 'Claude Code Mods (Function Hooks): TypeScript Plugins That Rewrite, Deny, Cache and Draw',
+    description: 'Claude Mods for Claude Code: plugins built on function hooks, TypeScript middleware over the $ engine interface. Deny destructive commands, redact secrets, cache WebFetch, audit every event, draw in the terminal. Early access behind CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code 2.1.259+).',
+    tagline: 'Function-hooks plugins on the $ engine interface. Early access: enable with CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1.'
+  },
 };
+
+const MODS_ISSUE_URL = 'https://github.com/anthropics/claude-code/issues/91870';
+const MODS_SOURCE_URL = 'https://github.com/anthropics/claude-code/tree/main/mods';
 
 const { type } = Astro.params;
 const activeType = type && VALID_TYPES.includes(type) ? type : 'skills';
@@ -61,6 +68,7 @@ export function getStaticPaths() {
     { params: { type: 'hooks' } },
     { params: { type: 'mcps' } },
     { params: { type: 'loops' } },
+    { params: { type: 'mods' } },
   ];
 }
 ---
@@ -93,9 +101,16 @@ export function getStaticPaths() {
         </div>
         
         <div class="flex-1">
-          <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-2 tracking-tight">
-            {config?.label ?? activeType}
-          </h1>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
+            <h1 class="text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+              {config?.label ?? activeType}
+            </h1>
+            {activeType === 'mods' && (
+              <span class="inline-flex items-center rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 font-ui-mono text-[11px] font-semibold uppercase tracking-wide text-amber-400">
+                Beta
+              </span>
+            )}
+          </div>
           <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
             {meta?.tagline ?? meta?.description}
           </p>
@@ -104,7 +119,23 @@ export function getStaticPaths() {
     </div>
   </div>
   
-  <FeaturedSection />
+  {activeType === 'mods' && (
+    <div class="px-6 pt-6 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-[13px] text-[var(--color-text-primary)]">
+        <span class="shrink-0 inline-flex items-center gap-1.5 font-ui-mono text-[11px] font-semibold uppercase tracking-wide text-amber-400">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Early access
+        </span>
+        <p class="text-[var(--color-text-secondary)] leading-relaxed">
+          Mods are Claude Code plugins built on <strong class="text-[var(--color-text-primary)]">function hooks</strong>. They load in Claude Code 2.1.259+ with <code class="font-ui-mono text-[12px]">CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1</code>; Anthropic is shipping the feature in the coming weeks and the <code class="font-ui-mono text-[12px]">$</code> API may still change between releases. These mods are typed against Anthropic's published declarations
+          (<a href={MODS_SOURCE_URL} target="_blank" rel="noopener" class="underline decoration-amber-400/60 underline-offset-2 hover:text-amber-300">claude-code/mods</a>); discussion and feedback in
+          <a href={MODS_ISSUE_URL} target="_blank" rel="noopener" class="underline decoration-amber-400/60 underline-offset-2 hover:text-amber-300">anthropics/claude-code#91870</a>.
+          <a href="/blog/function-hooks-claude-code/" class="ml-1 underline decoration-amber-400/60 underline-offset-2 hover:text-amber-300">How to enable it →</a>
+        </p>
+      </div>
+    </div>
+  )}
+
   <ComponentGrid client:load initialType={activeType} />
   <SearchModal client:idle />
   <CartSidebar client:idle />
