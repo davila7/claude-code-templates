@@ -1009,11 +1009,7 @@ html.light .stat-today-active {
   color: var(--color-text-tertiary);
 }
 
-@media (max-width: 480px) {
-  .hs-cell-wrap {
-    padding: 2px 10px;
-  }
-
+@media (max-width: 640px) {
   .hs-value {
     font-size: 16px;
   }
@@ -1021,6 +1017,31 @@ html.light .stat-today-active {
   .hs-label {
     font-size: 9px;
     letter-spacing: 0.05em;
+  }
+}
+
+/* Too narrow for one row: lay the cells out as a grid and drop the dividers,
+   which would otherwise start a wrapped row. */
+@media (max-width: 560px) {
+  .hs-root {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 0;
+    width: 100%;
+    padding: 10px 6px;
+  }
+
+  .hs-divider {
+    display: none;
+  }
+
+  .hs-item {
+    justify-content: center;
+  }
+
+  .hs-cell-wrap {
+    padding: 2px 8px;
+    width: 100%;
   }
 }
 
