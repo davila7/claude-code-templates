@@ -94,13 +94,16 @@ to load. Check them in this order:
    `~/.claude/debug/<session-id>.txt` (a `.txt`, not a `.log`; `latest` is a
    symlink to the newest), and an SDK host receives each one as `ui_log`. The
    router is working; look there.
-2. **The plugin was never loaded.** Claude Code does not adopt a plugin from
-   the project's `.claude/skills/`, which is where `--mod` writes it. Start
-   the session with `--plugin-dir` or move it to `~/.claude/skills/` (see
-   Install). `claude --debug` settles it: a loaded module prints
-   `hooks module jev-model-router@inline loaded (worker, …); events: prompt.submit,turn.step,agent.spawn`
-   (`@skills-dir` when loaded from `~/.claude/skills/`); no such line means
-   the plugin is not in the session.
+2. **The plugin was never loaded.** Claude Code adopts a plugin from a
+   project's `.claude/skills/` (where `--mod` writes it) only once the
+   project is trusted: it is repository content, so an untrusted folder's
+   `.claude/` is not read at all, and `claude -p` never asks. Open `claude`
+   interactively in the folder and accept the trust prompt, or name the
+   plugin explicitly with `--plugin-dir` (see Install). `claude --debug`
+   settles it: a loaded module prints
+   `hooks module jev-model-router@skills-dir loaded (worker, …); events: prompt.submit,turn.step,agent.spawn`
+   (`@inline` when loaded with `--plugin-dir`); `Found N plugins` without it
+   means the plugin is not in the session.
 3. **Function hooks are off.** Without `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`
    the debug log says `installed plugins' hooks modules not loaded: rollout
    flag (tengu_plugin_hooks_modules) is off`. Set the flag; Claude Code must
@@ -143,32 +146,36 @@ Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, 
 ```
 
 The entry's key is the plugin's id, and the id follows how the plugin was
-loaded: `"jev-model-router"` with `--plugin-dir`, `"jev-model-router@skills-dir"`
-when auto-loaded from `~/.claude/skills/`. Under the wrong key every option
-stays at its default, and the `ready on` line reports `no key set`.
+loaded: `"jev-model-router@skills-dir"` when auto-loaded from `.claude/skills/`
+(the `--mod` install), `"jev-model-router"` with `--plugin-dir`. Under the
+wrong key every option stays at its default, and the `ready on` line reports
+`no key set`.
 
 ## Install
 
 ```sh
 npx claude-code-templates@latest --mod productivity/jev-model-router
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-model-router
-```
-
-`--mod` writes the plugin to `.claude/skills/jev-model-router/` in the project.
-Claude Code does not adopt plugins from a project's `.claude/skills/`, so it has
-to be named on the command line with `--plugin-dir` (per session, with hot
-reload; loaded as `jev-model-router@inline`). To have it load on its own in
-every session, put it in the user-level directory instead, which Claude Code
-scans at start:
-
-```sh
-mv .claude/skills/jev-model-router ~/.claude/skills/jev-model-router
 CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 ```
 
-It then loads as `jev-model-router@skills-dir`, and its options go under that
-key in `pluginConfigs` (see Options). Either way, `claude plugin validate
-<dir>` prints every event it hooks and every `$` call it makes.
+`--mod` writes the plugin to `.claude/skills/jev-model-router/` in the project,
+and Claude Code auto-loads it as `jev-model-router@skills-dir` **in a trusted
+project**: a folder's `.claude/` is repository content and is not read until
+you accept the trust prompt on the first interactive `claude` there (`-p`
+never asks, so a headless run in a fresh folder never sees it). The options
+then go under the `"jev-model-router@skills-dir"` key in `pluginConfigs` (see
+Options).
+
+For one session with hot reload, or in a folder you do not want to trust,
+name it on the command line instead — it loads as `jev-model-router@inline`
+and reads options from the `"jev-model-router"` key:
+
+```sh
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-model-router
+```
+
+Either way, `claude plugin validate .claude/skills/jev-model-router` prints
+every event it hooks and every `$` call it makes.
 
 ## Tests
 
