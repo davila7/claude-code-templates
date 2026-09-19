@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-18T03:18:49.021457+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-09-19T03:12:11.624752+00:00",
+  "totalJobs": 93,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,26 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5427479008",
+      "company": "Anthropic",
+      "position": "Customer Success Manager, Public Sector (National Security) ",
+      "location": "Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "As a Customer Success Manager on Anthropic's Public Sector team, you will be the post-sales trusted advisor helping national security customers realize the value of Claude and turn their investment into mission impact. You'll combine your customer success expertise with technical fluency to drive...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5427479008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5427479008",
+      "postedAt": "2026-09-18T18:50:40-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5369102008",
       "company": "Anthropic",
@@ -463,6 +483,51 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "wwr-toptal-automation-engineer-uipath-for-innovative-ai-project",
+      "company": "Toptal",
+      "position": "Automation Engineer (UIPath) for innovative AI Project",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: 📌 Summary We are seeking a hands-on, execution-focused Senior Automation & AI Systems Developer (UiPath & Power Platform) to build, scale, and maintain enterprise automations across our client's regional operations. In this role, you will own the end-to-end development lifecycle for...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/toptal-automation-engineer-uipath-for-innovative-ai-project",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/toptal-automation-engineer-uipath-for-innovative-ai-project",
+      "postedAt": "2026-08-26T13:48:50+00:00",
+      "tags": [
+        "Python",
+        "Azure",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "wwr-offerup-software-development-engineer-ii-full-stack-business-remote-colombia",
+      "company": "OfferUp",
+      "position": "Software Development Engineer II Full Stack - Business (Remote @ Colombia)",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Remote @ Colombia About the role: The OfferUp Business team owns the platforms that power every business vertical on our marketplace; Storefronts, Auto Dealers, Services, Rentals, and Jobs. Our customers aren't casually browsing; they're running businesses on top of what we build, so...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/offerup-software-development-engineer-ii-full-stack-business-remote-colombia",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/offerup-software-development-engineer-ii-full-stack-business-remote-colombia",
+      "postedAt": "2026-08-26T07:30:39+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "AWS",
+        "Claude Code",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5390966008",
       "company": "Anthropic",
       "position": "Staff Software Engineer, GTM AI Engineering ",
@@ -611,47 +676,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "wwr-base-com-full-stack-developer-bl-paczka",
-      "company": "Base.com",
-      "position": "Full-stack Developer (BL paczka)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Gdańsk, Pomeranian Voivodeship, Poland BLPaczka działa jako integrator logistyczny dedykowany użytkownikom platformy Base i nie tylko. Specjalizujemy się w obsłudze przesyłek e-commerce o różnych gabarytach, zarówno w kraju, jak i zagranicą. Współpracujemy wyłącznie z zaufanymi...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/base-com-full-stack-developer-bl-paczka",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/base-com-full-stack-developer-bl-paczka",
-      "postedAt": "2026-08-19T20:36:38+00:00",
-      "tags": [
-        "JavaScript",
-        "Go",
-        "AWS",
-        "Docker",
-        "Copilot",
-        "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-kota-senior-product-designer",
-      "company": "Kota",
-      "position": "Senior Product Designer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote About the job Kota is reimagining insurance and retirement benefits for the modern workforce. Through our two flagship products—Kota Platform, the first fully integrated benefits platform, and Kota Embed, our embedded insurance solution—we're making benefits more accessible,...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/kota-senior-product-designer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/kota-senior-product-designer",
-      "postedAt": "2026-08-19T20:36:07+00:00",
-      "tags": [
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5394948008",
