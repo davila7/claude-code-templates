@@ -124,23 +124,30 @@ export const register: Register = (on, options) => {
   let applied: { model?: string; effort?: Effort } | null = null
 
   on('prompt.submit', async ($, e, next) => {
+    // Before the routing guards: a module whose switches are all off has still
+    // loaded, and that is exactly when its silence is most misleading.
+    if (!announced) {
+      announced = true
+      if (logDecisions) {
+        $.ui.log(
+          `[jev-model-router] ${describeSetup(
+            active,
+            url,
+            {
+              subagentModel: routeSubagentModel,
+              mainEffort: routeMainEffort,
+              mainModel: routeMainModel,
+            },
+            forced === 'builtin',
+          )}`,
+        )
+      }
+    }
     if (!routeMainLoop) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
-    }
-    if (!announced) {
-      announced = true
-      if (logDecisions) {
-        $.ui.log(
-          `[jev-model-router] ${describeSetup(active, url, {
-            subagentModel: routeSubagentModel,
-            mainEffort: routeMainEffort,
-            mainModel: routeMainModel,
-          })}`,
-        )
-      }
     }
 
     const startedAt = await $.clock.now()
@@ -230,24 +237,32 @@ export const register: Register = (on, options) => {
   })
 
   on('agent.spawn', async ($, e, next) => {
+    // Before the routing guards: a module whose switches are all off has still
+    // loaded, and that is exactly when its silence is most misleading.
+    if (!announced) {
+      announced = true
+      if (logDecisions) {
+        $.ui.log(
+          `[jev-model-router] ${describeSetup(
+            active,
+            url,
+            {
+              subagentModel: routeSubagentModel,
+              mainEffort: routeMainEffort,
+              mainModel: routeMainModel,
+            },
+            forced === 'builtin',
+          )}`,
+        )
+      }
+    }
+
     // A fork inherits its parent's model; `model` is ignored for it.
     if (!routeSubagentModel || e.fork) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
-    }
-    if (!announced) {
-      announced = true
-      if (logDecisions) {
-        $.ui.log(
-          `[jev-model-router] ${describeSetup(active, url, {
-            subagentModel: routeSubagentModel,
-            mainEffort: routeMainEffort,
-            mainModel: routeMainModel,
-          })}`,
-        )
-      }
     }
 
     const startedAt = await $.clock.now()

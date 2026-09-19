@@ -62,7 +62,7 @@ status line, the header and the effort box never move whatever it decides.
 [jev-model-router] ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, main effort
 [jev-model-router] jev: tier fast (0.87) · effort 0.4 → low (0.71) · risky 0.02 · 249ms
 [jev-model-router] main loop → effort low: fast (confidence 0.87)
-[jev-model-router] jev: tier fast (0.41) · effort 0.6 → low (0.38) · risky 0.01 · 210ms
+[jev-model-router] jev: tier fast (0.41) · effort 0.4 → low (0.38) · risky 0.01 · 210ms
 [jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
 ```
 
@@ -82,9 +82,10 @@ jev · fast 0.87 → haiku/low
 jev · fast 0.41 · unchanged
 ```
 
-`confidence n/d` in place of a number means no key reached the mod and the
-built-in classifier answered. **No lines at all** means the module is not
-loaded: check `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`, that Claude Code is
+`confidence n/d` means the backend reported no confidence, which the built-in
+classifier never does and the Gateway does whenever its probability
+distribution is absent; the `ready on` line says which one answered. **No lines
+at all** means the module is not loaded: check `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`, that Claude Code is
 2.1.259+, and run `claude --debug`, which prints
 `hooks module jev-model-router loaded … events: prompt.submit, turn.step, agent.spawn`.
 

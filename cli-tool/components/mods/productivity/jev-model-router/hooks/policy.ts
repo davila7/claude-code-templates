@@ -416,8 +416,15 @@ export function describeSetup(
   provider: Provider | null,
   url: string,
   switches: { subagentModel: boolean; mainEffort: boolean; mainModel: boolean },
+  // `provider: "builtin"` is a choice, not a missing key. Reporting it as a
+  // credential problem sends someone hunting for a key they meant to omit.
+  builtinByChoice = false,
 ): string {
-  const backend = provider ? `${provider} (${url})` : 'the built-in classifier, no key set'
+  const backend = provider
+    ? `${provider} (${url})`
+    : builtinByChoice
+      ? 'the built-in classifier, by choice'
+      : 'the built-in classifier, no key set'
   const on = [
     switches.subagentModel && 'subagent model',
     switches.mainEffort && 'main effort',

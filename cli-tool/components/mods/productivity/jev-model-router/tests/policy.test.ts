@@ -330,6 +330,14 @@ test('the setup line says so when there is no backend and when nothing routes', 
   ).toBe('ready on the built-in classifier, no key set; routing nothing, every switch is off')
 })
 
+// `provider: "builtin"` is a deliberate choice; reporting it as a missing key
+// sends someone looking for a credential they meant to leave out.
+test('choosing the built-in classifier is not reported as a missing key', () => {
+  expect(
+    describeSetup(null, '', { subagentModel: true, mainEffort: true, mainModel: false }, true),
+  ).toBe('ready on the built-in classifier, by choice; routing subagent model, main effort')
+})
+
 test('the decision line carries every answer and the latency', () => {
   const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2.8))
   expect(describeDecision(decision, 249.4)).toBe(
