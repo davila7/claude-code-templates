@@ -31,6 +31,9 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@davila7'
 
+      - name: Verify package versions
+        run: npm run check:version-sync
+
       - name: Configure package for GitHub Packages
         working-directory: ./cli-tool
         run: |

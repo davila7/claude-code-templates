@@ -9,7 +9,10 @@
   },
   "scripts": {
     "build": "echo 'Build complete'",
-    "test": "echo 'No tests specified'",
+    "test": "npm run check:version-sync",
+    "check:version-sync": "node scripts/sync-package-versions.js --check",
+    "prepublishOnly": "npm run check:version-sync",
+    "version:set": "node scripts/sync-package-versions.js",
     "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'",
     "deploy": "./scripts/deploy.sh",
     "deploy:dashboard": "./scripts/deploy.sh"
