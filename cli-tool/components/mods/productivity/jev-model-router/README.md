@@ -127,9 +127,9 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   typesafeModel:          string  empty uses jev-latest
   gatewayBaseUrl:         string  empty uses https://ai-gateway.vercel.sh/v4/ai
   gatewayModel:           string  empty uses typesafe-ai/jev
-  fastModel:              string  fast tier (default "haiku")
-  balancedModel:          string  balanced tier (default "sonnet")
-  deepModel:              string  deep tier (default "opus")
+  fastModel:              string  fast tier, alias or full id (default "haiku")
+  balancedModel:          string  balanced tier, alias or full id (default "sonnet")
+  deepModel:              string  deep tier, alias or full id (default "opus")
   minUpgradeConfidence:   number  bar to spend more (default 0.3)
   minDowngradeConfidence: number  bar to spend less (default 0.6)
   routeSubagentModel:     boolean model of each subagent (default true)
@@ -138,6 +138,14 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   timeoutMs:              number  latency budget per classification (default 800)
   logDecisions:           boolean log each decision (default true)
 ```
+
+The three tiers take an alias (`haiku`, `sonnet`, `opus`) or a full model id.
+A subagent is spawned with the name as given, the way the Agent tool takes it;
+the main loop's request needs an id, so there an alias is resolved to the
+family's current id (`haiku` → `claude-haiku-4-5-20251001`, `sonnet` →
+`claude-sonnet-5`, `opus` → `claude-opus-5`). Set a full id to pin a
+specific version. A decision for the tier the session already runs is not a
+change, so a session on `claude-opus-5[1m]` keeps its 1M-context id.
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 

@@ -12,6 +12,7 @@ import {
   readDecision,
   requestBody,
   requestHeaders,
+  requestModelId,
   route,
   selectProvider,
 } from '../hooks/policy.ts'
@@ -356,4 +357,26 @@ test('the status line distinguishes a change from a deliberate no-change', () =>
   )
   expect(describeStatus(decision, null)).toBe('jev · fast 0.87 · unchanged')
   expect(describeStatus(null, null)).toBe('jev · no answer')
+})
+
+// `turn.step`'s `model` goes to the API as written, so a family alias has to
+// become an id there; the engine refuses "haiku" on a request.
+test('a family alias resolves to a full id for the main loop', () => {
+  expect(requestModelId('haiku')).toBe('claude-haiku-4-5-20251001')
+  expect(requestModelId('Sonnet')).toBe('claude-sonnet-5')
+  expect(requestModelId('opus')).toBe('claude-opus-5')
+})
+
+test('a full id or an unknown name is passed through unchanged', () => {
+  expect(requestModelId('claude-haiku-4-5-20251001')).toBe('claude-haiku-4-5-20251001')
+  expect(requestModelId('claude-opus-5[1m]')).toBe('claude-opus-5[1m]')
+  expect(requestModelId('my-org/custom')).toBe('my-org/custom')
+})
+
+// Staying in the same tier is not a change, so a session on `claude-opus-5[1m]`
+// keeps its 1M-context id when the decision is `deep`.
+test('a decision for the tier the session already runs keeps its exact id', () => {
+  const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }))
+  const routing = route(decision, { model: 'claude-opus-5[1m]', effort: 'medium' }, config)
+  expect(routing.model).toBeNull()
 })
