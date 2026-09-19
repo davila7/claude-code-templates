@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HOME_STATS, statValueAt, type HomeStat } from '../lib/home-stats';
 
 /**
@@ -185,7 +185,7 @@ function StatCell({ stat, rolling }: { stat: HomeStat; rolling: boolean }) {
   );
 }
 
-export default function HomeStats({ componentsFloor = 0 }: { componentsFloor?: number }) {
+export default function HomeStats() {
   const [rolling, setRolling] = useState(false);
 
   useEffect(() => {
@@ -193,21 +193,9 @@ export default function HomeStats({ componentsFloor = 0 }: { componentsFloor?: n
     if (!reduced) setRolling(true);
   }, []);
 
-  // The catalog count is read at build time; never show less than what the
-  // site actually ships. Memoised so the per-cell interval is not restarted.
-  const stats = useMemo(
-    () =>
-      HOME_STATS.map((stat) =>
-        stat.key === 'components' && componentsFloor > stat.base
-          ? { ...stat, base: componentsFloor }
-          : stat,
-      ),
-    [componentsFloor],
-  );
-
   return (
     <div className="hs-root">
-      {stats.map((stat, i) => (
+      {HOME_STATS.map((stat, i) => (
         <div className="hs-item" key={stat.key}>
           {i > 0 && <span className="hs-divider" aria-hidden="true" />}
           <StatCell stat={stat} rolling={rolling} />

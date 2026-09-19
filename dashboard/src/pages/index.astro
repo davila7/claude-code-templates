@@ -8,15 +8,8 @@ import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
 import HomeStats from '../components/HomeStats.tsx';
-import counts from '../../public/counts.json';
 
 export const prerender = true;
-
-// Real catalog size at build time — the counter never shows less than this.
-const componentsFloor = Object.values(counts as Record<string, number>).reduce(
-  (sum, n) => sum + n,
-  0,
-);
 ---
 
 <DashboardLayout
@@ -63,7 +56,7 @@ const componentsFloor = Object.values(counts as Record<string, number>).reduce(
           <span class="status-dot"></span>
           <span class="font-ui-mono text-[12px] text-[var(--color-text-secondary)]">Ready-to-use configurations for your Claude Code projects</span>
         </div>
-        <HomeStats client:load componentsFloor={componentsFloor} />
+        <HomeStats client:load />
       </div>
 
       {/* <FeaturedSection /> */}

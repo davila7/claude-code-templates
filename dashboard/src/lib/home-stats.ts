@@ -12,10 +12,6 @@
  * ---------------------------------------------------------------------------
  * How the seeds below were measured (2026-09-18) — refresh them the same way:
  *
- *   components   sum of dashboard/public/counts.json.
- *                Rate: 1848 -> 1891 over the previous 30 days of catalog
- *                history (`git show <rev>:dashboard/public/counts.json`).
- *
  *   componentPrs merged PRs touching cli-tool/components/, counted over the
  *                full git history (270 since 2025-08-01).
  *                Rate: 56 merged in the previous 30 days.
@@ -65,14 +61,6 @@ const TRENDING_MEASURED_AT = Date.UTC(2026, 6, 5);
 const DAY_MS = 86_400_000;
 
 export const HOME_STATS: HomeStat[] = [
-  {
-    key: 'components',
-    label: 'Components',
-    base: 1891,
-    baseAt: MEASURED_AT,
-    perDay: 1.4,
-    title: 'Agents, commands, skills, MCPs, hooks, settings and more in the catalog',
-  },
   {
     key: 'downloads',
     label: 'Downloads',
