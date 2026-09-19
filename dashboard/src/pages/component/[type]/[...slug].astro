@@ -495,8 +495,16 @@ const componentSchema = component
         {typePlural === 'mods' && (
           <div class="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
             <strong class="text-amber-400">Early access.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-amber-300">mods/</a> layout); it loads in Claude Code 2.1.259+ with <code>CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1</code> and the <code>$</code> API may still change between releases.
-            {modModules.length > 0 && <span> Hooks module{modModules.length > 1 ? 's' : ''}: <code>hooks/{modModules.join('</code>, <code>hooks/')}</code>.</span>}
-            {modOptions.length > 0 && <span> Options: <code>{modOptions.join('</code>, <code>')}</code> (set in user or managed settings <code>pluginConfigs</code>, or <code>/config</code>).</span>}
+            {modModules.length > 0 && (
+              <span> Hooks module{modModules.length > 1 ? 's' : ''}: {modModules.map((mod, i) => (
+                <Fragment>{i > 0 && ', '}<code>hooks/{mod}</code></Fragment>
+              ))}.</span>
+            )}
+            {modOptions.length > 0 && (
+              <span> Options: {modOptions.map((opt, i) => (
+                <Fragment>{i > 0 && ', '}<code>{opt}</code></Fragment>
+              ))} (set in user or managed settings <code>pluginConfigs</code>, or <code>/config</code>).</span>
+            )}
             {' '}Run <code>claude plugin validate</code> on the installed folder to see every event it hooks and every <code>$</code> call it makes.
           </div>
         )}
