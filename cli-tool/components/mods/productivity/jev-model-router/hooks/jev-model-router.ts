@@ -54,6 +54,7 @@ import {
   selectProvider,
   requestBody,
   requestHeaders,
+  requestModelId,
   route,
   TIER_ORDER,
 } from './policy.ts'
@@ -210,7 +211,9 @@ export const register: Register = (on, options) => {
     const decision = pending.take()
     const routing = route(decision, { model: e.model, effort: e.effort }, policy)
     const change: { model?: string; effort?: Effort } = {}
-    if (routeMainModel && routing.model) change.model = routing.model
+    // The main loop's `model` is sent to the API as written, so an alias
+    // becomes its id here; a subagent's (agent.spawn) may stay an alias.
+    if (routeMainModel && routing.model) change.model = requestModelId(routing.model)
     if (routeMainEffort && routing.effort) change.effort = routing.effort
 
     appliedTurnId = e.turnId

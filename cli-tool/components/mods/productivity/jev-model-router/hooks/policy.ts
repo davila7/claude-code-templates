@@ -246,6 +246,30 @@ export function rankOf(model: string, tiers: Tiers): number | null {
   return null
 }
 
+/**
+ * The full id a family alias names on the main loop.
+ *
+ * `agent.spawn` takes an alias (`haiku`) the way the Agent tool does, but
+ * `turn.step`'s `model` is the id the engine already resolved for the request
+ * and goes to the API as written: an alias there is refused ("There's an
+ * issue with the selected model (haiku)"). So the tiers stay aliases in the
+ * options, and only a main-loop rewrite resolves them, here.
+ */
+const ALIAS_IDS: Record<string, string> = {
+  haiku: 'claude-haiku-4-5-20251001',
+  sonnet: 'claude-sonnet-5',
+  opus: 'claude-opus-5',
+}
+
+/**
+ * What to write into `turn.step`'s `model`: a full id as given, or the id
+ * behind a family alias. Anything else is returned unchanged for the engine
+ * to judge.
+ */
+export function requestModelId(model: string): string {
+  return ALIAS_IDS[model.trim().toLowerCase()] ?? model
+}
+
 export interface PolicyConfig {
   tiers: Tiers
   /**
