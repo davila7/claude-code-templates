@@ -1,0 +1,103 @@
+# jev-model-router
+
+Picks the model and the reasoning effort each task runs with, using [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model: unstructured state in, a typed choice with a probability distribution out, no free-form text.
+
+Two backends, chosen by whichever key is set:
+
+| Backend | Endpoint | Model | Confidence |
+|---|---|---|---|
+| `typesafe` | `POST api.typesafe.ai/v1/systemone` | `jev-latest` | reported per answer |
+| `gateway` | `POST ai-gateway.vercel.sh/v4/ai/evaluation-model` | `typesafe-ai/jev` | derived from an optional distribution |
+
+TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the confidence bars below read. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
+
+Three switches, and they are not equally safe:
+
+| Switch | What it sets | Default |
+|---|---|---|
+| `routeSubagentModel` | the model of each subagent, at `agent.spawn` | on |
+| `routeMainEffort` | the reasoning effort of the main conversation, at `turn.step` | on |
+| `routeMainModel` | the model of the main conversation, at `turn.step` | **off** |
+
+A subagent starts with its own context, so routing its model costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
+
+The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set.
+
+**Both directions, both dimensions.** A task read as mechanical is routed down; one read as hard is routed up — model and effort alike.
+
+The prompt is classified at `prompt.submit`, which runs before the turn starts, and the decision is applied to the turn's first model request and reused by the rest of that turn.
+
+**With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the same question with the small fast model. That path reports no confidence, so the threshold does not apply to it.
+
+## What it asks
+
+One request, three questions evaluated in parallel:
+
+- `tier` — a `choice` between three descriptions of the *work* (mechanical and local / ordinary engineering / hard or high-stakes). The decision model never sees a model name.
+- `effort` — a `score` on a four-level rubric, for how much step-by-step reasoning the task needs.
+- `risky` — whether the task touches production, money, credentials, or state that cannot be undone. A `noul` on TypeSafe's API, a `boolean` on the Gateway: the same question under two names.
+
+## How it decides
+
+TypeSafe's API reports a `confidence` per answer. The Gateway's answer shape carries **no `confidence` field**, so on that backend confidence is read as the highest probability in the distribution — and that distribution is itself optional in the schema, in which case confidence is absent and the threshold does not fire.
+
+The two mistakes do not cost the same, so they do not clear the same bar:
+
+- Spending **more** (a bigger model, more reasoning) needs `minUpgradeConfidence`, 0.3 by default. Being wrong costs money.
+- Spending **less** needs `minDowngradeConfidence`, 0.6 by default. Being wrong means a task handled by too small a model or too little thought.
+- `risky` above 0.7 takes the deep tier and real reasoning, past both bars. That one is not a confidence question.
+- A backend that reports no confidence at all — the Gateway without a distribution, or the built-in classifier — may only move a request **up**. Spending less on an unmeasured hunch is the bad trade.
+- A model id matching no tier, or a numeric effort (the caller's own scale), has no knowable direction: the model gets the gentler upgrade bar, and a numeric effort is left alone.
+
+Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
+
+## Privacy
+
+With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt; the subagent path sends the subagent's prompt, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.
+
+## Options
+
+```
+  typesafeApiKey:         string  TypeSafe API key (preferred: it reports a confidence)
+  gatewayApiKey:          string  Vercel AI Gateway key
+  provider:               string  "auto" | "typesafe" | "gateway" | "builtin"
+  typesafeBaseUrl:        string  empty uses https://api.typesafe.ai
+  typesafeModel:          string  empty uses jev-latest
+  gatewayBaseUrl:         string  empty uses https://ai-gateway.vercel.sh/v4/ai
+  gatewayModel:           string  empty uses typesafe-ai/jev
+  fastModel:              string  fast tier (default "haiku")
+  balancedModel:          string  balanced tier (default "sonnet")
+  deepModel:              string  deep tier (default "opus")
+  minUpgradeConfidence:   number  bar to spend more (default 0.3)
+  minDowngradeConfidence: number  bar to spend less (default 0.6)
+  routeSubagentModel:     boolean model of each subagent (default true)
+  routeMainEffort:        boolean effort of the main loop (default true)
+  routeMainModel:         boolean model of the main loop (default false)
+  timeoutMs:              number  latency budget per classification (default 800)
+  logDecisions:           boolean log each decision (default true)
+```
+
+Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
+
+```json
+{ "pluginConfigs": { "jev-model-router": { "options": { "typesafeApiKey": "" } } } }
+```
+
+## Install
+
+```sh
+npx claude-code-templates@latest --mod productivity/jev-model-router
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+```
+
+It is written to `.claude/skills/jev-model-router/`, which Claude Code auto-loads as `jev-model-router@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-model-router`. `claude plugin validate .claude/skills/jev-model-router` prints every event it hooks and every `$` call it makes.
+
+## Tests
+
+```sh
+bun test cli-tool/components/mods/productivity/jev-model-router/tests
+```
+
+**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+
+A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.

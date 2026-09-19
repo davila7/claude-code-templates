@@ -1,0 +1,129 @@
+{
+  "name": "jev-model-router",
+  "version": "0.3.0",
+  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity",
+    "routing"
+  ],
+  "userConfig": {
+    "typesafeApiKey": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for TypeSafe's own API; preferred over the Gateway, since only it reports a calibrated confidence",
+      "default": "",
+      "sensitive": true
+    },
+    "gatewayApiKey": {
+      "type": "string",
+      "title": "Vercel AI Gateway API key",
+      "description": "Key for the AI Gateway; with none set the engine's built-in classifier is used instead",
+      "default": "",
+      "sensitive": true
+    },
+    "provider": {
+      "type": "string",
+      "title": "Backend",
+      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+      "default": "auto",
+      "options": [
+        "auto",
+        "typesafe",
+        "gateway",
+        "builtin"
+      ]
+    },
+    "typesafeBaseUrl": {
+      "type": "string",
+      "title": "TypeSafe base URL",
+      "description": "Base URL of TypeSafe's own API; empty uses https://api.typesafe.ai",
+      "default": ""
+    },
+    "typesafeModel": {
+      "type": "string",
+      "title": "TypeSafe model",
+      "description": "Decision model on TypeSafe's own API; empty uses jev-latest",
+      "default": ""
+    },
+    "gatewayBaseUrl": {
+      "type": "string",
+      "title": "AI Gateway base URL",
+      "description": "Base URL of the AI Gateway; empty uses https://ai-gateway.vercel.sh/v4/ai",
+      "default": ""
+    },
+    "gatewayModel": {
+      "type": "string",
+      "title": "AI Gateway model",
+      "description": "Decision model on the AI Gateway; empty uses typesafe-ai/jev",
+      "default": ""
+    },
+    "fastModel": {
+      "type": "string",
+      "title": "Fast tier",
+      "description": "Model alias or id for mechanical, local tasks",
+      "default": "haiku"
+    },
+    "balancedModel": {
+      "type": "string",
+      "title": "Balanced tier",
+      "description": "Model alias or id for ordinary engineering work",
+      "default": "sonnet"
+    },
+    "deepModel": {
+      "type": "string",
+      "title": "Deep tier",
+      "description": "Model alias or id for hard or high-stakes work",
+      "default": "opus"
+    },
+    "minUpgradeConfidence": {
+      "type": "number",
+      "title": "Confidence to spend more",
+      "description": "How sure the decision must be to raise the model or the effort; being wrong here costs money, so the bar is low",
+      "default": 0.3
+    },
+    "minDowngradeConfidence": {
+      "type": "number",
+      "title": "Confidence to spend less",
+      "description": "How sure it must be to lower the model or the effort; being wrong here means a task gets too little, so the bar is high",
+      "default": 0.6
+    },
+    "routeSubagentModel": {
+      "type": "boolean",
+      "title": "Route subagent models",
+      "description": "Pick the model of each subagent at agent.spawn (the Agent tool takes no effort)",
+      "default": true
+    },
+    "routeMainEffort": {
+      "type": "boolean",
+      "title": "Route the main loop's effort",
+      "description": "Raise or lower the reasoning effort of the main conversation",
+      "default": true
+    },
+    "routeMainModel": {
+      "type": "boolean",
+      "title": "Route the main loop's model",
+      "description": "Change the model of the main conversation; off by default because switching models mid-session invalidates the prompt cache",
+      "default": false
+    },
+    "timeoutMs": {
+      "type": "number",
+      "title": "Latency budget (ms)",
+      "description": "How long to wait for a decision before letting the request through unchanged",
+      "default": 800
+    },
+    "logDecisions": {
+      "type": "boolean",
+      "title": "Log decisions",
+      "description": "Write each routing decision to the session log",
+      "default": true
+    }
+  }
+}
