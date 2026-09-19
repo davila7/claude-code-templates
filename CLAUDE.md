@@ -227,12 +227,14 @@ python scripts/generate_components_json.py
 # 2. Run tests
 npm test
 
-# 3. Check current npm version and align local version
+# 3. Check current npm version and align both package manifests
 npm view claude-code-templates version  # check latest on registry
-# Edit package.json version to be one patch above the registry version
+npm version X.Y.Z --no-git-tag-version  # also syncs cli-tool/package*.json
+npm run check:version-sync
 
 # 4. Commit version bump and push
-git add package.json && git commit -m "chore: Bump version to X.Y.Z"
+git add package.json package-lock.json cli-tool/package.json cli-tool/package-lock.json
+git commit -m "chore: Bump version to X.Y.Z"
 git push origin main
 
 # 5. Publish to npm (requires granular access token with "Bypass 2FA" enabled)
