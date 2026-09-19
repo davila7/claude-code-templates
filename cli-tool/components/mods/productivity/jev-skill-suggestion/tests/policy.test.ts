@@ -103,9 +103,10 @@ test('trimming the listing keeps only the named skills under the original header
   expect(trimListing(LISTING, parseNames('nope'))).toBeNull()
 })
 
-test('the catalog drops built-ins and excluded names, and narrows to the listing once one was seen', () => {
+test('the catalog keeps only plugin and user skills, drops excluded names, and narrows to the listing once one was seen', () => {
   const commands = [
     { name: 'help', description: 'Show help', source: 'builtin' },
+    { name: 'summarize', description: 'An MCP prompt', source: 'mcp' },
     { name: 'commit', description: 'Create a git commit', source: 'plugin' },
     { name: 'commit', description: 'duplicate', source: 'user' },
     { name: 'lint', description: 'Python Linter', source: 'user' },
@@ -149,9 +150,16 @@ test('the ranking is the distribution, surest first; without one the named choic
   expect(shortlistOf(wide!, skills, 3).map((s) => s.name)).toEqual(['powerpoint', 'pptx-author', 'commit'])
   const bare = readWide(wideAnswer('commit', undefined, ACTION))
   expect(bare?.ranked).toEqual([{ name: 'commit', probability: 0.9 }])
-  // A gate with no nouls answered is null and does not block.
-  expect(readWide(wideAnswer('commit', undefined))?.gate).toBeNull()
-  expect(passesGate(readWide(wideAnswer('commit', undefined))!, config)).toBe(true)
+  // A backend answer missing any gate noul is incomplete: null gate, fails closed.
+  const partial = readWide(wideAnswer('commit', undefined, { acts_on_user_system: 0.9 }))
+  expect(partial?.gate).toBeNull()
+  expect(passesGate(partial!, config)).toBe(false)
+  expect(decide(partial, null, skills, config)).toEqual({
+    name: null,
+    reason: 'gate not answered; no suggestion',
+  })
+  // The built-in classifier never asks the gate and passes by design.
+  expect(passesGate(builtinWide('commit')!, config)).toBe(true)
 })
 
 test('the rerank can flip the winner, and its fits nouls can reject the whole shortlist', () => {
@@ -171,8 +179,15 @@ test('the rerank can flip the winner, and its fits nouls can reject the whole sh
     reason: 'nothing fits, best 0.20 < 0.3',
   })
   // A winner that was never on the shortlist is not trusted.
-  const stray = readRerank(rerankAnswer('made-up', { powerpoint: 0.9 }))
+  const stray = readRerank(rerankAnswer('made-up', { powerpoint: 0.9, 'pptx-author': 0.1, commit: 0 }))
   expect(decide(wide, stray, skills, config).name).toBeNull()
+  // An answer that leaves out any candidate's fits is incomplete.
+  const partial = readRerank(rerankAnswer('powerpoint', { powerpoint: 0.9 }))
+  expect(decide(wide, partial, skills, config)).toEqual({
+    name: null,
+    reason: 'rerank left out fits for pptx-author, commit; no suggestion',
+  })
+  expect(decide(wide, readRerank(rerankAnswer('powerpoint', {})), skills, config).name).toBeNull()
 })
 
 test('with the rerank off the top of the ranking is suggested; with it attempted and failed, nothing is', () => {
@@ -223,6 +238,9 @@ test("a skill's detail is its frontmatter description plus the opening of its bo
   expect(detailOf(skill, markdown, 20)).toBe(
     'Build PowerPoint decks headless with python-pptx, from an outline or a template — # pptx-author\n\nUse p',
   )
+  // The frontmatter's description is canonical even when the typeahead's line is longer.
+  expect(detailOf(skill, '---\ndescription: Decks.\n---\nbody', 700)).toBe('Decks. — body')
+  expect(detailOf(skill, '---\ndescription:\n---\nbody', 700)).toBe(`${skill.description} — body`)
   expect(detailOf(skill, null, 700)).toBe(skill.description)
   expect(detailOf({ name: 'pdf', description: '' }, null, 700)).toBe('A skill named pdf.')
   expect(detailOf({ name: 'pdf', description: '' }, 'no frontmatter here', 700)).toBe('no frontmatter here')

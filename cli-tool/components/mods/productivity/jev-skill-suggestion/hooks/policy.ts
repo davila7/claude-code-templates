@@ -53,6 +53,8 @@ export interface Wide {
   gate: number | null
   /** Each gate noul as answered, for the log. */
   gateValues: Record<string, number>
+  /** True when the built-in classifier answered: one label, no gate by design. */
+  builtin?: true
 }
 
 /** What the second request answered. */
@@ -134,9 +136,8 @@ export function parseListing(text: string): Skill[] {
 }
 
 /**
- * The skills the decision model is offered: every command the person can run
- * that the model may also call, less the built-ins (`/help`, `/clear`) and the
- * names configured out. When the engine's listing has been seen, only skills
+ * The skills the decision model is offered: every plugin or user skill the
+ * person can run, less the names configured out. When the engine's listing has been seen, only skills
  * it listed are offered: the listing is the engine's word on which skills the
  * model is allowed to invoke.
  */
@@ -148,7 +149,11 @@ export function catalog(
   const seen = new Set<string>()
   const skills: Skill[] = []
   for (const command of commands) {
-    if (command.source === 'builtin') continue
+    // Only what the Skill tool can load: a plugin's or the person's own
+    // skill. A built-in (`/help`) and an MCP server's prompt are commands
+    // too, and a suggestion naming one would send the model to a load that
+    // fails.
+    if (command.source !== 'plugin' && command.source !== 'user') continue
     if (listed.size > 0 && !listed.has(command.name)) continue
     if (excluded.has(command.name) || seen.has(command.name)) continue
     seen.add(command.name)
@@ -252,8 +257,10 @@ export function detailOf(skill: Skill, markdown: string | null, excerptChars: nu
     body = markdown.slice(frontmatter[0].length)
     const field = /^description:\s*(.*)$/m.exec(frontmatter[1] as string)
     if (field) {
+      // The skill's own frontmatter is the canonical text; the typeahead's
+      // one-liner only stands in when the file has none.
       const value = (field[1] as string).trim().replace(/^["']|["']$/g, '')
-      if (value.length > description.length) description = value
+      if (value) description = value
     }
   }
   const excerpt = body.trim().slice(0, Math.max(0, excerptChars))
@@ -389,7 +396,8 @@ function yesNoOf(answer: Record<string, unknown> | undefined): number | null {
  * Reads the first request's answer. The ranking is the Choice's probability
  * distribution, surest first; a backend that sends none ranks the named
  * choice alone, at the reported confidence or none. The gate is the mean of
- * the oriented nouls that were answered, or null when none was.
+ * the oriented nouls, or null when any of the three is missing: a backend
+ * answer with the gate left out is incomplete, and `passesGate` fails it.
  */
 export function readWide(responseText: string): Wide | null {
   const answers = answersOf(responseText)
@@ -419,7 +427,8 @@ export function readWide(responseText: string): Wide | null {
     gateValues[key] = value
     oriented.push(INVERTED.has(key) ? 1 - value : value)
   }
-  const gate = oriented.length > 0 ? oriented.reduce((a, b) => a + b, 0) / oriented.length : null
+  const complete = oriented.length === Object.keys(GATE_QUESTIONS).length
+  const gate = complete ? oriented.reduce((a, b) => a + b, 0) / oriented.length : null
   return { ranked, gate, gateValues }
 }
 
@@ -448,6 +457,7 @@ export function builtinWide(label: string | undefined): Wide | null {
     ranked: label === NONE ? [] : [{ name: label, probability: null }],
     gate: null,
     gateValues: {},
+    builtin: true,
   }
 }
 
@@ -490,9 +500,14 @@ export function shortlistOf(wide: Wide, skills: readonly Skill[], count: number)
   return picked
 }
 
-/** Whether the first request's answer is worth a second look at all. */
+/**
+ * Whether the first request's answer is worth a second look at all. A
+ * backend answer with no gate is incomplete and fails closed; the built-in
+ * classifier never asks the gate, and passes by design.
+ */
 export function passesGate(wide: Wide, config: PolicyConfig): boolean {
-  return wide.gate === null || wide.gate >= config.gateThreshold
+  if (wide.gate === null) return wide.builtin === true
+  return wide.gate >= config.gateThreshold
 }
 
 export interface Suggestion {
@@ -524,7 +539,10 @@ export function decide(
   if (!passesGate(wide, config)) {
     return {
       name: null,
-      reason: `needs a skill ${(wide.gate as number).toFixed(2)} < ${config.gateThreshold}`,
+      reason:
+        wide.gate === null
+          ? 'gate not answered; no suggestion'
+          : `needs a skill ${wide.gate.toFixed(2)} < ${config.gateThreshold}`,
     }
   }
   const shortlist = shortlistOf(wide, skills, config.shortlist)
@@ -533,9 +551,17 @@ export function decide(
   if (!rerank && rerankAttempted) return { name: null, reason: 'rerank gave no answer; no suggestion' }
 
   if (rerank) {
-    const values = Object.values(rerank.fits)
-    const best = values.length > 0 ? Math.max(...values) : null
-    if (best !== null && best < config.fitsThreshold) {
+    // Every candidate's `fits` is the false-positive check; an answer that
+    // leaves any out is incomplete and is not trusted.
+    const missing = shortlist.filter((skill) => rerank.fits[skill.name] === undefined)
+    if (missing.length > 0) {
+      return {
+        name: null,
+        reason: `rerank left out fits for ${missing.map((s) => s.name).join(', ')}; no suggestion`,
+      }
+    }
+    const best = Math.max(...shortlist.map((skill) => rerank.fits[skill.name] as number))
+    if (best < config.fitsThreshold) {
       return { name: null, reason: `nothing fits, best ${best.toFixed(2)} < ${config.fitsThreshold}` }
     }
     if (shortlist.some((skill) => skill.name === rerank.winner)) {

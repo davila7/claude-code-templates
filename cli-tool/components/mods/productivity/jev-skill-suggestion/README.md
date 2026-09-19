@@ -39,7 +39,7 @@ The first line is the cookbook's, word for word: it says the suggestion can be i
 
 The call stays the model's: a suggestion is a hint, not a preload. A typed `/name` still loads any skill, suggested or not.
 
-**Where the candidates come from.** The listing is rendered at the turn's first model request, *after* `prompt.submit` has run, so the first prompt of a session would have nothing to choose from if the listing were the source. The candidates come from `$.command.list()` instead — every command the person can run, less the built-ins (`/help`, `/clear`) and the names in `neverSuggested`. Once a listing has been seen, only the skills it named are offered: the listing is the engine's word on which skills the model is allowed to invoke, and `$.command.list()` also names commands it may not (a skill with `disable-model-invocation: true`).
+**Where the candidates come from.** The listing is rendered at the turn's first model request, *after* `prompt.submit` has run, so the first prompt of a session would have nothing to choose from if the listing were the source. The candidates come from `$.command.list()` instead — the plugin and user skills the person can run (a built-in like `/help` and an MCP server's prompt are commands too, but the Skill tool cannot load them), less the names in `neverSuggested`. Once a listing has been seen, only the skills it named are offered: the listing is the engine's word on which skills the model is allowed to invoke, and `$.command.list()` also names commands it may not (a skill with `disable-model-invocation: true`).
 
 **Only the main conversation.** A subagent's own skill listing is left as the engine renders it. Its prompt is a tool call's argument, not a `prompt.submit`, so nothing here could suggest for it, and hiding its listing would leave it with no skills at all.
 
@@ -66,6 +66,7 @@ This is where lookalikes separate — on one line the skill that *edits* `.pptx`
 The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session.
 
 - The Gateway answers a `noul` as a `boolean` with a `probability`; both shapes are read.
+- An incomplete answer is not trusted: a first request missing any of the three gate nouls, or a second request missing any candidate's `fits`, suggests nothing.
 - `rerank: false` skips the second request and suggests the top of the ranking, once the gate passes. A second request that was *attempted* and failed suggests nothing: the ranking's winner has not had its false-positive check.
 - A skill whose frontmatter says `disable-model-invocation: true` is never suggested, whichever path picked it: the engine leaves it out of the listing and the Skill tool refuses it. Before the first listing has been seen the candidates come from `$.command.list()`, which also names such skills, so their SKILL.md is the check (read for the shortlist and for the winner).
 - The built-in classifier answers one label from the descriptions, with no gate and no second request.

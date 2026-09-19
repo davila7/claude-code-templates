@@ -158,9 +158,12 @@ export const register: Register = (on, options) => {
   // word on which skills the model is allowed to invoke, and `$.command.list()`
   // also names commands the model may not.
   const listed = new Set<string>()
-  // The skill suggested for the current prompt, so a skill.prompt that loads
-  // it can be told apart from one the model reached for on its own.
-  let suggested: string | null = null
+  // The skills suggested for the last few prompts, newest first, so a
+  // skill.prompt that loads one can be told apart from one the model reached
+  // for on its own. `skill.prompt` carries no turn id, and a prompt queued
+  // while a turn still runs is classified before that turn's loads, so a
+  // single slot would misattribute them; a short window does not.
+  const recent: string[] = []
   // Each skill's SKILL.md as first found, or null when nowhere: read once per
   // session, since the second request wants it on every prompt it is on.
   const bodies = new Map<string, string | null>()
@@ -177,12 +180,13 @@ export const register: Register = (on, options) => {
       }
     }
 
+    // A subagent's listing is not ours: its roster is its own, nothing here
+    // suggests for a subagent, and hiding its listing would leave it with no
+    // skills at all. Only the main conversation's names are recorded.
+    if (e.agentId) return next(e)
     const skills = parseListing(e.text)
     for (const skill of skills) listed.add(skill.name)
-
-    // A subagent's listing is not ours: nothing here suggests for a subagent,
-    // so hiding its listing would leave it with no skills at all.
-    if (!hideListing || e.agentId) return next(e)
+    if (!hideListing) return next(e)
 
     const kept = trimListing(e.text, alwaysListed)
     if (logDecisions) {
@@ -206,8 +210,6 @@ export const register: Register = (on, options) => {
         $.ui.log(`[jev-skill-suggestion] ${describeSetup(active, url, hideListing, forced === 'builtin')}`)
       }
     }
-    suggested = null
-
     // Notifications and peer messages are not tasks; a typed `/name` already
     // names its skill. Neither gets a suggestion.
     if (!e.text.trim() || /^\/\S/.test(e.text.trim())) return next(e)
@@ -321,15 +323,26 @@ export const register: Register = (on, options) => {
     // Before the listing has been seen, `$.command.list()` may name a skill
     // the model is not allowed to invoke; its own frontmatter tells.
     const barred: string[] = []
+    let offered = skills
     if (active && rerankEnabled && wide && passesGate(wide, policy)) {
-      const candidates: Candidate[] = []
-      for (const skill of shortlistOf(wide, skills, policy.shortlist)) {
-        const body = await bodyOf(skill, pluginOf.get(skill.name))
-        if (!modelInvocable(body)) {
-          barred.push(skill.name)
-          continue
+      // The shortlist is re-drawn without a barred skill, so the candidates
+      // the second request reads are exactly the shortlist `decide` checks
+      // the `fits` answers against.
+      let candidates: Candidate[] = []
+      for (;;) {
+        candidates = []
+        let redraw = false
+        for (const skill of shortlistOf(wide, offered, policy.shortlist)) {
+          const body = await bodyOf(skill, pluginOf.get(skill.name))
+          if (!modelInvocable(body)) {
+            barred.push(skill.name)
+            redraw = true
+            continue
+          }
+          candidates.push({ ...skill, detail: detailOf(skill, body, excerptChars) })
         }
-        candidates.push({ ...skill, detail: detailOf(skill, body, excerptChars) })
+        if (!redraw) break
+        offered = offered.filter((skill) => !barred.includes(skill.name))
       }
       if (candidates.length > 0) {
         const rerankStartedAt = await $.clock.now()
@@ -346,7 +359,6 @@ export const register: Register = (on, options) => {
       }
     }
 
-    const offered = barred.length > 0 ? skills.filter((skill) => !barred.includes(skill.name)) : skills
     let decision = decide(wide, rerank, offered, policy, rerankAttempted)
     let pick = decision.name ? (skills.find((skill) => skill.name === decision.name) ?? null) : null
     // The winner's own frontmatter has the last word, whichever path picked it.
@@ -370,7 +382,8 @@ export const register: Register = (on, options) => {
       )
     }
 
-    suggested = pick?.name ?? null
+    if (pick) recent.unshift(pick.name)
+    if (recent.length > 3) recent.length = 3
     const block = suggestionBlock(pick, hideListing)
     if (!block) return next(e)
     // Attached on the way down: one block after the prompt as typed, read by
@@ -383,11 +396,13 @@ export const register: Register = (on, options) => {
     // a skill it was never told about, is the one measure of this mod's worth.
     if (logDecisions) {
       const how =
-        suggested === e.skill
+        recent[0] === e.skill
           ? 'as suggested'
-          : suggested
-            ? `suggested was /${suggested}`
-            : 'nothing was suggested'
+          : recent.includes(e.skill)
+            ? 'suggested for an earlier prompt'
+            : recent[0]
+              ? `last suggestion was /${recent[0]}`
+              : 'nothing was suggested'
       $.ui.log(`[jev-skill-suggestion] skill /${e.skill} loaded (${how})`)
     }
     return next(e)
