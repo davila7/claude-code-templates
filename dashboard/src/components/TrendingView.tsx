@@ -47,7 +47,7 @@ function formatNumber(n: number): string {
   return String(n);
 }
 
-const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps'] as const;
+const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps', 'mods'] as const;
 
 export default function TrendingView() {
   const [data, setData] = useState<TrendingData | null>(null);
