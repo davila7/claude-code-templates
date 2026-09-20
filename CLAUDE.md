@@ -539,7 +539,8 @@ All of the above are served as static Cloudflare Pages assets with
 1. `scripts/generate_components_json.py` scans `cli-tool/components/`
 2. Generates `docs/components.json` (full, with `content`/`security`) and the split dashboard artifacts (`dashboard/public/components.json`, `counts.json`, `components/{type}.json`, `search-index.json`, `component-content/{type}/{slug}.json`) — these two writes are decoupled, so the dashboard payload stays lean without touching the legacy catalog
 3. Dashboard islands (`ComponentGrid.tsx`, `SearchModal.tsx`, `Sidebar.astro`, `SendToRepoModal.tsx`) load the split artifacts instead of the full catalog
-4. Download tracking via `/api/track-download-supabase`
+4. `scripts/generate_trending_data.py` writes only `docs/trending-data.json`; `update-json-data.yml` copies it to `dashboard/public/trending-data.json`, which is the one `TrendingView.tsx` and the home counters actually fetch
+5. Download tracking via `/api/track-download-supabase`
 
 ### Plugins & Marketplaces Catalog
 

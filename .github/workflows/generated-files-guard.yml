@@ -36,6 +36,18 @@ jobs:
             const prNumber = pr.number;
             const marker = '<!-- generated-files-guard:v1 -->';
 
+            // The guard exists to keep *fork* PRs from committing conflict-prone
+            // generated blobs. A branch pushed to this repository is a maintainer
+            // or agent branch, and those are expected to carry the regenerated
+            // catalog — the Claude GitHub App, which opens them, is not OWNER,
+            // MEMBER or COLLABORATOR, so author_association alone failed exactly
+            // the PRs that do the required work.
+            const headRepo = pr.head.repo && pr.head.repo.full_name;
+            if (headRepo === `${owner}/${repo}`) {
+              core.info(`Head branch lives in ${headRepo} — skipping guard.`);
+              return;
+            }
+
             // Maintainers regenerate the catalog on purpose (e.g. sync PRs).
             const trusted = ['OWNER', 'MEMBER', 'COLLABORATOR'];
             if (trusted.includes(pr.author_association)) {
