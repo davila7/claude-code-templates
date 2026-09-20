@@ -26,10 +26,32 @@ The broadcast targets the segment in the `RESEND_SEGMENT_ID` secret. Point it
 at a small pilot segment for tests, or the full-audience segment for
 community-wide sends. Nothing outside that segment can receive the email.
 
-## Schedule
+## Schedule — PAUSED (2026-09-20)
 
-Cron: Sundays 16:00 UTC (`0 16 * * SUN`). Note: the Cloudflare account's free
-plan allows 5 cron triggers; this slot was freed by decommissioning the
+The weekly send is **off**. It used to run Sundays 16:00 UTC (`0 16 * * SUN`)
+but was paused because the emails were reading as spam. The worker stays
+deployed; only the automatic send is disabled.
+
+Two independent locks, so neither one alone can start it sending again:
+
+1. `wrangler.toml` has `crons = []`, which removes the registered trigger from
+   Cloudflare on deploy (an empty list is what deletes it — omitting the
+   `[triggers]` section would leave the old trigger running).
+2. `NEWSLETTER_ENABLED` is `"false"`, and `scheduled()` returns immediately
+   unless it is exactly `"true"`.
+
+`POST /trigger` and `GET /preview` still work, so the newsletter can be
+iterated on while paused.
+
+**Note:** editing this repo does not change production. The pause only takes
+effect once someone runs `npx wrangler deploy` from this directory (no GitHub
+Action deploys this worker). The alternative is deleting the trigger by hand
+in the Cloudflare dashboard under Workers → `aitmpl-newsletter` → Settings →
+Trigger Events.
+
+To re-enable: restore `crons = ["0 16 * * SUN"]`, set
+`NEWSLETTER_ENABLED = "true"`, and deploy. The Cloudflare account's free plan
+allows 5 cron triggers; this slot was freed by decommissioning the
 `claude-docs-monitor` worker (2026-07).
 
 ## Endpoints

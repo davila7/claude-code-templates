@@ -38,6 +38,15 @@ const CATEGORIES = [
 
 export default {
   async scheduled(event, env, ctx) {
+    // Paused 2026-09-20: the weekly send was reading as spam. wrangler.toml
+    // removes the cron trigger; this guard is the second lock, so restoring
+    // the trigger without also setting NEWSLETTER_ENABLED="true" still sends
+    // nothing. Manual POST /trigger stays open for testing while paused.
+    if (env.NEWSLETTER_ENABLED !== 'true') {
+      console.log('📬 Newsletter: paused (NEWSLETTER_ENABLED is not "true") — skipping scheduled send');
+      return;
+    }
+
     console.log('📬 Newsletter: starting weekly send (cron)...');
     // dedupe guards against Cloudflare's documented occasional cron double-fire;
     // manual /trigger sends skip it so pilots/tests can send multiple times a day.
