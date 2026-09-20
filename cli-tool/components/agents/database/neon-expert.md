@@ -48,7 +48,8 @@ neon auth
 
 # Branching (copy-on-write, seconds to create)
 # --expires-at takes an RFC 3339 timestamp (there is no --ttl flag); this expires the branch in 24h
-neon branches create --name pr-preview --expires-at "$(date -u -d '+24 hours' +%Y-%m-%dT%H:%M:%SZ)"
+EXPIRES_AT=$(date -u -v+24H "+%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d "+24 hours" "+%Y-%m-%dT%H:%M:%SZ")
+neon branches create --name pr-preview --expires-at "$EXPIRES_AT"
 neon connection-string pr-preview
 
 # Link a local project
