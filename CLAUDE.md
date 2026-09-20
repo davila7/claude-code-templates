@@ -12,8 +12,9 @@ Node.js CLI tool for managing Claude Code components (agents, commands, MCPs, ho
 # Development
 npm install                    # Install dependencies
 npm test                       # Run tests
-npm run version:set -- X.Y.Z   # Bump every package manifest and lockfile
-npm publish                    # Publish to npm
+npm version X.Y.Z --ignore-scripts=false  # Sync, commit, and tag all package versions
+npm run version:set -- X.Y.Z   # Sync versions without creating a commit or tag
+npm publish --ignore-scripts=false  # Publish and run the trusted prepublish guard
 
 # Component catalog
 python scripts/generate_components_json.py  # Update docs/components.json
@@ -227,25 +228,20 @@ python scripts/generate_components_json.py
 # 2. Run tests
 npm test
 
-# 3. Check current npm version and align both package manifests
+# 3. Check current npm version, then create the synchronized version commit and tag
 npm view claude-code-templates version  # check latest on registry
-npm run version:set -- X.Y.Z   # X.Y.Z = one patch above the registry version
+npm version X.Y.Z --ignore-scripts=false  # X.Y.Z = one patch above the registry version
 npm run check:version-sync
 
-# 4. Commit version bump and push
-git add package.json package-lock.json cli-tool/package.json cli-tool/package-lock.json
-git commit -m "chore: Bump version to X.Y.Z"
-git push origin main
+# 4. Push the version commit and tag created by npm version
+git push origin main --follow-tags
 
 # 5. Publish to npm (requires granular access token with "Bypass 2FA" enabled)
 npm config set //registry.npmjs.org/:_authToken=YOUR_GRANULAR_TOKEN
-npm publish
+npm publish --ignore-scripts=false
 npm config delete //registry.npmjs.org/:_authToken  # always clean up after
 
-# 6. Tag the release
-git tag vX.Y.Z && git push origin vX.Y.Z
-
-# 7. Deploy website (dashboard on Cloudflare Pages)
+# 6. Deploy website (dashboard on Cloudflare Pages)
 # Automatic on push to main (GitHub Actions). Manual: from dashboard/ run `npm run deploy`
 ```
 
@@ -253,6 +249,7 @@ git tag vX.Y.Z && git push origin vX.Y.Z
 - Classic npm tokens were revoked Dec 2025. Use **granular access tokens** from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens)
 - The token must have **Read and Write** permissions for `claude-code-templates` and **"Bypass 2FA"** enabled
 - Always remove the token from npm config after publishing (`npm config delete`)
+- The repository disables lifecycle scripts by default for security. Pass `--ignore-scripts=false` only to the trusted release commands shown above so their version and prepublish hooks can run.
 - The local `package.json` version may drift from npm if published from CI — always check `npm view claude-code-templates version` first
 - Never hardcode or commit tokens
 

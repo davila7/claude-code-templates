@@ -8,8 +8,13 @@ const cliArguments = process.argv.slice(2);
 const checkOnly = cliArguments.includes('--check');
 const requestedVersions = cliArguments.filter((argument) => argument !== '--check');
 
+function fail(message) {
+  console.error(message);
+  process.exit(1);
+}
+
 if (requestedVersions.length > 1 || (checkOnly && requestedVersions.length > 0)) {
-  throw new Error('Usage: sync-package-versions.js [--check | X.Y.Z]');
+  fail('Usage: sync-package-versions.js [--check | X.Y.Z]');
 }
 
 const requestedVersion = requestedVersions[0];
@@ -17,7 +22,7 @@ const semverPattern =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:(?:[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)|0|[1-9]\d*)(?:\.(?:(?:[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)|0|[1-9]\d*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
 if (requestedVersion && !semverPattern.test(requestedVersion)) {
-  throw new Error(`Invalid semantic version: ${requestedVersion}`);
+  fail(`Invalid semantic version: ${requestedVersion}`);
 }
 
 function readJson(relativePath) {
@@ -46,7 +51,7 @@ for (const file of versionFiles) {
   if (file.relativePath.endsWith('package-lock.json')) {
     const lockRoot = file.data.packages && file.data.packages[''];
     if (!lockRoot) {
-      throw new Error(`${file.relativePath} does not contain packages[""]`);
+      fail(`${file.relativePath} does not contain packages[""]`);
     }
     fields.push(['packages[""].version', lockRoot]);
   }
@@ -57,12 +62,14 @@ for (const file of versionFiles) {
       mismatches.push(
         `${file.relativePath} ${field}: ${owner.version} (expected ${expectedVersion})`
       );
-      owner.version = expectedVersion;
-      changed = true;
+      if (!checkOnly) {
+        owner.version = expectedVersion;
+        changed = true;
+      }
     }
   }
 
-  if (changed && !checkOnly) {
+  if (changed) {
     fs.writeFileSync(file.absolutePath, `${JSON.stringify(file.data, null, 2)}\n`);
   }
 }

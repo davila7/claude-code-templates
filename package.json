@@ -9,9 +9,11 @@
   },
   "scripts": {
     "build": "echo 'Build complete'",
-    "test": "npm run check:version-sync",
+    "test": "npm run check:version-sync && npm run test:version-sync",
     "check:version-sync": "node scripts/sync-package-versions.js --check",
+    "test:version-sync": "node --test scripts/sync-package-versions.test.js",
     "prepublishOnly": "npm run check:version-sync",
+    "version": "node scripts/sync-package-versions.js && git add package.json package-lock.json cli-tool/package.json cli-tool/package-lock.json",
     "version:set": "node scripts/sync-package-versions.js",
     "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'",
     "deploy": "./scripts/deploy.sh",

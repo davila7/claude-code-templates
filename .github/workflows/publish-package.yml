@@ -64,7 +64,7 @@ jobs:
 
       - name: Publish to GitHub Packages
         working-directory: ./cli-tool
-        run: npm publish
+        run: npm publish --ignore-scripts=false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
