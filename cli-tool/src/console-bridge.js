@@ -58,7 +58,6 @@ class ConsoleBridge extends EventEmitter {
       
       console.log(chalk.green('✅ Console Bridge initialized successfully'));
       console.log(chalk.cyan(`🔌 WebSocket server running on port ${this.options.port} (loopback only)`));
-      console.log(chalk.gray(`🔑 Console Bridge token: ${this.authToken}`));
       
       return true;
     } catch (error) {
@@ -164,6 +163,16 @@ class ConsoleBridge extends EventEmitter {
   }
 
   /**
+   * Whether a string is a plain device path we are willing to hand to expect
+   * and to a shell. Deliberately strict: /dev/ plus a conservative charset.
+   * @param {string} value - candidate path
+   * @returns {boolean}
+   */
+  static isDevicePath(value) {
+    return typeof value === 'string' && /^\/dev\/[A-Za-z0-9._/-]+$/.test(value);
+  }
+
+  /**
    * Setup monitoring of Claude Code processes
    */
   setupProcessMonitoring() {
@@ -236,6 +245,16 @@ class ConsoleBridge extends EventEmitter {
         return;
       }
       
+      // SECURITY: tty comes from parsing `lsof` output and then reaches both an
+      // expect script and a shell command string. Tcl's `open` treats a value
+      // starting with "|" as a command pipeline, and the polling exec() below
+      // interpolates the same value into /bin/sh, so anything that is not a
+      // plain /dev/ device path is refused here rather than downstream.
+      if (!ConsoleBridge.isDevicePath(terminalInfo.tty)) {
+        console.warn(chalk.yellow(`⚠️ Refusing unexpected terminal device path: ${terminalInfo.tty}`));
+        return;
+      }
+
       this.attachedPid = pid;
       this.terminalDevice = terminalInfo.tty;
       

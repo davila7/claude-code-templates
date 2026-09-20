@@ -59,11 +59,28 @@ describe('ConsoleBridge command injection (GHSA-4jm9-m3fr-9jpx)', () => {
   });
 
   (hasExpect ? it : it.skip)('does not evaluate Tcl substitutions in terminal input', async () => {
-    // The text is read back with $env(...) rather than interpolated into the
-    // script source, so Tcl never re-parses it.
-    bridge.writeToTerminal(`x[exec /bin/sh -c ": > ${marker}"]\n`);
+    // An expect script is Tcl, and Tcl substitutes [...] inside a double-quoted
+    // string. The old sink escaped only double quotes, so this was a second,
+    // independent execution path alongside the reported shell breakout.
+    // The payload deliberately contains NO double quote: escaping " cannot
+    // neutralise it, which is what makes this test discriminate. Verified to
+    // create the marker against the pre-fix console-bridge.js and not to
+    // create it here, where the value is read back with $env(...) and a Tcl
+    // variable's value is never re-parsed.
+    bridge.writeToTerminal(`x[exec touch ${marker}]\n`);
     await settle();
     expect(fs.existsSync(marker)).toBe(false);
+  });
+
+  it('refuses a terminal device path that is not a plain /dev/ path', () => {
+    // Tcl's `open` runs a value beginning with "|" as a command pipeline, and
+    // the polling exec() interpolates the same value into /bin/sh.
+    expect(ConsoleBridge.isDevicePath('/dev/pts/3')).toBe(true);
+    expect(ConsoleBridge.isDevicePath('/dev/ttys004')).toBe(true);
+    expect(ConsoleBridge.isDevicePath('|touch /tmp/x')).toBe(false);
+    expect(ConsoleBridge.isDevicePath('/dev/pts/3; touch /tmp/x')).toBe(false);
+    expect(ConsoleBridge.isDevicePath('/etc/passwd')).toBe(false);
+    expect(ConsoleBridge.isDevicePath(undefined)).toBe(false);
   });
 
   it('ignores a choice response whose value is not a number', () => {
