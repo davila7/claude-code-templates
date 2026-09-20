@@ -34,6 +34,34 @@ class CanonicalTypeTest(unittest.TestCase):
         self.assertEqual(generator.canonical_type("widget"), "widget")
 
 
+class LegacyTypeAliasTest(unittest.TestCase):
+    def test_function_hook_is_folded_into_mod(self):
+        self.assertEqual(generator.canonical_type("function-hook"), "mod")
+        self.assertEqual(generator.canonical_type("function-hooks"), "mod")
+        self.assertEqual(generator.plural_type("function-hook"), "mods")
+
+    def test_legacy_and_current_rows_are_one_component(self):
+        # Pre-#910 CLI versions still write component_type 'function-hook'.
+        downloads = [download("function-hook", "secret-redactor", days_ago=2),
+                     download("function-hook", "secret-redactor", days_ago=1),
+                     download("mod", "secret-redactor")]
+
+        data = generator.process_downloads_data(downloads)
+
+        self.assertNotIn("function-hooks", data["trending"])
+        mods = data["trending"]["mods"]
+        self.assertEqual(len(mods), 1)
+        self.assertEqual(mods[0]["id"], "mod-secret-redactor")
+        self.assertEqual(mods[0]["downloadsTotal"], 3)
+        self.assertEqual(data["globalStats"]["totalComponents"], 1)
+
+    def test_legacy_rows_land_in_the_mods_chart_series(self):
+        data = generator.process_downloads_data([download("function-hook", "pacman")])
+
+        self.assertNotIn("function-hooks", data["chartData"]["series"])
+        self.assertEqual(data["chartData"]["series"]["mods"][-1], 1)
+
+
 class PluralTypeTest(unittest.TestCase):
     def test_known_types_map_to_their_bucket(self):
         self.assertEqual(generator.plural_type("mod"), "mods")
