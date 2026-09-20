@@ -41,13 +41,24 @@ FALLBACK_TYPES = ['commands', 'agents', 'settings', 'hooks', 'mcps', 'skills', '
 
 TYPE_SINGULARS = {plural: singular for singular, plural in TYPE_PLURALS.items()}
 
+# Types renamed in the CLI. Older CLI versions keep writing the old name, so the
+# rows have to be folded into the current type or the component's downloads are
+# split across two buckets. `function-hook` became `mod` in #910 (2026-09-16).
+TYPE_ALIASES = {
+    'function-hook': 'mod',
+    'function-hooks': 'mod',
+}
+
 
 def canonical_type(component_type):
-    """Collapse the singular and plural spellings of a component_type to one key.
+    """Collapse the spellings of a component_type to one key.
 
-    Downloads are aggregated per component under this key, so a component that
-    has both `mod` and `mods` rows counts as one component instead of two.
+    Downloads are aggregated per component under this key, so a component with
+    both `mod` and `function-hook` (or `mods`) rows counts once, with its
+    downloads summed, instead of appearing as two half-counted components.
     """
+    if component_type in TYPE_ALIASES:
+        return TYPE_ALIASES[component_type]
     if component_type in TYPE_PLURALS:
         return component_type
     return TYPE_SINGULARS.get(component_type, component_type)
