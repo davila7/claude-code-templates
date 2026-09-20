@@ -618,43 +618,18 @@ Do you want to proceed?
    * @param {string} text - Text to send
    */
   tryAlternativeInput(text) {
-    // Method 2: Try using osascript (AppleScript on macOS) to send keystrokes
-    if (process.platform === 'darwin') {
-      // SECURITY: same rule as writeToTerminal - no shell, and the untrusted
-      // text is handed to AppleScript as a run argument rather than being
-      // interpolated into the script source.
-      const script = `
-        on run argv
-          tell application "Terminal"
-            do script (item 1 of argv) in front window
-          end tell
-        end run
-      `;
-
-      const child = spawn('osascript', ['-e', script, text], {
-        shell: false,
-        stdio: 'ignore'
-      });
-
-      let settled = false;
-      const settle = (ok) => {
-        if (settled) return;
-        settled = true;
-        if (ok) {
-          console.log(chalk.green('✅ Input sent via AppleScript'));
-        } else {
-          console.log(chalk.yellow('⚠️ AppleScript method failed, falling back to simulation'));
-          this.simulateResponse({ type: 'choice', value: parseInt(text) - 1, text: text.trim() });
-        }
-      };
-
-      child.on('error', () => settle(false));
-      child.on('close', (code) => settle(code === 0));
-    } else {
-      // On Linux, try using xdotool or similar
-      console.log(chalk.yellow('⚠️ Non-macOS platform - input simulation not implemented'));
-      this.simulateResponse({ type: 'choice', value: parseInt(text) - 1, text: text.trim() });
-    }
+    // There is no second way to deliver inert terminal input.
+    //
+    // SECURITY: this used to shell out to AppleScript on macOS, but Terminal's
+    // `do script` is documented as "Runs a UNIX shell script or command" - it
+    // executes what it is given instead of typing it. Handing it a response
+    // value therefore ran that value as a shell command, which is the sink
+    // GHSA-4jm9-m3fr-9jpx is about, and passing the text as an argv item
+    // rather than interpolating it does not change that. It never delivered
+    // keystrokes, so nothing is lost by dropping it; every platform now falls
+    // back to simulation, as Linux and Windows already did.
+    console.log(chalk.yellow('⚠️ No terminal input method available - falling back to simulation'));
+    this.simulateResponse({ type: 'choice', value: parseInt(text) - 1, text: text.trim() });
   }
 
   /**

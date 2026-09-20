@@ -12,11 +12,14 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const WebSocket = require('ws');
 const ConsoleBridge = require('../../src/console-bridge');
 
-const hasExpect = ['/usr/bin/expect', '/usr/local/bin/expect', '/opt/homebrew/bin/expect']
-  .some((p) => fs.existsSync(p));
+// Resolve `expect` exactly the way writeToTerminal does - through PATH - so
+// these tests cannot silently skip on a machine where production would still
+// reach the sink.
+const hasExpect = spawnSync('expect', ['-c', 'exit 0'], { stdio: 'ignore' }).error === undefined;
 
 const TEST_PORT = 43334;
 
@@ -43,6 +46,16 @@ describe('ConsoleBridge command injection (GHSA-4jm9-m3fr-9jpx)', () => {
     bridge.writeToTerminal(`x'; : > ${marker} #\n`);
     await settle();
     expect(fs.existsSync(marker)).toBe(false);
+  });
+
+  it('has no shell-executing fallback left in the module', () => {
+    // Terminal's `do script` executes what it is handed, so the osascript
+    // fallback was a second command-execution sink; it must not come back.
+    const source = fs.readFileSync(require.resolve('../../src/console-bridge'), 'utf8');
+    const code = source.split('\n').filter((l) => !l.trim().startsWith('//')).join('\n');
+    expect(code).not.toMatch(/osascript/);
+    expect(code).not.toMatch(/do script/);
+    expect(code).not.toMatch(/shell:\s*true/);
   });
 
   (hasExpect ? it : it.skip)('does not evaluate Tcl substitutions in terminal input', async () => {
