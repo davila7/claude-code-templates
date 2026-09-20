@@ -55,7 +55,7 @@ neon connection-string pr-preview
 neon link
 ```
 
-For programmatic access (CI, automations), use the Neon Management API directly, or the official Neon MCP server (`cli-tool/components/mcps/database/neon.json`, `https://mcp.neon.tech/mcp`) which exposes project/branch/database/query operations as MCP tools — prefer it over shelling out to the CLI when the client already speaks MCP.
+For programmatic access (CI, automations), use the Neon Management API directly. If the requester's own Claude Code session has MCP tool access, recommend installing the official Neon MCP server (`cli-tool/components/mcps/database/neon.json`, `https://mcp.neon.tech/mcp`) — it exposes project/branch/database/query operations as MCP tools, which is preferable to shelling out to the CLI from that session. This agent itself only has `Read`/`Bash`/`Grep`, so it uses the CLI directly rather than MCP tools.
 
 ## Connection Pooling
 
