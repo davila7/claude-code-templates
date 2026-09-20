@@ -551,7 +551,7 @@ All of the above are served as static Cloudflare Pages assets with
 
 ### Legacy Static Site (docs/)
 
-The `docs/` directory contains the old static HTML site (no longer deployed to www). Blog articles in `docs/blog/` are still referenced externally.
+The `docs/` directory contains the old static HTML site (no longer deployed to www). GitHub Pages still builds it from repository settings and publishes it at `davila7.github.io/claude-code-templates`; nothing in production depends on that, and every article canonicalises to `aitmpl.com`. Blog articles in `docs/blog/` are still referenced externally.
 
 ### Blog Article Creation
 
@@ -565,6 +565,15 @@ This automatically:
 1. Generates AI cover image
 2. Creates HTML with SEO optimization
 3. Updates `docs/blog/blog-articles.json`
+
+**The site serves `dashboard/public/blog/`, not `docs/blog/`.** The skill writes
+only the `docs/` copy, so after creating an article you must mirror it across —
+the article directory, its cover under `assets/`, and the new entry in
+`blog-articles.json` — or it never appears on aitmpl.com. Three articles were
+stranded this way before 2026-09-20. `daily-blog-discord.yml` picks from
+`docs/blog/blog-articles.json` and links to `aitmpl.com/blog/<slug>/`, so an
+unmirrored article is posted to Discord as a 404. Keep the two
+`blog-articles.json` files identical.
 
 ## Code Standards
 
