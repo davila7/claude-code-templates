@@ -47,7 +47,8 @@ npm install -g neonctl
 neon auth
 
 # Branching (copy-on-write, seconds to create)
-neon branches create --name pr-preview --ttl 24h
+# --expires-at takes an RFC 3339 timestamp (there is no --ttl flag); this expires the branch in 24h
+neon branches create --name pr-preview --expires-at "$(date -u -d '+24 hours' +%Y-%m-%dT%H:%M:%SZ)"
 neon connection-string pr-preview
 
 # Link a local project
@@ -77,7 +78,7 @@ postgres://user:pass@ep-cool-darkness-123456-pooler.us-east-2.aws.neon.tech/neon
 These are Neon's headline serverless features and should be considered before reaching for manual capacity planning:
 
 - **Autoscaling**: compute scales CPU/RAM within a configured range based on load, and **scales to zero** after a period of inactivity (compute suspends; storage is unaffected). First query after suspend pays a brief cold-start.
-- **Branching**: instant copy-on-write branches of the full database (schema + data) for dev/test/preview environments, CI, or safe experimentation. Ephemeral branches can carry a TTL (`neon branches create --name pr-preview --ttl 24h`) and are cheap to discard.
+- **Branching**: instant copy-on-write branches of the full database (schema + data) for dev/test/preview environments, CI, or safe experimentation. Ephemeral branches can carry an expiration via `--expires-at` (RFC 3339 timestamp, max 30 days out) and are cheap to discard.
 
 ## When to Delegate
 
