@@ -376,7 +376,7 @@ curl -X POST "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/trigger" \
   -H "Authorization: Bearer $TRIGGER_SECRET"
 ```
 
-**Secrets (Cloudflare):** `RESEND_API_KEY` (full access — broadcasts/segments), `RESEND_SEGMENT_ID`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`).
+**Secrets (Cloudflare):** `RESEND_API_KEY` (full access — broadcasts/segments), `RESEND_SEGMENT_ID`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`), `NEWSLETTER_ENABLED` (currently `"false"` — the kill switch described above).
 
 ## Error Tracking (Sentry)
 

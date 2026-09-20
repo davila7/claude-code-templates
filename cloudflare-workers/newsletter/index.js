@@ -91,10 +91,14 @@ export default {
     }
 
     if (url.pathname === '/status') {
+      const scheduledSendEnabled = env.NEWSLETTER_ENABLED === 'true';
       return jsonResponse({
-        status: 'running',
+        status: scheduledSendEnabled ? 'running' : 'paused',
         worker: 'aitmpl-newsletter',
-        schedule: 'Sundays 16:00 UTC (Resend Broadcast to RESEND_SEGMENT_ID)',
+        scheduledSendEnabled,
+        schedule: scheduledSendEnabled
+          ? 'Sundays 16:00 UTC (Resend Broadcast to RESEND_SEGMENT_ID)'
+          : 'paused — NEWSLETTER_ENABLED is not "true", so the cron sends nothing. /preview and /trigger still work.',
         categories: CATEGORIES.map((c) => c.key),
       });
     }

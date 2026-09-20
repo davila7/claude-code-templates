@@ -83,8 +83,13 @@ npx wrangler deploy  # Deploy
 
 ## Configuration
 
-Public vars live in `wrangler.toml` `[vars]`: `DASHBOARD_URL`,
-`RESEND_FROM_EMAIL`.
+Public vars live in `wrangler.toml` `[vars]`:
+
+| Var | Purpose |
+|---|---|
+| `DASHBOARD_URL` | Origin the catalog and trending JSON are fetched from |
+| `RESEND_FROM_EMAIL` | From header on the broadcast |
+| `NEWSLETTER_ENABLED` | Kill switch for the scheduled send. `scheduled()` is a no-op unless it is exactly `"true"`. Currently `"false"` — see Schedule above. `/trigger` and `/preview` are not gated by it. |
 
 Secrets (via `wrangler secret put <KEY>`):
 
