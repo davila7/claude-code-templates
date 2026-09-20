@@ -590,19 +590,22 @@ Do you want to proceed?
         }
       });
 
-      child.on('error', () => {
-        console.log(chalk.yellow('⚠️ Expect method failed, trying alternative...'));
-        this.tryAlternativeInput(text);
-      });
-
-      child.on('close', (code) => {
-        if (code === 0) {
+      // Node emits both 'error' and 'close' when the binary cannot be
+      // spawned, so settle once - exec's callback also ran once.
+      let settled = false;
+      const settle = (ok) => {
+        if (settled) return;
+        settled = true;
+        if (ok) {
           console.log(chalk.green('✅ Input sent via expect'));
         } else {
           console.log(chalk.yellow('⚠️ Expect method failed, trying alternative...'));
           this.tryAlternativeInput(text);
         }
-      });
+      };
+
+      child.on('error', () => settle(false));
+      child.on('close', (code) => settle(code === 0));
 
     } catch (error) {
       console.error(chalk.red('❌ Error writing to terminal:'), error);
@@ -633,19 +636,20 @@ Do you want to proceed?
         stdio: 'ignore'
       });
 
-      const onFailure = () => {
-        console.log(chalk.yellow('⚠️ AppleScript method failed, falling back to simulation'));
-        this.simulateResponse({ type: 'choice', value: parseInt(text) - 1, text: text.trim() });
-      };
-
-      child.on('error', onFailure);
-      child.on('close', (code) => {
-        if (code === 0) {
+      let settled = false;
+      const settle = (ok) => {
+        if (settled) return;
+        settled = true;
+        if (ok) {
           console.log(chalk.green('✅ Input sent via AppleScript'));
         } else {
-          onFailure();
+          console.log(chalk.yellow('⚠️ AppleScript method failed, falling back to simulation'));
+          this.simulateResponse({ type: 'choice', value: parseInt(text) - 1, text: text.trim() });
         }
-      });
+      };
+
+      child.on('error', () => settle(false));
+      child.on('close', (code) => settle(code === 0));
     } else {
       // On Linux, try using xdotool or similar
       console.log(chalk.yellow('⚠️ Non-macOS platform - input simulation not implemented'));

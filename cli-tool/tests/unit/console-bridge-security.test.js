@@ -60,6 +60,21 @@ describe('ConsoleBridge command injection (GHSA-4jm9-m3fr-9jpx)', () => {
     spy.mockRestore();
   });
 
+  it('falls back exactly once when expect cannot be spawned', async () => {
+    // Node emits both 'error' and 'close' for a missing binary.
+    const spy = jest.spyOn(bridge, 'tryAlternativeInput').mockImplementation(() => {});
+    const realPath = process.env.PATH;
+    process.env.PATH = '/nonexistent';
+    try {
+      bridge.writeToTerminal('hello\n');
+      await settle();
+    } finally {
+      process.env.PATH = realPath;
+    }
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+
   it('ignores a text response whose value is not a string', () => {
     const spy = jest.spyOn(bridge, 'writeToTerminal').mockImplementation(() => {});
     bridge.sendResponseToClaudeCode({ type: 'text', value: { toString: () => "x'; id #" } });
