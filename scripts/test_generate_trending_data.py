@@ -21,6 +21,19 @@ def download(component_type, name, days_ago=0, category="general", country="CL")
     }
 
 
+class CanonicalTypeTest(unittest.TestCase):
+    def test_plural_spelling_collapses_to_the_singular(self):
+        self.assertEqual(generator.canonical_type("mods"), "mod")
+        self.assertEqual(generator.canonical_type("mcps"), "mcp")
+
+    def test_singular_spelling_is_unchanged(self):
+        self.assertEqual(generator.canonical_type("mod"), "mod")
+        self.assertEqual(generator.canonical_type("sandbox"), "sandbox")
+
+    def test_unknown_type_is_left_alone(self):
+        self.assertEqual(generator.canonical_type("widget"), "widget")
+
+
 class PluralTypeTest(unittest.TestCase):
     def test_known_types_map_to_their_bucket(self):
         self.assertEqual(generator.plural_type("mod"), "mods")
@@ -64,6 +77,23 @@ class ProcessDownloadsDataTest(unittest.TestCase):
 
         names = sorted(m["name"] for m in data["trending"]["mods"])
         self.assertEqual(names, ["a", "b"])
+
+    def test_mixed_spellings_of_one_component_are_a_single_row(self):
+        downloads = [download("mods", "jev-model-router", days_ago=1),
+                     download("mod", "jev-model-router")]
+
+        data = generator.process_downloads_data(downloads)
+
+        mods = data["trending"]["mods"]
+        self.assertEqual(len(mods), 1)
+        self.assertEqual(mods[0]["downloadsTotal"], 2)
+        self.assertEqual(data["globalStats"]["totalComponents"], 1)
+
+    def test_trending_ids_keep_the_singular_type_prefix(self):
+        # TrendingView derives the row icon from id.split('-')[0] + 's'.
+        data = generator.process_downloads_data([download("mods", "secret-redactor")])
+
+        self.assertEqual(data["trending"]["mods"][0]["id"], "mod-secret-redactor")
 
     def test_core_types_still_fall_back_when_absent(self):
         data = generator.process_downloads_data([download("mod", "a")])

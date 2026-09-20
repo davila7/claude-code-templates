@@ -39,14 +39,26 @@ TYPE_PLURALS = {
 FALLBACK_TYPES = ['commands', 'agents', 'settings', 'hooks', 'mcps', 'skills', 'templates']
 
 
+TYPE_SINGULARS = {plural: singular for singular, plural in TYPE_PLURALS.items()}
+
+
+def canonical_type(component_type):
+    """Collapse the singular and plural spellings of a component_type to one key.
+
+    Downloads are aggregated per component under this key, so a component that
+    has both `mod` and `mods` rows counts as one component instead of two.
+    """
+    if component_type in TYPE_PLURALS:
+        return component_type
+    return TYPE_SINGULARS.get(component_type, component_type)
+
+
 def plural_type(component_type):
     """Map a raw component_type from Supabase to its trending bucket name."""
-    if component_type in TYPE_PLURALS:
-        return TYPE_PLURALS[component_type]
-    # Already plural (e.g. 'mods' written by an older CLI)
-    if component_type in TYPE_PLURALS.values():
-        return component_type
-    return component_type + 's'
+    canonical = canonical_type(component_type)
+    if canonical in TYPE_PLURALS:
+        return TYPE_PLURALS[canonical]
+    return canonical if canonical.endswith('s') else canonical + 's'
 
 def fetch_with_retry(url, headers, max_retries=5, timeout=60):
     """
@@ -299,7 +311,9 @@ def process_downloads_data(downloads):
         # The key should match format: component_type/category/name
         category = download.get('category', 'general')
         component_name = download['component_name']
-        component_type = download['component_type']
+        # Normalize before aggregating so mixed spellings of the same type don't
+        # split one component into two rows with half the downloads each.
+        component_type = canonical_type(download['component_type'])
 
         # Handle case where component_name already includes category (like "frontend/react-expert")
         if '/' in component_name:
