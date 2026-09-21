@@ -351,9 +351,10 @@ export function injectionBlock(
     lines.push(`Skill /${suggested.name} is already loaded above; instructions unchanged.`)
   } else if (markdown && path) {
     const dir = dirOf(path)
+    // Callbacks, so a path holding `$&` or `$1` goes in verbatim.
     const body = bodyOf(markdown)
-      .replace(/\$\{CLAUDE_SKILL_DIR\}/g, dir)
-      .replace(/\$\{CLAUDE_PROJECT_DIR\}/g, projectDir)
+      .replace(/\$\{CLAUDE_SKILL_DIR\}/g, () => dir)
+      .replace(/\$\{CLAUDE_PROJECT_DIR\}/g, () => projectDir)
     lines.push(
       `Its instructions follow: follow them now, including any setup steps. Do not load it with the Skill tool (it is already loaded here, and the tool may refuse it). Its files are in ${dir}.`,
       `<skill name="${suggested.name}" dir="${dir}">`,
@@ -891,6 +892,21 @@ export function setupInstructions(
     '</jev_skill_suggestion_setup>',
   )
   return lines.join('\n')
+}
+
+/**
+ * What the model reads when the setup cannot be planned: the roster or the
+ * settings could not be read, so no edit is proposed — an edit planned from
+ * a partial roster or empty settings would hide too little or back up the
+ * wrong values.
+ */
+export function setupAborted(reason: string): string {
+  return [
+    '<jev_skill_suggestion_setup>',
+    `The jev-skill-suggestion setup could not be prepared: ${reason}.`,
+    'Tell the user, and do not edit any settings file. They can fix the cause and run the command again.',
+    '</jev_skill_suggestion_setup>',
+  ].join('\n')
 }
 
 /** The hint logged while skills are still listed and the mod is meant to be the only source of them. */

@@ -104,6 +104,7 @@ import {
   requestBody,
   requestHeaders,
   selectProvider,
+  setupAborted,
   setupInstructions,
   setupPlan,
   shortlistOf,
@@ -490,6 +491,8 @@ export const register: Register = (on, options) => {
     // has it and the user settings as they are. The model does the editing
     // with its own tools, so the change shows as a diff and asks permission.
     const mode = /\brestore\b/i.test(e.text) ? 'restore' : 'apply'
+    // No plan from a partial roster or unreadable settings: the edit would
+    // hide too little, and the backup would save the wrong values.
     let commands: Awaited<ReturnType<typeof $.command.list>> = []
     try {
       commands = await $.command.list()
@@ -507,7 +510,8 @@ export const register: Register = (on, options) => {
       }
       commands = canonical(commands, displayToId ?? new Map())
     } catch (error) {
-      $.ui.log(`[jev-skill-suggestion] could not list the skills: ${String(error)}`)
+      $.ui.log(`[jev-skill-suggestion] setup: could not list the skills: ${String(error)}`)
+      return next({ ...e, text: setupAborted(`the skills could not be listed (${String(error)})`) })
     }
     const home = (await $.env.get('HOME')) ?? '~'
     const settingsPath = `${home}/.claude/settings.json`
@@ -516,7 +520,8 @@ export const register: Register = (on, options) => {
     try {
       if (await $.fs.exists(settingsPath)) json = await $.fs.read(settingsPath)
     } catch (error) {
-      $.ui.log(`[jev-skill-suggestion] could not read ${settingsPath}: ${String(error)}`)
+      $.ui.log(`[jev-skill-suggestion] setup: could not read ${settingsPath}: ${String(error)}`)
+      return next({ ...e, text: setupAborted(`${settingsPath} exists but could not be read (${String(error)})`) })
     }
     const settings = readSkillSettings(json)
     const plan = setupPlan(commands, settings, new Set([SETUP_COMMAND]))

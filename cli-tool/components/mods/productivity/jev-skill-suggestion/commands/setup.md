@@ -2,6 +2,7 @@
 description: Hand skill selection to jev-skill-suggestion — hide every skill from the model's listing (user-invocable-only) so /context counts them at 0; "restore" undoes it
 argument-hint: "[restore]"
 disable-model-invocation: true
+allowed-tools: Read, Write, Edit
 ---
 Mode: $ARGUMENTS
 

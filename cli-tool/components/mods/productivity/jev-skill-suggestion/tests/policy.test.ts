@@ -35,6 +35,7 @@ import {
   setupInstructions,
   describeStillListed,
   SETUP_COMMAND,
+  setupAborted,
   commandLike,
   frontmatterName,
   displayIds,
@@ -435,4 +436,16 @@ test('a rerun of the setup leaves an existing backup alone, since only it holds 
   expect(rerun).toContain('do NOT overwrite')
   expect(rerun).not.toContain('first write /b.json')
   expect(rerun).toContain('"new": "user-invocable-only"')
+})
+
+test('a path with replacement-pattern characters goes into the injected body verbatim', () => {
+  const skill: Skill = { name: 'odd', description: 'x' }
+  const block = injectionBlock(skill, '---\nname: odd\n---\nsee ${CLAUDE_SKILL_DIR}/a and ${CLAUDE_PROJECT_DIR}/b', '/p/$&/odd/SKILL.md', '/w/$1', false)
+  expect(block).toContain('see /p/$&/odd/a and /w/$1/b')
+})
+
+test('a setup that cannot be planned tells the model to change nothing', () => {
+  const text = setupAborted('the skills could not be listed')
+  expect(text).toContain('could not be prepared: the skills could not be listed')
+  expect(text).toContain('do not edit any settings file')
 })
