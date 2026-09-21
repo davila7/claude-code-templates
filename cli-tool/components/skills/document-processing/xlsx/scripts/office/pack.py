@@ -76,16 +76,9 @@ def _run_validation(
     validators = []
 
     if suffix == ".docx":
-        author = "Claude"
-        if infer_author_func:
-            try:
-                author = infer_author_func(unpacked_dir, original_file)
-            except ValueError as e:
-                print(f"Warning: {e} Using default author 'Claude'.", file=sys.stderr)
-
         validators = [
             DOCXSchemaValidator(unpacked_dir, original_file),
-            RedliningValidator(unpacked_dir, original_file, author=author),
+            RedliningValidator(unpacked_dir, original_file),
         ]
     elif suffix == ".pptx":
         validators = [PPTXSchemaValidator(unpacked_dir, original_file)]
