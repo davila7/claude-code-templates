@@ -155,6 +155,7 @@ This collection includes components from multiple sources:
 **Community Skills & Agents:**
 - **[obra/superpowers](https://github.com/obra/superpowers)** by Jesse Obra - MIT License (14 workflow skills)
 - **[alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)** by Alireza Rezvani - MIT License (36 professional role skills)
+- **[axelfreeman/marketing-mindset](https://github.com/axelfreeman/marketing-mindset)** by Axel Freeman - MIT License (marketer's decision framework: test volume floors, kill rules, positioning, outreach)
 - **[wshobson/agents](https://github.com/wshobson/agents)** by wshobson - MIT License (48 agents)
 - **NerdyChefsAI Skills** - Community contribution - MIT License (specialized enterprise skills)
 
