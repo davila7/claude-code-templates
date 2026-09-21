@@ -406,7 +406,7 @@ const INVERTED = new Set(['prose_suffices'])
 
 /** The same yes/no question under two names. */
 function yesNo(provider: Provider, instructions: string): Record<string, unknown> {
-  return { type: provider === 'typesafe' ? 'noul' : 'boolean', instructions }
+  return { type: provider === 'gateway' ? 'boolean' : 'noul', instructions }
 }
 
 /** The first request's `questions`: the ranking and the gate. */

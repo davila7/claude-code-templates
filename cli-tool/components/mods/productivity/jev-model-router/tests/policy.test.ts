@@ -423,3 +423,9 @@ test('auto prefers typesafe, then openrouter, then the gateway', () => {
   expect(selectProvider('auto', '', 'gw', '')).toBe('gateway')
   expect(selectProvider('auto', '', '', '')).toBeNull()
 })
+
+test('openrouter speaks the decision dialect: noul, not the SDK boolean', () => {
+  expect((questions('openrouter').risky as { type: string }).type).toBe('noul')
+  expect((questions('typesafe').risky as { type: string }).type).toBe('noul')
+  expect((questions('gateway').risky as { type: string }).type).toBe('boolean')
+})

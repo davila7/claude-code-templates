@@ -490,3 +490,12 @@ test('auto prefers typesafe, then openrouter, then the gateway', () => {
   expect(selectProvider('auto', '', 'gw', '')).toBe('gateway')
   expect(selectProvider('auto', '', '', '')).toBeNull()
 })
+
+test('openrouter speaks the decision dialect: noul, not the SDK boolean', () => {
+  const typeOf = (p: 'typesafe' | 'gateway' | 'openrouter') =>
+    (Object.values(rerankQuestions(p, [{ name: 'a', detail: 'd' }]) as Record<string, { type: string }>)
+      .find((q) => q.type === 'noul' || q.type === 'boolean') ?? { type: 'none' }).type
+  expect(typeOf('openrouter')).toBe('noul')
+  expect(typeOf('typesafe')).toBe('noul')
+  expect(typeOf('gateway')).toBe('boolean')
+})

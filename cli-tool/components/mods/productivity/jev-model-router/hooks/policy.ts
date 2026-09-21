@@ -123,9 +123,10 @@ export function questions(provider: Provider): Record<string, unknown> {
       criteria: EFFORT_RUBRIC,
     },
     risky: {
-      // The same question under two names: `noul` on TypeSafe's own API,
-      // `boolean` in the AI SDK's evaluation schema.
-      type: provider === 'typesafe' ? 'noul' : 'boolean',
+      // The same question under two names: `noul` on the decision APIs
+      // (TypeSafe's own and OpenRouter's), `boolean` in the AI SDK's
+      // evaluation schema, which is what the Gateway speaks.
+      type: provider === 'gateway' ? 'boolean' : 'noul',
       // Asked about the act, not the subject. The first wording ("the task
       // touches production, money, credentials") scored 0.96 on "add a
       // refund endpoint that calls Stripe" — ordinary code that happens to be
