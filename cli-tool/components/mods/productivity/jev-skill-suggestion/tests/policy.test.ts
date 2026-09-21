@@ -515,7 +515,7 @@ test('one question is still named `which` under the cap', () => {
   expect(Object.keys(q)).toContain('which')
 })
 
-test('readWide merges the probabilities of every chunk', () => {
+test('chunk scores are not compared across chunks; the chunks interleave', () => {
   const body = JSON.stringify({
     answers: {
       'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.2, b: 0.1 } },
@@ -523,6 +523,8 @@ test('readWide merges the probabilities of every chunk', () => {
     },
   })
   const wide = readWide(body)
-  expect(wide?.ranked[0]?.name).toBe('c')
+  // `c` scores 0.7 and `a` scores 0.2, but each is normalised over its own options,
+  // so 0.7 does not outrank 0.2. Each chunk's best comes first, in chunk order.
+  expect(wide?.ranked.map((e) => e.name)).toEqual(['a', 'c', 'b'])
   expect(wide?.ranked.length).toBe(3)
 })

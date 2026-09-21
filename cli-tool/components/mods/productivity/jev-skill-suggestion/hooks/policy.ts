@@ -522,15 +522,37 @@ export function readWide(responseText: string): Wide | null {
   const which = parts.find((p) => typeof p.choice === 'string')
   if (!which) return null
 
-  const ranked: Wide['ranked'] = []
+  // A Choice distribution is normalised across ITS OWN options, so scores from
+  // different chunks are not comparable: 1.00 among 223 options and 0.70 among the
+  // other 222 say nothing about each other. Each chunk is therefore sorted on its
+  // own and the chunks are interleaved, so the shortlist samples all of them rather
+  // than whichever chunk happened to produce the largest numbers. The comparable
+  // judgement is the per-candidate `fits` noul in the second request, which is an
+  // absolute probability and not normalised against a set.
+  const perChunk: Wide['ranked'][] = []
   for (const part of parts) {
     const probabilities = part.probabilities as Record<string, number> | undefined
-    if (!probabilities) continue
-    for (const [name, probability] of Object.entries(probabilities)) {
-      if (typeof probability === 'number') ranked.push({ name, probability })
+    const chunk: Wide['ranked'] = []
+    if (probabilities) {
+      for (const [name, probability] of Object.entries(probabilities)) {
+        if (typeof probability === 'number') chunk.push({ name, probability })
+      }
+    } else if (typeof part.choice === 'string') {
+      chunk.push({
+        name: part.choice,
+        probability: typeof part.confidence === 'number' ? part.confidence : null,
+      })
+    }
+    chunk.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
+    perChunk.push(chunk)
+  }
+  const ranked: Wide['ranked'] = []
+  for (let rank = 0; perChunk.some((c) => rank < c.length); rank++) {
+    for (const chunk of perChunk) {
+      const entry = chunk[rank]
+      if (entry) ranked.push(entry)
     }
   }
-  ranked.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
   if (ranked.length === 0) {
     ranked.push({
       name: which.choice,
