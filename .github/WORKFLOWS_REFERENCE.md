@@ -2,32 +2,19 @@
 
 ## ✅ Active Workflows
 
-### `deploy.yml` - **VERCEL DEPLOYMENT**
+### `deploy.yml` - **CLOUDFLARE PAGES DEPLOYMENT**
 - **Status**: ✅ ACTIVE - Production deployment
-- **Purpose**: Deploys main site to Vercel production
-- **Trigger**: Push to main branch
-- **Features**: 
-  - Automated Vercel deployment
-  - Production environment setup
-  - Zero-downtime deployment
-
-### `deploy-docusaurus.yml` - **GITHUB PAGES DEPLOYMENT**
-- **Status**: ✅ ACTIVE - Documentation site
-- **Purpose**: Deploys main site to GitHub Pages
-- **Trigger**: Push to main branch or manual dispatch
+- **Purpose**: Builds `dashboard/` and deploys it to the Cloudflare Pages project `aitmpl-dashboard` (www.aitmpl.com and app.aitmpl.com)
+- **Trigger**: Push to main touching `dashboard/**`, or manual dispatch
 - **Features**:
-  - Builds and deploys documentation
-  - GitHub Pages integration
-  - Jekyll disabled (.nojekyll)
+  - Astro build + `wrangler pages deploy dist`
+  - Needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets
 
-### `publish-package.yml` - **PACKAGE PUBLISHING**
-- **Status**: ✅ ACTIVE - Package distribution
-- **Purpose**: Publishes CLI package to GitHub Packages
-- **Trigger**: Release published or manual dispatch
-- **Features**:
-  - Automated version management
-  - GitHub Packages publishing
-  - NPM registry integration
+### `pages-build-deployment` - **GITHUB PAGES (LEGACY)**
+- **Status**: ⚠️ LEGACY - not a file in this repository
+- **Purpose**: GitHub's built-in Pages build, configured from repository settings against the `docs/` folder on `main`. It publishes the old static site to `davila7.github.io/claude-code-templates`.
+- **Trigger**: Every push to main
+- **Note**: Nothing in production depends on it — www.aitmpl.com is served by Cloudflare Pages, and every article under `docs/blog/` already canonicalises to `aitmpl.com`. It can be switched off with Settings → Pages → Source: None.
 
 ## 📊 Download Tracking System
 
@@ -44,17 +31,10 @@
 ### For Production Deployment
 **Use**: `deploy.yml` (triggers automatically on main branch)
 
-### For Documentation Updates  
-**Use**: `deploy-docusaurus.yml` (triggers automatically on main branch)
-
 ### For Package Publishing
-**Use**: `publish-package.yml`
-
-```bash
-# Trigger manual package publishing
-gh workflow run "Publish Package to GitHub Packages" \
-  --field version=patch
-```
+The CLI is published to npm as `claude-code-templates`, by hand, from a
+maintainer's machine — see the "Publishing Workflow" section of `CLAUDE.md`.
+No workflow publishes it.
 
 ## Migration History
 
@@ -73,9 +53,8 @@ gh workflow run "Publish Package to GitHub Packages" \
 ## Troubleshooting
 
 ### Workflow Issues
-- **Deployment failed**: Check Vercel token and environment variables
-- **Pages not updating**: Verify GitHub Pages settings and branch configuration
-- **Package publishing failed**: Ensure GitHub token has packages:write permission
+- **Deployment failed**: Check the `CLOUDFLARE_API_TOKEN` secret and the Cloudflare Pages environment variables
+- **Pages not updating**: `docs/` is the legacy GitHub Pages site, unrelated to www.aitmpl.com
 
 ### Download Tracking Issues
 - **Tracking not working**: Verify CLI is updated and Supabase endpoint is accessible
@@ -84,5 +63,5 @@ gh workflow run "Publish Package to GitHub Packages" \
 
 ---
 
-Last updated: 2025-08-19  
+Last updated: 2026-09-20  
 Active tracking system: Direct Supabase database integration
