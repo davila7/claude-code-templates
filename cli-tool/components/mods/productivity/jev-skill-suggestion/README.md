@@ -1,6 +1,6 @@
 # jev-skill-suggestion
 
-Takes the skill listing out of the context window and lets [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model, suggest at most one skill per prompt from the skills' descriptions. The skills stay installed and loadable; what goes away is the listing Claude Code sends the model every session — one line per skill, sixty-odd lines on a well-equipped machine — whether or not the prompt has anything to do with any of them.
+Takes the skill listing out of the context window and lets [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model, pick at most one skill per prompt from the skills' descriptions — and then loads that one skill itself, by attaching its `SKILL.md` to the prompt. The skills stay installed and you can still type `/name`; what goes away is the listing Claude Code sends the model every session — one line per skill, sixty-odd lines on a well-equipped machine — whether or not the prompt has anything to do with any of them. Because the mod does the loading, the skills can be hidden from the model altogether (`/jev-skill-suggestion:setup` sets them `user-invocable-only`), and `/skills` and `/context` then show the saving.
 
 The decision is TypeSafe's own [skill-suggestion cookbook](https://docs.typesafe.ai/cookbooks/skill_suggestion), which on a 182-skill roster cut wrong skill loads from 16.8% to 7.3% and needless ones from 9.8% to 4.0%: two requests per prompt, one that ranks every skill and asks whether the prompt needs a skill at all, one that re-reads the top three properly and can reject all of them.
 
@@ -15,31 +15,78 @@ TypeSafe's own API wins when both keys are set: it is the only one that reports 
 
 **With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the ranking question with the small fast model, the descriptions folded into the text it reads. That path has no gate and no second request: its single answer is taken as is.
 
+## Quick start
+
+Five steps, in this order. Each one is checkable before the next.
+
+**1. Install and start.** Claude Code 2.1.278 or newer, in a project you trust:
+
+```sh
+npx claude-code-templates@latest --mod productivity/jev-skill-suggestion
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+```
+
+The first prompt of the session prints `[jev-skill-suggestion] ready on …; withholding the skill listing` in the transcript. From here on the listing is already kept from the model on every prompt — but `/skills` and `/context` do not know that yet (see [Checking that it works](#checking-that-it-works)), which is what the next step is for.
+
+**2. Hand the skills over.** In Claude Code:
+
+```
+/jev-skill-suggestion:setup
+```
+
+The mod fills the command in at run time with your real roster and Claude shows you, in your language, three lists before touching anything:
+
+- the skills it will set to `user-invocable-only` in `~/.claude/settings.json` (`skillOverrides`) — your user-level skills, the project's, those synced from claude.ai, and any picked up from a parent directory's `.claude/skills` (a git worktree nested in its main checkout sees both);
+- Claude Code's bundled skills (`simplify`, `loop`, `init`, …), turned off together with `disableBundledSkills: true`;
+- the skills a plugin ships, which `skillOverrides` cannot touch: they stay listed unless you disable the plugin in `/plugin`.
+
+Say yes, and Claude first writes the previous values to `~/.claude/jev-skill-suggestion.skill-overrides.backup.json`, then edits `~/.claude/settings.json` with the Edit tool — so the change shows as a diff and asks for permission like any other file edit. Nothing is written before your yes. Running the command again proposes only what is still to change (`0` on a machine already set up), so it is safe to repeat after installing new skills.
+
+**3. Restart Claude Code** — `/skills` and `/context` read the settings at start-up.
+
+**4. Check.** `/skills` lists every hidden skill as `user-only`; `/context`'s "Skills" row counts only what a plugin ships. Then ask for something one of your skills does:
+
+```
+Make me a 5-slide pptx deck about Q3 results. Before building anything, tell me which skill instructions you have and what their first workflow step is.
+```
+
+The status row under the prompt reads `jev · skill: <name>`, the transcript shows `suggesting /<name>` and `injected /<name> from <its SKILL.md> (N characters)`, and the answer follows that skill's own steps — the skill was never in the model's listing and the Skill tool would have refused it. A prompt with no skill in it (`Explain in two sentences what a monad is`) reads `jev · no skill` and `no suggestion`.
+
+**5. Undo, whenever.** `/jev-skill-suggestion:setup restore` puts the saved values back (and removes the backup); restart afterwards. Do this before uninstalling the mod, or your skills stay hidden from the model with nothing left to inject them.
+
+Skills you have hidden are still yours to run by typing `/name`.
+
 ## How it works
 
-Two hooks, one on each side of the exchange:
+Three hooks, two on the way in and one on the way out:
 
 | Hook | What it does |
 |---|---|
 | `prompt.attachment` on `skill_listing` | Answers the engine's skill listing with `{ text: null }`, so the model never reads it — or with the listing trimmed to the names in `alwaysListed`. The names the listing carried are remembered. |
-| `prompt.submit` | Runs the two requests below and attaches the one winner, if any, to the prompt as a `<skill_relevance>` block the model reads and the user never sees. |
-| `skill.prompt` | Observation only: logs whether the skill the model loaded was the suggested one. |
+| `prompt.submit` | Runs the two requests below and attaches the one winner, if any, to the prompt as a `<skill_relevance>` block the model reads and the user never sees — with the skill's own `SKILL.md` inside it (`inject: "content"`, the default), or with its name alone for the Skill tool (`inject: "suggest"`). |
+| `skill.prompt` | Observation: logs whether a skill the model loaded was the suggested one. Also writes the prompt of `/jev-skill-suggestion:setup` (see Install). |
 
 The block the model reads, in place of the listing:
 
 ```
 <skill_relevance>
 Relevant to the current request: commit. Ignore this if it does not fit what the user actually asked for.
-- commit: Create a git commit from the staged changes
-Load it with the Skill tool (skill: "commit") before you start. The full skill listing is withheld from your context; the user can invoke any skill by typing /name.
+Its instructions follow: follow them now, including any setup steps. Do not load it with the Skill tool (it is already loaded here, and the tool may refuse it). Its files are in /home/me/.claude/skills/commit.
+<skill name="commit" dir="/home/me/.claude/skills/commit">
+…the SKILL.md body, frontmatter off, ${CLAUDE_SKILL_DIR} and ${CLAUDE_PROJECT_DIR} filled in…
+</skill>
 </skill_relevance>
 ```
 
-The first line is the cookbook's, word for word: it says the suggestion can be ignored, because pushing harder wins compliance on wrong suggestions too, and a wrong one is worse than none. The rest is only there because the listing is gone — the model has no line to look the name up in. With `hideListing: false` the block is the cookbook's alone, and a turn with nothing to suggest still sends `No skill in the roster appears relevant to this request.`, so the roster's own "err on the side of loading" is not left unopposed. With the listing withheld there is nothing to oppose, so nothing is sent.
+The first line is the cookbook's, word for word: it says the suggestion can be ignored, because pushing harder wins compliance on wrong suggestions too, and a wrong one is worse than none. The rest is the skill as the engine would have rendered it on a Skill-tool call, so the model has it whether or not the engine would let it load the skill: a skill set to `user-invocable-only` or `off` in `skillOverrides` is refused by the Skill tool, and this is what makes hiding every skill workable. A skill injected once is only named again on later prompts (`Skill /commit is already loaded above; instructions unchanged.`), as the engine does on a repeated call. A skill whose file cannot be found (a bundled one) is suggested by name, for the Skill tool.
 
-The call stays the model's: a suggestion is a hint, not a preload. A typed `/name` still loads any skill, suggested or not.
+What the Skill tool does that this does not: apply the skill's `allowed-tools`, and count as a skill invocation for `/skill-doctor`.
 
-**Where the candidates come from.** The listing is rendered at the turn's first model request, *after* `prompt.submit` has run, so the first prompt of a session would have nothing to choose from if the listing were the source. The candidates come from `$.command.list()` instead — every command the person can run, less the built-ins (`/help`, `/clear`) and the names in `neverSuggested`. Once a listing has been seen, only the skills it named are offered: the listing is the engine's word on which skills the model is allowed to invoke, and `$.command.list()` also names commands it may not (a skill with `disable-model-invocation: true`).
+With `inject: "suggest"` the block is the cookbook's: the name, and with the listing withheld the skill's line and the way to load it. A turn with nothing to suggest, while the listing is in place (`hideListing: false`), still sends `No skill in the roster appears relevant to this request.`, so the roster's own "err on the side of loading" is not left unopposed. With the listing withheld there is nothing to oppose, so nothing is sent. In this mode the call stays the model's, and a skill hidden with `skillOverrides` cannot be loaded.
+
+A typed `/name` still loads any skill, suggested or not.
+
+**Where the candidates come from.** The listing is rendered at the turn's first model request, *after* `prompt.submit` has run, so the first prompt of a session would have nothing to choose from if the listing were the source. The candidates come from `$.command.list()` instead — every command the person can run, less the built-ins (`/help`, `/clear`, and Claude Code's bundled skills, which have no file to inject) and the names in `neverSuggested`. Skills hidden with `skillOverrides` are still candidates: the mod loads the winner itself. With `inject: "suggest"`, once a listing has been seen only the skills it named are offered, since there the Skill tool does the loading and the listing is the engine's word on what it will load. A skill whose own frontmatter says `disable-model-invocation: true` is never picked in either mode.
 
 **Only the main conversation.** A subagent's own skill listing is left as the engine renders it. Its prompt is a tool call's argument, not a `prompt.submit`, so nothing here could suggest for it, and hiding its listing would leave it with no skills at all.
 
@@ -63,7 +110,7 @@ Their mean is the gate: under `gateThreshold` (0.30) nothing is suggested, whate
 
 This is where lookalikes separate — on one line the skill that *edits* `.pptx` files reads nearly the same as the one that *authors* them; on 700 characters they do not.
 
-The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session.
+The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, `~/.claude/skills/synced/<account>/<name>/SKILL.md` for a skill synced from claude.ai, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session, and the same read is what gets injected.
 
 - The Gateway answers a `noul` as a `boolean` with a `probability`; both shapes are read.
 - `rerank: false` skips the second request and suggests the top of the ranking, once the gate passes. A second request that was *attempted* and failed suggests nothing: the ranking's winner has not had its false-positive check.
@@ -83,16 +130,17 @@ With `logDecisions` on (the default), the mod reports every step of its own work
 [jev-skill-suggestion] jev: needs a skill 0.76 · top of 58: powerpoint (0.70), pptx-author (0.30), chroma (0.00) · 160ms
 [jev-skill-suggestion] jev: rerank → pptx-author (0.81) · fits powerpoint 0.73, pptx-author 0.38, chroma 0.02 · 90ms · 3/3 bodies read
 [jev-skill-suggestion] suggesting /pptx-author: rerank of 3, fits 0.38
+[jev-skill-suggestion] injected /pptx-author from /home/me/.claude/skills/pptx-author/SKILL.md (4210 characters)
 [jev-skill-suggestion] withheld the skill listing (58 skills, 9127 characters); kept listed: none
-[jev-skill-suggestion] skill /pptx-author loaded (as suggested)
 [jev-skill-suggestion] jev: needs a skill 0.12 · top of 58: debug (0.41), code-review (0.22), commit (0.05) · 150ms
 [jev-skill-suggestion] no suggestion: needs a skill 0.12 < 0.3
 ```
 
 - The first line appears once per session, the first time a hook runs. It is the proof the module loaded and which backend answers it.
 - The two `jev:` lines are what the decision model replied to each request, before any policy is applied — the gate, the top of the ranking, then the rerank's winner and every `fits`, with how long each call took and how many SKILL.md bodies were found.
-- `withheld the skill listing` is the listing hook firing, with what it cost the context and what it kept. It appears after the first prompt's lines, because that is when the engine renders the listing.
-- `skill /name loaded` is the model acting: `as suggested`, or which skill was suggested instead when it reached for another — the one measure of whether the suggestions are any good.
+- `injected /name from <file>` is the skill going in with the prompt; `already injected this session; named again` on a repeat.
+- `withheld the skill listing` is the listing hook firing, with what it cost the context and what it kept. It appears after the first prompt's lines, because that is when the engine renders the listing. While it still counts skills, the mod adds `N skills are still listed for the model … run /jev-skill-suggestion:setup` once per session.
+- `skill /name loaded` is the model calling the Skill tool on its own (`inject: "suggest"`, or a typed `/name`): `as suggested`, or which skill was suggested instead when it reached for another.
 
 It also keeps a one-line status on screen, replaced as it goes:
 
@@ -109,7 +157,21 @@ jev · no skill
 
 A `ready on the built-in classifier, no key set` line when you did set a key means the key sits under the wrong `pluginConfigs` entry: the key must match the plugin's id, which depends on how it was loaded (see Options).
 
-To confirm the listing is really gone, `/context` shows the skill listing's share of the window; with the mod on it reads zero (or only the `alwaysListed` names).
+## Checking that it works
+
+Three places tell you different things, and only one of them is what the model was actually sent:
+
+| Where | What it shows | Reflects the mod? |
+|---|---|---|
+| `/skills` | each skill's state (`on`, `name-only`, `user-only`, `off`) and its estimated listing cost | after `setup`: the hidden ones read `user-only` |
+| `/context` → Skills | an estimate rendered from the roster, without asking the `prompt.attachment` hooks | **no** while skills are `on`: it reads the same with the mod as without (5.4k tokens for a 40-skill roster in our test). After `setup` it counts only what is still listed — the plugin skills |
+| the API request | what the model read | **yes**: the first request's `input_tokens` in the session's `.jsonl` under `~/.claude/projects/` drop by the listing's size (5,496 tokens in that test), `/context`'s "Messages" row — computed from what was sent — drops the same, and a model asked *"is there a skill listing in your context?"* answers no |
+
+So the mod is at work from the first prompt, and `setup` is what makes the two panels agree with it. The transcript lines (above) are the running proof: `withheld the skill listing (N skills, …)` says what was kept from the model on that prompt, and `injected /name from …` that the one skill needed went in instead.
+
+What stays counted after `setup`: skills shipped by plugins (`/skills` marks them `locked by plugin`; disable the plugin in `/plugin` to remove them) — the mod's own `/jev-skill-suggestion:setup` is not among them, its `disable-model-invocation: true` keeps its description out of the listing.
+
+If `/skills` still shows one of your own skills as `on` after `setup` and a restart, its directory holds a SKILL.md whose frontmatter `name:` differs from the directory name; run `setup` again — the mod maps such names to the directory the engine goes by — or delete the skill if it is a stray copy (a skill installed into more than one ancestor `.claude/skills` shows up once per copy).
 
 ## Privacy
 
@@ -125,6 +187,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
   typesafeModel:    string  empty uses jev-latest
   gatewayBaseUrl:   string  empty uses https://ai-gateway.vercel.sh/v4/ai
   gatewayModel:     string  empty uses typesafe-ai/jev
+  inject:           string  "content" attaches the chosen skill's SKILL.md (default); "suggest" names it for the Skill tool
   hideListing:      boolean withhold the engine's skill listing (default true)
   rerank:           boolean second request over the shortlist (default true)
   shortlist:        number  how many of the ranking the second request re-reads (default 3)
@@ -137,7 +200,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
   logDecisions:     boolean log each decision (default true)
 ```
 
-`hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
+`inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
@@ -148,6 +211,8 @@ Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, 
 The entry's key is the plugin's id, and the id follows how the plugin was loaded: `"jev-skill-suggestion@skills-dir"` when auto-loaded from `.claude/skills/` (the `--mod` install), `"jev-skill-suggestion"` with `--plugin-dir`. Under the wrong key every option stays at its default, and the `ready on` line reports `no key set`.
 
 ## Install
+
+The full sequence is in [Quick start](#quick-start); this is the detail behind it.
 
 ```sh
 npx claude-code-templates@latest --mod productivity/jev-skill-suggestion
@@ -164,7 +229,11 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-skill
 
 Either way, `claude plugin validate .claude/skills/jev-skill-suggestion` prints every event it hooks and every `$` call it makes.
 
-Pairs with [jev-model-router](../jev-model-router/README.md), which asks the same decision model which model and effort a prompt deserves; the two share a key and run side by side.
+**The setup command.** `/jev-skill-suggestion:setup` is a markdown command the plugin ships (`commands/setup.md`) whose text the mod replaces in its `skill.prompt` hook with the plan built from `$.command.list()` and the settings as they are; its `disable-model-invocation: true` keeps it out of the model's listing. A skill whose frontmatter `name:` is not its directory name (`name: "PocketBase API Rules"` in `pb-api-rules/`) is written by its directory name, which is what the engine lists, runs and overrides. `setup restore` reads `~/.claude/jev-skill-suggestion.skill-overrides.backup.json` and puts every saved entry back, removing the ones the setup added. Both modes end with a restart of Claude Code. The command only ever proposes an edit; Claude makes it with the Edit tool after you confirm, so a `--permission-mode plan` session shows the plan and changes nothing.
+
+Uninstalling: run `/jev-skill-suggestion:setup restore` first, or your skills stay hidden from the model with nothing left to inject them.
+
+Pairs with [jev-model-router](../jev-model-router/README.md), which asks the same decision model which model and effort a prompt deserves; the two share a key and run side by side, each prefixing its own transcript lines.
 
 ## Tests
 

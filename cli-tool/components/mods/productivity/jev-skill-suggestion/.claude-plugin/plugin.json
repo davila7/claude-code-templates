@@ -1,7 +1,7 @@
 {
   "name": "jev-skill-suggestion",
   "version": "0.1.0",
-  "description": "Keeps the skill listing out of the context window and lets TypeSafe's Jev, a System One decision model, suggest at most one skill per prompt from the skills' descriptions, the way TypeSafe's skill-suggestion cookbook does: one request ranks every skill and asks whether the prompt needs a skill at all, a second re-reads the top three with their SKILL.md and can reject all of them. The winner is attached to the prompt for the Skill tool; every other skill stays loaded but unlisted. Falls back to the engine's built-in classifier when no key is set.",
+  "description": "Keeps the skill listing out of the context window and lets TypeSafe's Jev, a System One decision model, pick at most one skill per prompt from the skills' descriptions, the way TypeSafe's skill-suggestion cookbook does: one request ranks every skill and asks whether the prompt needs a skill at all, a second re-reads the top three with their SKILL.md and can reject them all. The winner's SKILL.md is attached to the prompt, so the skills can be hidden from the model altogether (/jev-skill-suggestion:setup makes them user-invocable-only and /context counts them at 0). Falls back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -65,6 +65,16 @@
       "title": "AI Gateway model",
       "description": "Decision model on the AI Gateway; empty uses typesafe-ai/jev",
       "default": ""
+    },
+    "inject": {
+      "type": "string",
+      "title": "How the chosen skill reaches the model",
+      "description": "\"content\" attaches the skill's SKILL.md to the prompt, so it loads even when the engine lists it as user-invocable-only or off; \"suggest\" only names it and the model loads it with the Skill tool",
+      "default": "content",
+      "options": [
+        "content",
+        "suggest"
+      ]
     },
     "hideListing": {
       "type": "boolean",

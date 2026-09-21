@@ -204,6 +204,53 @@ export function skillFileCandidates(name: string, plugin?: string): string[] {
   return files
 }
 
+/** Whether a name is one the engine would run as `/name`: no whitespace. */
+export function commandLike(name: string): boolean {
+  return name.length > 0 && !/\s/.test(name)
+}
+
+/** The `name:` a SKILL.md's frontmatter declares, or null. */
+export function frontmatterName(markdown: string): string | null {
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(markdown)
+  if (!frontmatter) return null
+  const field = /^name:\s*(.*)$/m.exec(frontmatter[1] as string)
+  if (!field) return null
+  const value = (field[1] as string).trim().replace(/^["']|["']$/g, '')
+  return value || null
+}
+
+/**
+ * Display name → directory name, from the skills found on disk: only the
+ * ones whose frontmatter `name:` differs from their directory, since those
+ * are the ones `$.command.list()` reports under a name the engine will not
+ * run, list or override. First found wins.
+ */
+export function displayIds(found: readonly { dir: string; markdown: string }[]): Map<string, string> {
+  const ids = new Map<string, string>()
+  for (const { dir, markdown } of found) {
+    const declared = frontmatterName(markdown)
+    if (declared && declared !== dir && !ids.has(declared)) ids.set(declared, dir)
+  }
+  return ids
+}
+
+/** Commands with every display name replaced by the engine's id. */
+export function canonical<T extends { name: string }>(commands: readonly T[], ids: ReadonlyMap<string, string>): T[] {
+  if (ids.size === 0) return [...commands]
+  return commands.map((command) => (ids.has(command.name) ? { ...command, name: ids.get(command.name) as string } : command))
+}
+
+/**
+ * A claude.ai-synced skill's file: Claude Code keeps them under
+ * `~/.claude/skills/synced/<account>/<skill>/SKILL.md`, listed to the model
+ * with a prefix (`anthropic-skills:pptx`) that is not on disk.
+ */
+export function syncedFileCandidates(home: string, accounts: readonly string[], name: string): string[] {
+  if (!safeName(name)) return []
+  const short = name.includes(':') ? name.slice(name.lastIndexOf(':') + 1) : name
+  return accounts.filter(safeName).map((account) => `${home}/.claude/skills/synced/${account}/${short}/SKILL.md`)
+}
+
 /**
  * The same files under a plugin's install path, as
  * `~/.claude/plugins/installed_plugins.json` records it.
@@ -268,6 +315,63 @@ export function detailOf(skill: Skill, markdown: string | null, excerptChars: nu
  * listing has been seen, this is the only way to tell. No file, or no such
  * field, reads as invocable.
  */
+/** A skill's body with its frontmatter taken off. */
+export function bodyOf(markdown: string): string {
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(markdown)
+  return (frontmatter ? markdown.slice(frontmatter[0].length) : markdown).trim()
+}
+
+/** The directory a skill file lives in, for `${CLAUDE_SKILL_DIR}`. */
+export function dirOf(path: string): string {
+  const cut = path.lastIndexOf('/')
+  return cut > 0 ? path.slice(0, cut) : '.'
+}
+
+/**
+ * The block attached to the prompt when the mod loads the skill itself: the
+ * cookbook's line, then the skill's instructions as the engine would have
+ * rendered them, with the paths the engine substitutes. The Skill tool is
+ * not needed, and may refuse the skill when it is `user-invocable-only`, so
+ * the model is told not to reach for it. A skill already injected earlier in
+ * the session is only named again: the engine does the same on a byte-identical
+ * re-invocation.
+ */
+export function injectionBlock(
+  suggested: Skill,
+  markdown: string | null,
+  path: string | null,
+  projectDir: string,
+  alreadyLoaded: boolean,
+): string {
+  const lines = [
+    '<skill_relevance>',
+    `Relevant to the current request: ${suggested.name}. Ignore this if it does not fit what the user actually asked for.`,
+  ]
+  if (alreadyLoaded) {
+    lines.push(`Skill /${suggested.name} is already loaded above; instructions unchanged.`)
+  } else if (markdown && path) {
+    const dir = dirOf(path)
+    const body = bodyOf(markdown)
+      .replace(/\$\{CLAUDE_SKILL_DIR\}/g, dir)
+      .replace(/\$\{CLAUDE_PROJECT_DIR\}/g, projectDir)
+    lines.push(
+      `Its instructions follow: follow them now, including any setup steps. Do not load it with the Skill tool (it is already loaded here, and the tool may refuse it). Its files are in ${dir}.`,
+      `<skill name="${suggested.name}" dir="${dir}">`,
+      body,
+      '</skill>',
+    )
+  } else {
+    // No file on disk (a synced or bundled skill the mod cannot read): the
+    // name and the way to load it are all there is.
+    lines.push(
+      `${line(suggested)}`,
+      `Load it with the Skill tool (skill: "${suggested.name}") before you start; if the tool refuses it, tell the user to type /${suggested.name}.`,
+    )
+  }
+  lines.push('</skill_relevance>')
+  return lines.join('\n')
+}
+
 export function modelInvocable(markdown: string | null): boolean {
   if (!markdown) return true
   const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(markdown)
@@ -638,4 +742,149 @@ export function describeRerank(rerank: Rerank | null, ms: number | null): string
  */
 export function describeStatus(suggested: string | null): string {
   return suggested ? `jev · skill: ${suggested}` : 'jev · no skill'
+}
+
+/** The name of the plugin's own setup command, as the engine runs it. */
+export const SETUP_COMMAND = 'jev-skill-suggestion:setup'
+
+/** A user settings file's parts the setup touches. */
+export interface SkillSettings {
+  skillOverrides: Record<string, string>
+  disableBundledSkills: boolean | undefined
+}
+
+/** Reads the two fields from `~/.claude/settings.json`; malformed reads as empty. */
+export function readSkillSettings(json: string | null): SkillSettings {
+  let parsed: unknown = null
+  try {
+    parsed = json ? JSON.parse(json) : null
+  } catch {
+    parsed = null
+  }
+  const settings = (parsed ?? {}) as { skillOverrides?: unknown; disableBundledSkills?: unknown }
+  const overrides: Record<string, string> = {}
+  if (settings.skillOverrides && typeof settings.skillOverrides === 'object') {
+    for (const [name, value] of Object.entries(settings.skillOverrides as Record<string, unknown>)) {
+      if (typeof value === 'string') overrides[name] = value
+    }
+  }
+  return {
+    skillOverrides: overrides,
+    disableBundledSkills: typeof settings.disableBundledSkills === 'boolean' ? settings.disableBundledSkills : undefined,
+  }
+}
+
+export interface SetupPlan {
+  /** User and project skills the setup hides from the model (`user-invocable-only`). */
+  hide: string[]
+  /** Of those, the ones already hidden or off: nothing to change. */
+  alreadyHidden: string[]
+  /** A plugin's skills: `skillOverrides` cannot touch them, only `/plugin` can. */
+  locked: string[]
+  /** Whether bundled skills still need `disableBundledSkills`. */
+  bundledStillOn: boolean
+}
+
+/**
+ * What the setup has to change, from the roster and the settings as they
+ * are. Every user-level command is listed, so the person sees the whole set
+ * before anything is written.
+ */
+export function setupPlan(
+  commands: readonly { name: string; source: string }[],
+  settings: SkillSettings,
+  excluded: ReadonlySet<string>,
+): SetupPlan {
+  const hide: string[] = []
+  const alreadyHidden: string[] = []
+  const locked: string[] = []
+  const seen = new Set<string>()
+  for (const command of commands) {
+    if (seen.has(command.name) || excluded.has(command.name)) continue
+    seen.add(command.name)
+    if (command.source === 'plugin') locked.push(command.name)
+    else if (command.source === 'user') {
+      const state = settings.skillOverrides[command.name] ?? 'on'
+      if (state === 'user-invocable-only' || state === 'off') alreadyHidden.push(command.name)
+      else hide.push(command.name)
+    }
+  }
+  return { hide, alreadyHidden, locked, bundledStillOn: settings.disableBundledSkills !== true }
+}
+
+/**
+ * The prompt the model reads for `/jev-skill-suggestion:setup`: the plan in
+ * full, the exact edit, and the rule that nothing is written before the
+ * person has seen the list and said yes. The model edits the file with its
+ * own tools, so the change shows as a diff and asks permission like any edit.
+ */
+export function setupInstructions(
+  mode: 'apply' | 'restore',
+  plan: SetupPlan,
+  settings: SkillSettings,
+  settingsPath: string,
+  backupPath: string,
+): string {
+  const lines: string[] = ['<jev_skill_suggestion_setup>']
+  if (mode === 'restore') {
+    lines.push(
+      `The user asked to undo jev-skill-suggestion's setup: put their skills back the way they were before it ran.`,
+      `1. Read ${backupPath}. It holds {"skillOverrides": {...}, "disableBundledSkills": ...} as they were before the setup.`,
+      `   If it does not exist, say so and stop: there is nothing to restore.`,
+      `2. Show the user what will change in ${settingsPath}: the "skillOverrides" entries that go back to their saved value (an entry not in the backup is removed), and "disableBundledSkills" back to its saved value (removed when the backup says null).`,
+      `3. Ask the user to confirm. Only after a clear yes, edit ${settingsPath} with the Edit tool, changing nothing else in the file, then delete ${backupPath}.`,
+      `4. Tell the user to restart Claude Code for /skills and /context to show the change.`,
+      '</jev_skill_suggestion_setup>',
+    )
+    return lines.join('\n')
+  }
+  const overrides: Record<string, string> = { ...settings.skillOverrides }
+  for (const name of plan.hide) overrides[name] = 'user-invocable-only'
+  const after = JSON.stringify({ skillOverrides: overrides, disableBundledSkills: true }, null, 2)
+  const backup = JSON.stringify(
+    { skillOverrides: settings.skillOverrides, disableBundledSkills: settings.disableBundledSkills ?? null },
+    null,
+    2,
+  )
+  lines.push(
+    `The user asked jev-skill-suggestion to take over skill selection: every skill is hidden from the model's listing (state "user-invocable-only": the user can still type /name) and the mod injects the one skill each prompt needs. Nothing here is written until the user has seen the list and said yes.`,
+    '',
+    `Skills that will be hidden from the model (${plan.hide.length}):`,
+    ...(plan.hide.length > 0 ? plan.hide.map((name) => `- ${name}`) : ['- (none)']),
+  )
+  if (plan.alreadyHidden.length > 0) {
+    lines.push('', `Already hidden, left as they are (${plan.alreadyHidden.length}):`, ...plan.alreadyHidden.map((name) => `- ${name}`))
+  }
+  lines.push(
+    '',
+    plan.bundledStillOn
+      ? `Claude Code's bundled skills (simplify, loop, init, ...) will be hidden too, by setting "disableBundledSkills": true.`
+      : `Claude Code's bundled skills are already disabled ("disableBundledSkills": true).`,
+  )
+  if (plan.locked.length > 0) {
+    lines.push(
+      '',
+      `Plugin skills cannot be hidden by skillOverrides; they stay listed unless the plugin is disabled in /plugin (${plan.locked.length}):`,
+      ...plan.locked.map((name) => `- ${name}`),
+    )
+  }
+  lines.push(
+    '',
+    'Steps:',
+    `1. Show the user the lists above, in their language, and say the change goes to ${settingsPath} (their user settings) and can be undone with /${SETUP_COMMAND} restore.`,
+    '2. Ask them to confirm. Do not edit anything before a clear yes.',
+    `3. After the yes, first write ${backupPath} with exactly this content (it is what restore reads):`,
+    backup,
+    `4. Then edit ${settingsPath} with the Edit tool (read it first; create it as {} if it does not exist) so that its top-level "skillOverrides" and "disableBundledSkills" become exactly:`,
+    after,
+    '   Change nothing else in the file. Keep every other top-level key as it is.',
+    '5. Tell the user to restart Claude Code: /skills will then show these skills as user-only and /context will count them at 0, while the mod keeps injecting the one skill a prompt needs.',
+    '</jev_skill_suggestion_setup>',
+  )
+  return lines.join('\n')
+}
+
+/** The hint logged while skills are still listed and the mod is meant to be the only source of them. */
+export function describeStillListed(count: number): string {
+  return `${count} skill${count === 1 ? ' is' : 's are'} still listed for the model (withheld here, but /context counts them); run /${SETUP_COMMAND} to hand their selection to the mod for good`
 }
