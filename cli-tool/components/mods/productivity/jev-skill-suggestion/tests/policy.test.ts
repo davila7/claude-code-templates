@@ -499,3 +499,30 @@ test('openrouter speaks the decision dialect: noul, not the SDK boolean', () => 
   expect(typeOf('typesafe')).toBe('noul')
   expect(typeOf('gateway')).toBe('boolean')
 })
+
+test('a listing over the Choice cap is split across parallel questions', () => {
+  const skills = Array.from({ length: 445 }, (_, i) => ({ name: `s${i}`, description: `d${i}` }))
+  const q = wideQuestions('openrouter', skills) as Record<string, { type: string; criteria: Record<string, string> }>
+  const chunks = Object.keys(q).filter((k) => k.startsWith('which'))
+  expect(chunks.length).toBe(2)
+  for (const k of chunks) expect(Object.keys(q[k]!.criteria).length).toBeLessThanOrEqual(255)
+  const total = chunks.reduce((n, k) => n + Object.keys(q[k]!.criteria).length, 0)
+  expect(total).toBe(445)
+})
+
+test('one question is still named `which` under the cap', () => {
+  const q = wideQuestions('openrouter', [{ name: 'a', description: 'd' }])
+  expect(Object.keys(q)).toContain('which')
+})
+
+test('readWide merges the probabilities of every chunk', () => {
+  const body = JSON.stringify({
+    answers: {
+      'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.2, b: 0.1 } },
+      'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.7 } },
+    },
+  })
+  const wide = readWide(body)
+  expect(wide?.ranked[0]?.name).toBe('c')
+  expect(wide?.ranked.length).toBe(3)
+})

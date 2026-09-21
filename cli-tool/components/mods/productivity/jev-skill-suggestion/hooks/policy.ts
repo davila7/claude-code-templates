@@ -410,16 +410,25 @@ function yesNo(provider: Provider, instructions: string): Record<string, unknown
 }
 
 /** The first request's `questions`: the ranking and the gate. */
+/**
+ * A Choice question takes at most 255 options, so a machine with more skills than
+ * that cannot be ranked in one question. Past the cap the listing is split across
+ * several Choice questions, which run in parallel inside the same request.
+ */
+export const MAX_CHOICE_OPTIONS = 255
+
 export function wideQuestions(provider: Provider, skills: readonly Skill[]): Record<string, unknown> {
-  const criteria: Record<string, string> = {}
-  for (const skill of skills) criteria[skill.name] = skill.description || `A skill named ${skill.name}.`
-  const questions: Record<string, unknown> = {
-    which: {
-      type: 'choice',
-      instructions:
-        "Which of these skills, if any, is the right one to load to help with the user's latest request?",
-      criteria,
-    },
+  const instructions =
+    "Which of these skills, if any, is the right one to load to help with the user's latest request?"
+  const questions: Record<string, unknown> = {}
+  const chunks = Math.max(1, Math.ceil(skills.length / MAX_CHOICE_OPTIONS))
+  const per = Math.ceil(skills.length / chunks)
+  for (let i = 0; i < chunks; i++) {
+    const criteria: Record<string, string> = {}
+    for (const skill of skills.slice(i * per, (i + 1) * per)) {
+      criteria[skill.name] = skill.description || `A skill named ${skill.name}.`
+    }
+    questions[chunks === 1 ? 'which' : `which::${i}`] = { type: 'choice', instructions, criteria }
   }
   for (const [key, text] of Object.entries(GATE_QUESTIONS)) {
     questions[`gate::${key}`] = yesNo(provider, text)
@@ -505,17 +514,23 @@ function yesNoOf(answer: Record<string, unknown> | undefined): number | null {
  */
 export function readWide(responseText: string): Wide | null {
   const answers = answersOf(responseText)
-  const which = answers?.which
-  if (!answers || !which || typeof which.choice !== 'string') return null
+  // One `which`, or `which::0..n` when the listing was split across the Choice cap.
+  const parts = Object.entries(answers ?? {})
+    .filter(([key]) => key === 'which' || key.startsWith('which::'))
+    .map(([, value]) => value)
+  if (!answers || parts.length === 0) return null
+  const which = parts.find((p) => typeof p.choice === 'string')
+  if (!which) return null
 
-  const probabilities = which.probabilities as Record<string, number> | undefined
   const ranked: Wide['ranked'] = []
-  if (probabilities) {
+  for (const part of parts) {
+    const probabilities = part.probabilities as Record<string, number> | undefined
+    if (!probabilities) continue
     for (const [name, probability] of Object.entries(probabilities)) {
       if (typeof probability === 'number') ranked.push({ name, probability })
     }
-    ranked.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
   }
+  ranked.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
   if (ranked.length === 0) {
     ranked.push({
       name: which.choice,
