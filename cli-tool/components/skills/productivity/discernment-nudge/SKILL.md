@@ -89,9 +89,7 @@ turn (first or later) still gets the nudge.
   copy. The user is the judge of whether it's good; there's nothing
   to verify.
 - **Casual conversation** — greetings, small talk, opinion swapping.
-- **Trivial code the user will execute locally** — running it is a
-  useful check, but still nudge code that affects production,
-  external systems, security, or data.
+- **Code the user will execute** — running it is the verification.
   (Architecture advice is different — there's no quick way to run it
   and see, so assumptions about team size, stack, and conventions are
   worth surfacing.)
