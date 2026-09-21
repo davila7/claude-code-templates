@@ -858,7 +858,7 @@ export function setupInstructions(
       `1. Read ${backupPath}. It holds {"skillOverrides": {...}, "disableBundledSkills": ...} as they were before the setup.`,
       `   If it does not exist, say so and stop: there is nothing to restore.`,
       `2. Show the user what will change in ${settingsPath}: the "skillOverrides" entries that go back to their saved value (an entry not in the backup is removed), and "disableBundledSkills" back to its saved value (removed when the backup says null).`,
-      `3. Ask the user to confirm. Only after a clear yes, edit ${settingsPath} with the Edit tool, changing nothing else in the file, then delete ${backupPath}.`,
+      `3. Ask the user to confirm. Only after a clear yes, edit ${settingsPath} with the Edit tool, changing nothing else in the file, then remove the backup by running exactly this command with the Bash tool: rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json`,
       `4. Tell the user to restart Claude Code for /skills and /context to show the change.`,
       '</jev_skill_suggestion_setup>',
     )

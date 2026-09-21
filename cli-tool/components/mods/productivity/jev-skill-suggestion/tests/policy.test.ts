@@ -406,6 +406,7 @@ test('the setup instructions list every skill, carry the exact edit and the back
   const restore = setupInstructions('restore', plan, settings, '/s.json', '/b.json')
   expect(restore).toContain('Read /b.json')
   expect(restore).toContain('Only after a clear yes')
+  expect(restore).toContain('rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json')
   expect(describeStillListed(1)).toContain('1 skill is still listed')
   expect(describeStillListed(13)).toContain(`run /${SETUP_COMMAND}`)
 })
