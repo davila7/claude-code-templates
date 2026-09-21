@@ -293,6 +293,8 @@ export const register: Register = (on, options) => {
       try {
         const home = (await $.env.get('HOME')) ?? ''
         const relative = skillFileCandidates(skill.name, plugin)
+        // The engine reads the project's `.claude/` (the working directory
+        // only, not its ancestors) and the user's.
         const candidates = [...relative, ...(home ? relative.map((file) => `${home}/${file}`) : [])]
         if (plugin && home) {
           const installed = `${home}/.claude/plugins/installed_plugins.json`
@@ -469,6 +471,19 @@ export const register: Register = (on, options) => {
     return next({ ...e, context: [...(e.context ?? []), block] })
   })
 
+  // An injected skill lives in the conversation, not the process: `/clear`
+  // or a resume starts another under the same worker, and a compaction may
+  // summarize the block away. Either way the next pick goes in whole again.
+  on('session.end', async ($, e, next) => {
+    injected.clear()
+    suggested = null
+    return next(e)
+  })
+  on('session.compact', async ($, e, next) => {
+    if (!e.agentId) injected.clear()
+    return next(e)
+  })
+
   on('skill.prompt', { skill: 'jev-skill-suggestion:setup' }, async ($, e, next) => {
     // The plugin's own setup command: its markdown is a placeholder, and the
     // prompt the model reads is written here, from the roster as the engine
@@ -505,12 +520,16 @@ export const register: Register = (on, options) => {
     }
     const settings = readSkillSettings(json)
     const plan = setupPlan(commands, settings, new Set([SETUP_COMMAND]))
+    let backupExists = false
+    try {
+      backupExists = await $.fs.exists(backupPath)
+    } catch {}
     if (logDecisions) {
       $.ui.log(
         `[jev-skill-suggestion] setup (${mode}): ${plan.hide.length} to hide, ${plan.alreadyHidden.length} already hidden, ${plan.locked.length} locked by a plugin`,
       )
     }
-    return next({ ...e, text: setupInstructions(mode, plan, settings, settingsPath, backupPath) })
+    return next({ ...e, text: setupInstructions(mode, plan, settings, settingsPath, backupPath, backupExists) })
   })
 
   on('skill.prompt', async ($, e, next) => {

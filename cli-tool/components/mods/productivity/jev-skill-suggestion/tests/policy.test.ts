@@ -424,3 +424,15 @@ test("a skill named with spaces in its frontmatter is mapped to its directory, w
     { name: 'commit', source: 'user' },
   ])
 })
+
+test('a rerun of the setup leaves an existing backup alone, since only it holds the pre-setup values', () => {
+  const settings = { skillOverrides: { pptx: 'user-invocable-only' }, disableBundledSkills: true }
+  const plan = setupPlan([{ name: 'pptx', source: 'user' }, { name: 'new', source: 'user' }], settings, new Set())
+  const fresh = setupInstructions('apply', plan, settings, '/s.json', '/b.json', false)
+  expect(fresh).toContain('first write /b.json with exactly this content')
+  const rerun = setupInstructions('apply', plan, settings, '/s.json', '/b.json', true)
+  expect(rerun).toContain('/b.json already exists from an earlier run')
+  expect(rerun).toContain('do NOT overwrite')
+  expect(rerun).not.toContain('first write /b.json')
+  expect(rerun).toContain('"new": "user-invocable-only"')
+})

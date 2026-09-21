@@ -36,11 +36,11 @@ The first prompt of the session prints `[jev-skill-suggestion] ready on …; wit
 
 The mod fills the command in at run time with your real roster and Claude shows you, in your language, three lists before touching anything:
 
-- the skills it will set to `user-invocable-only` in `~/.claude/settings.json` (`skillOverrides`) — your user-level skills, the project's, those synced from claude.ai, and any picked up from a parent directory's `.claude/skills` (a git worktree nested in its main checkout sees both);
+- the skills it will set to `user-invocable-only` in `~/.claude/settings.json` (`skillOverrides`) — your user-level skills, the project's (the working directory's `.claude/`, not its ancestors: a git worktree only sees its own copies) and those synced from claude.ai;
 - Claude Code's bundled skills (`simplify`, `loop`, `init`, …), turned off together with `disableBundledSkills: true`;
 - the skills a plugin ships, which `skillOverrides` cannot touch: they stay listed unless you disable the plugin in `/plugin`.
 
-Say yes, and Claude first writes the previous values to `~/.claude/jev-skill-suggestion.skill-overrides.backup.json`, then edits `~/.claude/settings.json` with the Edit tool — so the change shows as a diff and asks for permission like any other file edit. Nothing is written before your yes. Running the command again proposes only what is still to change (`0` on a machine already set up), so it is safe to repeat after installing new skills.
+Say yes, and Claude first writes the previous values to `~/.claude/jev-skill-suggestion.skill-overrides.backup.json`, then edits `~/.claude/settings.json` with the Edit tool — so the change shows as a diff and asks for permission like any other file edit. Nothing is written before your yes. Running the command again proposes only what is still to change (`0` on a machine already set up) and leaves the backup from the first run untouched, so it is safe to repeat after installing new skills.
 
 **3. Restart Claude Code** — `/skills` and `/context` read the settings at start-up.
 
@@ -78,7 +78,7 @@ Its instructions follow: follow them now, including any setup steps. Do not load
 </skill_relevance>
 ```
 
-The first line is the cookbook's, word for word: it says the suggestion can be ignored, because pushing harder wins compliance on wrong suggestions too, and a wrong one is worse than none. The rest is the skill as the engine would have rendered it on a Skill-tool call, so the model has it whether or not the engine would let it load the skill: a skill set to `user-invocable-only` or `off` in `skillOverrides` is refused by the Skill tool, and this is what makes hiding every skill workable. A skill injected once is only named again on later prompts (`Skill /commit is already loaded above; instructions unchanged.`), as the engine does on a repeated call. A skill whose file cannot be found (a bundled one) is suggested by name, for the Skill tool.
+The first line is the cookbook's, word for word: it says the suggestion can be ignored, because pushing harder wins compliance on wrong suggestions too, and a wrong one is worse than none. The rest is the skill as the engine would have rendered it on a Skill-tool call, so the model has it whether or not the engine would let it load the skill: a skill set to `user-invocable-only` or `off` in `skillOverrides` is refused by the Skill tool, and this is what makes hiding every skill workable. A skill injected once is only named again on later prompts (`Skill /commit is already loaded above; instructions unchanged.`), as the engine does on a repeated call — until the conversation is no longer the one it went into: `/clear`, a resume or a compaction of the main conversation start the count over, and the next pick goes in whole again. A skill whose file cannot be found (a bundled one) is suggested by name, for the Skill tool.
 
 What the Skill tool does that this does not: apply the skill's `allowed-tools`, and count as a skill invocation for `/skill-doctor`.
 
@@ -171,7 +171,7 @@ So the mod is at work from the first prompt, and `setup` is what makes the two p
 
 What stays counted after `setup`: skills shipped by plugins (`/skills` marks them `locked by plugin`; disable the plugin in `/plugin` to remove them) — the mod's own `/jev-skill-suggestion:setup` is not among them, its `disable-model-invocation: true` keeps its description out of the listing.
 
-If `/skills` still shows one of your own skills as `on` after `setup` and a restart, its directory holds a SKILL.md whose frontmatter `name:` differs from the directory name; run `setup` again — the mod maps such names to the directory the engine goes by — or delete the skill if it is a stray copy (a skill installed into more than one ancestor `.claude/skills` shows up once per copy).
+If `/skills` still shows one of your own skills as `on` after `setup` and a restart, its directory holds a SKILL.md whose frontmatter `name:` differs from the directory name; run `setup` again — the mod maps such names to the directory the engine goes by — or delete the skill if it is a stray copy.
 
 ## Privacy
 

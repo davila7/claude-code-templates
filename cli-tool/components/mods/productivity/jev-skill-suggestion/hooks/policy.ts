@@ -824,6 +824,12 @@ export function setupInstructions(
   settings: SkillSettings,
   settingsPath: string,
   backupPath: string,
+  /**
+   * Whether a backup from an earlier run is already there. It holds the
+   * values from before the first run, which the current settings no longer
+   * do, so a rerun must leave it alone.
+   */
+  backupExists = false,
 ): string {
   const lines: string[] = ['<jev_skill_suggestion_setup>']
   if (mode === 'restore') {
@@ -873,8 +879,11 @@ export function setupInstructions(
     'Steps:',
     `1. Show the user the lists above, in their language, and say the change goes to ${settingsPath} (their user settings) and can be undone with /${SETUP_COMMAND} restore.`,
     '2. Ask them to confirm. Do not edit anything before a clear yes.',
-    `3. After the yes, first write ${backupPath} with exactly this content (it is what restore reads):`,
-    backup,
+    ...(backupExists
+      ? [
+          `3. ${backupPath} already exists from an earlier run and holds the values from before the first setup: do NOT overwrite or modify it.`,
+        ]
+      : [`3. After the yes, first write ${backupPath} with exactly this content (it is what restore reads):`, backup]),
     `4. Then edit ${settingsPath} with the Edit tool (read it first; create it as {} if it does not exist) so that its top-level "skillOverrides" and "disableBundledSkills" become exactly:`,
     after,
     '   Change nothing else in the file. Keep every other top-level key as it is.',
