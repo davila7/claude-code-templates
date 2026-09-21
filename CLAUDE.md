@@ -17,7 +17,8 @@ npm run version:set -- X.Y.Z   # Sync versions without creating a commit or tag
 npm publish --ignore-scripts=false  # Publish and run the trusted prepublish guard
 
 # Component catalog
-python scripts/generate_components_json.py  # Update docs/components.json
+python scripts/generate_components_json.py                   # Update docs/components.json (pulls download counts from Supabase: minutes)
+python scripts/generate_components_json.py --skip-downloads  # Same, keeping the counts already in the catalog: seconds
 
 # Dashboard + API (Astro on Cloudflare Pages)
 cd dashboard && npm run build  # Build before deploy
@@ -130,7 +131,7 @@ the workflow:
 
 | Workflow | Regenerate + commit the catalog? |
 |----------|----------------------------------|
-| Maintainer working directly on this repo (local branch, sync PRs, agent-driven migrations) | ✅ Yes — run the script and commit the output with the component |
+| Maintainer working directly on this repo (local branch, sync PRs, agent-driven migrations) | ✅ Yes — run the script (`--skip-downloads` is enough for a content change) and commit the output with the component |
 | **External contributor PR (fork)** | ❌ **No** — the PR must only contain files under `cli-tool/components/` (plus supporting files). The catalog is regenerated automatically after merge (`update-json-data.yml` daily cron, or a maintainer). |
 
 Why: the generated JSON files are single-line blobs that change on every
@@ -138,6 +139,13 @@ component/download-count update, so two PRs that both commit them always
 conflict. `.github/workflows/generated-files-guard.yml` fails any
 non-maintainer PR that touches them and posts revert instructions; the
 `component-pr-welcome.yml` bot also warns about it up front.
+
+Two workflows regenerate them on `main`: `update-component-content.yml`
+runs on every push that touches `cli-tool/components/**` with
+`--skip-downloads` (content only, seconds), and `update-json-data.yml`
+(daily cron) refreshes the download counts by pulling the whole
+`component_downloads` table from Supabase (minutes) — that table has one
+row per download, which is what makes a full run slow.
 
 When reviewing a contributor PR that includes these files, ask them to revert
 with `git checkout origin/main -- docs/components.json dashboard/public/` rather

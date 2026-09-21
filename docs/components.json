@@ -47524,7 +47524,7 @@
       "path": "productivity/jev-skill-suggestion",
       "category": "productivity",
       "type": "mod",
-      "description": "Keeps the skill listing out of the context window and lets TypeSafe's Jev, a System One decision model, suggest at most one skill per prompt from the skills' descriptions, the way TypeSafe's skill-suggestion cookbook does: one request ranks every skill and asks whether the prompt needs a skill at all, a second re-reads the top three with their SKILL.md and can reject all of them. The winner is attached to the prompt for the Skill tool; every other skill stays loaded but unlisted. Falls back to the engine's built-in classifier when no key is set.",
+      "description": "Keeps the skill listing out of the context window and lets TypeSafe's Jev, a System One decision model, pick at most one skill per prompt from the skills' descriptions, the way TypeSafe's skill-suggestion cookbook does: one request ranks every skill and asks whether the prompt needs a skill at all, a second re-reads the top three with their SKILL.md and can reject them all. The winner's SKILL.md is attached to the prompt, so the skills can be hidden from the model altogether (/jev-skill-suggestion:setup makes them user-invocable-only and /context counts them at 0). Falls back to the engine's built-in classifier when no key is set.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47599,6 +47599,16 @@
           "description": "Decision model on the AI Gateway; empty uses typesafe-ai/jev",
           "default": ""
         },
+        "inject": {
+          "type": "string",
+          "title": "How the chosen skill reaches the model",
+          "description": "\"content\" attaches the skill's SKILL.md to the prompt, so it loads even when the engine lists it as user-invocable-only or off; \"suggest\" only names it and the model loads it with the Skill tool",
+          "default": "content",
+          "options": [
+            "content",
+            "suggest"
+          ]
+        },
         "hideListing": {
           "type": "boolean",
           "title": "Hide the skill listing",
@@ -47662,6 +47672,7 @@
       },
       "references": [
         ".claude-plugin/plugin.json",
+        "commands/setup.md",
         "hooks/hooks.json",
         "hooks/jev-skill-suggestion.ts",
         "hooks/policy.ts",
@@ -47993,8 +48004,8 @@
       "language": "javascript-typescript",
       "description": "Angular-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/services.md",
-        ".claude/commands/components.md"
+        ".claude/commands/components.md",
+        ".claude/commands/services.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=angular-app --yes",
       "downloads": 0
@@ -48007,11 +48018,11 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
+        ".mcp.json",
         ".claude/commands/git-workflow.md",
         ".claude/commands/project-setup.md",
-        ".mcp.json",
-        "CLAUDE.md",
-        "README.md"
+        "README.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -48026,8 +48037,8 @@
       "description": "Django-App with Python",
       "files": [
         ".claude/commands/django-model.md",
-        ".claude/commands/views.md",
         ".claude/commands/admin.md",
+        ".claude/commands/views.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
@@ -48043,10 +48054,10 @@
       "description": "Fastapi-App with Python",
       "files": [
         ".claude/commands/testing.md",
-        ".claude/commands/api-endpoints.md",
-        ".claude/commands/database.md",
         ".claude/commands/deployment.md",
         ".claude/commands/auth.md",
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/database.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
@@ -48061,12 +48072,12 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/testing.md",
-        ".claude/commands/app-factory.md",
         ".claude/commands/flask-route.md",
+        ".claude/commands/testing.md",
+        ".claude/commands/deployment.md",
+        ".claude/commands/app-factory.md",
         ".claude/commands/blueprint.md",
         ".claude/commands/database.md",
-        ".claude/commands/deployment.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
@@ -48094,17 +48105,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/debug.md",
         ".claude/commands/api-endpoint.md",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
         ".claude/commands/typescript-migrate.md",
-        ".claude/commands/refactor.md",
+        ".claude/commands/lint.md",
         ".claude/commands/npm-scripts.md",
-        ".mcp.json",
-        "CLAUDE.md",
-        "README.md"
+        ".claude/commands/refactor.md",
+        ".claude/commands/test.md",
+        "README.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -48119,9 +48130,9 @@
       "description": "Node-Api with Javascript-Typescript",
       "files": [
         ".claude/commands/api-endpoint.md",
+        ".claude/commands/middleware.md",
         ".claude/commands/route.md",
         ".claude/commands/database.md",
-        ".claude/commands/middleware.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
@@ -48135,10 +48146,10 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
         ".mcp.json",
+        ".claude/settings.json",
+        ".claude/commands/lint.md",
+        ".claude/commands/test.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
@@ -48168,8 +48179,8 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/component.md",
         ".claude/commands/state-management.md",
+        ".claude/commands/component.md",
         ".claude/commands/hooks.md",
         "CLAUDE.md"
       ],
@@ -48184,10 +48195,10 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/model.md",
         ".claude/commands/test.md",
-        ".mcp.json",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
