@@ -19,7 +19,7 @@
  * @ai-sdk/gateway and @ai-sdk/provider.
  */
 
-export type Provider = 'typesafe' | 'gateway'
+export type Provider = 'typesafe' | 'gateway' | 'openrouter'
 
 export type Tier = 'fast' | 'balanced' | 'deep'
 
@@ -64,6 +64,7 @@ const EFFORT_RUBRIC = ['almost none', 'some', 'a lot', 'as much as possible'] as
 export const DEFAULT_BASE_URL: Record<Provider, string> = {
   typesafe: 'https://api.typesafe.ai',
   gateway: 'https://ai-gateway.vercel.sh/v4/ai',
+  openrouter: 'https://openrouter.ai/api/alpha',
 }
 
 /**
@@ -75,6 +76,7 @@ const AI_GATEWAY_PROTOCOL_VERSION = '0.0.1'
 export const DEFAULT_MODEL: Record<Provider, string> = {
   typesafe: 'jev-latest',
   gateway: 'typesafe-ai/jev',
+  openrouter: 'typesafe/jev-1.13',
 }
 
 /**
@@ -87,11 +89,14 @@ export function selectProvider(
   forced: string,
   typesafeKey: string,
   gatewayKey: string,
+  openrouterKey = '',
 ): Provider | null {
   if (forced === 'builtin') return null
   if (forced === 'typesafe') return typesafeKey ? 'typesafe' : null
   if (forced === 'gateway') return gatewayKey ? 'gateway' : null
+  if (forced === 'openrouter') return openrouterKey ? 'openrouter' : null
   if (typesafeKey) return 'typesafe'
+  if (openrouterKey) return 'openrouter'
   if (gatewayKey) return 'gateway'
   return null
 }
@@ -99,7 +104,9 @@ export function selectProvider(
 /** The full endpoint a backend posts to. */
 export function endpoint(provider: Provider, baseUrl: string): string {
   const root = baseUrl.replace(/\/+$/, '')
-  return provider === 'typesafe' ? `${root}/v1/systemone` : `${root}/evaluation-model`
+  if (provider === 'typesafe') return `${root}/v1/systemone`
+  if (provider === 'openrouter') return `${root}/decisions`
+  return `${root}/evaluation-model`
 }
 
 /** The `questions` map, in the shape the backend's schema names. */
@@ -150,7 +157,7 @@ export function requestHeaders(
   model: string,
 ): Record<string, string> {
   const common = { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` }
-  if (provider === 'typesafe') return common
+  if (provider !== 'gateway') return common
   return {
     ...common,
     'ai-gateway-auth-method': 'api-key',

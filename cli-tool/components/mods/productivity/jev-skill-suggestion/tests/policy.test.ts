@@ -22,6 +22,7 @@ import {
   readWide,
   rerankQuestions,
   requestBody,
+  DEFAULT_BASE_URL,
   requestHeaders,
   selectProvider,
   shortlistOf,
@@ -460,4 +461,32 @@ test('only a file with the backup\'s own shape is treated as a reusable backup',
   expect(validBackup('{"skillOverrides":{}}')).toBe(false)
   expect(validBackup('{nope')).toBe(false)
   expect(validBackup('[]')).toBe(false)
+})
+
+test('openrouter posts to the decisions surface', () => {
+  expect(endpoint('openrouter', DEFAULT_BASE_URL.openrouter)).toBe(
+    'https://openrouter.ai/api/alpha/decisions',
+  )
+  expect(endpoint('openrouter', 'https://openrouter.ai/api/alpha/')).toBe(
+    'https://openrouter.ai/api/alpha/decisions',
+  )
+})
+
+test('openrouter takes the model in the body, so it sends no gateway headers', () => {
+  const headers = requestHeaders('openrouter', 'k', 'typesafe/jev-1.13')
+  expect(headers.authorization).toBe('Bearer k')
+  expect(headers['ai-model-id']).toBeUndefined()
+  expect(headers['ai-gateway-auth-method']).toBeUndefined()
+})
+
+test('openrouter is chosen when forced, and only with a key', () => {
+  expect(selectProvider('openrouter', '', '', 'or-key')).toBe('openrouter')
+  expect(selectProvider('openrouter', 'ts-key', 'gw-key', '')).toBeNull()
+})
+
+test('auto prefers typesafe, then openrouter, then the gateway', () => {
+  expect(selectProvider('auto', 'ts', 'gw', 'or')).toBe('typesafe')
+  expect(selectProvider('auto', '', 'gw', 'or')).toBe('openrouter')
+  expect(selectProvider('auto', '', 'gw', '')).toBe('gateway')
+  expect(selectProvider('auto', '', '', '')).toBeNull()
 })

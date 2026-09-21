@@ -73,22 +73,28 @@ export const register: Register = (on, options) => {
   // reads. `provider` forces one, including "builtin" to use neither.
   const typesafeKey = text('typesafeApiKey', '')
   const gatewayKey = text('gatewayApiKey', '')
+  const openrouterKey = text('openrouterApiKey', '')
   const forced = text('provider', 'auto')
-  const active: Provider | null = selectProvider(forced, typesafeKey, gatewayKey)
+  const active: Provider | null = selectProvider(forced, typesafeKey, gatewayKey, openrouterKey)
 
   // Each backend keeps its own URL and model, so an override written for one
   // can never be sent to the other when `auto` picks differently than expected.
-  const apiKey = active === 'typesafe' ? typesafeKey : active === 'gateway' ? gatewayKey : ''
+  const apiKey =
+    active === 'typesafe' ? typesafeKey : active === 'openrouter' ? openrouterKey : active === 'gateway' ? gatewayKey : ''
   const modelId = !active
     ? ''
     : active === 'typesafe'
       ? text('typesafeModel', DEFAULT_MODEL.typesafe)
-      : text('gatewayModel', DEFAULT_MODEL.gateway)
+      : active === 'openrouter'
+        ? text('openrouterModel', DEFAULT_MODEL.openrouter)
+        : text('gatewayModel', DEFAULT_MODEL.gateway)
   const url = !active
     ? ''
     : active === 'typesafe'
       ? endpoint('typesafe', text('typesafeBaseUrl', DEFAULT_BASE_URL.typesafe))
-      : endpoint('gateway', text('gatewayBaseUrl', DEFAULT_BASE_URL.gateway))
+      : active === 'openrouter'
+        ? endpoint('openrouter', text('openrouterBaseUrl', DEFAULT_BASE_URL.openrouter))
+        : endpoint('gateway', text('gatewayBaseUrl', DEFAULT_BASE_URL.gateway))
 
   // A backend named in the options but missing its key degrades to the
   // built-in classifier, which is silent; say so once, when a hook first runs.
