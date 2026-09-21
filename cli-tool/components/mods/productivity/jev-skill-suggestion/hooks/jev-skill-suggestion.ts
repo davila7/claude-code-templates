@@ -108,6 +108,7 @@ import {
   setupInstructions,
   setupPlan,
   shortlistOf,
+  validBackup,
   skillFileCandidates,
   suggestionBlock,
   syncedFileCandidates,
@@ -525,10 +526,25 @@ export const register: Register = (on, options) => {
     }
     const settings = readSkillSettings(json)
     const plan = setupPlan(commands, settings, new Set([SETUP_COMMAND]))
+    // An earlier run's backup is reused only if it is one: a file that is
+    // not this mod's, or is corrupt, is nothing restore could apply, so no
+    // setup is built on top of it.
     let backupExists = false
     try {
       backupExists = await $.fs.exists(backupPath)
-    } catch {}
+      if (backupExists && !validBackup(await $.fs.read(backupPath))) {
+        $.ui.log(`[jev-skill-suggestion] setup: ${backupPath} is not a valid backup`)
+        return next({
+          ...e,
+          text: setupAborted(
+            `${backupPath} exists but is not a backup this mod wrote (expected {"skillOverrides": {...}, "disableBundledSkills": true|false|null}); ask the user to inspect it and move it away, or fix it, before running the setup again`,
+          ),
+        })
+      }
+    } catch (error) {
+      $.ui.log(`[jev-skill-suggestion] setup: could not read ${backupPath}: ${String(error)}`)
+      return next({ ...e, text: setupAborted(`${backupPath} could not be read (${String(error)})`) })
+    }
     if (logDecisions) {
       $.ui.log(
         `[jev-skill-suggestion] setup (${mode}): ${plan.hide.length} to hide, ${plan.alreadyHidden.length} already hidden, ${plan.locked.length} locked by a plugin`,

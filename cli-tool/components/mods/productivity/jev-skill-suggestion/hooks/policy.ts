@@ -775,6 +775,25 @@ export function readSkillSettings(json: string | null): SkillSettings {
   }
 }
 
+/**
+ * Whether a file is this mod's backup: `skillOverrides` an object of
+ * strings and `disableBundledSkills` a boolean or null. Anything else is
+ * not something `restore` could apply, so a setup must not build on it.
+ */
+export function validBackup(json: string): boolean {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(json)
+  } catch {
+    return false
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false
+  const { skillOverrides, disableBundledSkills } = parsed as Record<string, unknown>
+  if (!skillOverrides || typeof skillOverrides !== 'object' || Array.isArray(skillOverrides)) return false
+  if (!Object.values(skillOverrides as Record<string, unknown>).every((value) => typeof value === 'string')) return false
+  return disableBundledSkills === null || typeof disableBundledSkills === 'boolean'
+}
+
 export interface SetupPlan {
   /** User and project skills the setup hides from the model (`user-invocable-only`). */
   hide: string[]

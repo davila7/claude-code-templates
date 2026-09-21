@@ -36,6 +36,7 @@ import {
   describeStillListed,
   SETUP_COMMAND,
   setupAborted,
+  validBackup,
   commandLike,
   frontmatterName,
   displayIds,
@@ -448,4 +449,14 @@ test('a setup that cannot be planned tells the model to change nothing', () => {
   const text = setupAborted('the skills could not be listed')
   expect(text).toContain('could not be prepared: the skills could not be listed')
   expect(text).toContain('do not edit any settings file')
+})
+
+test('only a file with the backup\'s own shape is treated as a reusable backup', () => {
+  expect(validBackup('{"skillOverrides":{"a":"on"},"disableBundledSkills":null}')).toBe(true)
+  expect(validBackup('{"skillOverrides":{},"disableBundledSkills":true}')).toBe(true)
+  expect(validBackup('{"skillOverrides":{"a":1},"disableBundledSkills":null}')).toBe(false)
+  expect(validBackup('{"skillOverrides":[],"disableBundledSkills":null}')).toBe(false)
+  expect(validBackup('{"skillOverrides":{}}')).toBe(false)
+  expect(validBackup('{nope')).toBe(false)
+  expect(validBackup('[]')).toBe(false)
 })
