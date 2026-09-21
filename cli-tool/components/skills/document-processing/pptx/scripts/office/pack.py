@@ -26,7 +26,6 @@ def pack(
     output_file: str,
     original_file: str | None = None,
     validate: bool = True,
-    infer_author_func=None,
 ) -> tuple[None, str]:
     input_dir = Path(input_directory)
     output_path = Path(output_file)
@@ -42,7 +41,7 @@ def pack(
         original_path = Path(original_file)
         if original_path.exists():
             success, output = _run_validation(
-                input_dir, original_path, suffix, infer_author_func
+                input_dir, original_path, suffix
             )
             if output:
                 print(output)
@@ -70,22 +69,14 @@ def _run_validation(
     unpacked_dir: Path,
     original_file: Path,
     suffix: str,
-    infer_author_func=None,
 ) -> tuple[bool, str | None]:
     output_lines = []
     validators = []
 
     if suffix == ".docx":
-        author = "Claude"
-        if infer_author_func:
-            try:
-                author = infer_author_func(unpacked_dir, original_file)
-            except ValueError as e:
-                print(f"Warning: {e} Using default author 'Claude'.", file=sys.stderr)
-
         validators = [
             DOCXSchemaValidator(unpacked_dir, original_file),
-            RedliningValidator(unpacked_dir, original_file, author=author),
+            RedliningValidator(unpacked_dir, original_file),
         ]
     elif suffix == ".pptx":
         validators = [PPTXSchemaValidator(unpacked_dir, original_file)]

@@ -29797,7 +29797,7 @@
       "path": "development/claude-api",
       "category": "development",
       "type": "skill",
-      "description": "\"Build, debug, and optimize Claude API / Anthropic SDK apps. Apps built with this skill should include prompt caching. Also handles migrating existing Claude API code between Claude model versions (4.5 → 4.6, 4.6 → 4.7, retired-model replacements). TRIGGER when: code imports `anthropic`/`@anthropic-ai/sdk`; user asks for the Claude API, Anthropic SDK, or Managed Agents; user adds/modifies/tunes a Claude feature (caching, thinking, compaction, tool use, batch, files, citations, memory) or model (Opus/Sonnet/Haiku) in a file; questions about prompt caching / cache hit rate in an Anthropic SDK project. SKIP: file imports `openai`/other-provider SDK, filename like `*-openai.py`/`*-generic.py`, provider-neutral code, general programming/ML.\"",
+      "description": "|-",
       "author": "",
       "repo": "",
       "version": "",
@@ -29828,12 +29828,17 @@
         "python/claude-api/README.md",
         "python/claude-api/batches.md",
         "python/claude-api/files-api.md",
+        "python/claude-api/sdk-upgrade.md",
         "python/claude-api/streaming.md",
         "python/claude-api/tool-use.md",
         "python/managed-agents/README.md",
         "ruby/claude-api.md",
         "ruby/managed-agents/README.md",
+        "shared/admin-api.md",
         "shared/agent-design.md",
+        "shared/anthropic-cli.md",
+        "shared/claude-platform-on-aws.md",
+        "shared/cost-optimization.md",
         "shared/error-codes.md",
         "shared/live-sources.md",
         "shared/managed-agents-api-reference.md",
@@ -29846,11 +29851,16 @@
         "shared/managed-agents-onboarding.md",
         "shared/managed-agents-outcomes.md",
         "shared/managed-agents-overview.md",
+        "shared/managed-agents-scheduled-deployments.md",
+        "shared/managed-agents-self-hosted-sandboxes.md",
         "shared/managed-agents-tools.md",
         "shared/managed-agents-webhooks.md",
         "shared/model-migration.md",
         "shared/models.md",
+        "shared/platform-availability.md",
+        "shared/prompt-audit.md",
         "shared/prompt-caching.md",
+        "shared/token-counting.md",
         "shared/tool-use-concepts.md",
         "typescript/agent-sdk/README.md",
         "typescript/agent-sdk/patterns.md",
@@ -35127,7 +35137,7 @@
       "path": "document-processing/docx",
       "category": "document-processing",
       "type": "skill",
-      "description": "\"Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.\"",
+      "description": "\"Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templates (.dotx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', '.dotx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx or .dotx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -35197,8 +35207,12 @@
         "scripts/accept_changes.py",
         "scripts/comment.py",
         "scripts/document.py",
+        "scripts/merge_runs.py",
         "scripts/office/helpers/__init__.py",
         "scripts/office/helpers/merge_runs.py",
+        "scripts/office/helpers/pptx_chart.py",
+        "scripts/office/helpers/pptx_slide.py",
+        "scripts/office/helpers/pptx_theme.py",
         "scripts/office/helpers/simplify_redlines.py",
         "scripts/office/pack.py",
         "scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd",
@@ -35597,7 +35611,7 @@
       "path": "document-processing/pptx",
       "category": "document-processing",
       "type": "skill",
-      "description": "\"Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \\\"deck,\\\" \\\"slides,\\\" \\\"presentation,\\\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.\"",
+      "description": "\"Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx or .potx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates (.potx), layouts, speaker notes, or comments. Trigger whenever the user mentions \\\"deck,\\\" \\\"slides,\\\" \\\"presentation,\\\" or references a .pptx or .potx filename, regardless of what they plan to do with the content afterward. If a .pptx or .potx file needs to be opened, created, or touched, use this skill.\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -35672,6 +35686,9 @@
         "scripts/inventory.py",
         "scripts/office/helpers/__init__.py",
         "scripts/office/helpers/merge_runs.py",
+        "scripts/office/helpers/pptx_chart.py",
+        "scripts/office/helpers/pptx_slide.py",
+        "scripts/office/helpers/pptx_theme.py",
         "scripts/office/helpers/simplify_redlines.py",
         "scripts/office/pack.py",
         "scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd",
@@ -35843,7 +35860,7 @@
       "path": "document-processing/xlsx",
       "category": "document-processing",
       "type": "skill",
-      "description": "\"Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \\\"the xlsx in my downloads\\\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.\"",
+      "description": "\"Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \\\"the xlsx in my downloads\\\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.\"",
       "author": "",
       "repo": "",
       "version": "",
@@ -35863,6 +35880,9 @@
         "recalc.py",
         "scripts/office/helpers/__init__.py",
         "scripts/office/helpers/merge_runs.py",
+        "scripts/office/helpers/pptx_chart.py",
+        "scripts/office/helpers/pptx_slide.py",
+        "scripts/office/helpers/pptx_theme.py",
         "scripts/office/helpers/simplify_redlines.py",
         "scripts/office/pack.py",
         "scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd",
@@ -48018,11 +48038,11 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".claude/commands/git-workflow.md",
-        ".claude/commands/project-setup.md",
-        ".mcp.json",
+        "README.md",
         "CLAUDE.md",
-        "README.md"
+        ".mcp.json",
+        ".claude/commands/project-setup.md",
+        ".claude/commands/git-workflow.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -48036,10 +48056,10 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
+        "CLAUDE.md",
         ".claude/commands/django-model.md",
-        ".claude/commands/views.md",
         ".claude/commands/admin.md",
-        "CLAUDE.md"
+        ".claude/commands/views.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -48053,12 +48073,12 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        ".claude/commands/testing.md",
-        ".claude/commands/api-endpoints.md",
-        ".claude/commands/database.md",
-        ".claude/commands/deployment.md",
+        "CLAUDE.md",
         ".claude/commands/auth.md",
-        "CLAUDE.md"
+        ".claude/commands/testing.md",
+        ".claude/commands/database.md",
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/deployment.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -48072,13 +48092,13 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
+        "CLAUDE.md",
         ".claude/commands/testing.md",
-        ".claude/commands/app-factory.md",
         ".claude/commands/flask-route.md",
-        ".claude/commands/blueprint.md",
         ".claude/commands/database.md",
         ".claude/commands/deployment.md",
-        "CLAUDE.md"
+        ".claude/commands/blueprint.md",
+        ".claude/commands/app-factory.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -48091,8 +48111,8 @@
       "category": "languages",
       "description": "Go project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=go --yes",
       "downloads": 0
@@ -48105,17 +48125,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/debug.md",
-        ".claude/commands/api-endpoint.md",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/refactor.md",
-        ".claude/commands/npm-scripts.md",
-        ".mcp.json",
+        "README.md",
         "CLAUDE.md",
-        "README.md"
+        ".mcp.json",
+        ".claude/settings.json",
+        ".claude/commands/test.md",
+        ".claude/commands/api-endpoint.md",
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/lint.md",
+        ".claude/commands/debug.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/refactor.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -48129,11 +48149,11 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
+        "CLAUDE.md",
         ".claude/commands/api-endpoint.md",
-        ".claude/commands/route.md",
         ".claude/commands/database.md",
-        ".claude/commands/middleware.md",
-        "CLAUDE.md"
+        ".claude/commands/route.md",
+        ".claude/commands/middleware.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -48146,11 +48166,11 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/test.md",
-        ".claude/commands/lint.md",
-        ".mcp.json",
-        "CLAUDE.md"
+        ".claude/commands/lint.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -48164,8 +48184,8 @@
       "language": "ruby",
       "description": "Rails-App with Ruby",
       "files": [
-        ".claude/commands/authentication.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/commands/authentication.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
@@ -48179,10 +48199,10 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/component.md",
-        ".claude/commands/state-management.md",
+        "CLAUDE.md",
         ".claude/commands/hooks.md",
-        "CLAUDE.md"
+        ".claude/commands/state-management.md",
+        ".claude/commands/component.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -48195,11 +48215,11 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/model.md",
-        ".claude/commands/test.md",
+        "CLAUDE.md",
         ".mcp.json",
-        "CLAUDE.md"
+        ".claude/settings.json",
+        ".claude/commands/test.md",
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
@@ -48212,8 +48232,8 @@
       "category": "languages",
       "description": "Rust project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rust --yes",
       "downloads": 0
@@ -48227,8 +48247,8 @@
       "language": "javascript-typescript",
       "description": "Vue-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/components.md",
-        ".claude/commands/composables.md"
+        ".claude/commands/composables.md",
+        ".claude/commands/components.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0
