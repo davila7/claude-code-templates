@@ -27,7 +27,20 @@ import {
   shortlistOf,
   skillFileCandidates,
   suggestionBlock,
+  syncedFileCandidates,
   trimListing,
+  injectionBlock,
+  readSkillSettings,
+  setupPlan,
+  setupInstructions,
+  describeStillListed,
+  SETUP_COMMAND,
+  setupAborted,
+  validBackup,
+  commandLike,
+  frontmatterName,
+  displayIds,
+  canonical,
   wideQuestions,
 } from '../hooks/policy.ts'
 import type { Candidate, PolicyConfig, Skill } from '../hooks/policy.ts'
@@ -318,4 +331,133 @@ test('the log lines name the backend, the gate, the ranking, the rerank and the 
   )
   expect(describeStatus('pptx-author')).toBe('jev · skill: pptx-author')
   expect(describeStatus(null)).toBe('jev · no skill')
+})
+
+test("the injection block carries the skill's body with its frontmatter off and its paths filled in", () => {
+  const skill: Skill = { name: 'pptx', description: 'Author a deck' }
+  const markdown = '---\nname: pptx\ndescription: Author a deck\n---\nRun ${CLAUDE_SKILL_DIR}/scripts/build.py in ${CLAUDE_PROJECT_DIR}.\n'
+  const block = injectionBlock(skill, markdown, '/home/u/.claude/skills/pptx/SKILL.md', '/work/app', false)
+  expect(block.startsWith('<skill_relevance>\nRelevant to the current request: pptx.')).toBe(true)
+  expect(block).toContain('<skill name="pptx" dir="/home/u/.claude/skills/pptx">')
+  expect(block).toContain('Run /home/u/.claude/skills/pptx/scripts/build.py in /work/app.')
+  expect(block).not.toContain('name: pptx')
+  expect(block).toContain('Do not load it with the Skill tool')
+  expect(block.endsWith('</skill_relevance>')).toBe(true)
+})
+
+test('an already-injected skill is only named again, and one without a file is suggested by name', () => {
+  const skill: Skill = { name: 'pptx', description: 'Author a deck' }
+  const again = injectionBlock(skill, 'body', '/x/SKILL.md', '/work', true)
+  expect(again).toContain('Skill /pptx is already loaded above; instructions unchanged.')
+  expect(again).not.toContain('<skill name=')
+  const none = injectionBlock(skill, null, null, '/work', false)
+  expect(none).toContain('- pptx: Author a deck')
+  expect(none).toContain('Load it with the Skill tool (skill: "pptx")')
+})
+
+test('a synced skill is looked for under every account directory, by its unprefixed name', () => {
+  expect(syncedFileCandidates('/home/u', ['acc_1', 'acc_2'], 'anthropic-skills:pptx')).toEqual([
+    '/home/u/.claude/skills/synced/acc_1/pptx/SKILL.md',
+    '/home/u/.claude/skills/synced/acc_2/pptx/SKILL.md',
+  ])
+  expect(syncedFileCandidates('/home/u', ['../etc'], 'pptx')).toEqual([])
+  expect(syncedFileCandidates('/home/u', ['acc'], 'a/b')).toEqual([])
+})
+
+test('the skill settings read the two fields the setup touches, and malformed JSON reads as empty', () => {
+  const settings = readSkillSettings('{"skillOverrides":{"a":"off","b":3},"disableBundledSkills":true,"model":"x"}')
+  expect(settings).toEqual({ skillOverrides: { a: 'off' }, disableBundledSkills: true })
+  expect(readSkillSettings('{nope')).toEqual({ skillOverrides: {}, disableBundledSkills: undefined })
+  expect(readSkillSettings(null)).toEqual({ skillOverrides: {}, disableBundledSkills: undefined })
+})
+
+test('the setup plan hides user skills still on, leaves hidden ones, and reports plugin skills as locked', () => {
+  const commands = [
+    { name: 'help', source: 'builtin' },
+    { name: 'pptx', source: 'user' },
+    { name: 'commit', source: 'user' },
+    { name: 'deploy', source: 'user' },
+    { name: 'eng:debug', source: 'plugin' },
+    { name: 'pptx', source: 'user' },
+    { name: SETUP_COMMAND, source: 'plugin' },
+  ]
+  const plan = setupPlan(
+    commands,
+    { skillOverrides: { commit: 'user-invocable-only', deploy: 'off' }, disableBundledSkills: undefined },
+    new Set([SETUP_COMMAND]),
+  )
+  expect(plan).toEqual({ hide: ['pptx'], alreadyHidden: ['commit', 'deploy'], locked: ['eng:debug'], bundledStillOn: true })
+})
+
+test('the setup instructions list every skill, carry the exact edit and the backup, and demand a yes first', () => {
+  const settings = { skillOverrides: { commit: 'name-only' }, disableBundledSkills: undefined }
+  const plan = setupPlan([{ name: 'pptx', source: 'user' }, { name: 'commit', source: 'user' }, { name: 'eng:debug', source: 'plugin' }], settings, new Set())
+  const text = setupInstructions('apply', plan, settings, '/home/u/.claude/settings.json', '/home/u/.claude/backup.json')
+  expect(text).toContain('Skills that will be hidden from the model (2):\n- pptx\n- commit')
+  expect(text).toContain('- eng:debug')
+  expect(text).toContain('Do not edit anything before a clear yes.')
+  expect(text).toContain('"pptx": "user-invocable-only"')
+  expect(text).toContain('"commit": "user-invocable-only"')
+  expect(text).toContain('"disableBundledSkills": true')
+  // The backup keeps what was there, so restore can put it back.
+  expect(text).toContain('"commit": "name-only"')
+  expect(text).toContain('"disableBundledSkills": null')
+  expect(text).toContain(`/${SETUP_COMMAND} restore`)
+  const restore = setupInstructions('restore', plan, settings, '/s.json', '/b.json')
+  expect(restore).toContain('Read /b.json')
+  expect(restore).toContain('Only after a clear yes')
+  expect(restore).toContain('rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json')
+  expect(describeStillListed(1)).toContain('1 skill is still listed')
+  expect(describeStillListed(13)).toContain(`run /${SETUP_COMMAND}`)
+})
+
+test("a skill named with spaces in its frontmatter is mapped to its directory, which is the engine's id", () => {
+  expect(commandLike('pb-api-rules')).toBe(true)
+  expect(commandLike('PocketBase API Rules')).toBe(false)
+  expect(frontmatterName('---\nname: "PocketBase API Rules"\ndescription: x\n---\nbody')).toBe('PocketBase API Rules')
+  expect(frontmatterName('no frontmatter')).toBeNull()
+  const ids = displayIds([
+    { dir: 'pb-api-rules', markdown: '---\nname: "PocketBase API Rules"\n---\n' },
+    { dir: 'commit', markdown: '---\nname: commit\n---\n' },
+    { dir: 'other', markdown: '---\nname: "PocketBase API Rules"\n---\n' },
+  ])
+  expect([...ids]).toEqual([['PocketBase API Rules', 'pb-api-rules']])
+  expect(canonical([{ name: 'PocketBase API Rules', source: 'user' }, { name: 'commit', source: 'user' }], ids)).toEqual([
+    { name: 'pb-api-rules', source: 'user' },
+    { name: 'commit', source: 'user' },
+  ])
+})
+
+test('a rerun of the setup leaves an existing backup alone, since only it holds the pre-setup values', () => {
+  const settings = { skillOverrides: { pptx: 'user-invocable-only' }, disableBundledSkills: true }
+  const plan = setupPlan([{ name: 'pptx', source: 'user' }, { name: 'new', source: 'user' }], settings, new Set())
+  const fresh = setupInstructions('apply', plan, settings, '/s.json', '/b.json', false)
+  expect(fresh).toContain('first write /b.json with exactly this content')
+  const rerun = setupInstructions('apply', plan, settings, '/s.json', '/b.json', true)
+  expect(rerun).toContain('/b.json already exists from an earlier run')
+  expect(rerun).toContain('do NOT overwrite')
+  expect(rerun).not.toContain('first write /b.json')
+  expect(rerun).toContain('"new": "user-invocable-only"')
+})
+
+test('a path with replacement-pattern characters goes into the injected body verbatim', () => {
+  const skill: Skill = { name: 'odd', description: 'x' }
+  const block = injectionBlock(skill, '---\nname: odd\n---\nsee ${CLAUDE_SKILL_DIR}/a and ${CLAUDE_PROJECT_DIR}/b', '/p/$&/odd/SKILL.md', '/w/$1', false)
+  expect(block).toContain('see /p/$&/odd/a and /w/$1/b')
+})
+
+test('a setup that cannot be planned tells the model to change nothing', () => {
+  const text = setupAborted('the skills could not be listed')
+  expect(text).toContain('could not be prepared: the skills could not be listed')
+  expect(text).toContain('do not edit any settings file')
+})
+
+test('only a file with the backup\'s own shape is treated as a reusable backup', () => {
+  expect(validBackup('{"skillOverrides":{"a":"on"},"disableBundledSkills":null}')).toBe(true)
+  expect(validBackup('{"skillOverrides":{},"disableBundledSkills":true}')).toBe(true)
+  expect(validBackup('{"skillOverrides":{"a":1},"disableBundledSkills":null}')).toBe(false)
+  expect(validBackup('{"skillOverrides":[],"disableBundledSkills":null}')).toBe(false)
+  expect(validBackup('{"skillOverrides":{}}')).toBe(false)
+  expect(validBackup('{nope')).toBe(false)
+  expect(validBackup('[]')).toBe(false)
 })
