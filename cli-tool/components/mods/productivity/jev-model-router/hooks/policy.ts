@@ -144,10 +144,11 @@ export function requestBody(
   state: Record<string, unknown>,
   model: string,
 ): string {
+  // Only the Gateway takes the model in a header; the decision APIs take it in the body.
   const body =
-    provider === 'typesafe'
-      ? { model, state, questions: questions(provider) }
-      : { state, questions: questions(provider) }
+    provider === 'gateway'
+      ? { state, questions: questions(provider) }
+      : { model, state, questions: questions(provider) }
   return JSON.stringify(body)
 }
 

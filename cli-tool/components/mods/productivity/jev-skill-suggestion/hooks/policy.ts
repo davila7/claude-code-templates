@@ -459,7 +459,8 @@ export function requestBody(
   model: string,
 ): string {
   const state = { request: prompt, recent_context: '' }
-  const body = provider === 'typesafe' ? { model, state, questions } : { state, questions }
+  // Only the Gateway takes the model in a header; the decision APIs take it in the body.
+  const body = provider === 'gateway' ? { state, questions } : { model, state, questions }
   return JSON.stringify(body)
 }
 

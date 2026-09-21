@@ -429,3 +429,12 @@ test('openrouter speaks the decision dialect: noul, not the SDK boolean', () => 
   expect((questions('typesafe').risky as { type: string }).type).toBe('noul')
   expect((questions('gateway').risky as { type: string }).type).toBe('boolean')
 })
+
+test('the decision APIs take the model in the body, the gateway does not', () => {
+  const or = JSON.parse(requestBody('openrouter', { prompt: 'p' }, 'typesafe/jev-1.13'))
+  expect(or.model).toBe('typesafe/jev-1.13')
+  const ts = JSON.parse(requestBody('typesafe', { prompt: 'p' }, 'jev-latest'))
+  expect(ts.model).toBe('jev-latest')
+  const gw = JSON.parse(requestBody('gateway', { prompt: 'p' }, 'typesafe-ai/jev'))
+  expect(gw.model).toBeUndefined()
+})
