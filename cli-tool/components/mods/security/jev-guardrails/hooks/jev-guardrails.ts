@@ -59,7 +59,6 @@ import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
   DEFAULT_POLICY,
-  POLICIES,
   REVIEW_CANCEL,
   REVIEW_SEND,
   blockReason,
@@ -71,6 +70,7 @@ import {
   describeSetup,
   describeStatus,
   endpoint,
+  isPolicyName,
   parseNames,
   readScreen,
   requestBody,
@@ -130,7 +130,7 @@ export const register: Register = (on, options) => {
   // built-in classifier, which is silent; say so once, when a hook first runs.
   let unusableReported = forced === 'auto' || forced === 'builtin' || active !== null
 
-  const policyName = POLICIES[text('policy', DEFAULT_POLICY)] ? text('policy', DEFAULT_POLICY) : DEFAULT_POLICY
+  const policyName = isPolicyName(text('policy', DEFAULT_POLICY)) ? text('policy', DEFAULT_POLICY) : DEFAULT_POLICY
   const policy = resolvePolicy(policyName, {
     reviewThreshold: optional('reviewThreshold'),
     actionThreshold: optional('actionThreshold'),

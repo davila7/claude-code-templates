@@ -15,6 +15,7 @@ import {
   describeStatus,
   endpoint,
   hazardsOf,
+  isPolicyName,
   questions,
   readScreen,
   requestBody,
@@ -135,6 +136,10 @@ test('resolvePolicy overrides one number and keeps the rest; an unknown name rea
     severityBlock: 1.5,
   })
   expect(resolvePolicy('nope', {})).toEqual(strict)
+  // An inherited name is not a policy: every threshold would be undefined and everything would pass.
+  expect(resolvePolicy('toString', {})).toEqual(strict)
+  expect(isPolicyName('toString')).toBe(false)
+  expect(isPolicyName('permissive')).toBe(true)
 })
 
 // --- reading both wire shapes -----------------------------------------------
@@ -151,13 +156,21 @@ test('a Gateway answer reads probability per hazard', () => {
   expect(s?.nouls.jailbreak).toBeUndefined()
 })
 
-test('a hazard the backend did not answer is left out, and a disabled one is never read', () => {
-  const s = readScreen(typesafeAnswer({ jailbreak: 0.9, medical_advice: 0.9 }, 0), 'input', new Set(['medical_advice']))
-  expect(Object.keys(s?.nouls ?? {})).toEqual(['jailbreak'])
+test('a battery with a hole in it is no screening; a disabled hazard is neither required nor read', () => {
+  // jailbreak missing: the hole could be the one question that matters.
+  expect(readScreen(typesafeAnswer({ harmful_request: 0.1, medical_advice: 0.1, self_harm: 0.1 }, 0), 'input', none)).toBeNull()
+  const s = readScreen(
+    typesafeAnswer({ jailbreak: 0.9, harmful_request: 0.1, self_harm: 0.1 }, 0),
+    'input',
+    new Set(['medical_advice']),
+  )
+  expect(Object.keys(s?.nouls ?? {})).toEqual(['jailbreak', 'harmful_request', 'self_harm'])
 })
 
 test('malformed or empty payloads read as no screening rather than throwing', () => {
   expect(readScreen('not json', 'input', none)).toBeNull()
+  expect(readScreen('null', 'input', none)).toBeNull()
+  expect(readScreen('42', 'input', none)).toBeNull()
   expect(readScreen('{}', 'input', none)).toBeNull()
   expect(readScreen(JSON.stringify({ answers: { severity: { score: 1 } } }), 'input', none)).toBeNull()
 })
@@ -230,6 +243,8 @@ test('the classifier text names every enabled hazard and its action', () => {
   const t = classifyText('hi', 'output', new Set(['self_harm']))
   expect(t).toContain('broke_policy → block')
   expect(t).not.toContain('self_harm')
+  expect(t).toContain('2 = Serious')
+  expect(t).toContain('severity is 2 or more')
   expect(t.endsWith('hi')).toBe(true)
 })
 

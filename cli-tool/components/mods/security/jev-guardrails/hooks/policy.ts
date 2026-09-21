@@ -220,9 +220,14 @@ export const POLICIES: Record<string, Policy> = {
 
 export const DEFAULT_POLICY = 'strict'
 
+/** Whether a name is one of the shipped policies, and not an inherited `toString`. */
+export function isPolicyName(name: string): boolean {
+  return Object.prototype.hasOwnProperty.call(POLICIES, name)
+}
+
 /** A named policy with any of its numbers overridden; unknown names read as the default. */
 export function resolvePolicy(name: string, overrides: Partial<Policy>): Policy {
-  const base = POLICIES[name] ?? (POLICIES[DEFAULT_POLICY] as Policy)
+  const base = (isPolicyName(name) ? POLICIES[name] : POLICIES[DEFAULT_POLICY]) as Policy
   return {
     reviewThreshold: overrides.reviewThreshold ?? base.reviewThreshold,
     actionThreshold: overrides.actionThreshold ?? base.actionThreshold,
@@ -337,9 +342,10 @@ function yesNoOf(answer: Record<string, unknown> | undefined): number | null {
 }
 
 /**
- * Reads a response from either backend into one screening. A hazard the
- * backend did not answer is left out, so it can neither fire nor pass; a
- * response naming no hazard at all reads as no screening.
+ * Reads a response from either backend into one screening. Every enabled
+ * hazard must be answered: a battery with a hole in it is not a screening
+ * (the hole could be the jailbreak question), so it reads as none and takes
+ * the same path as a timeout, fail-open or fail-closed as configured.
  */
 export function readScreen(responseText: string, side: Side, disabled: ReadonlySet<string>): Screen | null {
   let parsed: unknown
@@ -348,13 +354,16 @@ export function readScreen(responseText: string, side: Side, disabled: ReadonlyS
   } catch {
     return null
   }
+  // A body of `null` or a bare number parses fine and has no `.answers`.
+  if (parsed === null || typeof parsed !== 'object') return null
   const answers = (parsed as { answers?: Record<string, Record<string, unknown>> }).answers
   if (!answers || typeof answers !== 'object') return null
 
   const nouls: Partial<Record<Hazard, number>> = {}
   for (const hazard of hazardsOf(side, disabled)) {
     const value = yesNoOf(answers[hazard])
-    if (value !== null) nouls[hazard] = value
+    if (value === null) return null
+    nouls[hazard] = value
   }
   if (Object.keys(nouls).length === 0) return null
   const severity = answers.severity
@@ -384,6 +393,10 @@ export function classifyText(text: string, side: Side, disabled: ReadonlySet<str
     ),
     '- pass: none of the above applies.',
     'Answer "review" when a hazard may apply but is not clear.',
+    '',
+    'Severity, how much harm could result if the assistant complied: ' +
+      SEVERITY_CRITERIA.map((criterion, score) => `${score} = ${criterion}`).join(' '),
+    'A hazard that would be "review" is "block" instead when the severity is 2 or more.',
     '',
     'Message:',
     text,
