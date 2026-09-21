@@ -13,9 +13,10 @@
  *   prompt.submit  — the input battery on the user's prompt.
  *                    pass     the prompt enters as typed.
  *                    review   the person is asked (`$.ui.ask`): send it, or
- *                             cancel. With no one to ask (a `-p` run) the
- *                             prompt enters with a <guardrail> note for the
- *                             model instead.
+ *                             cancel; a dismissed dialog cancels too. With
+ *                             no one to ask (a `-p` run, told by an empty
+ *                             `$.session.surfaces()`) the prompt enters
+ *                             with a <guardrail> note for the model instead.
  *                    block    `{ drop }` without `next`: the prompt never
  *                             enters, and the reason is shown.
  *                    support  the prompt enters with a note that tells the
@@ -234,21 +235,34 @@ export const register: Register = (on, options) => {
       case 'support':
         return next({ ...e, context: [...(e.context ?? []), contextBlock('support', routing)] })
       case 'review': {
-        // The person is the review path. `$.ui.ask` rejects when there is
-        // no one to ask (a `-p` run) or the dialog is dismissed: the first
-        // lets the prompt through with a note, the second cancels it.
-        let answer: string
+        // The person is the review path. `$.ui.ask` rejects both when there
+        // is no one to ask (a `-p` run) and when the dialog is dismissed, and
+        // the two must not land the same way: headless lets the prompt
+        // through with a note, a dismissal cancels it. `$.session.surfaces()`
+        // tells them apart up front: it is empty in a plain `-p` run.
+        let surfaces = 0
+        try {
+          surfaces = (await $.session.surfaces()).length
+        } catch (error) {
+          $.ui.log(`[jev-guardrails] review: could not read the surfaces (${String(error)}); treating as headless`)
+        }
+        if (surfaces === 0) {
+          if (logDecisions) $.ui.log('[jev-guardrails] review: no one to ask (headless); passed with a note')
+          return next({ ...e, context: [...(e.context ?? []), contextBlock('review', routing)] })
+        }
+        let answer: string | null = null
         try {
           answer = await $.ui.ask(reviewQuestion(routing), { options: [REVIEW_SEND, REVIEW_CANCEL], header: 'guardrail' })
         } catch (error) {
-          if (logDecisions) $.ui.log(`[jev-guardrails] review: no one to ask (${String(error)}); passed with a note`)
-          return next({ ...e, context: [...(e.context ?? []), contextBlock('review', routing)] })
+          if (logDecisions) $.ui.log(`[jev-guardrails] review: dialog dismissed (${String(error)}); cancelled`)
         }
         if (answer === REVIEW_SEND) {
           if (logDecisions) $.ui.log('[jev-guardrails] review: sent as typed')
           return next(e)
         }
-        if (logDecisions) $.ui.log(`[jev-guardrails] review: cancelled (${answer})`)
+        // Cancel, free text under "Other", or a dismissed dialog: anything
+        // but an explicit yes keeps the prompt out.
+        if (logDecisions) $.ui.log(`[jev-guardrails] review: cancelled (${answer ?? 'dismissed'})`)
         return { drop: `jev-guardrails: prompt cancelled at review (${routing.hazard ?? 'flagged'}).` }
       }
     }

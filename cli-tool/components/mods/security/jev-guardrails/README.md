@@ -46,7 +46,7 @@ Two policies ship, and the probabilities do not move between them:
 | `strict` (default) | 0.35 | 0.70 | 2.0 |
 | `permissive` | 0.35 | 0.85 | 2.0 |
 
-The cookbook's `neurosemantical` jailbreak (0.74) blocks under `strict` and goes to review under `permissive`. Any of the three numbers can be overridden on its own.
+The cookbook's `neurosemantical` jailbreak (0.74) blocks under `strict` and goes to review under `permissive`. Any of the three numbers can be overridden on its own; the three override options ship **without a default** on purpose, since Claude Code hands a mod its manifest defaults as if they were set, and a default of 0.70 would silently replace `permissive`'s 0.85.
 
 ## What each action does here
 
@@ -55,7 +55,7 @@ A CLI has no review queue and no support desk, so the four actions land like thi
 | Action | Input (a prompt) | Output (a reply) |
 |---|---|---|
 | **pass** | enters as typed | shown as streamed |
-| **review** | **the person is asked** (`$.ui.ask`): *Send it* or *Cancel*. In `claude -p` there is no one to ask, so the prompt enters with a `<guardrail>` note telling the model which hazard was flagged and to answer conservatively | shown, logged as a review |
+| **review** | **the person is asked** (`$.ui.ask`): *Send it* or *Cancel*; dismissing the dialog cancels too — only an explicit *Send it* lets it in. In `claude -p` there is no one to ask (`$.session.surfaces()` is empty), so the prompt enters with a `<guardrail>` note telling the model which hazard was flagged and to answer conservatively | shown, logged as a review |
 | **block** | **dropped**: the prompt never enters, and the reason is shown in its place | **withheld**: the text is replaced by a one-line notice naming the hazard and the policy |
 | **support** | enters with a `<guardrail>` note telling the model to respond to the person first — acknowledge, do not lecture, offer a way to reach someone — and not to carry on with a task as if nothing was said | withheld, replaced by a notice that includes a crisis line |
 
@@ -114,9 +114,9 @@ With a key set, the text of every prompt and every reply leaves the machine and 
   gatewayBaseUrl:   string  empty uses https://ai-gateway.vercel.sh/v4/ai
   gatewayModel:     string  empty uses typesafe-ai/jev
   policy:           string  "strict" | "permissive" (default "strict")
-  reviewThreshold:  number  overrides the policy's review line (default 0.35)
-  actionThreshold:  number  overrides the policy's action line (default 0.70)
-  severityBlock:    number  overrides the policy's severity line (default 2.0)
+  reviewThreshold:  number  overrides the policy's review line; unset uses the policy's
+  actionThreshold:  number  overrides the policy's action line; unset uses the policy's
+  severityBlock:    number  overrides the policy's severity line; unset uses the policy's
   screenInput:      boolean run the input battery on prompts (default true)
   screenOutput:     string  "block" | "audit" | "off" (default "block")
   screenSubagents:  boolean also screen subagent replies (default false)

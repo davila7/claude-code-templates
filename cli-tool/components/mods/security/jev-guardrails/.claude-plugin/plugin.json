@@ -79,20 +79,17 @@
     "reviewThreshold": {
       "type": "number",
       "title": "Review threshold",
-      "description": "Overrides the policy: a hazard probability at or above this sends the message to review",
-      "default": 0.35
+      "description": "Overrides the policy's review line when set: a hazard probability at or above this sends the message to review. Leave unset to use the policy's own (0.35 in both)"
     },
     "actionThreshold": {
       "type": "number",
       "title": "Action threshold",
-      "description": "Overrides the policy: a hazard probability at or above this triggers the hazard's action (block, review or support)",
-      "default": 0.7
+      "description": "Overrides the policy's action line when set: a hazard probability at or above this triggers the hazard's action (block, review or support). Leave unset to use the policy's own (strict 0.70, permissive 0.85)"
     },
     "severityBlock": {
       "type": "number",
       "title": "Severity block",
-      "description": "Overrides the policy: a severity score (0-3) at or above this turns a review into a block",
-      "default": 2
+      "description": "Overrides the policy's severity line when set: a severity score (0-3) at or above this turns a review into a block. Leave unset to use the policy's own (2.0 in both)"
     },
     "screenInput": {
       "type": "boolean",
