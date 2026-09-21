@@ -520,7 +520,8 @@ export function readWide(responseText: string): Wide | null {
     .map(([, value]) => value)
   if (!answers || parts.length === 0) return null
   const which = parts.find((p) => typeof p.choice === 'string')
-  if (!which) return null
+  if (!which || typeof which.choice !== 'string') return null
+  const winner: string = which.choice
 
   // A Choice distribution is normalised across ITS OWN options, so scores from
   // different chunks are not comparable: 1.00 among 223 options and 0.70 among the
@@ -555,7 +556,7 @@ export function readWide(responseText: string): Wide | null {
   }
   if (ranked.length === 0) {
     ranked.push({
-      name: which.choice,
+      name: winner,
       probability: typeof which.confidence === 'number' ? which.confidence : null,
     })
   }
