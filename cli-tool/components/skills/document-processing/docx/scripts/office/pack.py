@@ -26,7 +26,6 @@ def pack(
     output_file: str,
     original_file: str | None = None,
     validate: bool = True,
-    infer_author_func=None,
 ) -> tuple[None, str]:
     input_dir = Path(input_directory)
     output_path = Path(output_file)
@@ -42,7 +41,7 @@ def pack(
         original_path = Path(original_file)
         if original_path.exists():
             success, output = _run_validation(
-                input_dir, original_path, suffix, infer_author_func
+                input_dir, original_path, suffix
             )
             if output:
                 print(output)
@@ -70,7 +69,6 @@ def _run_validation(
     unpacked_dir: Path,
     original_file: Path,
     suffix: str,
-    infer_author_func=None,
 ) -> tuple[bool, str | None]:
     output_lines = []
     validators = []
