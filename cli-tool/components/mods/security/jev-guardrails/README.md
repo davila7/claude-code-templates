@@ -114,9 +114,9 @@ With a key set, the text of every prompt and every reply leaves the machine and 
   gatewayBaseUrl:   string  empty uses https://ai-gateway.vercel.sh/v4/ai
   gatewayModel:     string  empty uses typesafe-ai/jev
   policy:           string  "strict" | "permissive" (default "strict")
-  reviewThreshold:  number  overrides the policy's review line; unset uses the policy's
-  actionThreshold:  number  overrides the policy's action line; unset uses the policy's
-  severityBlock:    number  overrides the policy's severity line; unset uses the policy's
+  reviewThreshold:  number  overrides the policy's review line; unset: 0.35 (strict and permissive)
+  actionThreshold:  number  overrides the policy's action line; unset: 0.70 strict, 0.85 permissive
+  severityBlock:    number  overrides the policy's severity line; unset: 2.0 (strict and permissive)
   screenInput:      boolean run the input battery on prompts (default true)
   screenOutput:     string  "block" | "audit" | "off" (default "block")
   screenSubagents:  boolean also screen subagent replies (default false)
