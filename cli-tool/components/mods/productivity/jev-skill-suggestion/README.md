@@ -109,6 +109,8 @@ Their mean is the gate: under `gateThreshold` (0.30) nothing is suggested, whate
 
 **Request 2 — read the top three properly.** The same `choice` over the shortlist (`shortlist`, 3), now with each skill's full frontmatter description and the first `excerptChars` (700) of its SKILL.md as the criterion, and one `noul` per candidate — *does this skill do the specific thing the request asks for?* — answered on its own, so all of them can come back low. A shortlist whose best `fits` is under `fitsThreshold` (0.30) is dropped entirely; otherwise the `choice`'s winner is suggested. The two decide different things: the `choice` settles *which*, the `noul`s settle *whether*.
 
+`shortlist` is a floor rather than an exact count. A Choice takes at most 255 options, so a listing above that is split across several of them, and scores from different splits are not comparable — the ranking interleaves them instead. If the shortlist were smaller than the number of splits, the last splits would never be re-read and their skills could not be picked at all. The shortlist is therefore raised to the number of splits when that is larger, which past 765 skills means one extra body read per further 255.
+
 This is where lookalikes separate — on one line the skill that *edits* `.pptx` files reads nearly the same as the one that *authors* them; on 700 characters they do not.
 
 The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, `~/.claude/skills/synced/<account>/<name>/SKILL.md` for a skill synced from claude.ai, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session, and the same read is what gets injected.
@@ -194,7 +196,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
   inject:            string  "content" attaches the chosen skill's SKILL.md (default); "suggest" names it for the Skill tool
   hideListing:       boolean withhold the engine's skill listing (default true)
   rerank:            boolean second request over the shortlist (default true)
-  shortlist:         number  how many of the ranking the second request re-reads (default 3)
+  shortlist:         number  how many of the ranking the second request re-reads (default 3, floor)
   gateThreshold:     number  gate mean under which nothing is suggested (default 0.3)
   fitsThreshold:     number  best `fits` under which the shortlist is dropped (default 0.3)
   excerptChars:      number  SKILL.md characters each candidate brings (default 700)

@@ -56,6 +56,8 @@ export interface Wide {
   gate: number | null
   /** Each gate noul as answered, for the log. */
   gateValues: Record<string, number>
+  /** How many Choice questions the ranking came back in; the shortlist's floor. */
+  chunks: number
 }
 
 /** What the second request answered. */
@@ -535,16 +537,16 @@ export function readWide(responseText: string): Wide | null {
   if (!which || typeof which.choice !== 'string') return null
   const winner: string = which.choice
 
-  // A Choice distribution is normalised across ITS OWN options, so a score from one
-  // chunk only loosely compares to a score from another. Each chunk is therefore
-  // sorted on its own and the chunks are interleaved by rank: every chunk's best
-  // comes before any chunk's second, so no chunk can take two shortlist places while
-  // another takes none. Within one rank the entries are ordered by probability, not
-  // by chunk position, because the shortlist truncates: ordering rank 0 by position
-  // would make the chunks past the shortlist size unreachable, and a skill would be
-  // unselectable for its place in the catalog. The comparable judgement stays the
-  // per-candidate `fits` noul in the second request, which is an absolute
-  // probability and not normalised against a set.
+  // A Choice distribution is normalised across ITS OWN options, so scores from
+  // different chunks are not comparable: 1.00 among 223 options and 0.70 among the
+  // other 222 say nothing about each other. Each chunk is therefore sorted on its
+  // own and the chunks are interleaved, so the shortlist samples all of them rather
+  // than whichever chunk happened to produce the largest numbers. The comparable
+  // judgement is the per-candidate `fits` noul in the second request, which is an
+  // absolute probability and not normalised against a set.
+  //
+  // Interleaving alone is not enough, because the shortlist truncates: `shortlistOf`
+  // raises its count to `chunks` so that every chunk reaches the second request.
   const perChunk: Wide['ranked'][] = []
   for (const part of parts) {
     const probabilities = part.probabilities as Record<string, number> | undefined
@@ -564,13 +566,10 @@ export function readWide(responseText: string): Wide | null {
   }
   const ranked: Wide['ranked'] = []
   for (let rank = 0; perChunk.some((c) => rank < c.length); rank++) {
-    const tier: Wide['ranked'] = []
     for (const chunk of perChunk) {
       const entry = chunk[rank]
-      if (entry) tier.push(entry)
+      if (entry) ranked.push(entry)
     }
-    tier.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
-    ranked.push(...tier)
   }
   if (ranked.length === 0) {
     ranked.push({
@@ -588,7 +587,7 @@ export function readWide(responseText: string): Wide | null {
     oriented.push(INVERTED.has(key) ? 1 - value : value)
   }
   const gate = oriented.length > 0 ? oriented.reduce((a, b) => a + b, 0) / oriented.length : null
-  return { ranked, gate, gateValues }
+  return { ranked, gate, gateValues, chunks: perChunk.length }
 }
 
 /** Reads the second request's answer. */
@@ -616,6 +615,7 @@ export function builtinWide(label: string | undefined): Wide | null {
     ranked: label === NONE ? [] : [{ name: label, probability: null }],
     gate: null,
     gateValues: {},
+    chunks: 1,
   }
 }
 
@@ -646,14 +646,25 @@ export interface PolicyConfig {
   fitsThreshold: number
 }
 
-/** The shortlist the second request reads: the top of the ranking, by name. */
+/**
+ * The shortlist the second request reads: the top of the ranking, by name.
+ *
+ * `count` is a floor, not a ceiling. The ranking interleaves the chunks, so the
+ * first `chunks` entries are one per chunk; a count below that would cut the last
+ * chunks off the shortlist and make their skills unselectable for their position
+ * in the catalog alone. Taking the larger of the two keeps every chunk reachable
+ * without comparing Choice scores across chunks, which are not comparable. The
+ * listing is split at 255 options, so this only raises the configured 3 past 765
+ * skills, and then by one per further 255.
+ */
 export function shortlistOf(wide: Wide, skills: readonly Skill[], count: number): Skill[] {
+  const wanted = Math.max(count, wide.chunks)
   const byName = new Map(skills.map((skill) => [skill.name, skill]))
   const picked: Skill[] = []
   for (const entry of wide.ranked) {
     const skill = byName.get(entry.name)
     if (skill) picked.push(skill)
-    if (picked.length >= count) break
+    if (picked.length >= wanted) break
   }
   return picked
 }
@@ -716,11 +727,21 @@ export function decide(
     return { name: null, reason: `rerank named ${rerank.winner}, not on the shortlist` }
   }
 
-  const top = shortlist[0] as Skill
-  const probability = wide.ranked.find((entry) => entry.name === top.name)?.probability ?? null
+  // No second request means no `fits` noul, so the one pick has to come from the
+  // Choice scores. Inside a chunk the ranking is already sorted; across chunks it
+  // is interleaved, so taking the first entry would always name chunk 0's best
+  // whatever the other chunks answered. The scores are normalised per chunk and
+  // only loosely comparable, but the chunker gives every chunk the same size to
+  // within one option, and the alternative — deciding on catalog position — carries
+  // no information at all. With one chunk this picks what the sort already had.
+  const scored = shortlist.map((skill) => ({
+    skill,
+    probability: wide.ranked.find((entry) => entry.name === skill.name)?.probability ?? null,
+  }))
+  const best = scored.reduce((a, b) => ((b.probability ?? 0) > (a.probability ?? 0) ? b : a))
   return {
-    name: top.name,
-    reason: `top of ${wide.ranked.length}${probability === null ? '' : ` (${probability.toFixed(2)})`}, no rerank`,
+    name: best.skill.name,
+    reason: `top of ${wide.ranked.length}${best.probability === null ? '' : ` (${best.probability.toFixed(2)})`}, no rerank`,
   }
 }
 
