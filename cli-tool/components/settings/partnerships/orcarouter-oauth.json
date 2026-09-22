@@ -1,0 +1,10 @@
+{
+  "description": "OrcaRouter (account login) - the same OrcaRouter gateway as the API-key preset, authenticated with an OrcaRouter account instead of a pasted key. Run `npx claude-code-templates@latest --orcarouter-connect` to authorize in a browser with OAuth 2.0 + PKCE (S256) and store the sk-orca-... key it issues; no client secret and no pre-registered redirect URI are involved. Inference and model discovery live at https://api.orcarouter.ai/v1; authorization lives at https://www.orcarouter.ai. The issued key is durable: it is reused until revoked at https://www.orcarouter.ai/console/authorized-apps, so authorization is not repeated on every launch.",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.orcarouter.ai",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR-ORCAROUTER-API-KEY",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "anthropic/claude-sonnet-4.6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "anthropic/claude-opus-4.8",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "anthropic/claude-haiku-4.5"
+  }
+}
