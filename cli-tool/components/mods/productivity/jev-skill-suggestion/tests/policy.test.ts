@@ -545,7 +545,7 @@ test('the shortlist takes at least one candidate from every chunk', () => {
   // be unselectable for its place in the catalog. The count is raised to the chunk
   // count instead, which needs no comparison between chunks.
   expect(shortlistOf(wide!, skills, 3).map((s) => s.name)).toEqual(['a', 'b', 'c', 'd'])
-  // A configured 1 is the reviewer's other case: two chunks, one slot.
+  // A configured 1 is raised the same way: four chunks, one slot.
   expect(shortlistOf(wide!, skills, 1).length).toBe(4)
 })
 
