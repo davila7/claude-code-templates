@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-21T03:04:29.398877+00:00",
-  "totalJobs": 93,
+  "lastUpdated": "2026-09-22T03:08:58.954418+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -20,26 +20,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5427479008",
       "postedAt": "2026-09-18T18:50:40-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5369102008",
-      "company": "Anthropic",
-      "position": "Engineering Manager, Labs",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Anthropic...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5369102008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5369102008",
-      "postedAt": "2026-09-17T20:13:04-04:00",
       "tags": [
         "Rust",
         "AWS",
