@@ -147,14 +147,14 @@
     "openrouterBaseUrl": {
       "type": "string",
       "title": "OpenRouter base URL",
-      "description": "Override the OpenRouter decisions host; the mod appends /decisions",
-      "default": "https://openrouter.ai/api/alpha"
+      "description": "Base URL of OpenRouter's decisions API, to which the mod appends /decisions; empty uses https://openrouter.ai/api/alpha",
+      "default": ""
     },
     "openrouterModel": {
       "type": "string",
       "title": "OpenRouter model id",
-      "description": "Jev model id as OpenRouter names it",
-      "default": "typesafe/jev-1.13"
+      "description": "Jev model id as OpenRouter names it; empty uses typesafe/jev-1.13",
+      "default": ""
     }
   }
 }

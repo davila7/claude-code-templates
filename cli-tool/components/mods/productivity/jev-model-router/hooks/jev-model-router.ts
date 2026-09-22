@@ -5,11 +5,12 @@
  * decision model: unstructured state in, a typed choice with a probability
  * distribution out.
  *
- * Jev is reached one of two ways, whichever key is configured: TypeSafe's
- * own API (`typesafeApiKey`), which reports a calibrated confidence per
- * answer, or the Vercel AI Gateway (`gatewayApiKey`), which does not. With
- * neither, the engine's own `$.model.classify` stands in, so the mod is
- * useful without any account.
+ * Jev is reached one of three ways, whichever key is configured: TypeSafe's
+ * own API (`typesafeApiKey`) or OpenRouter's decisions API
+ * (`openrouterApiKey`), both of which report a calibrated confidence per
+ * answer, or the Vercel AI Gateway (`gatewayApiKey`), which does not. `auto`
+ * takes them in that order. With no key at all, the engine's own
+ * `$.model.classify` stands in, so the mod is useful without any account.
  *
  * Three things it can set, each on its own switch:
  *   agent.spawn  — the model of each subagent (on by default)
@@ -68,9 +69,10 @@ export const register: Register = (on, options) => {
   const flag = (key: string, fallback: boolean) =>
     typeof options[key] === 'boolean' ? (options[key] as boolean) : fallback
 
-  // TypeSafe's own API is preferred when both keys are set: it is the only
-  // one that reports a calibrated confidence, which the policy's threshold
-  // reads. `provider` forces one, including "builtin" to use neither.
+  // With more than one key set, `auto` takes TypeSafe's own API, then
+  // OpenRouter, then the Gateway: the first two report the calibrated
+  // confidence the policy's threshold reads and the Gateway does not.
+  // `provider` forces one, including "builtin" to use none of them.
   const typesafeKey = text('typesafeApiKey', '')
   const gatewayKey = text('gatewayApiKey', '')
   const openrouterKey = text('openrouterApiKey', '')

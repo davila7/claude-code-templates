@@ -5,15 +5,18 @@
  * API takes, reads its answer, and turns that answer into a model id. The
  * hooks module does every call on `$` at its own call site.
  *
- * Two backends speak to the same model with different wire shapes:
+ * Three backends speak to the same model with different wire shapes:
  *
- *   typesafe  POST https://api.typesafe.ai/v1/systemone
- *             `{ model, state, questions }`; a yes/no question is a `noul`
- *             and every answer carries its own `confidence`.
- *   gateway   POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
- *             `{ state, questions }` with the model in a header; a yes/no
- *             question is a `boolean`, and there is no `confidence` field —
- *             it has to be derived from an optional distribution.
+ *   typesafe    POST https://api.typesafe.ai/v1/systemone
+ *               `{ model, state, questions }`; a yes/no question is a `noul`
+ *               and every answer carries its own `confidence`.
+ *   openrouter  POST https://openrouter.ai/api/alpha/decisions
+ *               the same body and the same `noul` and `confidence` fields,
+ *               under OpenRouter's own model id and key.
+ *   gateway     POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
+ *               `{ state, questions }` with the model in a header; a yes/no
+ *               question is a `boolean`, and there is no `confidence` field —
+ *               it has to be derived from an optional distribution.
  *
  * The Gateway shape is not documented publicly; it was read from
  * @ai-sdk/gateway and @ai-sdk/provider.
@@ -81,9 +84,10 @@ export const DEFAULT_MODEL: Record<Provider, string> = {
 
 /**
  * Which backend a configuration asks for, or null for the built-in
- * classifier. `auto` prefers TypeSafe, since it is the only one that reports
- * a calibrated confidence; a forced backend whose key is missing resolves to
- * null rather than falling through to the other one's key.
+ * classifier. `auto` takes TypeSafe, then OpenRouter, then the Gateway: the
+ * first two report a calibrated confidence and the Gateway does not. A forced
+ * backend whose key is missing resolves to null rather than falling through
+ * to another one's key.
  */
 export function selectProvider(
   forced: string,
@@ -177,13 +181,14 @@ function isTier(value: unknown): value is Tier {
 }
 
 /**
- * Reads a response from either backend.
+ * Reads a response from any of the backends.
  *
- * TypeSafe's own API reports a `confidence` per answer and a `noul` number
- * for a yes/no question. The Gateway reports neither: confidence has to come
- * from the highest probability of a distribution that is itself optional, and
- * a yes/no answer arrives as `probability`. Both are handled, and a missing
- * confidence reads as null rather than as a number the policy would trust.
+ * The decision APIs — TypeSafe's own and OpenRouter's — report a `confidence`
+ * per answer and a `noul` number for a yes/no question. The Gateway reports
+ * neither: confidence has to come from the highest probability of a
+ * distribution that is itself optional, and a yes/no answer arrives as
+ * `probability`. Both shapes are handled, and a missing confidence reads as
+ * null rather than as a number the policy would trust.
  */
 export function readDecision(responseText: string): Decision | null {
   let parsed: unknown
