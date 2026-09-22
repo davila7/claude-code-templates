@@ -515,16 +515,45 @@ test('one question is still named `which` under the cap', () => {
   expect(Object.keys(q)).toContain('which')
 })
 
-test('chunk scores are not compared across chunks; the chunks interleave', () => {
+test('no chunk takes a second place before every chunk has taken a first', () => {
   const body = JSON.stringify({
     answers: {
-      'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.2, b: 0.1 } },
-      'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.7 } },
+      'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.9, b: 0.8 } },
+      'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.2 } },
     },
   })
   const wide = readWide(body)
-  // `c` scores 0.7 and `a` scores 0.2, but each is normalised over its own options,
-  // so 0.7 does not outrank 0.2. Each chunk's best comes first, in chunk order.
+  // `b` scores 0.8 against `c`'s 0.2, but each is normalised over its own options.
+  // `c` is its chunk's best and still comes before chunk 0's second.
   expect(wide?.ranked.map((e) => e.name)).toEqual(['a', 'c', 'b'])
   expect(wide?.ranked.length).toBe(3)
+})
+
+test('every chunk can reach a shortlist smaller than the chunk count', () => {
+  const skills: Skill[] = ['a', 'b', 'c', 'd'].map((name) => ({ name, description: name }))
+  const body = JSON.stringify({
+    answers: {
+      'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.1 } },
+      'which::1': { type: 'choice', choice: 'b', probabilities: { b: 0.2 } },
+      'which::2': { type: 'choice', choice: 'c', probabilities: { c: 0.3 } },
+      'which::3': { type: 'choice', choice: 'd', probabilities: { d: 0.9 } },
+    },
+  })
+  const wide = readWide(body)
+  // The fourth chunk's candidate is the surest of the four, so a shortlist of 3
+  // reaches it. Ordering rank 0 by chunk position would drop it for its place in
+  // the catalog alone.
+  expect(shortlistOf(wide!, skills, 3).map((s) => s.name)).toEqual(['d', 'c', 'b'])
+})
+
+test('a malformed answer suggests nothing instead of throwing', () => {
+  expect(readWide(JSON.stringify({ answers: { which: null } }))).toBeNull()
+  expect(readRerank(JSON.stringify({ answers: { which: null } }))).toBeNull()
+  expect(readWide('null')).toBeNull()
+  const mixed = readWide(
+    JSON.stringify({
+      answers: { 'which::0': null, 'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.7 } } },
+    }),
+  )
+  expect(mixed?.ranked.map((e) => e.name)).toEqual(['c'])
 })

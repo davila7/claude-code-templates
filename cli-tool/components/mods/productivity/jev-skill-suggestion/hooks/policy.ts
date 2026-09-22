@@ -18,14 +18,17 @@
  *              per candidate: does this skill do the specific thing asked?
  *              Every `fits` may come back low, and then nothing is suggested.
  *
- * Two backends speak to the same model with different wire shapes:
+ * Three backends speak to the same model with different wire shapes:
  *
- *   typesafe  POST https://api.typesafe.ai/v1/systemone
- *             `{ model, state, questions }`; a yes/no question is a `noul`
- *             and every answer carries its own `confidence`.
- *   gateway   POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
- *             `{ state, questions }` with the model in a header; a yes/no
- *             question is a `boolean` answered as `probability`.
+ *   typesafe    POST https://api.typesafe.ai/v1/systemone
+ *               `{ model, state, questions }`; a yes/no question is a `noul`
+ *               and every answer carries its own `confidence`.
+ *   openrouter  POST https://openrouter.ai/api/alpha/decisions
+ *               the same body and the same `noul` and `confidence` fields,
+ *               under OpenRouter's own model id and key.
+ *   gateway     POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
+ *               `{ state, questions }` with the model in a header; a yes/no
+ *               question is a `boolean` answered as `probability`.
  *
  * The Gateway shape is not documented publicly; it was read from
  * @ai-sdk/gateway and @ai-sdk/provider.
@@ -82,9 +85,10 @@ export const DEFAULT_MODEL: Record<Provider, string> = {
 
 /**
  * Which backend a configuration asks for, or null for the built-in
- * classifier. `auto` prefers TypeSafe, since it is the only one that reports
- * a calibrated confidence; a forced backend whose key is missing resolves to
- * null rather than falling through to the other one's key.
+ * classifier. `auto` takes TypeSafe, then OpenRouter, then the Gateway: the
+ * first two report a calibrated confidence and the Gateway does not. A forced
+ * backend whose key is missing resolves to null rather than falling through
+ * to another one's key.
  */
 export function selectProvider(forced: string, typesafeKey: string, gatewayKey: string, openrouterKey = ''): Provider | null {
   if (forced === 'builtin') return null
@@ -494,11 +498,19 @@ function answersOf(responseText: string): Answers | null {
   } catch {
     return null
   }
-  const answers = (parsed as { answers?: Answers }).answers
-  return answers && typeof answers === 'object' ? answers : null
+  const answers = (parsed as { answers?: Answers } | null)?.answers
+  if (!answers || typeof answers !== 'object') return null
+  // A backend can answer a question with `null`, and every reader below indexes
+  // into what it takes out of this map. Anything that is not an object is
+  // dropped here, so a malformed answer reads as an unanswered one.
+  const objects: Answers = {}
+  for (const [key, value] of Object.entries(answers)) {
+    if (value !== null && typeof value === 'object') objects[key] = value
+  }
+  return objects
 }
 
-/** P(true) of a yes/no answer: `noul` on TypeSafe, `probability` on the Gateway. */
+/** P(true) of a yes/no answer: `noul` on the decision APIs, `probability` on the Gateway. */
 function yesNoOf(answer: Record<string, unknown> | undefined): number | null {
   if (!answer) return null
   if (typeof answer.noul === 'number') return answer.noul
@@ -523,13 +535,16 @@ export function readWide(responseText: string): Wide | null {
   if (!which || typeof which.choice !== 'string') return null
   const winner: string = which.choice
 
-  // A Choice distribution is normalised across ITS OWN options, so scores from
-  // different chunks are not comparable: 1.00 among 223 options and 0.70 among the
-  // other 222 say nothing about each other. Each chunk is therefore sorted on its
-  // own and the chunks are interleaved, so the shortlist samples all of them rather
-  // than whichever chunk happened to produce the largest numbers. The comparable
-  // judgement is the per-candidate `fits` noul in the second request, which is an
-  // absolute probability and not normalised against a set.
+  // A Choice distribution is normalised across ITS OWN options, so a score from one
+  // chunk only loosely compares to a score from another. Each chunk is therefore
+  // sorted on its own and the chunks are interleaved by rank: every chunk's best
+  // comes before any chunk's second, so no chunk can take two shortlist places while
+  // another takes none. Within one rank the entries are ordered by probability, not
+  // by chunk position, because the shortlist truncates: ordering rank 0 by position
+  // would make the chunks past the shortlist size unreachable, and a skill would be
+  // unselectable for its place in the catalog. The comparable judgement stays the
+  // per-candidate `fits` noul in the second request, which is an absolute
+  // probability and not normalised against a set.
   const perChunk: Wide['ranked'][] = []
   for (const part of parts) {
     const probabilities = part.probabilities as Record<string, number> | undefined
@@ -549,10 +564,13 @@ export function readWide(responseText: string): Wide | null {
   }
   const ranked: Wide['ranked'] = []
   for (let rank = 0; perChunk.some((c) => rank < c.length); rank++) {
+    const tier: Wide['ranked'] = []
     for (const chunk of perChunk) {
       const entry = chunk[rank]
-      if (entry) ranked.push(entry)
+      if (entry) tier.push(entry)
     }
+    tier.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
+    ranked.push(...tier)
   }
   if (ranked.length === 0) {
     ranked.push({
