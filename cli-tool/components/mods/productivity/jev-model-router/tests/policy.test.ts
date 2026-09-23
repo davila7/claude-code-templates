@@ -277,17 +277,29 @@ test('a prompt that failed to classify still shields the next prompt', () => {
   expect(pending.take()).toBeNull()
 })
 
-// A UserPromptSubmit hook in the settings blocked the last prompt: no turn
-// reads it, and the prompt before it (or after it) keeps its own decision.
+// A UserPromptSubmit hook in the settings blocked a prompt: no turn reads it,
+// and every other prompt waiting keeps its own decision.
 test('a withdrawn decision no longer counts as waiting', () => {
   const pending = pendingDecisions()
-  pending.put(deepDecision)
-  pending.withdraw()
+  pending.withdraw(pending.put(deepDecision))
   pending.put(fastDecision)
   expect(pending.take()).toEqual(fastDecision)
+})
+
+test('withdrawing one decision leaves one put after it', () => {
+  const pending = pendingDecisions()
+  const blocked = pending.put(deepDecision)
   pending.put(fastDecision)
-  pending.put(deepDecision)
-  pending.withdraw()
+  pending.withdraw(blocked)
+  expect(pending.take()).toEqual(fastDecision)
+})
+
+test('a withdrawal after the turn took its decision changes nothing', () => {
+  const pending = pendingDecisions()
+  const held = pending.put(deepDecision)
+  expect(pending.take()).toEqual(deepDecision)
+  pending.withdraw(held)
+  pending.put(fastDecision)
   expect(pending.take()).toEqual(fastDecision)
 })
 
