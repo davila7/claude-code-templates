@@ -686,7 +686,79 @@ export function adviseStrategy(decision: Decision | null, config: StrategyConfig
   return { block, reason: `${strategy} (${confidence.toFixed(2)})` }
 }
 
+// --- telling the model what jev-pilot does ----------------------------------------
+
+/** Which parts of jev-pilot are switched on, for the note to the model. */
+export interface Capabilities {
+  effort: boolean
+  raise: boolean
+  subagents: boolean
+  subagentEffort: boolean
+  skills: boolean
+  strategy: boolean
+  model: boolean
+}
+
+/**
+ * The note the main model gets once per session (and again after a
+ * compaction): what jev-pilot decides for it, so it neither fights that (by
+ * pinning a subagent's model or effort, or making agent types just to fix an
+ * effort) nor tells the user jev-pilot cannot do what it does. Only the parts
+ * switched on are named; null when none is.
+ */
+export function capabilityNote(on: Capabilities): string | null {
+  const does: string[] = []
+  if (on.effort) {
+    does.push(
+      on.raise
+        ? "- sets this conversation's reasoning effort for each turn (low to xhigh), and raises it a level, up to max, when tool calls keep failing"
+        : "- sets this conversation's reasoning effort for each turn (low to xhigh)",
+    )
+  }
+  if (on.model) does.push("- may switch this conversation's model for a turn")
+  if (on.subagents) {
+    does.push(
+      on.subagentEffort
+        ? "- sets each subagent's model (haiku, sonnet or opus) and its reasoning effort, from the task in its prompt"
+        : "- sets each subagent's model (haiku, sonnet or opus), from the task in its prompt",
+    )
+  }
+  if (on.skills) does.push('- attaches the one skill a request needs, if any')
+  if (on.strategy) does.push('- may attach an <execution_strategy> block: advice to weigh, not an order')
+  if (does.length === 0) return null
+  const leave: string[] = []
+  if (on.subagents) {
+    leave.push(
+      on.subagentEffort
+        ? "Leave subagents' model and effort to it: don't pin them in the Agent call, and don't create agent types only to fix a model or an effort, unless the user asks. Write each subagent's prompt as a clear, self-contained task; that is what it rates."
+        : "Leave subagents' model to it: don't pin one in the Agent call unless the user asks. Write each subagent's prompt as a clear, self-contained task; that is what it rates.",
+    )
+  }
+  if (on.effort) leave.push("Don't change the effort yourself unless the user asks.")
+  return [
+    '<jev_pilot>',
+    'jev-pilot is running in this session. Before each turn, a fast decision model reads the request and:',
+    ...does,
+    ...leave,
+    'The user switches any part on or off with /jev.',
+    '</jev_pilot>',
+  ].join('\n')
+}
+
 // --- escalation within a turn -----------------------------------------------
+
+/** Why the decision model gave no answer: too slow, too busy, or an error. */
+export type Miss = 'timeout' | 'busy' | 'error'
+
+/**
+ * The miss a response stands for: no response in time (null) is a timeout;
+ * 429 (rate limited), 502, 503 and 529 (overloaded) mean the backend is busy
+ * and will answer again later; any other status is an error worth showing.
+ */
+export function missOf(status: number | null): Miss {
+  if (status === null) return 'timeout'
+  return status === 429 || status === 502 || status === 503 || status === 529 ? 'busy' : 'error'
+}
 
 /**
  * Whether a later request of a turn is the engine's own move to another

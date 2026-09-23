@@ -6,7 +6,7 @@ Lets [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), Type
 |---|---|---|
 | **Reasoning effort** of the main conversation, `low` → `xhigh` | start of each turn | on, capped by `maxEffort` |
 | **Raise effort, up to `max`**, when tool calls keep failing | mid-turn, at most once | on, after 2 failed calls in a row |
-| **Subagent model**: Haiku, Sonnet or Opus | when a subagent starts | on |
+| **Subagent model and effort**: Haiku, Sonnet or Opus, `low` → `xhigh` | when a subagent starts | on |
 | **Strategy**: direct, delegate, parallel, or a small graph of subagents | start of each turn, as advice | on |
 | **The one skill** the prompt needs, if any | start of each turn | on |
 | **A record of every decision**, with tuning suggestions | always, via `/jev-pilot:report` | on |
@@ -34,7 +34,7 @@ Then give it a key in `~/.claude/settings.json` (user settings; project settings
 { "pluginConfigs": { "jev-pilot@skills-dir": { "options": { "openrouterApiKey": "sk-or-v1-...", "timeoutMs": 1500 } } } }
 ```
 
-With no key, it still runs on Claude Code's built-in classifier: it routes by tier only, with no confidence and no strategy advice. To check it's working, look above the prompt: the pilot's bubble says `ready · openrouter`. `ready · no key, built-in` means the options are under the wrong key.
+With no key, it still runs on Claude Code's built-in classifier: it routes by tier only, with no confidence and no strategy advice. To check it's working, look above the prompt: the pilot's bubble says `ready · openrouter`. `ready · no key, built-in` means the options are under the wrong key. When Jev is slow or overloaded, the turn runs as you set it and the bubble says so (`no answer in time` or `jev busy`).
 
 To install it for every project instead, with an installer, a `claude-jev` launcher and `claude-jev self-update`, see the project's repository: **[github.com/Akramovic1/jev-pilot](https://github.com/Akramovic1/jev-pilot)**.
 
@@ -55,7 +55,9 @@ To install it for every project instead, with an installer, a `claude-jev` launc
 - **Risky work gets real thought.** A task that would itself deploy, move money or destroy data gets at least `high`.
 - **Turns start at `xhigh` at most.** Only the mid-turn raise reaches `max`.
 
-**Subagents** get the cheapest tier that fits their brief: `haiku`, `sonnet` or `opus`. These are family names, so Claude Code uses its current release of each.
+**Subagents** get the cheapest tier that fits their brief: `haiku`, `sonnet` or `opus`. These are family names, so Claude Code uses its current release of each. They also get an effort from the same decision, on the same rubric and bars as the main conversation; the Agent tool has no effort setting, so it is set on each request the subagent makes (models without one are left alone).
+
+**Claude knows it's there.** On the first prompt of each session, and again after a compaction, Claude gets a short note listing what jev-pilot decides (only the parts switched on), so it leaves those decisions alone: it won't pin a subagent's model or effort unless you ask.
 
 **Strategy** advice is added to the prompt as an `<execution_strategy>` block only when Jev is confident (0.6, or 0.8 for `graph`) and the advice agrees with the tier. Claude may ignore it.
 
@@ -91,6 +93,7 @@ All options go under `pluginConfigs["jev-pilot@skills-dir"].options`. The full l
 | `escalateAfterErrors` | 2 | failed tool calls in a row before a raise; 0 turns raising off |
 | `effortCloseMargin` | 0.15 | how close two levels must be for the higher to win |
 | `fastModel` / `balancedModel` / `deepModel` | `haiku` / `sonnet` / `opus` | subagent tiers |
+| `routeSubagentEffort` | true | also set each subagent's reasoning effort |
 | `routeMainModel` | false | also switch the main conversation's model (invalidates the prompt cache); if Claude Code falls back to another model mid-turn (overload), the fallback stands |
 | `suggestStrategy` | true | ask for and attach strategy advice |
 | `contextMessages` / `contextChars` | 4 / 2000 | how much of the conversation Jev reads; 0 sends none |

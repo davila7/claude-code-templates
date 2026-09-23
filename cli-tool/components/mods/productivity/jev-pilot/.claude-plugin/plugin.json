@@ -1,6 +1,6 @@
 {
   "name": "jev-pilot",
-  "version": "0.4.4",
+  "version": "0.4.7",
   "description": "TypeSafe's Jev decides how Claude Code works on each prompt: the main conversation's reasoning effort (low to xhigh, raised to max mid-turn when tool calls keep failing), each subagent's model, whether to split the work across subagents, and the one skill the prompt needs. Reads the prompt with recent context, records every decision, and suggests its own tuning. Backends: OpenRouter, TypeSafe's API, the Vercel AI Gateway, or Claude Code's built-in classifier. Built on claude-code-templates' jev-model-router and jev-skill-suggestion.",
   "author": {
     "name": "Ahmed Akram",
@@ -131,6 +131,12 @@
       "type": "boolean",
       "title": "Route subagent models",
       "description": "Pick the model of each subagent at agent.spawn (the Agent tool takes no effort)",
+      "default": true
+    },
+    "routeSubagentEffort": {
+      "type": "boolean",
+      "title": "Route subagent effort",
+      "description": "Also set each subagent's reasoning effort, from the same decision that picks its model, at every request it makes (under the subagents switch)",
       "default": true
     },
     "routeMainEffort": {

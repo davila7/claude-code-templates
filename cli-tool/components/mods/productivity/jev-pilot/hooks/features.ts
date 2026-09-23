@@ -14,7 +14,7 @@ export const FEATURES: readonly Feature[] = ['effort', 'raise', 'subagents', 'sk
 export const FEATURE_INFO: Record<Feature, string> = {
   effort: 'sets the reasoning effort of each turn',
   raise: 'raises the effort when tool calls keep failing',
-  subagents: 'picks each subagent’s model',
+  subagents: 'picks each subagent’s model and effort',
   skills: 'picks the one skill a prompt needs (off: the full skill list stays)',
   strategy: 'advises splitting big work across subagents',
   model: 'switches the main conversation’s model (resets the prompt cache)',

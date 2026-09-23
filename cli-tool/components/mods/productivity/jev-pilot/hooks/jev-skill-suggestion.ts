@@ -72,8 +72,9 @@
  * to whichever backend the key belongs to.
  */
 import type { Register } from 'claude-code'
+import { missOf } from './model-router.policy.ts'
 import { NOT_A_TASK, recentContext } from './context.ts'
-import { noteSkill } from './summary.ts'
+import { noteSkill, resetBriefing } from './summary.ts'
 import { feature } from './features.ts'
 import {
   DEFAULT_BASE_URL,
@@ -300,11 +301,14 @@ export const register: Register = (on, options) => {
           $.clock.sleep(timeoutMs),
         ])
         if (response && response.ok) return response.text
-        // The body says why (a limit, a bad field): worth the one line.
+        // A timeout or a busy backend is routine (the pet says so): verbose
+        // only. Any other status is an error, and its body says why (a limit,
+        // a bad field): worth the one line.
+        const miss = missOf(response ? response.status : null)
+        const tell = (text: string) => (miss === 'error' || verbose ? $.ui.log(text) : undefined)
         if (response) {
-          $.ui.log(`[jev-skill-suggestion] ${active} responded ${response.status} to the ${what}: ${response.text.slice(0, 200)}`)
-        }
-        else $.ui.log(`[jev-skill-suggestion] ${what} passed ${timeoutMs}ms; no suggestion`)
+          tell(`[jev-skill-suggestion] ${active} responded ${response.status} to the ${what}: ${response.text.slice(0, 200)}`)
+        } else tell(`[jev-skill-suggestion] ${what} passed ${timeoutMs}ms; no suggestion`)
       } catch (error) {
         $.ui.log(`[jev-skill-suggestion] ${what} failed: ${String(error)}`)
       }
@@ -532,7 +536,12 @@ export const register: Register = (on, options) => {
     return next(e)
   })
   on('session.compact', async ($, e, next) => {
-    if (!e.agentId) injected.clear()
+    if (!e.agentId) {
+      injected.clear()
+      // The compacted conversation no longer holds the router's note to the
+      // model about what jev-pilot does: it is given again on the next prompt.
+      resetBriefing()
+    }
     return next(e)
   })
 

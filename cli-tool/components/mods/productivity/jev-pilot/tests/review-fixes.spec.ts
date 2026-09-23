@@ -3,7 +3,8 @@ import { expect, test } from 'bun:test'
 import { NOT_A_TASK } from '../hooks/context.ts'
 import { configKeysOf, reportPrompt, suggestions } from '../hooks/ledger.ts'
 import type { LedgerEntry } from '../hooks/ledger.ts'
-import { engineMoved, pendingDecisions, readDecision, route } from '../hooks/model-router.policy.ts'
+import { capabilityNote, engineMoved, missOf, pendingDecisions, readDecision, route } from '../hooks/model-router.policy.ts'
+import { resetBriefing, takeBriefing } from '../hooks/summary.ts'
 import type { Decision, PolicyConfig } from '../hooks/model-router.policy.ts'
 import {
   catalog,
@@ -182,4 +183,46 @@ test('the same model on a later request is the turn going on, not a move', () =>
   expect(engineMoved('claude-opus-5-5', 'claude-opus-5-5')).toBe(false)
   // No first request seen: nothing is known to have moved.
   expect(engineMoved(null, 'claude-opus-5-5')).toBe(false)
+})
+
+// ---- Jev busy: an overloaded backend is routine, not an error ------------------
+
+test('no response in time is a timeout; 429, 502, 503 and 529 mean busy; other statuses are errors', () => {
+  expect(missOf(null)).toBe('timeout')
+  for (const status of [429, 502, 503, 529]) expect(missOf(status)).toBe('busy')
+  for (const status of [400, 401, 404, 500]) expect(missOf(status)).toBe('error')
+})
+
+// ---- the note to the model: what jev-pilot does, so it doesn't fight it -------
+
+
+const allOn = { effort: true, raise: true, subagents: true, subagentEffort: true, skills: true, strategy: true, model: false }
+
+test('the note names every part switched on, and asks the model to leave subagents to it', () => {
+  const note = capabilityNote(allOn) as string
+  expect(note.startsWith('<jev_pilot>')).toBe(true)
+  expect(note).toContain("reasoning effort for each turn")
+  expect(note).toContain('up to max')
+  expect(note).toContain("each subagent's model (haiku, sonnet or opus) and its reasoning effort")
+  expect(note).toContain("don't pin them in the Agent call")
+  expect(note).toContain('/jev')
+  expect(note).not.toContain('switch this conversation')
+})
+
+test('a part switched off is not claimed; with everything off there is no note', () => {
+  const noSubagents = capabilityNote({ ...allOn, subagents: false }) as string
+  expect(noSubagents).not.toContain('subagent')
+  const noRaise = capabilityNote({ ...allOn, raise: false }) as string
+  expect(noRaise).not.toContain('up to max')
+  const modelOnly = capabilityNote({ ...allOn, subagentEffort: false }) as string
+  expect(modelOnly).toContain("each subagent's model (haiku, sonnet or opus), from")
+  expect(capabilityNote({ effort: false, raise: false, subagents: false, subagentEffort: false, skills: false, strategy: false, model: false })).toBeNull()
+})
+
+test('the note is given once, and again after a reset (new session, compaction)', () => {
+  resetBriefing()
+  expect(takeBriefing()).toBe(true)
+  expect(takeBriefing()).toBe(false)
+  resetBriefing()
+  expect(takeBriefing()).toBe(true)
 })

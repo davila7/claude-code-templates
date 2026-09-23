@@ -112,15 +112,21 @@ test('a success resets the run, and a refused permission is not a failure', asyn
   expect(efforts).toEqual(['medium', 'medium', 'high'])
 })
 
-test('no key: nothing is attached to the prompt, whatever the tier', async ($, on) => {
+test('no key: no strategy advice is attached, whatever the tier; only the note to the model, once', async ($, on) => {
   world(on, 'deep', () => [])
-  const submitted: unknown[] = []
+  const submitted: string[][] = []
   on('prompt.submit', async (_$, e) => {
-    submitted.push(e.context ?? [])
+    submitted.push([...((e.context ?? []) as string[])])
     return { text: e.text, context: e.context }
   })
   await $.prompt.submit({ text: 'build the whole billing service', wait: false } as never)
-  expect(submitted).toEqual([[]])
+  await $.prompt.submit({ text: 'and add tests for it', wait: false } as never)
+  // The first prompt carries what jev-pilot does, for the model; no advice.
+  expect(submitted[0]).toHaveLength(1)
+  expect(submitted[0]?.[0]).toContain('<jev_pilot>')
+  expect(submitted[0]?.[0]).toContain("each subagent's model")
+  // The second carries nothing: the note is once per session.
+  expect(submitted[1]).toEqual([])
 })
 
 test('the session announces jev-pilot as it opens, before any prompt', async ($, on) => {

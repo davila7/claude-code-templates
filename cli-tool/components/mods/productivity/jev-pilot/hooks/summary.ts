@@ -86,3 +86,19 @@ export function turnLine(facts: TurnFacts): string {
   if (ms > 0) parts.push(`${(ms / 1000).toFixed(1)}s`)
   return parts.join(' · ')
 }
+
+// ---- the note to the model: once per session, and again after a compaction ----
+
+let briefed = false
+
+/** Whether the model still needs jev-pilot's capability note; marks it given. */
+export function takeBriefing(): boolean {
+  if (briefed) return false
+  briefed = true
+  return true
+}
+
+/** A new session or a compacted conversation: the note is due again. */
+export function resetBriefing(): void {
+  briefed = false
+}

@@ -49,11 +49,14 @@ export function sure(confidence: number): string {
 /**
  * What the pet says when a turn starts:
  *   low · no skill · 89% sure
+ *   jev busy · left as is          (the backend overloaded; the turn runs as set)
  *   xhigh · /systematic-debugging · parallel · 88% sure
  *   high kept · wanted low · 42% sure
  */
 export function turnSpeech(facts: {
   answered: boolean
+  /** Why the decision model gave no answer, when it gave none. */
+  miss?: 'timeout' | 'busy' | 'error' | null
   applied: string | null
   current: string | null
   wanted: string | null
@@ -61,7 +64,10 @@ export function turnSpeech(facts: {
   skill: string | null | undefined
   advised: string | null
 }): Speech {
-  if (!facts.answered) return { text: 'no answer in time · left as is', mood: 'alert' }
+  if (!facts.answered) {
+    const why = facts.miss === 'busy' ? 'jev busy' : facts.miss === 'error' ? 'jev error' : 'no answer in time'
+    return { text: `${why} · left as is`, mood: 'alert' }
+  }
   const parts: string[] = []
   const effort = facts.applied ?? facts.current
   if (facts.applied) parts.push(facts.applied)
@@ -107,33 +113,31 @@ export const PALETTE: Record<string, string> = {
 }
 
 /**
- * The pilot: Claude Code's character from its official 24x24 shape at 1.5 units per
- * pixel (the same pilot as the README banner and the demo video): goggles
+ * The pilot: Claude Code's character (the same pilot as the README banner and
+ * the demo video) at 3/4 of the banner's 16x12, every part kept: goggles
  * pushed up on the forehead (pulled down over the eyes to fly), their lenses
- * glinting, eyes, arms, a teal scarf with its loose end, legs, and the
- * jet flames under them when flying.
+ * glinting, the head, two-pixel eyes, both rows of arms, a teal scarf with
+ * its loose end, long legs, and the jet flames under them.
  */
 const CLAWD = [
-  '..GWLLGGGGWLLG..',
-  '..CCCCCCCCCCCC..',
-  '..CCECCCCCCECC..',
-  '..CCECCCCCCECC..',
-  'CCCCCCCCCCCCCCCC',
-  'CCCCCCCCCCCCCCCC',
-  '..SSSSSSSSSSSSSS',
-  '..CCCCCCCCCCCC..',
-  '...C.C....C.C...',
-  '...C.C....C.C...',
+  '.GWLGGGGWLG.',
+  '.CCCCCCCCCC.',
+  '.CCECCCCECC.',
+  'CCCECCCCECCC',
+  'CCCCCCCCCCCC',
+  '.SSSSSSSSSSS',
+  '..C.C..C.C..',
+  '..C.C..C.C..',
 ]
-const FLAMES = ['...F.f....F.f...', '...f.F....f.F...']
+const FLAMES = ['..F.f..F.f..', '..f.F..f.F..']
 
 /**
  * The canvas every scene draws on: fixed, so the band never changes size.
  * The pilot's own part is the left BODY_W columns; to its right, what it holds.
  */
-export const BODY_W = 18
-export const CANVAS_W = 30
-export const CANVAS_H = 12
+export const BODY_W = 14
+export const CANVAS_W = 24
+export const CANVAS_H = 10
 
 /**
  * What the pet is doing. While a turn runs, what Claude is doing:
@@ -211,32 +215,32 @@ function clawdFor(act: Act, frame: number, blink: boolean): string[] {
     const shift = [-1, 0, 1, 0][frame % 4] as number
     rows = rows.map((row, y) => {
       if (y !== 2 && y !== 3) return row
-      return setAt(setAt(row.replace(/E/g, 'C'), 4 + shift, 'E'), 11 + shift, 'E')
+      return setAt(setAt(row.replace(/E/g, 'C'), 3 + shift, 'E'), 8 + shift, 'E')
     })
   }
   if (act === 'think') rows[3] = (rows[3] as string).replace(/E/g, 'C') // eyes up
   if (act === 'read' || act === 'search' || act === 'write' || act === 'run') {
     // The eyes turn to what the pilot holds at its side (down, for the page).
-    rows = rows.map((row, y) => (y === 2 || y === 3 ? setAt(setAt(row.replace(/E/g, 'C'), 5, 'E'), 12, 'E') : row))
+    rows = rows.map((row, y) => (y === 2 || y === 3 ? setAt(setAt(row.replace(/E/g, 'C'), 4, 'E'), 9, 'E') : row))
     if (act !== 'search') rows[2] = (rows[2] as string).replace(/E/g, 'C')
   }
   if (blink) rows = rows.map((row) => row.replace(/E/g, 'C'))
   if (act === 'wave' && frame % 2 === 0) {
     // The right arm up beside the head.
-    for (const y of [4, 5]) rows[y] = (rows[y] as string).slice(0, 14) + '..'
-    for (const y of [2, 3]) rows[y] = (rows[y] as string).slice(0, 14) + 'CC'
+    for (const y of [3, 4]) rows[y] = setAt(rows[y] as string, 11, '.')
+    for (const y of [1, 2]) rows[y] = setAt(rows[y] as string, 11, 'C')
   }
   if (act === 'fly') {
     // Flying: goggles down over the eyes, the strap round the head.
-    rows[0] = '..CCCCCCCCCCCC..'
-    rows[1] = '..CCCCCCCCCCCC..'
-    rows[2] = '.GGWLGGGGGGWLGG.'
-    rows[3] = '..CLLCCCCCCLLC..'
+    rows[0] = '.CCCCCCCCCC.'
+    rows[1] = '.CCCCCCCCCC.'
+    rows[2] = 'GGWLGGGGWLGG'
+    rows[3] = 'CCLLCCCCLLCC'
     // The flames flicker long and short, their colors steady.
     rows.push(...(frame % 2 === 1 ? [FLAMES[0] as string] : FLAMES))
   } else if (act !== 'rope') {
     // Hovering: the flames on, steady. (Jumping rope, the feet do the work.)
-    rows.push(...FLAMES)
+    rows.push(FLAMES[0] as string)
   }
   return rows
 }
@@ -262,14 +266,14 @@ export function scenePixels(act: Act, frame = 0, blink = false, wind = frame): s
   const grid = blank()
   const clawd = clawdFor(act, frame, blink)
   const X = 1
-  const scarf = (top: number) => flapScarf(grid, X + 15, top + 6, wind)
+  const scarf = (top: number) => flapScarf(grid, X + 11, top + 5, wind)
   if (act === 'fly') {
     // Flying up: a bob (down a pixel on the short flame), and streaks
     // sliding down past both sides.
     paste(grid, clawd, X, frame % 2)
     scarf(frame % 2)
     for (const x of [0, BODY_W - 1]) {
-      const y = (frame * 2 + (x === 0 ? 0 : 6)) % CANVAS_H
+      const y = (frame * 2 + (x === 0 ? 0 : 5)) % CANVAS_H
       dot(grid, x, y, 's')
       dot(grid, x, (y + 1) % CANVAS_H, 's')
     }
@@ -281,7 +285,7 @@ export function scenePixels(act: Act, frame = 0, blink = false, wind = frame): s
     const top = CANVAS_H - clawd.length - lift
     paste(grid, clawd, X, top)
     scarf(top)
-    const hands = top + 4
+    const hands = top + 3
     const right = BODY_W - 1
     if (beat === 0) {
       for (let x = 1; x < right; x++) dot(grid, x, 0, 'R')
@@ -303,33 +307,30 @@ export function scenePixels(act: Act, frame = 0, blink = false, wind = frame): s
 }
 
 /** Pixel art for what the pilot holds, each drawn to read as the thing at a glance. */
-const CLOUD = ['..RRR.RRR...', '.RRRRRRRRRR.', 'RRRRRRRRRRRR', 'RRRRRRRRRRRR', '.RRRRRRRRRR.', '...RRR.RR...']
+const CLOUD = ['.RR.RRR..', 'RRRRRRRRR', 'RRRRRRRRR', '.RRRRRRR.']
 const BOOK = [
-  '.PPPPP.PPPPP.',
-  'BPkkkPMPkkkPB',
-  'BPPPPPMPPPPPB',
-  'BPkkkPMPkkPPB',
-  'BPPPPPMPPPPPB',
-  'BPkkPPMPkkkPB',
-  'BBBBBBBBBBBBB',
+  '.PPP.PPP.',
+  'BkkPMkkPB',
+  'BPPPMPPPB',
+  'BkkPMkPPB',
+  'BBBBBBBBB',
 ]
-const LENS = ['..MMMM..', '.MllllM.', 'MlRRlllM', 'MlRllllM', 'MllllllM', 'MllllllM', '.MllllM.', '..MMMM..']
-const PAPER = ['PPPPPPP.', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP', 'PPPPPPPP']
+const LENS = ['.MMMM.', 'MRRllM', 'MRlllM', 'MllllM', 'MllllM', '.MMMM.']
+const PAPER = ['PPPPM.', 'PPPPPP', 'PPPPPP', 'PPPPPP', 'PPPPPP', 'PPPPPP', 'PPPPPP', 'PPPPPP']
 const TERMINAL = [
-  'KKKKKKKKKKKK',
-  'KrKyKgKKKKKK',
-  'KkkkkkkkkkkK',
-  'KkkkkkkkkkkK',
-  'KkkkkkkkkkkK',
-  'KkkkkkkkkkkK',
-  'KkkkkkkkkkkK',
-  'KkkkkkkkkkkK',
-  'KKKKKKKKKKKK',
+  'KKKKKKKKK',
+  'KrKyKgKKK',
+  'KkkkkkkkK',
+  'KkkkkkkkK',
+  'KkkkkkkkK',
+  'KkkkkkkkK',
+  'KkkkkkkkK',
+  'KKKKKKKKK',
 ]
 
 /**
  * What the pilot holds at its side while working, right of its body, by the
- * right hand (the arm ends at column 16, rows 4 and 5).
+ * right hand (resting, the arm ends at column 12, rows 4 and 5).
  */
 function drawProp(grid: Grid, act: Act, frame: number): void {
   const art = (x: number, y: number, rows: readonly string[]) => paste(grid, rows, x, y)
@@ -337,51 +338,48 @@ function drawProp(grid: Grid, act: Act, frame: number): void {
   const X = BODY_W // the first column right of the pilot
   if (act === 'think') {
     // Thought bubbles rising from the head into a cloud, "..." filling in.
-    art(X + 1, 0, CLOUD)
-    dot(grid, 16, 3, 'R')
-    dot(grid, X, 5, 'R')
+    art(X, 0, CLOUD)
+    dot(grid, 12, 3, 'R')
+    dot(grid, X - 1, 2, 'R')
     const dots = Math.floor(frame / 2) % 4
-    for (let i = 0; i < dots; i++) line(X + 3 + i * 3, 2, 'kk')
+    for (let i = 0; i < dots; i++) dot(grid, X + 2 + i * 2, 2, 'k')
   } else if (act === 'read') {
     // An open book: two pages of text, the fold between them; the line
     // being read lights up, down the left page, then the right.
-    art(X - 1, 2, BOOK)
-    const lines: [number, number, number][] = [[X + 1, 3, 3], [X + 1, 5, 3], [X + 1, 7, 2], [X + 7, 3, 3], [X + 7, 5, 2], [X + 7, 7, 3]]
+    art(X - 1, 3, BOOK)
+    const lines: [number, number, number][] = [[X, 4, 2], [X, 6, 2], [X + 4, 4, 2], [X + 4, 6, 1]]
     const [lx, ly, len] = lines[frame % lines.length] as [number, number, number]
     line(lx, ly, 'S'.repeat(len))
   } else if (act === 'search') {
     // A magnifying glass held out by its handle, from the hand to the rim,
     // sweeping in and out, the lens glinting.
     const dx = [0, 1, 2, 1][frame % 4] as number
-    art(X + 3 + dx, 1, LENS)
-    for (let x = X - 1; x < X + 3 + dx; x++) dot(grid, x, 5, 'H')
+    art(X + 2 + dx, 1, LENS)
+    for (let x = X - 1; x < X + 2 + dx; x++) dot(grid, x, 5, 'H')
     if (frame % 4 === 1) dot(grid, X + 5 + dx, 2, 'R')
   } else if (act === 'write') {
     // A sheet of paper, its corner turned; lines of writing appear as a
     // pencil moves along them.
     art(X + 1, 1, PAPER)
-    dot(grid, X + 8, 1, '.')
-    dot(grid, X + 7, 1, 'M')
     const done = frame % 12
-    for (let i = 0; i < done; i++) dot(grid, X + 2 + (i % 4) + (i % 4 > 1 ? 1 : 0), 3 + Math.floor(i / 4) * 2, 'k')
-    const px = X + 2 + (done % 4) + (done % 4 > 1 ? 1 : 0)
+    for (let i = 0; i < done; i++) dot(grid, X + 2 + (i % 4), 3 + Math.floor(i / 4) * 2, 'k')
+    const px = X + 2 + (done % 4)
     const py = 3 + Math.floor(done / 4) * 2
     // The pencil: point, wood, yellow body, eraser, leaning up and right.
     dot(grid, px, py, 'G')
     dot(grid, px + 1, py - 1, 'H')
     dot(grid, px + 2, py - 2, 'F')
-    dot(grid, px + 3, py - 3, 'F')
-    dot(grid, px + 4, py - 4, 'f')
+    dot(grid, px + 3, py - 3, 'f')
   } else if (act === 'run') {
     // A terminal window: its three buttons, output scrolling, a > prompt
     // and a blinking cursor.
     art(X, 1, TERMINAL)
-    const outputs = ['LLL.LLLL', 'LL.LLL..', 'LLLLL.LL', 'L.LLLL..', 'LLL.LL.L']
-    for (let i = 0; i < 2; i++) line(X + 2, 3 + i, outputs[(frame + i) % outputs.length] as string)
+    const outputs = ['LLL.LLL', 'LL.LLL.', 'LLLLL.L', 'L.LLLL.', 'LLL.LL.']
+    for (let i = 0; i < 2; i++) line(X + 1, 3 + i, outputs[(frame + i) % outputs.length] as string)
+    dot(grid, X + 1, 5, 'S')
     dot(grid, X + 2, 6, 'S')
-    dot(grid, X + 3, 7, 'S')
-    dot(grid, X + 2, 8, 'S')
-    if (frame % 2 === 0) line(X + 5, 7, 'RR')
+    dot(grid, X + 1, 7, 'S')
+    if (frame % 2 === 0) line(X + 4, 7, 'RR')
   }
 }
 

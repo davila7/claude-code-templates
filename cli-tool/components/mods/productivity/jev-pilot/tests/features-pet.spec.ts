@@ -64,7 +64,7 @@ const ACTS: Act[] = ['think', 'read', 'search', 'write', 'run', 'fly', 'rest', '
 
 test('the pet is Claude the pilot: goggles, eyes, scarf, flames; no flames while jumping rope', () => {
   const rest = scenePixels('rest').join('\n')
-  expect(rest).toContain('LL') // goggle lenses
+  expect(rest).toMatch(/L/) // goggle lenses
   expect(rest).toMatch(/E/) // open eyes
   expect(rest).toContain('SSSS') // scarf
   expect(rest).toMatch(/[Ff]/) // hovering on its jets
@@ -93,7 +93,7 @@ test('the flames hold their colors: resting they never change, flying only their
   expect(short[CANVAS_H - 1]).toBe(long[CANVAS_H - 2])
 })
 
-test('every frame of every act is the same size, six lines tall', () => {
+test('every frame of every act is the same size, five lines tall', () => {
   for (const act of ACTS) {
     for (let frame = 0; frame < 8; frame++) {
       for (const blink of [false, true]) {
@@ -110,9 +110,9 @@ test('every frame of every act is the same size, six lines tall', () => {
 
 test('each act moves: its frames differ within a loop and repeat after it', () => {
   // A loop runs until the act and the scarf's flap line up again
-  // (flying: the streaks take 6 steps down the canvas).
+  // (flying: the bob and the streaks' 5 steps down the canvas).
   const lcm = (a: number, b: number): number => (a * b) / (function gcd(x: number, y: number): number { return y ? gcd(y, x % y) : x })(a, b)
-  const loops: Record<string, number> = { fly: 6, think: 8, read: 6, search: 4, write: 12, run: 10, ...PLAY_FRAMES }
+  const loops: Record<string, number> = { fly: 10, think: 8, read: 4, search: 4, write: 12, run: 10, ...PLAY_FRAMES }
   for (const act of ['fly', 'think', 'read', 'search', 'write', 'run', ...PLAYS] as Act[]) {
     const n = lcm(loops[act] as number, SCARF_CYCLE)
     const frames = Array.from({ length: n }, (_, f) => scenePixels(act, f).join('\n'))
@@ -182,4 +182,12 @@ test('the bubble says the effort, the skill and how sure', () => {
   )
   expect(turnSpeech({ ...base, applied: null, skill: undefined, confidence: 0.42 }).text).toBe('high kept · wanted low · 42% sure')
   expect(turnSpeech({ ...base, answered: false, applied: null, skill: null }).mood).toBe('alert')
+})
+
+test('with no answer, the bubble says why: too slow, too busy, or an error', () => {
+  const none = { answered: false, applied: null, current: 'high', wanted: null, confidence: null, skill: undefined, advised: null }
+  expect(turnSpeech({ ...none, miss: 'timeout' }).text).toBe('no answer in time · left as is')
+  expect(turnSpeech({ ...none, miss: 'busy' }).text).toBe('jev busy · left as is')
+  expect(turnSpeech({ ...none, miss: 'error' }).text).toBe('jev error · left as is')
+  expect(turnSpeech(none).text).toBe('no answer in time · left as is')
 })

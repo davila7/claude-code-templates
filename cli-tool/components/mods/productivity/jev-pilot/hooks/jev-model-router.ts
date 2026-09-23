@@ -57,7 +57,7 @@
  */
 import type { HttpInit, HttpResponse, Register } from 'claude-code'
 import { NOT_A_TASK, recentContext, signalsOf } from './context.ts'
-import { clearSkillNotes, takeSkill, turnLine } from './summary.ts'
+import { clearSkillNotes, resetBriefing, takeBriefing, takeSkill, turnLine } from './summary.ts'
 import { moodOf, say, turnSpeech } from './pet-art.ts'
 import { feature } from './features.ts'
 import type { ContextMessage } from './context.ts'
@@ -75,7 +75,9 @@ import {
   describeDecision,
   describeSetup,
   describeStatus,
+  capabilityNote,
   endpoint,
+  missOf,
   pendingDecisions,
   readDecision,
   selectProvider,
@@ -86,6 +88,7 @@ import {
   route,
   TIER_ORDER,
 } from './model-router.policy.ts'
+import type { Miss } from './model-router.policy.ts'
 import type { Decision, Effort, PolicyConfig, Provider, StrategyConfig, Tier } from './model-router.policy.ts'
 
 /** Where decisions are asked, when a backend is configured. */
@@ -106,13 +109,17 @@ interface Io {
   fetch: (url: string, init: HttpInit) => Promise<HttpResponse>
   sleep: (ms: number) => Promise<void>
   log: (text: string) => unknown
+  /** A line for the verbose log only: what is routine, not an error. */
+  detail: (text: string) => unknown
   messages: () => Promise<readonly ContextMessage[]>
 }
 
 /**
  * One request to the backend, read as a decision; null without a backend, or
- * on timeout, error, a non-2xx or an unreadable answer. Every caller treats
- * null the same way: the request goes on as the engine built it.
+ * on timeout, error, a non-2xx or an unreadable answer, with why (`miss`).
+ * Every caller treats a null decision the same way: the request goes on as
+ * the engine built it. A timeout or a busy backend is routine (the pet says
+ * so); only an error is logged whatever the log level.
  */
 async function classify(
   io: Io,
@@ -120,8 +127,8 @@ async function classify(
   state: Record<string, unknown>,
   withStrategy: boolean,
   what: string,
-): Promise<Decision | null> {
-  if (!backend) return null
+): Promise<{ decision: Decision | null; miss: Miss | null }> {
+  if (!backend) return { decision: null, miss: null }
   try {
     const response = await Promise.race([
       io.fetch(backend.url, {
@@ -131,13 +138,19 @@ async function classify(
       }),
       io.sleep(backend.timeoutMs),
     ])
-    if (response && response.ok) return readDecision(response.text)
-    if (response) await io.log(`[jev-model-router] ${backend.provider} responded ${response.status}: ${response.text.slice(0, 200)}`)
-    else await io.log(`[jev-model-router] classification passed ${backend.timeoutMs}ms; leaving ${what} alone`)
+    if (response && response.ok) {
+      const decision = readDecision(response.text)
+      return { decision, miss: decision ? null : 'error' }
+    }
+    const miss = missOf(response ? response.status : null)
+    const tell = miss === 'error' ? io.log : io.detail
+    if (response) await tell(`[jev-model-router] ${backend.provider} responded ${response.status}: ${response.text.slice(0, 200)}`)
+    else await tell(`[jev-model-router] classification passed ${backend.timeoutMs}ms; leaving ${what} alone`)
+    return { decision: null, miss }
   } catch (error) {
     await io.log(`[jev-model-router] classification failed: ${String(error)}`)
+    return { decision: null, miss: 'error' }
   }
-  return null
 }
 
 /** The conversation so far, or none when not `wanted` or unreadable. */
@@ -251,6 +264,25 @@ export const register: Register = (on, options) => {
     graphSkill: text('graphSkill', ''),
   }
   const escalateAfterErrors = Math.max(0, Math.round(number('escalateAfterErrors', 2)))
+  // A subagent's effort, set at its requests from the decision made when it
+  // started (the Agent tool itself takes none); under the subagents switch.
+  const subagentEffortOn = flag('routeSubagentEffort', true)
+  const routeSubagentEffort = () => routeSubagentModel() && subagentEffortOn
+  // Each subagent's decision, by the id core gives it when it starts; its
+  // effort, once its first request has settled it.
+  const subagents = new Map<string, { decision: Decision; type: string }>()
+  const subagentEffort = new Map<string, Effort | null>()
+  const MAX_SUBAGENTS = 64
+  /** What is switched on, for the note that tells the model. */
+  const capabilities = () => ({
+    effort: routeMainEffort(),
+    raise: routeMainEffort() && feature('raise') && escalateAfterErrors > 0,
+    subagents: routeSubagentModel(),
+    subagentEffort: routeSubagentEffort(),
+    skills: feature('skills'),
+    strategy: suggestStrategy(),
+    model: routeMainModel(),
+  })
 
   const backend: Backend | null = active ? { provider: active, url, apiKey, modelId, timeoutMs } : null
 
@@ -261,7 +293,7 @@ export const register: Register = (on, options) => {
   // routing a turn on a decision made for a different prompt.
   // Each classified prompt waits with its decision and its ledger draft, so
   // the turn that reads it knows which prompt it is working on.
-  const pending = pendingDecisions<{ decision: Decision | null; prompt: string; draft: Draft }>()
+  const pending = pendingDecisions<{ decision: Decision | null; prompt: string; draft: Draft; miss: Miss | null }>()
   // Said once, the first time a hook runs. A router that loaded and one that
   // never loaded are otherwise told apart only by the absence of later lines,
   // and absence is not evidence: the policy leaves most turns alone anyway.
@@ -306,6 +338,7 @@ export const register: Register = (on, options) => {
       fetch: (url, init) => $.http.fetch(url, init),
       sleep: (ms) => $.clock.sleep(ms),
       log: (text) => $.ui.log(text),
+      detail: (text) => (verbose ? $.ui.log(text) : undefined),
       messages: () => $.session.messages(),
     }
     // Before the routing guards: a module whose switches are all off has still
@@ -318,7 +351,19 @@ export const register: Register = (on, options) => {
     // message or a typed `/command` would otherwise take the pending slot and
     // leave the next real prompt's turn without its decision.
     const isTask = !!e.text.trim() && !/^\/\S/.test(e.text.trim()) && !(e.origin && NOT_A_TASK.has(e.origin.kind))
-    if (!isTask || (!routeMainLoop() && !suggestStrategy())) return next(e)
+    if (!isTask) return next(e)
+    // Once per session, and again after a compaction: what jev-pilot does,
+    // for the model, so it leaves those decisions to it.
+    const note = takeBriefing() ? capabilityNote(capabilities()) : null
+    const withNote = (input: typeof e, extra: string | null = null) => {
+      const blocks = [extra, note].filter((b): b is string => b !== null)
+      return blocks.length > 0 ? { ...input, context: [...(input.context ?? []), ...blocks] } : input
+    }
+    if (!routeMainLoop() && !suggestStrategy()) {
+      const passed = await next(withNote(e))
+      if (passed.drop && note) resetBriefing()
+      return passed
+    }
     const planning = suggestStrategy()
 
     if (!unusableReported) {
@@ -330,14 +375,15 @@ export const register: Register = (on, options) => {
     const messages = await readMessages(io, contextLimits.messages > 0)
     const recent = recentContext(messages, e.text, contextLimits)
     let decision: Decision | null = null
+    let miss: Miss | null = null
     if (active) {
-      decision = await classify(
+      ;({ decision, miss } = await classify(
         io,
         backend,
         { prompt: e.text, recent_context: recent, signals: signalsOf(e.text, messages) },
         planning,
         'the turn',
-      )
+      ))
     } else {
       // No backend: the engine's own small-model classifier answers the same
       // question, without the confidence the policy's threshold reads, and
@@ -384,12 +430,15 @@ export const register: Register = (on, options) => {
       strategyConfidence: decision?.strategyConfidence ?? null,
       advised: block !== null,
     }
-    pending.put({ decision, prompt: e.text, draft })
+    pending.put({ decision, prompt: e.text, draft, miss })
     // Attached on the way down: one block after the prompt as typed, read by
     // the model and never shown to the person.
-    const result = await next(block ? { ...e, context: [...(e.context ?? []), block] } : e)
+    const result = await next(withNote(e, block))
     // Refused further down: no turn will read this decision.
-    if (result.drop) pending.withdraw()
+    if (result.drop) {
+      pending.withdraw()
+      if (note) resetBriefing()
+    }
     return result
   })
 
@@ -398,12 +447,35 @@ export const register: Register = (on, options) => {
       fetch: (url, init) => $.http.fetch(url, init),
       sleep: (ms) => $.clock.sleep(ms),
       log: (text) => $.ui.log(text),
+      detail: (text) => (verbose ? $.ui.log(text) : undefined),
       messages: () => $.session.messages(),
     }
     // Every request names the id the engine resolved for it, a subagent's
     // included: that is where the main loop's switch finds its ids.
     ids.learn(e.model)
-    if (!routeMainLoop() || e.agentId) return yield* next(e)
+    // A subagent's request: the effort it was routed to when it started,
+    // settled at its first request (from the effort the engine built it with)
+    // and kept for the rest of its run.
+    if (e.agentId) {
+      const agentId = e.agentId
+      let effort = subagentEffort.get(agentId)
+      const known = subagents.get(agentId)
+      // A model without effort (the engine left it unset) is left that way.
+      if (effort === undefined && known && routeSubagentEffort() && e.effort !== undefined) {
+        const routing = route(known.decision, { model: e.model, effort: e.effort }, policy)
+        effort = routing.effort
+        subagentEffort.set(agentId, effort)
+        if (effort && lines) {
+          $.ui.log(verbose ? `[jev-model-router] ${known.type} → effort ${effort}: ${routing.reason}` : `jev · subagent ${known.type} → effort ${effort}`)
+        }
+        if (effort && petOn()) {
+          say(`${known.type} → ${effort}`, 'focused')
+          $.ui.invalidate('ui.render')
+        }
+      }
+      return yield* next(effort && routeSubagentEffort() ? { ...e, effort } : e)
+    }
+    if (!routeMainLoop()) return yield* next(e)
 
     // Every request after the first reuses what the turn settled on, so
     // neither the model nor the effort changes under its own tool loop —
@@ -422,18 +494,20 @@ export const register: Register = (on, options) => {
           const reread =
             prompt === null
               ? null
-              : await classify(
-                  io,
-                  backend,
-                  {
-                    prompt,
-                    recent_context: recentContext(messages, prompt, contextLimits),
-                    signals: signalsOf(prompt, messages),
-                    trouble: `${failed} tool calls in a row have failed while working on this request`,
-                  },
-                  false,
-                  'the effort',
-                )
+              : (
+                  await classify(
+                    io,
+                    backend,
+                    {
+                      prompt,
+                      recent_context: recentContext(messages, prompt, contextLimits),
+                      signals: signalsOf(prompt, messages),
+                      trouble: `${failed} tool calls in a row have failed while working on this request`,
+                    },
+                    false,
+                    'the effort',
+                  )
+                ).decision
           const level = reread ? effortScoreOf(reread, margin) : null
           const raised = escalate(effort, failed, escalateAfterErrors, level, raisedCeiling)
           if (raised) {
@@ -523,10 +597,13 @@ export const register: Register = (on, options) => {
     const skillNote = takeSkill(taken?.prompt ?? null)
     const known = decision ? (taken?.draft ?? null) : null
     const level = decision ? effortScoreOf(decision, margin) : null
-    if (petOn()) {
+    // A turn nobody typed (a subagent's or a background task's notification)
+    // was never put to the decision model: the bubble keeps what it said.
+    if (petOn() && taken) {
       say(
         turnSpeech({
           answered: decision !== null,
+          miss: taken?.miss ?? null,
           applied: change.effort ?? null,
           current: typeof e.effort === 'string' ? e.effort : null,
           wanted: level === null ? null : effortLevel(level),
@@ -593,6 +670,11 @@ export const register: Register = (on, options) => {
   // long it took, what it produced. Written after the engine's own handling.
   on('turn.complete', async ($, e, next) => {
     const result = await next(e)
+    // A subagent that finished: its routing is done with.
+    if (e.agentId) {
+      subagents.delete(e.agentId)
+      subagentEffort.delete(e.agentId)
+    }
     if (!e.agentId && current && current.turnId === e.turnId) {
       const { turnId: _turnId, ...entry } = current
       current = null
@@ -617,6 +699,9 @@ export const register: Register = (on, options) => {
   // skill module hooks session.end too, and one unmatched hook per plugin.)
   on('session.end', { sessionId: /(?:)/ }, async ($, e, next) => {
     pending.clear()
+    resetBriefing()
+    subagents.clear()
+    subagentEffort.clear()
     clearSkillNotes()
     current = null
     appliedTurnId = undefined
@@ -659,6 +744,7 @@ export const register: Register = (on, options) => {
       fetch: (url, init) => $.http.fetch(url, init),
       sleep: (ms) => $.clock.sleep(ms),
       log: (text) => $.ui.log(text),
+      detail: (text) => (verbose ? $.ui.log(text) : undefined),
       messages: () => $.session.messages(),
     }
     // Before the routing guards: a module whose switches are all off has still
@@ -680,13 +766,15 @@ export const register: Register = (on, options) => {
     let decision: Decision | null = null
     if (active) {
       // A subagent's brief is self-contained by design: no conversation added.
-      decision = await classify(
-        io,
-        backend,
-        { prompt: e.prompt, description: e.description, agentType: e.subagentType },
-        false,
-        'the subagent',
-      )
+      decision = (
+        await classify(
+          io,
+          backend,
+          { prompt: e.prompt, description: e.description, agentType: e.subagentType },
+          false,
+          'the subagent',
+        )
+      ).decision
     } else {
       try {
         const label = await $.model.classify(e.prompt, TIER_ORDER)
@@ -711,20 +799,26 @@ export const register: Register = (on, options) => {
 
     // The subagent's own model wins when the caller named one; otherwise it
     // would inherit the parent's, so that is what a change is measured from.
-    // The Agent tool takes no effort, so only the model is ours to set here.
+    // The Agent tool takes no effort: that is set at the subagent's requests
+    // (turn.step), from this same decision, kept by the id it starts with.
     const current = e.model ?? e.parentModel
     const { model, reason } = route(decision, { model: current }, policy)
     if (!model) {
       if (verbose) $.ui.log(`[jev-model-router] ${e.subagentType}: model kept (${reason})`)
-      return next(e)
+    } else {
+      if (lines) {
+        $.ui.log(verbose ? `[jev-model-router] ${e.subagentType} → ${model}: ${reason}` : `jev · subagent ${e.subagentType} → ${model}`)
+      }
+      if (petOn()) {
+        say(`${e.subagentType} → ${model}`, 'focused')
+        $.ui.invalidate('ui.render')
+      }
     }
-    if (lines) {
-      $.ui.log(verbose ? `[jev-model-router] ${e.subagentType} → ${model}: ${reason}` : `jev · subagent ${e.subagentType} → ${model}`)
+    const result = await next(model ? { ...e, model } : e)
+    if (decision && result.agentId && routeSubagentEffort()) {
+      subagents.set(result.agentId, { decision, type: e.subagentType })
+      while (subagents.size > MAX_SUBAGENTS) subagents.delete(subagents.keys().next().value as string)
     }
-    if (petOn()) {
-      say(`${e.subagentType} → ${model}`, 'focused')
-      $.ui.invalidate('ui.render')
-    }
-    return next({ ...e, model })
+    return result
   })
 }
