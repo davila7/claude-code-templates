@@ -6,8 +6,10 @@ import {
   questions,
   describeDecision,
   describeSetup,
+  clipPrompt,
   describeStatus,
   pendingDecisions,
+  promptState,
   rankOf,
   readDecision,
   requestBody,
@@ -400,4 +402,32 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
+})
+
+test('the risky question names the acts that were routed down as mechanical', () => {
+  const q = questions('typesafe').risky as { instructions: string }
+  for (const act of ['force-push', 'deploy to production', 'place real orders', 'send messages', 'backups'])
+    expect(q.instructions).toContain(act)
+  expect(q.instructions).toContain('without doing it')
+})
+
+test('the state carries the message a follow-up answers, cut to its two ends', () => {
+  expect(promptState('yes', null, 2000)).toEqual({ prompt: 'yes' })
+  expect(promptState('yes', '   ', 2000)).toEqual({ prompt: 'yes' })
+  expect(promptState('yes', 'Shall I migrate prod?', 0)).toEqual({ prompt: 'yes' })
+  expect(promptState('执行吧', 'Plan: migrate prod. Proceed?', 2000)).toEqual({
+    previousAssistantMessage: 'Plan: migrate prod. Proceed?',
+    prompt: '执行吧',
+  })
+  const cut = promptState('ok', 'DROP prod' + 'x'.repeat(50) + 'Proceed?', 20)
+  expect(cut.previousAssistantMessage).toBe('DROP prodx\n[… 47 characters cut …]\nxxProceed?')
+})
+
+test('a long prompt goes to the backend as its two ends, the cut named', () => {
+  expect(clipPrompt('short', 4000)).toBe('short')
+  expect(clipPrompt('x'.repeat(9000), 0)).toHaveLength(9000)
+  const clipped = clipPrompt(`Delete the prod backups.${'.'.repeat(10_000)}Then deploy.`, 60)
+  expect(clipped.startsWith('Delete the prod backups.')).toBe(true)
+  expect(clipped.endsWith('Then deploy.')).toBe(true)
+  expect(clipped).toContain('[… 9976 characters cut …]')
 })

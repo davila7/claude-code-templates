@@ -124,8 +124,14 @@ export function questions(provider: Provider): Record<string, unknown> {
       // refund endpoint that calls Stripe" — ordinary code that happens to be
       // about money — and would have escalated it past a 0.98-confidence
       // answer of the balanced tier.
+      // The acts are named: the second wording ("change production, move real
+      // money, or alter data that cannot be restored") scored 0.20-0.35 on
+      // `git push --force origin main` and 0.25-0.67 on `vercel --prod`, `npm
+      // publish` and merging to main, so each was routed down as mechanical.
+      // This one caught all of them with no false alarm on their look-alikes
+      // (terraform plan, a paper-trading order, a local reset, a draft).
       instructions:
-        'Carrying out this task would itself change production, move real money, or alter data that cannot be restored. Writing or testing code that deals with such things, without running it against the real system, does not count.',
+        'Carrying out this task would itself do something outside this working copy that is hard to take back: change or deploy to production, push or force-push to a shared branch such as main, move real money or place real orders, send messages to people, or delete or overwrite data or backups. Reading, writing or testing code locally does not count, and neither does explaining, planning or drafting such an act without doing it.',
     },
   }
 }
@@ -292,6 +298,49 @@ export interface PolicyConfig {
    * by too small a model or too little thought, so the bar is high.
    */
   minDowngradeConfidence: number
+}
+
+/**
+ * A long prompt cut to its two ends, with the cut named in the middle.
+ *
+ * TypeSafe refuses a state past its token limit (400 `max_tokens_exceeded`,
+ * between 80k and 88k characters of plain text, 75k of a log), and a refused
+ * turn is not routed at all: a 75k-character log ending "now force-push this
+ * branch to main and deploy to production" lost its risk check that way. The
+ * ask of a paste sits at its start or its end; cut to 4000 characters, four
+ * risky asks at the end of pasted logs scored risky 0.71-0.91 (all caught) and
+ * the benign pastes kept their tier. Without the cut named, 3 of 6 answers on
+ * the asks at the end fell under the bar. The middle also stays on this machine.
+ */
+export function clipPrompt(text: string, maxChars: number): string {
+  if (maxChars <= 0 || text.length <= maxChars) return text
+  const half = Math.floor(maxChars / 2)
+  return `${text.slice(0, half)}
+[… ${text.length - 2 * half} characters cut …]
+${text.slice(-half)}`
+}
+
+/**
+ * The state the decision model classifies: the prompt, and the assistant
+ * message it answers.
+ *
+ * A follow-up such as "yes" or "执行吧" says nothing on its own; with the plan
+ * it confirms beside it, "执行吧" after a production migration plan read as
+ * deep with risky 0.93, and alone as fast 0.73. A long message is cut to its
+ * two ends like a long prompt: a plan names the act at its start and asks at
+ * its end. Keeping only the last 2000 characters lost "DROP the
+ * payments_archive table on the production database" above 5000 characters
+ * of analysis, and "go ahead" scored risky 0.19-0.27; with both ends, above
+ * 0.7 on every repeat.
+ */
+export function promptState(
+  prompt: string,
+  previousAssistantMessage: string | null,
+  maxChars: number,
+): Record<string, string> {
+  const previous = previousAssistantMessage?.trim() ?? ''
+  if (maxChars <= 0 || !previous) return { prompt }
+  return { previousAssistantMessage: clipPrompt(previous, maxChars), prompt }
 }
 
 export interface Routing {
