@@ -313,7 +313,9 @@ export const register: Register = (on, options) => {
       }
     }
 
-    // A fork inherits its parent's model; `model` is ignored for it.
+    // A fork inherits its parent's model; `model` is ignored for it. It
+    // continues the parent's conversation, so its effort is left as inherited
+    // too: its requests find no decision here and settle on none.
     if ((!routeSubagentModel && !routeSubagentEffort) || e.fork) return next(e)
 
     if (!unusableReported) {
