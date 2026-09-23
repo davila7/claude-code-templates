@@ -3,6 +3,7 @@ import json
 import shutil
 import requests
 import subprocess
+import time
 from collections import defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
@@ -266,56 +267,57 @@ def fetch_download_stats():
             'Authorization': f'Bearer {supabase_api_key}'
         }
         
-        # First, let's query component_downloads to aggregate counts per component
-        # We need to handle pagination since there can be many records
+        # component_downloads has one row per download (1M+ rows). Page by id
+        # (keyset) rather than OFFSET: deep offsets hit statement timeouts (500)
+        # and unordered offset pages are not guaranteed to be disjoint.
         api_url = f"{supabase_url}/rest/v1/component_downloads"
-        
-        all_downloads = []
-        offset = 0
-        limit = 1000
 
-        # Fetch all records with pagination
-        max_pages = 1000  # Safety limit (1000 pages * 1000 records = 1,000,000 max)
-        for page in range(max_pages):
-            paginated_headers = headers.copy()
-            paginated_headers['Range'] = f'{offset}-{offset + limit - 1}'
-            
-            response = requests.get(api_url, headers=paginated_headers)
-            
-            if response.status_code not in [200, 206]:
-                print(f"  Page {page+1}: Got status {response.status_code}, stopping")
-                break
-                
-            batch = response.json()
+        all_downloads = []
+        last_id = 0
+        limit = 1000
+        max_attempts = 5
+
+        page = 0
+        while True:
+            params = {
+                'select': 'id,component_type,component_name',
+                'id': f'gt.{last_id}',
+                'order': 'id.asc',
+                'limit': limit,
+            }
+            batch = None
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    response = requests.get(api_url, headers=headers, params=params, timeout=60)
+                    if response.status_code in (200, 206):
+                        batch = response.json()
+                        break
+                    error = f"status {response.status_code}"
+                except requests.RequestException as e:
+                    error = str(e)
+                print(f"  Page {page+1} (id > {last_id}): {error}, attempt {attempt}/{max_attempts}")
+                time.sleep(2 ** attempt)
+
+            if batch is None:
+                # A partial fetch would publish counts far below the real ones;
+                # keep the counts already in the catalog instead.
+                print(f"⚠️ Download fetch failed after {len(all_downloads)} records; keeping previous counts")
+                return previous_download_stats()
+
             if not batch:
                 break
-                
+
             all_downloads.extend(batch)
-            
-            # Check if we have more records to fetch
-            content_range = response.headers.get('content-range', '')
-            
-            # If we get a range like "45000-45977/*", check if we got less than limit records
+            last_id = batch[-1]['id']
+            page += 1
+
             if len(batch) < limit:
-                break  # We've reached the end
-            
-            # Also check for explicit total if provided
-            if content_range and '/' in content_range:
-                parts = content_range.split('/')
-                if parts[1] != '*':
-                    try:
-                        total = int(parts[1])
-                        if offset + limit >= total:
-                            break
-                    except ValueError:
-                        pass
-            
-            offset += limit
-            
-            # Progress indicator every 10 pages
-            if (page + 1) % 10 == 0:
+                break
+
+            # Progress indicator every 100 pages
+            if page % 100 == 0:
                 print(f"  Fetched {len(all_downloads)} records so far...")
-        
+
         print(f"📊 Total records fetched: {len(all_downloads)}")
         
         # If we fetched records, use them
