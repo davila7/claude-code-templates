@@ -68,6 +68,7 @@ import {
   EFFORT_ORDER,
   effortLevel,
   effortScoreOf,
+  engineMoved,
   escalate,
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
@@ -267,6 +268,9 @@ export const register: Register = (on, options) => {
   let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
+  // The model the engine named for the current turn's first request, before
+  // any rewrite: a later request naming another is the engine's fallback.
+  let turnEngineModel: string | null = null
   // The prompt the current turn works on (null when its decision was
   // withheld), for a re-reading mid-turn, and the turn whose effort was
   // already raised: at most once each.
@@ -452,6 +456,14 @@ export const register: Register = (on, options) => {
           }
         }
       }
+      // The engine moved the turn to another model (its overload fallback):
+      // that model stands for the rest of the turn; the routed effort stays.
+      if (applied?.model && engineMoved(turnEngineModel, e.model)) {
+        const { model: _dropped, ...rest } = applied
+        applied = Object.keys(rest).length > 0 ? rest : null
+        if (verbose) $.ui.log(`[jev-model-router] main loop: the engine moved the turn to ${e.model}; that model stands`)
+        if (lines) $.ui.status(`jev · engine moved to ${e.model}${applied?.effort ? ` · effort ${applied.effort}` : ''}`)
+      }
       return yield* next(applied ? { ...e, ...applied } : e)
     }
 
@@ -475,6 +487,7 @@ export const register: Register = (on, options) => {
     if (routeMainEffort() && routing.effort) change.effort = routing.effort
 
     appliedTurnId = e.turnId
+    turnEngineModel = e.model
     applied = Object.keys(change).length > 0 ? change : null
     if (recordDecisions) {
       // A decision withheld (two prompts waiting) is recorded as unanswered:

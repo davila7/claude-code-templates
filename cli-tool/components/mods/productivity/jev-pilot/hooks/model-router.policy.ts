@@ -689,6 +689,18 @@ export function adviseStrategy(decision: Decision | null, config: StrategyConfig
 // --- escalation within a turn -----------------------------------------------
 
 /**
+ * Whether a later request of a turn is the engine's own move to another
+ * model: it names a model other than the one the engine named for the turn's
+ * first request (before any rewrite). That is Claude Code's overload
+ * fallback (`--fallback-model`, after repeated 529s), retried as the turn's
+ * next request; a routed model must not send it back to the overloaded one.
+ * With no first request seen (`first` null), nothing is known to have moved.
+ */
+export function engineMoved(first: string | null, model: string): boolean {
+  return first !== null && model !== first
+}
+
+/**
  * The reasoning level to raise a struggling turn to, or null to leave it.
  *
  * Called once `failed` tool calls in a row reach `after`. The trouble itself

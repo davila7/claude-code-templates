@@ -3,7 +3,7 @@ import { expect, test } from 'bun:test'
 import { NOT_A_TASK } from '../hooks/context.ts'
 import { configKeysOf, reportPrompt, suggestions } from '../hooks/ledger.ts'
 import type { LedgerEntry } from '../hooks/ledger.ts'
-import { pendingDecisions, readDecision, route } from '../hooks/model-router.policy.ts'
+import { engineMoved, pendingDecisions, readDecision, route } from '../hooks/model-router.policy.ts'
 import type { Decision, PolicyConfig } from '../hooks/model-router.policy.ts'
 import {
   catalog,
@@ -169,4 +169,17 @@ test('the report edits the settings key jev-pilot actually uses', () => {
   const none = reportPrompt('R', '/s.json', true, [])
   for (const key of ['jev-pilot@jev-pilot', 'jev-pilot@skills-dir', '"jev-pilot"']) expect(none).toContain(key)
   expect(reportPrompt('R', '/s.json', false, ['jev-pilot'])).toContain('Do not change any settings')
+})
+
+// ---- PR #975 review (meesp123): Claude Code's overload fallback stands --------
+
+test('a later request naming another model than the turn began with is the engine moving it', () => {
+  // --fallback-model after repeated 529s: the retry names the fallback.
+  expect(engineMoved('claude-opus-5-5', 'claude-haiku-4-5-20251001')).toBe(true)
+})
+
+test('the same model on a later request is the turn going on, not a move', () => {
+  expect(engineMoved('claude-opus-5-5', 'claude-opus-5-5')).toBe(false)
+  // No first request seen: nothing is known to have moved.
+  expect(engineMoved(null, 'claude-opus-5-5')).toBe(false)
 })
