@@ -413,22 +413,25 @@ export function route(
  */
 export function pendingDecisions(): {
   put(decision: Decision | null): void
+  withdraw(): void
   take(): Decision | null
 } {
-  let held: Decision | null = null
-  let waiting = 0
+  let waiting: (Decision | null)[] = []
 
   return {
     put(decision) {
-      waiting += 1
-      // Past the first, which prompt a turn will read is unknowable, so the
-      // slot is emptied instead of holding a decision that may not fit.
-      held = waiting === 1 ? decision : null
+      waiting.push(decision)
+    },
+    // The last one put, whose prompt a settings hook blocked before it
+    // entered: no turn will read it.
+    withdraw() {
+      waiting.pop()
     },
     take() {
-      const decision = waiting === 1 ? held : null
-      held = null
-      waiting = 0
+      // Past the first, which prompt a turn will read is unknowable, so none
+      // is handed out rather than one that may not fit.
+      const decision = waiting.length === 1 ? waiting[0] : null
+      waiting = []
       return decision
     },
   }

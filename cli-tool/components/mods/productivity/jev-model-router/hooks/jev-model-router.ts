@@ -195,8 +195,17 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}`)
     }
 
+    // Held before `next`, which resolves once the turn has started. A
+    // UserPromptSubmit hook in the settings can still block the prompt
+    // beneath; then no turn reads it, and left waiting it made the next
+    // prompt the second one, whose turn went without a decision.
     pending.put(decision)
-    return next(e)
+    const entered = await next(e)
+    if (entered.drop !== undefined) {
+      pending.withdraw()
+      if (logDecisions) $.ui.log('[jev-model-router] the prompt was blocked before it entered; its decision is dropped')
+    }
+    return entered
   })
 
   on('turn.step', async function* ($, e, next) {
