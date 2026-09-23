@@ -437,6 +437,8 @@ test('two prompts typed into one turn: the higher effort either asks for wins', 
   expect(midTurnEffort([typed(2.7), typed(0)], current, config).effort).toBe('xhigh')
   expect(midTurnEffort([typed(0), typed(2.1)], current, config).effort).toBe('high')
   expect(midTurnEffort([typed(2.1), typed(2.7)], current, config).effort).toBe('xhigh')
+  const first = typed(2.7)
+  expect(midTurnEffort([first, typed(0)], current, config).decision).toBe(first)
 })
 
 test('only what a person wrote is classified', () => {

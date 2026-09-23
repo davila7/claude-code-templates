@@ -268,7 +268,7 @@ export const register: Register = (on, options) => {
         const routing = midTurnEffort(decisions, { model: applied?.model ?? e.model, effort }, policy)
         if (routeMainEffort && routing.effort) applied = { ...applied, effort: routing.effort }
         if (logDecisions) {
-          $.ui.status(describeStatus(decisions[decisions.length - 1] ?? null, applied))
+          $.ui.status(describeStatus(routing.decision, applied))
           const what = routeMainEffort && routing.effort ? `→ effort ${routing.effort}` : `kept ${effort ?? 'its effort'}`
           $.ui.log(`[jev-model-router] main loop, prompt mid-turn ${what}: ${routing.reason}`)
         }

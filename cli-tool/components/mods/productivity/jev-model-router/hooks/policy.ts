@@ -424,28 +424,29 @@ export function bareCommand(text: string): boolean {
  * effort, and its decision was never read. The first task is still under way,
  * so the new one may lift the effort but not lower it. The model is left as it
  * is mid-turn. Two prompts typed into the same turn both belong to it, so the
- * higher effort either asks for wins.
+ * higher effort either asks for wins; `decision` is the one that won, or the
+ * latest when none raised it.
  */
 export function midTurnEffort(
   decisions: readonly (Decision | null)[],
   current: { model: string; effort?: string | number },
   config: PolicyConfig,
-): Routing {
+): Routing & { decision: Decision | null } {
   const now = effortRank(current.effort)
-  let raise: Routing | null = null
+  let raise: (Routing & { decision: Decision | null }) | null = null
   let reason = NOTHING.reason
   for (const decision of decisions) {
     const routing = route(decision, current, config)
     const rank = effortRank(routing.effort ?? undefined)
     if (rank !== null && now !== null && rank > now) {
       if (!raise || rank > (effortRank(raise.effort ?? undefined) ?? -1)) {
-        raise = { model: null, effort: routing.effort, reason: routing.reason }
+        raise = { model: null, effort: routing.effort, reason: routing.reason, decision }
       }
     } else {
       reason = routing.effort ? `wanted ${routing.effort}; a prompt mid-turn only raises it` : routing.reason
     }
   }
-  return raise ?? { model: null, effort: null, reason }
+  return raise ?? { model: null, effort: null, reason, decision: decisions[decisions.length - 1] ?? null }
 }
 
 /**
