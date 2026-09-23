@@ -13,10 +13,13 @@
  *
  * Three things it can set, each on its own switch:
  *   agent.spawn  — the model of each subagent (on by default)
- *   turn.step    — the reasoning effort of the main loop (on by default)
+ *   turn.step    — the reasoning effort of the main loop (on by default;
+ *                  moved freely only on models where a change keeps the
+ *                  prompt cache, Opus 5.5 and Fable 5.1)
  *   turn.step    — the model of the main loop (off by default: switching
  *                  models mid-session invalidates the prompt cache, which can
- *                  cost more than the cheaper tier saves)
+ *                  cost more than the cheaper tier saves; held once the
+ *                  context is too large for a smaller window)
  *
  * Every one of them moves in both directions: a task the decision model reads
  * as mechanical is routed down, one it reads as hard is routed up. The two
@@ -43,11 +46,14 @@
  */
 import type { Register } from 'claude-code'
 import {
+  contextAllowsModelChange,
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
   describeDecision,
   describeSetup,
   describeStatus,
+  EFFORT_CACHE_SAFE_MODELS,
+  effortKeepsCache,
   endpoint,
   pendingDecisions,
   readDecision,
@@ -101,6 +107,17 @@ export const register: Register = (on, options) => {
   const routeMainModel = flag('routeMainModel', false)
   const routeMainLoop = routeMainEffort || routeMainModel
   const logDecisions = flag('logDecisions', true)
+  // Models whose effort can change without dropping the prompt cache, by id
+  // prefix; on any other the main loop's effort moves only with risk or a
+  // model change. See effortKeepsCache.
+  const effortCacheSafeModels = text('effortCacheSafeModels', EFFORT_CACHE_SAFE_MODELS.join(','))
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
+  // The main loop's model moves only while its context is at most this many
+  // tokens; past it a smaller window makes Claude Code compact the session
+  // away. 0 lifts the cap. See contextAllowsModelChange.
+  const maxContextForModelSwitch = number('maxContextForModelSwitch', 150000)
 
   const policy: PolicyConfig = {
     tiers: {
@@ -124,6 +141,9 @@ export const register: Register = (on, options) => {
   let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
+  // The length of the prompt the waiting decision was made for: the context
+  // reading leaves it out, and a large paste is what overflows a smaller model.
+  let promptChars = 0
 
   on('prompt.submit', async ($, e, next) => {
     // Before the routing guards: a module whose switches are all off has still
@@ -206,6 +226,7 @@ export const register: Register = (on, options) => {
     }
 
     pending.put(decision)
+    promptChars = e.text.length
     return next(e)
   })
 
@@ -219,7 +240,28 @@ export const register: Register = (on, options) => {
     }
 
     const decision = pending.take()
-    const routing = route(decision, { model: e.model, effort: e.effort }, policy)
+    // Read only when the model may move. Unreadable, it is no reading, and the
+    // model is held: the context cap cannot be judged.
+    const usage = routeMainModel
+      ? await $.session.usage().catch((error: unknown) => {
+          $.ui.log(`[jev-model-router] could not read usage: ${String(error)}`)
+          return null
+        })
+      : null
+    const routing = route(
+      decision,
+      { model: e.model, effort: e.effort },
+      {
+        ...policy,
+        effortChangeDropsCache: !effortKeepsCache(e.model, effortCacheSafeModels),
+        routeModel: routeMainModel,
+        contextAllowsModelChange:
+          !routeMainModel ||
+          (usage
+            ? contextAllowsModelChange(usage.context.tokens, promptChars, maxContextForModelSwitch)
+            : maxContextForModelSwitch <= 0),
+      },
+    )
     const change: { model?: string; effort?: Effort } = {}
     // The main loop's `model` is sent to the API as written, so an alias
     // becomes its id here; a subagent's (agent.spawn) may stay an alias.

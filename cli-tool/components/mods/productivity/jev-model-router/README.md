@@ -19,7 +19,12 @@ Three switches, and they are not equally safe:
 | `routeMainEffort` | the reasoning effort of the main conversation, at `turn.step` | on |
 | `routeMainModel` | the model of the main conversation, at `turn.step` | **off** |
 
-A subagent starts with its own context, so routing its model costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
+A subagent starts with its own context, so routing its model costs nothing beyond the classification.
+
+The main loop is where the prompt cache lives, and both of its switches can drop it (Claude Code's prompt-caching page, and measured with a `turn.step` rewrite like this mod's on Claude Code 2.1.280):
+
+- **Effort.** On Opus 5.5 and Fable 5.1 (subscription or API key) Claude Code changes effort without touching the cache; on every other model each effort level has its own cache, so the first turn at a new level re-sends the whole conversation uncached (on a ~27k-token conversation, Sonnet 5 read 9.7k from cache instead of 26.7k, Opus 5 1.4k instead of 21k). So effort moves freely only on the models in `effortCacheSafeModels`; elsewhere it moves only when risk raises it or the model changes too, and the line says `effort held: changing it on this model drops the prompt cache`. Not covered by the list: Bedrock, Google Cloud's Agent Platform, a Claude apps gateway, `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`: there Opus 5.5 loses the cache too; trim the list.
+- **Model.** Each model has its own cache: the turn on the new model reads nothing, and the session model's own cache survives a one-turn hop within its TTL. Worse, a context larger than the new model's window is not refused but compacted: a 283k-token Opus 5.5 [1m] session sent to Haiku 4.5 (200k) got `prompt is too long`, and Claude Code summarised the session down to its last 2 messages. So the model moves only while the context plus the prompt being sent (counted at one token a character) is at most `maxContextForModelSwitch` tokens (150k). A turn already moved can still outgrow the smaller window through its own tool results. Turn `routeMainModel` on once you have measured your own sessions, not before.
 
 The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set.
 
@@ -66,6 +71,10 @@ status line, the header and the effort box never move whatever it decides.
 [jev-model-router] main loop → effort low: fast (confidence 0.87)
 [jev-model-router] jev: tier fast (0.41) · effort 0.4 → low (0.38) · risky 0.01 · 210ms
 [jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
+[jev-model-router] jev: tier fast (1.00) · effort 0.0 → low (1.00) · risky 0.07 · 385ms
+[jev-model-router] main loop: fast (confidence 1.00, effort held: changing it on this model drops the prompt cache) (main-loop model routing off)
+[jev-model-router] jev: tier fast (1.00) · effort 0.0 → low (1.00) · risky 0.02 · 308ms
+[jev-model-router] main loop → effort low: fast (confidence 1.00, model held: the context is too large to move)
 ```
 
 - The first line appears once per session, the first time a hook runs. It is
@@ -73,9 +82,11 @@ status line, the header and the effort box never move whatever it decides.
 - A `jev:` line is what the decision model replied, before any policy is
   applied — the tier, the effort score and the risk, each with its confidence,
   and how long the call took.
-- The line under it is what the policy then did. The last pair above is a
+- The line under it is what the policy then did. The second pair above is a
   working router declining to act: it wanted to spend less but did not clear
   `minDowngradeConfidence`.
+- The last two pairs are the cache and context guards (see the switches): a
+  Sonnet 5 session kept its effort, and a 216k-token session kept its model.
 
 It also keeps a one-line status on screen, replaced as it goes:
 
@@ -137,6 +148,8 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   routeSubagentModel:     boolean model of each subagent (default true)
   routeMainEffort:        boolean effort of the main loop (default true)
   routeMainModel:         boolean model of the main loop (default false)
+  effortCacheSafeModels:  string  model id prefixes whose effort may change freely (default "claude-opus-5-5,claude-fable-5-1"; "claude-" = every model)
+  maxContextForModelSwitch: number  largest context, in tokens, the main loop's model may move with (default 150000; 0 = no cap)
   timeoutMs:              number  latency budget per classification (default 800)
   logDecisions:           boolean log each decision (default true)
 ```

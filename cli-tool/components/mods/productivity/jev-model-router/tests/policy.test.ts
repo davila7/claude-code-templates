@@ -6,7 +6,9 @@ import {
   questions,
   describeDecision,
   describeSetup,
+  contextAllowsModelChange,
   describeStatus,
+  effortKeepsCache,
   pendingDecisions,
   rankOf,
   readDecision,
@@ -401,3 +403,87 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
 })
+
+test('only Opus 5.5 and Fable 5.1 keep the prompt cache across an effort change', () => {
+  const safe = ['claude-opus-5-5', 'claude-fable-5-1']
+  for (const id of ['claude-opus-5-5', 'claude-opus-5-5[1m]', 'claude-opus-5-5-20260901', 'claude-fable-5-1'])
+    expect(effortKeepsCache(id, safe)).toBe(true)
+  for (const id of ['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5-20251001', 'claude-fable-5'])
+    expect(effortKeepsCache(id, safe)).toBe(false)
+  expect(effortKeepsCache('claude-sonnet-5', ['', ' '])).toBe(false)
+  expect(effortKeepsCache('claude-sonnet-5', ['claude-'])).toBe(true)
+})
+
+test('where an effort change drops the cache, a lighter turn keeps the session effort', () => {
+  const decision = readDecision(gatewayAnswer('balanced', { balanced: 0.95 }, 0.01, 0))
+  const held = route(decision, on('claude-sonnet-5', 'high'), { ...config, effortChangeDropsCache: true })
+  expect(held.effort).toBeNull()
+  expect(held.model).toBeNull()
+  expect(held.reason).toContain('prompt cache')
+  expect(route(decision, on('claude-sonnet-5', 'high'), config).effort).toBe('low')
+})
+
+// With main-loop model routing off (the default) the model named is not applied.
+test('risk still raises the effort where that drops the cache', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.9 }, 0.93, 0))
+  const routing = route(decision, on('claude-sonnet-5', 'low'), { ...config, effortChangeDropsCache: true, routeModel: false })
+  expect(routing.effort).toBe('high')
+  expect(routing.reason).not.toContain('prompt cache')
+})
+
+test('a model change still carries its effort, since it drops the cache anyway', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.95 }, 0.01, 0))
+  const routing = route(decision, on('claude-sonnet-5', 'high'), { ...config, effortChangeDropsCache: true })
+  expect(routing.model).toBe('haiku')
+  expect(routing.effort).toBe('low')
+})
+
+// Seen live on Sonnet 5 with main-loop model routing off: the routing wanted
+// Haiku, and that unapplied model change let the effort drop anyway.
+test('a model change the caller will not apply does not license an effort change', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.99 }, 0.02, 0))
+  const routing = route(decision, on('claude-sonnet-5', 'high'), {
+    ...config,
+    effortChangeDropsCache: true,
+    routeModel: false,
+  })
+  expect(routing.effort).toBeNull()
+  expect(routing.reason).toContain('prompt cache')
+})
+
+test('the context cap counts the prompt being sent, at a token a character', () => {
+  expect(contextAllowsModelChange(149_000, 20, 150_000)).toBe(true)
+  expect(contextAllowsModelChange(283_000, 20, 150_000)).toBe(false)
+  expect(contextAllowsModelChange(undefined, 20, 150_000)).toBe(true)
+  // A session's first turn has no reading: only the paste itself can hold it.
+  expect(contextAllowsModelChange(undefined, 400_000, 150_000)).toBe(false)
+  // A paste on top of a context that alone fits.
+  expect(contextAllowsModelChange(100_000, 60_000, 150_000)).toBe(false)
+  expect(contextAllowsModelChange(900_000, 400_000, 0)).toBe(true)
+})
+
+// Seen live: a 283k-token session sent to Haiku 4.5 (200k) was compacted down
+// to its last 2 messages by Claude Code's reactive compaction.
+test('a large context holds the model both ways, and says so', () => {
+  const down = readDecision(gatewayAnswer('fast', { fast: 0.99 }, 0.01, 0))
+  const heldDown = route(down, on('claude-opus-5-5[1m]', 'high'), { ...config, contextAllowsModelChange: false })
+  expect(heldDown.model).toBeNull()
+  expect(heldDown.effort).toBe('low')
+  expect(heldDown.reason).toContain('context is too large')
+  const up = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2))
+  expect(route(up, on('claude-sonnet-5', 'high'), { ...config, contextAllowsModelChange: false }).model).toBeNull()
+  expect(route(up, on('claude-sonnet-5', 'high'), config).model).toBe('opus')
+})
+
+test('risk on a large context keeps the model but still raises the effort', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.9 }, 0.93, 0))
+  const routing = route(decision, on('claude-sonnet-5', 'low'), {
+    ...config,
+    contextAllowsModelChange: false,
+    effortChangeDropsCache: true,
+  })
+  expect(routing.model).toBeNull()
+  expect(routing.effort).toBe('high')
+  expect(routing.reason).toContain('forced by risk, model held: the context is too large')
+})
+
