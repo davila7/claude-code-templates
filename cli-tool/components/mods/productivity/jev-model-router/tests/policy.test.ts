@@ -404,7 +404,8 @@ test('a slash command alone is not a task; with text after it, it is', () => {
 })
 
 // An overloaded routed model: Claude Code retries the turn's next request on
-// its fallback. That model stands; the routed effort still applies.
+// its fallback (`/model` mid-turn looks the same). That model stands; the
+// routed effort still applies.
 test('a later request keeps what the turn was given until the engine moves the model', () => {
   const applied = { model: 'claude-opus-5', effort: 'high' as const }
   expect(laterRequest(applied, 'claude-sonnet-5', 'claude-sonnet-5')).toBe(applied)

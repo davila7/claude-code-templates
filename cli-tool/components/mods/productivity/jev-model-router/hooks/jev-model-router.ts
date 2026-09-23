@@ -224,7 +224,7 @@ export const register: Register = (on, options) => {
       if (carried !== applied) {
         applied = carried
         if (logDecisions) {
-          $.ui.log(`[jev-model-router] main loop: the engine moved the turn to ${e.model}; that model stands`)
+          $.ui.log(`[jev-model-router] main loop: the turn moved to ${e.model} (a fallback or /model); that model stands`)
           $.ui.status(describeStatus(appliedDecision, applied))
         }
       }
