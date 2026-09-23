@@ -15,7 +15,7 @@ license: CC-BY-4.0
 metadata:
   source: https://context-architecture.dev
   author: Sergio Azócar
-  version: "0.3.0"
+  version: "0.3.1"
   term-introduced: "2025-10"
   first-published: "2026-06"
 ---
@@ -270,7 +270,9 @@ is a new claim that can go stale.
 
 - Extract every file path, command, symbol, and URL referenced in `README`, `AGENTS.md`/`CLAUDE.md`,
   the path-scoped rule files (`.claude/rules`, `.cursor/rules`, `.github/instructions`), `SKILL.md`,
-  and design docs; verify each still exists / still runs. Dead references are the highest-priority fix.
+  and design docs; verify each still exists. For a command, check that its script or binary is
+  defined, and run only the side-effect-free ones (lint, typecheck, unit tests). Dead references are
+  the highest-priority fix.
 - Diff each `AGENTS.md` against the code it sits beside: does it describe modules, exports, or flows
   that no longer match? Correct the doc, then add the test that would have caught it.
 - Land a **doc-reference test** so this class of rot cannot return.
