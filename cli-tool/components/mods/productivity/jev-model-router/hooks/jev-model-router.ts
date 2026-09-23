@@ -45,7 +45,7 @@
  * Privacy: with a key set, the prompt text is sent to whichever backend the
  * key belongs to.
  */
-import type { Register } from 'claude-code'
+import type { Register, TurnStepInput } from 'claude-code'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
@@ -64,6 +64,9 @@ import {
   bareCommand,
 } from './policy.ts'
 import type { Decision, Effort, PolicyConfig, Provider, Tier } from './policy.ts'
+
+/** The effort a request can carry: a level, or a number on the caller's own scale. */
+type StepEffort = NonNullable<TurnStepInput['effort']>
 
 export const register: Register = (on, options) => {
   const text = (key: string, fallback: string) =>
@@ -134,8 +137,8 @@ export const register: Register = (on, options) => {
   // moves under its own cache. A finished run keeps its entry: a named
   // subagent can be sent more work, each run a turn of its own under the same
   // id. Only the latest 256 subagents are kept.
-  const subagents = new Map<string, { decision: Decision } | { effort: Effort | null }>()
-  const remember = (agentId: string, entry: { decision: Decision } | { effort: Effort | null }) => {
+  const subagents = new Map<string, { decision: Decision } | { effort: StepEffort | null }>()
+  const remember = (agentId: string, entry: { decision: Decision } | { effort: StepEffort | null }) => {
     subagents.set(agentId, entry)
     for (const oldest of subagents.keys()) {
       if (subagents.size <= 256) break
@@ -232,7 +235,7 @@ export const register: Register = (on, options) => {
     if (e.agentId) {
       if (!routeSubagentEffort) return yield* next(e)
       const held = subagents.get(e.agentId)
-      let effort: Effort | null = null
+      let effort: StepEffort | null = null
       if (held && 'effort' in held) {
         effort = held.effort
       } else {
@@ -240,17 +243,21 @@ export const register: Register = (on, options) => {
         // decision (not seen) settles on none, so a later request never moves
         // the effort under the subagent's cache. A model with no effort
         // (Haiku) is left without one.
+        let routed: Effort | null = null
         if (held && e.effort !== undefined) {
           const routing = route(held.decision, { model: e.model, effort: e.effort }, policy)
-          effort = routing.effort
+          routed = routing.effort
           if (logDecisions) {
-            const what = effort ? `→ effort ${effort}: ` : ''
+            const what = routed ? `→ effort ${routed}: ` : ''
             $.ui.log(`[jev-model-router] subagent ${e.agentId.slice(0, 8)} ${what}${routing.reason}`)
           }
         }
+        // Not routed, it keeps the effort it started with, so a change to the
+        // session's effort mid-run does not reach its cache either.
+        effort = routed ?? e.effort ?? null
         remember(e.agentId, { effort })
       }
-      return yield* next(effort ? { ...e, effort } : e)
+      return yield* next(effort !== null && effort !== e.effort ? { ...e, effort } : e)
     }
     if (!routeMainLoop) return yield* next(e)
 
