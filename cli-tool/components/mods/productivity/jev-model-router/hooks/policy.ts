@@ -314,10 +314,13 @@ export interface PolicyConfig {
  */
 export function clipPrompt(text: string, maxChars: number): string {
   if (maxChars <= 0 || text.length <= maxChars) return text
-  const half = Math.floor(maxChars / 2)
-  return `${text.slice(0, half)}
-[… ${text.length - 2 * half} characters cut …]
-${text.slice(-half)}`
+  // The tail takes the odd character, so it is never empty: `slice(-0)` is the
+  // whole text.
+  const head = Math.floor(maxChars / 2)
+  const tail = maxChars - head
+  return `${text.slice(0, head)}
+[… ${text.length - maxChars} characters cut …]
+${text.slice(-tail)}`
 }
 
 /**

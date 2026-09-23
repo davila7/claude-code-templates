@@ -426,6 +426,8 @@ test('the state carries the message a follow-up answers, cut to its two ends', (
 test('a long prompt goes to the backend as its two ends, the cut named', () => {
   expect(clipPrompt('short', 4000)).toBe('short')
   expect(clipPrompt('x'.repeat(9000), 0)).toHaveLength(9000)
+  expect(clipPrompt('abcdef', 1)).toBe('\n[… 5 characters cut …]\nf')
+  expect(clipPrompt('abcdef', 3)).toBe('a\n[… 3 characters cut …]\nef')
   const clipped = clipPrompt(`Delete the prod backups.${'.'.repeat(10_000)}Then deploy.`, 60)
   expect(clipped.startsWith('Delete the prod backups.')).toBe(true)
   expect(clipped.endsWith('Then deploy.')).toBe(true)
