@@ -424,12 +424,12 @@ export function bareCommand(text: string): boolean {
  * reads them; DROP TABLE, rm -rf, <script>, reverse shells and the others went
  * through. A code review brief that quotes such a string is left alone, like
  * any failure. A state past its token limit is refused with 400
- * `max_tokens_exceeded`. The firewall is recognised by its block page's
- * title, not by any mention of Cloudflare, which an ordinary error body could
- * carry.
+ * `max_tokens_exceeded`. The firewall is recognised by that page's title, not
+ * by any mention of Cloudflare: a 403 page titled otherwise (an `Access denied`
+ * page, say) is not claimed to be about the text.
  */
 export function describeRefusal(provider: Provider, status: number, body: string): string {
-  if (status === 403 && /<title>[^<]*cloudflare/i.test(body)) {
+  if (status === 403 && /<title>\s*Attention Required![^<]*Cloudflare/i.test(body)) {
     return `${provider}'s firewall refused the text (403, Cloudflare); not classified`
   }
   if (status === 400 && body.includes('max_tokens_exceeded')) {

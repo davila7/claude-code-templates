@@ -407,6 +407,7 @@ test('a firewall 403 is told apart from a rejected key', () => {
   expect(describeRefusal('typesafe', 403, '<title>Attention Required! | Cloudflare</title>')).toContain('firewall')
   expect(describeRefusal('typesafe', 403, '{"detail":"forbidden"}')).toBe('typesafe responded 403')
   expect(describeRefusal('typesafe', 403, '{"detail":"blocked upstream of Cloudflare"}')).toBe('typesafe responded 403')
+  expect(describeRefusal('typesafe', 403, '<title>Access denied | api.typesafe.ai used Cloudflare to restrict access</title>')).toBe('typesafe responded 403')
   expect(describeRefusal('typesafe', 401, '')).toContain('rejected the key')
   expect(describeRefusal('typesafe', 400, '{"detail":{"error_type":"max_tokens_exceeded"}}')).toContain('too long')
   expect(describeRefusal('gateway', 500, '')).toBe('gateway responded 500')
