@@ -27,7 +27,11 @@
  * to set; only its model is.
  *
  * The prompt is classified at `prompt.submit`, which runs before the turn
- * starts, and the decision is applied at the turn's first request.
+ * starts, and the decision is applied at the turn's first request. A prompt
+ * typed while a turn runs is delivered into that turn instead, and may raise
+ * its effort from the next request on. Only what a person wrote is classified:
+ * a turn a background task's report starts keeps the last prompt's decision,
+ * and a peer's message leaves its turn alone.
  *
  * Every failure path is fail-open: a classification that errors or runs past
  * the latency budget leaves the request exactly as the engine built it.
@@ -39,7 +43,7 @@
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Privacy: with a key set, the prompt text is sent to whichever backend the
- * key belongs to.
+ * key belongs to. A background task's report or a peer's message is not.
  */
 import type { Register } from 'claude-code'
 import {
@@ -49,6 +53,7 @@ import {
   describeSetup,
   describeStatus,
   endpoint,
+  midTurnEffort,
   pendingDecisions,
   readDecision,
   selectProvider,
@@ -58,6 +63,7 @@ import {
   route,
   TIER_ORDER,
   bareCommand,
+  writtenByPerson,
 } from './policy.ts'
 import type { Decision, Effort, PolicyConfig, Provider, Tier } from './policy.ts'
 
@@ -124,6 +130,13 @@ export const register: Register = (on, options) => {
   let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
+  // The decision on the last prompt a person wrote, for the turns their
+  // background tasks start when they report back.
+  let lastDecision: Decision | null = null
+  // The prompts typed while a turn ran, waiting for the next request of that
+  // turn, which carries them. Not in `pending`: that slot is for a turn of its
+  // own.
+  let midTurn: { turnId: string; decisions: (Decision | null)[] } | null = null
 
   on('prompt.submit', async ($, e, next) => {
     // Before the routing guards: a module whose switches are all off has still
@@ -152,12 +165,38 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
     }
 
-    // A slash command alone gives the decision model only the command's name.
-    // Its turn keeps the session's model and effort; the null put keeps a
-    // previous prompt's decision from reaching it.
-    if (bareCommand(e.text)) {
-      if (logDecisions) $.ui.log('[jev-model-router] a command with nothing after it; leaving the turn alone')
-      pending.put(null)
+    // Typed over a running turn and delivered into it: the next request of that
+    // turn carries it, so its decision waits there, not for a turn of its own.
+    // One queued to wait (`wait`) gets its own turn like any other.
+    const intoTurn = e.turnId !== undefined && !e.wait
+    // Text nobody typed (a task notification, a peer's message), or no text:
+    // an image or a file alone gives the decision model nothing to read, and
+    // it still answers (fast 0.77 on an empty prompt), which is noise.
+    // A slash command alone gives it only the command's name (see bareCommand).
+    const skip = !writtenByPerson(e.origin)
+      ? `a ${e.origin.kind} prompt`
+      : !e.text.trim()
+        ? 'no text in the prompt'
+        : bareCommand(e.text)
+          ? 'a command with nothing after it'
+          : null
+    if (skip) {
+      // A background task's report continues the work the person's last
+      // prompt asked for (a review's subagents come back one by one, and each
+      // is checked in a turn of its own): that turn keeps its decision.
+      // The types declare `origin`; one left out must not throw here either.
+      const carried = e.origin?.kind === 'task-notification' && !intoTurn ? lastDecision : null
+      if (logDecisions) {
+        const what = intoTurn
+          ? 'delivered into the running turn'
+          : carried
+            ? "the last prompt's decision carries on"
+            : 'leaving the turn alone'
+        $.ui.log(`[jev-model-router] ${skip}; ${what}`)
+      }
+      // Put even when there is nothing to carry: the turn this prompt starts
+      // must not read a decision made for another prompt.
+      if (!intoTurn) pending.put(carried)
       return next(e)
     }
 
@@ -205,7 +244,13 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}`)
     }
 
-    pending.put(decision)
+    lastDecision = decision
+    if (intoTurn && e.turnId !== undefined) {
+      const earlier = midTurn?.turnId === e.turnId ? midTurn.decisions : []
+      midTurn = { turnId: e.turnId, decisions: [...earlier, decision] }
+    } else {
+      pending.put(decision)
+    }
     return next(e)
   })
 
@@ -213,11 +258,31 @@ export const register: Register = (on, options) => {
     if (!routeMainLoop || e.agentId) return yield* next(e)
 
     // Every request after the first reuses what the turn settled on, so
-    // neither the model nor the effort changes under its own tool loop.
+    // neither the model nor the effort changes under its own tool loop; only a
+    // prompt delivered into the turn may raise the effort from here on.
     if (e.index > 0 && e.turnId === appliedTurnId) {
+      if (midTurn?.turnId === e.turnId) {
+        const { decisions } = midTurn
+        midTurn = null
+        const effort = applied?.effort ?? e.effort
+        const routing = midTurnEffort(decisions, { model: applied?.model ?? e.model, effort }, policy)
+        if (routeMainEffort && routing.effort) applied = { ...applied, effort: routing.effort }
+        if (logDecisions) {
+          $.ui.status(describeStatus(decisions[decisions.length - 1] ?? null, applied))
+          const what = routeMainEffort && routing.effort ? `→ effort ${routing.effort}` : `kept ${effort ?? 'its effort'}`
+          $.ui.log(`[jev-model-router] main loop, prompt mid-turn ${what}: ${routing.reason}`)
+        }
+      }
       return yield* next(applied ? { ...e, ...applied } : e)
     }
 
+    // A prompt typed at the end of the last turn, after its final request,
+    // starts this one instead. More than one waiting then reads as none, as in
+    // `pending`: which of them this turn answers cannot be told.
+    if (midTurn) {
+      for (const decision of midTurn.decisions) pending.put(decision)
+      midTurn = null
+    }
     const decision = pending.take()
     const routing = route(decision, { model: e.model, effort: e.effort }, policy)
     const change: { model?: string; effort?: Effort } = {}

@@ -27,6 +27,10 @@ The Agent tool has no effort parameter, so a subagent's effort is not this mod's
 
 The prompt is classified at `prompt.submit`, which runs before the turn starts, and the decision is applied to the turn's first model request and reused by the rest of that turn.
 
+A prompt typed while a turn is running is delivered **into** that turn: `prompt.submit` fires with the running turn's id, and the next request of the same turn carries it. Its decision is applied there, and it may only **raise** the effort for the rest of the turn (the first task is still under way); the model is not changed mid-turn. Before this, such a decision was never read, and it also blocked the next prompt's (`main loop: no decision`), since two decisions were then waiting.
+
+Only what a person wrote is classified (`origin` `composer`, `bridge`, `sdk`, `scheduled-trigger`). A background task's `<task-notification>` starts a turn of its own when it arrives while the session is idle; that turn keeps the decision on the last prompt a person wrote, since it continues that work (a review's subagents report back one by one); one delivered into a running turn changes nothing. A peer session's message, a relay or a plugin's prompt leaves its turn alone, and so does a prompt with no text (an image alone). None of them is sent to the backend.
+
 **With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the same question with the small fast model. That path reports no confidence, so the threshold does not apply to it.
 
 ## What it asks
@@ -66,6 +70,8 @@ status line, the header and the effort box never move whatever it decides.
 [jev-model-router] main loop → effort low: fast (confidence 0.87)
 [jev-model-router] jev: tier fast (0.41) · effort 0.4 → low (0.38) · risky 0.01 · 210ms
 [jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
+[jev-model-router] main loop, prompt mid-turn → effort high: deep (confidence 0.99)
+[jev-model-router] a task-notification prompt; the last prompt's decision carries on
 ```
 
 - The first line appears once per session, the first time a hook runs. It is
@@ -73,9 +79,12 @@ status line, the header and the effort box never move whatever it decides.
 - A `jev:` line is what the decision model replied, before any policy is
   applied — the tier, the effort score and the risk, each with its confidence,
   and how long the call took.
-- The line under it is what the policy then did. The last pair above is a
+- The line under it is what the policy then did. The second pair above is a
   working router declining to act: it wanted to spend less but did not clear
   `minDowngradeConfidence`.
+- `prompt mid-turn` is a prompt typed while the turn ran, applied from the
+  turn's next request; the notification line is a turn a background task's
+  report started, routed on the last prompt a person wrote.
 
 It also keeps a one-line status on screen, replaced as it goes:
 
@@ -117,7 +126,7 @@ the plugin's id, which depends on how it was loaded (see Options).
 
 ## Privacy
 
-With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt; the subagent path sends the subagent's prompt, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.
+With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt a person wrote (never a background task's notification, a peer's message or a plugin's prompt); the subagent path sends the subagent's prompt, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.
 
 ## Options
 

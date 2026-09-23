@@ -3,6 +3,7 @@ import {
   effortLevel,
   effortRank,
   endpoint,
+  midTurnEffort,
   questions,
   describeDecision,
   describeSetup,
@@ -16,6 +17,7 @@ import {
   route,
   selectProvider,
   bareCommand,
+  writtenByPerson,
 } from '../hooks/policy.ts'
 import type { Decision, PolicyConfig } from '../hooks/policy.ts'
 
@@ -400,4 +402,47 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
+})
+
+const typed = (effort: number, risky = 0.05): Decision => ({
+  tier: 'deep',
+  confidence: 0.8,
+  risky,
+  effort,
+  effortConfidence: 0.8,
+})
+
+// A prompt typed while a turn runs is delivered into that turn, whose later
+// requests reuse what its first one settled on.
+test('a prompt delivered mid-turn may raise the effort of the rest of the turn', () => {
+  expect(midTurnEffort([typed(2.7)], on('claude-opus-5-5', 'medium'), config).effort).toBe('xhigh')
+})
+
+test('a prompt delivered mid-turn never lowers it: the first task is still running', () => {
+  const routing = midTurnEffort([typed(0)], on('claude-opus-5-5', 'high'), config)
+  expect(routing.effort).toBeNull()
+  expect(routing.reason).toContain('only raises')
+})
+
+test('a prompt delivered mid-turn never changes the model', () => {
+  expect(midTurnEffort([typed(2.7)], on('claude-sonnet-5', 'low'), config).model).toBeNull()
+})
+
+test('mid-turn with no decision leaves the turn as it is', () => {
+  expect(midTurnEffort([null], on('claude-opus-5-5', 'medium'), config).effort).toBeNull()
+})
+
+test('two prompts typed into one turn: the higher effort either asks for wins', () => {
+  const current = on('claude-opus-5-5', 'low')
+  expect(midTurnEffort([typed(2.7), typed(0)], current, config).effort).toBe('xhigh')
+  expect(midTurnEffort([typed(0), typed(2.1)], current, config).effort).toBe('high')
+  expect(midTurnEffort([typed(2.1), typed(2.7)], current, config).effort).toBe('xhigh')
+})
+
+test('only what a person wrote is classified', () => {
+  for (const kind of ['composer', 'bridge', 'sdk', 'scheduled-trigger']) expect(writtenByPerson({ kind })).toBe(true)
+  const others = ['task-notification', 'peer', 'peer-send-message', 'plugin', 'auto-continuation', 'unclassified', 'channel', 'coordinator', 'observer', 'observer-activity', 'slack-ping', 'projects-relay']
+  for (const kind of others)
+    expect(writtenByPerson({ kind })).toBe(false)
+  expect(writtenByPerson(undefined)).toBe(true)
 })
