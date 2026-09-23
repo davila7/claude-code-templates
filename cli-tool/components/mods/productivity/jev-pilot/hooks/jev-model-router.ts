@@ -57,12 +57,16 @@
  */
 import type { HttpInit, HttpResponse, Register } from 'claude-code'
 import { NOT_A_TASK, recentContext, signalsOf } from './context.ts'
+import { clearSkillNotes, takeSkill, turnLine } from './summary.ts'
+import { moodOf, say, turnSpeech } from './pet-art.ts'
+import { feature } from './features.ts'
 import type { ContextMessage } from './context.ts'
 import { appendEntry, configKeysOf, entriesOf, LEDGER_KEY, reportPrompt, suggestions, summarize } from './ledger.ts'
 import type { LedgerEntry, TunableConfig } from './ledger.ts'
 import {
   adviseStrategy,
   EFFORT_ORDER,
+  effortLevel,
   effortScoreOf,
   escalate,
   DEFAULT_BASE_URL,
@@ -180,11 +184,28 @@ export const register: Register = (on, options) => {
   let unusableReported = forced === 'auto' || forced === 'builtin' || active !== null
 
   const timeoutMs = number('timeoutMs', 800)
-  const routeSubagentModel = flag('routeSubagentModel', true)
-  const routeMainEffort = flag('routeMainEffort', true)
-  const routeMainModel = flag('routeMainModel', false)
-  const routeMainLoop = routeMainEffort || routeMainModel
+  // Each part reads its switch live (features.ts): /jev turns it on or off.
+  const routeSubagentModel = () => feature('subagents')
+  const routeMainEffort = () => feature('effort')
+  const routeMainModel = () => feature('model')
+  const routeMainLoop = () => routeMainEffort() || routeMainModel()
   const logDecisions = flag('logDecisions', true)
+  // Where jev-pilot talks: the pet at the bottom right (default), one line
+  // per turn in the transcript, both, or nowhere. verboseLog adds every step
+  // to the transcript whatever this says.
+  const display = text('display', 'pet')
+  const petOn = () => feature('pet')
+  const verbose = logDecisions && flag('verboseLog', false)
+  const lines = logDecisions && (verbose || display === 'transcript' || display === 'both')
+  const readyLine = () =>
+    verbose
+      ? `[jev-model-router] ${describeSetup(
+          active,
+          url,
+          { subagentModel: routeSubagentModel(), mainEffort: routeMainEffort(), mainModel: routeMainModel() },
+          forced === 'builtin',
+        )}`
+      : `jev-pilot · ready on ${active ?? `the built-in classifier${forced === 'builtin' ? '' : ' (no key set)'}`}`
 
   // A reasoning level from the options; a value off the ladder is not guessed
   // at and reads as the default.
@@ -222,7 +243,7 @@ export const register: Register = (on, options) => {
     messages: Math.max(0, Math.round(number('contextMessages', 4))),
     chars: Math.max(0, number('contextChars', 2000)),
   }
-  const suggestStrategy = flag('suggestStrategy', true)
+  const suggestStrategy = () => feature('strategy')
   const strategyConfig: StrategyConfig = {
     minConfidence: number('minStrategyConfidence', 0.6),
     minGraphConfidence: number('minGraphConfidence', 0.8),
@@ -259,6 +280,23 @@ export const register: Register = (on, options) => {
   // The ledger: the turn in progress (its draft waits in `pending`).
   let current: (LedgerEntry & { turnId: string }) | null = null
 
+  // Said as soon as the session opens, so a loaded jev-pilot is visible
+  // before the first prompt: a line in the transcript and one under the
+  // prompt. (The per-prompt lines follow once prompts arrive.)
+  on('session.start', async ($, e, next) => {
+    const result = await next(e)
+    announced = true
+    if (lines) {
+      $.ui.log(readyLine())
+      $.ui.status(`jev · ready on ${active ?? 'the built-in classifier'}`)
+    }
+    if (petOn()) {
+      say(`ready · ${active ?? (forced === 'builtin' ? 'built-in' : 'no key, built-in')}`, 'ready')
+      $.ui.invalidate('ui.render')
+    }
+    return result
+  })
+
   on('prompt.submit', async ($, e, next) => {
     const io: Io = {
       fetch: (url, init) => $.http.fetch(url, init),
@@ -270,27 +308,14 @@ export const register: Register = (on, options) => {
     // loaded, and that is exactly when its silence is most misleading.
     if (!announced) {
       announced = true
-      if (logDecisions) {
-        $.ui.log(
-          `[jev-model-router] ${describeSetup(
-            active,
-            url,
-            {
-              subagentModel: routeSubagentModel,
-              mainEffort: routeMainEffort,
-              mainModel: routeMainModel,
-            },
-            forced === 'builtin',
-          )}`,
-        )
-      }
+      if (lines) $.ui.log(readyLine())
     }
     // Only the person's own tasks are classified. A notification, a peer's
     // message or a typed `/command` would otherwise take the pending slot and
     // leave the next real prompt's turn without its decision.
     const isTask = !!e.text.trim() && !/^\/\S/.test(e.text.trim()) && !(e.origin && NOT_A_TASK.has(e.origin.kind))
-    if (!isTask || (!routeMainLoop && !suggestStrategy)) return next(e)
-    const planning = suggestStrategy
+    if (!isTask || (!routeMainLoop() && !suggestStrategy())) return next(e)
+    const planning = suggestStrategy()
 
     if (!unusableReported) {
       unusableReported = true
@@ -333,7 +358,7 @@ export const register: Register = (on, options) => {
     // What the decision model actually answered, whatever the policy then
     // does with it. This is the line that proves the classification ran.
     const ms = (await $.clock.now()) - startedAt
-    if (logDecisions) {
+    if (verbose) {
       const read = recent ? ` · read ${recent.split('\n').length} recent messages` : ''
       $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms, margin)}${read}`)
     }
@@ -342,7 +367,7 @@ export const register: Register = (on, options) => {
     if (planning) {
       const advice = adviseStrategy(decision, strategyConfig)
       block = advice.block
-      if (logDecisions) $.ui.log(`[jev-model-router] strategy: ${block ? 'advising ' : ''}${advice.reason}`)
+      if (verbose) $.ui.log(`[jev-model-router] strategy: ${block ? 'advising ' : ''}${advice.reason}`)
     }
     const draft: Draft = {
       answered: decision !== null,
@@ -374,13 +399,13 @@ export const register: Register = (on, options) => {
     // Every request names the id the engine resolved for it, a subagent's
     // included: that is where the main loop's switch finds its ids.
     ids.learn(e.model)
-    if (!routeMainLoop || e.agentId) return yield* next(e)
+    if (!routeMainLoop() || e.agentId) return yield* next(e)
 
     // Every request after the first reuses what the turn settled on, so
     // neither the model nor the effort changes under its own tool loop —
     // unless the loop is visibly struggling, and then only the effort, up.
     if (e.index > 0 && e.turnId === appliedTurnId) {
-      if (routeMainEffort && escalateAfterErrors > 0 && escalatedTurnId !== e.turnId) {
+      if (routeMainEffort() && feature('raise') && escalateAfterErrors > 0 && escalatedTurnId !== e.turnId) {
         const failed = failedInARow
         if (failed >= escalateAfterErrors) {
           escalatedTurnId = e.turnId
@@ -410,11 +435,19 @@ export const register: Register = (on, options) => {
           if (raised) {
             applied = { ...(applied ?? {}), effort: raised }
             if (turn && turn.turnId === e.turnId) turn.raisedTo = raised
-            if (logDecisions) {
-              $.ui.log(`[jev-model-router] main loop → effort ${raised}: ${failed} tool calls failed in a row`)
+            if (lines) {
+              $.ui.log(
+                verbose
+                  ? `[jev-model-router] main loop → effort ${raised}: ${failed} tool calls failed in a row`
+                  : `jev · ${failed} failed in a row → effort ${raised}`,
+              )
               $.ui.status(`jev · struggling → ${raised}`)
             }
-          } else if (logDecisions) {
+            if (petOn()) {
+              say(`${failed} fails → ${raised} ✈`, raised === 'max' ? 'boost' : moodOf(raised))
+              $.ui.invalidate('ui.render')
+            }
+          } else if (verbose) {
             $.ui.log(`[jev-model-router] ${failed} tool calls failed in a row; effort ${String(effort)} kept`)
           }
         }
@@ -432,14 +465,14 @@ export const register: Register = (on, options) => {
     // The main loop's `model` is sent to the API as written, so an alias
     // becomes the id the engine was seen using for it; a subagent's
     // (agent.spawn) may stay an alias.
-    if (routeMainModel && routing.model) {
+    if (routeMainModel() && routing.model) {
       const id = requestModelId(routing.model, ids)
       if (id) change.model = id
-      else if (logDecisions) {
+      else if (verbose) {
         $.ui.log(`[jev-model-router] no ${routing.model} model seen yet this session; model left as ${e.model}`)
       }
     }
-    if (routeMainEffort && routing.effort) change.effort = routing.effort
+    if (routeMainEffort() && routing.effort) change.effort = routing.effort
 
     appliedTurnId = e.turnId
     applied = Object.keys(change).length > 0 ? change : null
@@ -471,18 +504,53 @@ export const register: Register = (on, options) => {
       }
     }
     // A row in the transcript scrolls away; this line stays on screen.
-    if (logDecisions) $.ui.status(describeStatus(decision, applied))
+    if (lines) $.ui.status(describeStatus(decision, applied))
+    // The skill module's pick for this turn's prompt, read (and so released)
+    // whatever the log mode.
+    const skillNote = takeSkill(taken?.prompt ?? null)
+    const known = decision ? (taken?.draft ?? null) : null
+    const level = decision ? effortScoreOf(decision, margin) : null
+    if (petOn()) {
+      say(
+        turnSpeech({
+          answered: decision !== null,
+          applied: change.effort ?? null,
+          current: typeof e.effort === 'string' ? e.effort : null,
+          wanted: level === null ? null : effortLevel(level),
+          confidence: decision?.effortConfidence ?? null,
+          skill: skillNote ? skillNote.skill : undefined,
+          advised: known?.advised ? (known.strategy ?? null) : null,
+        }).text,
+        decision ? moodOf(change.effort ?? (typeof e.effort === 'string' ? e.effort : null)) : 'alert',
+      )
+      $.ui.invalidate('ui.render')
+    }
+    if (lines && !verbose) {
+      // One line for the whole decision: effort, skill, advice, time.
+      $.ui.log(
+        turnLine({
+          answered: decision !== null,
+          confidence: decision?.effortConfidence ?? null,
+          applied: change.effort ?? null,
+          current: typeof e.effort === 'string' ? e.effort : null,
+          wanted: level === null ? null : effortLevel(level),
+          jevMs: known?.ms ?? null,
+          skill: skillNote,
+          advised: known?.advised ? (known.strategy ?? null) : null,
+        }),
+      )
+    }
 
     if (!applied) {
       // A turn left alone is the common case, and it used to be silent, which
       // made a working mod look like one that never loaded. Say what happened.
-      if (logDecisions) {
-        const suppressed = routing.model && !routeMainModel ? ' (main-loop model routing off)' : ''
+      if (verbose) {
+        const suppressed = routing.model && !routeMainModel() ? ' (main-loop model routing off)' : ''
         $.ui.log(`[jev-model-router] main loop: ${routing.reason}${suppressed}`)
       }
       return yield* next(e)
     }
-    if (logDecisions) {
+    if (verbose) {
       const what = [change.model, change.effort && `effort ${change.effort}`]
         .filter(Boolean)
         .join(', ')
@@ -536,6 +604,7 @@ export const register: Register = (on, options) => {
   // skill module hooks session.end too, and one unmatched hook per plugin.)
   on('session.end', { sessionId: /(?:)/ }, async ($, e, next) => {
     pending.clear()
+    clearSkillNotes()
     current = null
     appliedTurnId = undefined
     applied = null
@@ -583,24 +652,11 @@ export const register: Register = (on, options) => {
     // loaded, and that is exactly when its silence is most misleading.
     if (!announced) {
       announced = true
-      if (logDecisions) {
-        $.ui.log(
-          `[jev-model-router] ${describeSetup(
-            active,
-            url,
-            {
-              subagentModel: routeSubagentModel,
-              mainEffort: routeMainEffort,
-              mainModel: routeMainModel,
-            },
-            forced === 'builtin',
-          )}`,
-        )
-      }
+      if (lines) $.ui.log(readyLine())
     }
 
     // A fork inherits its parent's model; `model` is ignored for it.
-    if (!routeSubagentModel || e.fork) return next(e)
+    if (!routeSubagentModel() || e.fork) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
@@ -637,7 +693,7 @@ export const register: Register = (on, options) => {
 
     if (logDecisions) {
       const ms = (await $.clock.now()) - startedAt
-      $.ui.log(`[jev-model-router] jev (${e.subagentType}): ${describeDecision(decision, ms)}`)
+      if (verbose) $.ui.log(`[jev-model-router] jev (${e.subagentType}): ${describeDecision(decision, ms)}`)
     }
 
     // The subagent's own model wins when the caller named one; otherwise it
@@ -646,10 +702,16 @@ export const register: Register = (on, options) => {
     const current = e.model ?? e.parentModel
     const { model, reason } = route(decision, { model: current }, policy)
     if (!model) {
-      if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType}: ${reason}`)
+      if (verbose) $.ui.log(`[jev-model-router] ${e.subagentType}: model kept (${reason})`)
       return next(e)
     }
-    if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType} → ${model}: ${reason}`)
+    if (lines) {
+      $.ui.log(verbose ? `[jev-model-router] ${e.subagentType} → ${model}: ${reason}` : `jev · subagent ${e.subagentType} → ${model}`)
+    }
+    if (petOn()) {
+      say(`${e.subagentType} → ${model}`, 'focused')
+      $.ui.invalidate('ui.render')
+    }
     return next({ ...e, model })
   })
 }

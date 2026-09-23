@@ -11,21 +11,29 @@ import type { On, SessionMessage } from 'claude-code'
 function world(on: On, tier: string, messages: () => SessionMessage[]) {
   const log: string[] = []
   const efforts: unknown[] = []
+  const statuses: string[] = []
   mock.clock(on)
   mock.env(on, { HOME: '/nowhere' })
+  mock.store(on)
   on('ui.log', async (_$, e) => {
     log.push(e.text)
     return { value: undefined }
   })
-  on('ui.status', async () => ({ value: undefined }))
+  on('ui.status', async (_$, e) => {
+    statuses.push(String((e as { text?: unknown }).text ?? ''))
+    return { value: undefined }
+  })
   on('model.classify', async () => ({ value: tier }))
   on('session.messages', async () => ({ value: messages() }))
   on('command.list', async () => ({ value: [] }))
+  on('command.register', async (_$, e) => ({ value: { command: (e as { name: string }).name } }))
+  // Beneath the plugin, the engine draws nothing in the band.
+  on('ui.render', async () => ({ type: 'Box', props: {}, children: [] }) as never)
   on('turn.step', async function* (_$, e) {
     efforts.push(e.effort)
     return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'tool_use' as const, usage: null }
   })
-  return { log, efforts }
+  return { log, efforts, statuses }
 }
 
 /** Beneath the plugins, Bash fails on `false` and succeeds on anything else; a `deny` command is refused. */
@@ -39,6 +47,20 @@ function tools(on: On) {
 
 async function bash($: Engine, command: string) {
   await $.tool.call({ tool: 'Bash', command } as never)
+}
+
+/** What the pet's bubble shows, drawn by the plugin in the band above the prompt. */
+async function bubble($: Engine): Promise<string> {
+  const ui = await $.ui.mount({
+    plugin: 'jev-pilot',
+    surface: 'terminal',
+    component: 'AbovePrompt',
+    props: { hasSurvey: false, isWorking: false, maxRows: 12, bodyColumns: 100 },
+  } as never)
+  const said = await ui.find({ key: 'jev:say' } as never)
+  const drawn = said ? '' : JSON.stringify(await ui.drawn()).slice(0, 600)
+  await ui.unmount()
+  return String((said as { text?: unknown } | undefined)?.text ?? `NOT FOUND; drawn: ${drawn}`)
 }
 
 /** One request of turn `t1` through the plugins, drained to its end. */
@@ -63,7 +85,10 @@ test('two failed tool calls in a row raise the turn one rung, once', async ($, o
   await step($, 3, 'medium')
 
   expect(efforts).toEqual(['medium', 'medium', 'high', 'high'])
-  expect(log.some((line) => line.includes('main loop → effort high'))).toBe(true)
+  // By default jev-pilot talks through the pet, never in the conversation.
+  expect(log.filter((line) => line.startsWith('jev') || line.startsWith('[jev'))).toEqual([])
+  // The pet's bubble says the raise.
+  expect(await bubble($)).toContain('2 fails → high')
 })
 
 test('a success resets the run, and a refused permission is not a failure', async ($, on) => {
@@ -96,4 +121,69 @@ test('no key: nothing is attached to the prompt, whatever the tier', async ($, o
   })
   await $.prompt.submit({ text: 'build the whole billing service', wait: false } as never)
   expect(submitted).toEqual([[]])
+})
+
+test('the session announces jev-pilot as it opens, before any prompt', async ($, on) => {
+  const { log, statuses } = world(on, 'balanced', () => [])
+  on('session.start', async (_$, e) => ({ cwd: e.cwd }))
+  await $.session.start({ cwd: '/tmp/project', surface: null, isInteractive: true } as never)
+  expect(await bubble($)).toContain('ready · no key, built-in')
+  // Nothing in the conversation, nothing in the footer: the pet says it.
+  expect(log).toEqual([])
+  expect(statuses).toEqual([])
+})
+
+async function jev($: Engine, args: string): Promise<string> {
+  const result = await $.command.run({ command: 'jev', args, origin: { kind: 'composer' } } as never)
+  return String((result as { text?: unknown }).text ?? '')
+}
+
+test('/jev lists the switches, and /jev raise off stops the mid-turn raise live', async ($, on) => {
+  const { efforts } = world(on, 'balanced', () => [])
+  tools(on)
+  on('prompt.submit', async (_$, e) => ({ text: e.text, context: e.context }))
+
+  const status = await jev($, '')
+  for (const name of ['effort', 'raise', 'subagents', 'skills', 'strategy', 'model', 'pet']) expect(status).toContain(name)
+  expect(await jev($, 'raise off')).toContain('raise off')
+
+  await $.prompt.submit({ text: 'fix the build', wait: false } as never)
+  await step($, 0, 'medium')
+  await bash($, 'false')
+  await bash($, 'false')
+  await step($, 1, 'medium')
+  // Two failures in a row, and still no raise: the switch is off.
+  expect(efforts).toEqual(['medium', 'medium'])
+
+  expect(await jev($, 'reset')).toMatch(/on\s+raise/)
+})
+
+test('/jev pet off hides the pet; /jev pet on brings it back', async ($, on) => {
+  world(on, 'balanced', () => [])
+  on('session.start', async (_$, e) => ({ cwd: e.cwd }))
+  await $.session.start({ cwd: '/tmp/project', surface: null, isInteractive: true } as never)
+  expect(await bubble($)).toContain('ready')
+  await jev($, 'pet off')
+  expect(await bubble($)).toContain('NOT FOUND')
+  await jev($, 'pet on')
+  expect(await bubble($)).toContain('ready')
+  await jev($, 'reset')
+})
+
+test('the pet shows what Claude is doing: reading during a Read, running during a Bash, thinking between', async ($, on) => {
+  world(on, 'balanced', () => [])
+  on('turn.start', async (_$, e) => ({ turnId: e.turnId }))
+  const during: string[] = []
+  // Beneath the plugins, each tool reads the bubble while it runs.
+  on('tool.call', async () => {
+    during.push(await bubble($))
+    return { result: 'ok', text: 'ok' }
+  })
+  await $.turn.start({ text: 'look at the build', turnId: 't1' } as never)
+  expect(await bubble($)).toContain('thinking')
+  await $.tool.call({ tool: 'Read', file_path: '/tmp/x' } as never)
+  await $.tool.call({ tool: 'Bash', command: 'ls' } as never)
+  expect(during[0]).toContain('reading')
+  expect(during[1]).toContain('running')
+  expect(await bubble($)).toContain('thinking')
 })

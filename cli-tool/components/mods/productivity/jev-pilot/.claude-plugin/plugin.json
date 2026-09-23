@@ -1,6 +1,6 @@
 {
   "name": "jev-pilot",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "TypeSafe's Jev decides how Claude Code works on each prompt: the main conversation's reasoning effort (low to xhigh, raised to max mid-turn when tool calls keep failing), each subagent's model, whether to split the work across subagents, and the one skill the prompt needs. Reads the prompt with recent context, records every decision, and suggests its own tuning. Backends: OpenRouter, TypeSafe's API, the Vercel AI Gateway, or Claude Code's built-in classifier. Built on claude-code-templates' jev-model-router and jev-skill-suggestion.",
   "author": {
     "name": "Ahmed Akram",
@@ -219,11 +219,29 @@
       "description": "How long each module waits for a decision before letting the prompt or request through unchanged",
       "default": 800
     },
+    "display": {
+      "type": "string",
+      "title": "Where jev-pilot talks",
+      "description": "\"pet\": Claude the pilot above the prompt, showing what Claude is doing, with a speech bubble saying each decision (nothing in the conversation); \"transcript\": one line per turn in the conversation; \"both\"; or \"off\". /jev pet off hides the pet, and is remembered",
+      "default": "pet",
+      "options": [
+        "pet",
+        "transcript",
+        "both",
+        "off"
+      ]
+    },
     "logDecisions": {
       "type": "boolean",
       "title": "Log decisions",
-      "description": "Write each routing decision and skill selection to the session log",
+      "description": "Master switch for jev-pilot's own messages: errors always, plus the transcript lines when display is transcript or both",
       "default": true
+    },
+    "verboseLog": {
+      "type": "boolean",
+      "title": "Verbose log",
+      "description": "Write every step instead: both modules' decisions, the skill ranking and rerank, the withheld listing, and why a turn was left alone",
+      "default": false
     },
     "recordDecisions": {
       "type": "boolean",
@@ -245,6 +263,12 @@
       "type": "boolean",
       "title": "Hide the skill listing",
       "description": "Leave the engine's skill listing out of the main conversation's context; off keeps the listing and only adds the suggestion",
+      "default": true
+    },
+    "suggestSkills": {
+      "type": "boolean",
+      "title": "Pick skills",
+      "description": "Pick the one skill each prompt needs and keep the skill listing out of context; off leaves skills exactly as Claude Code handles them (/jev skills on|off switches it live)",
       "default": true
     },
     "rerank": {

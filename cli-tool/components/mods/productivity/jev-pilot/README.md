@@ -11,6 +11,8 @@ Lets [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), Type
 | **The one skill** the prompt needs, if any | start of each turn | on |
 | **A record of every decision**, with tuning suggestions | always, via `/jev-pilot:report` | on |
 
+Jev never writes in the conversation. It talks through **Claude the pilot**, a small animated pet above the prompt, at the right. The pilot shows what Claude is doing: a thought cloud while thinking, an open book while reading, a magnifying glass for searches, paper and a pencil for edits, a terminal for commands, and flying (goggles down) for subagents. Idle, it jumps rope, waves or looks around. Its bubble says what Jev decided and how sure it was, e.g. `xhigh · /systematic-debugging · 88% sure`.
+
 Jev reads the prompt with the last few messages (text and tool names only), so a follow-up like "yes, do it" is judged as the work it continues.
 
 jev-pilot is built on this repo's own [`jev-model-router`](../jev-model-router) and [`jev-skill-suggestion`](../jev-skill-suggestion) by Daniel (San) Ávila, merged into one plugin. **It replaces both:** don't install it alongside either one, or prompts are routed twice.
@@ -32,7 +34,7 @@ Then give it a key in `~/.claude/settings.json` (user settings; project settings
 { "pluginConfigs": { "jev-pilot@skills-dir": { "options": { "openrouterApiKey": "sk-or-v1-...", "timeoutMs": 1500 } } } }
 ```
 
-With no key, it still runs on Claude Code's built-in classifier: it routes by tier only, with no confidence and no strategy advice. The first prompt logs `[jev-model-router] ready on openrouter (...)`. `no key set` there means the options are under the wrong key.
+With no key, it still runs on Claude Code's built-in classifier: it routes by tier only, with no confidence and no strategy advice. To check it's working, look above the prompt: the pilot's bubble says `ready · openrouter`. `ready · no key, built-in` means the options are under the wrong key.
 
 To install it for every project instead, with an installer, a `claude-jev` launcher and `claude-jev self-update`, see the project's repository: **[github.com/Akramovic1/jev-pilot](https://github.com/Akramovic1/jev-pilot)**.
 
@@ -66,6 +68,17 @@ To install it for every project instead, with an installer, a `claude-jev` launc
 
 **`/jev-pilot:report`** shows, per starting effort, how many turns there were, how many had to be raised, and the average tool calls and output tokens. After 20 turns it suggests specific setting changes. No prompt text is stored.
 
+## Switches
+
+Every part can be turned off live with `/jev`, and the switches are remembered across sessions:
+
+```
+/jev                    what is on
+/jev skills off         one switch: effort · raise · subagents · skills · strategy · model · pet
+/jev all off            every switch (all on turns them back on)
+/jev reset              back to the settings' defaults
+```
+
 ## Options
 
 All options go under `pluginConfigs["jev-pilot@skills-dir"].options`. The full list, with descriptions, is the `userConfig` in `.claude-plugin/plugin.json`.
@@ -82,6 +95,9 @@ All options go under `pluginConfigs["jev-pilot@skills-dir"].options`. The full l
 | `suggestStrategy` | true | ask for and attach strategy advice |
 | `contextMessages` / `contextChars` | 4 / 2000 | how much of the conversation Jev reads; 0 sends none |
 | `recordDecisions` | true | keep the decision record for `/jev-pilot:report` |
+| `display` | `pet` | where jev-pilot talks: `pet`, `transcript` (one line per turn), `both`, or `off` |
+| `verboseLog` | false | log every step, each answer with its confidence |
+| `suggestSkills` | true | pick one skill per prompt; off leaves skills as Claude Code handles them |
 
 ## Privacy
 

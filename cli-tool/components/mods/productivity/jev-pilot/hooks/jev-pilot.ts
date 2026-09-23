@@ -12,8 +12,23 @@
 import type { Register } from 'claude-code'
 import { register as registerModelRouter } from './jev-model-router.ts'
 import { register as registerSkillSuggestion } from './jev-skill-suggestion.ts'
+import { register as registerPet } from './jev-pet.tsx'
+import { initFeatures } from './features.ts'
 
 export const register: Register = (on, options) => {
+  // Every part's default comes from the options; /jev switches them live.
+  const flag = (key: string, fallback: boolean) => (typeof options[key] === 'boolean' ? (options[key] as boolean) : fallback)
+  const display = typeof options.display === 'string' ? options.display : 'pet'
+  initFeatures({
+    effort: flag('routeMainEffort', true),
+    raise: typeof options.escalateAfterErrors === 'number' ? options.escalateAfterErrors > 0 : true,
+    subagents: flag('routeSubagentModel', true),
+    skills: flag('suggestSkills', true),
+    strategy: flag('suggestStrategy', true),
+    model: flag('routeMainModel', false),
+    pet: display === 'pet' || display === 'both',
+  })
   registerModelRouter(on, options)
   registerSkillSuggestion(on, options)
+  registerPet(on, options)
 }

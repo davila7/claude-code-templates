@@ -73,6 +73,8 @@
  */
 import type { Register } from 'claude-code'
 import { NOT_A_TASK, recentContext } from './context.ts'
+import { noteSkill } from './summary.ts'
+import { feature } from './features.ts'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
@@ -161,6 +163,11 @@ export const register: Register = (on, options) => {
   const excerptChars = number('excerptChars', 700)
   const timeoutMs = number('timeoutMs', 800)
   const logDecisions = flag('logDecisions', true)
+  // One line per turn (written by the router) by default; every step here with verboseLog.
+  const verbose = logDecisions && flag('verboseLog', false)
+  // The setup tip goes to the transcript only where jev-pilot talks there.
+  const display = text('display', 'pet')
+  const lines = logDecisions && (verbose || display === 'transcript' || display === 'both')
   // Shared with the model router: how much of the conversation Jev reads.
   const contextLimits = {
     messages: Math.max(0, Math.round(number('contextMessages', 4))),
@@ -205,15 +212,16 @@ export const register: Register = (on, options) => {
   on('prompt.attachment', { type: 'skill_listing' }, async ($, e, next) => {
     if (!announced) {
       announced = true
-      if (logDecisions) {
-        $.ui.log(`[jev-skill-suggestion] ${describeSetup(active, url, hideListing, forced === 'builtin')}`)
-      }
+      if (verbose) $.ui.log(`[jev-skill-suggestion] ${describeSetup(active, url, hideListing, forced === 'builtin')}`)
     }
 
     // A subagent's listing is not ours: nothing here suggests for a subagent,
     // so hiding it would leave the subagent with no skills, and adding its
     // names would narrow the main conversation's roster to the subagent's.
     if (e.agentId) return next(e)
+    // Skills switched off (/jev skills off): the listing reaches the model as
+    // the engine built it, and nothing is picked.
+    if (!feature('skills')) return next(e)
 
     const skills = parseListing(e.text)
     for (const skill of skills) listed.add(skill.name)
@@ -222,13 +230,19 @@ export const register: Register = (on, options) => {
     // context the setup command would have saved: say so once.
     if (injectContent && !hintedSetup && skills.length > 0) {
       hintedSetup = true
-      if (logDecisions) $.ui.log(`[jev-skill-suggestion] ${describeStillListed(skills.length)}`)
+      if (lines) {
+        $.ui.log(
+          verbose
+            ? `[jev-skill-suggestion] ${describeStillListed(skills.length)}`
+            : `jev · tip: /jev-pilot:setup takes the ${skills.length} listed skills out of context`,
+        )
+      }
     }
 
     if (!hideListing) return next(e)
 
     const kept = trimListing(e.text, alwaysListed)
-    if (logDecisions) {
+    if (verbose) {
       const keptNames = kept
         ? parseListing(kept)
             .map((skill) => skill.name)
@@ -248,11 +262,10 @@ export const register: Register = (on, options) => {
   on('prompt.submit', { text: /(?:)/ }, async ($, e, next) => {
     if (!announced) {
       announced = true
-      if (logDecisions) {
-        $.ui.log(`[jev-skill-suggestion] ${describeSetup(active, url, hideListing, forced === 'builtin')}`)
-      }
+      if (verbose) $.ui.log(`[jev-skill-suggestion] ${describeSetup(active, url, hideListing, forced === 'builtin')}`)
     }
     suggested = null
+    if (!feature('skills')) return next(e)
 
     // Notifications and peer messages are not tasks; a typed `/name` already
     // names its skill. Neither gets a suggestion.
@@ -374,7 +387,7 @@ export const register: Register = (on, options) => {
     // list: a skill hidden with skillOverrides is still a candidate.
     const skills = catalog(commands, injectContent ? new Set() : listed, neverSuggested)
     if (skills.length === 0) {
-      if (logDecisions) $.ui.log('[jev-skill-suggestion] no candidate skills; nothing to suggest')
+      if (verbose) $.ui.log('[jev-skill-suggestion] no candidate skills; nothing to suggest')
       return next(e)
     }
     const pluginOf = new Map(commands.map((command) => [command.name, command.plugin]))
@@ -416,7 +429,7 @@ export const register: Register = (on, options) => {
     }
     // What the decision model actually answered, whatever the policy then
     // does with it. This is the line that proves the ranking ran.
-    if (logDecisions) {
+    if (verbose) {
       const ms = (await $.clock.now()) - startedAt
       $.ui.log(`[jev-skill-suggestion] jev: ${describeWide(wide, skills.length, ms)}`)
     }
@@ -443,7 +456,7 @@ export const register: Register = (on, options) => {
         rerankAttempted = true
         const answer = await ask(e.text, rerankQuestions(active, candidates), 'rerank')
         if (answer) rerank = readRerank(answer)
-        if (logDecisions) {
+        if (verbose) {
           const ms = (await $.clock.now()) - rerankStartedAt
           const read = candidates.filter((candidate) => files.get(candidate.name)).length
           $.ui.log(
@@ -462,14 +475,15 @@ export const register: Register = (on, options) => {
       decision = { name: null, reason: `/${pick.name} has disable-model-invocation` }
       pick = null
     }
-    if (logDecisions && barred.length > 0) {
+    if (verbose && barred.length > 0) {
       $.ui.log(
         `[jev-skill-suggestion] not model-invocable, left out: ${barred.map((name) => `/${name}`).join(', ')}`,
       )
     }
-    // A row in the transcript scrolls away; this line stays on screen.
-    if (logDecisions) $.ui.status(describeStatus(pick?.name ?? null))
-    if (logDecisions) {
+    // The router writes the turn's one line (and its status) from this note.
+    noteSkill(e.text, { skill: pick?.name ?? null, ms: active ? Math.round((await $.clock.now()) - startedAt) : null })
+    if (verbose) $.ui.status(describeStatus(pick?.name ?? null))
+    if (verbose) {
       $.ui.log(
         pick
           ? `[jev-skill-suggestion] suggesting /${pick.name}: ${decision.reason}`
@@ -483,7 +497,7 @@ export const register: Register = (on, options) => {
       const file = await fileOf(pick, pluginOf.get(pick.name))
       const projectDir = await $.session.cwd()
       block = injectionBlock(pick, file?.markdown ?? null, file?.path ?? null, projectDir, injected.has(pick.name))
-      if (logDecisions) {
+      if (verbose) {
         $.ui.log(
           file
             ? injected.has(pick.name)
@@ -599,7 +613,7 @@ export const register: Register = (on, options) => {
     // Observation only: whether the model took the suggestion, or reached for
     // a skill it was never told about, is the one measure of this mod's worth.
     // The plugin's own commands (setup, report) are not skills to measure.
-    if (logDecisions && !e.skill.startsWith('jev-pilot:')) {
+    if (verbose && !e.skill.startsWith('jev-pilot:')) {
       const how =
         suggested === e.skill
           ? 'as suggested'
