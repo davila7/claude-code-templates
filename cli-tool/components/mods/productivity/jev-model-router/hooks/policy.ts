@@ -328,14 +328,15 @@ export interface PolicyConfig {
  * prompt being sent now: a large paste, or any prompt on a session's first
  * turn (no reading yet), would pass unseen. The prompt is added at one token
  * a character, the most text weighs (CJK; English runs about 4 characters a
- * token): a large paste holds the model rather than guess.
+ * token): a large paste holds the model rather than guess. Only 0 lifts the
+ * cap; a negative one holds the model.
  */
 export function contextAllowsModelChange(
   tokens: number | undefined,
   promptChars: number,
   maxTokens: number,
 ): boolean {
-  return maxTokens <= 0 || (tokens ?? 0) + promptChars <= maxTokens
+  return maxTokens === 0 || (tokens ?? 0) + promptChars <= maxTokens
 }
 
 /** Model ids whose effort Claude Code can change without dropping the prompt cache. */

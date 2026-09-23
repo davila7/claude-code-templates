@@ -460,6 +460,7 @@ test('the context cap counts the prompt being sent, at a token a character', () 
   // A paste on top of a context that alone fits.
   expect(contextAllowsModelChange(100_000, 60_000, 150_000)).toBe(false)
   expect(contextAllowsModelChange(900_000, 400_000, 0)).toBe(true)
+  expect(contextAllowsModelChange(1_000, 20, -1)).toBe(false)
 })
 
 // Seen live: a 283k-token session sent to Haiku 4.5 (200k) was compacted down

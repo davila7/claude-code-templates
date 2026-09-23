@@ -226,7 +226,9 @@ export const register: Register = (on, options) => {
     }
 
     pending.put(decision)
-    promptChars = e.text.length
+    // With what hooks before this one attached beside it, which the model
+    // reads too.
+    promptChars = e.text.length + (e.context ?? []).reduce((chars, block) => chars + block.length, 0)
     return next(e)
   })
 
@@ -259,7 +261,7 @@ export const register: Register = (on, options) => {
           !routeMainModel ||
           (usage
             ? contextAllowsModelChange(usage.context.tokens, promptChars, maxContextForModelSwitch)
-            : maxContextForModelSwitch <= 0),
+            : maxContextForModelSwitch === 0),
       },
     )
     const change: { model?: string; effort?: Effort } = {}
