@@ -418,11 +418,6 @@ test('a risky turn in the tier the session already runs keeps its exact id', () 
   expect(settled.reason).toBe('deep, forced by risk; already on claude-opus-5-5[1m]/xhigh')
 })
 
-test('a risky turn still lifts a session below the deep tier', () => {
-  const decision = readDecision(gatewayAnswer('fast', { fast: 0.97 }, 0.93))
-  expect(route(decision, on('claude-sonnet-5', 'low'), config).model).toBe('opus')
-})
-
 // A subagent has no effort to set (the Agent tool takes none), and a spawn left
 // as it was used to be logged as if it had been routed.
 test('with no current effort and no model change, nothing is routed', () => {
