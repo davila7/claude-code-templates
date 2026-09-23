@@ -414,6 +414,27 @@ export function bareCommand(text: string): boolean {
 }
 
 /**
+ * What a later request of a turn is sent with: what the turn's first request
+ * was given, less a model the engine has since moved the turn off itself.
+ *
+ * When the model a turn was routed to is overloaded, Claude Code falls back
+ * (`--fallback-model`) after three attempts and retries as the turn's next
+ * request, naming the fallback. Rewriting that retry to the routed model again
+ * defeats the fallback: 11 more 529s over three minutes, and the turn failed.
+ * `firstModel` is the model the engine named for the first request, before
+ * any rewrite; a later one naming another is the engine's own move.
+ */
+export function laterRequest(
+  applied: { model?: string; effort?: Effort } | null,
+  firstModel: string | undefined,
+  model: string,
+): { model?: string; effort?: Effort } | null {
+  if (!applied?.model || model === firstModel) return applied
+  const { model: _moved, ...rest } = applied
+  return rest.effort ? rest : null
+}
+
+/**
  * Holds a prompt's classification until the turn that reads that prompt
  * starts.
  *
