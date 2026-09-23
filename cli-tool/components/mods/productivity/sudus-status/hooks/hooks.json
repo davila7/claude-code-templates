@@ -1,0 +1,4 @@
+{
+  "description": "Sudus in front of the person: the verdict `sudus wake` names next, as a status line under the prompt, a pane beside the transcript, or both, with a blobatar face whose expression follows it; set in settings.json, no command. session.start runs wake and opens the pane, turn.start and turn.complete refresh it, tool.call on Bash refreshes after a sudus, cairn or git command, ui.render draws the pane, ui.close remembers a pane the person closed",
+  "modules": ["./register.tsx"]
+}

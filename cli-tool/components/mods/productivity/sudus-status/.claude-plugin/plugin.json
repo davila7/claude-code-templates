@@ -1,0 +1,50 @@
+{
+  "name": "sudus-status",
+  "version": "0.1.0",
+  "description": "Sudus, the referee for agent-led software development, in front of you: the verdict `sudus wake` names next as a status line under the prompt, a pane beside the transcript, or both, with a blobatar face whose expression follows it (thinking while a turn runs, idle with work to do, sad while you owe an answer, happy at Done). Everything is set in settings.json; there is no command. Zero tokens. Needs the sudus command and function hooks (early access).",
+  "author": {
+    "name": "eas4ai",
+    "url": "https://github.com/eas4ai/sudus"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "sudus",
+    "statusline",
+    "pane",
+    "blobatar"
+  ],
+  "userConfig": {
+    "view": {
+      "type": "string",
+      "title": "Where Sudus shows",
+      "description": "\"status-line\" (default): one line under the prompt. \"pane\": a pane beside the transcript with the face. \"both\". \"off\": nothing.",
+      "required": false,
+      "default": "status-line",
+      "options": ["status-line", "pane", "both", "off"]
+    },
+    "face": {
+      "type": "string",
+      "title": "Blobatar face",
+      "description": "The text the face is drawn from; blobatar makes the same face from the same text every time. \"sudus\" is built in; any other text is fetched from blobatar.dev once per session.",
+      "required": false,
+      "default": "sudus"
+    },
+    "asciiFace": {
+      "type": "boolean",
+      "title": "ASCII face in the status line",
+      "description": "Prefix the status line with a small ASCII face in the same expression as the picture.",
+      "required": false,
+      "default": true
+    },
+    "command": {
+      "type": "string",
+      "title": "sudus command",
+      "description": "The command that runs Sudus; \"sudus\" on PATH by default.",
+      "required": false,
+      "default": "sudus"
+    }
+  }
+}
