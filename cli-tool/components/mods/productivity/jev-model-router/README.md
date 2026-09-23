@@ -11,17 +11,18 @@ Two backends, chosen by whichever key is set:
 
 TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the confidence bars below read. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
 
-Three switches, and they are not equally safe:
+Four switches, and they are not equally safe:
 
 | Switch | What it sets | Default |
 |---|---|---|
 | `routeSubagentModel` | the model of each subagent, at `agent.spawn` | on |
+| `routeSubagentEffort` | the reasoning effort of each subagent, at its first request (`turn.step`) | on |
 | `routeMainEffort` | the reasoning effort of the main conversation, at `turn.step` | on |
 | `routeMainModel` | the model of the main conversation, at `turn.step` | **off** |
 
-A subagent starts with its own context, so routing its model costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
+A subagent starts with its own context, so routing its model or its effort costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
 
-The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set.
+The Agent tool has no effort parameter, but each request a subagent makes passes through `turn.step` with its `agentId`, and `agent.spawn`'s `next()` returns that id before the subagent's first request (measured in Claude Code 2.1.280). The effort decided at the spawn is set at that first request and kept for every later one, so it never moves under the subagent's own cache. Without it a subagent runs at the session's configured effort, not the main loop's routed one: a deep subagent spawned from a turn raised to `high` still ran at the session's `low`. A model with no effort (Haiku) is left without one.
 
 **Both directions, both dimensions.** A task read as mechanical is routed down; one read as hard is routed up — model and effort alike.
 
@@ -61,11 +62,12 @@ rewrites are parameters of each request, not the session's settings, so the
 status line, the header and the effort box never move whatever it decides.
 
 ```
-[jev-model-router] ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, main effort
+[jev-model-router] ready on typesafe (https://api.typesafe.ai/v1/systemone); routing subagent model, subagent effort, main effort
 [jev-model-router] jev: tier fast (0.87) · effort 0.4 → low (0.71) · risky 0.02 · 249ms
 [jev-model-router] main loop → effort low: fast (confidence 0.87)
 [jev-model-router] jev: tier fast (0.41) · effort 0.4 → low (0.38) · risky 0.01 · 210ms
 [jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
+[jev-model-router] subagent a888e63c → effort high: deep (confidence 0.98)
 ```
 
 - The first line appears once per session, the first time a hook runs. It is
@@ -73,7 +75,7 @@ status line, the header and the effort box never move whatever it decides.
 - A `jev:` line is what the decision model replied, before any policy is
   applied — the tier, the effort score and the risk, each with its confidence,
   and how long the call took.
-- The line under it is what the policy then did. The last pair above is a
+- The line under it is what the policy then did. The second pair above is a
   working router declining to act: it wanted to spend less but did not clear
   `minDowngradeConfidence`.
 
@@ -135,6 +137,7 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   minUpgradeConfidence:   number  bar to spend more (default 0.3)
   minDowngradeConfidence: number  bar to spend less (default 0.6)
   routeSubagentModel:     boolean model of each subagent (default true)
+  routeSubagentEffort:    boolean effort of each subagent, set at its first request (default true)
   routeMainEffort:        boolean effort of the main loop (default true)
   routeMainModel:         boolean model of the main loop (default false)
   timeoutMs:              number  latency budget per classification (default 800)
