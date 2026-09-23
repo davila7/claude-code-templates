@@ -1,0 +1,6 @@
+{
+  "description": "One module registering two: jev-model-router (prompt.submit classifies, turn.step sets the main loop's effort and, off by default, model; agent.spawn sets subagent models) and jev-skill-suggestion (prompt.attachment withholds the skill listing, prompt.submit ranks and reranks skills and attaches the winner, skill.prompt observes and writes /jev-pilot:setup).",
+  "modules": [
+    "./jev-pilot.ts"
+  ]
+}

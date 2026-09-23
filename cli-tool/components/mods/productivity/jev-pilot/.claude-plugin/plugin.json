@@ -1,0 +1,294 @@
+{
+  "name": "jev-pilot",
+  "version": "0.4.1",
+  "description": "TypeSafe's Jev decides how Claude Code works on each prompt: the main conversation's reasoning effort (low to xhigh, raised to max mid-turn when tool calls keep failing), each subagent's model, whether to split the work across subagents, and the one skill the prompt needs. Reads the prompt with recent context, records every decision, and suggests its own tuning. Backends: OpenRouter, TypeSafe's API, the Vercel AI Gateway, or Claude Code's built-in classifier. Built on claude-code-templates' jev-model-router and jev-skill-suggestion.",
+  "author": {
+    "name": "Ahmed Akram",
+    "url": "https://github.com/Akramovic1"
+  },
+  "repository": "https://github.com/Akramovic1/jev-pilot",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "jev",
+    "typesafe",
+    "openrouter",
+    "effort",
+    "routing",
+    "subagents",
+    "skills",
+    "function-hooks"
+  ],
+  "userConfig": {
+    "typesafeApiKey": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for TypeSafe's own API; preferred over the Gateway, since only it reports a calibrated confidence",
+      "default": "",
+      "sensitive": true
+    },
+    "gatewayApiKey": {
+      "type": "string",
+      "title": "Vercel AI Gateway API key",
+      "description": "Key for the AI Gateway, used when neither a TypeSafe nor an OpenRouter key is set; it reports no calibrated confidence",
+      "default": "",
+      "sensitive": true
+    },
+    "openrouterApiKey": {
+      "type": "string",
+      "title": "OpenRouter API key",
+      "description": "Key for OpenRouter, which hosts Jev (~typesafe/jev-latest) on its System One route and reports a calibrated confidence like TypeSafe's own API",
+      "default": "",
+      "sensitive": true
+    },
+    "provider": {
+      "type": "string",
+      "title": "Backend",
+      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then OpenRouter, then the Gateway, then the built-in classifier",
+      "default": "auto",
+      "options": [
+        "auto",
+        "typesafe",
+        "openrouter",
+        "gateway",
+        "builtin"
+      ]
+    },
+    "typesafeBaseUrl": {
+      "type": "string",
+      "title": "TypeSafe base URL",
+      "description": "Base URL of TypeSafe's own API; empty uses https://api.typesafe.ai",
+      "default": ""
+    },
+    "typesafeModel": {
+      "type": "string",
+      "title": "TypeSafe model",
+      "description": "Decision model on TypeSafe's own API; empty uses jev-latest",
+      "default": ""
+    },
+    "gatewayBaseUrl": {
+      "type": "string",
+      "title": "AI Gateway base URL",
+      "description": "Base URL of the AI Gateway; empty uses https://ai-gateway.vercel.sh/v4/ai",
+      "default": ""
+    },
+    "gatewayModel": {
+      "type": "string",
+      "title": "AI Gateway model",
+      "description": "Decision model on the AI Gateway; empty uses typesafe-ai/jev",
+      "default": ""
+    },
+    "openrouterBaseUrl": {
+      "type": "string",
+      "title": "OpenRouter base URL",
+      "description": "Base URL of OpenRouter's API; empty uses https://openrouter.ai/api (requests go to /v1/systemone)",
+      "default": ""
+    },
+    "openrouterModel": {
+      "type": "string",
+      "title": "OpenRouter model",
+      "description": "Jev model on OpenRouter; empty uses ~typesafe/jev-latest (pin e.g. typesafe/jev-1.13)",
+      "default": ""
+    },
+    "fastModel": {
+      "type": "string",
+      "title": "Fast tier",
+      "description": "Model alias or id for mechanical, local tasks",
+      "default": "haiku"
+    },
+    "balancedModel": {
+      "type": "string",
+      "title": "Balanced tier",
+      "description": "Model alias or id for ordinary engineering work",
+      "default": "sonnet"
+    },
+    "deepModel": {
+      "type": "string",
+      "title": "Deep tier",
+      "description": "Model alias or id for hard or high-stakes work",
+      "default": "opus"
+    },
+    "minUpgradeConfidence": {
+      "type": "number",
+      "title": "Confidence to spend more",
+      "description": "How sure the decision must be to raise the model or the effort; being wrong here costs money, so the bar is low",
+      "default": 0.3
+    },
+    "minDowngradeConfidence": {
+      "type": "number",
+      "title": "Confidence to spend less",
+      "description": "How sure it must be to lower the model or the effort; being wrong here means a task gets too little, so the bar is high",
+      "default": 0.6
+    },
+    "effortCloseMargin": {
+      "type": "number",
+      "title": "Close-call margin",
+      "description": "When Jev's two most likely effort levels are within this probability of each other, the higher one is used (under-thinking costs more than over-thinking); 0 turns the lean off",
+      "default": 0.15
+    },
+    "routeSubagentModel": {
+      "type": "boolean",
+      "title": "Route subagent models",
+      "description": "Pick the model of each subagent at agent.spawn (the Agent tool takes no effort)",
+      "default": true
+    },
+    "routeMainEffort": {
+      "type": "boolean",
+      "title": "Route the main loop's effort",
+      "description": "Raise or lower the reasoning effort of the main conversation",
+      "default": true
+    },
+    "routeMainModel": {
+      "type": "boolean",
+      "title": "Route the main loop's model",
+      "description": "Change the model of the main conversation; off by default because switching models mid-session invalidates the prompt cache",
+      "default": false
+    },
+    "maxEffort": {
+      "type": "string",
+      "title": "Starting effort ceiling",
+      "description": "The highest reasoning level a turn may start at; higher levels are reached only by the mid-turn raise. An effort you set above it by hand is left alone",
+      "default": "xhigh",
+      "options": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    },
+    "maxRaisedEffort": {
+      "type": "string",
+      "title": "Raised effort ceiling",
+      "description": "The highest reasoning level a struggling turn may be raised to (see escalateAfterErrors)",
+      "default": "max",
+      "options": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    },
+    "escalateAfterErrors": {
+      "type": "number",
+      "title": "Raise effort after failures",
+      "description": "Tool calls that must fail in a row within a turn before its effort goes up (at least one rung, once per turn); 0 turns this off",
+      "default": 2
+    },
+    "contextMessages": {
+      "type": "number",
+      "title": "Recent messages sent",
+      "description": "How many messages before the prompt the decision model reads (text and tool names only, never tool input or output); 0 sends none",
+      "default": 4
+    },
+    "contextChars": {
+      "type": "number",
+      "title": "Recent context budget",
+      "description": "The most characters those messages may take together; the newest are kept",
+      "default": 2000
+    },
+    "suggestStrategy": {
+      "type": "boolean",
+      "title": "Advise how to carry out the task",
+      "description": "Ask the decision model whether a request is best done directly, by one subagent, by parallel subagents or as a small graph of subagents, and attach that advice to the prompt when it is confident",
+      "default": true
+    },
+    "minStrategyConfidence": {
+      "type": "number",
+      "title": "Strategy confidence",
+      "description": "How sure the answer must be before delegate or parallel advice is attached",
+      "default": 0.6
+    },
+    "minGraphConfidence": {
+      "type": "number",
+      "title": "Graph confidence",
+      "description": "The higher bar for graph advice, the costliest way to work; it also needs the task read as deep",
+      "default": 0.8
+    },
+    "graphSkill": {
+      "type": "string",
+      "title": "Graph skill",
+      "description": "A skill the graph advice may name for a heavier workflow (e.g. agentic-graph-skill); empty keeps the advice to plain subagent waves",
+      "default": ""
+    },
+    "timeoutMs": {
+      "type": "number",
+      "title": "Latency budget (ms)",
+      "description": "How long each module waits for a decision before letting the prompt or request through unchanged",
+      "default": 800
+    },
+    "logDecisions": {
+      "type": "boolean",
+      "title": "Log decisions",
+      "description": "Write each routing decision and skill selection to the session log",
+      "default": true
+    },
+    "recordDecisions": {
+      "type": "boolean",
+      "title": "Record decisions",
+      "description": "Keep each main-conversation turn's decision and outcome (effort, raises, failures, tokens; never prompt text) in the plugin's store, for /jev-pilot:report and its suggested tuning",
+      "default": true
+    },
+    "inject": {
+      "type": "string",
+      "title": "How the chosen skill reaches the model",
+      "description": "\"content\" attaches the skill's SKILL.md to the prompt, so it loads even when the engine lists it as user-invocable-only or off; \"suggest\" only names it and the model loads it with the Skill tool",
+      "default": "content",
+      "options": [
+        "content",
+        "suggest"
+      ]
+    },
+    "hideListing": {
+      "type": "boolean",
+      "title": "Hide the skill listing",
+      "description": "Leave the engine's skill listing out of the main conversation's context; off keeps the listing and only adds the suggestion",
+      "default": true
+    },
+    "rerank": {
+      "type": "boolean",
+      "title": "Re-read the shortlist",
+      "description": "Send a second request that re-reads the top skills with their full description and SKILL.md opening, and can reject them all; off suggests the top of the ranking alone",
+      "default": true
+    },
+    "shortlist": {
+      "type": "number",
+      "title": "Shortlist size",
+      "description": "How many of the ranking the second request re-reads",
+      "default": 3
+    },
+    "gateThreshold": {
+      "type": "number",
+      "title": "Needs-a-skill threshold",
+      "description": "Mean of the three request nouls (acts on the user's system, would follow a documented procedure, prose does not suffice) under which nothing is suggested",
+      "default": 0.3
+    },
+    "fitsThreshold": {
+      "type": "number",
+      "title": "Fits threshold",
+      "description": "A shortlist whose best per-skill \"does this fit\" noul is under this is dropped entirely",
+      "default": 0.3
+    },
+    "excerptChars": {
+      "type": "number",
+      "title": "SKILL.md excerpt",
+      "description": "How many characters of each shortlisted skill's body the second request reads",
+      "default": 700
+    },
+    "alwaysListed": {
+      "type": "string",
+      "title": "Always listed",
+      "description": "Comma-separated skill names that stay in the listing whatever the prompt (the model can still see and call them)",
+      "default": ""
+    },
+    "neverSuggested": {
+      "type": "string",
+      "title": "Never suggested",
+      "description": "Comma-separated skill names the decision model is never offered; they stay reachable by typing /name",
+      "default": ""
+    }
+  },
+  "homepage": "https://github.com/Akramovic1/jev-pilot"
+}
