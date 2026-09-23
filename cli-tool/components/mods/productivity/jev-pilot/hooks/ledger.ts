@@ -108,8 +108,9 @@ export function suggestions(entries: readonly LedgerEntry[], config: TunableConf
   if (entries.length < MIN_TURNS_TO_SUGGEST) return []
   const found: Suggestion[] = []
 
-  // Answers that did not arrive in time: the turns ran unrouted.
-  const asked = entries.filter((entry) => entry.ms !== null || !entry.answered)
+  // Answers that did not arrive in time: the turns ran unrouted. Only turns
+  // where a backend was asked count (`ms` is null when none was, e.g. no key).
+  const asked = entries.filter((entry) => entry.ms !== null)
   const missed = asked.filter((entry) => !entry.answered).length
   const p90 = percentile(
     entries.filter((entry) => entry.answered && entry.ms !== null).map((entry) => entry.ms as number),
@@ -224,15 +225,40 @@ export function summarize(entries: readonly LedgerEntry[], config: TunableConfig
   return lines.join('\n')
 }
 
-/** The prompt `/jev-pilot:report` hands the model. */
-export function reportPrompt(report: string, settingsPath: string, hasSuggestions: boolean): string {
+/** The settings keys that hold jev-pilot's options (`jev-pilot`, `jev-pilot@<source>`). */
+export function configKeysOf(settingsJson: string): string[] {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(settingsJson)
+  } catch {
+    return []
+  }
+  const configs = parsed && typeof parsed === 'object' ? (parsed as { pluginConfigs?: unknown }).pluginConfigs : null
+  if (!configs || typeof configs !== 'object' || Array.isArray(configs)) return []
+  return Object.keys(configs).filter((key) => /^jev-pilot(@[^@]+)?$/.test(key))
+}
+
+/**
+ * The prompt `/jev-pilot:report` hands the model. The settings key depends
+ * on how jev-pilot was installed, so a suggested edit names the key found in
+ * the settings, or asks when there is none or more than one.
+ */
+export function reportPrompt(report: string, settingsPath: string, hasSuggestions: boolean, keys: readonly string[] = []): string {
+  let where: string
+  if (keys.length === 1) {
+    where = `the "${keys[0]}" entry under "pluginConfigs" in ${settingsPath} ("options" object)`
+  } else if (keys.length > 1) {
+    where = `the jev-pilot entry under "pluginConfigs" in ${settingsPath} that this session loads (found: ${keys.map((key) => `"${key}"`).join(', ')}; ask the user which, if it is not clear)`
+  } else {
+    where = `a new jev-pilot entry under "pluginConfigs" in ${settingsPath}, whose key depends on how jev-pilot was installed: "jev-pilot@jev-pilot" from its marketplace, "jev-pilot@skills-dir" from claude-code-templates --mod, "jev-pilot" with --plugin-dir. Ask the user which before adding it`
+  }
   return [
     'Show the user this jev-pilot report exactly as written, as markdown:',
     '',
     report,
     '',
     hasSuggestions
-      ? `Then offer to apply the suggested changes to the "jev-pilot" entry under "pluginConfigs" in ${settingsPath} ("options" object), one Edit, changing nothing else, and only after the user says yes. The change takes effect in the next session.`
+      ? `Then offer to apply the suggested changes to ${where}: one Edit, changing nothing else, and only after the user says yes. The change takes effect in the next session.`
       : 'Do not change any settings.',
   ].join('\n')
 }

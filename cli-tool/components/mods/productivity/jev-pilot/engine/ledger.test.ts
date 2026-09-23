@@ -28,7 +28,7 @@ function world(on: On): Map<string, unknown> {
   on('model.classify', async () => ({ value: 'balanced' }))
   on('session.messages', async () => ({ value: [] }))
   on('command.list', async () => ({ value: [] }))
-  on('prompt.submit', async (_$, e) => ({ text: e.text, context: e.context }))
+  on('prompt.submit', async (_$, e) => (e.text === 'drop me' ? { drop: 'refused by a test hook' } : { text: e.text, context: e.context }))
   on('tool.call', async (_$, e) => {
     const failed = String((e as { command?: unknown }).command) === 'false'
     return failed ? { result: 'exit 1', text: 'exit 1', isError: true as const } : { result: 'ok', text: 'ok' }
@@ -92,4 +92,39 @@ test('the report command reads the ledger, and reset clears it', async ($, on) =
 
   await $.skill.prompt({ skill: 'jev-pilot:report', text: 'Mode: reset' })
   expect(store.has('ledger')).toBe(false)
+})
+
+/** One turn's first step and its end, without submitting a prompt first. */
+async function bareTurn($: Engine, turnId: string) {
+  for await (const _chunk of $.turn.step({ turnId, index: 0, model: 'claude-opus-5-5', effort: 'medium', messageCount: 1 })) {
+  }
+  await $.turn.complete({ turnId, answer: 'done', durationMs: 1, isAborted: false, reason: 'answer' } as never)
+}
+
+test('a notification delivered before the turn starts does not cost the prompt its decision', async ($, on) => {
+  const store = world(on)
+  await $.prompt.submit({ text: 'fix the build', wait: false } as never)
+  await $.prompt.submit({ text: 'Background task finished', wait: false, origin: { kind: 'task-notification' } } as never)
+  await bareTurn($, 't1')
+  const [only] = store.get('ledger') as Record<string, unknown>[]
+  expect(only).toMatchObject({ answered: true, tier: 'balanced' })
+})
+
+test('a prompt refused further down leaves no decision behind for the next one', async ($, on) => {
+  const store = world(on)
+  await $.prompt.submit({ text: 'drop me', wait: false } as never)
+  await $.prompt.submit({ text: 'fix the build', wait: false } as never)
+  await bareTurn($, 't1')
+  const [only] = store.get('ledger') as Record<string, unknown>[]
+  expect(only).toMatchObject({ answered: true, tier: 'balanced' })
+})
+
+test('a new session starts with nothing waiting', async ($, on) => {
+  const store = world(on)
+  on('session.end', async (_$, e) => ({ sessionId: e.sessionId }))
+  await $.prompt.submit({ text: 'fix the build', wait: false } as never)
+  await $.session.end({ reason: 'clear', sessionId: 's1' } as never)
+  await bareTurn($, 't1')
+  const [only] = store.get('ledger') as Record<string, unknown>[]
+  expect(only).toMatchObject({ answered: false, tier: null })
 })

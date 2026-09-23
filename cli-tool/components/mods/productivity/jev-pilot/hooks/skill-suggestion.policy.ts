@@ -168,6 +168,8 @@ export function catalog(
     if (command.source === 'builtin') continue
     if (listed.size > 0 && !listed.has(command.name)) continue
     if (excluded.has(command.name) || seen.has(command.name)) continue
+    // This plugin's own commands (setup, report) are the person's to run.
+    if (command.name.startsWith(OWN_COMMANDS)) continue
     seen.add(command.name)
     skills.push({ name: command.name, description: command.description.trim() })
   }
@@ -317,7 +319,7 @@ export function detailOf(skill: Skill, markdown: string | null, excerptChars: nu
     const field = /^description:\s*(.*)$/m.exec(frontmatter[1] as string)
     if (field) {
       const value = (field[1] as string).trim().replace(/^["']|["']$/g, '')
-      if (value.length > description.length) description = value
+      if (value) description = value
     }
   }
   const excerpt = body.trim().slice(0, Math.max(0, excerptChars))
@@ -453,9 +455,19 @@ export function mergeWide(parts: readonly (Wide | null)[]): Wide | null {
   if (parts.length === 0 || parts.some((part) => part === null)) return null
   const answered = parts as readonly Wide[]
   if (answered.length === 1) return answered[0] as Wide
-  const ranked = answered
-    .flatMap((part) => part.ranked)
-    .sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
+  // Each batch's probabilities sum to one on their own, so they do not
+  // compare across batches. The merge goes by rank: every batch's first,
+  // then every batch's second, and so on; within a rank, by probability.
+  const ranked: Wide['ranked'] = []
+  const depth = Math.max(...answered.map((part) => part.ranked.length))
+  for (let position = 0; position < depth; position++) {
+    const row = answered.flatMap((part) => {
+      const entry = part.ranked[position]
+      return entry ? [entry] : []
+    })
+    row.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
+    ranked.push(...row)
+  }
   const first = answered[0] as Wide
   return { ranked, gate: first.gate, gateValues: first.gateValues }
 }
@@ -555,8 +567,9 @@ function answersOf(responseText: string): Answers | null {
   } catch {
     return null
   }
-  const answers = (parsed as { answers?: Answers }).answers
-  return answers && typeof answers === 'object' ? answers : null
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null
+  const answers = (parsed as { answers?: unknown }).answers
+  return answers && typeof answers === 'object' && !Array.isArray(answers) ? (answers as Answers) : null
 }
 
 /** P(true) of a yes/no answer: `noul` on TypeSafe, `probability` on the Gateway. */
@@ -721,11 +734,16 @@ export function decide(
       return { name: null, reason: `nothing fits, best ${best.toFixed(2)} < ${config.fitsThreshold}` }
     }
     if (shortlist.some((skill) => skill.name === rerank.winner)) {
+      // The pick itself must fit: another candidate fitting well says
+      // nothing for the one the Choice named.
       const fit = rerank.fits[rerank.winner]
-      return {
-        name: rerank.winner,
-        reason: `rerank of ${shortlist.length}${fit === undefined ? '' : `, fits ${fit.toFixed(2)}`}`,
+      if (fit === undefined || fit < config.fitsThreshold) {
+        return {
+          name: null,
+          reason: `rerank named ${rerank.winner}, which fits ${fit === undefined ? 'n/d' : fit.toFixed(2)} < ${config.fitsThreshold}`,
+        }
       }
+      return { name: rerank.winner, reason: `rerank of ${shortlist.length}, fits ${fit.toFixed(2)}` }
     }
     return { name: null, reason: `rerank named ${rerank.winner}, not on the shortlist` }
   }
@@ -825,19 +843,29 @@ export function describeStatus(suggested: string | null): string {
 /** The name of the plugin's own setup command, as the engine runs it. */
 export const SETUP_COMMAND = 'jev-pilot:setup'
 
+/** The prefix of this plugin's own commands, never offered as a skill. */
+export const OWN_COMMANDS = 'jev-pilot:'
+
 /** A user settings file's parts the setup touches. */
 export interface SkillSettings {
   skillOverrides: Record<string, string>
   disableBundledSkills: boolean | undefined
+  /** The file exists but is not a JSON object: nothing may be planned on it. */
+  invalid?: true
 }
 
 /** Reads the two fields from `~/.claude/settings.json`; malformed reads as empty. */
 export function readSkillSettings(json: string | null): SkillSettings {
   let parsed: unknown = null
-  try {
-    parsed = json ? JSON.parse(json) : null
-  } catch {
-    parsed = null
+  if (json && json.trim()) {
+    try {
+      parsed = JSON.parse(json)
+    } catch {
+      return { skillOverrides: {}, disableBundledSkills: undefined, invalid: true }
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { skillOverrides: {}, disableBundledSkills: undefined, invalid: true }
+    }
   }
   const settings = (parsed ?? {}) as { skillOverrides?: unknown; disableBundledSkills?: unknown }
   const overrides: Record<string, string> = {}

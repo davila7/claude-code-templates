@@ -58,7 +58,7 @@
 import type { HttpInit, HttpResponse, Register } from 'claude-code'
 import { NOT_A_TASK, recentContext, signalsOf } from './context.ts'
 import type { ContextMessage } from './context.ts'
-import { appendEntry, entriesOf, LEDGER_KEY, reportPrompt, suggestions, summarize } from './ledger.ts'
+import { appendEntry, configKeysOf, entriesOf, LEDGER_KEY, reportPrompt, suggestions, summarize } from './ledger.ts'
 import type { LedgerEntry, TunableConfig } from './ledger.ts'
 import {
   adviseStrategy,
@@ -237,24 +237,26 @@ export const register: Register = (on, options) => {
   // one at a time, so nothing accumulates over a long session. `pending`
   // reports no decision when two prompts are waiting at once, rather than
   // routing a turn on a decision made for a different prompt.
-  const pending = pendingDecisions()
+  // Each classified prompt waits with its decision and its ledger draft, so
+  // the turn that reads it knows which prompt it is working on.
+  const pending = pendingDecisions<{ decision: Decision | null; prompt: string; draft: Draft }>()
   // Said once, the first time a hook runs. A router that loaded and one that
   // never loaded are otherwise told apart only by the absence of later lines,
   // and absence is not evidence: the policy leaves most turns alone anyway.
   let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
-  // The prompt the current turn works on, for a re-reading mid-turn, and the
-  // turn whose effort was already raised: at most once each.
-  let lastPrompt = ''
+  // The prompt the current turn works on (null when its decision was
+  // withheld), for a re-reading mid-turn, and the turn whose effort was
+  // already raised: at most once each.
+  let turnPrompt: string | null = null
   let escalatedTurnId: string | undefined
   // The main loop's tool calls that failed in a row since its last success,
   // counted as they finish (tool.call) and cleared when a turn starts.
   let failedInARow = 0
   // Each family's current full id, learned from the requests the engine makes.
   const ids = modelIds()
-  // The ledger: the decision waiting for its turn, then the turn in progress.
-  let draft: Draft | null = null
+  // The ledger: the turn in progress (its draft waits in `pending`).
   let current: (LedgerEntry & { turnId: string }) | null = null
 
   on('prompt.submit', async ($, e, next) => {
@@ -283,10 +285,12 @@ export const register: Register = (on, options) => {
         )
       }
     }
-    // A notification or a typed `/command` is not a task to plan a split for.
+    // Only the person's own tasks are classified. A notification, a peer's
+    // message or a typed `/command` would otherwise take the pending slot and
+    // leave the next real prompt's turn without its decision.
     const isTask = !!e.text.trim() && !/^\/\S/.test(e.text.trim()) && !(e.origin && NOT_A_TASK.has(e.origin.kind))
-    const planning = suggestStrategy && isTask
-    if (!routeMainLoop && !planning) return next(e)
+    if (!isTask || (!routeMainLoop && !suggestStrategy)) return next(e)
+    const planning = suggestStrategy
 
     if (!unusableReported) {
       unusableReported = true
@@ -296,8 +300,6 @@ export const register: Register = (on, options) => {
     const startedAt = await $.clock.now()
     const messages = await readMessages(io, contextLimits.messages > 0)
     const recent = recentContext(messages, e.text, contextLimits)
-    // A notification delivered mid-turn is not what the turn works on.
-    if (isTask) lastPrompt = e.text
     let decision: Decision | null = null
     if (active) {
       decision = await classify(
@@ -336,14 +338,13 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms, margin)}${read}`)
     }
 
-    pending.put(decision)
     let block: string | null = null
     if (planning) {
       const advice = adviseStrategy(decision, strategyConfig)
       block = advice.block
       if (logDecisions) $.ui.log(`[jev-model-router] strategy: ${block ? 'advising ' : ''}${advice.reason}`)
     }
-    draft = {
+    const draft: Draft = {
       answered: decision !== null,
       ms: active ? Math.round(ms) : null,
       tier: decision?.tier ?? null,
@@ -354,9 +355,13 @@ export const register: Register = (on, options) => {
       strategyConfidence: decision?.strategyConfidence ?? null,
       advised: block !== null,
     }
+    pending.put({ decision, prompt: e.text, draft })
     // Attached on the way down: one block after the prompt as typed, read by
     // the model and never shown to the person.
-    return next(block ? { ...e, context: [...(e.context ?? []), block] } : e)
+    const result = await next(block ? { ...e, context: [...(e.context ?? []), block] } : e)
+    // Refused further down: no turn will read this decision.
+    if (result.drop) pending.withdraw()
+    return result
   })
 
   on('turn.step', async function* ($, e, next) {
@@ -381,19 +386,25 @@ export const register: Register = (on, options) => {
           escalatedTurnId = e.turnId
           const effort = applied?.effort ?? e.effort
           const turn = current
-          const messages = await readMessages(io, contextLimits.messages > 0)
-          const reread = await classify(
-            io,
-            backend,
-            {
-              prompt: lastPrompt,
-              recent_context: recentContext(messages, lastPrompt, contextLimits),
-              signals: signalsOf(lastPrompt, messages),
-              trouble: `${failed} tool calls in a row have failed while working on this request`,
-            },
-            false,
-            'the effort',
-          )
+          // The turn's own prompt: without one (its decision was withheld),
+          // there is nothing to re-read, and the raise is the one rung.
+          const prompt = turnPrompt
+          const messages = prompt === null ? [] : await readMessages(io, contextLimits.messages > 0)
+          const reread =
+            prompt === null
+              ? null
+              : await classify(
+                  io,
+                  backend,
+                  {
+                    prompt,
+                    recent_context: recentContext(messages, prompt, contextLimits),
+                    signals: signalsOf(prompt, messages),
+                    trouble: `${failed} tool calls in a row have failed while working on this request`,
+                  },
+                  false,
+                  'the effort',
+                )
           const level = reread ? effortScoreOf(reread, margin) : null
           const raised = escalate(effort, failed, escalateAfterErrors, level, raisedCeiling)
           if (raised) {
@@ -413,7 +424,9 @@ export const register: Register = (on, options) => {
 
     // A new turn: failures of the last one say nothing about this one.
     failedInARow = 0
-    const decision = pending.take()
+    const taken = pending.take()
+    const decision = taken?.decision ?? null
+    turnPrompt = taken?.prompt ?? null
     const routing = route(decision, { model: e.model, effort: e.effort }, policy)
     const change: { model?: string; effort?: Effort } = {}
     // The main loop's `model` is sent to the API as written, so an alias
@@ -433,7 +446,7 @@ export const register: Register = (on, options) => {
     if (recordDecisions) {
       // A decision withheld (two prompts waiting) is recorded as unanswered:
       // the turn ran on the engine's own settings.
-      const known = decision ? draft : null
+      const known = decision ? (taken?.draft ?? null) : null
       const startEffort = change.effort ?? e.effort
       current = {
         turnId: e.turnId,
@@ -457,7 +470,6 @@ export const register: Register = (on, options) => {
         outputTokens: null,
       }
     }
-    draft = null
     // A row in the transcript scrolls away; this line stays on screen.
     if (logDecisions) $.ui.status(describeStatus(decision, applied))
 
@@ -518,6 +530,21 @@ export const register: Register = (on, options) => {
     return result
   })
 
+  // `/clear` or a resume starts another session in this worker: nothing
+  // waiting or in progress carries over. The learned model ids stay: they
+  // are the engine's own and still valid. (Under a match-all matcher: the
+  // skill module hooks session.end too, and one unmatched hook per plugin.)
+  on('session.end', { sessionId: /(?:)/ }, async ($, e, next) => {
+    pending.clear()
+    current = null
+    appliedTurnId = undefined
+    applied = null
+    escalatedTurnId = undefined
+    turnPrompt = null
+    failedInARow = 0
+    return next(e)
+  })
+
   // `/jev-pilot:report`: the ledger summarised, with suggested changes;
   // `/jev-pilot:report reset` clears it. The command's markdown is a
   // placeholder: the prompt the model reads is written here.
@@ -529,11 +556,16 @@ export const register: Register = (on, options) => {
       }
       const entries = entriesOf(await $.store.get(LEDGER_KEY))
       const home = (await $.env.get('HOME')) ?? '~'
-      const text = reportPrompt(
-        summarize(entries, tunable),
-        `${home}/.claude/settings.json`,
-        suggestions(entries, tunable).length > 0,
-      )
+      const settingsPath = `${home}/.claude/settings.json`
+      // The key jev-pilot's options live under depends on how it was
+      // installed (marketplace, --mod, --plugin-dir): read which exist.
+      let keys: string[] = []
+      try {
+        if (await $.fs.exists(settingsPath)) keys = configKeysOf(await $.fs.read(settingsPath))
+      } catch {
+        keys = []
+      }
+      const text = reportPrompt(summarize(entries, tunable), settingsPath, suggestions(entries, tunable).length > 0, keys)
       return next({ ...e, text })
     } catch (error) {
       return next({ ...e, text: `Tell the user the jev-pilot ledger could not be read: ${String(error)}. Change nothing.` })

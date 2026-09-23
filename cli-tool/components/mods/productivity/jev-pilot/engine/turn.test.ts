@@ -73,13 +73,18 @@ test('a success resets the run, and a refused permission is not a failure', asyn
 
   await $.prompt.submit({ text: 'fix the build', wait: false } as never)
   await step($, 0, 'medium')
+  // A success resets the run: false, true, false is one failure, not two.
   await bash($, 'false')
   await bash($, 'true')
   await bash($, 'false')
-  await bash($, 'deny')
   await step($, 1, 'medium')
+  // A refusal between two failures neither counts nor clears: false, deny,
+  // false is two in a row, and only that raises the turn.
+  await bash($, 'deny')
+  await bash($, 'false')
+  await step($, 2, 'medium')
 
-  expect(efforts).toEqual(['medium', 'medium'])
+  expect(efforts).toEqual(['medium', 'medium', 'high'])
 })
 
 test('no key: nothing is attached to the prompt, whatever the tier', async ($, on) => {

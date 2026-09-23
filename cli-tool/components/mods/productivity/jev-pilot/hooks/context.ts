@@ -16,6 +16,8 @@ export const NOT_A_TASK: ReadonlySet<string> = new Set([
   'projects-relay',
   'observer',
   'observer-activity',
+  'scheduled-trigger',
+  'slack-ping',
 ])
 
 /** The part of a transcript message this module reads (`SessionMessage`). */

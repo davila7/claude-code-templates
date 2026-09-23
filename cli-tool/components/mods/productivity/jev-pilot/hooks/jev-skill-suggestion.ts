@@ -117,6 +117,7 @@ import {
   trimListing,
   wideQuestions,
   batchesOf,
+  MAX_CHOICES,
   mergeWide,
 } from './skill-suggestion.policy.ts'
 import type { Candidate, PolicyConfig, Provider, Rerank, Skill, Wide } from './skill-suggestion.policy.ts'
@@ -166,7 +167,8 @@ export const register: Register = (on, options) => {
     chars: Math.max(0, number('contextChars', 2000)),
   }
   const policy: PolicyConfig = {
-    shortlist: Math.max(1, Math.round(number('shortlist', 3))),
+    // The rerank is one Choice too, under the same 255-option limit.
+    shortlist: Math.min(MAX_CHOICES, Math.max(1, Math.round(number('shortlist', 3)))),
     gateThreshold: number('gateThreshold', 0.3),
     fitsThreshold: number('fitsThreshold', 0.3),
   }
@@ -208,19 +210,22 @@ export const register: Register = (on, options) => {
       }
     }
 
+    // A subagent's listing is not ours: nothing here suggests for a subagent,
+    // so hiding it would leave the subagent with no skills, and adding its
+    // names would narrow the main conversation's roster to the subagent's.
+    if (e.agentId) return next(e)
+
     const skills = parseListing(e.text)
     for (const skill of skills) listed.add(skill.name)
 
     // With the mod loading skills itself, a listing that still names any is
     // context the setup command would have saved: say so once.
-    if (injectContent && !hintedSetup && skills.length > 0 && !e.agentId) {
+    if (injectContent && !hintedSetup && skills.length > 0) {
       hintedSetup = true
       if (logDecisions) $.ui.log(`[jev-skill-suggestion] ${describeStillListed(skills.length)}`)
     }
 
-    // A subagent's listing is not ours: nothing here suggests for a subagent,
-    // so hiding its listing would leave it with no skills at all.
-    if (!hideListing || e.agentId) return next(e)
+    if (!hideListing) return next(e)
 
     const kept = trimListing(e.text, alwaysListed)
     if (logDecisions) {
@@ -377,10 +382,14 @@ export const register: Register = (on, options) => {
     // Request 1: rank everything, and ask whether the prompt wants a skill at all.
     const startedAt = await $.clock.now()
     let wide: Wide | null = null
+    // The shortlist grows with the batches, so every batch's leaders reach
+    // the rerank (their scores do not compare across batches).
+    let picked: PolicyConfig = policy
     if (active) {
       // One Choice takes at most MAX_CHOICES options: a larger catalog is
       // ranked in batches, side by side, and the gate asked once.
       const batches = batchesOf(skills)
+      picked = { ...policy, shortlist: Math.min(MAX_CHOICES, policy.shortlist * batches.length) }
       const answers = await Promise.all(
         batches.map((batch, index) =>
           ask(
@@ -421,7 +430,7 @@ export const register: Register = (on, options) => {
     const barred: string[] = []
     if (active && rerankEnabled && wide && passesGate(wide, policy)) {
       const candidates: Candidate[] = []
-      for (const skill of shortlistOf(wide, skills, policy.shortlist)) {
+      for (const skill of shortlistOf(wide, skills, picked.shortlist)) {
         const body = await bodyOf(skill, pluginOf.get(skill.name))
         if (!modelInvocable(body)) {
           barred.push(skill.name)
@@ -445,7 +454,7 @@ export const register: Register = (on, options) => {
     }
 
     const offered = barred.length > 0 ? skills.filter((skill) => !barred.includes(skill.name)) : skills
-    let decision = decide(wide, rerank, offered, policy, rerankAttempted)
+    let decision = decide(wide, rerank, offered, picked, rerankAttempted)
     let pick = decision.name ? (skills.find((skill) => skill.name === decision.name) ?? null) : null
     // The winner's own frontmatter has the last word, whichever path picked it.
     if (pick && !barred.includes(pick.name) && !modelInvocable(await bodyOf(pick, pluginOf.get(pick.name)))) {
@@ -499,6 +508,13 @@ export const register: Register = (on, options) => {
   on('session.end', async ($, e, next) => {
     injected.clear()
     suggested = null
+    // Everything learned about this session's skills goes with it: the next
+    // one may have another roster, and its SKILL.md files may have changed.
+    listed.clear()
+    files.clear()
+    displayToId = null
+    announced = false
+    hintedSetup = false
     return next(e)
   })
   on('session.compact', async ($, e, next) => {
@@ -545,6 +561,12 @@ export const register: Register = (on, options) => {
       return next({ ...e, text: setupAborted(`${settingsPath} exists but could not be read (${String(error)})`) })
     }
     const settings = readSkillSettings(json)
+    // Never plan edits on a file that could not be parsed: the backup would
+    // miss what it holds, and the edit could destroy it.
+    if (settings.invalid) {
+      $.ui.log(`[jev-skill-suggestion] setup: ${settingsPath} is not valid JSON`)
+      return next({ ...e, text: setupAborted(`${settingsPath} is not a valid JSON object; ask the user to fix it first`) })
+    }
     const plan = setupPlan(commands, settings, new Set([SETUP_COMMAND]))
     // An earlier run's backup is reused only if it is one: a file that is
     // not this mod's, or is corrupt, is nothing restore could apply, so no

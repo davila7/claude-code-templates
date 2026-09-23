@@ -273,8 +273,9 @@ export function readDecision(responseText: string): Decision | null {
   } catch {
     return null
   }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null
   const answers = (parsed as { answers?: Record<string, Record<string, unknown>> }).answers
-  if (!answers) return null
+  if (!answers || typeof answers !== 'object' || Array.isArray(answers)) return null
 
   const tierAnswer = answers.tier
   if (!tierAnswer || !isTier(tierAnswer.choice)) return null
@@ -567,6 +568,9 @@ export function route(
   const model =
     wantedModel &&
     wantedModel !== current.model &&
+    // Risk skips the confidence bars, not the same-tier check: a deep model
+    // stays as it is (a swap to the tier's alias would only bust the cache).
+    (currentTier === null || wantedTier !== currentTier) &&
     (forced || allowed(wantedTier, currentTier, decision.confidence, config))
       ? wantedModel
       : null
@@ -581,6 +585,9 @@ export function route(
     // and rated mechanically simple would be pulled down to `high` with no
     // confidence check at all — the opposite of what the rule is for.
     if (forced && currentRank !== null) wantedRank = Math.max(wantedRank, currentRank)
+    // The risk floor is a safety rule, the ceiling a cost one: the floor wins,
+    // even under a `maxEffort` set below it.
+    if (forced) wantedRank = Math.max(wantedRank, EFFORT_ORDER.indexOf('high'))
 
     // A numeric effort is the caller's own scale, not this ladder; leave it.
     const comparable = typeof current.effort !== 'number'
@@ -720,25 +727,39 @@ export function escalate(
  * none: running a turn on another prompt's decision is a worse outcome than
  * not routing it, and not routing is what every other failure path here does.
  */
-export function pendingDecisions(): {
-  put(decision: Decision | null): void
-  take(): Decision | null
+export function pendingDecisions<T = Decision>(): {
+  put(value: T | null): void
+  take(): T | null
+  /** The prompt last put will not start a turn (refused further down). */
+  withdraw(): void
+  /** A new session: nothing waiting carries over. */
+  clear(): void
 } {
-  let held: Decision | null = null
+  let held: T | null = null
   let waiting = 0
 
   return {
-    put(decision) {
+    put(value) {
       waiting += 1
       // Past the first, which prompt a turn will read is unknowable, so the
       // slot is emptied instead of holding a decision that may not fit.
-      held = waiting === 1 ? decision : null
+      held = waiting === 1 ? value : null
     },
     take() {
-      const decision = waiting === 1 ? held : null
+      const value = waiting === 1 ? held : null
       held = null
       waiting = 0
-      return decision
+      return value
+    },
+    withdraw() {
+      // With one waiting, it is the one withdrawn. With more, the slot is
+      // already empty and stays so: which one remains is still unknowable.
+      waiting = Math.max(0, waiting - 1)
+      if (waiting === 0) held = null
+    },
+    clear() {
+      held = null
+      waiting = 0
     },
   }
 }

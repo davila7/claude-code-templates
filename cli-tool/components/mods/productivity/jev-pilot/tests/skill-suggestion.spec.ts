@@ -401,11 +401,16 @@ test('a synced skill is looked for under every account directory, by its unprefi
   expect(syncedFileCandidates('/home/u', ['acc'], 'a/b')).toEqual([])
 })
 
-test('the skill settings read the two fields the setup touches, and malformed JSON reads as empty', () => {
+test('the skill settings read the two fields the setup touches; malformed JSON is marked invalid, not read as empty', () => {
   const settings = readSkillSettings('{"skillOverrides":{"a":"off","b":3},"disableBundledSkills":true,"model":"x"}')
   expect(settings).toEqual({ skillOverrides: { a: 'off' }, disableBundledSkills: true })
-  expect(readSkillSettings('{nope')).toEqual({ skillOverrides: {}, disableBundledSkills: undefined })
+  // An unparseable file must never look like an empty one: setup would plan edits on it.
+  for (const bad of ['{nope', '[1, 2]', '"text"', 'null']) {
+    expect(readSkillSettings(bad).invalid).toBe(true)
+  }
+  // No file (or an empty one) is simply no settings yet.
   expect(readSkillSettings(null)).toEqual({ skillOverrides: {}, disableBundledSkills: undefined })
+  expect(readSkillSettings('  ')).toEqual({ skillOverrides: {}, disableBundledSkills: undefined })
 })
 
 test('the setup plan hides user skills still on, leaves hidden ones, and reports plugin skills as locked', () => {
