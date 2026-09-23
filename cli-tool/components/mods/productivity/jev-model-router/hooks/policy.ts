@@ -414,6 +414,32 @@ export function bareCommand(text: string): boolean {
 }
 
 /**
+ * The log line for a backend that answered with an error, naming the cause
+ * where the body shows it: a 403 from TypeSafe's firewall is not a bad key.
+ *
+ * Measured against TypeSafe in September 2026 (20 security-flavoured texts,
+ * each as a main-loop and as a subagent state): its Cloudflare
+ * refuses texts that name `../../etc/passwd`, `' OR 1=1 --` or `${jndi:…}`
+ * in 12–32 ms with its "Attention Required" page, before the decision model
+ * reads them; DROP TABLE, rm -rf, <script>, reverse shells and the others went
+ * through. A code review brief that quotes such a string is left alone, like
+ * any failure. A state past its token limit is refused with 400
+ * `max_tokens_exceeded`. The firewall is recognised by its block page's
+ * title, not by any mention of Cloudflare, which an ordinary error body could
+ * carry.
+ */
+export function describeRefusal(provider: Provider, status: number, body: string): string {
+  if (status === 403 && /<title>[^<]*cloudflare/i.test(body)) {
+    return `${provider}'s firewall refused the text (403, Cloudflare); not classified`
+  }
+  if (status === 400 && body.includes('max_tokens_exceeded')) {
+    return `${provider} refused the text as too long (400 max_tokens_exceeded); not classified`
+  }
+  if (status === 401) return `${provider} rejected the key (401)`
+  return `${provider} responded ${status}`
+}
+
+/**
  * Holds a prompt's classification until the turn that reads that prompt
  * starts.
  *
