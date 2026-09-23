@@ -314,13 +314,16 @@ export interface PolicyConfig {
  */
 export function clipPrompt(text: string, maxChars: number): string {
   if (maxChars <= 0 || text.length <= maxChars) return text
+  // Cut on code points, so an emoji is never split into half a surrogate pair.
+  const chars = Array.from(text)
+  if (chars.length <= maxChars) return text
   // The tail takes the odd character, so it is never empty: `slice(-0)` is the
   // whole text.
   const head = Math.floor(maxChars / 2)
   const tail = maxChars - head
-  return `${text.slice(0, head)}
-[… ${text.length - maxChars} characters cut …]
-${text.slice(-tail)}`
+  return `${chars.slice(0, head).join('')}
+[… ${chars.length - maxChars} characters cut …]
+${chars.slice(-tail).join('')}`
 }
 
 /**

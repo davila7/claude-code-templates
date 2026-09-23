@@ -428,6 +428,9 @@ test('a long prompt goes to the backend as its two ends, the cut named', () => {
   expect(clipPrompt('x'.repeat(9000), 0)).toHaveLength(9000)
   expect(clipPrompt('abcdef', 1)).toBe('\n[… 5 characters cut …]\nf')
   expect(clipPrompt('abcdef', 3)).toBe('a\n[… 3 characters cut …]\nef')
+  // An emoji is two UTF-16 units; the cut never leaves half of one.
+  expect(clipPrompt('👍👍👍👍', 2)).toBe('👍\n[… 2 characters cut …]\n👍')
+  expect(clipPrompt('👍👍', 2)).toBe('👍👍')
   const clipped = clipPrompt(`Delete the prod backups.${'.'.repeat(10_000)}Then deploy.`, 60)
   expect(clipped.startsWith('Delete the prod backups.')).toBe(true)
   expect(clipped.endsWith('Then deploy.')).toBe(true)
