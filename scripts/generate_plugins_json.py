@@ -108,14 +108,13 @@ def gh_api(endpoint, retries=3):
                 if attempt < retries - 1:
                     time.sleep(2 ** attempt)
                     continue
-                return None
+                raise RuntimeError(f"gh api {endpoint} failed after {retries} attempts: {result.stderr}")
         except (subprocess.TimeoutExpired, FileNotFoundError) as e:
             if attempt < retries - 1:
                 time.sleep(2 ** attempt)
             else:
-                print(f"  ⚠️  gh CLI failed: {e}")
-                return None
-    return None
+                raise RuntimeError(f"gh api {endpoint} failed after {retries} attempts: {e}")
+    raise RuntimeError(f"gh api {endpoint} failed after {retries} attempts")
 
 
 def gh_file_content(repo, path):
