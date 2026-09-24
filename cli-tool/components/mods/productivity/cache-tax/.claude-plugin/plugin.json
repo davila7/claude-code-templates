@@ -1,0 +1,19 @@
+{
+  "name": "cache-tax",
+  "version": "2.1.3",
+  "description": "cache-tax, the Mod. Everything the hook form does, from inside Claude Code instead of the transcript: stops a cold send once with its price (the resend goes through), keeps the 1-hour prompt cache warm for a window you set with one cache-shared fork per idle stretch, arms that for you after a paid cold write, and keeps score of this session's cold writes. Needs function hooks (early access).",
+  "author": {
+    "name": "Karan Bansal"
+  },
+  "homepage": "https://cache-tax.karanbansal.in/",
+  "repository": "https://github.com/karanb192/cache-tax",
+  "license": "MIT",
+  "keywords": [
+    "cost",
+    "prompt-cache",
+    "cache",
+    "keepalive",
+    "usage",
+    "function-hooks"
+  ]
+}
