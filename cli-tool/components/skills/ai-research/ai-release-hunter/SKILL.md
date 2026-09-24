@@ -1,11 +1,12 @@
 ---
 name: ai-release-hunter
 description: Daily digest of AI releases from Anthropic, Meta, Vercel Labs, OpenAI and Google GitHub repos, the Claude Cowork changelog, the claude.dev blog and Hacker News, deduplicated against a local state file and sent by email. Use when the user asks for a daily AI news digest, to scan AI labs for new releases, or to set up a scheduled release-hunter job.
-version: 1.0.0
-author: Daniel Avila
 license: MIT
-tags: [ai-news, releases, github, hacker-news, digest, email, anthropic, openai, google, meta, vercel]
-allowed-tools: Bash, Read, Write, WebFetch
+allowed-tools: Bash Read Write WebFetch
+metadata:
+  author: Daniel Avila
+  version: "1.0.0"
+  tags: "ai-news, releases, github, hacker-news, digest, email, anthropic, openai, google, meta, vercel"
 ---
 
 # AI Release Hunter (Anthropic + Meta + Vercel + OpenAI + Google + Hacker News)
