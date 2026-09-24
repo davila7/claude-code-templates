@@ -712,6 +712,9 @@ def main():
                 results.append(data)
             else:
                 errors.append(repo_full)
+        except RuntimeError as e:
+            print(f"  ❌ Fatal API error processing {repo_full}: {e}")
+            raise
         except Exception as e:
             print(f"  ❌ Error processing {repo_full}: {e}")
             errors.append(repo_full)
