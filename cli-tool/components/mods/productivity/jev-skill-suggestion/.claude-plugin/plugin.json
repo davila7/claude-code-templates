@@ -33,11 +33,12 @@
     "provider": {
       "type": "string",
       "title": "Backend",
-      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then OpenRouter, then the Gateway, then the built-in classifier",
       "default": "auto",
       "options": [
         "auto",
         "typesafe",
+        "openrouter",
         "gateway",
         "builtin"
       ]
@@ -135,6 +136,25 @@
       "title": "Log decisions",
       "description": "Write each selection to the session log",
       "default": true
+    },
+    "openrouterApiKey": {
+      "type": "string",
+      "title": "OpenRouter API key",
+      "description": "Key for OpenRouter's decisions API; like TypeSafe's own API it reports a calibrated confidence, unlike the Gateway",
+      "default": "",
+      "sensitive": true
+    },
+    "openrouterBaseUrl": {
+      "type": "string",
+      "title": "OpenRouter base URL",
+      "description": "Base URL of OpenRouter's decisions API, to which the mod appends /decisions; empty uses https://openrouter.ai/api/alpha",
+      "default": ""
+    },
+    "openrouterModel": {
+      "type": "string",
+      "title": "OpenRouter model id",
+      "description": "Jev model id as OpenRouter names it; empty uses typesafe/jev-1.13",
+      "default": ""
     }
   }
 }

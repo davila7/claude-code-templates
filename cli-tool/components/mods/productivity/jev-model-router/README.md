@@ -2,14 +2,15 @@
 
 Picks the model and the reasoning effort each task runs with, using [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model: unstructured state in, a typed choice with a probability distribution out, no free-form text.
 
-Two backends, chosen by whichever key is set:
+Three backends, chosen by whichever key is set:
 
 | Backend | Endpoint | Model | Confidence |
 |---|---|---|---|
 | `typesafe` | `POST api.typesafe.ai/v1/systemone` | `jev-latest` | reported per answer |
+| `openrouter` | `POST openrouter.ai/api/alpha/decisions` | `typesafe/jev-1.13` | reported per answer |
 | `gateway` | `POST ai-gateway.vercel.sh/v4/ai/evaluation-model` | `typesafe-ai/jev` | derived from an optional distribution |
 
-TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the confidence bars below read. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
+With more than one key set, `auto` takes TypeSafe's own API, then OpenRouter, then the Gateway. The first two report the calibrated confidence the bars below read; the Gateway does not. Set `provider` to force one, or to `builtin` to use none of them. Each backend keeps its own URL and model option, so an override written for one is never sent to another. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
 
 Three switches, and they are not equally safe:
 
@@ -35,11 +36,11 @@ One request, three questions evaluated in parallel:
 
 - `tier` — a `choice` between three descriptions of the *work* (mechanical and local / ordinary engineering / hard or high-stakes). The decision model never sees a model name.
 - `effort` — a `score` on a four-level rubric, for how much step-by-step reasoning the task needs.
-- `risky` — whether the task touches production, money, credentials, or state that cannot be undone. A `noul` on TypeSafe's API, a `boolean` on the Gateway: the same question under two names.
+- `risky` — whether the task touches production, money, credentials, or state that cannot be undone. A `noul` on the decision APIs (TypeSafe's own and OpenRouter's), a `boolean` on the Gateway: the same question under two names.
 
 ## How it decides
 
-TypeSafe's API reports a `confidence` per answer. The Gateway's answer shape carries **no `confidence` field**, so on that backend confidence is read as the highest probability in the distribution — and that distribution is itself optional in the schema, in which case confidence is absent and the threshold does not fire.
+The decision APIs — TypeSafe's own and OpenRouter's — report a `confidence` per answer. The Gateway's answer shape carries **no `confidence` field**, so on that backend confidence is read as the highest probability in the distribution — and that distribution is itself optional in the schema, in which case confidence is absent and the threshold does not fire.
 
 The two mistakes do not cost the same, so they do not clear the same bar:
 
@@ -121,10 +122,13 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
 
 ```
   typesafeApiKey:         string  TypeSafe API key (preferred: it reports a confidence)
+  openrouterApiKey:       string  OpenRouter API key (also reports a confidence)
   gatewayApiKey:          string  Vercel AI Gateway key
-  provider:               string  "auto" | "typesafe" | "gateway" | "builtin"
+  provider:               string  "auto" | "typesafe" | "openrouter" | "gateway" | "builtin"
   typesafeBaseUrl:        string  empty uses https://api.typesafe.ai
   typesafeModel:          string  empty uses jev-latest
+  openrouterBaseUrl:      string  empty uses https://openrouter.ai/api/alpha
+  openrouterModel:        string  empty uses typesafe/jev-1.13
   gatewayBaseUrl:         string  empty uses https://ai-gateway.vercel.sh/v4/ai
   gatewayModel:           string  empty uses typesafe-ai/jev
   fastModel:              string  fast tier, alias or full id (default "haiku")
@@ -193,4 +197,4 @@ bun test cli-tool/components/mods/productivity/jev-model-router/tests
 
 **Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
-A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.
+A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: every backend is spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0. OpenRouter's decisions API takes that same shape, the same `noul` question type and the same `confidence` field, on its own host and under its own model id. The Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, was read from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Any of the three may change.

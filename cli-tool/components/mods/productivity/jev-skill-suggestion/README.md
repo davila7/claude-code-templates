@@ -4,14 +4,15 @@ Takes the skill listing out of the context window and lets [Jev](https://typesaf
 
 The decision is TypeSafe's own [skill-suggestion cookbook](https://docs.typesafe.ai/cookbooks/skill_suggestion), which on a 182-skill roster cut wrong skill loads from 16.8% to 7.3% and needless ones from 9.8% to 4.0%: two requests per prompt, one that ranks every skill and asks whether the prompt needs a skill at all, one that re-reads the top three properly and can reject all of them.
 
-Two backends, chosen by whichever key is set:
+Three backends, chosen by whichever key is set:
 
 | Backend | Endpoint | Model | Confidence |
 |---|---|---|---|
 | `typesafe` | `POST api.typesafe.ai/v1/systemone` | `jev-latest` | reported per answer |
+| `openrouter` | `POST openrouter.ai/api/alpha/decisions` | `typesafe/jev-1.13` | reported per answer |
 | `gateway` | `POST ai-gateway.vercel.sh/v4/ai/evaluation-model` | `typesafe-ai/jev` | derived from an optional distribution |
 
-TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence per answer, which the log shows beside every pick. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
+With more than one key set, `auto` takes TypeSafe's own API, then OpenRouter, then the Gateway. The first two report a calibrated confidence per answer, which the log shows beside every pick; the Gateway does not. Set `provider` to force one, or to `builtin` to use none of them. Each backend keeps its own URL and model option, so an override written for one is never sent to another. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
 
 **With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the ranking question with the small fast model, the descriptions folded into the text it reads. That path has no gate and no second request: its single answer is taken as is.
 
@@ -108,6 +109,8 @@ Their mean is the gate: under `gateThreshold` (0.30) nothing is suggested, whate
 
 **Request 2 — read the top three properly.** The same `choice` over the shortlist (`shortlist`, 3), now with each skill's full frontmatter description and the first `excerptChars` (700) of its SKILL.md as the criterion, and one `noul` per candidate — *does this skill do the specific thing the request asks for?* — answered on its own, so all of them can come back low. A shortlist whose best `fits` is under `fitsThreshold` (0.30) is dropped entirely; otherwise the `choice`'s winner is suggested. The two decide different things: the `choice` settles *which*, the `noul`s settle *whether*.
 
+`shortlist` is a floor rather than an exact count. A Choice takes at most 255 options, so a listing above that is split across several of them, and scores from different splits are not comparable — the ranking interleaves them instead. If the shortlist were smaller than the number of splits, the last splits would never be re-read and their skills could not be picked at all. The shortlist is therefore raised to the number of splits when that is larger, which past 765 skills means one extra body read per further 255.
+
 This is where lookalikes separate — on one line the skill that *edits* `.pptx` files reads nearly the same as the one that *authors* them; on 700 characters they do not.
 
 The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, `~/.claude/skills/synced/<account>/<name>/SKILL.md` for a skill synced from claude.ai, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session, and the same read is what gets injected.
@@ -180,24 +183,27 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 ## Options
 
 ```
-  typesafeApiKey:   string  TypeSafe API key (preferred: it reports a confidence)
-  gatewayApiKey:    string  Vercel AI Gateway key
-  provider:         string  "auto" | "typesafe" | "gateway" | "builtin"
-  typesafeBaseUrl:  string  empty uses https://api.typesafe.ai
-  typesafeModel:    string  empty uses jev-latest
-  gatewayBaseUrl:   string  empty uses https://ai-gateway.vercel.sh/v4/ai
-  gatewayModel:     string  empty uses typesafe-ai/jev
-  inject:           string  "content" attaches the chosen skill's SKILL.md (default); "suggest" names it for the Skill tool
-  hideListing:      boolean withhold the engine's skill listing (default true)
-  rerank:           boolean second request over the shortlist (default true)
-  shortlist:        number  how many of the ranking the second request re-reads (default 3)
-  gateThreshold:    number  gate mean under which nothing is suggested (default 0.3)
-  fitsThreshold:    number  best `fits` under which the shortlist is dropped (default 0.3)
-  excerptChars:     number  SKILL.md characters each candidate brings (default 700)
-  alwaysListed:     string  comma-separated names that stay in the listing
-  neverSuggested:   string  comma-separated names never offered to the decision model
-  timeoutMs:        number  latency budget per request (default 800)
-  logDecisions:     boolean log each decision (default true)
+  typesafeApiKey:    string  TypeSafe API key (preferred: it reports a confidence)
+  openrouterApiKey:  string  OpenRouter API key (also reports a confidence)
+  gatewayApiKey:     string  Vercel AI Gateway key
+  provider:          string  "auto" | "typesafe" | "openrouter" | "gateway" | "builtin"
+  typesafeBaseUrl:   string  empty uses https://api.typesafe.ai
+  typesafeModel:     string  empty uses jev-latest
+  openrouterBaseUrl: string  empty uses https://openrouter.ai/api/alpha
+  openrouterModel:   string  empty uses typesafe/jev-1.13
+  gatewayBaseUrl:    string  empty uses https://ai-gateway.vercel.sh/v4/ai
+  gatewayModel:      string  empty uses typesafe-ai/jev
+  inject:            string  "content" attaches the chosen skill's SKILL.md (default); "suggest" names it for the Skill tool
+  hideListing:       boolean withhold the engine's skill listing (default true)
+  rerank:            boolean second request over the shortlist (default true)
+  shortlist:         number  how many of the ranking the second request re-reads (default 3, floor)
+  gateThreshold:     number  gate mean under which nothing is suggested (default 0.3)
+  fitsThreshold:     number  best `fits` under which the shortlist is dropped (default 0.3)
+  excerptChars:      number  SKILL.md characters each candidate brings (default 700)
+  alwaysListed:      string  comma-separated names that stay in the listing
+  neverSuggested:    string  comma-separated names never offered to the decision model
+  timeoutMs:         number  latency budget per request (default 800)
+  logDecisions:      boolean log each decision (default true)
 ```
 
 `inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
@@ -243,4 +249,4 @@ bun test cli-tool/components/mods/productivity/jev-skill-suggestion/tests
 
 **Early access.** Mods need `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. This mod needs **Claude Code 2.1.278 or newer**: the `prompt.attachment` event it hooks to withhold the listing first shipped there. On an older release the module loads but the event never fires, so the listing stays and only the suggestion is added. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
-A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.
+A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: every backend is spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0. OpenRouter's decisions API takes that same shape, the same `noul` question type and the same `confidence` field, on its own host and under its own model id. The Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, was read from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Any of the three may change.

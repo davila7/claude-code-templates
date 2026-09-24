@@ -11,6 +11,7 @@ import {
   rankOf,
   readDecision,
   requestBody,
+  DEFAULT_BASE_URL,
   requestHeaders,
   requestModelId,
   route,
@@ -393,4 +394,47 @@ test('a decision for the tier the session already runs keeps its exact id', () =
   const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }))
   const routing = route(decision, { model: 'claude-opus-5[1m]', effort: 'medium' }, config)
   expect(routing.model).toBeNull()
+})
+
+test('openrouter posts to the decisions surface', () => {
+  expect(endpoint('openrouter', DEFAULT_BASE_URL.openrouter)).toBe(
+    'https://openrouter.ai/api/alpha/decisions',
+  )
+  expect(endpoint('openrouter', 'https://openrouter.ai/api/alpha/')).toBe(
+    'https://openrouter.ai/api/alpha/decisions',
+  )
+})
+
+test('openrouter takes the model in the body, so it sends no gateway headers', () => {
+  const headers = requestHeaders('openrouter', 'k', 'typesafe/jev-1.13')
+  expect(headers.authorization).toBe('Bearer k')
+  expect(headers['ai-model-id']).toBeUndefined()
+  expect(headers['ai-gateway-auth-method']).toBeUndefined()
+})
+
+test('openrouter is chosen when forced, and only with a key', () => {
+  expect(selectProvider('openrouter', '', '', 'or-key')).toBe('openrouter')
+  expect(selectProvider('openrouter', 'ts-key', 'gw-key', '')).toBeNull()
+})
+
+test('auto prefers typesafe, then openrouter, then the gateway', () => {
+  expect(selectProvider('auto', 'ts', 'gw', 'or')).toBe('typesafe')
+  expect(selectProvider('auto', '', 'gw', 'or')).toBe('openrouter')
+  expect(selectProvider('auto', '', 'gw', '')).toBe('gateway')
+  expect(selectProvider('auto', '', '', '')).toBeNull()
+})
+
+test('openrouter speaks the decision dialect: noul, not the SDK boolean', () => {
+  expect((questions('openrouter').risky as { type: string }).type).toBe('noul')
+  expect((questions('typesafe').risky as { type: string }).type).toBe('noul')
+  expect((questions('gateway').risky as { type: string }).type).toBe('boolean')
+})
+
+test('the decision APIs take the model in the body, the gateway does not', () => {
+  const or = JSON.parse(requestBody('openrouter', { prompt: 'p' }, 'typesafe/jev-1.13'))
+  expect(or.model).toBe('typesafe/jev-1.13')
+  const ts = JSON.parse(requestBody('typesafe', { prompt: 'p' }, 'jev-latest'))
+  expect(ts.model).toBe('jev-latest')
+  const gw = JSON.parse(requestBody('gateway', { prompt: 'p' }, 'typesafe-ai/jev'))
+  expect(gw.model).toBeUndefined()
 })

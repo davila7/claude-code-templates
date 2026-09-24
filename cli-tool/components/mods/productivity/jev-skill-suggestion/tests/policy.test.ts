@@ -22,6 +22,7 @@ import {
   readWide,
   rerankQuestions,
   requestBody,
+  DEFAULT_BASE_URL,
   requestHeaders,
   selectProvider,
   shortlistOf,
@@ -460,4 +461,126 @@ test('only a file with the backup\'s own shape is treated as a reusable backup',
   expect(validBackup('{"skillOverrides":{}}')).toBe(false)
   expect(validBackup('{nope')).toBe(false)
   expect(validBackup('[]')).toBe(false)
+})
+
+test('openrouter posts to the decisions surface', () => {
+  expect(endpoint('openrouter', DEFAULT_BASE_URL.openrouter)).toBe(
+    'https://openrouter.ai/api/alpha/decisions',
+  )
+  expect(endpoint('openrouter', 'https://openrouter.ai/api/alpha/')).toBe(
+    'https://openrouter.ai/api/alpha/decisions',
+  )
+})
+
+test('openrouter takes the model in the body, so it sends no gateway headers', () => {
+  const headers = requestHeaders('openrouter', 'k', 'typesafe/jev-1.13')
+  expect(headers.authorization).toBe('Bearer k')
+  expect(headers['ai-model-id']).toBeUndefined()
+  expect(headers['ai-gateway-auth-method']).toBeUndefined()
+})
+
+test('openrouter is chosen when forced, and only with a key', () => {
+  expect(selectProvider('openrouter', '', '', 'or-key')).toBe('openrouter')
+  expect(selectProvider('openrouter', 'ts-key', 'gw-key', '')).toBeNull()
+})
+
+test('auto prefers typesafe, then openrouter, then the gateway', () => {
+  expect(selectProvider('auto', 'ts', 'gw', 'or')).toBe('typesafe')
+  expect(selectProvider('auto', '', 'gw', 'or')).toBe('openrouter')
+  expect(selectProvider('auto', '', 'gw', '')).toBe('gateway')
+  expect(selectProvider('auto', '', '', '')).toBeNull()
+})
+
+test('openrouter speaks the decision dialect: noul, not the SDK boolean', () => {
+  const typeOf = (p: 'typesafe' | 'gateway' | 'openrouter') =>
+    (Object.values(rerankQuestions(p, [{ name: 'a', detail: 'd' }]) as Record<string, { type: string }>)
+      .find((q) => q.type === 'noul' || q.type === 'boolean') ?? { type: 'none' }).type
+  expect(typeOf('openrouter')).toBe('noul')
+  expect(typeOf('typesafe')).toBe('noul')
+  expect(typeOf('gateway')).toBe('boolean')
+})
+
+test('a listing over the Choice cap is split across parallel questions', () => {
+  const skills = Array.from({ length: 445 }, (_, i) => ({ name: `s${i}`, description: `d${i}` }))
+  const q = wideQuestions('openrouter', skills) as Record<string, { type: string; criteria: Record<string, string> }>
+  const chunks = Object.keys(q).filter((k) => k.startsWith('which'))
+  expect(chunks.length).toBe(2)
+  for (const k of chunks) expect(Object.keys(q[k]!.criteria).length).toBeLessThanOrEqual(255)
+  const total = chunks.reduce((n, k) => n + Object.keys(q[k]!.criteria).length, 0)
+  expect(total).toBe(445)
+})
+
+test('one question is still named `which` under the cap', () => {
+  const q = wideQuestions('openrouter', [{ name: 'a', description: 'd' }])
+  expect(Object.keys(q)).toContain('which')
+})
+
+test('chunk scores are not compared across chunks; the chunks interleave', () => {
+  const body = JSON.stringify({
+    answers: {
+      'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.2, b: 0.1 } },
+      'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.7 } },
+    },
+  })
+  const wide = readWide(body)
+  // `c` scores 0.7 and `a` scores 0.2, but each is normalised over its own options,
+  // so 0.7 does not outrank 0.2. Each chunk's best comes first, in chunk order.
+  expect(wide?.ranked.map((e) => e.name)).toEqual(['a', 'c', 'b'])
+  expect(wide?.chunks).toBe(2)
+})
+
+test('the shortlist takes at least one candidate from every chunk', () => {
+  const skills: Skill[] = ['a', 'b', 'c', 'd'].map((name) => ({ name, description: name }))
+  const body = JSON.stringify({
+    answers: {
+      'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.9, b: 0.1 } },
+      'which::1': { type: 'choice', choice: 'b', probabilities: { b: 0.9 } },
+      'which::2': { type: 'choice', choice: 'c', probabilities: { c: 0.9 } },
+      'which::3': { type: 'choice', choice: 'd', probabilities: { d: 0.9 } },
+    },
+  })
+  const wide = readWide(body)
+  expect(wide?.chunks).toBe(4)
+  // A configured 3 would have cut the fourth chunk off the shortlist, so `d` would
+  // be unselectable for its place in the catalog. The count is raised to the chunk
+  // count instead, which needs no comparison between chunks.
+  expect(shortlistOf(wide!, skills, 3).map((s) => s.name)).toEqual(['a', 'b', 'c', 'd'])
+  // A configured 1 is raised the same way: four chunks, one slot.
+  expect(shortlistOf(wide!, skills, 1).length).toBe(4)
+})
+
+test('a shortlist above the chunk count is left alone', () => {
+  const skills: Skill[] = ['a', 'b', 'c'].map((name) => ({ name, description: name }))
+  const wide = readWide(
+    JSON.stringify({ answers: { which: { type: 'choice', choice: 'a', probabilities: { a: 0.6, b: 0.3, c: 0.1 } } } }),
+  )
+  expect(wide?.chunks).toBe(1)
+  expect(shortlistOf(wide!, skills, 2).map((s) => s.name)).toEqual(['a', 'b'])
+})
+
+test('with no rerank the pick is the surest candidate, not chunk 0 by default', () => {
+  const skills: Skill[] = ['a', 'c'].map((name) => ({ name, description: name }))
+  const wide = readWide(
+    JSON.stringify({
+      answers: {
+        'which::0': { type: 'choice', choice: 'a', probabilities: { a: 0.2 } },
+        'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.7 } },
+      },
+    }),
+  )
+  // Without a second request there is no `fits` noul to settle it, and the ranking
+  // interleaves, so taking ranked[0] would name `a` however sure the model was of `c`.
+  expect(decide(wide, null, skills, config, false).name).toBe('c')
+})
+
+test('a malformed answer suggests nothing instead of throwing', () => {
+  expect(readWide(JSON.stringify({ answers: { which: null } }))).toBeNull()
+  expect(readRerank(JSON.stringify({ answers: { which: null } }))).toBeNull()
+  expect(readWide('null')).toBeNull()
+  const mixed = readWide(
+    JSON.stringify({
+      answers: { 'which::0': null, 'which::1': { type: 'choice', choice: 'c', probabilities: { c: 0.7 } } },
+    }),
+  )
+  expect(mixed?.ranked.map((e) => e.name)).toEqual(['c'])
 })

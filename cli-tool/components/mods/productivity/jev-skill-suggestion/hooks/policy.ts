@@ -18,20 +18,23 @@
  *              per candidate: does this skill do the specific thing asked?
  *              Every `fits` may come back low, and then nothing is suggested.
  *
- * Two backends speak to the same model with different wire shapes:
+ * Three backends speak to the same model with different wire shapes:
  *
- *   typesafe  POST https://api.typesafe.ai/v1/systemone
- *             `{ model, state, questions }`; a yes/no question is a `noul`
- *             and every answer carries its own `confidence`.
- *   gateway   POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
- *             `{ state, questions }` with the model in a header; a yes/no
- *             question is a `boolean` answered as `probability`.
+ *   typesafe    POST https://api.typesafe.ai/v1/systemone
+ *               `{ model, state, questions }`; a yes/no question is a `noul`
+ *               and every answer carries its own `confidence`.
+ *   openrouter  POST https://openrouter.ai/api/alpha/decisions
+ *               the same body and the same `noul` and `confidence` fields,
+ *               under OpenRouter's own model id and key.
+ *   gateway     POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
+ *               `{ state, questions }` with the model in a header; a yes/no
+ *               question is a `boolean` answered as `probability`.
  *
  * The Gateway shape is not documented publicly; it was read from
  * @ai-sdk/gateway and @ai-sdk/provider.
  */
 
-export type Provider = 'typesafe' | 'gateway'
+export type Provider = 'typesafe' | 'gateway' | 'openrouter'
 
 /** One skill as the model could be told about it: its name and one line. */
 export interface Skill {
@@ -53,6 +56,8 @@ export interface Wide {
   gate: number | null
   /** Each gate noul as answered, for the log. */
   gateValues: Record<string, number>
+  /** How many Choice questions the ranking came back in; the shortlist's floor. */
+  chunks: number
 }
 
 /** What the second request answered. */
@@ -71,24 +76,29 @@ export const NONE = 'none'
 export const DEFAULT_BASE_URL: Record<Provider, string> = {
   typesafe: 'https://api.typesafe.ai',
   gateway: 'https://ai-gateway.vercel.sh/v4/ai',
+  openrouter: 'https://openrouter.ai/api/alpha',
 }
 
 export const DEFAULT_MODEL: Record<Provider, string> = {
   typesafe: 'jev-latest',
   gateway: 'typesafe-ai/jev',
+  openrouter: 'typesafe/jev-1.13',
 }
 
 /**
  * Which backend a configuration asks for, or null for the built-in
- * classifier. `auto` prefers TypeSafe, since it is the only one that reports
- * a calibrated confidence; a forced backend whose key is missing resolves to
- * null rather than falling through to the other one's key.
+ * classifier. `auto` takes TypeSafe, then OpenRouter, then the Gateway: the
+ * first two report a calibrated confidence and the Gateway does not. A forced
+ * backend whose key is missing resolves to null rather than falling through
+ * to another one's key.
  */
-export function selectProvider(forced: string, typesafeKey: string, gatewayKey: string): Provider | null {
+export function selectProvider(forced: string, typesafeKey: string, gatewayKey: string, openrouterKey = ''): Provider | null {
   if (forced === 'builtin') return null
   if (forced === 'typesafe') return typesafeKey ? 'typesafe' : null
   if (forced === 'gateway') return gatewayKey ? 'gateway' : null
+  if (forced === 'openrouter') return openrouterKey ? 'openrouter' : null
   if (typesafeKey) return 'typesafe'
+  if (openrouterKey) return 'openrouter'
   if (gatewayKey) return 'gateway'
   return null
 }
@@ -96,7 +106,9 @@ export function selectProvider(forced: string, typesafeKey: string, gatewayKey: 
 /** The full endpoint a backend posts to. */
 export function endpoint(provider: Provider, baseUrl: string): string {
   const root = baseUrl.replace(/\/+$/, '')
-  return provider === 'typesafe' ? `${root}/v1/systemone` : `${root}/evaluation-model`
+  if (provider === 'typesafe') return `${root}/v1/systemone`
+  if (provider === 'openrouter') return `${root}/decisions`
+  return `${root}/evaluation-model`
 }
 
 /** A comma-separated option as a set of trimmed, non-empty names. */
@@ -400,20 +412,29 @@ const INVERTED = new Set(['prose_suffices'])
 
 /** The same yes/no question under two names. */
 function yesNo(provider: Provider, instructions: string): Record<string, unknown> {
-  return { type: provider === 'typesafe' ? 'noul' : 'boolean', instructions }
+  return { type: provider === 'gateway' ? 'boolean' : 'noul', instructions }
 }
 
 /** The first request's `questions`: the ranking and the gate. */
+/**
+ * A Choice question takes at most 255 options, so a machine with more skills than
+ * that cannot be ranked in one question. Past the cap the listing is split across
+ * several Choice questions, which run in parallel inside the same request.
+ */
+export const MAX_CHOICE_OPTIONS = 255
+
 export function wideQuestions(provider: Provider, skills: readonly Skill[]): Record<string, unknown> {
-  const criteria: Record<string, string> = {}
-  for (const skill of skills) criteria[skill.name] = skill.description || `A skill named ${skill.name}.`
-  const questions: Record<string, unknown> = {
-    which: {
-      type: 'choice',
-      instructions:
-        "Which of these skills, if any, is the right one to load to help with the user's latest request?",
-      criteria,
-    },
+  const instructions =
+    "Which of these skills, if any, is the right one to load to help with the user's latest request?"
+  const questions: Record<string, unknown> = {}
+  const chunks = Math.max(1, Math.ceil(skills.length / MAX_CHOICE_OPTIONS))
+  const per = Math.ceil(skills.length / chunks)
+  for (let i = 0; i < chunks; i++) {
+    const criteria: Record<string, string> = {}
+    for (const skill of skills.slice(i * per, (i + 1) * per)) {
+      criteria[skill.name] = skill.description || `A skill named ${skill.name}.`
+    }
+    questions[chunks === 1 ? 'which' : `which::${i}`] = { type: 'choice', instructions, criteria }
   }
   for (const [key, text] of Object.entries(GATE_QUESTIONS)) {
     questions[`gate::${key}`] = yesNo(provider, text)
@@ -453,14 +474,15 @@ export function requestBody(
   model: string,
 ): string {
   const state = { request: prompt, recent_context: '' }
-  const body = provider === 'typesafe' ? { model, state, questions } : { state, questions }
+  // Only the Gateway takes the model in a header; the decision APIs take it in the body.
+  const body = provider === 'gateway' ? { state, questions } : { model, state, questions }
   return JSON.stringify(body)
 }
 
 /** The request headers. */
 export function requestHeaders(provider: Provider, apiKey: string, model: string): Record<string, string> {
   const common = { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` }
-  if (provider === 'typesafe') return common
+  if (provider !== 'gateway') return common
   return {
     ...common,
     'ai-gateway-auth-method': 'api-key',
@@ -478,11 +500,19 @@ function answersOf(responseText: string): Answers | null {
   } catch {
     return null
   }
-  const answers = (parsed as { answers?: Answers }).answers
-  return answers && typeof answers === 'object' ? answers : null
+  const answers = (parsed as { answers?: Answers } | null)?.answers
+  if (!answers || typeof answers !== 'object') return null
+  // A backend can answer a question with `null`, and every reader below indexes
+  // into what it takes out of this map. Anything that is not an object is
+  // dropped here, so a malformed answer reads as an unanswered one.
+  const objects: Answers = {}
+  for (const [key, value] of Object.entries(answers)) {
+    if (value !== null && typeof value === 'object') objects[key] = value
+  }
+  return objects
 }
 
-/** P(true) of a yes/no answer: `noul` on TypeSafe, `probability` on the Gateway. */
+/** P(true) of a yes/no answer: `noul` on the decision APIs, `probability` on the Gateway. */
 function yesNoOf(answer: Record<string, unknown> | undefined): number | null {
   if (!answer) return null
   if (typeof answer.noul === 'number') return answer.noul
@@ -498,20 +528,52 @@ function yesNoOf(answer: Record<string, unknown> | undefined): number | null {
  */
 export function readWide(responseText: string): Wide | null {
   const answers = answersOf(responseText)
-  const which = answers?.which
-  if (!answers || !which || typeof which.choice !== 'string') return null
+  // One `which`, or `which::0..n` when the listing was split across the Choice cap.
+  const parts = Object.entries(answers ?? {})
+    .filter(([key]) => key === 'which' || key.startsWith('which::'))
+    .map(([, value]) => value)
+  if (!answers || parts.length === 0) return null
+  const which = parts.find((p) => typeof p.choice === 'string')
+  if (!which || typeof which.choice !== 'string') return null
+  const winner: string = which.choice
 
-  const probabilities = which.probabilities as Record<string, number> | undefined
-  const ranked: Wide['ranked'] = []
-  if (probabilities) {
-    for (const [name, probability] of Object.entries(probabilities)) {
-      if (typeof probability === 'number') ranked.push({ name, probability })
+  // A Choice distribution is normalised across ITS OWN options, so scores from
+  // different chunks are not comparable: 1.00 among 223 options and 0.70 among the
+  // other 222 say nothing about each other. Each chunk is therefore sorted on its
+  // own and the chunks are interleaved, so the shortlist samples all of them rather
+  // than whichever chunk happened to produce the largest numbers. The comparable
+  // judgement is the per-candidate `fits` noul in the second request, which is an
+  // absolute probability and not normalised against a set.
+  //
+  // Interleaving alone is not enough, because the shortlist truncates: `shortlistOf`
+  // raises its count to `chunks` so that every chunk reaches the second request.
+  const perChunk: Wide['ranked'][] = []
+  for (const part of parts) {
+    const probabilities = part.probabilities as Record<string, number> | undefined
+    const chunk: Wide['ranked'] = []
+    if (probabilities) {
+      for (const [name, probability] of Object.entries(probabilities)) {
+        if (typeof probability === 'number') chunk.push({ name, probability })
+      }
+    } else if (typeof part.choice === 'string') {
+      chunk.push({
+        name: part.choice,
+        probability: typeof part.confidence === 'number' ? part.confidence : null,
+      })
     }
-    ranked.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
+    chunk.sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0))
+    perChunk.push(chunk)
+  }
+  const ranked: Wide['ranked'] = []
+  for (let rank = 0; perChunk.some((c) => rank < c.length); rank++) {
+    for (const chunk of perChunk) {
+      const entry = chunk[rank]
+      if (entry) ranked.push(entry)
+    }
   }
   if (ranked.length === 0) {
     ranked.push({
-      name: which.choice,
+      name: winner,
       probability: typeof which.confidence === 'number' ? which.confidence : null,
     })
   }
@@ -525,7 +587,7 @@ export function readWide(responseText: string): Wide | null {
     oriented.push(INVERTED.has(key) ? 1 - value : value)
   }
   const gate = oriented.length > 0 ? oriented.reduce((a, b) => a + b, 0) / oriented.length : null
-  return { ranked, gate, gateValues }
+  return { ranked, gate, gateValues, chunks: perChunk.length }
 }
 
 /** Reads the second request's answer. */
@@ -553,6 +615,7 @@ export function builtinWide(label: string | undefined): Wide | null {
     ranked: label === NONE ? [] : [{ name: label, probability: null }],
     gate: null,
     gateValues: {},
+    chunks: 1,
   }
 }
 
@@ -583,14 +646,25 @@ export interface PolicyConfig {
   fitsThreshold: number
 }
 
-/** The shortlist the second request reads: the top of the ranking, by name. */
+/**
+ * The shortlist the second request reads: the top of the ranking, by name.
+ *
+ * `count` is a floor, not a ceiling. The ranking interleaves the chunks, so the
+ * first `chunks` entries are one per chunk; a count below that would cut the last
+ * chunks off the shortlist and make their skills unselectable for their position
+ * in the catalog alone. Taking the larger of the two keeps every chunk reachable
+ * without comparing Choice scores across chunks, which are not comparable. The
+ * listing is split at 255 options, so this only raises the configured 3 past 765
+ * skills, and then by one per further 255.
+ */
 export function shortlistOf(wide: Wide, skills: readonly Skill[], count: number): Skill[] {
+  const wanted = Math.max(count, wide.chunks)
   const byName = new Map(skills.map((skill) => [skill.name, skill]))
   const picked: Skill[] = []
   for (const entry of wide.ranked) {
     const skill = byName.get(entry.name)
     if (skill) picked.push(skill)
-    if (picked.length >= count) break
+    if (picked.length >= wanted) break
   }
   return picked
 }
@@ -653,11 +727,21 @@ export function decide(
     return { name: null, reason: `rerank named ${rerank.winner}, not on the shortlist` }
   }
 
-  const top = shortlist[0] as Skill
-  const probability = wide.ranked.find((entry) => entry.name === top.name)?.probability ?? null
+  // No second request means no `fits` noul, so the one pick has to come from the
+  // Choice scores. Inside a chunk the ranking is already sorted; across chunks it
+  // is interleaved, so taking the first entry would always name chunk 0's best
+  // whatever the other chunks answered. The scores are normalised per chunk and
+  // only loosely comparable, but the chunker gives every chunk the same size to
+  // within one option, and the alternative — deciding on catalog position — carries
+  // no information at all. With one chunk this picks what the sort already had.
+  const scored = shortlist.map((skill) => ({
+    skill,
+    probability: wide.ranked.find((entry) => entry.name === skill.name)?.probability ?? null,
+  }))
+  const best = scored.reduce((a, b) => ((b.probability ?? 0) > (a.probability ?? 0) ? b : a))
   return {
-    name: top.name,
-    reason: `top of ${wide.ranked.length}${probability === null ? '' : ` (${probability.toFixed(2)})`}, no rerank`,
+    name: best.skill.name,
+    reason: `top of ${wide.ranked.length}${best.probability === null ? '' : ` (${best.probability.toFixed(2)})`}, no rerank`,
   }
 }
 

@@ -5,21 +5,24 @@
  * API takes, reads its answer, and turns that answer into a model id. The
  * hooks module does every call on `$` at its own call site.
  *
- * Two backends speak to the same model with different wire shapes:
+ * Three backends speak to the same model with different wire shapes:
  *
- *   typesafe  POST https://api.typesafe.ai/v1/systemone
- *             `{ model, state, questions }`; a yes/no question is a `noul`
- *             and every answer carries its own `confidence`.
- *   gateway   POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
- *             `{ state, questions }` with the model in a header; a yes/no
- *             question is a `boolean`, and there is no `confidence` field —
- *             it has to be derived from an optional distribution.
+ *   typesafe    POST https://api.typesafe.ai/v1/systemone
+ *               `{ model, state, questions }`; a yes/no question is a `noul`
+ *               and every answer carries its own `confidence`.
+ *   openrouter  POST https://openrouter.ai/api/alpha/decisions
+ *               the same body and the same `noul` and `confidence` fields,
+ *               under OpenRouter's own model id and key.
+ *   gateway     POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model
+ *               `{ state, questions }` with the model in a header; a yes/no
+ *               question is a `boolean`, and there is no `confidence` field —
+ *               it has to be derived from an optional distribution.
  *
  * The Gateway shape is not documented publicly; it was read from
  * @ai-sdk/gateway and @ai-sdk/provider.
  */
 
-export type Provider = 'typesafe' | 'gateway'
+export type Provider = 'typesafe' | 'gateway' | 'openrouter'
 
 export type Tier = 'fast' | 'balanced' | 'deep'
 
@@ -64,6 +67,7 @@ const EFFORT_RUBRIC = ['almost none', 'some', 'a lot', 'as much as possible'] as
 export const DEFAULT_BASE_URL: Record<Provider, string> = {
   typesafe: 'https://api.typesafe.ai',
   gateway: 'https://ai-gateway.vercel.sh/v4/ai',
+  openrouter: 'https://openrouter.ai/api/alpha',
 }
 
 /**
@@ -75,23 +79,28 @@ const AI_GATEWAY_PROTOCOL_VERSION = '0.0.1'
 export const DEFAULT_MODEL: Record<Provider, string> = {
   typesafe: 'jev-latest',
   gateway: 'typesafe-ai/jev',
+  openrouter: 'typesafe/jev-1.13',
 }
 
 /**
  * Which backend a configuration asks for, or null for the built-in
- * classifier. `auto` prefers TypeSafe, since it is the only one that reports
- * a calibrated confidence; a forced backend whose key is missing resolves to
- * null rather than falling through to the other one's key.
+ * classifier. `auto` takes TypeSafe, then OpenRouter, then the Gateway: the
+ * first two report a calibrated confidence and the Gateway does not. A forced
+ * backend whose key is missing resolves to null rather than falling through
+ * to another one's key.
  */
 export function selectProvider(
   forced: string,
   typesafeKey: string,
   gatewayKey: string,
+  openrouterKey = '',
 ): Provider | null {
   if (forced === 'builtin') return null
   if (forced === 'typesafe') return typesafeKey ? 'typesafe' : null
   if (forced === 'gateway') return gatewayKey ? 'gateway' : null
+  if (forced === 'openrouter') return openrouterKey ? 'openrouter' : null
   if (typesafeKey) return 'typesafe'
+  if (openrouterKey) return 'openrouter'
   if (gatewayKey) return 'gateway'
   return null
 }
@@ -99,7 +108,9 @@ export function selectProvider(
 /** The full endpoint a backend posts to. */
 export function endpoint(provider: Provider, baseUrl: string): string {
   const root = baseUrl.replace(/\/+$/, '')
-  return provider === 'typesafe' ? `${root}/v1/systemone` : `${root}/evaluation-model`
+  if (provider === 'typesafe') return `${root}/v1/systemone`
+  if (provider === 'openrouter') return `${root}/decisions`
+  return `${root}/evaluation-model`
 }
 
 /** The `questions` map, in the shape the backend's schema names. */
@@ -116,9 +127,10 @@ export function questions(provider: Provider): Record<string, unknown> {
       criteria: EFFORT_RUBRIC,
     },
     risky: {
-      // The same question under two names: `noul` on TypeSafe's own API,
-      // `boolean` in the AI SDK's evaluation schema.
-      type: provider === 'typesafe' ? 'noul' : 'boolean',
+      // The same question under two names: `noul` on the decision APIs
+      // (TypeSafe's own and OpenRouter's), `boolean` in the AI SDK's
+      // evaluation schema, which is what the Gateway speaks.
+      type: provider === 'gateway' ? 'boolean' : 'noul',
       // Asked about the act, not the subject. The first wording ("the task
       // touches production, money, credentials") scored 0.96 on "add a
       // refund endpoint that calls Stripe" — ordinary code that happens to be
@@ -136,10 +148,11 @@ export function requestBody(
   state: Record<string, unknown>,
   model: string,
 ): string {
+  // Only the Gateway takes the model in a header; the decision APIs take it in the body.
   const body =
-    provider === 'typesafe'
-      ? { model, state, questions: questions(provider) }
-      : { state, questions: questions(provider) }
+    provider === 'gateway'
+      ? { state, questions: questions(provider) }
+      : { model, state, questions: questions(provider) }
   return JSON.stringify(body)
 }
 
@@ -150,7 +163,7 @@ export function requestHeaders(
   model: string,
 ): Record<string, string> {
   const common = { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` }
-  if (provider === 'typesafe') return common
+  if (provider !== 'gateway') return common
   return {
     ...common,
     'ai-gateway-auth-method': 'api-key',
@@ -168,13 +181,14 @@ function isTier(value: unknown): value is Tier {
 }
 
 /**
- * Reads a response from either backend.
+ * Reads a response from any of the backends.
  *
- * TypeSafe's own API reports a `confidence` per answer and a `noul` number
- * for a yes/no question. The Gateway reports neither: confidence has to come
- * from the highest probability of a distribution that is itself optional, and
- * a yes/no answer arrives as `probability`. Both are handled, and a missing
- * confidence reads as null rather than as a number the policy would trust.
+ * The decision APIs — TypeSafe's own and OpenRouter's — report a `confidence`
+ * per answer and a `noul` number for a yes/no question. The Gateway reports
+ * neither: confidence has to come from the highest probability of a
+ * distribution that is itself optional, and a yes/no answer arrives as
+ * `probability`. Both shapes are handled, and a missing confidence reads as
+ * null rather than as a number the policy would trust.
  */
 export function readDecision(responseText: string): Decision | null {
   let parsed: unknown
