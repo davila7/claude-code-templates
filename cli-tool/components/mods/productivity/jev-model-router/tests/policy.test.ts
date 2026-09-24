@@ -15,6 +15,7 @@ import {
   requestModelId,
   route,
   selectProvider,
+  bareCommand,
 } from '../hooks/policy.ts'
 import type { Decision, PolicyConfig } from '../hooks/policy.ts'
 
@@ -393,4 +394,10 @@ test('a decision for the tier the session already runs keeps its exact id', () =
   const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }))
   const routing = route(decision, { model: 'claude-opus-5[1m]', effort: 'medium' }, config)
   expect(routing.model).toBeNull()
+})
+
+test('a slash command alone is not a task; with text after it, it is', () => {
+  for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
+  for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
+    expect(bareCommand(text)).toBe(false)
 })
