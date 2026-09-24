@@ -33,6 +33,29 @@ export function currentSpeech(): Speech {
   return speech
 }
 
+// Full power: the effort was raised to max this turn. The pilot wears its
+// goggles down until the turn ends.
+let boosted = false
+
+export function setBoost(on: boolean): void {
+  boosted = on
+}
+
+export function isBoosted(): boolean {
+  return boosted
+}
+
+/**
+ * A subagent's name in the bubble: its task's short description (the Agent
+ * tool's `description`, e.g. "Fix S2a Codex findings"), cut to fit; its type
+ * (`general-purpose`, `Explore`) when it has none.
+ */
+export function subagentLabel(description: string | undefined, type: string, max = 32): string {
+  const text = (description ?? '').replace(/\s+/g, ' ').trim()
+  if (!text) return type
+  return text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`
+}
+
 /** The mood an effort level reads as. */
 export function moodOf(effort: string | null): Mood {
   if (effort === 'low' || effort === 'medium') return 'calm'
@@ -99,7 +122,6 @@ export const PALETTE: Record<string, string> = {
   F: '#ffd166', // flame
   f: '#ff7a59', // flame, outer
   R: '#e6edf3', // jump rope, thought dots, cursor
-  s: '#3b4a6b', // speed streaks
   B: '#5b8def', // book cover
   P: '#f5f0e1', // book pages
   M: '#56607d', // magnifier rim
@@ -146,7 +168,7 @@ export const CANVAS_H = 10
  *   search  searching: a magnifier sweeping, the eyes following it
  *   write   editing files: typing code on a laptop
  *   run     running commands: a terminal prompt, the cursor blinking
- *   fly     anything else (subagents, other tools): flying up
+ *   fly     anything else (subagents, other tools): flying, goggles down
  * Idle:
  *   rest    hovering, the scarf flapping, blinking now and then
  *   rope    play: jumping rope
@@ -208,7 +230,7 @@ function setAt(row: string, x: number, ch: string): string {
 }
 
 /** The pilot for one frame of one act, before it is placed. */
-function clawdFor(act: Act, frame: number, blink: boolean): string[] {
+function clawdFor(act: Act, frame: number, blink: boolean, goggles: boolean): string[] {
   let rows = [...CLAWD]
   if (act === 'look' && !blink) {
     // The eyes glance left, back, right, back.
@@ -230,12 +252,15 @@ function clawdFor(act: Act, frame: number, blink: boolean): string[] {
     for (const y of [3, 4]) rows[y] = setAt(rows[y] as string, 11, '.')
     for (const y of [1, 2]) rows[y] = setAt(rows[y] as string, 11, 'C')
   }
-  if (act === 'fly') {
-    // Flying: goggles down over the eyes, the strap round the head.
+  if (goggles) {
+    // Goggles down over the eyes, the strap round the head: flying, or at
+    // full power.
     rows[0] = '.CCCCCCCCCC.'
     rows[1] = '.CCCCCCCCCC.'
-    rows[2] = 'GGWLGGGGWLGG'
+    rows[2] = '.GWLGGGGWLG.'
     rows[3] = 'CCLLCCCCLLCC'
+  }
+  if (act === 'fly') {
     // The flames flicker long and short, their colors steady.
     rows.push(...(frame % 2 === 1 ? [FLAMES[0] as string] : FLAMES))
   } else if (act !== 'rope') {
@@ -261,22 +286,17 @@ function flapScarf(grid: Grid, sx: number, sy: number, wind: number): void {
 /**
  * The pixel canvas for one frame of one act. `wind` flaps the scarf's end
  * (by default in step with the frames; resting, the pet passes its own).
+ * `goggles` pulls them down over the eyes: always when flying.
  */
-export function scenePixels(act: Act, frame = 0, blink = false, wind = frame): string[] {
+export function scenePixels(act: Act, frame = 0, blink = false, wind = frame, goggles = act === 'fly'): string[] {
   const grid = blank()
-  const clawd = clawdFor(act, frame, blink)
+  const clawd = clawdFor(act, frame, blink, goggles)
   const X = 1
   const scarf = (top: number) => flapScarf(grid, X + 11, top + 5, wind)
   if (act === 'fly') {
-    // Flying up: a bob (down a pixel on the short flame), and streaks
-    // sliding down past both sides.
+    // Flying: a bob, down a pixel on the short flame.
     paste(grid, clawd, X, frame % 2)
     scarf(frame % 2)
-    for (const x of [0, BODY_W - 1]) {
-      const y = (frame * 2 + (x === 0 ? 0 : 5)) % CANVAS_H
-      dot(grid, x, y, 's')
-      dot(grid, x, (y + 1) % CANVAS_H, 's')
-    }
   } else if (act === 'rope') {
     // Four beats: the rope overhead, coming down in front, under the feet
     // (the pilot up in the air), coming round behind.
@@ -384,8 +404,8 @@ function drawProp(grid: Grid, act: Act, frame: number): void {
 }
 
 /** The canvas as terminal lines of cells, two pixel rows per line. */
-export function sceneRows(act: Act, frame = 0, blink = false, wind = frame): Cell[][] {
-  const pixels = scenePixels(act, frame, blink, wind)
+export function sceneRows(act: Act, frame = 0, blink = false, wind = frame, goggles = act === 'fly'): Cell[][] {
+  const pixels = scenePixels(act, frame, blink, wind, goggles)
   const rows: Cell[][] = []
   for (let y = 0; y < pixels.length; y += 2) {
     const top = pixels[y] as string

@@ -12,7 +12,7 @@ function world(on: On, tier: string, messages: () => SessionMessage[]) {
   const log: string[] = []
   const efforts: unknown[] = []
   const statuses: string[] = []
-  mock.clock(on)
+  const clock = mock.clock(on)
   mock.env(on, { HOME: '/nowhere' })
   mock.store(on)
   on('ui.log', async (_$, e) => {
@@ -33,7 +33,7 @@ function world(on: On, tier: string, messages: () => SessionMessage[]) {
     efforts.push(e.effort)
     return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'tool_use' as const, usage: null }
   })
-  return { log, efforts, statuses }
+  return { log, efforts, statuses, clock }
 }
 
 /** Beneath the plugins, Bash fails on `false` and succeeds on anything else; a `deny` command is refused. */
@@ -192,4 +192,17 @@ test('the pet shows what Claude is doing: reading during a Read, running during 
   expect(during[0]).toContain('reading')
   expect(during[1]).toContain('running')
   expect(await bubble($)).toContain('thinking')
+})
+
+test('subagents still working in the background: the pilot cruises until they are done', async ($, on) => {
+  const { clock } = world(on, 'balanced', () => [])
+  on('session.start', async (_$, e) => ({ cwd: e.cwd }))
+  let status = 'running'
+  on('agent.list', async () => ({ value: [{ id: 'a1', description: 'build', type: 'general-purpose', status }] }))
+  await $.session.start({ cwd: '/tmp/project', surface: null, isInteractive: true } as never)
+  await clock.advance(1600)
+  expect(await bubble($)).toContain('working')
+  status = 'completed'
+  await clock.advance(1600)
+  expect(await bubble($)).not.toContain('working')
 })

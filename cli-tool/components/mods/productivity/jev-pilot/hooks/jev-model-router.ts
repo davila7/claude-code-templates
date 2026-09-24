@@ -58,7 +58,7 @@
 import type { HttpInit, HttpResponse, Register } from 'claude-code'
 import { NOT_A_TASK, recentContext, signalsOf } from './context.ts'
 import { clearSkillNotes, resetBriefing, takeBriefing, takeSkill, turnLine } from './summary.ts'
-import { moodOf, say, turnSpeech } from './pet-art.ts'
+import { moodOf, say, setBoost, subagentLabel, turnSpeech } from './pet-art.ts'
 import { feature } from './features.ts'
 import type { ContextMessage } from './context.ts'
 import { appendEntry, configKeysOf, entriesOf, LEDGER_KEY, reportPrompt, suggestions, summarize } from './ledger.ts'
@@ -69,6 +69,7 @@ import {
   effortLevel,
   effortScoreOf,
   engineMoved,
+  isFollowUp,
   escalate,
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
@@ -127,6 +128,7 @@ async function classify(
   state: Record<string, unknown>,
   withStrategy: boolean,
   what: string,
+  subagent = false,
 ): Promise<{ decision: Decision | null; miss: Miss | null }> {
   if (!backend) return { decision: null, miss: null }
   try {
@@ -134,7 +136,7 @@ async function classify(
       io.fetch(backend.url, {
         method: 'POST',
         headers: requestHeaders(backend.provider, backend.apiKey, backend.modelId),
-        body: requestBody(backend.provider, state, backend.modelId, withStrategy),
+        body: requestBody(backend.provider, state, backend.modelId, withStrategy, subagent),
       }),
       io.sleep(backend.timeoutMs),
     ])
@@ -270,7 +272,7 @@ export const register: Register = (on, options) => {
   const routeSubagentEffort = () => routeSubagentModel() && subagentEffortOn
   // Each subagent's decision, by the id core gives it when it starts; its
   // effort, once its first request has settled it.
-  const subagents = new Map<string, { decision: Decision; type: string }>()
+  const subagents = new Map<string, { decision: Decision; label: string; model: string | null }>()
   const subagentEffort = new Map<string, Effort | null>()
   const MAX_SUBAGENTS = 64
   /** What is switched on, for the note that tells the model. */
@@ -466,10 +468,10 @@ export const register: Register = (on, options) => {
         effort = routing.effort
         subagentEffort.set(agentId, effort)
         if (effort && lines) {
-          $.ui.log(verbose ? `[jev-model-router] ${known.type} → effort ${effort}: ${routing.reason}` : `jev · subagent ${known.type} → effort ${effort}`)
+          $.ui.log(verbose ? `[jev-model-router] ${known.label} → effort ${effort}: ${routing.reason}` : `jev · subagent ${known.label} → effort ${effort}`)
         }
         if (effort && petOn()) {
-          say(`${known.type} → ${effort}`, 'focused')
+          say(`${known.label} → ${[known.model, effort].filter(Boolean).join(' · ')}`, 'focused')
           $.ui.invalidate('ui.render')
         }
       }
@@ -522,6 +524,8 @@ export const register: Register = (on, options) => {
               $.ui.status(`jev · struggling → ${raised}`)
             }
             if (petOn()) {
+              // At max, the pilot pulls its goggles down for the rest of the turn.
+              if (raised === 'max') setBoost(true)
               say(`${failed} fails → ${raised} ✈`, raised === 'max' ? 'boost' : moodOf(raised))
               $.ui.invalidate('ui.render')
             }
@@ -546,7 +550,7 @@ export const register: Register = (on, options) => {
     const taken = pending.take()
     const decision = taken?.decision ?? null
     turnPrompt = taken?.prompt ?? null
-    const routing = route(decision, { model: e.model, effort: e.effort }, policy)
+    const routing = route(decision, { model: e.model, effort: e.effort }, policy, { noLowering: taken ? isFollowUp(taken.prompt) : false })
     const change: { model?: string; effort?: Effort } = {}
     // The main loop's `model` is sent to the API as written, so an alias
     // becomes the id the engine was seen using for it; a subagent's
@@ -773,6 +777,7 @@ export const register: Register = (on, options) => {
           { prompt: e.prompt, description: e.description, agentType: e.subagentType },
           false,
           'the subagent',
+          true,
         )
       ).decision
     } else {
@@ -803,20 +808,22 @@ export const register: Register = (on, options) => {
     // (turn.step), from this same decision, kept by the id it starts with.
     const current = e.model ?? e.parentModel
     const { model, reason } = route(decision, { model: current }, policy)
+    // Named by its task in the bubble and the log, not its generic type.
+    const label = subagentLabel(e.description, e.subagentType)
     if (!model) {
-      if (verbose) $.ui.log(`[jev-model-router] ${e.subagentType}: model kept (${reason})`)
+      if (verbose) $.ui.log(`[jev-model-router] ${label} (${e.subagentType}): model kept (${reason})`)
     } else {
       if (lines) {
-        $.ui.log(verbose ? `[jev-model-router] ${e.subagentType} → ${model}: ${reason}` : `jev · subagent ${e.subagentType} → ${model}`)
+        $.ui.log(verbose ? `[jev-model-router] ${label} (${e.subagentType}) → ${model}: ${reason}` : `jev · subagent ${label} → ${model}`)
       }
       if (petOn()) {
-        say(`${e.subagentType} → ${model}`, 'focused')
+        say(`${label} → ${model}`, 'focused')
         $.ui.invalidate('ui.render')
       }
     }
     const result = await next(model ? { ...e, model } : e)
     if (decision && result.agentId && routeSubagentEffort()) {
-      subagents.set(result.agentId, { decision, type: e.subagentType })
+      subagents.set(result.agentId, { decision, label, model: model ?? null })
       while (subagents.size > MAX_SUBAGENTS) subagents.delete(subagents.keys().next().value as string)
     }
     return result

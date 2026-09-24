@@ -40,7 +40,7 @@ To install it for every project instead, with an installer, a `claude-jev` launc
 
 ## How it decides
 
-**Effort** is a five-level rubric. Each level names a kind of task, not an amount:
+**Effort** is a choice of five named levels, each saying what kind of task it is for, not an amount (asked as a choice, not a 0-4 score: on 76 labelled real requests that halved the answers off by two or more levels):
 
 | Level | Kind of task |
 |---|---|
@@ -50,16 +50,18 @@ To install it for every project instead, with an installer, a `claude-jev` launc
 | `xhigh` | design across components, a bug with an unknown cause |
 | `max` | novel architecture, security, a failure that resisted earlier attempts |
 
-- **Close calls lean up.** Within `effortCloseMargin` (0.15), the higher of two levels wins.
+- **Jev rates the work, not the topic.** A question answered in words, or a small diff review, is low or medium even when it's about architecture or security.
+- **Close calls lean up, as far as `high`.** Within `effortCloseMargin` (0.15), the higher of two levels wins. `xhigh` needs Jev at least 60% sure the task is very hard.
+- **Short approvals never lower the effort.** "fix all and continue", "1" or "ok go ahead" can raise it, never lower it.
 - **Raising and lowering have different bars.** Raising needs confidence 0.3; lowering needs 0.6.
 - **Risky work gets real thought.** A task that would itself deploy, move money or destroy data gets at least `high`.
 - **Turns start at `xhigh` at most.** Only the mid-turn raise reaches `max`.
 
-**Subagents** get the cheapest tier that fits their brief: `haiku`, `sonnet` or `opus`. These are family names, so Claude Code uses its current release of each. They also get an effort from the same decision, on the same rubric and bars as the main conversation; the Agent tool has no effort setting, so it is set on each request the subagent makes (models without one are left alone).
+**Subagents** get the cheapest model that fits their brief, each described by when to choose it: **Haiku** when there's no logic to work out (search, read and report, copy or clone, boilerplate, comments, renames, formatting), **Sonnet** when the logic is ordinary or already written down (carrying out a plan, a well-specified change, tests, a described bug), **Opus** when the work needs real judgment. These are family names, so Claude Code uses its current release of each. They also get an effort from the same decision, rated on carrying out the brief (a brief that names the files, steps and tests has done the design); the Agent tool has no effort setting, so it is set on each request the subagent makes (models without one are left alone).
 
 **Claude knows it's there.** On the first prompt of each session, and again after a compaction, Claude gets a short note listing what jev-pilot decides (only the parts switched on), so it leaves those decisions alone: it won't pin a subagent's model or effort unless you ask.
 
-**Strategy** advice is added to the prompt as an `<execution_strategy>` block only when Jev is confident (0.6, or 0.8 for `graph`) and the advice agrees with the tier. Claude may ignore it.
+**Strategy** advice is added to the prompt as an `<execution_strategy>` block only when Jev is confident (0.6, or 0.8 for `graph`) and the advice agrees with the tier. `parallel` is fan-out then join, in the background. `graph` is a small blueprint of plain subagents: real nodes only, waves that start together, one shared plan file, a separate read-only reviewer after each join, and bounds (4 subagents at a time, 2 review rounds per wave). Claude may ignore it.
 
 **Skills.** One per prompt at most:
 1. Rank every skill. Catalogs over the API's 255-choice limit are ranked in parallel batches.

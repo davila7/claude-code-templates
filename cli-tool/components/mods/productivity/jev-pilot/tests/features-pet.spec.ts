@@ -9,7 +9,7 @@ import {
   parseJevCommand,
   setFeature,
 } from '../hooks/features.ts'
-import { type Act, actOfTool, BODY_W, CANVAS_H, PALETTE, SCARF_CYCLE, CANVAS_W, PLAY_FRAMES, PLAYS, scenePixels, sceneRows, turnSpeech } from '../hooks/pet-art.ts'
+import { type Act, actOfTool, BODY_W, CANVAS_H, subagentLabel, PALETTE, SCARF_CYCLE, CANVAS_W, PLAY_FRAMES, PLAYS, scenePixels, sceneRows, turnSpeech } from '../hooks/pet-art.ts'
 
 const allOn = { effort: true, raise: true, subagents: true, skills: true, strategy: true, model: false, pet: true }
 
@@ -110,9 +110,9 @@ test('every frame of every act is the same size, five lines tall', () => {
 
 test('each act moves: its frames differ within a loop and repeat after it', () => {
   // A loop runs until the act and the scarf's flap line up again
-  // (flying: the bob and the streaks' 5 steps down the canvas).
+  // (flying: the bob, two frames).
   const lcm = (a: number, b: number): number => (a * b) / (function gcd(x: number, y: number): number { return y ? gcd(y, x % y) : x })(a, b)
-  const loops: Record<string, number> = { fly: 10, think: 8, read: 4, search: 4, write: 12, run: 10, ...PLAY_FRAMES }
+  const loops: Record<string, number> = { fly: 2, think: 8, read: 4, search: 4, write: 12, run: 10, ...PLAY_FRAMES }
   for (const act of ['fly', 'think', 'read', 'search', 'write', 'run', ...PLAYS] as Act[]) {
     const n = lcm(loops[act] as number, SCARF_CYCLE)
     const frames = Array.from({ length: n }, (_, f) => scenePixels(act, f).join('\n'))
@@ -190,4 +190,26 @@ test('with no answer, the bubble says why: too slow, too busy, or an error', () 
   expect(turnSpeech({ ...none, miss: 'busy' }).text).toBe('jev busy · left as is')
   expect(turnSpeech({ ...none, miss: 'error' }).text).toBe('jev error · left as is')
   expect(turnSpeech(none).text).toBe('no answer in time · left as is')
+})
+
+test('goggles come down over the eyes when flying, or at full power in any pose', () => {
+  // Down: the goggles sit below the top of the head, not on it.
+  const down = (pixels: string[]) => pixels.findIndex((row) => row.includes('W')) > pixels.findIndex((row) => row.includes('C'))
+  expect(down(scenePixels('fly', 0))).toBe(true)
+  expect(down(scenePixels('rest', 0))).toBe(false)
+  const reading = scenePixels('read', 0, false, 0, true)
+  expect(down(reading)).toBe(true)
+  // The goggles cover the eyes, and the book is still in hand.
+  expect(reading.join('')).not.toContain('E')
+  expect(reading.join('')).toMatch(/B/)
+})
+
+test('a subagent is named by its task in the bubble, not its generic type', () => {
+  expect(subagentLabel('Fix S2a Codex findings', 'general-purpose')).toBe('Fix S2a Codex findings')
+  expect(subagentLabel('  Build   plan 3\ntasks 1-4 ', 'general-purpose')).toBe('Build plan 3 tasks 1-4')
+  const long = subagentLabel('Write the talent-match plan 4 for the casting dashboard', 'general-purpose')
+  expect(long.length).toBe(32)
+  expect(long.endsWith('…')).toBe(true)
+  expect(subagentLabel('', 'Explore')).toBe('Explore')
+  expect(subagentLabel(undefined, 'Explore')).toBe('Explore')
 })

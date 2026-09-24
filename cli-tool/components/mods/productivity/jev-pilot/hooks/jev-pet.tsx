@@ -4,13 +4,15 @@
  * decided, so the decisions stay out of the conversation. It also owns
  * `/jev`, the switches for every part of jev-pilot.
  *
- * While a turn runs the pilot shows what Claude is doing, and the bubble says it
- * beside a spinner: thinking (thought dots), reading (a book), searching (a
- * magnifier), writing (typing on a laptop), running a command (a terminal),
- * anything else (a subagent) flying. Idle, it hovers, its scarf's end
- * dipping every few seconds; it blinks, and every few seconds plays for a
- * moment: jumps rope, waves, looks around. Resting, it redraws only when
- * something moves.
+ * While a turn runs the pilot shows what Claude is doing, and the bubble says
+ * it beside a spinner: thinking (a thought cloud), reading (a book),
+ * searching (a magnifier), writing (paper and a pencil), running a command
+ * (a terminal), anything else (a subagent) flying, goggles down. With
+ * subagents still working in the background after a turn, it cruises,
+ * goggles down, until they finish; at max effort the goggles stay down for
+ * the turn. Idle, it hovers, its scarf's end dipping every few seconds; it
+ * blinks, and every few seconds plays for a moment: jumps rope, waves, looks
+ * around. Resting, it redraws only when something moves.
  *
  * The router and the skill module set what it says (pet-art.ts `say`) and ask
  * for a redraw; this module draws it, in the `AbovePrompt` band on the
@@ -31,16 +33,22 @@ import {
   ACT_LABEL,
   actOfTool,
   currentSpeech,
+  isBoosted,
   MOOD_COLOR,
   PLAY_FRAMES,
   PLAYS,
   SCARF_CYCLE,
   sceneRows,
+  setBoost,
   WORK_ACTS,
 } from './pet-art.ts'
 
 const FEATURES_KEY = 'features'
 const FLY_MS = 200
+// Background subagents still working, no turn running: the pilot cruises,
+// goggles down, at a calmer rate; running agents are checked this often.
+const CRUISE_MS = 450
+const AGENTS_EVERY_MS = 1500
 const WIND_MS = 1000
 const BLINK_EVERY_MS = 4600
 const BLINK_MS = 170
@@ -62,6 +70,8 @@ export const register: Register = (on) => {
   let plays = 0
   let wind = 0
   let breeze: Timer | null = null
+  let cruising: Timer | null = null
+  let watcher: Timer | null = null
   // The main loop's tool calls in flight, each with the act it shows.
   const running = new Map<string, Act>()
   let calls = 0
@@ -69,6 +79,10 @@ export const register: Register = (on) => {
   const stopPlay = () => {
     playing?.cancel()
     playing = null
+  }
+  const stopCruise = () => {
+    cruising?.cancel()
+    cruising = null
   }
 
   // Session setup: the saved switches, the /jev command, the blink. (Under a
@@ -87,7 +101,7 @@ export const register: Register = (on) => {
       .catch((error) => $.ui.log(`[jev-pilot] /jev not registered: ${String(error)}`))
     blinker?.cancel()
     blinker = $.clock.every(BLINK_EVERY_MS, () => {
-      if (!feature('pet') || workingTurn || playing) return
+      if (!feature('pet') || workingTurn || playing || cruising) return
       blink = true
       $.ui.invalidate('ui.render')
       $.clock.after(BLINK_MS, () => {
@@ -103,12 +117,12 @@ export const register: Register = (on) => {
       if (!feature('pet')) return
       wind++
       const step = wind % SCARF_CYCLE
-      if (!workingTurn && !playing && (step === SCARF_CYCLE - 1 || step === 0)) $.ui.invalidate('ui.render')
+      if (!workingTurn && !playing && !cruising && (step === SCARF_CYCLE - 1 || step === 0)) $.ui.invalidate('ui.render')
     })
     // Idle play: every few seconds one of the plays, in turn, for a moment.
     player?.cancel()
     player = $.clock.every(PLAY_EVERY_MS, () => {
-      if (!feature('pet') || workingTurn || playing) return
+      if (!feature('pet') || workingTurn || playing || cruising) return
       const play = PLAYS[plays++ % PLAYS.length] as (typeof PLAYS)[number]
       const steps = PLAY_FRAMES[play] * PLAY_LOOPS[play]
       act = play
@@ -124,6 +138,35 @@ export const register: Register = (on) => {
       })
       $.ui.invalidate('ui.render')
     })
+    // Subagents working in the background, with no turn running: the pilot
+    // cruises until they are all done. Asked of the engine every few seconds,
+    // so one that was stopped or failed never leaves it flying.
+    watcher?.cancel()
+    watcher = $.clock.every(AGENTS_EVERY_MS, async () => {
+      if (!feature('pet')) return
+      let busy = false
+      try {
+        busy = (await $.agent.list()).some((agent) => agent.status === 'running')
+      } catch {
+        busy = false
+      }
+      if (busy && !workingTurn && !cruising) {
+        stopPlay()
+        act = 'fly'
+        frame = 0
+        cruising = $.clock.every(CRUISE_MS, () => {
+          frame++
+          $.ui.invalidate('ui.render')
+        })
+      } else if (!busy && cruising) {
+        stopCruise()
+        if (!workingTurn) {
+          act = 'rest'
+          frame = 0
+          $.ui.invalidate('ui.render')
+        }
+      }
+    })
     return result
   })
 
@@ -132,6 +175,8 @@ export const register: Register = (on) => {
     flying?.cancel()
     flying = null
     stopPlay()
+    stopCruise()
+    setBoost(false)
     act = 'rest'
     workingTurn = null
     running.clear()
@@ -162,6 +207,8 @@ export const register: Register = (on) => {
     workingTurn = e.turnId
     flying?.cancel()
     stopPlay()
+    stopCruise()
+    setBoost(false)
     running.clear()
     act = 'think'
     frame = 0
@@ -210,6 +257,7 @@ export const register: Register = (on) => {
       workingTurn = null
       flying?.cancel()
       flying = null
+      setBoost(false)
       act = 'rest'
       frame = 0
       $.ui.invalidate('ui.render')
@@ -224,7 +272,8 @@ export const register: Register = (on) => {
     const columns = e.props.bodyColumns || (e.viewport?.columns ?? 80)
     const speech = currentSpeech()
     const color = MOOD_COLOR[speech.mood]
-    const rows = sceneRows(act, frame, blink, wind)
+    // Goggles down when flying, and at full power (effort raised to max).
+    const rows = sceneRows(act, frame, blink, wind, act === 'fly' || isBoosted())
     const working = (WORK_ACTS as readonly Act[]).includes(act)
     const text = working ? `${SPINNER[frame % SPINNER.length]} ${ACT_LABEL[act as (typeof WORK_ACTS)[number]]} · ${speech.text}` : speech.text
     return (

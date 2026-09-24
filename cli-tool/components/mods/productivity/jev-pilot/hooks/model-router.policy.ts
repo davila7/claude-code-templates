@@ -68,13 +68,13 @@ export const STRATEGY_ORDER: readonly Strategy[] = ['direct', 'delegate', 'paral
  */
 const STRATEGY_CRITERIA: Record<Strategy, string> = {
   direct:
-    'The main conversation does it itself: a question, a lookup, a command, or a change to one or a few files. The right answer for most requests, including most follow-ups.',
+    'The main conversation does it itself: a question, a lookup, a command, or a change to one or a few files. One job with one clear finish line. The right answer for most requests, including most follow-ups.',
   delegate:
-    'One subagent on a cheaper model does a broad but mechanical part first — searching or reading across many files, a codebase sweep, bulk renames — and the main conversation acts on its short report.',
+    'One subagent on a cheaper model does a broad but mechanical part first (searching or reading across many files, a codebase sweep, bulk renames) and the main conversation acts on its short report.',
   parallel:
-    'Several independent pieces with no shared files or state (separate modules, services or investigations), each done by its own subagent at the same time, then combined.',
+    'Fan out, then join: several independent pieces with no shared files or state (separate modules, services or investigations), each done by its own subagent at the same time, then combined in one place.',
   graph:
-    'A large build with parts that depend on each other: plan a small dependency graph, run each wave of independent parts as parallel subagents, integrate and test between waves. Only for work too big for one conversation to do well.',
+    'Work one conversation would lose track of: parts that depend on each other in waves, or distinct specialties that hand off (build, then an independent review, then fixes), with results fanning in to be checked. Only for large builds; most work, even big work, is direct or parallel.',
 }
 
 /**
@@ -98,10 +98,10 @@ export const TIER_ORDER: readonly Tier[] = ['fast', 'balanced', 'deep']
  * shape of the work, not about model names: the model never sees an id.
  */
 const TIER_CRITERIA: Record<Tier, string> = {
-  fast: 'Mechanical and local: read or summarise a file, run one command, rename a symbol, answer something already in context.',
+  fast: 'Haiku. Choose when there is no logic to work out, only doing: search or list files, read and report what is there, copy, move or clone, fill in boilerplate from an existing pattern, add or fix comments and docs, rename, reformat, run a command and report the result.',
   balanced:
-    'Ordinary engineering: implement a well-specified change across a few files, write tests, fix a clearly described bug, review a small diff.',
-  deep: 'Hard or high-stakes: architecture and design, debugging a failure whose cause is unknown, security, data migrations, concurrency, anything touching production or money.',
+    'Sonnet. Choose when the logic is ordinary or already written down: carry out a detailed brief or plan step by step, implement a well-specified change across a few files, write tests for code that exists, fix a clearly described bug, review a small diff.',
+  deep: 'Opus. Choose when the work needs real judgment: design and architecture, a bug whose cause is unknown, security, data migrations, concurrency, anything touching production or money, or a problem whose approach is not written down.',
 }
 
 /**
@@ -171,7 +171,49 @@ export function endpoint(provider: Provider, baseUrl: string): string {
  * is asked only for the main conversation: a subagent is already one part of
  * a split, and its own is not this router's to decide.
  */
-export function questions(provider: Provider, withStrategy = false): Record<string, unknown> {
+/**
+ * The effort question for a subagent's brief. Asked as for a conversation,
+ * a planner's detailed brief (files, steps, tests, stakes) reads as hard in
+ * itself; what the subagent needs is the reasoning to carry it out. Measured
+ * on 14 real builder and fixer briefs: 10 read as xhigh with the general
+ * question, 1 with this one (the brief that asked for a design).
+ */
+export const SUBAGENT_EFFORT_INSTRUCTIONS =
+  'How much step-by-step reasoning does a subagent need to carry out this brief? A brief that already names the files, the steps and the tests has done the design: carrying it out is execution. Rate higher only when the brief itself asks for design, an unknown cause, or reasoning that is not already written out. Rate the work, not how important the topic sounds: reviewing a small diff is medium, even for security.'
+
+/**
+ * The effort question for the conversation. Measured on 76 labelled real
+ * requests: rating the topic instead of the work put 8 of 26 medium tasks
+ * (advice questions, small security reviews) at xhigh; this wording, with
+ * the follow-up rule in `route`, took the misses of 2+ levels from 19 to 9.
+ */
+export const EFFORT_INSTRUCTIONS =
+  'How much step-by-step reasoning does the work this request asks for need? Rate the work, not how important the topic sounds: a question or advice answered in words, even about architecture or security, is low or medium, and reviewing a small diff is medium. A short reply that approves, continues or picks an option ("go ahead", "fix all and continue", "1") takes the size of the work it approves, from the recent conversation.'
+
+/**
+ * A short reply that is not a question ("fix all and continue", "ok go
+ * ahead", "1"): it continues or approves work, so its own words say nothing
+ * about how big that work is. Such a reply never lowers the effort.
+ */
+export function isFollowUp(prompt: string): boolean {
+  const text = prompt.trim()
+  if (!text || text.endsWith('?')) return false
+  if (/^(what|why|how|is|are|do|does|did|can|could|should|where|when|which|who)\b/i.test(text)) return false
+  return text.split(/\s+/).length <= 8
+}
+
+/**
+ * The effort question's options, one per rung of EFFORT_ORDER, each saying
+ * when to choose it (the rubric's levels). Asked as a choice, not a score:
+ * measured on 76 labelled real requests, named options halved the answers
+ * off by two or more levels (9 to 5) and got more medium tasks right (7 to
+ * 10 of 26), with its misses balanced instead of mostly too high.
+ */
+export const EFFORT_CHOICES: Record<Effort, string> = Object.fromEntries(
+  EFFORT_ORDER.map((level, index) => [level, EFFORT_RUBRIC[index] as string]),
+) as Record<Effort, string>
+
+export function questions(provider: Provider, withStrategy = false, subagent = false): Record<string, unknown> {
   const asked: Record<string, unknown> = {
     tier: {
       type: 'choice',
@@ -179,9 +221,9 @@ export function questions(provider: Provider, withStrategy = false): Record<stri
       criteria: TIER_CRITERIA,
     },
     effort: {
-      type: 'score',
-      instructions: 'How much step-by-step reasoning does this task need?',
-      criteria: EFFORT_RUBRIC,
+      type: 'choice',
+      instructions: subagent ? SUBAGENT_EFFORT_INSTRUCTIONS : EFFORT_INSTRUCTIONS,
+      criteria: EFFORT_CHOICES,
     },
     risky: {
       // The same question under two names: `noul` on TypeSafe's own API and
@@ -216,8 +258,9 @@ export function requestBody(
   state: Record<string, unknown>,
   model: string,
   withStrategy = false,
+  subagent = false,
 ): string {
-  const asked = questions(provider, withStrategy)
+  const asked = questions(provider, withStrategy, subagent)
   const body = provider !== 'gateway' ? { model, state, questions: asked } : { state, questions: asked }
   return JSON.stringify(body)
 }
@@ -294,16 +337,27 @@ export function readDecision(responseText: string): Decision | null {
   const strategyAnswer = answers.strategy
   const strategy = isStrategy(strategyAnswer?.choice) ? strategyAnswer.choice : null
 
-  const effortProbabilities = effortAnswer?.probabilities
+  // Effort comes as a choice (a level name, probabilities by name) or, from
+  // an older question, a score (0..4, probabilities keyed "0".."4"). Both
+  // read the same: probabilities by rung, and their mean as the score.
+  const rawProbabilities = effortAnswer?.probabilities
+  const byName = rawProbabilities && typeof rawProbabilities === 'object' && !Array.isArray(rawProbabilities) ? (rawProbabilities as Record<string, unknown>) : null
+  let effortProbabilities: Record<string, number> | null = null
+  let effort: number | null = typeof effortAnswer?.score === 'number' ? effortAnswer.score : null
+  if (byName && EFFORT_ORDER.some((level) => typeof byName[level] === 'number')) {
+    effortProbabilities = Object.fromEntries(EFFORT_ORDER.map((level, index) => [String(index), typeof byName[level] === 'number' ? (byName[level] as number) : 0]))
+    effort = EFFORT_ORDER.reduce((sum, _level, index) => sum + index * (effortProbabilities as Record<string, number>)[String(index)]!, 0)
+  } else if (typeof effortAnswer?.choice === 'string' && (EFFORT_ORDER as readonly string[]).includes(effortAnswer.choice)) {
+    effort = EFFORT_ORDER.indexOf(effortAnswer.choice as Effort)
+  } else if (byName) {
+    effortProbabilities = byName as Record<string, number>
+  }
   return {
     tier: tierAnswer.choice,
     confidence: confidenceOf(tierAnswer),
-    effort: typeof effortAnswer?.score === 'number' ? effortAnswer.score : null,
+    effort,
     effortConfidence: effortAnswer ? confidenceOf(effortAnswer) : null,
-    effortProbabilities:
-      effortProbabilities && typeof effortProbabilities === 'object' && !Array.isArray(effortProbabilities)
-        ? (effortProbabilities as Record<string, number>)
-        : null,
+    effortProbabilities,
     risky,
     strategy,
     strategyConfidence: strategy && strategyAnswer ? confidenceOf(strategyAnswer) : null,
@@ -325,19 +379,33 @@ function confidenceOf(answer: Record<string, unknown>): number | null {
   return values.length > 0 ? Math.max(...values) : null
 }
 
+/** The rubric level for "hard": the lean on close calls goes no higher. */
+const HARD = 2
+
 /**
- * The rubric level to act on, leaning up on a close call; null without an
- * effort answer.
+ * How sure the decision model must be that a task is very hard (xhigh or
+ * max, together) to act on it: above `high`, each rung costs a lot, so a
+ * near split between hard and very hard stays at hard.
+ */
+export const VERY_HARD_CONFIDENCE = 0.6
+
+/**
+ * The rubric level to act on; null without an effort answer.
  *
- * Under-thinking a hard task costs more than over-thinking an easy one, so
- * when two levels are nearly tied the higher wins. With a distribution, the
- * runner-up is taken when it is higher and within `margin` of the top; with
- * a bare score, a fraction at or above `0.5 - margin` rounds up. A margin of
- * 0 is plain rounding and the plain top of the distribution.
+ * Under-thinking a hard task costs more than over-thinking an easy one, so up
+ * to `high` a close call leans up: with a distribution, the runner-up is
+ * taken when it is higher (at most `high`) and within `margin` of the top;
+ * with a bare score, a fraction at or above `0.5 - margin` rounds up (at most
+ * to `high`). A margin of 0 is plain rounding and the plain top.
+ *
+ * Above `high` the bar is how sure the model is: `xhigh` or `max` only when
+ * those two together hold at least `veryHard` of the answer, and `xhigh` when
+ * they do even though `high` alone came top.
  */
 export function effortScoreOf(
   decision: Pick<Decision, 'effort' | 'effortProbabilities'>,
   margin: number,
+  veryHard = VERY_HARD_CONFIDENCE,
 ): number | null {
   const top = EFFORT_ORDER.length - 1
   const ranked = Object.entries(decision.effortProbabilities ?? {})
@@ -353,13 +421,18 @@ export function effortScoreOf(
     .sort((a, b) => b.probability - a.probability || b.level - a.level)
   const [best, second] = ranked
   if (best) {
-    if (second && second.level > best.level && best.probability - second.probability <= margin) return second.level
-    return best.level
+    let level = best.level
+    if (second && second.level > level && second.level <= HARD && best.probability - second.probability <= margin) level = second.level
+    const veryHardShare = ranked.filter((entry) => entry.level > HARD).reduce((sum, entry) => sum + entry.probability, 0)
+    if (level > HARD && veryHardShare < veryHard) return HARD
+    if (level <= HARD && veryHardShare >= veryHard) return HARD + 1
+    return level
   }
   if (decision.effort === null || !Number.isFinite(decision.effort)) return null
   const score = Math.min(top, Math.max(0, decision.effort))
   const whole = Math.floor(score)
-  return Math.min(top, score - whole >= 0.5 - margin ? whole + 1 : whole)
+  const lean = whole + 1 <= HARD ? margin : 0
+  return Math.min(top, score - whole >= 0.5 - lean ? whole + 1 : whole)
 }
 
 /** The rubric score (0..4) as a reasoning level. */
@@ -545,6 +618,7 @@ export function route(
   decision: Decision | null,
   current: { model: string; effort?: string | number },
   config: PolicyConfig,
+  hints: { noLowering?: boolean } = {},
 ): Routing {
   if (!decision) return NOTHING
 
@@ -595,9 +669,13 @@ export function route(
     // Above the ceiling already (set by hand): the ceiling limits what this
     // router asks for, it is not a reason to cut what the person chose.
     const aboveCeiling = currentRank !== null && currentRank > ceilingOf(config)
+    // A short follow-up approves or continues work its words don't describe:
+    // it may raise the effort, never lower it.
+    const lowering = currentRank !== null && wantedRank < currentRank
     if (
       comparable &&
       !aboveCeiling &&
+      !(hints.noLowering && lowering) &&
       wantedRank !== currentRank &&
       (forced || allowed(wantedRank, currentRank, decision.effortConfidence, config))
     ) {
@@ -642,9 +720,16 @@ const STRATEGY_HOW: Record<Exclude<Strategy, 'direct'>, string> = {
   delegate:
     'Send the broad, mechanical part (searching or reading across many files) to one subagent with a self-contained brief and a request for a short report, then do the rest here. Keep small lookups here: a subagent costs a fresh context.',
   parallel:
-    'Split the work into independent pieces that share no files, and dispatch one subagent per piece in a single message so they run at the same time. Give each a self-contained brief, then combine and verify their results here.',
-  graph:
-    'Plan a small dependency graph first: which parts depend on which. Run each wave of independent parts as parallel subagents, each owning its own files, then integrate and run the tests before the next wave. Keep the graph small; a few nodes is usually enough.',
+    'Fan out, then join. Split the work into independent pieces that share no files, and start one subagent per piece in a single message, in the background, so they run at the same time. Give each a self-contained brief naming its files and how to check its piece. Then join here: read their reports, integrate, and run the tests once. Two pieces that touch the same file are one piece.',
+  graph: [
+    'Sketch the graph in a few lines before starting, and keep it that small:',
+    '- Nodes: one subagent per independent part or real specialty (a builder per part; one read-only reviewer). A step you could do inline is not a node.',
+    '- Edges: parts with no dependency between them start together, in one message, in the background; a wave starts only when the parts it depends on are done, and joins here.',
+    '- Shared state: one plan file with each node\'s brief, files and status. Each node writes only its own section and its own files.',
+    '- Review: after each join, a separate read-only reviewer subagent checks the result against the plan and the tests. On a fail, send its findings back to the builder once, then decide here.',
+    '- Bounds: at most 4 subagents at a time and 2 review rounds per wave; a failed node is redone alone, without touching the others\' work.',
+    'If the graph cannot be explained in one breath, work directly instead.',
+  ].join('\n'),
 }
 
 /**

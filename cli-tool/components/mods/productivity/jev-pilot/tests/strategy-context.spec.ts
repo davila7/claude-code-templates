@@ -12,6 +12,9 @@ import {
   requestBody,
   route,
   STRATEGY_ORDER,
+  SUBAGENT_EFFORT_INSTRUCTIONS,
+  EFFORT_INSTRUCTIONS,
+  isFollowUp,
 } from '../hooks/model-router.policy.ts'
 import type { Decision, PolicyConfig, Strategy, StrategyConfig } from '../hooks/model-router.policy.ts'
 import { requestBody as skillRequestBody, wideQuestions } from '../hooks/skill-suggestion.policy.ts'
@@ -107,8 +110,10 @@ const decided = (patch: Partial<Decision>): Decision => ({
 test('the rubric reaches max, and every rung is reachable from its own score', () => {
   expect(EFFORT_ORDER).toEqual(['low', 'medium', 'high', 'xhigh', 'max'])
   EFFORT_ORDER.forEach((level, score) => expect(effortLevel(score)).toBe(level))
-  const rubric = (questions('typesafe').effort as { criteria: string[] }).criteria
-  expect(rubric.length).toBe(EFFORT_ORDER.length)
+  // Effort is asked as a choice: one named option per rung, low to max.
+  const options = (questions('typesafe').effort as { type: string; criteria: Record<string, string> })
+  expect(options.type).toBe('choice')
+  expect(Object.keys(options.criteria)).toEqual([...EFFORT_ORDER])
 })
 
 test('the ceiling caps what the router asks for', () => {
@@ -285,10 +290,32 @@ test('the route acts on the leaned level', () => {
 
 // --- the questions themselves ------------------------------------------------------
 
-test('every effort level describes a kind of task, one per rung', () => {
-  const rubric = (questions('openrouter').effort as { criteria: string[] }).criteria
-  expect(rubric.length).toBe(EFFORT_ORDER.length)
-  for (const level of rubric) expect(level.length).toBeGreaterThan(40)
+test('every effort option says when to choose it, one per rung', () => {
+  const options = (questions('openrouter').effort as { criteria: Record<string, string> }).criteria
+  expect(Object.keys(options)).toEqual([...EFFORT_ORDER])
+  for (const when of Object.values(options)) expect(when.length).toBeGreaterThan(40)
+})
+
+test('every model option names its model and says when to choose it; Sonnet has its own place', () => {
+  const tiers = (questions('openrouter').tier as { type: string; criteria: Record<string, string> }).criteria
+  expect(tiers.fast).toMatch(/^Haiku\. Choose when there is no logic/)
+  expect(tiers.balanced).toMatch(/^Sonnet\. Choose when the logic is ordinary or already written down/)
+  expect(tiers.deep).toMatch(/^Opus\. Choose when the work needs real judgment/)
+})
+
+test('an effort answer given as a choice reads as probabilities by rung, with their mean as the score', () => {
+  const text = JSON.stringify({
+    answers: {
+      tier: { type: 'choice', choice: 'balanced', probabilities: { fast: 0.1, balanced: 0.8, deep: 0.1 }, confidence: 0.8 },
+      effort: { type: 'choice', choice: 'high', probabilities: { low: 0, medium: 0.2, high: 0.7, xhigh: 0.1, max: 0 }, confidence: 0.7 },
+      risky: { type: 'noul', noul: 0.05 },
+    },
+  })
+  const decision = readDecision(text)
+  expect(decision?.effortProbabilities).toEqual({ '0': 0, '1': 0.2, '2': 0.7, '3': 0.1, '4': 0 })
+  expect(decision?.effort).toBeCloseTo(1.9)
+  expect(decision?.effortConfidence).toBe(0.7)
+  expect(effortScoreOf(decision as Decision, 0.15)).toBe(2)
 })
 
 test('the risk question says what true and false look like, where the schema takes it', () => {
@@ -299,4 +326,99 @@ test('the risk question says what true and false look like, where the schema tak
   const gateway = questions('gateway').risky as { type: string; criteria?: unknown }
   expect(gateway.type).toBe('boolean')
   expect(gateway.criteria).toBeUndefined()
+})
+
+// ---- above high, the bar is how sure the model is --------------------------------
+// Distributions below are Jev's real answers for subagent briefs of 2026-09-24.
+
+const dist = (probabilities: Record<string, number>, effort: number) => ({ effort, effortProbabilities: probabilities })
+const bareScore = (effort: number) => ({ effort, effortProbabilities: null })
+
+test('the lean on close calls stops at high: a near split with xhigh stays high', () => {
+  // "Accept slow successful heartbeats": high 52, xhigh 45, max 1.
+  expect(effortScoreOf(dist({ '2': 0.52, '3': 0.45, '4': 0.01 }, 2.47), 0.15)).toBe(2)
+  // "Build plan 3 tasks 1-4": xhigh 51 on top, but xhigh and max hold 57 in all.
+  expect(effortScoreOf(dist({ '2': 0.42, '3': 0.51, '4': 0.06 }, 2.63), 0.15)).toBe(2)
+})
+
+test('xhigh when the model is at least 60% sure the task is very hard, even with high on top', () => {
+  // "Fix plan-3 Codex findings": xhigh 84, max 14.
+  expect(effortScoreOf(dist({ '2': 0.02, '3': 0.84, '4': 0.14 }, 3.12), 0.15)).toBe(3)
+  // high came top, but xhigh and max together hold 60.
+  expect(effortScoreOf(dist({ '2': 0.4, '3': 0.35, '4': 0.25 }, 2.85), 0.15)).toBe(3)
+  // The bar is adjustable.
+  expect(effortScoreOf(dist({ '2': 0.42, '3': 0.51, '4': 0.06 }, 2.63), 0.15, 0.5)).toBe(3)
+})
+
+test('a bare score leans up only as far as high', () => {
+  expect(effortScoreOf(bareScore(1.4), 0.15)).toBe(2)
+  expect(effortScoreOf(bareScore(2.4), 0.15)).toBe(2)
+  expect(effortScoreOf(bareScore(2.5), 0.15)).toBe(3)
+})
+
+test('a subagent is asked about carrying out its brief, on the same rubric', () => {
+  const general = questions('openrouter') as Record<string, { instructions: string; criteria: string[] }>
+  const subagent = questions('openrouter', false, true) as Record<string, { instructions: string; criteria: string[] }>
+  expect(subagent.effort?.instructions).toBe(SUBAGENT_EFFORT_INSTRUCTIONS)
+  expect(general.effort?.instructions).not.toBe(SUBAGENT_EFFORT_INSTRUCTIONS)
+  expect(subagent.effort?.criteria).toEqual(general.effort?.criteria)
+  expect(JSON.parse(requestBody('openrouter', { prompt: 'x' }, 'm', false, true)).questions.effort.instructions).toBe(SUBAGENT_EFFORT_INSTRUCTIONS)
+})
+
+// ---- the graph blueprint: nodes, edges, shared state, a reviewer, bounds ------------
+
+test('graph advice is a small blueprint: real nodes, parallel waves, one plan file, a separate reviewer, bounds', () => {
+  const graph = adviseStrategy(
+    { tier: 'deep', confidence: 0.9, risky: 0, effort: 3, effortConfidence: 0.8, strategy: 'graph', strategyConfidence: 0.95 },
+    { minConfidence: 0.6, minGraphConfidence: 0.8, graphSkill: '' },
+  ).block as string
+  expect(graph).toContain('A step you could do inline is not a node')
+  expect(graph).toContain('in one message, in the background')
+  expect(graph).toContain('one plan file')
+  expect(graph).toContain('separate read-only reviewer')
+  expect(graph).toContain('at most 4 subagents at a time')
+  expect(graph).toContain('one breath')
+})
+
+test('parallel advice fans out in the background and joins once', () => {
+  const parallel = adviseStrategy(
+    { tier: 'balanced', confidence: 0.9, risky: 0, effort: 2, effortConfidence: 0.8, strategy: 'parallel', strategyConfidence: 0.9 },
+    { minConfidence: 0.6, minGraphConfidence: 0.8, graphSkill: '' },
+  ).block as string
+  expect(parallel).toContain('Fan out, then join')
+  expect(parallel).toContain('in the background')
+  expect(parallel).toContain('Two pieces that touch the same file are one piece')
+})
+
+// ---- measured fixes (76 labelled real requests, 2026-09-24) ------------------------
+
+test('a short reply that is not a question is a follow-up; a question is not', () => {
+  for (const reply of ['fix all and continue', 'ok go ahead with the iam update', '1', 'yes do it', 'the limit already reset']) {
+    expect(isFollowUp(reply)).toBe(true)
+  }
+  for (const other of ['what status?', 'is it finish', 'why does the build fail', 'rename getUser to fetchUser across the api, its callers, the tests and the docs please']) {
+    expect(isFollowUp(other)).toBe(false)
+  }
+})
+
+test('a follow-up may raise the effort, never lower it', () => {
+  const lowAnswer = { tier: 'fast' as const, confidence: 0.95, risky: 0, effort: 0, effortConfidence: 0.95, effortProbabilities: { '0': 0.95, '1': 0.05 } }
+  expect(route(lowAnswer, { model: 'claude-opus-5-5', effort: 'medium' }, config).effort).toBe('low')
+  expect(route(lowAnswer, { model: 'claude-opus-5-5', effort: 'medium' }, config, { noLowering: true }).effort).toBeNull()
+  const highAnswer = { ...lowAnswer, effort: 2, effortProbabilities: { '2': 0.9, '1': 0.1 } }
+  expect(route(highAnswer, { model: 'claude-opus-5-5', effort: 'medium' }, config, { noLowering: true }).effort).toBe('high')
+})
+
+test('the conversation question rates the work, not the topic', () => {
+  expect((questions('openrouter') as Record<string, { instructions: string }>).effort?.instructions).toBe(EFFORT_INSTRUCTIONS)
+  expect(EFFORT_INSTRUCTIONS).toContain('Rate the work, not how important the topic sounds')
+  expect(SUBAGENT_EFFORT_INSTRUCTIONS).toContain('Rate the work, not how important the topic sounds')
+})
+
+test('the newest assistant message keeps its beginning and its end: where it asks what a short reply answers', () => {
+  const report = `Plan 1 is merged. ${'The tests pass and the typecheck is clean. '.repeat(40)}Should I start writing plan 2?`
+  const recent = recentContext([user('build plan 1'), assistant(report)], 'ok do it', { messages: 4, chars: 2000 })
+  expect(recent).toContain('Plan 1 is merged.')
+  expect(recent).toContain('Should I start writing plan 2?')
+  expect(recent.length).toBeLessThanOrEqual(2000)
 })

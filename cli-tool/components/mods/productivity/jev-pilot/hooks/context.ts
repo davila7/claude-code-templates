@@ -36,11 +36,14 @@ export interface ContextLimits {
 }
 
 /** A message as one line: who, what they said, and which tools ran. */
-function lineOf(message: ContextMessage, cap: number): string | null {
+function lineOf(message: ContextMessage, cap: number, tail = 0): string | null {
   const text = message.text.replace(/\s+/g, ' ').trim()
   const tools = (message.toolUses ?? []).map((use) => (use.isError ? `${use.tool} (failed)` : use.tool))
   if (!text && tools.length === 0) return null
-  const said = text.length > cap ? `${text.slice(0, cap)}…` : text
+  // With a tail, a long message keeps its beginning and its end: where a
+  // reply asks its question ("Shall I start?") is usually the end.
+  const said =
+    text.length <= cap ? text : tail > 0 && tail < cap ? `${text.slice(0, cap - tail)} … ${text.slice(-tail)}` : `${text.slice(0, cap)}…`
   const ran = tools.length > 0 ? ` [tools: ${tools.join(', ')}]` : ''
   return `${message.role}: ${said}${ran}`
 }
@@ -65,11 +68,25 @@ export function recentContext(
   const last = list.at(-1)
   if (last && last.role === 'user' && last.text.trim() === prompt.trim()) list = list.slice(0, -1)
 
+  // The newest assistant message is what a short reply answers ("yes", "1",
+  // "fix all and continue"), and its proposal is usually at its end: it gets
+  // about half the budget and keeps its beginning and its end; the others
+  // share the rest.
   const cap = Math.max(200, Math.floor(limits.chars / limits.messages))
+  let newestAssistant = -1
+  for (let index = list.length - 1; index >= 0; index--) {
+    if ((list[index] as ContextMessage).role === 'assistant' && (list[index] as ContextMessage).text.trim()) {
+      newestAssistant = index
+      break
+    }
+  }
+  const bigCap = Math.min(limits.chars, Math.max(cap, Math.floor(limits.chars * 0.55)))
+  const otherCap = newestAssistant >= 0 && limits.messages > 1 ? Math.max(200, Math.floor((limits.chars - bigCap) / (limits.messages - 1))) : cap
   const lines: string[] = []
   let used = 0
   for (let index = list.length - 1; index >= 0 && lines.length < limits.messages; index--) {
-    const line = lineOf(list[index] as ContextMessage, cap)
+    const message = list[index] as ContextMessage
+    const line = index === newestAssistant ? lineOf(message, bigCap, Math.floor(bigCap * 0.72)) : lineOf(message, otherCap)
     if (!line) continue
     if (used + line.length > limits.chars) {
       // A budget smaller than one message still carries the newest one.
