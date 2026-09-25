@@ -179,6 +179,18 @@ export function parseConfig(text: string, source: string): Parsed {
   return { config, errors }
 }
 
+/**
+ * A regex whose matching can blow up (a quantified group that itself holds a
+ * quantifier, as in `(a+)+` or `(\\w*)*`): matching is synchronous, so one such
+ * pattern could stall every tool call. Refused at load time.
+ */
+export function riskyRegex(source: string): boolean {
+  return /\((?:[^()\\]|\\.)*[+*}](?:[^()\\]|\\.)*\)[+*{]/.test(source)
+}
+
+/** Text longer than this is not regex-matched: the action is asked about instead. */
+export const MAX_MATCH_CHARS = 20_000
+
 function parseRule(r: unknown, where: string, errors: string[]): Rule | null {
   if (!isObject(r)) {
     errors.push(`${where}: must be an object`)
@@ -208,6 +220,10 @@ function parseRule(r: unknown, where: string, errors: string[]): Rule | null {
           new RegExp(source)
         } catch {
           errors.push(`${where}: "${key}" has an invalid regex: ${source}`)
+          return null
+        }
+        if (riskyRegex(source)) {
+          errors.push(`${where}: "${key}" nests quantifiers (${source}), which can stall matching; rewrite it without a repeated group that itself repeats`)
           return null
         }
       }
@@ -288,7 +304,8 @@ export function mergeConfigs(user: Parsed['config'], project: Parsed['config']):
   const config: Config = {
     mode: stricter(['audit', 'enforce'] as const, user.mode, project.mode, DEFAULT_CONFIG.mode),
     default: stricter(['allow', 'passthrough', 'jev', 'ask', 'deny'] as const, user.default, project.default, DEFAULT_CONFIG.default),
-    askWith: user.askWith ?? project.askWith ?? DEFAULT_CONFIG.askWith,
+    // the mod's own dialog (with its headless deny) is the stricter of the two
+    askWith: stricter(['engine', 'mod'] as const, user.askWith, project.askWith, DEFAULT_CONFIG.askWith),
     headless: stricter(['allow', 'deny'] as const, user.headless, project.headless, DEFAULT_CONFIG.headless),
     opaqueShell: stricter(['allow', 'ask', 'deny'] as const, user.opaqueShell, project.opaqueShell, DEFAULT_CONFIG.opaqueShell),
     trustProjectAllow: trust,
@@ -383,6 +400,10 @@ export const globMatch = (glob: string, value: string, mode: 'path' | 'text' = '
  * only when it covers every part, so `ls && rm -rf ~` is not allowed by an
  * allow on `ls*`.
  */
+/** `[wrappers and VAR=x …] [/path/]bash|sh|zsh [flags] -c '<script>'`, the script captured. */
+const SHELL_C =
+  /^(?:(?:sudo|env|nohup|time|command|builtin|exec|nice|stdbuf|timeout|xargs|doas)(?:\s+(?:-\S+|\d\S*))*\s+|[A-Za-z_][A-Za-z0-9_]*=\S*\s+)*(?:\S*\/)?(?:ba|z|da|k|fi)?sh\s+(?:-[a-zA-Z]+\s+)*-[a-zA-Z]*c[a-zA-Z]*\s+(['"])([\s\S]*)\1/
+
 export function bashParts(command: string): string[] {
   const parts: string[] = []
   const nested: string[] = []
@@ -390,6 +411,26 @@ export function bashParts(command: string): string[] {
   let quote: '"' | "'" | null = null
   for (let i = 0; i < command.length; i++) {
     const c = command[i]!
+    // `$( … )` and backticks run inside double quotes too (not inside single quotes)
+    if (quote !== "'" && c === '$' && command[i + 1] === '(') {
+      let depth = 1
+      let j = i + 2
+      for (; j < command.length && depth > 0; j++) {
+        if (command[j] === '(') depth += 1
+        else if (command[j] === ')') depth -= 1
+      }
+      nested.push(command.slice(i + 2, j - 1))
+      current += command.slice(i, j)
+      i = j - 1
+      continue
+    }
+    if (quote !== "'" && c === '`') {
+      const end = command.indexOf('`', i + 1)
+      nested.push(end === -1 ? command.slice(i + 1) : command.slice(i + 1, end))
+      current += end === -1 ? command.slice(i) : command.slice(i, end + 1)
+      i = end === -1 ? command.length : end
+      continue
+    }
     if (quote) {
       if (c === quote) quote = null
       else if (c === '\\' && quote === '"') {
@@ -410,26 +451,6 @@ export function bashParts(command: string): string[] {
       i += 1
       continue
     }
-    if (c === '$' && command[i + 1] === '(') {
-      let depth = 1
-      let j = i + 2
-      for (; j < command.length && depth > 0; j++) {
-        if (command[j] === '(') depth += 1
-        else if (command[j] === ')') depth -= 1
-      }
-      nested.push(command.slice(i + 2, j - 1))
-      current += command.slice(i, j)
-      i = j - 1
-      continue
-    }
-    if (c === '`') {
-      const end = command.indexOf('`', i + 1)
-      const body = end === -1 ? command.slice(i + 1) : command.slice(i + 1, end)
-      nested.push(body)
-      current += end === -1 ? command.slice(i) : command.slice(i, end + 1)
-      i = end === -1 ? command.length : end
-      continue
-    }
     const two = command.slice(i, i + 2)
     if (two === '&&' || two === '||') {
       parts.push(current)
@@ -447,7 +468,7 @@ export function bashParts(command: string): string[] {
   parts.push(current)
   // `bash -c '…'` / `sh -c "…"`: the quoted script is a command line of its own
   for (const part of parts) {
-    const m = /^\s*(?:\S*\/)?(?:ba|z|da|k)?sh\s+(?:-\w+\s+)*-c\s+(['"])([\s\S]*)\1/.exec(part.trim())
+    const m = SHELL_C.exec(part.trim())
     if (m) nested.push(m[2]!)
   }
   return [...parts, ...nested.flatMap(bashParts)].map(p => p.trim().replace(/\s+/g, ' ')).filter(Boolean)
@@ -545,8 +566,36 @@ export function toolAction(tool: string, input: Record<string, unknown>, agentId
   }
 }
 
+/**
+ * The path-like arguments of a Bash command: every word after the program in
+ * every part (read as the shell runs it), `--opt=value` values and redirect
+ * targets included, so a `path` rule sees `cat ~/.aws/credentials` too.
+ */
+export function bashPathArgs(command: string): string[] {
+  const out: string[] = []
+  const vars = assignments(command)
+  for (const part of bashParts(command)) {
+    const words = strippedPart(substitute(part, vars)).split(' ').slice(1)
+    for (let w of words) {
+      w = w.replace(/^[0-9]*[<>]+&?/, '')
+      if (w.startsWith('-')) {
+        const eq = w.indexOf('=')
+        if (eq === -1) continue
+        w = w.slice(eq + 1)
+      }
+      w = w.replace(/^\.\//, '').replace(/[;,)]+$/, '')
+      if (w && !/^[0-9]+$/.test(w)) out.push(w)
+    }
+  }
+  return out
+}
+
 export function paths(a: Action, root: string, home: string | undefined): string[] {
-  const raw = [a.input.file_path, a.input.path, a.input.notebook_path].map(str).filter((p): p is string => !!p)
+  const command = a.tool === 'Bash' ? str(a.input.command) : undefined
+  const raw = [
+    ...[a.input.file_path, a.input.path, a.input.notebook_path].map(str).filter((p): p is string => !!p),
+    ...(command !== undefined ? bashPathArgs(command) : []),
+  ]
   const out = new Set<string>()
   for (let p of raw) {
     if (home && (p === '~' || p.startsWith('~/'))) p = home + p.slice(1)
@@ -595,8 +644,8 @@ export function ruleMatches(rule: Rule, a: Action, ctx: MatchContext): boolean {
   if (rule.bash !== undefined || rule.bashRegex !== undefined) {
     const command = a.tool === 'Bash' ? str(a.input.command) : undefined
     if (command === undefined) return false
-    const parts = bashParts(command)
-    const vars = assignments(command)
+    const parts = bashParts(command.slice(0, MAX_MATCH_CHARS))
+    const vars = assignments(command.slice(0, MAX_MATCH_CHARS))
     const one = (text: string) =>
       list(rule.bash).some(g => globMatch(g, text)) || list(rule.bashRegex).some(r => new RegExp(r).test(text))
     // deny/ask read every spelling of a part (written, unquoted, unwrapped);
@@ -606,8 +655,16 @@ export function ruleMatches(rule: Rule, a: Action, ctx: MatchContext): boolean {
     if (rule.decision === 'allow' ? !parts.every(hits) : !parts.some(hits)) return false
   }
   if (rule.path !== undefined) {
-    const ps = paths(a, ctx.root, ctx.home)
-    if (!ps.length || !list(rule.path).some(g => ps.some(p => globMatch(expandHome(g, ctx.home), p, 'path')))) return false
+    const hit = (p: string) => list(rule.path).some(g => globMatch(expandHome(g, ctx.home), p, 'path'))
+    const command = a.tool === 'Bash' ? str(a.input.command) : undefined
+    if (command !== undefined && rule.decision === 'allow') {
+      // an allow must hold for every argument, or `rm -rf / src/a` would ride on `src/**`
+      const args = bashPathArgs(command)
+      if (!args.length || !args.every(arg => paths(toolAction('Read', { file_path: arg }), ctx.root, ctx.home).some(hit))) return false
+    } else {
+      const ps = paths(a, ctx.root, ctx.home)
+      if (!ps.length || !ps.some(hit)) return false
+    }
   }
   if (rule.domain !== undefined) {
     const host = hostOf(a)
@@ -619,7 +676,7 @@ export function ruleMatches(rule: Rule, a: Action, ctx: MatchContext): boolean {
     return false
   if (rule.agent !== undefined && !(a.agent && list(rule.agent).some(g => globMatch(g, a.agent!)))) return false
   if (rule.inputRegex !== undefined) {
-    const json = JSON.stringify(a.input)
+    const json = JSON.stringify(a.input).slice(0, MAX_MATCH_CHARS)
     if (!list(rule.inputRegex).some(r => new RegExp(r).test(json))) return false
   }
   return true
@@ -636,6 +693,10 @@ export function evaluate(config: Config, a: Action, ctx: MatchContext): Verdict 
     if (!ruleMatches(rule, a, ctx)) continue
     if (!best || RANK[rule.decision] > RANK[best.decision]) best = rule
     if (best.decision === 'deny') break
+  }
+  // An input too long to match safely (regexes are synchronous) is asked about, never waved through.
+  if ((!best || RANK[best.decision] < RANK.ask) && JSON.stringify(a.input).length > MAX_MATCH_CHARS) {
+    best = { id: 'too-long', decision: 'ask', reason: `jev-auto-mode: this input is over ${MAX_MATCH_CHARS} characters, too long to check against the rules` }
   }
   // A program only known at run time slips past every bash matcher: give it at least opaqueShell.
   const command = a.tool === 'Bash' ? str(a.input.command) : undefined
@@ -668,6 +729,8 @@ export function judged(config: Config, a: Action): boolean {
 /** Tools that only read, and tools whose input is prose (a prompt, a question), not an operation. */
 const HARMLESS_TOOLS = new Set(['Read', 'Glob', 'Grep', 'LS', 'Agent', 'Task', 'TodoWrite', 'AskUserQuestion', 'WebSearch', 'Skill', 'ToolSearch'])
 const READ_ONLY_COMMAND = /^(cat|less|more|head|tail|grep|rg|jq|ls|stat|wc|diff|file|git (diff|log|show|status|blame))(\s|$)/
+/** Options by which a "read" command writes a file: `git show --output=x`, `less -o x`, `sed -i`, `sort -o x` … */
+const WRITE_OPTION = /\s(-[a-zA-Z]*[oOiw][a-zA-Z]*|--(output|out|log-file|in-place)[\w-]*)(=|\s|$)/
 
 /**
  * A reason to refuse an action that would change this mod's policy or the mod
@@ -676,17 +739,28 @@ const READ_ONLY_COMMAND = /^(cat|less|more|head|tail|grep|rg|jq|ls|stat|wc|diff|
  * whose input names the policy file or the mod's directory is refused, and so
  * is any shell part naming them that is not a plain read (`cat`, `grep`, …).
  */
-export function selfProtection(a: Action, pluginRoot: string, ctx: MatchContext): string | undefined {
+export function selfProtection(a: Action, pluginRoot: string, ctx: MatchContext, policyFiles: readonly string[] = []): string | undefined {
   const root = pluginRoot.replace(/\/+$/, '')
+  // the active policy files by every spelling a command might use: absolute, ~/…, relative to the project, bare name
+  const needles = new Set<string>([CONFIG_NAME])
+  for (const f of policyFiles) {
+    if (!f) continue
+    needles.add(f)
+    const name = f.slice(f.lastIndexOf('/') + 1)
+    if (name) needles.add(name)
+    if (ctx.home && f.startsWith(`${ctx.home}/`)) needles.add(`~${f.slice(ctx.home.length)}`)
+    const r = ctx.root.replace(/\/+$/, '')
+    if (f.startsWith(`${r}/`)) needles.add(f.slice(r.length + 1))
+  }
   const mentions = (text: string) =>
-    text.includes(CONFIG_NAME) || (root !== '' && text.includes(root)) || /jev-auto-mode\/(hooks|\.claude-plugin|examples)\b/.test(text)
+    [...needles].some(n => text.includes(n)) || (root !== '' && text.includes(root)) || /jev-auto-mode\/(hooks|\.claude-plugin|examples)\b/.test(text)
   if (a.kind !== 'tool' || HARMLESS_TOOLS.has(a.tool)) return undefined
   if (a.tool === 'Bash') {
     const command = str(a.input.command) ?? ''
     const touches = bashParts(command).some(part => {
       const plain = normalizePart(part)
       if (!mentions(plain)) return false
-      return !(READ_ONLY_COMMAND.test(strippedPart(part)) && !/[>]/.test(plain) && !/\s-(o|O|i)\b/.test(plain))
+      return !(READ_ONLY_COMMAND.test(strippedPart(part)) && !/[>]/.test(plain) && !WRITE_OPTION.test(plain))
     })
     return touches ? `jev-auto-mode: shell commands that touch ${CONFIG_NAME} or the mod beyond reading them are refused; edit it yourself` : undefined
   }

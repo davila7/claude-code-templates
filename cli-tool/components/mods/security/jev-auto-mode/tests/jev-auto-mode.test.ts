@@ -186,4 +186,14 @@ describe('commands and skills', () => {
     const skill = await $.skill.prompt({ skill: 'release-notes', text: 'write them' })
     expect(skill.text).toContain('no one to ask')
   })
+
+  test('a Skill call that was denied leaves no approval behind for its prompt', async ($, on) => {
+    const w = world({ [USER_FILE]: { rules: [{ decision: 'ask', skill: 'release-*' }] } }, { surfaces: 0 })
+    fakeEngine(on, w)
+    await turn($)
+    const r = await call($, 'Skill', { skill: 'release-notes' })
+    expect(r.r.deny).toContain('headless')
+    const skill = await $.skill.prompt({ skill: 'release-notes', text: 'write them' })
+    expect(skill.text).toContain('no one to ask')
+  })
 })

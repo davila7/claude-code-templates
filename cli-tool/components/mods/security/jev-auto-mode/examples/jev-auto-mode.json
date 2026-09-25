@@ -4,28 +4,154 @@
   "askWith": "mod",
   "headless": "deny",
   "rules": [
-    { "id": "read-only-tools", "decision": "allow", "tool": ["Read", "Glob", "Grep", "LS", "TodoWrite", "WebSearch"] },
+    {
+      "id": "read-only-tools",
+      "decision": "allow",
+      "tool": [
+        "Read",
+        "Glob",
+        "Grep",
+        "LS",
+        "TodoWrite",
+        "WebSearch"
+      ]
+    },
     {
       "id": "everyday-shell",
       "decision": "allow",
-      "bash": ["ls*", "pwd", "cat *", "head *", "tail *", "wc *", "git status*", "git diff*", "git log*", "git show*", "git branch", "npm test*", "npm run test*", "npm run lint*", "npx tsc*"]
+      "bash": [
+        "ls*",
+        "pwd",
+        "cat *",
+        "head *",
+        "tail *",
+        "wc *",
+        "git status*",
+        "git diff*",
+        "git log*",
+        "git show*",
+        "git branch",
+        "npm test*",
+        "npm run test*",
+        "npm run lint*",
+        "npx tsc*"
+      ]
     },
-
-    { "id": "no-rm-rf", "decision": "deny", "bashRegex": "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f|\\brm\\s+-[a-zA-Z]*f[a-zA-Z]*r", "reason": "Recursive force deletes are blocked; delete specific files instead." },
-    { "id": "no-force-push", "decision": "deny", "bashRegex": "^git push\\b.*\\s(--force(-with-lease)?|-f)(\\s|$)", "reason": "Force pushes rewrite shared history." },
-    { "id": "no-secrets-in-shell", "decision": "deny", "bashRegex": "\\.env(\\.[\\w-]+)?(\\s|$)|id_rsa|\\.pem(\\s|$)", "reason": "Secrets files are off limits, from the shell too." },
-    { "id": "no-pipe-to-shell", "decision": "deny", "bashRegex": "(curl|wget)[^|]*\\|\\s*(sudo\\s+)?(ba|z)?sh\\b", "reason": "Piping a download into a shell runs untrusted code." },
-    { "id": "no-sudo", "decision": "deny", "bash": "sudo *", "reason": "No elevated privileges." },
-    { "id": "secrets-files", "decision": "deny", "tool": ["Read", "Write", "Edit", "MultiEdit"], "path": ["**/.env", "**/.env.*", "**/*.pem", "**/*.key", "~/.ssh/**", "~/.aws/**"], "reason": "Secrets files are off limits." },
-    { "id": "publish-and-deploy", "decision": "ask", "bash": ["npm publish*", "git push*", "*wrangler*deploy*", "vercel*--prod*", "terraform apply*", "kubectl apply*"], "reason": "This ships something outside the machine." },
-    { "id": "no-nested-subagents", "decision": "deny", "tool": "Agent", "scope": "subagents", "reason": "Subagents may not spawn more subagents." },
-    { "id": "untrusted-hosts", "decision": "deny", "tool": ["WebFetch"], "domain": ["*.pastebin.com", "pastebin.com", "transfer.sh", "*.ngrok.io"], "reason": "Uploads and paste hosts are blocked." },
-    { "id": "mcp-writes", "decision": "ask", "tool": "mcp__*", "inputRegex": "\"(delete|drop|remove|destroy)", "reason": "An MCP call that deletes something." },
-    { "id": "example-blocked-skill", "decision": "deny", "skill": "example-dangerous-skill", "reason": "Example: block a skill by name, typed or through the Skill tool." }
+    {
+      "id": "no-rm-rf",
+      "decision": "deny",
+      "bashRegex": "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f|\\brm\\s+-[a-zA-Z]*f[a-zA-Z]*r",
+      "reason": "Recursive force deletes are blocked; delete specific files instead."
+    },
+    {
+      "id": "no-force-push",
+      "decision": "deny",
+      "bashRegex": "^git push\\b.*\\s(--force(-with-lease)?|-f)(\\s|$)",
+      "reason": "Force pushes rewrite shared history."
+    },
+    {
+      "id": "no-pipe-to-shell",
+      "decision": "deny",
+      "bashRegex": "(curl|wget)[^|]*\\|\\s*(sudo\\s+)?(ba|z)?sh\\b",
+      "reason": "Piping a download into a shell runs untrusted code."
+    },
+    {
+      "id": "no-sudo",
+      "decision": "deny",
+      "bash": "sudo *",
+      "reason": "No elevated privileges."
+    },
+    {
+      "id": "secrets-files",
+      "decision": "deny",
+      "tool": [
+        "Read",
+        "Write",
+        "Edit",
+        "MultiEdit",
+        "Bash"
+      ],
+      "path": [
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/id_rsa*",
+        "**/id_ed25519*",
+        "~/.ssh/**",
+        "~/.aws/**",
+        "~/.config/gcloud/**",
+        "~/.kube/config",
+        "~/.netrc",
+        "~/.npmrc"
+      ],
+      "reason": "Secrets files are off limits, from any tool and from the shell."
+    },
+    {
+      "id": "publish-and-deploy",
+      "decision": "ask",
+      "bash": [
+        "npm publish*",
+        "git push*",
+        "*wrangler*deploy*",
+        "vercel*--prod*",
+        "terraform apply*",
+        "kubectl apply*"
+      ],
+      "reason": "This ships something outside the machine."
+    },
+    {
+      "id": "no-nested-subagents",
+      "decision": "deny",
+      "tool": "Agent",
+      "scope": "subagents",
+      "reason": "Subagents may not spawn more subagents."
+    },
+    {
+      "id": "untrusted-hosts",
+      "decision": "deny",
+      "tool": [
+        "WebFetch"
+      ],
+      "domain": [
+        "*.pastebin.com",
+        "pastebin.com",
+        "transfer.sh",
+        "*.ngrok.io"
+      ],
+      "reason": "Uploads and paste hosts are blocked."
+    },
+    {
+      "id": "mcp-writes",
+      "decision": "ask",
+      "tool": "mcp__*",
+      "inputRegex": "\"(delete|drop|remove|destroy)",
+      "reason": "An MCP call that deletes something."
+    },
+    {
+      "id": "example-blocked-skill",
+      "decision": "deny",
+      "skill": "example-dangerous-skill",
+      "reason": "Example: block a skill by name, typed or through the Skill tool."
+    }
   ],
   "jev": {
-    "tools": ["Bash", "Write", "Edit", "MultiEdit", "NotebookEdit", "WebFetch", "mcp__*", "Agent"],
-    "hazards": { "destructive": "ask", "exfiltration": "deny", "security_weakening": "ask", "out_of_scope": "ask" },
+    "tools": [
+      "Bash",
+      "Write",
+      "Edit",
+      "MultiEdit",
+      "NotebookEdit",
+      "WebFetch",
+      "mcp__*",
+      "Agent"
+    ],
+    "hazards": {
+      "destructive": "ask",
+      "exfiltration": "deny",
+      "security_weakening": "ask",
+      "out_of_scope": "ask"
+    },
     "threshold": 0.7,
     "askThreshold": 0.4,
     "severityDeny": 3,

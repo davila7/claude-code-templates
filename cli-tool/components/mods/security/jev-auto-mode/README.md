@@ -18,9 +18,9 @@ The status line keeps a running tally: `auto · 42✓ 3? 2✗ · deny Bash(rm -r
 
 For every tool call, in this order:
 
-1. **Self-protection.** Claude may not change `jev-auto-mode.json` (yours or the project's) or the mod's own files. The check errs toward refusing:
+1. **Self-protection.** Claude may not change the policy files in force (yours, including a custom `configFile` path, and the project's) or the mod's own files. The check errs toward refusing:
    - Any tool other than a reader whose input names one of them in a path is refused. That covers Write/Edit and MCP file tools, but not a file's content that merely mentions the name.
-   - Any shell part naming them that isn't a plain read (`cat`, `grep`, `git diff`, …, with no redirect and no `-o`/`-O`/`-i`) is refused. That covers `sed -i`, `>`, `curl -o`, `wget -O`, `cp`, `mv`, `ln`, a variable holding the path, and so on.
+   - Any shell part naming them that isn't a plain read (`cat`, `grep`, `git diff`, …, with no redirect and no write option such as `-o`, `-i` or `--output`) is refused. That covers `sed -i`, `>`, `curl -o`, `wget -O`, `git show --output=`, `cp`, `mv`, `ln`, a variable holding the path, and so on.
 
    This check runs before any rule, so no rule and no project file can switch it off.
 2. **Rules.** Every rule that matches is collected, and **deny beats ask beats allow**, whatever order they were written in.
@@ -36,7 +36,9 @@ For every tool call, in this order:
 
 Slash commands and skills you type are checked against the rules only: you typed them, so there is nothing to judge. A skill's prompt is also checked when it expands (typed, through the Skill tool, or preloaded into a subagent). A deny rule replaces the prompt with a notice, so a blocked skill cannot reach a subagent through its definition either. An ask rule asks there too, unless the Skill call or the typed `/skill` was just approved, so you're never asked twice.
 
-**If the mod itself fails, it denies.** The engine skips a hook that throws, which would let the call through unchecked. So any internal error denies the call and says why.
+**If the mod itself fails, it denies.** The engine skips a hook that throws, which would let the call through unchecked. So an internal error denies the tool call, refuses the typed command, or withholds the skill, and says why. A policy file that can't be re-read leaves the last good policy in force rather than an empty one.
+
+**Inputs over 20,000 characters are asked about.** Matching is synchronous, so the rules don't match past that length, and the judge never sees a half-shown command. For the same reason, a regex whose repeated group itself repeats (`(a+)+`) is refused when the file loads.
 
 ## The judge (`default: "jev"`)
 
@@ -68,7 +70,7 @@ Two files are merged:
 | File | Who writes it | What it may do |
 |---|---|---|
 | `~/.claude/jev-auto-mode.json` (or the `configFile` option) | you | everything |
-| `<project>/.claude/jev-auto-mode.json` | the repository | **tighten only**: deny and ask rules, a stricter `default`, `mode`, `headless`, lower thresholds, more judged tools. Its allow rules are ignored unless your file sets `"trustProjectAllow": true` |
+| `<project>/.claude/jev-auto-mode.json` | the repository | **tighten only**: deny and ask rules, a stricter `default`, `mode`, `headless`, `askWith` or `opaqueShell`, lower thresholds, more judged tools. Its allow rules are ignored unless your file sets `"trustProjectAllow": true` |
 
 A repository you clone cannot use its own file to open things up. Both files are re-read at the start of each turn if they changed. A broken rule is reported (log + toast) and dropped, while the rest of the file still applies.
 
@@ -112,7 +114,7 @@ A rule has a `decision`, an optional `id`, `reason` and `scope` (`all`, `main` o
 | `mcpServer` | the server of an `mcp__server__tool` | `github` |
 | `bash` | each part of a Bash command, as a glob | `*` matches anything, spaces included: `git push*` |
 | `bashRegex` | each part of a Bash command, as a regex | |
-| `path` | `file_path` / `path` / `notebook_path` | `*` stays in one segment, `**` crosses them, `~` is your home. Relative and absolute forms both match |
+| `path` | `file_path` / `path` / `notebook_path`, and a Bash command's arguments | `*` stays in one segment, `**` crosses them, `~` is your home. Relative and absolute forms both match. On Bash, a deny or ask hits when any argument matches (`cat ~/.aws/credentials`), and an allow only when every argument does |
 | `domain` | the host of a `url` | `*.example.com` also matches `example.com` |
 | `skill` | the Skill tool's skill, a typed `/skill`, a preloaded skill | |
 | `command` | a slash command you type, without the slash | |

@@ -84,10 +84,14 @@ export const SEVERITY_CRITERIA: readonly string[] = [
   'Severe: irreversible loss, a production outage, or leaked credentials.',
 ]
 
-/** The situation the judge reads: the user's intent, then the action, bounded. */
-export function stateText(intent: string, a: Action, maxChars = 6000): string {
-  const input = JSON.stringify(a.input, null, 1)
-  const body = input.length > maxChars ? `${input.slice(0, maxChars)}… (${input.length - maxChars} more characters)` : input
+/**
+ * The situation the judge reads: the user's intent, then the action, whole.
+ * Inputs past MAX_MATCH_CHARS never reach the judge (the rules ask about
+ * them), so nothing here is cut: a judge shown half a command could approve
+ * what it never saw.
+ */
+export function stateText(intent: string, a: Action): string {
+  const body = JSON.stringify(a.input, null, 1)
   return [
     "The user's latest request to an AI coding agent:",
     intent.trim() ? intent.trim().slice(0, 2000) : '(none recorded)',

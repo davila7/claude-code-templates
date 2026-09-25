@@ -2,6 +2,7 @@
 import { describe, expect, test } from 'claude-code/testing'
 import {
   DEFAULT_CONFIG,
+  riskyRegex,
   bashParts,
   evaluate,
   globMatch,
@@ -181,6 +182,67 @@ describe('evasions the review found', () => {
     expect(selfProtection(bash('git diff .claude/jev-auto-mode.json'), P, ctx)).toBeUndefined()
     expect(selfProtection(toolAction('Write', { file_path: 'docs/policy.md', content: 'Edit your jev-auto-mode.json to add rules.' }), P, ctx)).toBeUndefined()
     expect(selfProtection(toolAction('Agent', { prompt: 'never touch jev-auto-mode.json', subagent_type: 'Explore' }), P, ctx)).toBeUndefined()
+  })
+})
+
+describe('second review (greptile)', () => {
+  const P = '/p/jev-auto-mode/'
+  test('a custom configFile is protected by path, ~ form and name', () => {
+    const custom = ['/home/u/policies/actions.json']
+    expect(selfProtection(bash('echo {} > /home/u/policies/actions.json'), P, ctx, custom)).toBeDefined()
+    expect(selfProtection(bash('cp /tmp/x ~/policies/actions.json'), P, ctx, custom)).toBeDefined()
+    expect(selfProtection(toolAction('Write', { file_path: '/home/u/policies/actions.json', content: '{}' }), P, ctx, custom)).toBeDefined()
+    expect(selfProtection(bash('cat ~/policies/actions.json'), P, ctx, custom)).toBeUndefined()
+  })
+
+  test('read commands with write options are not reads', () => {
+    expect(selfProtection(bash('git show HEAD:x --output=.claude/jev-auto-mode.json'), P, ctx)).toBeDefined()
+    expect(selfProtection(bash('git diff --output .claude/jev-auto-mode.json'), P, ctx)).toBeDefined()
+    expect(selfProtection(bash('less -o .claude/jev-auto-mode.json'), P, ctx)).toBeDefined()
+  })
+
+  test('path rules see Bash arguments; an allow must cover every one', () => {
+    const cfg = policy({
+      rules: [
+        { id: 'secrets', decision: 'deny', tool: ['Read', 'Bash'], path: ['~/.aws/**', '**/.env'] },
+        { id: 'src', decision: 'allow', tool: 'Bash', path: 'src/**' },
+      ],
+    })
+    const d = (c: string) => {
+      const v = evaluate(cfg, bash(c), ctx)
+      return v.source === 'rule' ? v.decision : v.fallback
+    }
+    expect(d('cat ~/.aws/credentials')).toBe('deny')
+    expect(d('tail -n 5 ./.env')).toBe('deny')
+    expect(d('grep key --file=/home/u/.aws/config')).toBe('deny')
+    expect(d('ls src/a src/b')).toBe('allow')
+    expect(d('rm -rf / src/a')).toBe('passthrough')
+  })
+
+  test('substitutions inside double quotes and wrapped shells are split out', () => {
+    const cfg = policy({ rules: [{ id: 'rm', decision: 'deny', bash: 'rm -rf*' }] })
+    const d = (c: string) => evaluate(cfg, bash(c), ctx).source
+    expect(d('echo "$(rm -rf target)"')).toBe('rule')
+    expect(d('echo "`rm -rf target`"')).toBe('rule')
+    expect(d("echo '$(rm -rf target)'")).toBe('fallback')
+    expect(d("env bash -c 'rm -rf target'")).toBe('rule')
+    expect(d("timeout 5 sh -c 'rm -rf target'")).toBe('rule')
+    expect(d("bash -lc 'rm -rf target'")).toBe('rule')
+  })
+
+  test('a project cannot loosen askWith', () => {
+    const project = parseConfig(JSON.stringify({ askWith: 'engine' }), 'project').config
+    expect(mergeConfigs({}, project).config.askWith).toBe('mod')
+    expect(mergeConfigs({ askWith: 'engine' }, {}).config.askWith).toBe('engine')
+  })
+
+  test('nested quantifiers are refused, and over-long inputs are asked about', () => {
+    expect(riskyRegex('(a+)+$')).toBe(true)
+    expect(riskyRegex('(\\w*)*x')).toBe(true)
+    expect(riskyRegex('\\brm\\s+-rf')).toBe(false)
+    expect(parseConfig(JSON.stringify({ rules: [{ decision: 'deny', inputRegex: '(a+)+$' }] }), 'project').errors[0]).toContain('nests quantifiers')
+    const cfg = policy({ rules: [{ decision: 'allow', tool: 'Bash' }] })
+    expect(evaluate(cfg, bash(`echo ${'a'.repeat(25_000)}`), ctx)).toEqual(expect.objectContaining({ decision: 'ask' }))
   })
 })
 

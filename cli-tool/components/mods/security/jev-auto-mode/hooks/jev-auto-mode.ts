@@ -79,8 +79,11 @@ let stamp = ''
 let intent = ''
 const verdicts = new Map<string, { decision: 'allow' | 'ask'; reason: string }>()
 const judgements = new Map<string, Ruling>()
-// skills already let through as a Skill call or a typed /skill: their prompt is not asked about twice
-const approvedSkills = new Set<string>()
+// skills let through as a Skill call or a typed /skill a moment ago: their prompt is not asked about twice
+const approvedSkills = new Map<string, number>()
+const APPROVAL_MS = 60_000
+// the policy files in force, protected by name from Claude's edits
+let policyFiles: string[] = []
 const history: Entry[] = []
 const tally = { allow: 0, ask: 0, deny: 0, passthrough: 0 }
 
@@ -150,25 +153,32 @@ export const register: Register = (on, options) => {
 
   // The user's words are the judge's intent; each turn also picks up edits to the policy files.
   on('turn.start', async ($, e, next) => {
-    if (e.text.trim()) intent = e.text
-    const home = await $.env.get('HOME')
-    const root = await $.session.root()
-    const userPath = configFile || (home ? `${home}/.claude/${CONFIG_NAME}` : '')
-    const projectPath = `${root}/.claude/${CONFIG_NAME}`
-    // exists first: a missing policy file is normal, not an error for the debug log
-    const mtime = async (p: string) =>
-      p && (await $.fs.exists(p).catch(() => false)) ? await $.fs.stat(p).then(s => `${s.mtimeMs}`, () => '-') : '-'
-    const now = `${userPath}:${await mtime(userPath)}|${projectPath}:${await mtime(projectPath)}`
-    if (now !== stamp) {
-      const first = stamp === ''
-      stamp = now
-      const read = async (p: string) =>
-        p && (await $.fs.exists(p).catch(() => false)) ? await $.fs.read(p).then(t => t as string, () => undefined) : undefined
-      applyLoaded(await read(userPath), userPath, await read(projectPath), projectPath)
-      $.ui.log(`[jev-auto-mode] ${first ? 'ready' : 'policy reloaded'}: ${describePolicy(backend)}`)
-      for (const line of [...loadErrors, ...loadNotes]) $.ui.log(`[jev-auto-mode] ${line}`)
-      if (loadErrors.length) $.ui.toast(`jev-auto-mode: ${loadErrors.length} problem(s) in ${CONFIG_NAME}; see the transcript`)
-      $.ui.status(statusLine())
+    // a failed read keeps the last good policy (never an empty one) and says so
+    try {
+      if (e.text.trim()) intent = e.text
+      const home = await $.env.get('HOME')
+      const root = await $.session.root()
+      const userPath = configFile || (home ? `${home}/.claude/${CONFIG_NAME}` : '')
+      const projectPath = `${root}/.claude/${CONFIG_NAME}`
+      policyFiles = [userPath, projectPath].filter(Boolean)
+      // exists first: a missing policy file is normal, not an error for the debug log
+      const mtime = async (p: string) =>
+        p && (await $.fs.exists(p).catch(() => false)) ? await $.fs.stat(p).then(s => `${s.mtimeMs}`, () => '-') : '-'
+      const now = `${userPath}:${await mtime(userPath)}|${projectPath}:${await mtime(projectPath)}`
+      if (now !== stamp) {
+        const first = stamp === ''
+        const read = async (p: string) =>
+          p && (await $.fs.exists(p).catch(() => false)) ? await $.fs.read(p).then(t => t as string, () => undefined) : undefined
+        applyLoaded(await read(userPath), userPath, await read(projectPath), projectPath)
+        stamp = now
+        $.ui.log(`[jev-auto-mode] ${first ? 'ready' : 'policy reloaded'}: ${describePolicy(backend)}`)
+        for (const line of [...loadErrors, ...loadNotes]) $.ui.log(`[jev-auto-mode] ${line}`)
+        if (loadErrors.length) $.ui.toast(`jev-auto-mode: ${loadErrors.length} problem(s) in ${CONFIG_NAME}; see the transcript`)
+        $.ui.status(statusLine())
+      }
+    } catch (err) {
+      $.ui.log(`[jev-auto-mode] could not reload the policy, keeping the last one: ${String(err)}`)
+      $.ui.toast('jev-auto-mode: policy reload failed; the previous policy stays in force')
     }
     return next(e)
   })
@@ -190,7 +200,7 @@ export const register: Register = (on, options) => {
       const ctx = { root, home }
 
       // Before any rule: Claude does not get to rewrite its own leash.
-      const guard = selfProtection(a, $.plugin.root, ctx)
+      const guard = selfProtection(a, $.plugin.root, ctx, [...policyFiles, configFile])
       if (guard) {
         const entry: Entry = { at: await $.clock.now(), action: describeAction(a), decision: 'deny', by: 'self-protection', audit: false }
         remember(entry)
@@ -261,23 +271,32 @@ export const register: Register = (on, options) => {
       if (logs(decision)) $.ui.log(`[jev-auto-mode] ${entry.audit ? 'audit: would ' : ''}${decision} ${entry.action} (${by})`)
       $.ui.status(statusLine(entry))
 
-      if (a.skill && decision !== 'deny') approvedSkills.add(a.skill)
-      if (entry.audit || decision === 'passthrough') return next(e)
+      const now = entry.at
+      const approve = () => {
+        if (a.skill) approvedSkills.set(a.skill, now)
+      }
+      if (entry.audit || decision === 'passthrough') {
+        approve()
+        return next(e)
+      }
       if (decision === 'deny') return { deny: reason }
       if (decision === 'allow') {
         if (id) verdicts.set(id, { decision: 'allow', reason })
+        approve()
         return next(e)
       }
 
       // ask
       if (config.askWith === 'engine') {
         if (id) verdicts.set(id, { decision: 'ask', reason })
+        approve()
         return next(e)
       }
       const surfaces = await $.session.surfaces().then(s => s.length, () => 0)
       if (surfaces === 0) {
         if (config.headless === 'deny') return { deny: `${reason} (asked, but no one is here to answer: headless runs deny)` }
         if (id) verdicts.set(id, { decision: 'allow', reason })
+        approve()
         return next(e)
       }
       const who = agentId ? 'a subagent' : 'Claude'
@@ -289,6 +308,7 @@ export const register: Register = (on, options) => {
         return { deny: `The user declined this action (${reason}). Do not retry it; ask the user how to proceed.` }
       }
       if (id) verdicts.set(id, { decision: 'allow', reason: 'approved by the user' })
+      approve()
       return next(e)
     } catch (err) {
       $.ui.log(`[jev-auto-mode] internal error, denied ${e.tool}: ${String(err)}`)
@@ -299,88 +319,111 @@ export const register: Register = (on, options) => {
   // The pipeline's verdict becomes the permission decision; an engine deny (a settings rule, plan mode) still stands.
   on('tool.check', async ($, e, next) => {
     const mine = e.tool_use_id ? verdicts.get(e.tool_use_id) : undefined
-    if (!mine) return next(e)
+    const skill = e.tool === 'Skill' && e.input && typeof e.input === 'object' ? (e.input as { skill?: unknown }).skill : undefined
+    if (!mine) {
+      const engine = await next(e)
+      if (engine.decision !== 'allow' && typeof skill === 'string') approvedSkills.delete(skill)
+      return engine
+    }
     verdicts.delete(e.tool_use_id!)
     const engine = await next(e)
-    if (engine.decision === 'deny') return engine
+    if (engine.decision === 'deny') {
+      if (typeof skill === 'string') approvedSkills.delete(skill)
+      return engine
+    }
     return { decision: mine.decision, reason: mine.reason }
   })
 
   // Typed slash commands and skills: rules only (the person typed them; there is nothing to judge).
   on('command.run', async ($, e, next) => {
-    if (e.command === COMMAND) {
-      const arg = e.args.trim().toLowerCase()
-      if (arg === 'log') {
-        if (!history.length) return { text: 'jev-auto-mode: no decisions yet' }
+    try {
+      if (e.command === COMMAND) {
+        const arg = e.args.trim().toLowerCase()
+        if (arg === 'log') {
+          if (!history.length) return { text: 'jev-auto-mode: no decisions yet' }
+          return {
+            text: history
+              .slice(-15)
+              .map(h => `${h.audit ? '(audit) ' : ''}${h.decision.padEnd(11)} ${h.action}  · ${h.by}`)
+              .join('\n'),
+          }
+        }
+        if (arg === 'init' || arg === 'init project') {
+          const home = await $.env.get('HOME')
+          const target =
+            arg === 'init project' ? `${await $.session.root()}/.claude/${CONFIG_NAME}` : configFile || `${home ?? '~'}/.claude/${CONFIG_NAME}`
+          if (await $.fs.exists(target)) return { text: `jev-auto-mode: ${target} already exists; not overwritten` }
+          const example = await $.fs.read(`${$.plugin.root}/examples/${CONFIG_NAME}`)
+          await $.fs.write(target, example as string)
+          stamp = ''
+          return { text: `jev-auto-mode: wrote ${target}; it loads on your next prompt` }
+        }
+        if (arg === 'reload') stamp = ''
+        const problems = [...loadErrors, ...loadNotes]
         return {
-          text: history
-            .slice(-15)
-            .map(h => `${h.audit ? '(audit) ' : ''}${h.decision.padEnd(11)} ${h.action}  · ${h.by}`)
-            .join('\n'),
+          text: [
+            `jev-auto-mode: ${describePolicy(backend)}`,
+            `decisions: ${tally.allow} allowed · ${tally.ask} asked · ${tally.deny} denied · ${tally.passthrough} left to the engine`,
+            ...problems.map(p => `  ! ${p}`),
+            arg === 'reload' ? 'the policy files are re-read on your next prompt' : '/jev-auto-mode log · reload · init (your file) · init project',
+          ].join('\n'),
         }
       }
-      if (arg === 'init' || arg === 'init project') {
-        const home = await $.env.get('HOME')
-        const target =
-          arg === 'init project' ? `${await $.session.root()}/.claude/${CONFIG_NAME}` : configFile || `${home ?? '~'}/.claude/${CONFIG_NAME}`
-        if (await $.fs.exists(target)) return { text: `jev-auto-mode: ${target} already exists; not overwritten` }
-        const example = await $.fs.read(`${$.plugin.root}/examples/${CONFIG_NAME}`)
-        await $.fs.write(target, example as string)
-        stamp = ''
-        return { text: `jev-auto-mode: wrote ${target}; it loads on your next prompt` }
-      }
-      if (arg === 'reload') stamp = ''
-      const problems = [...loadErrors, ...loadNotes]
-      return {
-        text: [
-          `jev-auto-mode: ${describePolicy(backend)}`,
-          `decisions: ${tally.allow} allowed · ${tally.ask} asked · ${tally.deny} denied · ${tally.passthrough} left to the engine`,
-          ...problems.map(p => `  ! ${p}`),
-          arg === 'reload' ? 'the policy files are re-read on your next prompt' : '/jev-auto-mode log · reload · init (your file) · init project',
-        ].join('\n'),
-      }
-    }
 
-    const a: Action = { kind: 'command', tool: `/${e.command}`, command: e.command, skill: e.command, input: { args: e.args } }
-    const verdict = evaluate(config, a, { root: await $.session.root(), home: await $.env.get('HOME') })
-    if (verdict.source !== 'rule' || verdict.decision === 'allow') {
-      approvedSkills.add(e.command)
+      const a: Action = { kind: 'command', tool: `/${e.command}`, command: e.command, skill: e.command, input: { args: e.args } }
+      const verdict = evaluate(config, a, { root: await $.session.root(), home: await $.env.get('HOME') })
+      if (verdict.source !== 'rule' || verdict.decision === 'allow') {
+        approvedSkills.set(e.command, await $.clock.now())
+        return next(e)
+      }
+      const entry: Entry = { at: await $.clock.now(), action: describeAction(a), decision: verdict.decision, by: `rule ${verdict.rule.id}`, audit: config.mode === 'audit' }
+      remember(entry)
+      $.ui.log(`[jev-auto-mode] ${entry.audit ? 'audit: would ' : ''}${verdict.decision} ${entry.action} (${entry.by})`)
+      $.ui.status(statusLine(entry))
+      if (entry.audit) return next(e)
+      if (verdict.decision === 'deny') return { text: `⛔ jev-auto-mode blocked /${e.command}: ${verdict.reason}` }
+      const answer = await $.ui
+        .ask(`${verdict.reason.replace(/[.\s]+$/, '')}. Run /${e.command}?`, { options: [ALLOW, DENY], header: 'auto mode' })
+        .catch(() => DENY)
+      if (answer !== ALLOW) return { text: `jev-auto-mode: /${e.command} not run` }
+      approvedSkills.set(e.command, await $.clock.now())
       return next(e)
+    } catch (err) {
+      // a throwing hook is skipped by the engine, which would run a blocked command: refuse instead
+      $.ui.log(`[jev-auto-mode] internal error on /${e.command}: ${String(err)}`)
+      return { text: `⛔ jev-auto-mode could not check /${e.command} (${String(err)}); not run.` }
     }
-    const entry: Entry = { at: await $.clock.now(), action: describeAction(a), decision: verdict.decision, by: `rule ${verdict.rule.id}`, audit: config.mode === 'audit' }
-    remember(entry)
-    $.ui.log(`[jev-auto-mode] ${entry.audit ? 'audit: would ' : ''}${verdict.decision} ${entry.action} (${entry.by})`)
-    $.ui.status(statusLine(entry))
-    if (entry.audit) return next(e)
-    if (verdict.decision === 'deny') return { text: `⛔ jev-auto-mode blocked /${e.command}: ${verdict.reason}` }
-    const answer = await $.ui
-      .ask(`${verdict.reason.replace(/[.\s]+$/, '')}. Run /${e.command}?`, { options: [ALLOW, DENY], header: 'auto mode' })
-      .catch(() => DENY)
-    if (answer !== ALLOW) return { text: `jev-auto-mode: /${e.command} not run` }
-    approvedSkills.add(e.command)
-    return next(e)
   })
 
   // A skill's prompt, however it arrives (typed, Skill tool, preloaded into a subagent): deny rules replace it,
   // ask rules ask unless the Skill call or the typed /skill was just let through.
   on('skill.prompt', async ($, e, next) => {
-    const a: Action = { kind: 'skill', tool: 'Skill', skill: e.skill, input: { skill: e.skill } }
-    const verdict = evaluate(config, a, { root: await $.session.root(), home: await $.env.get('HOME') })
-    const approved = approvedSkills.delete(e.skill)
-    if (verdict.source !== 'rule' || verdict.decision === 'allow' || config.mode === 'audit') return next(e)
-    const blocked = (why: string) => ({
-      text: `The skill "${e.skill}" is blocked by the user's jev-auto-mode policy: ${why}. Do not follow or reconstruct its instructions; tell the user it is blocked.`,
-    })
-    if (verdict.decision === 'deny') {
-      $.ui.log(`[jev-auto-mode] deny skill ${e.skill} (rule ${verdict.rule.id})`)
-      return blocked(verdict.reason)
+    try {
+      const a: Action = { kind: 'skill', tool: 'Skill', skill: e.skill, input: { skill: e.skill } }
+      const verdict = evaluate(config, a, { root: await $.session.root(), home: await $.env.get('HOME') })
+      const at = approvedSkills.get(e.skill)
+      approvedSkills.delete(e.skill)
+      const approved = at !== undefined && (await $.clock.now()) - at < APPROVAL_MS
+      if (verdict.source !== 'rule' || verdict.decision === 'allow' || config.mode === 'audit') return next(e)
+      const blocked = (why: string) => ({
+        text: `The skill "${e.skill}" is blocked by the user's jev-auto-mode policy: ${why}. Do not follow or reconstruct its instructions; tell the user it is blocked.`,
+      })
+      if (verdict.decision === 'deny') {
+        $.ui.log(`[jev-auto-mode] deny skill ${e.skill} (rule ${verdict.rule.id})`)
+        return blocked(verdict.reason)
+      }
+      if (approved) return next(e)
+      const surfaces = await $.session.surfaces().then(list => list.length, () => 0)
+      if (surfaces === 0) return config.headless === 'deny' ? blocked(`${verdict.reason} (no one to ask)`) : next(e)
+      const answer = await $.ui
+        .ask(`${verdict.reason.replace(/[.\s]+$/, '')}. Load the skill ${e.skill}?`, { options: [ALLOW, DENY], header: 'auto mode' })
+        .catch(() => DENY)
+      return answer === ALLOW ? next(e) : blocked('the user declined it')
+    } catch (err) {
+      $.ui.log(`[jev-auto-mode] internal error on skill ${e.skill}: ${String(err)}`)
+      return {
+        text: `The skill "${e.skill}" could not be checked by the user's jev-auto-mode policy (${String(err)}), so it is withheld. Tell the user.`,
+      }
     }
-    if (approved) return next(e)
-    const surfaces = await $.session.surfaces().then(list => list.length, () => 0)
-    if (surfaces === 0) return config.headless === 'deny' ? blocked(`${verdict.reason} (no one to ask)`) : next(e)
-    const answer = await $.ui
-      .ask(`${verdict.reason.replace(/[.\s]+$/, '')}. Load the skill ${e.skill}?`, { options: [ALLOW, DENY], header: 'auto mode' })
-      .catch(() => DENY)
-    return answer === ALLOW ? next(e) : blocked('the user declined it')
   })
 }
