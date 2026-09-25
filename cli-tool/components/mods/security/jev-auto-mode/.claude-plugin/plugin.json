@@ -1,0 +1,46 @@
+{
+  "name": "jev-auto-mode",
+  "version": "0.1.0",
+  "description": "A permission layer driven by a JSON policy: allow, ask or deny every tool call (Bash, edits, web, MCP, subagents, skills), every slash command or skill you type, and every skill preloaded into a subagent. Rules decide first (deny > ask > allow, compound Bash commands split); what no rule covers can go to TypeSafe's Jev, which judges the action against your latest request with thresholds you set. Claude can never edit the policy. Needs function hooks (early access).",
+  "author": { "name": "claude-code-templates", "url": "https://www.aitmpl.com" },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": ["mod", "function-hooks", "security", "permissions", "auto-mode", "jev", "typesafe", "policy"],
+  "userConfig": {
+    "configFile": {
+      "type": "file",
+      "title": "Policy file",
+      "description": "Your policy JSON; empty uses ~/.claude/jev-auto-mode.json. The project's .claude/jev-auto-mode.json is merged on top and can only tighten it."
+    },
+    "typesafeApiKey": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for api.typesafe.ai, the judge for actions no rule covers (calibrated probabilities). Empty: the Gateway key, else the built-in classifier.",
+      "sensitive": true,
+      "default": ""
+    },
+    "gatewayApiKey": {
+      "type": "string",
+      "title": "Vercel AI Gateway key",
+      "description": "Reaches Jev through ai-gateway.vercel.sh when no TypeSafe key is set.",
+      "sensitive": true,
+      "default": ""
+    },
+    "provider": {
+      "type": "string",
+      "title": "Judge backend",
+      "description": "auto (TypeSafe, then Gateway, then built-in), typesafe, gateway or builtin",
+      "default": "auto"
+    },
+    "typesafeBaseUrl": { "type": "string", "title": "TypeSafe base URL", "description": "Empty uses https://api.typesafe.ai", "default": "" },
+    "typesafeModel": { "type": "string", "title": "TypeSafe model", "description": "Empty uses jev-latest", "default": "" },
+    "gatewayBaseUrl": { "type": "string", "title": "Gateway base URL", "description": "Empty uses https://ai-gateway.vercel.sh/v4/ai", "default": "" },
+    "gatewayModel": { "type": "string", "title": "Gateway model", "description": "Empty uses typesafe-ai/jev", "default": "" },
+    "logLevel": {
+      "type": "string",
+      "title": "Log level",
+      "description": "blocked (asks and denies, the default), all (every decision) or off",
+      "default": "blocked"
+    }
+  }
+}
