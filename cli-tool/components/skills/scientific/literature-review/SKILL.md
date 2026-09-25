@@ -219,6 +219,24 @@ Literature reviews follow a structured, multi-phase workflow:
    efficiency (40-60%) but improved safety profiles^16-23^.
    ```
 
+#### Mathematical Notation in Markdown
+
+When writing mathematical content, **always use LaTeX math delimiters** — never Unicode math symbols. Pandoc's PDF conversion requires LaTeX syntax:
+
+- **Inline math**: wrap with `$...$`
+  - Correct: `$\alpha$`, `$\int_0^\infty f(x)\,dx$`, `$p \leq 0.05$`
+  - Wrong: `α`, `∫₀^∞ f(x)dx`, `p ≤ 0.05`
+- **Block/display math**: wrap with `$$...$$` on its own line
+  - Correct:
+    ```
+    $$
+    \sum_{i=1}^{n} x_i = \bar{x} \cdot n
+    $$
+    ```
+  - Wrong: `Σᵢ xᵢ = x̄ · n`
+
+Unicode math characters (∫ ∑ α β π ≤ ≥ ≠ ∞ √ etc.) look fine in a text editor but cause pandoc PDF generation to fail or produce garbled output. Use LaTeX equivalents every time.
+
 3. **Critical Analysis**:
    - Evaluate methodological strengths and limitations across studies
    - Assess quality and consistency of evidence
@@ -293,6 +311,7 @@ Literature reviews follow a structured, multi-phase workflow:
    - [ ] Limitations acknowledged
    - [ ] References complete and accurate
    - [ ] PDF generates without errors
+   - [ ] Mathematical expressions use `$...$` / `$$...$$` LaTeX delimiters (no raw Unicode math symbols)
 
 ## Database-Specific Search Guidance
 
@@ -437,6 +456,7 @@ Detailed formatting guidelines are in `references/citation_styles.md`. Quick ref
 8. **No quality assessment**: Treats all evidence equally; assess and report quality
 9. **Publication bias**: Only positive results published; note potential bias
 10. **Outdated search**: Field evolves rapidly; clearly state search date
+11. **Unicode math symbols in markdown**: Symbols like ∫, Σ, α, ≤ break pandoc PDF conversion; use `$...$` and `$$...$$` LaTeX delimiters instead
 
 ## Example Workflow
 
