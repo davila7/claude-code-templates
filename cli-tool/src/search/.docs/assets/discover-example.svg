@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <style>
+      .terminal-bg { fill: #1e1e1e; }
+      .terminal-text { fill: #d4d4d4; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; }
+      .terminal-green { fill: #4ec9b0; }
+      .terminal-blue { fill: #569cd6; }
+      .terminal-yellow { fill: #dcdcaa; }
+      .terminal-purple { fill: #c586c0; }
+      .terminal-orange { fill: #ce9178; }
+      .terminal-red { fill: #f48771; }
+      .terminal-gray { fill: #808080; }
+      .terminal-white { fill: #ffffff; }
+    </style>
+  </defs>
+  
+  <!-- Terminal Background -->
+  <rect class="terminal-bg" width="800" height="600" rx="8"/>
+  
+  <!-- Terminal Header -->
+  <rect fill="#2d2d30" width="800" height="35" rx="8"/>
+  <circle cx="20" cy="17.5" r="6" fill="#ff5f56"/>
+  <circle cx="40" cy="17.5" r="6" fill="#ffbd2e"/>
+  <circle cx="60" cy="17.5" r="6" fill="#27c93f"/>
+  <text class="terminal-text" x="400" y="23" text-anchor="middle">Terminal - npx cct --discover</text>
+  
+  <!-- Command Input -->
+  <text class="terminal-text" x="20" y="65">
+    <tspan class="terminal-green">$</tspan>
+    <tspan class="terminal-white"> npx cct --discover</tspan>
+  </text>
+  
+  <!-- Detection -->
+  <text class="terminal-blue" x="20" y="95">🔍 Analyzing your project...</text>
+  <text class="terminal-green" x="20" y="115">✓ Detected: Next.js 14 with TypeScript</text>
+  
+  <!-- Recommendations Header -->
+  <text class="terminal-yellow" x="20" y="150" font-weight="bold">🎯 Recommended components for your Next.js project:</text>
+  
+  <!-- Essential Section -->
+  <text class="terminal-purple" x="20" y="185" font-weight="bold">ESSENTIAL (Auto-detected):</text>
+  
+  <text class="terminal-text" x="20" y="210">
+    <tspan class="terminal-green">✅</tspan>
+    <tspan class="terminal-white" font-weight="bold"> nextjs-expert</tspan>
+    <tspan class="terminal-gray"> - Next.js specialist agent</tspan>
+  </text>
+  
+  <text class="terminal-text" x="20" y="235">
+    <tspan class="terminal-green">✅</tspan>
+    <tspan class="terminal-white" font-weight="bold"> typescript-helper</tspan>
+    <tspan class="terminal-gray"> - TypeScript development assistant</tspan>
+  </text>
+  
+  <text class="terminal-text" x="20" y="260">
+    <tspan class="terminal-green">✅</tspan>
+    <tspan class="terminal-white" font-weight="bold"> /generate-api-route</tspan>
+    <tspan class="terminal-gray"> - Create Next.js API routes</tspan>
+  </text>
+  
+  <!-- Popular Section -->
+  <text class="terminal-purple" x="20" y="295" font-weight="bold">POPULAR:</text>
+  
+  <text class="terminal-text" x="20" y="320">
+    <tspan class="terminal-yellow">⭐</tspan>
+    <tspan class="terminal-white" font-weight="bold"> react-performance-optimizer</tspan>
+    <tspan class="terminal-orange"> (1,234 downloads)</tspan>
+  </text>
+  
+  <text class="terminal-text" x="20" y="345">
+    <tspan class="terminal-yellow">⭐</tspan>
+    <tspan class="terminal-white" font-weight="bold"> seo-optimizer</tspan>
+    <tspan class="terminal-orange"> (987 downloads)</tspan>
+  </text>
+  
+  <!-- Trending Section -->
+  <text class="terminal-purple" x="20" y="380" font-weight="bold">TRENDING THIS WEEK:</text>
+  
+  <text class="terminal-text" x="20" y="405">
+    <tspan class="terminal-red">📈</tspan>
+    <tspan class="terminal-white" font-weight="bold"> app-router-migrator</tspan>
+    <tspan class="terminal-green"> (↑ 45%)</tspan>
+  </text>
+  
+  <text class="terminal-text" x="20" y="430">
+    <tspan class="terminal-red">📈</tspan>
+    <tspan class="terminal-white" font-weight="bold"> server-components-helper</tspan>
+    <tspan class="terminal-green"> (↑ 32%)</tspan>
+  </text>
+  
+  <!-- Quick Install -->
+  <rect fill="#264f78" x="15" y="460" width="770" height="80" rx="3"/>
+  <text class="terminal-yellow" x="30" y="485" font-weight="bold">💡 Quick Install:</text>
+  <text class="terminal-text" x="30" y="510">
+    <tspan class="terminal-gray"># Install all essential components:</tspan>
+  </text>
+  <text class="terminal-white" x="30" y="530">
+    npx cct --agent nextjs-expert --agent typescript-helper \
+  </text>
+  <text class="terminal-white" x="30" y="550">
+            --command generate-api-route
+  </text>
+</svg>
