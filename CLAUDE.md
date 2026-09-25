@@ -142,7 +142,9 @@ non-maintainer PR that touches them and posts revert instructions; the
 
 Two workflows regenerate them on `main`: `update-component-content.yml`
 runs on every push that touches `cli-tool/components/**` with
-`--skip-downloads` (content only, seconds), and `update-json-data.yml`
+`--skip-downloads` (content only, seconds) and then dispatches `deploy.yml`
+(its own push uses `GITHUB_TOKEN`, which never triggers other workflows, so
+without that the new catalog would not reach aitmpl.com), and `update-json-data.yml`
 (daily cron) refreshes the download counts by pulling the whole
 `component_downloads` table from Supabase (minutes) — that table has one
 row per download, which is what makes a full run slow.
