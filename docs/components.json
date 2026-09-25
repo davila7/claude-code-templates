@@ -48136,6 +48136,64 @@
       ]
     },
     {
+      "name": "git-sidebar",
+      "path": "ui/git-sidebar",
+      "category": "ui",
+      "type": "mod",
+      "description": "A lazygit-style side pane: every worktree of the repository and its local branches as rows you click. A worktree row moves the session there with /cd; a branch row shows its last commits and offers switch (clean tree only) or open worktree. Docked floor to ceiling beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "ui",
+        "git",
+        "worktree",
+        "sidebar"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "git-sidebar.tsx"
+      ],
+      "userConfig": {
+        "columns": {
+          "type": "number",
+          "title": "Pane width",
+          "description": "Columns asked for the docked pane in the fullscreen layout (28-120); a width you drag it to wins",
+          "default": 44
+        },
+        "maxBranches": {
+          "type": "number",
+          "title": "Branches listed",
+          "description": "How many local branches to list, most recently committed first",
+          "default": 40
+        },
+        "openOnStart": {
+          "type": "boolean",
+          "title": "Open on start",
+          "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+          "default": false
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/git-sidebar.tsx",
+        "hooks/git.ts",
+        "hooks/hooks.json",
+        "tests/git-sidebar.test.tsx"
+      ]
+    },
+    {
       "name": "tool-timing-badge",
       "path": "ui/tool-timing-badge",
       "category": "ui",
