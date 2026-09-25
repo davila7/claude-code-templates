@@ -1,0 +1,32 @@
+{
+  "name": "agent-flow",
+  "version": "0.1.0",
+  "description": "A side pane that draws the session's agent flow live: the main loop's context window, every subagent it spawns as a tree, and for each one the context handed down (its prompt, or the whole parent context for a fork), what it did with it (steps, tools, context size) and the answer it handed back up. Docked beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": ["mod", "function-hooks", "ui", "agents", "subagents", "context", "sidebar"],
+  "userConfig": {
+    "columns": {
+      "type": "number",
+      "title": "Pane width",
+      "description": "Columns asked for the docked pane in the fullscreen layout (32-120); a width you drag it to wins",
+      "default": 52
+    },
+    "maxAgents": {
+      "type": "number",
+      "title": "Agents kept",
+      "description": "How many subagents the flow keeps, oldest finished ones dropped first",
+      "default": 60
+    },
+    "openOnStart": {
+      "type": "boolean",
+      "title": "Open on start",
+      "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+      "default": false
+    }
+  }
+}
