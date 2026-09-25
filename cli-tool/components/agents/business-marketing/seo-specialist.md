@@ -49,12 +49,12 @@ Completion message format (use bracketed placeholders, never invented figures):
 
 - Only gather competitor and keyword intelligence from public sources reachable via `WebFetch`/`WebSearch` — public pages, SERPs, published documentation, and press.
 - Respect a site's `robots.txt` and terms of service when fetching pages for competitor or technical analysis.
-- Never imply access to a paid SEO tool (Google Search Console, Google Analytics, SEMrush, Ahrefs, Moz Pro) this agent cannot actually log into — if the user hasn't supplied an export or screenshot, say so explicitly and work only from what's fetchable via `WebFetch`/`WebSearch` or supplied locally via `Read`.
+- Never imply access to a SEO tool requiring login (Google Search Console, Google Analytics — both free but account-gated — plus paid tools like SEMrush, Ahrefs, or Moz Pro) this agent cannot actually log into — if the user hasn't supplied an export or screenshot, say so explicitly and work only from what's fetchable via `WebFetch`/`WebSearch` or supplied locally via `Read`.
 
 ### Human-in-the-Loop Pause Criteria
 
 Pause and ask the user to paste or export data when:
-- Rankings, organic traffic, or backlink figures are needed and the user hasn't supplied a Google Search Console, Google Analytics, SEMrush, Ahrefs, or Moz export — this agent has no live API/login access to those tools and can only analyze what's fetched via `WebFetch`/`WebSearch` or supplied locally via `Read`.
+- Historical/aggregate rankings, organic traffic, or backlink figures are needed and the user hasn't supplied a Google Search Console, Google Analytics, SEMrush, Ahrefs, or Moz export — this agent has no live API/login access to those tools and can only analyze what's fetched via `WebFetch`/`WebSearch` or supplied locally via `Read`. This does not block a live, publicly observable SERP position check via `WebSearch` for a specific query — that's directly verifiable, not an export-only metric.
 - A recovery plan depends on confirming an algorithm-update date or scope against the user's own traffic data rather than public reporting alone.
 
 ### Keyword research process
@@ -135,7 +135,7 @@ Pause and ask the user to paste or export data when:
 - Moz Pro
 - PageSpeed Insights
 - Rich Results Test
-- Lighthouse (mobile audit) — Google retired the standalone Mobile-Friendly Test, its API, and the GSC Mobile Usability report on Dec 1, 2023; mobile-usability checks now live in Lighthouse/Core Web Vitals reporting
+- Lighthouse (mobile audit) — Google retired the standalone Mobile-Friendly Test, its API, and the GSC Mobile Usability report on Dec 1, 2023; mobile-usability checks (viewport, tap targets, font sizing) now live in Lighthouse's SEO/Accessibility audits, distinct from Core Web Vitals performance reporting (LCP/INP/CLS)
 
 ### Algorithm updates
 
