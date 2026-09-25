@@ -60,7 +60,8 @@
  * hook always answers the same way, so the model's prompt cache holds.
  *
  * The API key comes from the plugin's options (userConfig "typesafeApiKey"
- * or "gatewayApiKey"). Never hardcode it in this file.
+ * or "gatewayApiKey"), or, when neither is set, from the environment
+ * (TYPESAFE_API_KEY, then AI_GATEWAY_API_KEY). Never hardcode it in this file.
  *
  * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 and Claude Code >= 2.1.278: the
  * `prompt.attachment` event is that release's. Typed against Anthropic's
@@ -138,28 +139,40 @@ export const register: Register = (on, options) => {
   // TypeSafe's own API is preferred when both keys are set: it is the only
   // one that reports a calibrated confidence. `provider` forces one,
   // including "builtin" to use neither.
-  const typesafeKey = text('typesafeApiKey', '')
-  const gatewayKey = text('gatewayApiKey', '')
+  let typesafeKey = text('typesafeApiKey', '')
+  let gatewayKey = text('gatewayApiKey', '')
   const forced = text('provider', 'auto')
-  const active: Provider | null = selectProvider(forced, typesafeKey, gatewayKey)
+  let active: Provider | null = null
+  let apiKey = ''
+  let modelId = ''
+  let url = ''
+  // A backend named in the options but missing its key degrades to the
+  // built-in classifier, which is silent; say so once, when a hook first runs.
+  let unusableReported = true
 
   // Each backend keeps its own URL and model, so an override written for one
   // can never be sent to the other when `auto` picks differently than expected.
-  const apiKey = active === 'typesafe' ? typesafeKey : active === 'gateway' ? gatewayKey : ''
-  const modelId = !active
-    ? ''
-    : active === 'typesafe'
-      ? text('typesafeModel', DEFAULT_MODEL.typesafe)
-      : text('gatewayModel', DEFAULT_MODEL.gateway)
-  const url = !active
-    ? ''
-    : active === 'typesafe'
-      ? endpoint('typesafe', text('typesafeBaseUrl', DEFAULT_BASE_URL.typesafe))
-      : endpoint('gateway', text('gatewayBaseUrl', DEFAULT_BASE_URL.gateway))
+  const configure = () => {
+    active = selectProvider(forced, typesafeKey, gatewayKey)
+    apiKey = active === 'typesafe' ? typesafeKey : active === 'gateway' ? gatewayKey : ''
+    modelId = !active
+      ? ''
+      : active === 'typesafe'
+        ? text('typesafeModel', DEFAULT_MODEL.typesafe)
+        : text('gatewayModel', DEFAULT_MODEL.gateway)
+    url = !active
+      ? ''
+      : active === 'typesafe'
+        ? endpoint('typesafe', text('typesafeBaseUrl', DEFAULT_BASE_URL.typesafe))
+        : endpoint('gateway', text('gatewayBaseUrl', DEFAULT_BASE_URL.gateway))
+    unusableReported = forced === 'auto' || forced === 'builtin' || active !== null
+  }
+  configure()
 
-  // A backend named in the options but missing its key degrades to the
-  // built-in classifier, which is silent; say so once, when a hook first runs.
-  let unusableReported = forced === 'auto' || forced === 'builtin' || active !== null
+  // When no option names a key, the environment is read once, the first time
+  // a hook runs: TYPESAFE_API_KEY, then AI_GATEWAY_API_KEY. This keeps the key
+  // out of a settings.json that is committed to a dotfiles repository.
+  let envChecked = false
 
   const hideListing = flag('hideListing', true)
   // "content": the mod reads the chosen skill's SKILL.md and attaches it, so
@@ -209,6 +222,14 @@ export const register: Register = (on, options) => {
   let displayToId: Map<string, string> | null = null
 
   on('prompt.attachment', { type: 'skill_listing' }, async ($, e, next) => {
+    if (!envChecked) {
+      envChecked = true
+      if (!typesafeKey && !gatewayKey) {
+        typesafeKey = (await $.env.get('TYPESAFE_API_KEY')) ?? ''
+        gatewayKey = (await $.env.get('AI_GATEWAY_API_KEY')) ?? ''
+        if (typesafeKey || gatewayKey) configure()
+      }
+    }
     if (!announced) {
       announced = true
       if (logDecisions) {
@@ -246,6 +267,14 @@ export const register: Register = (on, options) => {
   })
 
   on('prompt.submit', async ($, e, next) => {
+    if (!envChecked) {
+      envChecked = true
+      if (!typesafeKey && !gatewayKey) {
+        typesafeKey = (await $.env.get('TYPESAFE_API_KEY')) ?? ''
+        gatewayKey = (await $.env.get('AI_GATEWAY_API_KEY')) ?? ''
+        if (typesafeKey || gatewayKey) configure()
+      }
+    }
     if (!announced) {
       announced = true
       if (logDecisions) {

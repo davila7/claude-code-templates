@@ -182,6 +182,8 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 ```
   typesafeApiKey:   string  TypeSafe API key (preferred: it reports a confidence)
   gatewayApiKey:    string  Vercel AI Gateway key
+                            (with neither set, the environment variables
+                            TYPESAFE_API_KEY and AI_GATEWAY_API_KEY are read)
   provider:         string  "auto" | "typesafe" | "gateway" | "builtin"
   typesafeBaseUrl:  string  empty uses https://api.typesafe.ai
   typesafeModel:    string  empty uses jev-latest
@@ -201,6 +203,8 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 ```
 
 `inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
+
+A key can also come from the environment: when neither key option is set, the mod reads `TYPESAFE_API_KEY`, then `AI_GATEWAY_API_KEY`, once per session. That keeps the key out of a `settings.json` that lives in a dotfiles repository.
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
