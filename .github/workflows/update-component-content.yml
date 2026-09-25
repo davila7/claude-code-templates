@@ -18,6 +18,8 @@ on:
 
 permissions:
   contents: write
+  # to start deploy.yml once the regenerated catalog is pushed
+  actions: write
 
 concurrency:
   group: generated-catalog
@@ -92,3 +94,13 @@ jobs:
           🤖 Generated with [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           git pull --rebase origin main
           git push
+
+      # The push above uses GITHUB_TOKEN, which GitHub never lets trigger
+      # another workflow, so deploy.yml's `push: dashboard/**` does not fire
+      # for it. Dispatch the deploy explicitly so the new catalog reaches
+      # aitmpl.com; a workflow_dispatch is the one event GITHUB_TOKEN may raise.
+      - name: Deploy the updated catalog
+        if: steps.check_changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
