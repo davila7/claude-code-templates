@@ -236,6 +236,40 @@ test('risk raises the effort floor but never lowers one', () => {
   expect(route(decision, on('claude-opus-5', 'low'), config).effort).toBe('high')
 })
 
+test('a cap limits how far effort is raised, never the risk floor or a lower move', () => {
+  const capped = { ...config, maxEffort: 'medium' as const }
+  const hard = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2.9))
+  expect(route(hard, on('claude-opus-5', 'low'), capped).effort).toBe('medium')
+  expect(route(hard, on('claude-opus-5', 'low'), capped).reason).toContain('capped at medium')
+  // Already at the cap: nothing to raise, and nothing lowered.
+  expect(route(hard, on('claude-opus-5', 'medium'), capped).effort).toBeNull()
+  expect(route(hard, on('claude-opus-5', 'xhigh'), capped).effort).toBeNull()
+  // Risk forces its floor (high) past a medium cap.
+  const risky = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.95, 2.9))
+  expect(route(risky, on('claude-opus-5', 'low'), capped).effort).toBe('xhigh')
+  const easy = readDecision(gatewayAnswer('fast', { fast: 0.95 }, 0.01, 0))
+  const sure = { ...(easy as NonNullable<typeof easy>), effortConfidence: 0.9 }
+  expect(route(sure, on('claude-opus-5', 'high'), capped).effort).toBe('low')
+})
+
+test('a floor limits how far effort is lowered and never raises a lower start', () => {
+  const floored = { ...config, minEffort: 'medium' as const }
+  const easy = readDecision(gatewayAnswer('fast', { fast: 0.95 }, 0.01, 0))
+  const sure = { ...(easy as NonNullable<typeof easy>), effortConfidence: 0.9 }
+  expect(route(sure, on('claude-opus-5', 'high'), floored).effort).toBe('medium')
+  expect(route(sure, on('claude-opus-5', 'high'), floored).reason).toContain('floored at medium')
+  // At or below the floor already: nothing lowered, nothing raised.
+  expect(route(sure, on('claude-opus-5', 'medium'), floored).effort).toBeNull()
+  expect(route(sure, on('claude-opus-5', 'low'), floored).effort).toBeNull()
+  // A raise is untouched.
+  const hard = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2.9))
+  expect(route(hard, on('claude-opus-5', 'low'), floored).effort).toBe('xhigh')
+  // Both set: the floor is clamped to where the request started, so it never lifts past the cap's reach.
+  const both = { ...config, minEffort: 'high' as const, maxEffort: 'medium' as const }
+  expect(route(sure, on('claude-opus-5', 'xhigh'), both).effort).toBe('high')
+  expect(route(sure, on('claude-opus-5', 'medium'), both).effort).toBeNull()
+})
+
 test('max ranks above every rung the rubric can produce', () => {
   expect(effortRank('max')).toBeGreaterThan(effortRank('xhigh') as number)
   // Leaving max is a downgrade, so it needs the high bar, not the lenient one.

@@ -17,6 +17,7 @@ Four switches, and they are not equally safe:
 |---|---|---|
 | `routeSubagentModel` | the model of each subagent, at `agent.spawn` | on |
 | `routeSubagentEffort` | the reasoning effort of each subagent, at its first request (`turn.step`) | on |
+| `maxSubagentEffort`, `minSubagentEffort` | the highest and lowest effort that routing moves a subagent to (`low`, `medium`, `high` or `xhigh`); a bound never moves a subagent further from where it started (one that started above the cap is not pulled down to it, one below the floor is not raised to it), and risk still forces its floor past the cap | empty (no bound) |
 | `routeMainEffort` | the reasoning effort of the main conversation, at `turn.step` | on |
 | `routeMainModel` | the model of the main conversation, at `turn.step` | **off** |
 
@@ -138,6 +139,8 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   minDowngradeConfidence: number  bar to spend less (default 0.6)
   routeSubagentModel:     boolean model of each subagent (default true)
   routeSubagentEffort:    boolean effort of each subagent, set at its first request (default true)
+  maxSubagentEffort:      string  highest effort routing raises a subagent to: low, medium, high, xhigh (default empty = no cap)
+  minSubagentEffort:      string  lowest effort routing lowers a subagent to: low, medium, high, xhigh (default empty = no floor)
   routeMainEffort:        boolean effort of the main loop (default true)
   routeMainModel:         boolean model of the main loop (default false)
   timeoutMs:              number  latency budget per classification (default 800)

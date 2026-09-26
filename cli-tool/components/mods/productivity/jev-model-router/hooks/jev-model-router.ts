@@ -60,6 +60,7 @@ import {
   requestHeaders,
   requestModelId,
   route,
+  EFFORT_ORDER,
   TIER_ORDER,
   bareCommand,
 } from './policy.ts'
@@ -99,12 +100,20 @@ export const register: Register = (on, options) => {
       : endpoint('gateway', text('gatewayBaseUrl', DEFAULT_BASE_URL.gateway))
 
   // A backend named in the options but missing its key degrades to the
-  // built-in classifier, which is silent; say so once, when a hook first runs.
-  let unusableReported = forced === 'auto' || forced === 'builtin' || active !== null
+  // built-in classifier, which is silent; say so once, when a hook first runs,
+  // along with an effort bound that is not a level.
+  let unusableReported = false
 
   const timeoutMs = number('timeoutMs', 800)
   const routeSubagentModel = flag('routeSubagentModel', true)
   const routeSubagentEffort = flag('routeSubagentEffort', true)
+  // The highest and lowest effort routing may move a subagent to; empty for none.
+  const effortBound = (key: string) => {
+    const option = text(key, '').trim().toLowerCase()
+    return { option, level: (EFFORT_ORDER as readonly string[]).includes(option) ? (option as Effort) : undefined }
+  }
+  const maxSubagentEffort = effortBound('maxSubagentEffort')
+  const minSubagentEffort = effortBound('minSubagentEffort')
   const routeMainEffort = flag('routeMainEffort', true)
   const routeMainModel = flag('routeMainModel', false)
   const routeMainLoop = routeMainEffort || routeMainModel
@@ -171,7 +180,12 @@ export const register: Register = (on, options) => {
 
     if (!unusableReported) {
       unusableReported = true
-      $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
+      if (forced !== 'auto' && forced !== 'builtin' && !active) {
+        $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
+      }
+      for (const [key, bound] of [['maxSubagentEffort', maxSubagentEffort], ['minSubagentEffort', minSubagentEffort]] as const) {
+        if (bound.option && !bound.level) $.ui.log(`[jev-model-router] ${key} "${bound.option}" is not low, medium, high or xhigh; it is ignored`)
+      }
     }
 
     // A slash command alone gives the decision model only the command's name.
@@ -245,7 +259,11 @@ export const register: Register = (on, options) => {
         // (Haiku) is left without one.
         let routed: Effort | null = null
         if (held && e.effort !== undefined) {
-          const routing = route(held.decision, { model: e.model, effort: e.effort }, policy)
+          const routing = route(held.decision, { model: e.model, effort: e.effort }, {
+            ...policy,
+            maxEffort: maxSubagentEffort.level,
+            minEffort: minSubagentEffort.level,
+          })
           routed = routing.effort
           if (logDecisions) {
             const what = routed ? `→ effort ${routed}: ` : ''
@@ -327,7 +345,12 @@ export const register: Register = (on, options) => {
 
     if (!unusableReported) {
       unusableReported = true
-      $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
+      if (forced !== 'auto' && forced !== 'builtin' && !active) {
+        $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
+      }
+      for (const [key, bound] of [['maxSubagentEffort', maxSubagentEffort], ['minSubagentEffort', minSubagentEffort]] as const) {
+        if (bound.option && !bound.level) $.ui.log(`[jev-model-router] ${key} "${bound.option}" is not low, medium, high or xhigh; it is ignored`)
+      }
     }
 
     const startedAt = await $.clock.now()

@@ -292,6 +292,17 @@ export interface PolicyConfig {
    * by too small a model or too little thought, so the bar is high.
    */
   minDowngradeConfidence: number
+  /**
+   * The highest effort routing may raise a request to. A request already
+   * above it keeps its own, and risk still forces its floor past it. Absent
+   * means no cap.
+   */
+  maxEffort?: Effort
+  /**
+   * The lowest effort routing may lower a request to. A request already below
+   * it keeps its own. Absent means no floor.
+   */
+  minEffort?: Effort
 }
 
 export interface Routing {
@@ -363,6 +374,7 @@ export function route(
       : null
 
   let effort: Effort | null = null
+  let bounded = ''
   if (effortScore !== null) {
     const currentRank = effortRank(current.effort)
     let wantedRank = EFFORT_ORDER.indexOf(effortLevel(effortScore))
@@ -372,6 +384,28 @@ export function route(
     // and rated mechanically simple would be pulled down to `high` with no
     // confidence check at all — the opposite of what the rule is for.
     if (forced && currentRank !== null) wantedRank = Math.max(wantedRank, currentRank)
+
+    // The floor limits how far routing lowers the effort, so it never raises a
+    // request that started below it. Both bounds are clamped to where the
+    // request started (floor <= start <= cap), so they never conflict, even
+    // with a floor set above the cap.
+    if (config.minEffort !== undefined) {
+      const floor = Math.min(EFFORT_ORDER.indexOf(config.minEffort), currentRank ?? Infinity)
+      if (wantedRank < floor) {
+        wantedRank = floor
+        bounded = `, floored at ${config.minEffort}`
+      }
+    }
+
+    // The cap limits how far routing raises the effort, so it neither lowers
+    // a request that started above it nor overrides the risk floor.
+    if (config.maxEffort !== undefined && !forced) {
+      const cap = Math.max(EFFORT_ORDER.indexOf(config.maxEffort), currentRank ?? -1)
+      if (wantedRank > cap) {
+        wantedRank = cap
+        bounded = `, capped at ${config.maxEffort}`
+      }
+    }
 
     // A numeric effort is the caller's own scale, not this ladder; leave it.
     const comparable = typeof current.effort !== 'number'
@@ -394,10 +428,10 @@ export function route(
     const wantedEffort = effortScore === null ? null : effortLevel(effortScore)
     const kept = `${current.model}${current.effort === undefined ? '' : `/${current.effort}`}`
     const wanted = `${wantedModel}${wantedEffort ? `/${wantedEffort}` : ''}`
-    return { model: null, effort: null, reason: `kept ${kept}, wanted ${wanted} (${said})` }
+    return { model: null, effort: null, reason: `kept ${kept}, wanted ${wanted} (${said}${bounded})` }
   }
 
-  return { model, effort, reason: forced ? `${tier}, forced by risk` : `${tier} (${said})` }
+  return { model, effort, reason: forced ? `${tier}, forced by risk` : `${tier} (${said}${bounded})` }
 }
 
 /**

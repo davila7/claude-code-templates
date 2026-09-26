@@ -1,7 +1,7 @@
 {
   "name": "jev-model-router",
   "version": "0.4.2",
-  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn, subagent effort at their first request, and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
+  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn, subagent effort at their first request (within optional bounds), and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -106,6 +106,18 @@
       "title": "Route subagent effort",
       "description": "Set each subagent's reasoning effort at its first request, from the decision made at its spawn, and keep it for the rest of its requests",
       "default": true
+    },
+    "maxSubagentEffort": {
+      "type": "string",
+      "title": "Highest effort for a subagent",
+      "description": "low, medium, high or xhigh: routing never raises a subagent's effort past this (it may still lower it, and a subagent that started higher keeps its own). Empty for no cap",
+      "default": ""
+    },
+    "minSubagentEffort": {
+      "type": "string",
+      "title": "Lowest effort for a subagent",
+      "description": "low, medium, high or xhigh: routing never lowers a subagent's effort below this (a subagent that started lower keeps its own). Empty for no floor",
+      "default": ""
     },
     "routeMainEffort": {
       "type": "boolean",
