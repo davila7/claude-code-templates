@@ -305,8 +305,13 @@ export const register: Register = (on) => {
   /** A scene or an animated image: something that moves by itself. */
   const moving = () => source?.kind === 'scene' || (source?.kind === 'image' && !!source.anim)
 
+  /** Whether the band is on screen: nothing to animate otherwise (hidden, off, or slid away). */
+  const visible = () => band !== null && config.enabled
+
+  // One-shot effects (at most 1.4 s) always run out, so they end right; the ongoing ones (the
+  // working sweep, scenes, GIFs) only run while there's a band to show them.
   const animating = () =>
-    mood !== 'idle' || resizing() || (moving() && config.enabled && config.animate && band !== null)
+    isOneShot(mood) || (mood === 'working' && visible()) || resizing() || (moving() && config.animate && visible())
 
   function stopTimer() { timer?.cancel(); timer = null }
 
@@ -412,10 +417,12 @@ export const register: Register = (on) => {
     const deny = await writeSlot(to, current as Stored)
     if (deny) return `couldn't save it (${deny}).`
     await host.set(viewKeyFor(to), view)
-    if (to === 'global') { await host.del(projectKey()); await host.del(viewKeyFor('project')) }
+    // A move, not a copy: "only this project" means other projects stop showing it.
+    const from = scope
+    await host.del(slotKey(from)); await host.del(viewKeyFor(from))
     await loadState()
     redraw()
-    return to === 'project' ? 'now just for this project; other projects keep theirs.' : 'now shown in every project.'
+    return to === 'project' ? 'now shown only in this project.' : 'now shown in every project.'
   }
 
   async function setStyle(name: string): Promise<string> {
@@ -567,6 +574,7 @@ export const register: Register = (on) => {
         readBase64: (path) => $.fs.read(path, { as: 'bytes' }),
         tmpdir: () => $.env.get('TMPDIR'),
         run: (argv) => $.process.run(argv),
+        size: async (path) => ((await $.fs.stat(path)) as { size?: number } | undefined)?.size,
       },
     }
     const program = String((await $.env.get('TERM_PROGRAM')) ?? '')
@@ -791,9 +799,12 @@ export const register: Register = (on) => {
       case 'animate':
         return reply(['on', 'off'].includes(arg) ? await setAnimate(arg === 'on') : 'Usage: /pixelband animate on|off')
       case 'clear': {
-        await $.store.delete(isHere ? projectKey() : 'image:global')
+        // Clear what's showing here (this project's banner if it has one), or this project's with --here.
+        const which: Scope = isHere ? 'project' : here()
+        await $.store.delete(slotKey(which))
+        await $.store.delete(viewKeyFor(which))
         await loadState(); redraw(); syncTimer()
-        return reply(`cleared ${isHere ? "this project's" : 'the global'} banner.`)
+        return reply(`cleared ${which === 'project' ? "this project's" : 'the global'} banner.`)
       }
       case 'demo': {
         const m = arg.toLowerCase()

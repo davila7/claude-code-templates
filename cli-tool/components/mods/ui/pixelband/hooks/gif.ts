@@ -125,6 +125,8 @@ export function decodeGif(b: Uint8Array, onFrame: (canvas: Rgba, delayMs: number
     if (packed & 0x80) { const n = 3 * (1 << ((packed & 7) + 1)); table = b.subarray(p, p + n); p += n }
     const minSize = b[p++]
     if (!table || minSize < 2 || minSize > 11) throw new Error('broken GIF frame')
+    // A frame is meant to sit inside the canvas; one claiming to be vastly bigger would only exhaust memory.
+    if (fw * fh > Math.max(width * height * 4, 1 << 20)) throw new Error(`GIF frame ${fw}x${fh} is far bigger than its ${width}x${height} canvas`)
     const indices = lzw(b, p, minSize, fw * fh)
     p = skipBlocks(b, p)
 

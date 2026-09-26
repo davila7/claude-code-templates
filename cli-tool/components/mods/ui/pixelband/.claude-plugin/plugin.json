@@ -1,6 +1,6 @@
 {
   "name": "pixelband",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Animated pixel art above your Claude Code prompt that reacts while Claude works: seven scenes, or your own image or GIF. Zero tokens.",
   "author": {
     "name": "Furqan Khan"

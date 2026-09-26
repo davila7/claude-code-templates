@@ -49,7 +49,9 @@ export function decodePng(bytes: Uint8Array): Rgba {
   let at = 0
   for (const c of idat) { joined.set(c, at); at += c.length }
   const rowBytes = Math.ceil((width * channels * depth) / 8)
-  const raw = inflateZlib(joined, height * (rowBytes + 1))
+  // The pixels need exactly this much once inflated; anything bigger is a malformed or hostile file.
+  const expected = height * (rowBytes + 1)
+  const raw = inflateZlib(joined, expected, expected * 2 + 1024)
   if (raw.length < height * (rowBytes + 1)) throw new Error('PNG image data is truncated')
 
   // Undo the per-row filters in place, into `rows`.

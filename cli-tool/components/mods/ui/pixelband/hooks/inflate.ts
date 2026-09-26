@@ -31,12 +31,16 @@ function build(lengths: ArrayLike<number>): Huffman {
 const FIXED_LIT = build(Array.from({ length: 288 }, (_, i) => (i < 144 ? 8 : i < 256 ? 9 : i < 280 ? 7 : 8)))
 const FIXED_DIST = build(new Array(30).fill(5))
 
-/** Growable output buffer (we don't always know the inflated size up front). */
+/**
+ * Growable output buffer (we don't always know the inflated size up front), with a ceiling: a tiny
+ * compressed stream can claim to expand to gigabytes, and a decoder must not believe it.
+ */
 class Out {
   buf: Uint8Array
   len = 0
-  constructor(hint: number) { this.buf = new Uint8Array(Math.max(hint, 1024)) }
+  constructor(hint: number, private limit: number) { this.buf = new Uint8Array(Math.max(Math.min(hint, limit), 1024)) }
   ensure(n: number) {
+    if (this.len + n > this.limit) throw new Error('inflate: output is larger than expected')
     if (this.len + n <= this.buf.length) return
     let size = this.buf.length * 2
     while (size < this.len + n) size *= 2
@@ -118,10 +122,10 @@ function dynamic(bits: Bits): [Huffman, Huffman] {
   return [build(lengths.subarray(0, nlen)), build(lengths.subarray(nlen))]
 }
 
-/** Inflate a raw DEFLATE stream starting at `start`. */
-export function inflateRaw(data: Uint8Array, start = 0, sizeHint = 0): Uint8Array {
+/** Inflate a raw DEFLATE stream starting at `start`, refusing to produce more than `limit` bytes. */
+export function inflateRaw(data: Uint8Array, start = 0, sizeHint = 0, limit = 256 * 1024 * 1024): Uint8Array {
   const bits = new Bits(data, start)
-  const out = new Out(sizeHint || data.length * 4)
+  const out = new Out(sizeHint || data.length * 4, limit)
   let last = 0
   while (!last) {
     last = bits.need(1)
@@ -146,10 +150,10 @@ export function inflateRaw(data: Uint8Array, start = 0, sizeHint = 0): Uint8Arra
 }
 
 /** Inflate a zlib-wrapped stream (what PNG's IDAT chunks hold). */
-export function inflateZlib(data: Uint8Array, sizeHint = 0): Uint8Array {
+export function inflateZlib(data: Uint8Array, sizeHint = 0, limit?: number): Uint8Array {
   if (data.length < 2) throw new Error('zlib: too short')
   const cmf = data[0], flg = data[1]
   if ((cmf & 0x0f) !== 8 || ((cmf << 8) | flg) % 31 !== 0) throw new Error('zlib: bad header')
   if (flg & 0x20) throw new Error('zlib: preset dictionaries are not supported')
-  return inflateRaw(data, 2, sizeHint)
+  return inflateRaw(data, 2, sizeHint, limit)
 }

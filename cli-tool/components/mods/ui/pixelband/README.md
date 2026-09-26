@@ -28,6 +28,6 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 
 It is written to `.claude/skills/pixelband/`, which Claude Code auto-loads as `pixelband@skills-dir`. `claude plugin validate .claude/skills/pixelband` prints every event it hooks and every `$` call it makes.
 
-By [Furqan Khan](https://github.com/furqan-khan07). Source, tests and updates: https://github.com/furqan-khan07/pixelband (MIT). A star there helps.
+By [Furqan Khan](https://github.com/furqan-khan07). Tests: `claude plugin test` in this folder (decoders checked against Pillow). Source and updates: https://github.com/furqan-khan07/pixelband (MIT). A star there helps.
 
 **Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

@@ -26,6 +26,32 @@ const ANIM_MAX_SIDE = 240
 const STILL_MAX_SIDE = 320
 const MAX_GIF_BYTES = 30 * 1024 * 1024
 
+async function sizeOf(io: Io, path: string): Promise<number | null> {
+  if (!io.size) return null
+  try { const n = Number(await io.size(path)); return Number.isFinite(n) && n >= 0 ? n : null } catch { return null }
+}
+
+/**
+ * Read a file bigger than one read allows: `split` cuts it into temporary pieces in the temp folder,
+ * each is read, and the pieces are deleted again.
+ */
+async function readBig(io: Io, path: string, size: number): Promise<Uint8Array> {
+  const tmp = String((await io.tmpdir()) || '/tmp').replace(/\/$/, '')
+  const prefix = `${tmp}/pixelband-${Math.random().toString(36).slice(2)}-`
+  const count = Math.ceil(size / CHUNK)
+  const names = Array.from({ length: count }, (_, i) => prefix + String.fromCharCode(97 + Math.floor(i / 26), 97 + (i % 26)))
+  try {
+    const res = (await io.run(['split', '-b', String(CHUNK), path, prefix])) as { exitCode?: number } | undefined
+    if (!res || res.exitCode !== 0) throw new Error(`couldn't read ${path} in pieces (it's over 4 MB)`)
+    const out = new Uint8Array(size)
+    let o = 0
+    for (const name of names) { const part = await readBytes(io, name); out.set(part.subarray(0, size - o), o); o += part.length }
+    return out.subarray(0, Math.min(o, size))
+  } finally {
+    try { await io.run(['rm', '-f', ...names]) } catch { /* best effort */ }
+  }
+}
+
 /** Decode a GIF, shrinking each frame as it comes so a big one never sits in memory whole. */
 export function loadGif(bytes: Uint8Array): Loaded {
   if (bytes.length > MAX_GIF_BYTES) throw new Error(`that GIF is ${Math.round(bytes.length / 1048576)} MB; up to 30 MB works`)
@@ -51,7 +77,14 @@ export interface Io {
   readBase64: (path: string) => Promise<unknown>
   tmpdir: () => Promise<unknown>
   run: (argv: string[]) => Promise<unknown>
+  /** The file's size in bytes, when it can be told without reading it. */
+  size?: (path: string) => Promise<unknown>
 }
+
+/** Claude Code reads at most 4 MiB of a file at once. */
+const READ_LIMIT = 4 * 1024 * 1024
+/** Bigger GIFs are read in pieces this size. */
+const CHUNK = 3 * 1024 * 1024
 
 /**
  * Tidy up a path the way people actually give it: quoted, with backslash-escaped spaces from
@@ -105,6 +138,16 @@ const TOOL_FIRST = /\.(jpe?g|heic|heif|webp|tiff?|avif|icns|psd)$/i
 /** Load any image we can into RGBA. */
 export async function loadImage(io: Io, path: string): Promise<Loaded> {
   let toolError: unknown = null
+  const size = await sizeOf(io, path)
+  if (size !== null && size > READ_LIMIT) {
+    // Too big for one read. A GIF is read in pieces so its frames survive; anything else goes to the
+    // OS tool, which reads the file itself and hands back a small copy.
+    if (/\.gif$/i.test(path)) {
+      if (size > MAX_GIF_BYTES) throw new Error(`that GIF is ${Math.round(size / 1048576)} MB; up to 30 MB works`)
+      return loadGif(await readBig(io, path, size))
+    }
+    return viaTool(io, path)
+  }
   if (TOOL_FIRST.test(path)) {
     try { return await viaTool(io, path) } catch (err) { toolError = err } // maybe it's a mislabelled PNG
   }
