@@ -3,7 +3,7 @@
  * Claude's cost, the prompt Claude answers, and how its reply is read.
  * Pure: no `$`, so the tests drive it directly.
  */
-import type { ModelForkUsage } from 'claude-code'
+import type { ModelUsage } from 'claude-code'
 import {
   START_FEN,
   ending,
@@ -23,7 +23,7 @@ export type Played = {
   uci: string
   by: 'you' | 'claude'
   /** What Claude's move cost as the API reported it; null when the call reported none. */
-  usage?: ModelForkUsage | null
+  usage?: ModelUsage | null
   /** How the move was got when not plainly (a retry, a fallback, a random move). */
   note?: string
 }
@@ -104,14 +104,14 @@ export function readReply(pos: Position, reply: string): Move | undefined {
   return undefined
 }
 
-export const zeroUsage = (): ModelForkUsage => ({
+export const zeroUsage = (): ModelUsage => ({
   input_tokens: 0,
   output_tokens: 0,
   cache_read_input_tokens: 0,
   cache_creation_input_tokens: 0,
 })
 
-export function addUsage(a: ModelForkUsage, b: ModelForkUsage): ModelForkUsage {
+export function addUsage(a: ModelUsage, b: ModelUsage): ModelUsage {
   return {
     input_tokens: a.input_tokens + b.input_tokens,
     output_tokens: a.output_tokens + b.output_tokens,
@@ -120,11 +120,11 @@ export function addUsage(a: ModelForkUsage, b: ModelForkUsage): ModelForkUsage {
   }
 }
 
-export const totalTokens = (u: ModelForkUsage) =>
+export const totalTokens = (u: ModelUsage) =>
   u.input_tokens + u.output_tokens + u.cache_read_input_tokens + u.cache_creation_input_tokens
 
 /** Claude's moves' usage summed, and how many moves reported none. */
-export function gameUsage(g: Game): { usage: ModelForkUsage; moves: number; unreported: number } {
+export function gameUsage(g: Game): { usage: ModelUsage; moves: number; unreported: number } {
   let usage = zeroUsage()
   let moves = 0
   let unreported = 0
@@ -145,7 +145,7 @@ export function fmt(n: number): string {
 }
 
 /** "in 12 · out 4 · cache r 45k w 210" */
-export const usageLine = (u: ModelForkUsage) =>
+export const usageLine = (u: ModelUsage) =>
   `in ${fmt(u.input_tokens)} · out ${fmt(u.output_tokens)} · cache r ${fmt(u.cache_read_input_tokens)} w ${fmt(u.cache_creation_input_tokens)}`
 
 export function resultText(g: Game): string | undefined {
@@ -156,4 +156,21 @@ export function resultText(g: Game): string | undefined {
     return `Checkmate: ${winner === g.you ? 'you win' : 'Claude wins'}`
   }
   return `Draw by ${g.over}`
+}
+
+/**
+ * One model call's result, whatever Claude Code answered it with: 2.1.283 and
+ * later resolve `{ isAnswered, text, usage }` or `{ isAnswered: false, reason }`
+ * for both `$.model.fork` and `$.model.complete`; earlier releases resolved a
+ * bare string (complete) or null (fork with nothing to fork).
+ */
+export type Reply = { text?: string; usage?: ModelUsage; reason?: string }
+
+export function asReply(result: unknown): Reply {
+  if (typeof result === 'string') return { text: result }
+  if (result === null || result === undefined) return { reason: 'nothing-to-fork' }
+  const r = result as { isAnswered?: boolean; text?: unknown; usage?: ModelUsage; reason?: unknown }
+  const usage = r.usage && typeof r.usage.input_tokens === 'number' ? r.usage : undefined
+  if (r.isAnswered === false) return { reason: String(r.reason ?? 'unanswered'), ...(usage ? { usage } : {}) }
+  return { text: typeof r.text === 'string' ? r.text : '', ...(usage ? { usage } : {}) }
 }

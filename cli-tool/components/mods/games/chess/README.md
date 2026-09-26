@@ -32,12 +32,12 @@ Run `/chess` to open the board (`/chess black` to play Black, `/chess white` for
 
 ## Playing
 
-- **Click** one of your pieces, then a square. The picked square turns yellow, the squares it can move to turn blue with a `•`, and the pieces it can capture turn red. Click another of your pieces to switch, or the same one to drop it. A pawn clicked onto the last rank becomes a queen.
+- **Click** one of your pieces, then a square. The picked square turns yellow, the squares it can move to turn blue with a `•`, and the pieces it can capture turn red with a `×` (en passant included). Click another of your pieces to switch, or the same one to drop it. A pawn clicked onto the last rank becomes a queen.
 - **Type** a move in the field under the board: SAN (`e4`, `Nf3`, `exd5`, `O-O`, `e8=N`) or UCI (`e2e4`, `e7e8n`).
 - `new as white` / `new as black` start over; `resign` ends the game.
 - Your side is always at the bottom.
 
-Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`.
+Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`. A mod cannot see what `auto` resolved to, so if your terminal is light under `auto`, set the `board` option to `light`.
 
 Mouse clicks land in the fullscreen layout. Everywhere else, focus the pane (ctrl+x tab), then move with Tab and press with Enter. The Claude Code mobile app has no text field, so there you click.
 
@@ -58,7 +58,7 @@ What that means for the numbers:
 - **A move that needed a retry** (Claude named a move that is not legal) makes two calls, and both are counted on that move.
 - **Nothing is written to your transcript.** The fork's prompt and reply stay out of the conversation's JSONL.
 
-Before the session's first turn there is no transcript to fork. A move Claude makes then (for example when you start as Black in a new session) goes through `$.model.complete` on `fallbackModel` instead, which does not report usage: the pane shows `not reported` for that move and counts it apart from the total, never a guess. If Claude still names no legal move after one retry, the pane plays a random legal move for it and says so.
+Before the session's first turn there is no transcript to fork. A move Claude makes then (for example when you start as Black in a new session) goes through `$.model.complete` on `fallbackModel` instead, a short completion with only the chess prompt, so that move costs a few hundred tokens and the pane notes where it came from. If a call fails (an API error, an empty reply) or Claude still names no legal move after one retry, the pane plays a random legal move for it and says why, so the game never stays on "Claude is thinking".
 
 ## Options
 
@@ -66,6 +66,7 @@ Before the session's first turn there is no transcript to fork. A move Claude ma
   columns: number        width asked for the docked pane, 30-100 (default 40)
   pieces: string         "unicode" glyphs (default) or FEN "letters" (uppercase White)
   fallbackModel: string  model for a move before the session's first turn (default "haiku")
+  board: string          "theme" (default), "dark" or "light": forces the glyph mapping above
 ```
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, never project settings), with `--settings <file>` or in managed settings, under the plugin's full id:
@@ -95,4 +96,4 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/chess
 
 The rules are checked against published perft move counts. The pane tests answer `$.model.fork` and `$.model.complete` from a script, mount the pane on the terminal surface, click and type moves, and read the token lines.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.283 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.283 against its declarations; on 2.1.283 `$.model.fork` and `$.model.complete` resolve `{ isAnswered, text, usage }`, and the mod also reads the older string/null results. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
