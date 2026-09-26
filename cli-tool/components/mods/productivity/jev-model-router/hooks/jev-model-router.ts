@@ -49,6 +49,7 @@ import {
   describeSetup,
   describeStatus,
   endpoint,
+  laterRequest,
   pendingDecisions,
   readDecision,
   selectProvider,
@@ -124,6 +125,10 @@ export const register: Register = (on, options) => {
   let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
+  // The model the engine named for that turn's first request, before any
+  // rewrite, and the decision behind it (for the status line).
+  let appliedFrom: string | undefined
+  let appliedDecision: Decision | null = null
 
   on('prompt.submit', async ($, e, next) => {
     // Before the routing guards: a module whose switches are all off has still
@@ -215,6 +220,14 @@ export const register: Register = (on, options) => {
     // Every request after the first reuses what the turn settled on, so
     // neither the model nor the effort changes under its own tool loop.
     if (e.index > 0 && e.turnId === appliedTurnId) {
+      const carried = laterRequest(applied, appliedFrom, e.model)
+      if (carried !== applied) {
+        applied = carried
+        if (logDecisions) {
+          $.ui.log(`[jev-model-router] main loop: the turn moved to ${e.model} (a fallback or /model); that model stands`)
+          $.ui.status(describeStatus(appliedDecision, applied))
+        }
+      }
       return yield* next(applied ? { ...e, ...applied } : e)
     }
 
@@ -227,6 +240,8 @@ export const register: Register = (on, options) => {
     if (routeMainEffort && routing.effort) change.effort = routing.effort
 
     appliedTurnId = e.turnId
+    appliedFrom = e.model
+    appliedDecision = decision
     applied = Object.keys(change).length > 0 ? change : null
     // A row in the transcript scrolls away; this line stays on screen.
     if (logDecisions) $.ui.status(describeStatus(decision, applied))
