@@ -50,10 +50,11 @@ const DEFAULT_COLUMNS = 40
 // Claude's moves listed under the board, newest last
 const HISTORY_ROWS = 8
 
-const GLYPHS: Record<string, string> = {
-  K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
-  k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟',
-}
+// Unicode's "white" pieces are outlines and its "black" ones solid. On a dark
+// theme the terminal draws both in a light foreground, so the solid set reads
+// as the light side: there White gets the solid glyphs and Black the outlines.
+const OUTLINE: Record<string, string> = { k: '♔', q: '♕', r: '♖', b: '♗', n: '♘', p: '♙' }
+const SOLID: Record<string, string> = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' }
 const LIGHT = '#8b7355'
 const DARK = '#5c4a36'
 const PICKED = '#a08a2c'
@@ -67,8 +68,12 @@ let picked = -1
 let thinking = false
 let note: string | undefined
 let isOpen = false
+// the Claude Code theme is dark (or auto, taken as dark) unless it names light
+let darkTheme = true
 // raised by every new game, so a reply that lands after one is dropped
 let generation = 0
+
+const isDarkTheme = (value: unknown) => typeof value !== 'string' || !value.startsWith('light')
 
 const paneColumns = (v: unknown) => (typeof v === 'number' && v >= 30 && v <= 100 ? Math.round(v) : DEFAULT_COLUMNS)
 
@@ -168,6 +173,8 @@ export const register: Register = (on, options) => {
       })
       .catch(err => $.ui.log(`chess: /${COMMAND} not registered: ${err}`))
     $.ui.log(`chess loaded: /${COMMAND} opens the board`, { to: 'debug' })
+    const theme = await $.config.list().then(rows => rows.find(row => row.key === 'theme')?.value).catch(() => undefined)
+    darkTheme = isDarkTheme(theme)
     return r
   })
 
@@ -187,6 +194,8 @@ export const register: Register = (on, options) => {
       thinking = false
       note = undefined
     }
+    const theme = await $.config.list().then(rows => rows.find(row => row.key === 'theme')?.value).catch(() => undefined)
+    darkTheme = isDarkTheme(theme)
     isOpen = true
     await $.ui.open({ id: PANE, title: 'chess', focus: true, columns })
     $.ui.status(statusText())
@@ -301,7 +310,12 @@ export const register: Register = (on, options) => {
     const targets = new Set(picked >= 0 ? legalMoves(g.pos).filter(m => m.from === picked).map(m => m.to) : [])
     const ranks = g.you === 'w' ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7]
     const files = g.you === 'w' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0]
-    const glyph = (p: Piece) => (p === '' ? ' ' : letters ? p : GLYPHS[p])
+    const isWhite = (p: Piece) => p !== '' && p === p.toUpperCase()
+    const glyph = (p: Piece) => {
+      if (p === '' || letters) return p || ' '
+      const solid = isWhite(p) === darkTheme
+      return (solid ? SOLID : OUTLINE)[p.toLowerCase()]
+    }
 
     const board = ranks.map(rank => (
       <Box key={`rank:${rank}`} flexDirection="row">
@@ -313,7 +327,13 @@ export const register: Register = (on, options) => {
           const mark = targets.has(sq) ? (p === '' ? '•' : '×') : ' '
           return (
             <Box key={`cell:${sq}`} backgroundColor={bg}>
-              <Button key={`sq:${squareName(sq)}`} plain label={`${mark}${glyph(p)} `} onPress={noop} />
+              <Button
+                key={`sq:${squareName(sq)}`}
+                plain
+                dimColor={darkTheme && p !== '' && !isWhite(p)}
+                label={`${mark}${glyph(p)} `}
+                onPress={noop}
+              />
             </Box>
           )
         })}
@@ -378,8 +398,8 @@ export const register: Register = (on, options) => {
         ) : null}
 
         <Box key="foot" marginTop={1} flexDirection="row" columnGap={1} flexWrap="wrap">
-          <Button key="new-w" label="new ♔" onPress={noop} />
-          <Button key="new-b" label="new ♚" onPress={noop} />
+          <Button key="new-w" label="new as white" onPress={noop} />
+          <Button key="new-b" label="new as black" onPress={noop} />
           <Button key="resign" label="resign" onPress={noop} />
           <Button key="close" label="close" onPress={noop} />
         </Box>

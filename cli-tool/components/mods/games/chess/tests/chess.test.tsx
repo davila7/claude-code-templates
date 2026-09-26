@@ -185,3 +185,19 @@ describe('the pane', () => {
     await ui.unmount()
   })
 })
+
+describe('pieces follow the theme', () => {
+  for (const [theme, whiteKing] of [['dark', '♚'], ['light', '♔']] as const) {
+    test(`${theme} theme: White's king is ${whiteKing}`, async ($, on) => {
+      const calls: Calls = { prompts: [], replies: [], completes: [] }
+      fakeModel(on, calls)
+      on('config.list', () => ({
+        value: [{ key: 'theme', label: 'Theme', kind: 'choice', value: theme, provider: { plugin: 'engine', tier: 'core' }, isLocked: false }],
+      }))
+      await openBoard($)
+      const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
+      expect((await ui.find({ key: 'sq:e1' }))?.text).toContain(whiteKing)
+      await ui.unmount()
+    })
+  }
+})
