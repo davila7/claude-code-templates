@@ -77,6 +77,8 @@ let darkTheme = true
 let generation = 0
 
 const isDarkTheme = (value: unknown) => typeof value !== 'string' || !value.startsWith('light')
+// `auto` follows the terminal, which a mod cannot read, so `board` can say which it is
+const pickDark = (board: unknown, theme: unknown) => (board === 'dark' ? true : board === 'light' ? false : isDarkTheme(theme))
 
 const paneColumns = (v: unknown) => (typeof v === 'number' && v >= 30 && v <= 100 ? Math.round(v) : DEFAULT_COLUMNS)
 
@@ -177,7 +179,7 @@ export const register: Register = (on, options) => {
       .catch(err => $.ui.log(`chess: /${COMMAND} not registered: ${err}`))
     $.ui.log(`chess loaded: /${COMMAND} opens the board`, { to: 'debug' })
     const theme = await $.config.list().then(rows => rows.find(row => row.key === 'theme')?.value).catch(() => undefined)
-    darkTheme = isDarkTheme(theme)
+    darkTheme = pickDark(options.board, theme)
     return r
   })
 
@@ -198,7 +200,7 @@ export const register: Register = (on, options) => {
       note = undefined
     }
     const theme = await $.config.list().then(rows => rows.find(row => row.key === 'theme')?.value).catch(() => undefined)
-    darkTheme = isDarkTheme(theme)
+    darkTheme = pickDark(options.board, theme)
     isOpen = true
     await $.ui.open({ id: PANE, title: 'chess', focus: true, columns })
     $.ui.status(statusText())
@@ -310,7 +312,8 @@ export const register: Register = (on, options) => {
     const g = game
     const last = g.played[g.played.length - 1]
     const lastSquares = last ? [squareIndex(last.uci.slice(0, 2)), squareIndex(last.uci.slice(2, 4))] : []
-    const targets = new Set(picked >= 0 ? legalMoves(g.pos).filter(m => m.from === picked).map(m => m.to) : [])
+    // destination -> whether moving there captures (en passant lands on an empty square)
+    const targets = new Map(picked >= 0 ? legalMoves(g.pos).filter(m => m.from === picked).map(m => [m.to, !!m.captured] as const) : [])
     const ranks = g.you === 'w' ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7]
     const files = g.you === 'w' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0]
     const isWhite = (p: Piece) => p !== '' && p === p.toUpperCase()
@@ -327,12 +330,14 @@ export const register: Register = (on, options) => {
           const sq = rank * 8 + file
           const p = g.pos.board[sq]
           const target = targets.has(sq)
+          const capture = targets.get(sq) === true
           const bg =
             sq === picked ? PICKED
-            : target ? (p === '' ? TARGET : CAPTURE)
+            : target ? (capture ? CAPTURE : TARGET)
             : lastSquares.includes(sq) ? LAST
             : (file + rank) % 2 ? LIGHT : DARK
-          const label = target && p === '' ? ' • ' : ` ${glyph(p)} `
+          // the marker keeps a capture readable without the red
+          const label = capture ? `×${p === '' ? ' ' : glyph(p)} ` : target ? ' • ' : ` ${glyph(p)} `
           return (
             <Box key={`cell:${sq}`} backgroundColor={bg}>
               <Button
@@ -416,7 +421,7 @@ export const register: Register = (on, options) => {
           <Button key="resign" label="resign" onPress={noop} />
           <Button key="close" label="close" onPress={noop} />
         </Box>
-        <Text dimColor>{'click a piece: • move  red capture'}</Text>
+        <Text dimColor>{'click a piece: • move  × capture'}</Text>
       </Box>
     )
   })

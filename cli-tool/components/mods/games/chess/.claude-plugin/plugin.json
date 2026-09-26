@@ -27,7 +27,10 @@
       "type": "string",
       "title": "Pieces",
       "description": "How pieces are drawn: unicode glyphs or FEN letters (uppercase White)",
-      "options": ["unicode", "letters"],
+      "options": [
+        "unicode",
+        "letters"
+      ],
       "default": "unicode"
     },
     "fallbackModel": {
@@ -35,6 +38,17 @@
       "title": "Fallback model",
       "description": "Model for a move Claude makes before the session's first turn, when there is no transcript to fork; that call reports no token usage",
       "default": "haiku"
+    },
+    "board": {
+      "type": "string",
+      "title": "Board colors",
+      "description": "Which side's pieces are drawn solid: 'theme' follows the Claude Code theme (auto counts as dark); set 'light' or 'dark' when an auto theme resolves the other way",
+      "options": [
+        "theme",
+        "dark",
+        "light"
+      ],
+      "default": "theme"
     }
   }
 }

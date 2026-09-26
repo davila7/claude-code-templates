@@ -32,12 +32,12 @@ Run `/chess` to open the board (`/chess black` to play Black, `/chess white` for
 
 ## Playing
 
-- **Click** one of your pieces, then a square. The picked square turns yellow, the squares it can move to turn blue with a `•`, and the pieces it can capture turn red. Click another of your pieces to switch, or the same one to drop it. A pawn clicked onto the last rank becomes a queen.
+- **Click** one of your pieces, then a square. The picked square turns yellow, the squares it can move to turn blue with a `•`, and the pieces it can capture turn red with a `×` (en passant included). Click another of your pieces to switch, or the same one to drop it. A pawn clicked onto the last rank becomes a queen.
 - **Type** a move in the field under the board: SAN (`e4`, `Nf3`, `exd5`, `O-O`, `e8=N`) or UCI (`e2e4`, `e7e8n`).
 - `new as white` / `new as black` start over; `resign` ends the game.
 - Your side is always at the bottom.
 
-Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`.
+Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`. A mod cannot see what `auto` resolved to, so if your terminal is light under `auto`, set the `board` option to `light`.
 
 Mouse clicks land in the fullscreen layout. Everywhere else, focus the pane (ctrl+x tab), then move with Tab and press with Enter. The Claude Code mobile app has no text field, so there you click.
 
@@ -66,6 +66,7 @@ Before the session's first turn there is no transcript to fork. A move Claude ma
   columns: number        width asked for the docked pane, 30-100 (default 40)
   pieces: string         "unicode" glyphs (default) or FEN "letters" (uppercase White)
   fallbackModel: string  model for a move before the session's first turn (default "haiku")
+  board: string          "theme" (default), "dark" or "light": forces the glyph mapping above
 ```
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, never project settings), with `--settings <file>` or in managed settings, under the plugin's full id:
