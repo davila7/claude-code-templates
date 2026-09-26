@@ -5,17 +5,17 @@ Chess against Claude in a side pane while you work. Every move Claude makes show
 ```
 You White vs Claude Black
 
-8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
-7 ♟ ♟ ♟ ♟   ♟ ♟ ♟
+8 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+7 ♙ ♙ ♙ ♙   ♙ ♙ ♙
 6
-5         ♟
-4         ♙
-3           ♘
-2 ♙ ♙ ♙ ♙   ♙ ♙ ♙
-1 ♖ ♘ ♗ ♕ ♔ ♗   ♖
+5         ♙
+4         ♟
+3           ♞
+2 ♟ ♟ ♟ ♟   ♟ ♟ ♟
+1 ♜ ♞ ♝ ♛ ♚ ♝   ♜
    a  b  c  d  e  f  g  h
 
-Your move (White)
+Your move (White): click a piece
 move  e4, Nf3, O-O, e7e8q
 ╭────────────────────────────────╮
 │ Claude's tokens (API usage)    │
@@ -25,16 +25,19 @@ move  e4, Nf3, O-O, e7e8q
 ╰────────────────────────────────╯
 1...  e5        48k  out 4
 2...  Nc6       48k  out 4
-[ new ♔ ] [ new ♚ ] [ resign ] [ close ]
+[ new as white ] [ new as black ] [ resign ] [ close ]
 ```
 
 Run `/chess` to open the board (`/chess black` to play Black, `/chess white` for a new game as White) and `/chess stop` to close it. Closing keeps the game; `/chess` reopens it where it was.
 
 ## Playing
 
-- **Click** one of your pieces, then a square. The picked square is highlighted, `•` marks where it can go, `×` a capture. Click it again to drop it. A pawn clicked onto the last rank becomes a queen.
+- **Click** one of your pieces, then a square. The picked square turns yellow, the squares it can move to turn blue with a `•`, and the pieces it can capture turn red. Click another of your pieces to switch, or the same one to drop it. A pawn clicked onto the last rank becomes a queen.
 - **Type** a move in the field under the board: SAN (`e4`, `Nf3`, `exd5`, `O-O`, `e8=N`) or UCI (`e2e4`, `e7e8n`).
-- `new ♔` / `new ♚` start over as White or Black; `resign` ends the game.
+- `new as white` / `new as black` start over; `resign` ends the game.
+- Your side is always at the bottom.
+
+Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`.
 
 Mouse clicks land in the fullscreen layout. Everywhere else, focus the pane (ctrl+x tab), then move with Tab and press with Enter. The Claude Code mobile app has no text field, so there you click.
 
