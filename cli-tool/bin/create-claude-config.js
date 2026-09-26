@@ -52,6 +52,17 @@ program
   .option('--e2b-api-key <key>', 'E2B API key for sandbox execution (alternative to environment variable)')
   .option('--anthropic-api-key <key>', 'Anthropic API key for Claude Code (alternative to environment variable)')
   .option('--clone-session <url>', 'download and import a shared Claude Code session from URL')
+  .option('--orcarouter-api-key [key]', 'store an OrcaRouter API key (sk-orca-...) and route Claude Code through OrcaRouter (omit the value to be prompted)')
+  .option('--orcarouter-connect', 'sign in with an OrcaRouter account (OAuth 2.0 + PKCE) and store the issued key')
+  .option('--orcarouter-status', 'show OrcaRouter authentication options, stored credential (masked) and model catalog status')
+  .option('--orcarouter-models [capability]', 'list OrcaRouter models from the live catalog for a capability (chat, chat+image, chat+audio, chat+video, embedding, image, video, rerank)')
+  .option('--orcarouter-logout', 'remove the stored OrcaRouter credential')
+  .option('--orcarouter-flow <flow>', 'PKCE flow for --orcarouter-connect: loopback (default), oob, or device')
+  .option('--orcarouter-no-browser', 'use the out-of-band code flow with --orcarouter-connect (prints a code instead of listening on 127.0.0.1)')
+  .option('--orcarouter-force', 'authorize again even when a usable OrcaRouter credential is already stored')
+  .option('--orcarouter-credential-file <path>', 'override the OrcaRouter credential store location (mainly for tests)')
+  .option('--orcarouter-dashboard', 'open the OrcaRouter provider dashboard (API key + PKCE login + capability-filtered model selector)')
+  .option('--orcarouter-dashboard-port <port>', 'port for the OrcaRouter provider dashboard (default 3339)')
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands
