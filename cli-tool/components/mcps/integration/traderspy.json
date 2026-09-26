@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "traderspy": {
-      "description": "TraderSpy: crypto futures market data for AI agents as 18 read-only tools. AI-generated futures signals with entry, take-profit ladder, stop and realised outcome; positioning of top traders on Binance, Hyperliquid, Bybit and OKX; prices and OHLCV candles; 19 technical indicators over up to 3 timeframes in one call; funding rate and open interest; a screener over the most-traded pairs and an event-study backtest of a condition; plus a read-only view of the user's own TraderSpy account. No tool places, closes or modifies an order. Hosted remote server: create a free API key at https://traderspy.app/mcp (free 300 tool calls/day, premium 5,000/day, no card needed), or remove the headers block and the MCP client will sign in with OAuth on first use. Data and analysis, not investment advice.",
+      "description": "TraderSpy: crypto futures market data for AI agents as 17 read-only tools. AI-generated futures signals with entry, take-profit ladder, stop and realised outcome; positioning of top traders on Binance, Hyperliquid, Bybit and OKX; prices and OHLCV candles; 19 technical indicators over up to 3 timeframes in one call; funding rate and open interest; a screener over the most-traded pairs and an event-study backtest of a condition. No tool reads account data, and no tool places, closes or modifies an order. Hosted remote server: create a free API key at https://traderspy.app/mcp (free 300 tool calls/day, premium 5,000/day, no card needed), or remove the headers block and the MCP client will sign in with OAuth on first use. Data and analysis, not investment advice.",
       "type": "http",
       "url": "https://mcp.traderspy.app/mcp",
       "headers": {
