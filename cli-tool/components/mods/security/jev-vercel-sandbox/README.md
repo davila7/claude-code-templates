@@ -56,9 +56,9 @@ With no Jev key the engine's own `$.model.classify` decides between `local` and 
 
 **The copy** is taken when the sandbox starts, not kept in sync: edits Claude makes on your machine afterwards are not in it (`/jev-vercel-sandbox restart` takes a fresh copy). It holds what `git ls-files --cached --others --exclude-standard` lists (tracked files plus untracked ones `.gitignore` does not exclude), or every file outside `.git` and `node_modules` when the folder is not a git repository, minus:
 
-- `.env` and `.env.*` (except `.env.example`, `.sample`, `.template`, `.dist`), `.dev.vars`, `.npmrc`, `.pypirc`, `.netrc`, `.git-credentials`, `credentials(.json)`
+- `.env` and `.env.*` (except `.env.example`, `.sample`, `.template`, `.dist`), `.dev.vars`, `.npmrc`, `.pypirc`, `.netrc`, `.git-credentials`, `.pgpass`, `credentials(.json)`, Terraform state (`*.tfstate`)
 - `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `id_rsa`/`id_ed25519` and the like
-- anything inside `.git`, `.ssh`, `.aws`, `.gnupg`, `.vercel`, `.claude` or `node_modules`
+- anything inside `.git`, `.ssh`, `.aws`, `.gnupg`, `.kube`, `.docker`, `.terraform`, `.vercel`, `.claude` or `node_modules`
 
 It is packed with your `tar` (`tar -czf … --null -T -`), capped at `workspaceMaxMB` (10 MB compressed; a bigger project fails the start and says so), and uploaded as base64 through the command endpoint, 400 KB per request, because a mod's `$.http.fetch` sends text only and the SDK's `fs/write` takes a binary body. Inside, it is unpacked into `/vercel/sandbox/<folder name>` and committed as a git baseline so each command's changes can be listed. With no git in the image the changed files are not listed. `uploadWorkspace: false` skips the copy: commands then run in an empty sandbox. Packing needs `git`, `tar`, `mktemp` and `split` on your machine (macOS and Linux have them).
 

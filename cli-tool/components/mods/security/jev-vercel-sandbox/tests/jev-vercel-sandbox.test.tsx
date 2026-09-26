@@ -22,6 +22,8 @@ type World = {
   archiveBytes: number
   /** What `git status --porcelain` prints after a command. */
   porcelain: string
+  /** Makes \$.clock.now throw, to fail the tool.call hook mid-decision. */
+  nowThrows: boolean
 }
 
 const SESSION = { id: 'sbx_session_1', status: 'running', region: 'iad1', vcpus: 2, memory: 4096, timeout: 2_700_000, cwd: '/vercel/sandbox', requestedAt: 1_000, startedAt: 1_000, createdAt: 1_000 }
@@ -39,7 +41,10 @@ function fakeEngine(on: On, w: World) {
   on('env.get', ($, e) => ({ value: w.env[e.name] }))
   on('session.root', () => ({ value: '/repo' }))
   on('session.cwd', () => ({ value: '/repo/src' }))
-  on('clock.now', () => ({ value: 1_000 }))
+  on('clock.now', () => {
+    if (w.nowThrows) throw new Error('clock gone')
+    return { value: 1_000 }
+  })
   on('clock.sleep', () => ({ value: undefined }))
   on('model.classify', () => ({ value: w.label }))
   on('command.register', () => ({ value: undefined }) as never)
@@ -111,6 +116,7 @@ const world = (extra: Partial<World> = {}): World => ({
   getStatus: 'running',
   archiveBytes: 2_048,
   porcelain: 'D  build/out.js\nA  build/new.js\n',
+  nowThrows: false,
   ...extra,
 })
 
@@ -216,6 +222,17 @@ describe('jev-vercel-sandbox', () => {
     expect(r.context![0]).toContain("did not run on the user's machine")
     expect(r.context![0]).toContain('2 files changed: -build/out.js, +build/new.js')
     expect(r.context![0]).toContain('/jev-vercel-sandbox approve')
+  })
+
+  test('a hook that fails mid-decision refuses the command instead of running it locally', async ($, on) => {
+    const w = world()
+    fakeEngine(on, w)
+    await started($, w)
+    w.nowThrows = true
+    const r = await bash($, 'rm -rf build')
+    expect(r.deny).toContain('could not decide where to run this command')
+    expect(w.ranLocally).toEqual([])
+    expect(userCommands(w)).toEqual([])
   })
 
   test('a safe command stays local; plain reads never reach the judge', async ($, on) => {

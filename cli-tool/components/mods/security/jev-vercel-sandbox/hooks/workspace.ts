@@ -34,11 +34,13 @@ const SECRET_NAMES = [
   /^\.pypirc$/,
   /^\.netrc$/,
   /^\.git-credentials$/,
+  /^\.pgpass$/,
+  /\.tfstate(\.backup)?$/,
   /\.(pem|key|p12|pfx|jks|keystore|ppk)$/i,
   /^id_(rsa|dsa|ecdsa|ed25519)(\.pub)?$/,
   /^credentials(\.json)?$/,
 ]
-const SECRET_DIRS = ['.git', '.ssh', '.aws', '.gnupg', 'node_modules', '.vercel', '.claude']
+const SECRET_DIRS = ['.git', '.ssh', '.aws', '.gnupg', '.kube', '.docker', '.terraform', 'node_modules', '.vercel', '.claude']
 
 /** True for a path the upload leaves out: a credential file, or one inside a folder that never goes. */
 export function isExcluded(path: string): boolean {

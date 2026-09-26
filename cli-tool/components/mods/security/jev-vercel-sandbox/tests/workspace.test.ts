@@ -4,7 +4,7 @@ import { describeChanges, filesToUpload, folderName, isExcluded, nulList, readCh
 
 describe('workspace', () => {
   test('credentials and private folders never go up; examples and ordinary files do', () => {
-    for (const p of ['.env', '.env.local', 'apps/web/.env.production', '.dev.vars', '.npmrc', 'certs/server.pem', 'deploy.key', 'id_ed25519', '.ssh/config', '.claude/settings.local.json', 'a/node_modules/x/index.js', '.vercel/project.json']) {
+    for (const p of ['.env', '.env.local', 'apps/web/.env.production', '.dev.vars', '.npmrc', 'certs/server.pem', 'deploy.key', 'id_ed25519', '.ssh/config', '.claude/settings.local.json', 'a/node_modules/x/index.js', '.vercel/project.json', '.pgpass', 'infra/terraform.tfstate', '.docker/config.json', 'k8s/.kube/config']) {
       expect(isExcluded(p)).toBe(true)
     }
     for (const p of ['.env.example', '.env.sample', 'README.md', 'src/env.ts', 'keyboard.ts', 'docs/.envrc.md']) {
