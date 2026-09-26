@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "scrapeunblocker": {
+      "description": "Fetch any web page through the ScrapeUnblocker anti-bot API (Cloudflare, DataDome, PerimeterX, Akamai, Shape). Three tools: fetch_html (fully rendered HTML), fetch_parsed (AI-parsed structured JSON), and google_search (organic SERP results). Bring your own API key.",
+      "command": "npx",
+      "args": ["-y", "scrapeunblocker-mcp"],
+      "env": {
+        "SCRAPEUNBLOCKER_KEY": "<your-scrapeunblocker-api-key>"
+      }
+    }
+  }
+}
