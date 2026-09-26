@@ -401,3 +401,20 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
 })
+
+test('the setup line names subagent effort when it is routed', () => {
+  const line = describeSetup('typesafe', 'u', {
+    subagentModel: true,
+    subagentEffort: true,
+    mainEffort: true,
+    mainModel: false,
+  })
+  expect(line).toContain('routing subagent model, subagent effort, main effort')
+  const off = describeSetup('typesafe', 'u', {
+    subagentModel: true,
+    subagentEffort: false,
+    mainEffort: true,
+    mainModel: false,
+  })
+  expect(off).toContain('routing subagent model, main effort')
+})
