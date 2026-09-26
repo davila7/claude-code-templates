@@ -1,27 +1,45 @@
 {
-  "lastUpdated": "2026-09-25T03:05:54.643833+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-09-26T03:06:54.668595+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
-    "RemoteOK",
-    "WeWorkRemotely"
+    "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5428014008",
+      "company": "Anthropic",
+      "position": "Product Designer, Safeguards",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Design at Anthropic sits at the intersection of craft, research, and product intuition. We're a small team working on products that millions of people use daily—and on interactions that don't have established conventions yet. Our work shapes how people experience AI: whether Claude feels like a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428014008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428014008",
+      "postedAt": "2026-09-25T10:47:31-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5382518008",
       "company": "Anthropic",
       "position": "Applied AI Architect, Public Sector ",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "San Francisco, CA | New York City, NY | Washington, DC",
       "remote": false,
       "salary": "",
-      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping systems integrators, startups, and other GovTech companies understand the value of Claude and paint the vision on how they can successfully integrate and deploy...",
+      "description": "As an Applied AI Solutions Architect supporting a dedicated national security mission program, you will be the customer's trusted technical advisor — helping them understand the value of Claude and how to successfully integrate and deploy it into their technology stack. You'll combine deep...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5382518008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5382518008",
       "postedAt": "2026-09-23T13:17:43-04:00",
       "tags": [
-        "Python",
         "Rust",
         "AWS",
         "Claude Code",
@@ -480,51 +498,6 @@
         "Claude Code",
         "Django",
         "Vue.js"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-toptal-automation-engineer-uipath-for-innovative-ai-project",
-      "company": "Toptal",
-      "position": "Automation Engineer (UIPath) for innovative AI Project",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: 📌 Summary We are seeking a hands-on, execution-focused Senior Automation & AI Systems Developer (UiPath & Power Platform) to build, scale, and maintain enterprise automations across our client's regional operations. In this role, you will own the end-to-end development lifecycle for...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/toptal-automation-engineer-uipath-for-innovative-ai-project",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/toptal-automation-engineer-uipath-for-innovative-ai-project",
-      "postedAt": "2026-08-26T13:48:50+00:00",
-      "tags": [
-        "Python",
-        "Azure",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-offerup-software-development-engineer-ii-full-stack-business-remote-colombia",
-      "company": "OfferUp",
-      "position": "Software Development Engineer II Full Stack - Business (Remote @ Colombia)",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Remote @ Colombia About the role: The OfferUp Business team owns the platforms that power every business vertical on our marketplace; Storefronts, Auto Dealers, Services, Rentals, and Jobs. Our customers aren't casually browsing; they're running businesses on top of what we build, so...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/offerup-software-development-engineer-ii-full-stack-business-remote-colombia",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/offerup-software-development-engineer-ii-full-stack-business-remote-colombia",
-      "postedAt": "2026-08-26T07:30:39+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Node.js",
-        "AWS",
-        "Claude Code",
-        "Cursor",
-        "Copilot",
-        "Java"
       ],
       "companyIcon": ""
     },
