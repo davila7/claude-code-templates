@@ -1,3 +1,10 @@
+---
+description: "Analyze and explain code functionality"
+allowed-tools: Read, Grep, Glob
+argument-hint: "[code-or-file-path]"
+
+---
+
 # Analyze and Explain Code Functionality
 
 Analyze and explain code functionality

@@ -1,3 +1,10 @@
+---
+description: "Systematically debug and fix errors"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
+
+---
+
 # Systematically Debug and Fix Errors
 
 Systematically debug and fix errors

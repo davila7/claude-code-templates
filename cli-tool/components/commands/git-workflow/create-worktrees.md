@@ -1,3 +1,9 @@
+---
+description: "This command fetches all open pull requests using GitHub CLI, then creates a git worktree for each PR's branch in the `./tree/<BRANCH_NAME>` directory."
+allowed-tools: Read, Write, Edit, Bash
+
+---
+
 # Git Worktree Commands
 
 ## Create Worktrees for All Open PRs

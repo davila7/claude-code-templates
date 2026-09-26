@@ -1,3 +1,10 @@
+---
+description: "Synchronize task status with git commits, ensuring consistency between version control and task tracking."
+allowed-tools: Read, Write, Edit, Bash(git:*)
+argument-hint: "[--check] [--date <date>] [--project <project>] [options]"
+
+---
+
 # Orchestration Sync Command
 
 Synchronize task status with git commits, ensuring consistency between version control and task tracking.
