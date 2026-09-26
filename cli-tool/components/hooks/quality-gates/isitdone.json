@@ -1,0 +1,28 @@
+{
+  "description": "Blocks the end of the turn until the repository's real test, typecheck and lint commands pass. When Claude stops after claiming the work is done, the Stop hook runs the checks the repo already defines (npm/pnpm/yarn/bun scripts, pytest, go test, cargo test, dotnet, Gradle/Maven, Makefile targets) on the exact working tree, returns the failing output as the block reason, and caps itself at 3 attempts so it can never loop forever. The PostToolUse hook adds a warn-only note when an edit weakened a test (new .skip, dropped assertions, downgraded matchers). No LLM calls, no API key; the only network use is npm fetching the pinned package once. Requires Node.js 20+. Source: https://github.com/raimondasl/isitdone",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx -y @aivolution/isitdone@0.6.1 hook --host claude",
+            "timeout": 600
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx -y @aivolution/isitdone@0.6.1 hook --host claude --event edit",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
