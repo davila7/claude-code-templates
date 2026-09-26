@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "threadfox-lite": {
+      "description": "Free, read-only Reddit research tools (MIT): a subreddit's rules with self-promotion rules flagged, communities for a topic, an account's standing and whether a post is still live. Reads through your own signed-in Chrome via Microsoft's Playwright Extension; never posts, votes or changes anything, and needs no Reddit API keys.",
+      "command": "uvx",
+      "args": ["threadfox-lite"]
+    }
+  }
+}
