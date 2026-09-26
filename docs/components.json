@@ -48171,6 +48171,232 @@
       ]
     },
     {
+      "name": "jev-vercel-sandbox",
+      "path": "security/jev-vercel-sandbox",
+      "category": "security",
+      "type": "mod",
+      "description": "Runs dangerous Bash commands in a Vercel Sandbox instead of on your machine. TypeSafe's Jev judges every command Claude is about to run (destructive, remote code, a change to the machine, data leaving it); one past the threshold runs in an isolated Linux microVM started with the session, and its output comes back as the Bash result with a note telling Claude where it ran. A side pane shows the sandbox is ready and what ran there. Falls back to the engine's built-in classifier when no Jev key is set. Needs function hooks (early access).",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "security",
+        "sandbox",
+        "vercel",
+        "jev",
+        "typesafe",
+        "bash"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "jev-vercel-sandbox.tsx"
+      ],
+      "userConfig": {
+        "vercelToken": {
+          "type": "string",
+          "title": "Vercel token",
+          "description": "A Vercel access token (vercel.com/account/tokens), or an OIDC token from `vercel env pull`. Empty: the VERCEL_TOKEN, then VERCEL_OIDC_TOKEN environment variable",
+          "sensitive": true,
+          "default": ""
+        },
+        "vercelTeamId": {
+          "type": "string",
+          "title": "Vercel team id",
+          "description": "The team (team_…) the sandbox is billed to; needed with an access token, read from an OIDC token. Empty: VERCEL_TEAM_ID",
+          "default": ""
+        },
+        "vercelProjectId": {
+          "type": "string",
+          "title": "Vercel project id",
+          "description": "The project (prj_…) the sandbox belongs to; needed with an access token, read from an OIDC token. Empty: VERCEL_PROJECT_ID",
+          "default": ""
+        },
+        "sandboxImage": {
+          "type": "string",
+          "title": "Sandbox image",
+          "description": "Image to start from; empty uses Vercel's default (vercel/sandbox/universal: Ubuntu, Node.js LTS, Python)",
+          "default": ""
+        },
+        "sandboxVcpus": {
+          "type": "number",
+          "title": "vCPUs",
+          "description": "vCPUs for the sandbox; leave unset for Vercel's default"
+        },
+        "sandboxTimeoutMinutes": {
+          "type": "number",
+          "title": "Sandbox lifetime (minutes)",
+          "description": "How long the sandbox lives before Vercel stops it; the next dangerous command after that starts a new one. Your plan caps it",
+          "default": 45
+        },
+        "persistent": {
+          "type": "boolean",
+          "title": "Persistent sandbox",
+          "description": "Keep the sandbox's filesystem when it stops (Vercel snapshots it). Off: every session starts clean",
+          "default": false
+        },
+        "startOnSessionStart": {
+          "type": "boolean",
+          "title": "Start with the session",
+          "description": "Start the sandbox when the session starts; off starts it on the first dangerous command",
+          "default": true
+        },
+        "stopOnExit": {
+          "type": "boolean",
+          "title": "Stop on exit",
+          "description": "Stop the sandbox when the session ends",
+          "default": true
+        },
+        "commandTimeoutMs": {
+          "type": "number",
+          "title": "Command timeout (ms)",
+          "description": "Longest a sandboxed command may run when Claude sets no timeout of its own (max 600000)",
+          "default": 120000
+        },
+        "whenUnavailable": {
+          "type": "string",
+          "title": "When the sandbox is unavailable",
+          "description": "\"deny\" refuses a dangerous command the sandbox cannot run (not configured, failed to start); \"local\" runs it on this machine as if the mod were not there",
+          "default": "deny",
+          "options": [
+            "deny",
+            "local"
+          ]
+        },
+        "typesafeApiKey": {
+          "type": "string",
+          "title": "TypeSafe API key",
+          "description": "Key for api.typesafe.ai, the judge (calibrated probabilities). Empty: the Gateway key, else the built-in classifier",
+          "sensitive": true,
+          "default": ""
+        },
+        "gatewayApiKey": {
+          "type": "string",
+          "title": "Vercel AI Gateway key",
+          "description": "Reaches Jev through ai-gateway.vercel.sh when no TypeSafe key is set",
+          "sensitive": true,
+          "default": ""
+        },
+        "provider": {
+          "type": "string",
+          "title": "Judge backend",
+          "description": "\"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+          "default": "auto",
+          "options": [
+            "auto",
+            "typesafe",
+            "gateway",
+            "builtin"
+          ]
+        },
+        "typesafeBaseUrl": {
+          "type": "string",
+          "title": "TypeSafe base URL",
+          "description": "Empty uses https://api.typesafe.ai",
+          "default": ""
+        },
+        "typesafeModel": {
+          "type": "string",
+          "title": "TypeSafe model",
+          "description": "Empty uses jev-latest",
+          "default": ""
+        },
+        "gatewayBaseUrl": {
+          "type": "string",
+          "title": "AI Gateway base URL",
+          "description": "Empty uses https://ai-gateway.vercel.sh/v4/ai",
+          "default": ""
+        },
+        "gatewayModel": {
+          "type": "string",
+          "title": "AI Gateway model",
+          "description": "Empty uses typesafe-ai/jev",
+          "default": ""
+        },
+        "threshold": {
+          "type": "number",
+          "title": "Sandbox threshold",
+          "description": "A hazard probability at or above this sends the command to the sandbox",
+          "default": 0.5
+        },
+        "severityThreshold": {
+          "type": "number",
+          "title": "Severity threshold",
+          "description": "A severity score (0-3) at or above this sends the command to the sandbox whatever the probabilities",
+          "default": 2
+        },
+        "judgeTimeoutMs": {
+          "type": "number",
+          "title": "Judge latency budget (ms)",
+          "description": "How long to wait for Jev before applying onJudgeError",
+          "default": 2000
+        },
+        "onJudgeError": {
+          "type": "string",
+          "title": "When the judge fails",
+          "description": "Where a command goes when the judge gives no answer (timeout, error)",
+          "default": "sandbox",
+          "options": [
+            "sandbox",
+            "local"
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "title": "Mode",
+          "description": "\"enforce\" sandboxes dangerous commands; \"audit\" only logs what it would sandbox and runs everything locally",
+          "default": "enforce",
+          "options": [
+            "enforce",
+            "audit"
+          ]
+        },
+        "openPanel": {
+          "type": "boolean",
+          "title": "Open the side pane",
+          "description": "Open the sandbox pane when the session starts; the engine keeps an unasked pane hidden below 144 columns (/jev-vercel-sandbox opens it)",
+          "default": true
+        },
+        "columns": {
+          "type": "number",
+          "title": "Pane width",
+          "description": "Columns asked for the docked pane in the fullscreen layout (28-80)",
+          "default": 44
+        },
+        "vercelApiUrl": {
+          "type": "string",
+          "title": "Vercel API URL",
+          "description": "Empty uses https://api.vercel.com",
+          "default": ""
+        },
+        "logDecisions": {
+          "type": "boolean",
+          "title": "Log decisions",
+          "description": "Write each judgement and where the command ran to the session log",
+          "default": true
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/jev-vercel-sandbox.tsx",
+        "hooks/judge.ts",
+        "hooks/vercel.ts",
+        "tests/jev-vercel-sandbox.test.tsx",
+        "tests/judge.test.ts"
+      ]
+    },
+    {
       "name": "large-edit-confirmation",
       "path": "security/large-edit-confirmation",
       "category": "security",
