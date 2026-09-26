@@ -1,7 +1,7 @@
 {
   "name": "jev-vercel-sandbox",
-  "version": "0.1.0",
-  "description": "Runs dangerous Bash commands in a Vercel Sandbox instead of on your machine. TypeSafe's Jev judges every command Claude is about to run (destructive, remote code, a change to the machine, data leaving it); one past the threshold runs in an isolated Linux microVM started with the session, and its output comes back as the Bash result with a note telling Claude where it ran. A side pane shows the sandbox is ready and what ran there. Falls back to the engine's built-in classifier when no Jev key is set. Needs function hooks (early access).",
+  "version": "0.2.0",
+  "description": "Runs dangerous Bash commands in a Vercel Sandbox instead of on your machine. Run /jev-vercel-sandbox to start it: a side pane shows the microVM starting and a copy of the project (git's files, secrets left out) uploading, then says Jev will run dangerous commands there and logs each one live with its exit code and changed files. TypeSafe's Jev judges every command Claude is about to run (destructive, remote code, a change to the machine, data leaving it); one past the threshold runs in the sandbox and its output comes back as the Bash result. Until the sandbox runs, dangerous commands are refused. Falls back to the engine's built-in classifier when no Jev key is set. Needs function hooks (early access).",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -43,7 +43,7 @@
     "sandboxTimeoutMinutes": {
       "type": "number",
       "title": "Sandbox lifetime (minutes)",
-      "description": "How long the sandbox lives before Vercel stops it; the next dangerous command after that starts a new one. Your plan caps it",
+      "description": "How long the sandbox lives before Vercel stops it; run /jev-vercel-sandbox again after that. Your plan caps it",
       "default": 45
     },
     "persistent": {
@@ -52,11 +52,17 @@
       "description": "Keep the sandbox's filesystem when it stops (Vercel snapshots it). Off: every session starts clean",
       "default": false
     },
-    "startOnSessionStart": {
+    "uploadWorkspace": {
       "type": "boolean",
-      "title": "Start with the session",
-      "description": "Start the sandbox when the session starts; off starts it on the first dangerous command",
+      "title": "Copy the project into the sandbox",
+      "description": "On /jev-vercel-sandbox, copy the project (the files git tracks or would track, never .env*, keys, .git, .claude, node_modules) into the sandbox and run commands there. Off: commands run in an empty sandbox",
       "default": true
+    },
+    "workspaceMaxMB": {
+      "type": "number",
+      "title": "Project size cap (MB)",
+      "description": "The largest compressed copy of the project that is uploaded; bigger, the start fails and says so",
+      "default": 10
     },
     "stopOnExit": {
       "type": "boolean",
@@ -73,7 +79,7 @@
     "whenUnavailable": {
       "type": "string",
       "title": "When the sandbox is unavailable",
-      "description": "\"deny\" refuses a dangerous command the sandbox cannot run (not configured, failed to start); \"local\" runs it on this machine as if the mod were not there",
+      "description": "\"deny\" refuses a dangerous command while no sandbox runs (not started with /jev-vercel-sandbox, still starting, failed, not configured); \"local\" runs it on this machine as if the mod were not there",
       "default": "deny",
       "options": ["deny", "local"]
     },
@@ -153,12 +159,6 @@
       "description": "\"enforce\" sandboxes dangerous commands; \"audit\" only logs what it would sandbox and runs everything locally",
       "default": "enforce",
       "options": ["enforce", "audit"]
-    },
-    "openPanel": {
-      "type": "boolean",
-      "title": "Open the side pane",
-      "description": "Open the sandbox pane when the session starts; the engine keeps an unasked pane hidden below 144 columns (/jev-vercel-sandbox opens it)",
-      "default": true
     },
     "columns": {
       "type": "number",
