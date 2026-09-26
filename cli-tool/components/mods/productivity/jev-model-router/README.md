@@ -51,6 +51,8 @@ The two mistakes do not cost the same, so they do not clear the same bar:
 
 Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
 
+A slash command with nothing after it (`/simplify`) is not classified: the decision model would see only the command's name, never what the command does. Its turn keeps the session's model and effort. With text after the name, the prompt is classified like any other.
+
 ## What you see in the transcript
 
 With `logDecisions` on (the default), the router reports every step of its own
