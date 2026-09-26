@@ -23549,7 +23549,7 @@
     "slug": "traderspy-mcp",
     "name": "TraderSpy",
     "author": "target1m",
-    "description": "AI crypto signals, whale positions, 19 technical indicators, derivatives, a screener and backtests — 18 read-only MCP tools for Claude, ChatGPT, Grok and any MCP client.",
+    "description": "AI crypto signals, whale positions, 19 technical indicators, derivatives, a screener and backtests — 17 read-only MCP tools for Claude, ChatGPT, Grok and any MCP client.",
     "github": "https://github.com/target1m/traderspy-mcp",
     "stars": 0,
     "type": "plugin",
