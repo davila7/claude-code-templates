@@ -1,0 +1,6 @@
+{
+  "description": "chess: /chess opens a Pane with a board; ui.press and ui.input play your move, $.model.fork plays Claude's and reports its token usage",
+  "modules": [
+    "./register.tsx"
+  ]
+}
