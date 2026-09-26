@@ -47,7 +47,7 @@ function formatNumber(n: number): string {
   return String(n);
 }
 
-const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps'] as const;
+const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps', 'mods'] as const;
 
 export default function TrendingView() {
   const [data, setData] = useState<TrendingData | null>(null);
@@ -67,6 +67,13 @@ export default function TrendingView() {
     const list = data.trending[activeType] ?? [];
     return [...list].sort((a, b) => (b[period] ?? 0) - (a[period] ?? 0));
   }, [data, activeType, period]);
+
+  // Only show a type filter once the data actually carries that bucket, so a
+  // type the generator hasn't published yet never renders as an empty tab.
+  const visibleTypes = useMemo(
+    () => TRENDING_TYPES.filter((type) => type === 'all' || (data?.trending[type]?.length ?? 0) > 0),
+    [data]
+  );
 
   if (loading) {
     return (
@@ -226,7 +233,7 @@ export default function TrendingView() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           {/* Type filter */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {TRENDING_TYPES.map((type) => {
+            {visibleTypes.map((type) => {
               const config = TYPE_CONFIG[type];
               return (
                 <button

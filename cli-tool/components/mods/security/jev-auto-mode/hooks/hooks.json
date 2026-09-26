@@ -1,0 +1,6 @@
+{
+  "description": "jev-auto-mode: tool.call runs the JSON policy (rules, then Jev) on every tool call; tool.check makes its verdict the permission decision; command.run and skill.prompt apply it to typed commands and skills",
+  "modules": [
+    "./jev-auto-mode.ts"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.29.5",
+  "version": "1.29.6",
   "description": "Component templates and tracking system for Claude Code",
   "main": "cli-tool/src/index.js",
   "bin": {
@@ -9,7 +9,12 @@
   },
   "scripts": {
     "build": "echo 'Build complete'",
-    "test": "echo 'No tests specified'",
+    "test": "npm run check:version-sync && npm run test:version-sync",
+    "check:version-sync": "node scripts/sync-package-versions.js --check",
+    "test:version-sync": "node --test scripts/sync-package-versions.test.js",
+    "prepublishOnly": "npm run check:version-sync",
+    "version": "node scripts/sync-package-versions.js && git add package.json package-lock.json cli-tool/package.json cli-tool/package-lock.json",
+    "version:set": "node scripts/sync-package-versions.js",
     "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'",
     "deploy": "./scripts/deploy.sh",
     "deploy:dashboard": "./scripts/deploy.sh"

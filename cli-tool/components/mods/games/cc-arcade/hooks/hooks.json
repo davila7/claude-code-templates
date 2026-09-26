@@ -1,0 +1,4 @@
+{
+  "description": "cc-arcade: games above the prompt. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; builds without function hooks ignore the modules key.",
+  "modules": ["./register.tsx"]
+}
