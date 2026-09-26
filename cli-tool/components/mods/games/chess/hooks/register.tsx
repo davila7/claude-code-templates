@@ -14,6 +14,15 @@
  * transcript to fork; that move falls back to `$.model.complete` on
  * `fallbackModel`, a short completion whose usage is counted the same way.
  *
+ * With a Jev key in the options (`typesafeApiKey` or `gatewayApiKey`, the
+ * same ones jev-model-router takes), Jev plays instead: one request to
+ * TypeSafe's decision API per move, a `choice` over the legal moves, and the
+ * pane says Jev wherever it said Claude. Tokens show when the response
+ * reports them, "not reported" otherwise.
+ *
+ * Privacy: with a Jev key set, the position and the moves so far are sent to
+ * whichever backend the key belongs to.
+ *
  * Nothing here touches files, git or the transcript.
  *
  * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
@@ -22,6 +31,9 @@
  *   columns: number        width asked for the docked pane (default 40)
  *   pieces: string         "unicode" (default) or "letters"
  *   fallbackModel: string  model for a move made before the first turn (default "haiku")
+ *   typesafeApiKey / gatewayApiKey: string  a Jev key makes Jev the opponent
+ *   provider: string       "auto" (default), "typesafe", "gateway" or "claude"
+ *   typesafeBaseUrl, typesafeModel, gatewayBaseUrl, gatewayModel, timeoutMs (Jev, default 15000)
  */
 import type { Register } from 'claude-code'
 import { findMove, legalMoves, squareIndex, squareName } from './chess.ts'
@@ -44,6 +56,8 @@ import {
   usageLine,
 } from './game.ts'
 import type { Game, Played, Reply } from './game.ts'
+import { DEFAULT_BASE_URL, DEFAULT_MODEL, endpoint, jevMove, requestBody, requestHeaders, selectProvider } from './jev.ts'
+import type { JevResponse } from './jev.ts'
 
 const PANE = 'chess'
 const COMMAND = 'chess'
@@ -66,6 +80,8 @@ const CAPTURE = '#8a3d3d'
 
 // both resolve ModelCompleteResult-like values; read through asReply
 type Call = (prompt: string) => Promise<unknown>
+// Jev's HTTP answer for a game, or undefined when it did not come in time
+type JevCall = (g: Game) => Promise<JevResponse>
 
 let game: Game = newGame('w')
 let picked = -1
@@ -76,6 +92,8 @@ let isOpen = false
 let darkTheme = true
 // raised by every new game, so a reply that lands after one is dropped
 let generation = 0
+// who plays the other side: Jev when a Jev key is configured, Claude otherwise
+let opponent = 'Claude'
 
 const isDarkTheme = (value: unknown) => typeof value !== 'string' || !value.startsWith('light')
 // `auto` follows the terminal, which a mod cannot read, so `board` can say which it is
@@ -86,8 +104,8 @@ const paneColumns = (v: unknown) => (typeof v === 'number' && v >= 30 && v <= 10
 function statusText(): string | undefined {
   if (!isOpen) return undefined
   const { usage, moves } = gameUsage(game)
-  const where = resultText(game) ?? (thinking ? 'Claude is thinking' : isYourTurn(game) ? 'your move' : 'Claude to move')
-  return `chess: ${where} · Claude ${moves} move${moves === 1 ? '' : 's'}, ${fmt(totalTokens(usage))} tokens`
+  const where = resultText(game, opponent) ?? (thinking ? `${opponent} is thinking` : isYourTurn(game) ? 'your move' : `${opponent} to move`)
+  return `chess: ${where} · ${opponent} ${moves} move${moves === 1 ? '' : 's'}, ${fmt(totalTokens(usage))} tokens`
 }
 
 /**
@@ -131,9 +149,32 @@ async function claudeMoves(fork: Call, complete: Call, fallbackModel: string): P
   if (!move) {
     const legal = legalMoves(game.pos)
     move = legal[Math.floor(Math.random() * legal.length)]
-    how = `random: ${how ?? 'Claude named no legal move'}`
+    how = `random: ${how ?? `${opponent} named no legal move`}`
   }
   game = play(game, move, { by: 'claude', usage, ...(how ? { note: how } : {}) })
+  note = undefined
+}
+
+/**
+ * Jev's move: one request to the decision model, whose answer is a choice
+ * among the legal moves. A failed request, a timeout or an answer naming no
+ * legal move plays a random legal move and says why. Never throws.
+ */
+async function jevMoves(ask: JevCall, provider: string): Promise<void> {
+  const gen = generation
+  let got: ReturnType<typeof jevMove>
+  try {
+    got = jevMove(game.pos, await ask(game), provider)
+  } catch (err) {
+    got = { usage: null, why: `request failed: ${String(err).slice(0, 60)}` }
+  }
+  if (gen !== generation) return
+  let move = got.move
+  if (!move) {
+    const legal = legalMoves(game.pos)
+    move = legal[Math.floor(Math.random() * legal.length)]
+  }
+  game = play(game, move, { by: 'claude', usage: got.usage, ...(got.why ? { note: `random: ${got.why}` } : {}) })
   note = undefined
 }
 
@@ -176,19 +217,34 @@ function clickSquare(sq: number): boolean {
 export const register: Register = (on, options) => {
   const columns = paneColumns(options.columns)
   const letters = options.pieces === 'letters'
-  const fallbackModel = typeof options.fallbackModel === 'string' && options.fallbackModel ? options.fallbackModel : 'haiku'
+  const text = (key: string, fallback: string) =>
+    typeof options[key] === 'string' && options[key] ? (options[key] as string) : fallback
+  const fallbackModel = text('fallbackModel', 'haiku')
+  // A Jev key (the same ones jev-model-router takes) makes Jev the opponent.
+  const typesafeKey = text('typesafeApiKey', '')
+  const gatewayKey = text('gatewayApiKey', '')
+  const forced = text('provider', 'auto')
+  const jev = selectProvider(forced, typesafeKey, gatewayKey)
+  // a backend named without its key plays Claude; say so rather than silently
+  const unusable = (forced === 'typesafe' || forced === 'gateway') && !jev
+  const jevKey = jev === 'typesafe' ? typesafeKey : gatewayKey
+  const jevModel = jev ? text(`${jev}Model`, DEFAULT_MODEL[jev]) : ''
+  const jevUrl = jev ? endpoint(jev, text(`${jev}BaseUrl`, DEFAULT_BASE_URL[jev])) : ''
+  const jevTimeout = typeof options.timeoutMs === 'number' && options.timeoutMs > 0 ? options.timeoutMs : 15_000
+  opponent = jev ? 'Jev' : 'Claude'
 
   on('session.start', async ($, e, next) => {
     const r = await next(e)
     await $.command
       .register({
         name: COMMAND,
-        description: 'Play chess against Claude in a side pane; shows the tokens each of its moves costs',
+        description: `Play chess against ${opponent} in a side pane; shows the tokens each of its moves costs`,
         argumentHint: '[white|black|stop]',
         immediate: true,
       })
       .catch(err => $.ui.log(`chess: /${COMMAND} not registered: ${err}`))
     $.ui.log(`chess loaded: /${COMMAND} opens the board`, { to: 'debug' })
+    if (unusable) $.ui.log(`chess: provider "${forced}" has no key set; Claude plays`)
     const theme = await $.config.list().then(rows => rows.find(row => row.key === 'theme')?.value).catch(() => undefined)
     darkTheme = pickDark(options.board, theme)
     return r
@@ -221,11 +277,22 @@ export const register: Register = (on, options) => {
       thinking = true
       $.ui.status(statusText())
       $.ui.invalidate('ui.render')
-      await claudeMoves(
-        prompt => $.model.fork({ prompt }),
-        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
-        fallbackModel,
-      )
+      if (jev) {
+        await jevMoves(
+          async g =>
+            (await Promise.race([
+              $.http.fetch(jevUrl, { method: 'POST', headers: requestHeaders(jev, jevKey, jevModel), body: requestBody(jev, g, jevModel) }),
+              $.clock.sleep(jevTimeout),
+            ])) ?? undefined,
+          jev,
+        )
+      } else {
+        await claudeMoves(
+          prompt => $.model.fork({ prompt }),
+          prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
+          fallbackModel,
+        )
+      }
       // a new game or a resignation meanwhile owns `thinking` now
       if (gen === generation) thinking = false
       $.ui.status(statusText())
@@ -255,11 +322,22 @@ export const register: Register = (on, options) => {
       thinking = true
       $.ui.status(statusText())
       $.ui.invalidate('ui.render')
-      await claudeMoves(
-        prompt => $.model.fork({ prompt }),
-        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
-        fallbackModel,
-      )
+      if (jev) {
+        await jevMoves(
+          async g =>
+            (await Promise.race([
+              $.http.fetch(jevUrl, { method: 'POST', headers: requestHeaders(jev, jevKey, jevModel), body: requestBody(jev, g, jevModel) }),
+              $.clock.sleep(jevTimeout),
+            ])) ?? undefined,
+          jev,
+        )
+      } else {
+        await claudeMoves(
+          prompt => $.model.fork({ prompt }),
+          prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
+          fallbackModel,
+        )
+      }
       // a new game or a resignation meanwhile owns `thinking` now
       if (gen === generation) thinking = false
       $.ui.status(statusText())
@@ -300,11 +378,22 @@ export const register: Register = (on, options) => {
       thinking = true
       $.ui.status(statusText())
       $.ui.invalidate('ui.render')
-      await claudeMoves(
-        prompt => $.model.fork({ prompt }),
-        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
-        fallbackModel,
-      )
+      if (jev) {
+        await jevMoves(
+          async g =>
+            (await Promise.race([
+              $.http.fetch(jevUrl, { method: 'POST', headers: requestHeaders(jev, jevKey, jevModel), body: requestBody(jev, g, jevModel) }),
+              $.clock.sleep(jevTimeout),
+            ])) ?? undefined,
+          jev,
+        )
+      } else {
+        await claudeMoves(
+          prompt => $.model.fork({ prompt }),
+          prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
+          fallbackModel,
+        )
+      }
       // a new game or a resignation meanwhile owns `thinking` now
       if (gen === generation) thinking = false
       $.ui.status(statusText())
@@ -370,17 +459,17 @@ export const register: Register = (on, options) => {
       .map((m, i) => ({ m, n: Math.floor(i / 2) + 1, i }))
       .filter(x => x.m.by === 'claude')
       .slice(-HISTORY_ROWS)
-    const result = resultText(g)
+    const result = resultText(g, opponent)
     const turnLine = result ??
       (thinking
-        ? 'Claude is thinking…'
+        ? `${opponent} is thinking…`
         : isYourTurn(g)
           ? `Your move (${colorName(g.you)}): ${picked >= 0 ? 'click a highlighted square' : 'click a piece'}`
-          : 'Claude to move')
+          : `${opponent} to move`)
 
     return (
       <Box flexDirection="column">
-        <Text bold>{`You ${colorName(g.you)} vs Claude ${colorName(claudeColor(g))}`}</Text>
+        <Text bold>{`You ${colorName(g.you)} vs ${opponent} ${colorName(claudeColor(g))}`}</Text>
         <Box key="board" flexDirection="column" marginTop={1}>
           {board}
           <Text dimColor>{`  ${files.map(f => ` ${'abcdefgh'[f]} `).join('')}`}</Text>
@@ -395,7 +484,7 @@ export const register: Register = (on, options) => {
         </Box>
 
         <Box key="tokens" marginTop={1} flexDirection="column" borderStyle="round" borderDimColor paddingX={1}>
-          <Text bold color="cyan">Claude's tokens (API usage)</Text>
+          <Text bold color="cyan">{`${opponent}'s tokens (API usage)`}</Text>
           {claudeLast ? (
             <Text wrap="truncate-end">
               <Text bold>{`last ${claudeLast.san}: `}</Text>
