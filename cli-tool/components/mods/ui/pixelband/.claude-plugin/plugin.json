@@ -1,0 +1,21 @@
+{
+  "name": "pixelband",
+  "version": "0.2.0",
+  "description": "Animated pixel art above your Claude Code prompt that reacts while Claude works: seven scenes, or your own image or GIF. Zero tokens.",
+  "author": {
+    "name": "Furqan Khan"
+  },
+  "homepage": "https://github.com/furqan-khan07/pixelband",
+  "repository": "https://github.com/furqan-khan07/pixelband",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "claude-mods",
+    "pixel-art",
+    "terminal",
+    "animation",
+    "gif",
+    "customization",
+    "function-hooks"
+  ]
+}

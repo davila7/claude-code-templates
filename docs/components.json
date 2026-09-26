@@ -48427,6 +48427,60 @@
       ]
     },
     {
+      "name": "pixelband",
+      "path": "ui/pixelband",
+      "category": "ui",
+      "type": "mod",
+      "description": "Animated pixel art above your Claude Code prompt that reacts while Claude works: seven scenes, or your own image or GIF. Zero tokens.",
+      "author": "Furqan Khan",
+      "repo": "https://github.com/furqan-khan07/pixelband",
+      "version": "0.2.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "claude-mods",
+        "pixel-art",
+        "terminal",
+        "animation",
+        "gif",
+        "customization",
+        "function-hooks"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "register.ts"
+      ],
+      "userConfig": {},
+      "references": [
+        ".claude-plugin/plugin.json",
+        "LICENSE",
+        "hooks/anim.ts",
+        "hooks/bmp.ts",
+        "hooks/creation-data.ts",
+        "hooks/effects.ts",
+        "hooks/gif.ts",
+        "hooks/hooks.json",
+        "hooks/inflate.ts",
+        "hooks/load.ts",
+        "hooks/palette256.ts",
+        "hooks/pixelate.ts",
+        "hooks/png.ts",
+        "hooks/raster.ts",
+        "hooks/register.ts",
+        "hooks/scenes.ts",
+        "hooks/styles.ts",
+        "types/uint8array-base64.d.ts"
+      ]
+    },
+    {
       "name": "tool-timing-badge",
       "path": "ui/tool-timing-badge",
       "category": "ui",
@@ -48492,9 +48546,9 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
+        ".mcp.json",
         ".claude/commands/git-workflow.md",
         ".claude/commands/project-setup.md",
-        ".mcp.json",
         "README.md",
         "CLAUDE.md"
       ],
@@ -48527,11 +48581,11 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        ".claude/commands/database.md",
+        ".claude/commands/testing.md",
+        ".claude/commands/deployment.md",
         ".claude/commands/auth.md",
         ".claude/commands/api-endpoints.md",
-        ".claude/commands/deployment.md",
-        ".claude/commands/testing.md",
+        ".claude/commands/database.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
@@ -48546,12 +48600,12 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/app-factory.md",
         ".claude/commands/flask-route.md",
-        ".claude/commands/deployment.md",
         ".claude/commands/testing.md",
+        ".claude/commands/deployment.md",
+        ".claude/commands/app-factory.md",
         ".claude/commands/blueprint.md",
+        ".claude/commands/database.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
@@ -48579,15 +48633,15 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/refactor.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/api-endpoint.md",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
-        ".claude/commands/debug.md",
-        ".claude/commands/npm-scripts.md",
         ".mcp.json",
+        ".claude/settings.json",
+        ".claude/commands/debug.md",
+        ".claude/commands/api-endpoint.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/lint.md",
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/refactor.md",
+        ".claude/commands/test.md",
         "README.md",
         "CLAUDE.md"
       ],
@@ -48603,10 +48657,10 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
-        ".claude/commands/database.md",
         ".claude/commands/api-endpoint.md",
-        ".claude/commands/route.md",
         ".claude/commands/middleware.md",
+        ".claude/commands/route.md",
+        ".claude/commands/database.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
@@ -48620,10 +48674,10 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
         ".mcp.json",
+        ".claude/settings.json",
+        ".claude/commands/lint.md",
+        ".claude/commands/test.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
@@ -48653,9 +48707,9 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/hooks.md",
         ".claude/commands/state-management.md",
         ".claude/commands/component.md",
+        ".claude/commands/hooks.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
@@ -48669,10 +48723,10 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/model.md",
         ".claude/commands/test.md",
-        ".mcp.json",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
