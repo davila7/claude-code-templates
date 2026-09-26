@@ -58,7 +58,7 @@ What that means for the numbers:
 - **A move that needed a retry** (Claude named a move that is not legal) makes two calls, and both are counted on that move.
 - **Nothing is written to your transcript.** The fork's prompt and reply stay out of the conversation's JSONL.
 
-Before the session's first turn there is no transcript to fork. A move Claude makes then (for example when you start as Black in a new session) goes through `$.model.complete` on `fallbackModel` instead, which does not report usage: the pane shows `not reported` for that move and counts it apart from the total, never a guess. If Claude still names no legal move after one retry, the pane plays a random legal move for it and says so.
+Before the session's first turn there is no transcript to fork. A move Claude makes then (for example when you start as Black in a new session) goes through `$.model.complete` on `fallbackModel` instead, a short completion with only the chess prompt, so that move costs a few hundred tokens and the pane notes where it came from. If a call fails (an API error, an empty reply) or Claude still names no legal move after one retry, the pane plays a random legal move for it and says why, so the game never stays on "Claude is thinking".
 
 ## Options
 
@@ -96,4 +96,4 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/chess
 
 The rules are checked against published perft move counts. The pane tests answer `$.model.fork` and `$.model.complete` from a script, mount the pane on the terminal surface, click and type moves, and read the token lines.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.283 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.283 against its declarations; on 2.1.283 `$.model.fork` and `$.model.complete` resolve `{ isAnswered, text, usage }`, and the mod also reads the older string/null results. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

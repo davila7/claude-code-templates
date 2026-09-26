@@ -1,10 +1,10 @@
 // Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test games/chess
 import { describe, expect, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
-import type { ModelForkUsage, On } from 'claude-code'
+import type { ModelUsage, On } from 'claude-code'
 import { START_FEN, ending, findMove, legalMoves, makeMove, parseFen, san, toFen } from '../hooks/chess.ts'
 import type { Position } from '../hooks/chess.ts'
-import { fmt, gameUsage, movePrompt, newGame, play, readReply, resultText } from '../hooks/game.ts'
+import { asReply, fmt, gameUsage, movePrompt, newGame, play, readReply, resultText } from '../hooks/game.ts'
 
 function perft(p: Position, depth: number): number {
   if (!depth) return 1
@@ -54,7 +54,7 @@ describe('rules', () => {
   })
 })
 
-const U = (input: number, output: number, read: number, write: number): ModelForkUsage => ({
+const U = (input: number, output: number, read: number, write: number): ModelUsage => ({
   input_tokens: input,
   output_tokens: output,
   cache_read_input_tokens: read,
@@ -95,17 +95,22 @@ describe('the game', () => {
 })
 
 // Beneath the plugin: the model answers from a script and every prompt is kept.
-type Calls = { prompts: string[]; replies: (string | null)[]; completes: string[] }
+// A reply is the fork's text, null for nothing to fork, or an error arm.
+type Scripted = string | null | { error: string }
+type Calls = { prompts: string[]; replies: Scripted[]; completes: string[] }
 
 function fakeModel(on: On, calls: Calls) {
   on('model.fork', async ($, e) => {
     calls.prompts.push(e.prompt)
-    const text = calls.replies.shift()
-    return { value: text === null || text === undefined ? null : { text, usage: U(12, 5, 30_000, 100) } }
+    const next = calls.replies.shift()
+    if (next === null || next === undefined) return { value: { isAnswered: false as const, reason: 'nothing-to-fork' as const } }
+    if (typeof next === 'object')
+      return { value: { isAnswered: false as const, reason: 'api-error' as const, status: 529, error: 'overloaded' as const, usage: U(0, 0, 0, 0) } }
+    return { value: { isAnswered: true as const, text: next, usage: U(12, 5, 30_000, 100) } }
   })
   on('model.complete', async ($, e) => {
     calls.completes.push(e.model)
-    return { value: 'd5' }
+    return { value: { isAnswered: true as const, text: 'd5', usage: U(180, 3, 0, 0) } }
   })
   on('ui.open', () => ({ value: undefined }))
   on('ui.close', () => ({ value: undefined }))
@@ -169,7 +174,7 @@ describe('the pane', () => {
     await ui.unmount()
   })
 
-  test('with no transcript to fork, the fallback model moves and usage reads not reported', async ($, on) => {
+  test('with no transcript to fork, the fallback model moves and its usage counts', async ($, on) => {
     const calls: Calls = { prompts: [], replies: [null], completes: [] }
     fakeModel(on, calls)
     await openBoard($)
@@ -178,7 +183,8 @@ describe('the pane', () => {
     await ui.press({ key: 'sq:e4' })
     await ui.redraw()
     expect(calls.completes).toEqual(['haiku'])
-    expect(await ui.find({ type: 'Text', text: /last d5: not reported/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /last d5: 183/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /haiku: no transcript to fork yet/ })).toBeDefined()
     await ui.unmount()
   })
 
@@ -222,5 +228,26 @@ describe('capture marks', () => {
     expect((await ui.find({ key: 'sq:d6' }))?.text).toContain('×')
     expect((await ui.find({ key: 'sq:e6' }))?.text).toContain('•')
     await ui.unmount()
+  })
+})
+
+describe('a failing model never leaves Claude thinking', () => {
+  test('two API errors: a random legal move, and it is your turn again', async ($, on) => {
+    const calls: Calls = { prompts: [], replies: [{ error: 'overloaded' }, { error: 'overloaded' }], completes: [] }
+    fakeModel(on, calls)
+    await openBoard($)
+    const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
+    await ui.input({ key: 'move', text: 'e4' })
+    await ui.redraw()
+    expect(calls.prompts.length).toBe(2)
+    expect(await ui.find({ type: 'Text', text: /random: no reply \(api-error\)/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Your move \(White\)/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('a result in the pre-2.1.283 shape still plays', () => {
+    expect(asReply('e5')).toEqual({ text: 'e5' })
+    expect(asReply(null)).toEqual({ reason: 'nothing-to-fork' })
+    expect(asReply({ isAnswered: false, reason: 'nothing-to-fork' })).toEqual({ reason: 'nothing-to-fork' })
   })
 })

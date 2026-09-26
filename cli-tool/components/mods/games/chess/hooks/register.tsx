@@ -12,7 +12,7 @@
  * Claude's shows the API's own usage (input, output, cache read, cache write)
  * and the pane sums them. Before the session's first turn there is no
  * transcript to fork; that move falls back to `$.model.complete` on
- * `fallbackModel`, which reports no usage, and the pane says so.
+ * `fallbackModel`, a short completion whose usage is counted the same way.
  *
  * Nothing here touches files, git or the transcript.
  *
@@ -23,11 +23,12 @@
  *   pieces: string         "unicode" (default) or "letters"
  *   fallbackModel: string  model for a move made before the first turn (default "haiku")
  */
-import type { ModelForkResult, Register } from 'claude-code'
+import type { Register } from 'claude-code'
 import { findMove, legalMoves, squareIndex, squareName } from './chess.ts'
-import type { Color, Piece } from './chess.ts'
+import type { Color, Move, Piece } from './chess.ts'
 import {
   addUsage,
+  asReply,
   claudeColor,
   colorName,
   fmt,
@@ -42,7 +43,7 @@ import {
   totalTokens,
   usageLine,
 } from './game.ts'
-import type { Game, Played } from './game.ts'
+import type { Game, Played, Reply } from './game.ts'
 
 const PANE = 'chess'
 const COMMAND = 'chess'
@@ -63,8 +64,8 @@ const LAST = '#4f6b3a'
 const TARGET = '#3d6a8a'
 const CAPTURE = '#8a3d3d'
 
-type Fork = (prompt: string) => Promise<ModelForkResult | null>
-type Complete = (prompt: string) => Promise<string>
+// both resolve ModelCompleteResult-like values; read through asReply
+type Call = (prompt: string) => Promise<unknown>
 
 let game: Game = newGame('w')
 let picked = -1
@@ -90,37 +91,47 @@ function statusText(): string | undefined {
 }
 
 /**
- * Claude's move: fork, read the reply, one retry naming the miss, then a
- * random legal move so the game never stalls. Usage of every call is summed.
+ * Claude's move: fork the session, or before its first turn (nothing to fork)
+ * complete on `fallbackModel`; read the reply, retry once naming the miss,
+ * then a random legal move so the game never stalls. Every call's usage is
+ * summed onto the move. Never throws: a failure still ends Claude's turn.
  */
-async function claudeMoves(fork: Fork, complete: Complete, fallbackModel: string): Promise<void> {
+async function claudeMoves(fork: Call, complete: Call, fallbackModel: string): Promise<void> {
   const gen = generation
   let usage: Played['usage'] = null
   let reply = ''
-  let move
+  let move: Move | undefined
   let how: string | undefined
-  for (let attempt = 0; attempt < 2 && !move; attempt++) {
-    const prompt = movePrompt(game, attempt ? reply : undefined)
-    const forked = await fork(prompt).catch(() => null)
-    if (gen !== generation) return
-    if (forked) {
-      reply = forked.text
-      usage = usage ? addUsage(usage, forked.usage) : { ...forked.usage }
-    } else {
-      reply = await complete(prompt).catch(err => {
-        how = `${fallbackModel} failed: ${String(err).slice(0, 60)}`
-        return ''
-      })
+  const count = (r: Reply) => {
+    if (r.usage) usage = usage ? addUsage(usage, r.usage) : { ...r.usage }
+  }
+  try {
+    for (let attempt = 0; attempt < 2 && !move; attempt++) {
+      const prompt = movePrompt(game, attempt ? reply : undefined)
+      let r = asReply(await fork(prompt))
       if (gen !== generation) return
-      how ??= `${fallbackModel}, no transcript to fork yet: usage not reported`
+      if (r.reason === 'nothing-to-fork') {
+        r = asReply(await complete(prompt))
+        if (gen !== generation) return
+        how = `${fallbackModel}: no transcript to fork yet`
+      }
+      count(r)
+      if (r.reason) {
+        how = `no reply (${r.reason})`
+        continue
+      }
+      reply = r.text ?? ''
+      move = readReply(game.pos, reply)
+      if (!move && attempt === 0) how = `retried: "${reply.trim().slice(0, 16)}" was not legal`
     }
-    move = readReply(game.pos, reply)
-    if (!move && attempt === 0 && reply) how = `retried: "${reply.trim().slice(0, 16)}" was not legal`
+  } catch (err) {
+    if (gen !== generation) return
+    how = `model call failed: ${String(err).slice(0, 60)}`
   }
   if (!move) {
     const legal = legalMoves(game.pos)
     move = legal[Math.floor(Math.random() * legal.length)]
-    how = 'random: Claude named no legal move'
+    how = `random: ${how ?? 'Claude named no legal move'}`
   }
   game = play(game, move, { by: 'claude', usage, ...(how ? { note: how } : {}) })
   note = undefined
@@ -212,7 +223,7 @@ export const register: Register = (on, options) => {
       $.ui.invalidate('ui.render')
       await claudeMoves(
         prompt => $.model.fork({ prompt }),
-        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64 }),
+        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
         fallbackModel,
       )
       // a new game or a resignation meanwhile owns `thinking` now
@@ -246,7 +257,7 @@ export const register: Register = (on, options) => {
       $.ui.invalidate('ui.render')
       await claudeMoves(
         prompt => $.model.fork({ prompt }),
-        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64 }),
+        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
         fallbackModel,
       )
       // a new game or a resignation meanwhile owns `thinking` now
@@ -291,7 +302,7 @@ export const register: Register = (on, options) => {
       $.ui.invalidate('ui.render')
       await claudeMoves(
         prompt => $.model.fork({ prompt }),
-        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64 }),
+        prompt => $.model.complete({ model: fallbackModel, prompt, maxTokens: 64, timeoutMs: 60_000 }),
         fallbackModel,
       )
       // a new game or a resignation meanwhile owns `thinking` now
