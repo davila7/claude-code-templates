@@ -85,7 +85,7 @@ Use this template structure for comprehensive commands:
 ```markdown
 ---
 description: [One-line description for /help output]
-argument-hint: [<required>] or [[optional]] (omit if no arguments)
+argument-hint: "[<required>] or [[optional]] (omit if no arguments)"
 ---
 
 # [Command Title]

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [setup-mode] | --full | --webhooks-only | --monitoring | --deploy-target
+argument-hint: "[setup-mode] | --full | --webhooks-only | --monitoring | --deploy-target"
 description: Setup comprehensive automated synchronization workflows with monitoring and CI/CD integration
 ---
 

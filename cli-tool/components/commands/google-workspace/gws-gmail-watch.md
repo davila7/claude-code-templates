@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
+argument-hint: "[resource] [method] [flags]"
 description: Gmail: Watch for new emails and stream them as NDJSON.
 ---
 
