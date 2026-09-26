@@ -1,0 +1,6 @@
+{
+  "description": "jev-vercel-sandbox: tool.call on Bash asks TypeSafe's Jev whether the command is dangerous and runs a dangerous one in a Vercel Sandbox instead of locally; session.start starts the sandbox and opens its side pane; session.end stops it",
+  "modules": [
+    "./jev-vercel-sandbox.tsx"
+  ]
+}
