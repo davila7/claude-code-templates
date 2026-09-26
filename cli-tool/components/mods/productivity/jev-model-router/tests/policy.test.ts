@@ -5,6 +5,7 @@ import {
   endpoint,
   questions,
   describeDecision,
+  describeRefusal,
   describeSetup,
   describeStatus,
   pendingDecisions,
@@ -400,4 +401,14 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
+})
+
+test('a firewall 403 is told apart from a rejected key', () => {
+  expect(describeRefusal('typesafe', 403, '<title>Attention Required! | Cloudflare</title>')).toContain('firewall')
+  expect(describeRefusal('typesafe', 403, '{"detail":"forbidden"}')).toBe('typesafe responded 403')
+  expect(describeRefusal('typesafe', 403, '{"detail":"blocked upstream of Cloudflare"}')).toBe('typesafe responded 403')
+  expect(describeRefusal('typesafe', 403, '<title>Access denied | api.typesafe.ai used Cloudflare to restrict access</title>')).toBe('typesafe responded 403')
+  expect(describeRefusal('typesafe', 401, '')).toContain('rejected the key')
+  expect(describeRefusal('typesafe', 400, '{"detail":{"error_type":"max_tokens_exceeded"}}')).toContain('too long')
+  expect(describeRefusal('gateway', 500, '')).toBe('gateway responded 500')
 })

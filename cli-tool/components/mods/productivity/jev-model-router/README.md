@@ -49,7 +49,14 @@ The two mistakes do not cost the same, so they do not clear the same bar:
 - A backend that reports no confidence at all — the Gateway without a distribution, or the built-in classifier — may only move a request **up**. Spending less on an unmeasured hunch is the bad trade.
 - A model id matching no tier, or a numeric effort (the caller's own scale), has no knowable direction: the model gets the gentler upgrade bar, and a numeric effort is left alone.
 
-Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
+Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn. The log names the cause where the response shows it (TypeSafe's Cloudflare refuses texts that quote `../../etc/passwd`, `' OR 1=1 --` or `${jndi:`, before the decision model reads them):
+
+```
+[jev-model-router] typesafe's firewall refused the text (403, Cloudflare); not classified
+[jev-model-router] typesafe refused the text as too long (400 max_tokens_exceeded); not classified
+[jev-model-router] typesafe rejected the key (401)
+[jev-model-router] typesafe responded 500
+```
 
 A slash command with nothing after it (`/simplify`) is not classified: the decision model would see only the command's name, never what the command does. Its turn keeps the session's model and effort. With text after the name, the prompt is classified like any other.
 
