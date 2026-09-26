@@ -15,6 +15,62 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Single source of truth for the plural bucket name of every component type the
+# CLI can track. Keys are what `component_downloads.component_type` holds; the
+# fallback for anything missing here is a naive plural, so a new CLI type still
+# shows up in trending instead of disappearing.
+TYPE_PLURALS = {
+    'command': 'commands',
+    'agent': 'agents',
+    'setting': 'settings',
+    'hook': 'hooks',
+    'mcp': 'mcps',
+    'skill': 'skills',
+    'template': 'templates',
+    'mod': 'mods',
+    'loop': 'loops',
+    'plugin': 'plugins',
+    'workflow': 'workflows',
+    'sandbox': 'sandbox',
+}
+
+# Buckets that always exist in the output, with fallback data when Supabase has
+# no rows for them.
+FALLBACK_TYPES = ['commands', 'agents', 'settings', 'hooks', 'mcps', 'skills', 'templates']
+
+
+TYPE_SINGULARS = {plural: singular for singular, plural in TYPE_PLURALS.items()}
+
+# Types renamed in the CLI. Older CLI versions keep writing the old name, so the
+# rows have to be folded into the current type or the component's downloads are
+# split across two buckets. `function-hook` became `mod` in #910 (2026-09-16).
+TYPE_ALIASES = {
+    'function-hook': 'mod',
+    'function-hooks': 'mod',
+}
+
+
+def canonical_type(component_type):
+    """Collapse the spellings of a component_type to one key.
+
+    Downloads are aggregated per component under this key, so a component with
+    both `mod` and `function-hook` (or `mods`) rows counts once, with its
+    downloads summed, instead of appearing as two half-counted components.
+    """
+    if component_type in TYPE_ALIASES:
+        return TYPE_ALIASES[component_type]
+    if component_type in TYPE_PLURALS:
+        return component_type
+    return TYPE_SINGULARS.get(component_type, component_type)
+
+
+def plural_type(component_type):
+    """Map a raw component_type from Supabase to its trending bucket name."""
+    canonical = canonical_type(component_type)
+    if canonical in TYPE_PLURALS:
+        return TYPE_PLURALS[canonical]
+    return canonical if canonical.endswith('s') else canonical + 's'
+
 def fetch_with_retry(url, headers, max_retries=5, timeout=60):
     """
     Fetch data from API with retry logic and exponential backoff.
@@ -266,7 +322,9 @@ def process_downloads_data(downloads):
         # The key should match format: component_type/category/name
         category = download.get('category', 'general')
         component_name = download['component_name']
-        component_type = download['component_type']
+        # Normalize before aggregating so mixed spellings of the same type don't
+        # split one component into two rows with half the downloads each.
+        component_type = canonical_type(download['component_type'])
 
         # Handle case where component_name already includes category (like "frontend/react-expert")
         if '/' in component_name:
@@ -312,20 +370,7 @@ def process_downloads_data(downloads):
         if download_time >= month_start:
             download_date = download_time.strftime('%Y-%m-%d')
 
-            # Map component types to plural for consistency
-            type_mapping = {
-                'command': 'commands',
-                'agent': 'agents',
-                'setting': 'settings',
-                'hook': 'hooks',
-                'mcp': 'mcps',
-                'skill': 'skills',
-                'template': 'templates',
-                'plugin': 'plugins',
-                'sandbox': 'sandbox'
-            }
-            mapped_type = type_mapping.get(component_type, component_type + 's')
-            chart_data[download_date][mapped_type] += 1
+            chart_data[download_date][plural_type(component_type)] += 1
 
     # Debug: Print total counts by period
     print(f"📊 Total downloads by period:")
@@ -369,7 +414,9 @@ def process_downloads_data(downloads):
     
     # Process chart data for cumulative growth
     chart_dates = []
-    chart_categories = ['commands', 'agents', 'settings', 'hooks', 'mcps', 'skills', 'templates']
+    chart_categories = list(dict.fromkeys(
+        FALLBACK_TYPES + sorted({plural_type(t) for t in trending_by_type})
+    ))
     chart_series = {category: [] for category in chart_categories}
 
     # Generate the last 30 days
@@ -490,40 +537,23 @@ def process_downloads_data(downloads):
         }
     }
     
-    # Map component types to expected names
-    type_mapping = {
-        'command': 'commands',
-        'commands': 'commands',
-        'agent': 'agents',
-        'agents': 'agents',
-        'setting': 'settings',
-        'settings': 'settings',
-        'hook': 'hooks',
-        'hooks': 'hooks',
-        'mcp': 'mcps',
-        'mcps': 'mcps',
-        'skill': 'skills',
-        'skills': 'skills',
-        'template': 'templates',
-        'templates': 'templates',
-        'plugin': 'plugins',
-        'plugins': 'plugins',
-        'sandbox': 'sandbox'
-    }
-    
     # Debug: Print what component types we found
     print(f"🔍 Component types found in data: {list(trending_by_type.keys())}")
-    
-    # Populate trending data with real data or fallback
-    processed_types = set()
-    for db_type, json_type in type_mapping.items():
-        if json_type not in processed_types and db_type in trending_by_type:
-            trending_data['trending'][json_type] = trending_by_type[db_type]
-            processed_types.add(json_type)
-            print(f"✅ Using real data for {json_type}: {len(trending_by_type[db_type])} items")
-    
-    # Add fallback data only for types that don't have real data
-    for json_type in ['commands', 'agents', 'settings', 'hooks', 'mcps', 'skills', 'templates']:
+
+    # Populate trending data with every type present in the downloads. Types are
+    # merged by their plural bucket so a singular and a plural component_type for
+    # the same thing land in one list.
+    merged = defaultdict(list)
+    for db_type, items in trending_by_type.items():
+        merged[plural_type(db_type)].extend(items)
+
+    for json_type, items in merged.items():
+        items.sort(key=lambda x: x['downloadsWeek'], reverse=True)
+        trending_data['trending'][json_type] = items[:10]
+        print(f"✅ Using real data for {json_type}: {len(items[:10])} items")
+
+    # Add fallback data only for the core types that have no real data at all
+    for json_type in FALLBACK_TYPES:
         if json_type not in trending_data['trending']:
             trending_data['trending'][json_type] = create_fallback_data(json_type)
             print(f"⚠️  Using fallback data for {json_type}")

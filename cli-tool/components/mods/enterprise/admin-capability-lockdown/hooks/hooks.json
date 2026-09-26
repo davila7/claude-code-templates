@@ -1,0 +1,6 @@
+{
+  "description": "Organization control mod: withholds the http and process nouns from $ so no plugin beneath it can reach the network or spawn processes, refuses user-tier plugins by name allowlist or by the $ calls their source declares, and withholds the Bash tool (shellPolicy \"deny\", default) or, in \"guardrail\" mode, denies well-known network clients as a bypassable speed bump. Hooks engine.create, plugin.register and tool.call; seat it in the managed prepend tier.",
+  "modules": [
+    "./admin-capability-lockdown.ts"
+  ]
+}

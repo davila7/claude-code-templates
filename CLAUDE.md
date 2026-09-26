@@ -12,11 +12,13 @@ Node.js CLI tool for managing Claude Code components (agents, commands, MCPs, ho
 # Development
 npm install                    # Install dependencies
 npm test                       # Run tests
-npm version patch|minor|major  # Bump version
-npm publish                    # Publish to npm
+npm version X.Y.Z --ignore-scripts=false  # Sync, commit, and tag all package versions
+npm run version:set -- X.Y.Z   # Sync versions without creating a commit or tag
+npm publish --ignore-scripts=false  # Publish and run the trusted prepublish guard
 
 # Component catalog
-python scripts/generate_components_json.py  # Update docs/components.json
+python scripts/generate_components_json.py                   # Update docs/components.json (pulls download counts from Supabase: minutes)
+python scripts/generate_components_json.py --skip-downloads  # Same, keeping the counts already in the catalog: seconds
 
 # Dashboard + API (Astro on Cloudflare Pages)
 cd dashboard && npm run build  # Build before deploy
@@ -62,8 +64,19 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **Settings** (60+) - Claude Code configuration files
 **Hooks** (39+) - Automation triggers
 **Loops** (18+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
-**Function Hooks** (10, EXPERIMENTAL) - TypeScript hooks-modules written against the proposed `$` engine interface (Anthropic proposal [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870), not a shipped feature). Stored exactly like shell hooks: `cli-tool/components/function-hooks/{category}/{name}.json` is the plugin's `hooks/hooks.json` (a catalog-only `description` plus the proposal's `modules` key) and `{name}.ts`/`{name}.tsx` beside it is the hooks-module it names. The generator reads the module into the per-component content file so the site shows both. `--function-hook` downloads both and writes a plugin at `.claude/skills/{name}/` (`.claude-plugin/plugin.json`, `hooks/hooks.json`, `hooks/{name}.ts`), which Claude Code auto-loads as `{name}@skills-dir`; it prints the experimental warning. Keep the experimental banner (listing page, detail page, blog) until Anthropic ships the feature.
+**Mods** (10, EARLY ACCESS) - Claude Mods: plugins whose behaviour lives in a function-hooks module (`register(on, options)` hooking engine events as `($, e, next)` middleware). Anthropic's reference is [anthropics/claude-code/mods](https://github.com/anthropics/claude-code/tree/main/mods) (three built-in mods + `mods/types/claude-code.d.ts`); discussion in [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870). Mods load in Claude Code >= 2.1.259 with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Each mod is a complete plugin directory in Anthropic's `mods/` layout: `cli-tool/components/mods/{category}/{name}/` with `.claude-plugin/plugin.json` (name, description, `userConfig` — options are read from user/managed settings `pluginConfigs[name].options`, never project settings), `hooks/hooks.json` (`modules`), any number of hooks-modules under `hooks/` (relative imports allowed), optional `commands/*.md` (slash commands the plugin ships; a `skill.prompt` hook may rewrite their prompt at run time), `types/`, `tests/`, and a `README.md` the site shows. The generator uses README.md as content and ships every text file in the per-component content file (`files`), so the site explorer and the send-to-repo flow have the whole plugin. `--mod` (alias `--function-hook`) downloads the directory recursively (like a skill) and writes it verbatim to `.claude/skills/{name}/`, which Claude Code auto-loads as `{name}@skills-dir` — **only in a trusted project** (see "Debugging a mod that seems silent" below). Third-party mods are vendored as-is with LICENSE + attribution (e.g. `games/cc-arcade`). **Every module must typecheck against `cli-tool/components/mods/types/claude-code.d.ts`** (`cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json`; CI runs it in `mods-typecheck.yml`). Rules from the engine: import types only from `'claude-code'`, spell `$` as `$.noun.event(...)` at the call site (never pass `$` to a helper), treat `e` as frozen, deny with `{ deny }` without calling `next` (returning `{}` is fail-open). When Anthropic bumps the API, regenerate the d.ts with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "/plugin-types <dir>"` on a current Claude Code and re-run tsc (the header's first line names the writing version; currently 2.1.278, which added `prompt.attachment` — the per-attachment hook `jev-skill-suggestion` uses to withhold the `skill_listing` system-reminder). Note `/context`'s "Skills" row is estimated from the roster and does not reflect that hook; a mod can ship `commands/*.md` and rewrite their prompt in `skill.prompt` (that is how `/jev-skill-suggestion:setup` hides every skill as `user-invocable-only` while the mod injects the chosen `SKILL.md` itself). Keep the early-access banner (listing page, detail page, blog) until the flag is gone. Old URLs (`/function-hooks`, `/component/function-hook/*`) redirect via `dashboard/public/_redirects`.
 **Templates** (14+) - Complete project configurations
+
+#### Debugging a mod that seems silent (verified 2026-09-19 on Claude Code 2.1.278)
+
+A mod that "produces no output" has, in order of likelihood, these causes — none of which is the mod's code. Check them before touching the module:
+
+1. **The project is not trusted.** Claude Code adopts a plugin from a project's `.claude/skills/{name}/` only when `~/.claude.json` has `projects[<path>].hasTrustDialogAccepted: true`; an untrusted folder's `.claude/` is repository content and is not read at all (`plugin.scope==="project"` candidates are dropped and re-discovered "post-trust"). `claude -p` never shows the trust prompt, so a headless run in a fresh folder never loads a project mod. Fix: open `claude` interactively in the folder and accept the prompt, or pass `--plugin-dir .claude/skills/{name}` (explicit, loads as `{name}@inline`). `~/.claude/skills/{name}/` (user-level) always loads.
+2. **You are looking in the wrong place.** `$.ui.log` appends a dim transcript line and writes to the debug log; `$.ui.status` pins a line under the prompt. In `claude -p` / the SDK there is no transcript and no status row: the lines are only in `~/.claude/debug/<session-id>.txt` (`.txt`, not `.log`; `latest` symlinks the newest) and reach an SDK host as `ui_log`. The header, statusline and effort box show the *session's* settings and never move: a mod rewrites `model`/`effort` per *request*. The other observable is `"effort":"…"` in the transcript JSONL under `~/.claude/projects/<slug>/`.
+3. **Options under the wrong key.** `pluginConfigs` is keyed by the plugin's full id: `"{name}@skills-dir"` when auto-loaded, `"{name}"` with `--plugin-dir`. Under the wrong key every option is its default and the debug log says `plugin {name}: no pluginConfigs["{name}@skills-dir"].options in user, --settings or managed settings`.
+4. **Function hooks off.** With `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` unset/`0` the debug log says `installed plugins' hooks modules not loaded: rollout flag (tengu_plugin_hooks_modules) is off`. Built-in mods (`agents-md@builtin`) load regardless, so their presence proves nothing about ours.
+
+The lines that settle each question in `claude --debug`: `Found N plugins`, `Read hooks.json for plugin {name}`, `hooks module {name}@skills-dir loaded (worker, environment N, tier user); events: …`, then `hooks module {name}@… <event> settled in Xms`. Positive control: `pacman@skills-dir` loads from `.claude/skills/` in the trusted `claude-code-templates` checkout. Anthropic documents only `claude --plugin-dir mods/<name>` for its reference mods; the `.claude/skills` auto-load is Claude Code 2.1.157+ (CHANGELOG: "Plugins in `.claude/skills` directories are now automatically loaded").
 
 ### Installation Patterns
 
@@ -73,6 +86,7 @@ npx claude-code-templates@latest --agent frontend-developer
 npx claude-code-templates@latest --command setup-testing
 npx claude-code-templates@latest --hook automation/simple-notifications
 npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the loop's referenced components
+npx claude-code-templates@latest --mod security/secret-redactor          # Claude Mod: plugin at .claude/skills/secret-redactor/
 
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
@@ -117,7 +131,7 @@ the workflow:
 
 | Workflow | Regenerate + commit the catalog? |
 |----------|----------------------------------|
-| Maintainer working directly on this repo (local branch, sync PRs, agent-driven migrations) | ✅ Yes — run the script and commit the output with the component |
+| Maintainer working directly on this repo (local branch, sync PRs, agent-driven migrations) | ✅ Yes — run the script (`--skip-downloads` is enough for a content change) and commit the output with the component |
 | **External contributor PR (fork)** | ❌ **No** — the PR must only contain files under `cli-tool/components/` (plus supporting files). The catalog is regenerated automatically after merge (`update-json-data.yml` daily cron, or a maintainer). |
 
 Why: the generated JSON files are single-line blobs that change on every
@@ -126,9 +140,27 @@ conflict. `.github/workflows/generated-files-guard.yml` fails any
 non-maintainer PR that touches them and posts revert instructions; the
 `component-pr-welcome.yml` bot also warns about it up front.
 
+Two workflows regenerate them on `main`: `update-component-content.yml`
+runs on every push that touches `cli-tool/components/**` with
+`--skip-downloads` (content only, seconds) and then dispatches `deploy.yml`
+(its own push uses `GITHUB_TOKEN`, which never triggers other workflows, so
+without that the new catalog would not reach aitmpl.com), and `update-json-data.yml`
+(daily cron) refreshes the download counts by pulling the whole
+`component_downloads` table from Supabase (minutes) — that table has one
+row per download, which is what makes a full run slow.
+
 When reviewing a contributor PR that includes these files, ask them to revert
 with `git checkout origin/main -- docs/components.json dashboard/public/` rather
 than resolving the conflict by hand.
+
+**Mods (`cli-tool/components/mods/`) are plugin directories, not `.md` files.** Creating one: `mods/{category}/{name}/` with `.claude-plugin/plugin.json`, `hooks/hooks.json`, the hooks-modules under `hooks/`, a `README.md`, optionally `commands/`, `types/` and `tests/`. Before review: `cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json` and `claude plugin validate cli-tool/components/mods/{category}/{name}`. The component-reviewer applies this checklist to a mod:
+- ✅ `plugin.json` parses, has `name` (= directory name), `description`, `license`, and `author`/`repository` (attribution for vendored code)
+- ✅ `hooks/hooks.json` has a non-empty `modules` list and every entry exists under `hooks/`
+- ✅ Modules import types only from `'claude-code'`, use relative imports, spell `$` as `$.noun.event(...)`, never shadow `h` in a surface module
+- ✅ Options are declared in `plugin.json` `userConfig` (string/number/boolean/directory/file; lists as comma-separated strings)
+- ✅ Guards deny with `{ deny }` without calling `next`; `.catch` where fail-closed matters
+- ✅ No secrets (keys only via options), no absolute paths, no `$.process.run` with a shell
+- ✅ README states the command, controls/options, the early-access flag and (for `games/`) the attribution
 
 **The component-reviewer agent checks:**
 - ✅ Valid YAML frontmatter and required fields
@@ -206,23 +238,20 @@ python scripts/generate_components_json.py
 # 2. Run tests
 npm test
 
-# 3. Check current npm version and align local version
+# 3. Check current npm version, then create the synchronized version commit and tag
 npm view claude-code-templates version  # check latest on registry
-# Edit package.json version to be one patch above the registry version
+npm version X.Y.Z --ignore-scripts=false  # X.Y.Z = one patch above the registry version
+npm run check:version-sync
 
-# 4. Commit version bump and push
-git add package.json && git commit -m "chore: Bump version to X.Y.Z"
-git push origin main
+# 4. Push the version commit and tag created by npm version
+git push origin main --follow-tags
 
 # 5. Publish to npm (requires granular access token with "Bypass 2FA" enabled)
 npm config set //registry.npmjs.org/:_authToken=YOUR_GRANULAR_TOKEN
-npm publish
+npm publish --ignore-scripts=false
 npm config delete //registry.npmjs.org/:_authToken  # always clean up after
 
-# 6. Tag the release
-git tag vX.Y.Z && git push origin vX.Y.Z
-
-# 7. Deploy website (dashboard on Cloudflare Pages)
+# 6. Deploy website (dashboard on Cloudflare Pages)
 # Automatic on push to main (GitHub Actions). Manual: from dashboard/ run `npm run deploy`
 ```
 
@@ -230,6 +259,7 @@ git tag vX.Y.Z && git push origin vX.Y.Z
 - Classic npm tokens were revoked Dec 2025. Use **granular access tokens** from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens)
 - The token must have **Read and Write** permissions for `claude-code-templates` and **"Bypass 2FA"** enabled
 - Always remove the token from npm config after publishing (`npm config delete`)
+- The repository disables lifecycle scripts by default for security. Pass `--ignore-scripts=false` only to the trusted release commands shown above so their version and prepublish hooks can run.
 - The local `package.json` version may drift from npm if published from CI — always check `npm view claude-code-templates version` first
 - Never hardcode or commit tokens
 
@@ -336,11 +366,11 @@ GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 
 **Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below). The Vercel collector was removed (2026-07) since the dashboard no longer deploys to Vercel.
 
-### newsletter (Weekly Community Components Email)
+### newsletter (Weekly Community Components Email) — PAUSED 2026-09-20
 
 Composes and sends a simple weekly email via Resend featuring trending components (one Skill, Agent, MCP, Hook and Setting per send, in that fixed order). Selection is weighted-random by recent downloads and the copy (subject, catalog intro, per-component sentences, stats cited, closer) rotates from pools so no two emails read the same. Body is plain text plus a minimal HTML version (bold + underlined component titles, clickable component links). Data comes from the live `trending-data.json` + `components.json`.
 
-**Delivery:** Resend **Broadcast** targeting the segment in `RESEND_SEGMENT_ID` — Resend injects the per-recipient unsubscribe link (`{{{RESEND_UNSUBSCRIBE_URL}}}` placeholder in the body) and manages the suppression list automatically. Replies go to `NEWSLETTER_REPLY_TO`. The segment is the safety gate: point it at a pilot segment for tests or the full-audience segment for community-wide sends. Open/click tracking is enabled on the `aitmpl.com` domain with tracking subdomain `track.aitmpl.com` (metrics per broadcast at resend.com/broadcasts). Cron: Sundays 16:00 UTC (slot freed by decommissioning docs-monitor). `GET /preview?format=text` composes without sending; `POST /trigger` sends (`?send=false` for dry run).
+**Delivery:** Resend **Broadcast** targeting the segment in `RESEND_SEGMENT_ID` — Resend injects the per-recipient unsubscribe link (`{{{RESEND_UNSUBSCRIBE_URL}}}` placeholder in the body) and manages the suppression list automatically. Replies go to `NEWSLETTER_REPLY_TO`. The segment is the safety gate: point it at a pilot segment for tests or the full-audience segment for community-wide sends. Open/click tracking is enabled on the `aitmpl.com` domain with tracking subdomain `track.aitmpl.com` (metrics per broadcast at resend.com/broadcasts). **The weekly send is paused** (2026-09-20) because the emails were reading as spam; the worker stays deployed and only the automatic send is off. `wrangler.toml` has `crons = []` (was `0 16 * * SUN`, a slot freed by decommissioning docs-monitor) and `NEWSLETTER_ENABLED = "false"` makes `scheduled()` a no-op, so restoring the trigger alone does not resume sending. Repo edits do not reach production: no GitHub Action deploys this worker, so a pause or a resume only lands via `npx wrangler deploy` from `cloudflare-workers/newsletter/`. `GET /preview?format=text` composes without sending and `POST /trigger` sends (`?send=false` for dry run) — both still work while paused.
 
 ```bash
 cd cloudflare-workers/newsletter
@@ -356,7 +386,7 @@ curl -X POST "https://aitmpl-newsletter.SUBDOMAIN.workers.dev/trigger" \
   -H "Authorization: Bearer $TRIGGER_SECRET"
 ```
 
-**Secrets (Cloudflare):** `RESEND_API_KEY` (full access — broadcasts/segments), `RESEND_SEGMENT_ID`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`).
+**Secrets (Cloudflare):** `RESEND_API_KEY` (full access — broadcasts/segments), `RESEND_SEGMENT_ID`, `NEWSLETTER_REPLY_TO`, `TRIGGER_SECRET`, `SENTRY_DSN` (optional). Public vars in `wrangler.toml [vars]`: `DASHBOARD_URL`, `RESEND_FROM_EMAIL` (`daniel.avila@aitmpl.com`), `NEWSLETTER_ENABLED` (currently `"false"` — the kill switch described above).
 
 ## Error Tracking (Sentry)
 
@@ -519,7 +549,8 @@ All of the above are served as static Cloudflare Pages assets with
 1. `scripts/generate_components_json.py` scans `cli-tool/components/`
 2. Generates `docs/components.json` (full, with `content`/`security`) and the split dashboard artifacts (`dashboard/public/components.json`, `counts.json`, `components/{type}.json`, `search-index.json`, `component-content/{type}/{slug}.json`) — these two writes are decoupled, so the dashboard payload stays lean without touching the legacy catalog
 3. Dashboard islands (`ComponentGrid.tsx`, `SearchModal.tsx`, `Sidebar.astro`, `SendToRepoModal.tsx`) load the split artifacts instead of the full catalog
-4. Download tracking via `/api/track-download-supabase`
+4. `scripts/generate_trending_data.py` writes only `docs/trending-data.json`; `update-json-data.yml` copies it to `dashboard/public/trending-data.json`, which is the one `TrendingView.tsx` and the home counters actually fetch
+5. Download tracking via `/api/track-download-supabase`
 
 ### Plugins & Marketplaces Catalog
 
@@ -530,7 +561,7 @@ All of the above are served as static Cloudflare Pages assets with
 
 ### Legacy Static Site (docs/)
 
-The `docs/` directory contains the old static HTML site (no longer deployed to www). Blog articles in `docs/blog/` are still referenced externally.
+The `docs/` directory contains the old static HTML site (no longer deployed to www). GitHub Pages still builds it from repository settings and publishes it at `davila7.github.io/claude-code-templates`; nothing in production depends on that, and every article canonicalises to `aitmpl.com`. Blog articles in `docs/blog/` are still referenced externally.
 
 ### Blog Article Creation
 
@@ -544,6 +575,15 @@ This automatically:
 1. Generates AI cover image
 2. Creates HTML with SEO optimization
 3. Updates `docs/blog/blog-articles.json`
+
+**The site serves `dashboard/public/blog/`, not `docs/blog/`.** The skill writes
+only the `docs/` copy, so after creating an article you must mirror it across —
+the article directory, its cover under `assets/`, and the new entry in
+`blog-articles.json` — or it never appears on aitmpl.com. Three articles were
+stranded this way before 2026-09-20. `daily-blog-discord.yml` picks from
+`docs/blog/blog-articles.json` and links to `aitmpl.com/blog/<slug>/`, so an
+unmirrored article is posted to Discord as a 404. Keep the two
+`blog-articles.json` files identical.
 
 ## Code Standards
 
