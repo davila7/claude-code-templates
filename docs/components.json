@@ -46682,6 +46682,69 @@
       ]
     },
     {
+      "name": "chess",
+      "path": "games/chess",
+      "category": "games",
+      "type": "mod",
+      "description": "Play chess against Claude in a side pane while you work. Click a piece and a square, or type a move; Claude answers through a fork of the session and the pane shows the tokens each of its moves cost, as the API reported them, and the running total. Docked beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "game",
+        "chess",
+        "sidebar",
+        "tokens"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "register.tsx"
+      ],
+      "userConfig": {
+        "columns": {
+          "type": "number",
+          "title": "Pane width",
+          "description": "Columns asked for the docked pane in the fullscreen layout (30-100); a width you drag it to wins",
+          "default": 40
+        },
+        "pieces": {
+          "type": "string",
+          "title": "Pieces",
+          "description": "How pieces are drawn: unicode glyphs or FEN letters (uppercase White)",
+          "options": [
+            "unicode",
+            "letters"
+          ],
+          "default": "unicode"
+        },
+        "fallbackModel": {
+          "type": "string",
+          "title": "Fallback model",
+          "description": "Model for a move Claude makes before the session's first turn, when there is no transcript to fork; that call reports no token usage",
+          "default": "haiku"
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/chess.ts",
+        "hooks/game.ts",
+        "hooks/hooks.json",
+        "hooks/register.tsx",
+        "tests/chess.test.tsx"
+      ]
+    },
+    {
       "name": "diff-invaders",
       "path": "games/diff-invaders",
       "category": "games",
