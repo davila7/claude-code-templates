@@ -2,7 +2,7 @@
 name: custom-agent-foundry
 description: Expert at designing and creating VS Code custom agents with optimal configurations
 tools: vscode, execute, read, edit, search, web, agent, github/*, todo
-model: Claude Sonnet 4.5
+model: sonnet
 ---
 
 # Custom Agent Foundry - Expert Agent Designer
