@@ -59,6 +59,9 @@ const LIGHT = '#8b7355'
 const DARK = '#5c4a36'
 const PICKED = '#a08a2c'
 const LAST = '#4f6b3a'
+// where the picked piece can go, and where it captures
+const TARGET = '#3d6a8a'
+const CAPTURE = '#8a3d3d'
 
 type Fork = (prompt: string) => Promise<ModelForkResult | null>
 type Complete = (prompt: string) => Promise<string>
@@ -323,15 +326,20 @@ export const register: Register = (on, options) => {
         {files.map(file => {
           const sq = rank * 8 + file
           const p = g.pos.board[sq]
-          const bg = sq === picked ? PICKED : lastSquares.includes(sq) ? LAST : (file + rank) % 2 ? LIGHT : DARK
-          const mark = targets.has(sq) ? (p === '' ? '•' : '×') : ' '
+          const target = targets.has(sq)
+          const bg =
+            sq === picked ? PICKED
+            : target ? (p === '' ? TARGET : CAPTURE)
+            : lastSquares.includes(sq) ? LAST
+            : (file + rank) % 2 ? LIGHT : DARK
+          const label = target && p === '' ? ' • ' : ` ${glyph(p)} `
           return (
             <Box key={`cell:${sq}`} backgroundColor={bg}>
               <Button
                 key={`sq:${squareName(sq)}`}
                 plain
                 dimColor={darkTheme && p !== '' && !isWhite(p)}
-                label={`${mark}${glyph(p)} `}
+                label={label}
                 onPress={noop}
               />
             </Box>
@@ -347,7 +355,12 @@ export const register: Register = (on, options) => {
       .filter(x => x.m.by === 'claude')
       .slice(-HISTORY_ROWS)
     const result = resultText(g)
-    const turnLine = result ?? (thinking ? 'Claude is thinking…' : isYourTurn(g) ? `Your move (${colorName(g.you)})` : 'Claude to move')
+    const turnLine = result ??
+      (thinking
+        ? 'Claude is thinking…'
+        : isYourTurn(g)
+          ? `Your move (${colorName(g.you)}): ${picked >= 0 ? 'click a highlighted square' : 'click a piece'}`
+          : 'Claude to move')
 
     return (
       <Box flexDirection="column">
@@ -403,7 +416,7 @@ export const register: Register = (on, options) => {
           <Button key="resign" label="resign" onPress={noop} />
           <Button key="close" label="close" onPress={noop} />
         </Box>
-        <Text dimColor>{'• move  × capture'}</Text>
+        <Text dimColor>{'click a piece: • move  red capture'}</Text>
       </Box>
     )
   })

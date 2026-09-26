@@ -15,7 +15,7 @@ You White vs Claude Black
 1 ♜ ♞ ♝ ♛ ♚ ♝   ♜
    a  b  c  d  e  f  g  h
 
-Your move (White)
+Your move (White): click a piece
 move  e4, Nf3, O-O, e7e8q
 ╭────────────────────────────────╮
 │ Claude's tokens (API usage)    │
@@ -32,7 +32,7 @@ Run `/chess` to open the board (`/chess black` to play Black, `/chess white` for
 
 ## Playing
 
-- **Click** one of your pieces, then a square. The picked square is highlighted, `•` marks where it can go, `×` a capture. Click it again to drop it. A pawn clicked onto the last rank becomes a queen.
+- **Click** one of your pieces, then a square. The picked square turns yellow, the squares it can move to turn blue with a `•`, and the pieces it can capture turn red. Click another of your pieces to switch, or the same one to drop it. A pawn clicked onto the last rank becomes a queen.
 - **Type** a move in the field under the board: SAN (`e4`, `Nf3`, `exd5`, `O-O`, `e8=N`) or UCI (`e2e4`, `e7e8n`).
 - `new as white` / `new as black` start over; `resign` ends the game.
 - Your side is always at the bottom.

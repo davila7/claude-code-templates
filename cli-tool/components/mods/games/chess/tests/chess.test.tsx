@@ -139,6 +139,12 @@ describe('the pane', () => {
     await openBoard($)
     const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
     await ui.press({ key: 'sq:e2' })
+    await ui.redraw()
+    // the picked pawn's two squares are marked, nothing else is
+    expect((await ui.find({ key: 'sq:e3' }))?.text).toContain('•')
+    expect((await ui.find({ key: 'sq:e4' }))?.text).toContain('•')
+    expect((await ui.find({ key: 'sq:e5' }))?.text).not.toContain('•')
+    expect(await ui.find({ type: 'Text', text: /click a highlighted square/ })).toBeDefined()
     await ui.press({ key: 'sq:e4' })
     await ui.redraw()
     expect(calls.prompts.length).toBe(1)
