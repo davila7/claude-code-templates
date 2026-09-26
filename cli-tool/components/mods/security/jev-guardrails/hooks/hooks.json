@@ -1,0 +1,6 @@
+{
+  "description": "Screens each prompt at prompt.submit with TypeSafe's input battery (jailbreak, harmful_request, medical_advice, self_harm + severity) and each reply at turn.step with the output battery (broke_policy, harmful_request, medical_advice, self_harm + severity), routing them to pass, review ($.ui.ask), block or support under a named policy.",
+  "modules": [
+    "./jev-guardrails.ts"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "curviate": {
+      "description": "Official MCP server for the Curviate API: LinkedIn actions for AI agents (search, messaging, connections, posts, Sales Navigator, Recruiter). A thin stdio bridge to the hosted server, so the tool surface stays current with zero client-side updates.",
+      "command": "npx",
+      "args": ["-y", "@curviate/mcp"],
+      "env": {
+        "CURVIATE_API_KEY": "<your-api-key>"
+      }
+    }
+  }
+}
