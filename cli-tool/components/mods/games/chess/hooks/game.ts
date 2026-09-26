@@ -148,12 +148,13 @@ export function fmt(n: number): string {
 export const usageLine = (u: ModelUsage) =>
   `in ${fmt(u.input_tokens)} · out ${fmt(u.output_tokens)} · cache r ${fmt(u.cache_read_input_tokens)} w ${fmt(u.cache_creation_input_tokens)}`
 
-export function resultText(g: Game): string | undefined {
-  if (g.resigned) return `${g.resigned === g.you ? 'You resigned' : 'Claude resigned'}: ${colorName(g.resigned === 'w' ? 'b' : 'w')} wins`
+/** `opponent` is who plays the other side in the pane's words: Claude, or Jev. */
+export function resultText(g: Game, opponent = 'Claude'): string | undefined {
+  if (g.resigned) return `${g.resigned === g.you ? 'You resigned' : `${opponent} resigned`}: ${colorName(g.resigned === 'w' ? 'b' : 'w')} wins`
   if (!g.over) return undefined
   if (g.over === 'checkmate') {
     const winner = g.pos.turn === 'w' ? 'b' : 'w'
-    return `Checkmate: ${winner === g.you ? 'you win' : 'Claude wins'}`
+    return `Checkmate: ${winner === g.you ? 'you win' : `${opponent} wins`}`
   }
   return `Draw by ${g.over}`
 }

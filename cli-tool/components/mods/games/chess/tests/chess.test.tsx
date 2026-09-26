@@ -5,6 +5,7 @@ import type { ModelUsage, On } from 'claude-code'
 import { START_FEN, ending, findMove, legalMoves, makeMove, parseFen, san, toFen } from '../hooks/chess.ts'
 import type { Position } from '../hooks/chess.ts'
 import { asReply, fmt, gameUsage, movePrompt, newGame, play, readReply, resultText } from '../hooks/game.ts'
+import { DEFAULT_BASE_URL, endpoint, jevMove, readAnswer, requestBody, requestHeaders, selectProvider } from '../hooks/jev.ts'
 
 function perft(p: Position, depth: number): number {
   if (!depth) return 1
@@ -249,5 +250,54 @@ describe('a failing model never leaves Claude thinking', () => {
     expect(asReply('e5')).toEqual({ text: 'e5' })
     expect(asReply(null)).toEqual({ reason: 'nothing-to-fork' })
     expect(asReply({ isAnswered: false, reason: 'nothing-to-fork' })).toEqual({ reason: 'nothing-to-fork' })
+  })
+})
+
+describe('Jev', () => {
+  test('a key selects the backend; TypeSafe first, "claude" forces Claude', () => {
+    expect(selectProvider('auto', '', '')).toBeNull()
+    expect(selectProvider('auto', 'ts', 'gw')).toBe('typesafe')
+    expect(selectProvider('auto', '', 'gw')).toBe('gateway')
+    expect(selectProvider('typesafe', '', 'gw')).toBeNull()
+    expect(selectProvider('claude', 'ts', 'gw')).toBeNull()
+    expect(endpoint('typesafe', 'https://api.typesafe.ai/')).toBe('https://api.typesafe.ai/v1/systemone')
+    expect(endpoint('gateway', DEFAULT_BASE_URL.gateway)).toBe('https://ai-gateway.vercel.sh/v4/ai/evaluation-model')
+    expect(requestHeaders('gateway', 'k', 'typesafe-ai/jev')['ai-model-id']).toBe('typesafe-ai/jev')
+  })
+
+  test('the question is a choice over exactly the legal moves', () => {
+    const g = play(newGame('w'), findMove(parseFen(START_FEN), 'e4')!, { by: 'you' })
+    const body = JSON.parse(requestBody('typesafe', g, 'jev-latest'))
+    expect(body.model).toBe('jev-latest')
+    expect(body.state.you_play).toBe('Black')
+    expect(body.state.moves_so_far).toBe('1. e4')
+    expect(body.questions.move.type).toBe('choice')
+    expect(Object.keys(body.questions.move.criteria).length).toBe(20)
+    expect(body.questions.move.criteria.Nf6).toBe('knight g8-f6')
+    const gw = JSON.parse(requestBody('gateway', g, 'typesafe-ai/jev'))
+    expect(gw.model).toBeUndefined()
+  })
+
+  test('the answer: choice, confidence, and usage only when reported', () => {
+    expect(readAnswer(JSON.stringify({ answers: { move: { choice: 'e5', confidence: 0.4 } } }))).toEqual({ san: 'e5', confidence: 0.4, usage: null })
+    const withUsage = readAnswer(JSON.stringify({ answers: { move: { choice: 'c5', probabilities: { c5: 0.7, e5: 0.3 } } }, usage: { prompt_tokens: 900, completion_tokens: 2 } }))
+    expect(withUsage?.confidence).toBe(0.7)
+    expect(withUsage?.usage?.input_tokens).toBe(900)
+    expect(withUsage?.usage?.output_tokens).toBe(2)
+    expect(readAnswer('not json')).toBeNull()
+    expect(readAnswer('{"answers":{}}')).toBeNull()
+  })
+
+  test("Jev's response to a move: legal choice, errors, timeouts", () => {
+    const g = play(newGame('w'), findMove(parseFen(START_FEN), 'e4')!, { by: 'you' })
+    const ok = (body: unknown) => ({ ok: true, status: 200, text: JSON.stringify(body) })
+    const played = jevMove(g.pos, ok({ answers: { move: { choice: 'c5' } }, usage: { input_tokens: 700, output_tokens: 1 } }), 'typesafe')
+    expect(played.move?.to).toBe(34)
+    expect(played.usage?.input_tokens).toBe(700)
+    expect(played.why).toBeUndefined()
+    expect(jevMove(g.pos, { ok: false, status: 401, text: '' }, 'typesafe').why).toBe('typesafe responded 401')
+    expect(jevMove(g.pos, undefined, 'gateway').why).toBe('no answer in time')
+    expect(jevMove(g.pos, ok({ answers: { move: { choice: 'Ke2' } } }), 'typesafe').why).toBe('"Ke2" was not legal')
+    expect(resultText({ ...g, resigned: 'b' }, 'Jev')).toBe('Jev resigned: White wins')
   })
 })
