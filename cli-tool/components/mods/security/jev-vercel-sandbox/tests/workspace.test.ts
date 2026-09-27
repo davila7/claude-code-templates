@@ -1,6 +1,6 @@
 // Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test security/jev-vercel-sandbox
 import { describe, expect, test } from 'claude-code/testing'
-import { describeChanges, filesToUpload, folderName, isExcluded, nulList, readChanges, relativeCwd, uploadBatches } from '../hooks/workspace.ts'
+import { describeChanges, filesToUpload, folderName, isExcluded, isGitRef, isGitUrl, nulList, patchTargets, readChanges, readReport, relativeCwd, uploadBatches } from '../hooks/workspace.ts'
 
 describe('workspace', () => {
   test('credentials and private folders never go up; examples and ordinary files do', () => {
@@ -43,5 +43,32 @@ describe('workspace', () => {
     expect(relativeCwd('/repo', '/repo')).toBe('')
     expect(relativeCwd('/repo', '/repo/src/lib')).toBe('src/lib')
     expect(relativeCwd('/repo', '/other')).toBe(null)
+  })
+
+  test("a job's report reads its changes, patch size, files written outside and processes left", () => {
+    const r = readReport('@@changes\nD  src/a.ts\nA  b.ts\n@@patch 120\n@@outside\n/usr/local/bin/x\n@@processes\n77 miner\n')
+    expect(r).toEqual({
+      changes: [
+        { path: 'src/a.ts', kind: 'deleted' },
+        { path: 'b.ts', kind: 'added' },
+      ],
+      patchBytes: 120,
+      outside: ['/usr/local/bin/x'],
+      processes: ['miner'],
+    })
+    expect(readReport('')).toEqual({ changes: [], patchBytes: null, outside: [], processes: [] })
+  })
+
+  test('only https repositories and plain refs are cloned', () => {
+    expect(isGitUrl('https://github.com/org/lib')).toBe(true)
+    for (const u of ['file:///etc', 'ext::sh -c id', '--upload-pack=x', 'git@github.com:o/r.git', "https://x/'; rm -rf /"]) expect(isGitUrl(u)).toBe(false)
+    for (const r of ['main', 'v2.3.0', 'feature/x', 'abc1234']) expect(isGitRef(r)).toBe(true)
+    for (const r of ['--upload-pack=x', 'a b', 'main..dev', '-x']) expect(isGitRef(r)).toBe(false)
+  })
+
+  test("a patch's own headers name every path it writes and any symlink", () => {
+    const patch = ['diff --git a/src/a.ts b/src/b.ts', 'rename from src/a.ts', 'rename to src/b.ts', 'diff --git a/x b/x', 'new file mode 100644', '--- /dev/null', '+++ b/x'].join('\n')
+    expect(patchTargets(patch)).toEqual({ paths: ['src/a.ts', 'src/b.ts', 'x'], symlink: false })
+    expect(patchTargets('diff --git a/l b/l\nnew file mode 120000\n').symlink).toBe(true)
   })
 })
