@@ -13,6 +13,7 @@ import {
   rows,
   spawned,
   stepped,
+  synced,
   toolLabel,
   toolRan,
   trimmed,
@@ -68,12 +69,28 @@ describe('flow.ts', () => {
     expect(counts(flow)).toEqual({ running: 0, done: 1, failed: 0 })
   })
 
-  test('a loop no spawn announced is still drawn, marked unlisted', () => {
+  test('a loop no spawn announced is recorded, marked unlisted', () => {
     const flow = createFlow()
     stepped(flow, 'wf-1', usage(10), 1)
     expect(flow.nodes.get('wf-1')?.unlisted).toBe(true)
     stepped(flow, undefined, usage(20_000), 2)
     expect(flow.nodes.get(MAIN)?.contextTokens).toBe(20_000)
+  })
+
+  test('an unlisted loop stays out of the tree and the counts until agent.list knows it or a child of it shows', () => {
+    const flow = createFlow(0)
+    spawned(flow, spawn('a1'), 1)
+    toolRan(flow, 'fork-1', { tool: 'Read', label: 'MEMORY.md' } as never, 2)
+    stepped(flow, 'fork-2', usage(10), 3)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a1'])
+    expect(counts(flow)).toEqual({ running: 1, done: 0, failed: 0 })
+
+    synced(flow, [{ id: 'fork-1', status: 'running', type: 'general-purpose', description: 'workflow step' }])
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a1', 'fork-1'])
+    expect(counts(flow).running).toBe(2)
+
+    spawned(flow, spawn('kid', 'fork-2'), 4)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a1', 'fork-1', 'fork-2', 'kid'])
   })
 
   test('trim drops finished branches only, never one with a running agent', () => {

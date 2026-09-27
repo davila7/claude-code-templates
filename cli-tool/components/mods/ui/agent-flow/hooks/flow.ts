@@ -247,11 +247,23 @@ export function subtree(flow: Flow, id: string): string[] {
 
 export type Row = { node: FlowNode; depth: number; prefix: string }
 
+/**
+ * Drawn and counted unless it is a loop no spawn announced: such a loop may never
+ * report its end, and would then read `running` for good. It shows again once
+ * `$.agent.list()` knows it, or when something under it shows.
+ */
+function shown(flow: Flow, node: FlowNode): boolean {
+  return subtree(flow, node.id).some(id => {
+    const n = flow.nodes.get(id)
+    return !!n && !n.unlisted
+  })
+}
+
 /** The tree in spawn order, depth first, with its box-drawing prefix. */
 export function rows(flow: Flow): Row[] {
   const out: Row[] = []
   const walk = (id: string, depth: number, lead: string) => {
-    const kids = children(flow, id)
+    const kids = children(flow, id).filter(kid => shown(flow, kid))
     kids.forEach((kid, i) => {
       const last = i === kids.length - 1
       out.push({ node: kid, depth, prefix: `${lead}${last ? '└─' : '├─'}` })
@@ -267,7 +279,7 @@ export function counts(flow: Flow): { running: number; done: number; failed: num
   let done = 0
   let failed = 0
   for (const n of flow.nodes.values()) {
-    if (n.id === MAIN) continue
+    if (n.id === MAIN || !shown(flow, n)) continue
     if (n.status === 'running') running += 1
     else if (n.status === 'done') done += 1
     else failed += 1

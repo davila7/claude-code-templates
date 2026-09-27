@@ -59,7 +59,7 @@ It only observes: every hook passes its event on unchanged.
 | `turn.complete` | a loop's end: its answer, duration, and how it ended |
 | `session.measure` | the main window and its % |
 
-It reads `$.agent.list()` to fold in status changes it did not see (a background agent killed) and `$.session.usage({ breakdown: 'summary' })` when you select `main`. A loop that does work without an Agent call announcing it (a workflow's agent, an engine fork) is still drawn, as `loop <id>`.
+It reads `$.agent.list()` to fold in status changes it did not see (a background agent killed) and `$.session.usage({ breakdown: 'summary' })` when you select `main`. A loop that does work without an Agent call announcing it (a workflow's agent, an engine fork) is recorded but left out of the tree and the counts: such a loop may never report its end, and would then read `running` for good. It is drawn once `$.agent.list()` knows it, with that listing's type and description, or when a subagent it spawned is drawn.
 
 ## Options
 
