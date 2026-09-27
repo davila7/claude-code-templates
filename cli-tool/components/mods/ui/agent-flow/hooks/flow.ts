@@ -251,14 +251,39 @@ export function subtree(flow: Flow, id: string): string[] {
 
 export type Row = { node: FlowNode; depth: number; prefix: string }
 
-/** Drawn and counted unless hidden; a hidden node still shows when something under it does. */
-function shown(flow: Flow, node: FlowNode): boolean {
-  return subtree(flow, node.id).some(id => flow.nodes.get(id)?.hidden !== true)
+/**
+ * The subagents drawn and counted: every one not hidden, and a hidden one when something
+ * under it shows. One post-order pass, so rows() and counts() stay linear.
+ */
+export function visibleIds(flow: Flow): Set<string> {
+  const kids = new Map<string, string[]>()
+  for (const id of flow.order) {
+    const n = flow.nodes.get(id)
+    if (!n || n.id === MAIN) continue
+    const parent = n.parentId ?? MAIN
+    const list = kids.get(parent)
+    if (list) list.push(id)
+    else kids.set(parent, [id])
+  }
+  const out = new Set<string>()
+  const visit = (id: string): boolean => {
+    let any = false
+    for (const kid of kids.get(id) ?? []) if (visit(kid)) any = true
+    const n = flow.nodes.get(id)
+    const own = !!n && n.hidden !== true
+    if (id !== MAIN && (own || any)) out.add(id)
+    return own || any
+  }
+  visit(MAIN)
+  return out
 }
 
-/** Takes every finished agent off the pane; `showAll` brings them back. */
+/**
+ * Takes every finished agent off the pane; `showAll` brings them back. A loop no spawn
+ * announced goes too: it may never report its end, and would carry into the new round.
+ */
 export function hideFinished(flow: Flow): void {
-  for (const n of flow.nodes.values()) if (n.id !== MAIN && n.status !== 'running') n.hidden = true
+  for (const n of flow.nodes.values()) if (n.id !== MAIN && (n.status !== 'running' || n.unlisted)) n.hidden = true
 }
 
 export function showAll(flow: Flow): void {
@@ -279,8 +304,9 @@ export function announcedRunning(flow: Flow): number {
 /** The tree in spawn order, depth first, with its box-drawing prefix. */
 export function rows(flow: Flow): Row[] {
   const out: Row[] = []
+  const vis = visibleIds(flow)
   const walk = (id: string, depth: number, lead: string) => {
-    const kids = children(flow, id).filter(kid => shown(flow, kid))
+    const kids = children(flow, id).filter(kid => vis.has(kid.id))
     kids.forEach((kid, i) => {
       const last = i === kids.length - 1
       out.push({ node: kid, depth, prefix: `${lead}${last ? '└─' : '├─'}` })
@@ -295,8 +321,9 @@ export function counts(flow: Flow): { running: number; done: number; failed: num
   let running = 0
   let done = 0
   let failed = 0
+  const vis = visibleIds(flow)
   for (const n of flow.nodes.values()) {
-    if (n.id === MAIN || !shown(flow, n)) continue
+    if (!vis.has(n.id)) continue
     if (n.status === 'running') running += 1
     else if (n.status === 'done') done += 1
     else failed += 1

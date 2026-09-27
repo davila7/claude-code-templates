@@ -23,6 +23,7 @@ import {
   toolLabel,
   toolRan,
   trimmed,
+  visibleIds,
 } from '../hooks/flow.ts'
 
 const usage = (input: number, cached = 0, output = 10) => ({
@@ -145,6 +146,46 @@ describe('flow.ts', () => {
     expect(rows(flow).map(r => r.node.id)).toEqual(['a1'])
   })
 
+  test('hideFinished also takes off a loop no spawn announced, which may never report its end', () => {
+    const flow = createFlow(0)
+    toolRan(flow, 'fork-1', { tool: 'Read', label: 'MEMORY.md' }, 1)
+    spawned(flow, spawn('a1'), 2)
+    completed(flow, 'a1', { answer: 'ok', reason: 'answer', durationMs: 1 }, 3)
+    hideFinished(flow)
+    spawned(flow, spawn('a2'), 4)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a2'])
+    expect(counts(flow)).toEqual({ running: 1, done: 0, failed: 0 })
+    // it comes back if it runs again
+    stepped(flow, 'fork-1', usage(10), 5)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['fork-1', 'a2'])
+  })
+
+  test('visibleIds keeps a hidden parent for a visible child, and stays linear on a deep chain', () => {
+    const flow = createFlow(0)
+    spawned(flow, spawn('a'), 1)
+    spawned(flow, spawn('a1', 'a'), 1)
+    spawned(flow, spawn('b'), 1)
+    completed(flow, 'a', { answer: '', reason: 'answer', durationMs: 1 }, 2)
+    completed(flow, 'b', { answer: '', reason: 'answer', durationMs: 1 }, 2)
+    hideFinished(flow)
+    expect([...visibleIds(flow)].sort()).toEqual(['a', 'a1'])
+
+    // 500 agents nested one under the other, the most maxAgents keeps
+    const deep = createFlow(0)
+    let parent: string | undefined
+    for (let i = 0; i < 500; i++) {
+      spawned(deep, spawn(`d${i}`, parent), i)
+      parent = `d${i}`
+    }
+    const t0 = performance.now()
+    for (let i = 0; i < 10; i++) {
+      rows(deep)
+      counts(deep)
+    }
+    expect(rows(deep)).toHaveLength(500)
+    expect(performance.now() - t0).toBeLessThan(500)
+  })
+
   test('a loop no spawn announced does not count as a running subagent until agent.list knows it', () => {
     const flow = createFlow(0)
     spawned(flow, spawn('a1'), 1)
@@ -163,6 +204,7 @@ function fakeEngine(
   closes: string[] = [],
   lateConfig?: { clock: { sleep: (ms: number) => Promise<void> }; ms: number },
   keyPrefix = 'agent-flow@skills-dir',
+  agents: { id: string; status: string; type: string; description: string }[] = [],
 ) {
   on('agent.spawn', async ($, e) => ({
     model: 'claude-haiku-4-5',
@@ -181,7 +223,7 @@ function fakeEngine(
   on('tool.call', async () => ({ result: 'ok', text: 'ok' }) as never)
   on('turn.start', async ($, e) => ({ turnId: e.turnId }))
   on('turn.complete', async ($, e) => ({ text: e.answer }))
-  on('agent.list', () => ({ value: [] }))
+  on('agent.list', () => ({ value: agents }) as never)
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
   on('command.register', () => ({ value: undefined }))
   on('config.list', async () => {
@@ -453,6 +495,25 @@ describe('openOnSpawn', () => {
     await clock.advance(10_000)
     expect(closes).toEqual([])
     await clock.advance(5_000)
+    expect(closes).toEqual(['agent-flow'])
+  })
+
+  test('a refresh that finds the last subagent finished starts the idle close', async ($, on) => {
+    const clock = mock.clock(on)
+    const closes: string[] = []
+    const agents: { id: string; status: string; type: string; description: string }[] = []
+    fakeEngine(on, { openOnSpawn: true }, [], closes, undefined, undefined, agents)
+    await fresh($)
+    closes.length = 0
+    // a background agent killed outside our view: no turn.complete, only agent.list knows
+    await spawnAgent($)
+    agents.push({ id: 'sub-1', status: 'killed', type: 'Explore', description: 'd' })
+    const ui = await $.ui.mount({ plugin: 'agent-flow', surface: 'terminal', component: 'Pane', requestId: 'agent-flow', props: PANE_PROPS })
+    await ui.press({ key: 'refresh' })
+    await ui.unmount()
+    await clock.advance(14_999)
+    expect(closes).toEqual([])
+    await clock.advance(1)
     expect(closes).toEqual(['agent-flow'])
   })
 

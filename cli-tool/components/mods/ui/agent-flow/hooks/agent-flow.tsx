@@ -26,7 +26,7 @@
  *                        for this long; 0 keeps it (default 15000)
  *   clearOnAutoOpen: boolean a reopen by openOnSpawn shows only the new round (default true)
  */
-import type { ConfigRow, ContextCategory, PluginOptions, Register } from 'claude-code'
+import type { ConfigRow, ContextCategory, CoreEngineInterface, PluginOptions, Register } from 'claude-code'
 import {
   MAIN,
   announcedRunning,
@@ -99,6 +99,33 @@ async function setting(
     key === `${name}.${field}` || (key.startsWith(`${name}@`) && key.endsWith(`.${field}`))
   const row = await $.config.list().then(rows => rows.find(row => matches(row.key))).catch(() => undefined)
   return row ? row.value : options[field]
+}
+
+/**
+ * Starts the idle close of a pane a spawn opened, once no announced subagent runs. Called
+ * wherever the last one may have just finished: its turn.complete, and a refresh that
+ * finds it ended through `$.agent.list()`.
+ */
+async function armIdleClose(
+  $: Pick<CoreEngineInterface, 'clock' | 'config' | 'plugin' | 'ui'>,
+  options: PluginOptions,
+): Promise<void> {
+  if (!isOpen || !autoOpened || idleClose || announcedRunning(flow) > 0) return
+  const ms = idleCloseMs(await setting($, options, 'closeAfterIdleMs'))
+  // checked again after the read: a spawn, /agent-flow or a close may have landed meanwhile
+  if (ms <= 0 || !isOpen || !autoOpened || idleClose || announcedRunning(flow) > 0) return
+  idleClose = $.clock.after(ms, () => {
+    idleClose = undefined
+    // a spawn, /agent-flow and ui.close cancel the timer; a subagent resumed meanwhile
+    // does not, and its own turn.complete arms the timer again
+    if (announcedRunning(flow) > 0) return
+    // the close this callback raises does not reach this plugin's own ui.close hook,
+    // so the state changes here
+    isOpen = false
+    autoOpened = false
+    $.ui.status(undefined)
+    void $.ui.close({ id: PANE }).catch(() => undefined)
+  })
 }
 
 /** Tokens handed down to a node's children and handed back up by them. */
@@ -288,24 +315,7 @@ export const register: Register = (on, options) => {
       $.ui.status(statusText())
       $.ui.invalidate('ui.render')
     }
-    if (isOpen && autoOpened && !idleClose && announcedRunning(flow) === 0) {
-      const ms = idleCloseMs(await setting($, options, 'closeAfterIdleMs'))
-      // checked again after the read: a spawn, /agent-flow or a close may have landed meanwhile
-      if (ms > 0 && isOpen && autoOpened && !idleClose && announcedRunning(flow) === 0) {
-        idleClose = $.clock.after(ms, () => {
-          idleClose = undefined
-          // a spawn, /agent-flow and ui.close cancel the timer; a subagent resumed meanwhile
-          // does not, and its own turn.complete arms the timer again
-          if (announcedRunning(flow) > 0) return
-          // the close this callback raises does not reach this plugin's own ui.close hook,
-          // so the state changes here
-          isOpen = false
-          autoOpened = false
-          $.ui.status(undefined)
-          void $.ui.close({ id: PANE }).catch(() => undefined)
-        })
-      }
-    }
+    await armIdleClose($, options)
     return r
   })
 
@@ -346,6 +356,8 @@ export const register: Register = (on, options) => {
       if (selected && !flow.nodes.has(selected)) selected = undefined
     } else if (key === 'refresh') {
       synced(flow, await $.agent.list().catch(() => []))
+      // the last subagent may have ended where no turn.complete reports it
+      await armIdleClose($, options)
     } else if (key.startsWith(KEY)) {
       const id = key.slice(KEY.length)
       selected = selected === id ? undefined : id
