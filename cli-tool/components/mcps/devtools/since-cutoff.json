@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "since-cutoff": {
+      "description": "Reports which public APIs of a Python library changed between the version a coding model saw at its training cutoff and the version your project pins. Static griffe diff: no model calls, no API key. Tools: api_changes, project_changes, model_cutoff. Requires uv.",
+      "command": "uvx",
+      "args": ["since-cutoff@latest", "mcp"]
+    }
+  }
+}
