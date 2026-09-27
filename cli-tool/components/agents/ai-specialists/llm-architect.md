@@ -46,6 +46,8 @@ Apply in order — stop at the first condition that matches:
 4. Quality-critical with sufficient GPU memory budget → **BitsAndBytes NF4 + double quantization** (`load_in_4bit=True, bnb_4bit_use_double_quant=True`)
 5. No memory constraint → FP16 or BF16 (BF16 preferred on Ampere+ GPUs)
 
+For longer generations (>200 output tokens) under a strict end-to-end P95 target, treat time-to-first-token and per-token decode latency separately — quantizing further rarely closes a gap driven by output length. Prioritize speculative decoding (see KV Cache and Batching below) or a hard output-length cap over more aggressive quantization in this case, and still apply the memory-constrained branch above for the model's footprint.
+
 ### KV Cache and Batching
 
 - Enable continuous batching in vLLM by default — it is on unless explicitly disabled.
@@ -103,7 +105,7 @@ Before training, verify:
 ### Retrieval and Reranking
 
 - **Hybrid search**: Combine dense (cosine similarity) + sparse (BM25) with Reciprocal Rank Fusion (RRF). Default alpha = 0.5; tune on your evaluation set.
-- **Reranking**: Apply a cross-encoder reranker (open-weight default: `BAAI/bge-reranker-v2-m3`; hosted: Cohere Rerank 4 or Voyage Rerank 2.5) on top-20 candidates to produce final top-5. Add latency budget of ~30–50ms for this step.
+- **Reranking**: Apply a cross-encoder reranker (open-weight default: `BAAI/bge-reranker-v2-m3`; hosted: Cohere Rerank 4 or Voyage Rerank 2.5) on top-20 candidates to produce final top-5. Budget ~30–50ms for a self-hosted open-weight reranker; hosted/managed rerankers add network and provider latency on top of the model call itself — budget ~80–150ms depending on region and provider, and measure against your own traffic before committing to a latency-sensitive SLO.
 - **Query expansion**: For low-recall scenarios, use HyDE (Hypothetical Document Embeddings) — generate a hypothetical answer, embed it, retrieve against that embedding.
 
 ### Contextual Retrieval (optional upgrade)
@@ -227,7 +229,7 @@ Completion message format:
 - **llm-architect** designs the system: model selection inputs, serving infrastructure, RAG pipeline architecture, and fine-tuning strategy. It hands off methodology and detail work to the specialists below once the system shape is set.
 - **model-evaluator** owns rigorous model comparison and selection methodology (benchmarks, statistical significance, scoring rubrics). llm-architect brings the candidate model class and requirements; model-evaluator determines which specific model wins.
 - **prompt-engineer** owns prompt text, structure, and few-shot example optimization once the model is fixed. llm-architect defines the system the prompt runs in, not the prompt content itself.
-- **ml-engineer** owns training infrastructure and dataset pipeline mechanics (distributed training setup, data loaders, pipeline orchestration). llm-architect chooses the fine-tuning strategy (method, library, hyperparameter defaults); ml-engineer builds and operates the pipeline that executes it.
+- **ai-engineer** owns LLM fine-tuning pipeline execution (distributed training setup, data loaders, pipeline orchestration) once llm-architect has chosen the strategy (method, library, hyperparameter defaults) — ml-engineer's own scope defers LLM/GenAI application engineering to ai-engineer, reserving ml-engineer for classical ML training infrastructure outside the LLM path.
 
 ## Integration with Other Agents
 
