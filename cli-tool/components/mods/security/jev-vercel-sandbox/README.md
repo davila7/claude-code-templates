@@ -11,7 +11,7 @@ Vercel Sandbox
 ✓ Starting the microVM
     sbx-quiet-owl · iad1 · 2 vCPU
 ✓ Packing the project
-    412 files · 1.8 MB · 1 secret left out
+    412 files · 1.8 MB · 1 credential file left out
 ◌ Uploading it
     3/5
 · Unpacking in the sandbox
@@ -54,7 +54,7 @@ With no Jev key the engine's own `$.model.classify` decides between `local` and 
 
 **What the sandbox is.** A rehearsal on a copy: `rm -rf build` removes the copy's `build/`, and Claude sees which files went. Nothing of yours changes, and nothing it can reach is yours: not your local database, services or credentials. That is the point for `curl … | sh` or a command you never meant to run. For one you did mean, Claude is told it ran in the sandbox; you approve it with `/jev-vercel-sandbox approve` (or `run last locally` in the pane), and the same command, run again, runs on your machine once.
 
-**The copy** is taken when the sandbox starts, not kept in sync: edits Claude makes on your machine afterwards are not in it (`/jev-vercel-sandbox restart` takes a fresh copy). It holds what `git ls-files --cached --others --exclude-standard` lists (tracked files plus untracked ones `.gitignore` does not exclude), or every file outside `.git` and `node_modules` when the folder is not a git repository, minus:
+**The copy** is taken when the sandbox starts, not kept in sync: edits Claude makes on your machine afterwards are not in it (`/jev-vercel-sandbox restart` takes a fresh copy). It holds what `git ls-files --cached` lists: the files git tracks, as they are on disk now (uncommitted edits included). Untracked files stay home, because an untracked file (`secrets.yaml`, `service-account.json`, `.envrc`) can hold credentials no name list recognizes. `uploadUntracked: true` adds the untracked files `.gitignore` does not exclude (`--others --exclude-standard`) and, in a folder that is not a git repository, copies every file outside `.git` and `node_modules`; without it such a folder fails the start and says so. Either way these are left out:
 
 - `.env` and `.env.*` (except `.env.example`, `.sample`, `.template`, `.dist`), `.dev.vars`, `.npmrc`, `.pypirc`, `.netrc`, `.git-credentials`, `.pgpass`, `credentials(.json)`, Terraform state (`*.tfstate`)
 - `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `id_rsa`/`id_ed25519` and the like
@@ -119,6 +119,7 @@ Any of the three left empty falls back to `VERCEL_TOKEN` (then `VERCEL_OIDC_TOKE
   sandboxTimeoutMinutes: number  lifetime before Vercel stops it (default 45)
   persistent:            boolean keep the filesystem across stops (default false)
   uploadWorkspace:       boolean copy the project into the sandbox on start (default true)
+  uploadUntracked:       boolean copy untracked files too; needed outside git (default false)
   workspaceMaxMB:        number  cap on the compressed copy (default 10)
   stopOnExit:            boolean stop when the session ends (default true)
   commandTimeoutMs:      number  when Claude sets none (default 120000, max 600000)
@@ -139,7 +140,7 @@ Any of the three left empty falls back to `VERCEL_TOKEN` (then `VERCEL_OIDC_TOKE
 
 ## Privacy
 
-With a Jev key, your latest message and each judged command go to TypeSafe or the AI Gateway. `/jev-vercel-sandbox` uploads the project copy described above to Vercel (set `uploadWorkspace: false` to send no file); each sandboxed command goes there too. No environment variable leaves the machine through this mod, and the files listed as left out never do. Plain reads are never sent anywhere.
+With a Jev key, your latest message and each judged command go to TypeSafe or the AI Gateway. `/jev-vercel-sandbox` uploads the project copy described above to Vercel (set `uploadWorkspace: false` to send no file); each sandboxed command goes there too. No environment variable leaves the machine through this mod, untracked files (unless `uploadUntracked` is on) and the files listed as left out never do. Plain reads are never sent anywhere.
 
 ## Install
 

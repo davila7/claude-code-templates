@@ -72,7 +72,11 @@ function fakeEngine(on: On, w: World) {
     const [bin, ...args] = e.argv
     if (bin === 'git' && args[0] === 'rev-parse') return out('/repo\n')
     if (bin === 'git' && args.includes('--deleted')) return out('gone.txt\0')
-    if (bin === 'git' && args[0] === 'ls-files') return out('README.md\0src/app.ts\0.env\0gone.txt\0keys/deploy.pem\0')
+    if (bin === 'git' && args[0] === 'ls-files') {
+      const tracked = 'README.md\0src/app.ts\0.env\0gone.txt\0keys/deploy.pem\0'
+      // untracked, and no name the credential list knows
+      return out(args.includes('--others') ? `${tracked}service-account.json\0secrets.yaml\0.envrc\0` : tracked)
+    }
     if (bin === 'mktemp') return out('/tmp/jev.X\n')
     return out('')
   })
@@ -198,6 +202,10 @@ describe('jev-vercel-sandbox', () => {
     const tar = w.processes.find(p => p.argv[0] === 'tar')!
     expect(tar.argv).toEqual(['tar', '-czf', '/tmp/jev.X/workspace.tgz', '--null', '-T', '-'])
     expect(tar.stdin).toBe('README.md\0src/app.ts\0')
+    // only tracked files go by default: untracked ones may hold credentials no name list catches
+    expect(w.processes.find(p => p.argv[0] === 'git' && p.argv[1] === 'ls-files' && !p.argv.includes('--deleted'))!.argv).toEqual(['git', 'ls-files', '-z', '--cached'])
+    expect(tar.stdin).not.toContain('service-account.json')
+    expect(tar.stdin).not.toContain('secrets.yaml')
     expect(w.processes.some(p => p.argv[0] === 'rm' && p.argv.includes('/tmp/jev.X'))).toBe(true)
 
     const scripts = w.calls.filter(isScript).map(c => c.body!.args!.slice(3))
@@ -341,7 +349,7 @@ describe('jev-vercel-sandbox', () => {
     const ui = await $.ui.mount({ plugin: 'jev-vercel-sandbox', surface: 'terminal', component: 'Pane', requestId: 'jev-vercel-sandbox', props: PANE_PROPS })
     expect(await ui.find({ type: 'Text', text: /● ready/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Starting the microVM/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /2 files · .* 2 secrets left out/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /2 files · .* 2 credential files left out/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Jev will now run the commands it judges dangerous in this sandbox/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Commands in the sandbox \(1\)/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /rm -rf build/ })).toBeDefined()

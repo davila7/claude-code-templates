@@ -1,7 +1,7 @@
 {
   "name": "jev-vercel-sandbox",
   "version": "0.2.0",
-  "description": "Runs dangerous Bash commands in a Vercel Sandbox instead of on your machine. Run /jev-vercel-sandbox to start it: a side pane shows the microVM starting and a copy of the project (git's files, secrets left out) uploading, then says Jev will run dangerous commands there and logs each one live with its exit code and changed files. TypeSafe's Jev judges every command Claude is about to run (destructive, remote code, a change to the machine, data leaving it); one past the threshold runs in the sandbox and its output comes back as the Bash result. Until the sandbox runs, dangerous commands are refused. Falls back to the engine's built-in classifier when no Jev key is set. Needs function hooks (early access).",
+  "description": "Runs dangerous Bash commands in a Vercel Sandbox instead of on your machine. Run /jev-vercel-sandbox to start it: a side pane shows the microVM starting and a copy of the project (git's tracked files, credential files left out) uploading, then says Jev will run dangerous commands there and logs each one live with its exit code and changed files. TypeSafe's Jev judges every command Claude is about to run (destructive, remote code, a change to the machine, data leaving it); one past the threshold runs in the sandbox and its output comes back as the Bash result. Until the sandbox runs, dangerous commands are refused. Falls back to the engine's built-in classifier when no Jev key is set. Needs function hooks (early access).",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -55,8 +55,14 @@
     "uploadWorkspace": {
       "type": "boolean",
       "title": "Copy the project into the sandbox",
-      "description": "On /jev-vercel-sandbox, copy the project (the files git tracks or would track, never .env*, keys, .git, .claude, node_modules) into the sandbox and run commands there. Off: commands run in an empty sandbox",
+      "description": "On /jev-vercel-sandbox, copy the project (the files git tracks, never .env*, keys, .git, .claude, node_modules) into the sandbox and run commands there. Off: commands run in an empty sandbox",
       "default": true
+    },
+    "uploadUntracked": {
+      "type": "boolean",
+      "title": "Copy untracked files too",
+      "description": "Also copy files git does not track but does not ignore (and, outside a git repository, every file). Off: only tracked files go, since an untracked file can hold credentials no name list recognizes",
+      "default": false
     },
     "workspaceMaxMB": {
       "type": "number",

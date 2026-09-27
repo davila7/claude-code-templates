@@ -29,7 +29,8 @@
  *
  * Privacy: with a Jev key set, the user's latest request and each judged
  * command go to that backend. /jev-vercel-sandbox uploads the project's files
- * (what git tracks or would track, minus .env*, keys and credentials) to
+ * (what git tracks, minus .env*, keys and credentials; untracked files only with
+ * uploadUntracked) to
  * Vercel; no environment variable goes.
  */
 import type { ProcessRunInit, ProcessRunResult, Register } from 'claude-code'
@@ -207,6 +208,8 @@ export const register: Register = (on, options) => {
   }
   const commandTimeoutMs = Math.min(600_000, Math.max(1_000, number('commandTimeoutMs', 120_000)))
   const uploadWorkspace = flag('uploadWorkspace', true)
+  // untracked files are anything lying in the folder: never sent unless asked for
+  const uploadUntracked = flag('uploadUntracked', false)
   const maxMB = Math.max(1, number('workspaceMaxMB', 10))
   const columns = Math.min(80, Math.max(28, number('columns', 44)))
 
@@ -245,7 +248,8 @@ export const register: Register = (on, options) => {
     h.redraw()
     let listed: string[]
     let deleted: string[] = []
-    const git = await h.run(['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard'], { cwd: root, timeoutMs: 60_000 }).catch(() => undefined)
+    const listing = uploadUntracked ? ['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard'] : ['git', 'ls-files', '-z', '--cached']
+    const git = await h.run(listing, { cwd: root, timeoutMs: 60_000 }).catch(() => undefined)
     if (git && git.exitCode === 0) {
       // every entry ends in NUL: output cut at the limit ends mid-path
       if (git.stdout && !git.stdout.endsWith('\0')) throw new Error('the file list was cut short; the project is too large to copy')
@@ -253,6 +257,8 @@ export const register: Register = (on, options) => {
       const gone = await h.run(['git', 'ls-files', '-z', '--deleted'], { cwd: root, timeoutMs: 60_000 }).catch(() => undefined)
       if (gone?.exitCode === 0) deleted = nulList(gone.stdout)
     } else {
+      // outside git every file is untracked
+      if (!uploadUntracked) throw new Error('the folder is not a git repository; set uploadUntracked to copy its files, or uploadWorkspace to false for an empty sandbox')
       const found = await h.run(['find', '.', '-type', 'f', '-not', '-path', './.git/*', '-not', '-path', '*/node_modules/*', '-print0'], { cwd: root, timeoutMs: 60_000 })
       if (found.exitCode !== 0) throw new Error(`listing the project failed: ${found.stderr.trim().slice(0, 200)}`)
       if (found.stdout && !found.stdout.endsWith('\0')) throw new Error('the file list was cut short; the project is too large to copy')
@@ -285,7 +291,7 @@ export const register: Register = (on, options) => {
       }
       let base64 = ''
       for (const p of parts) base64 += await h.readBase64(p)
-      step('pack', 'done', `${plural(files.length, 'file')} · ${megabytes(bytes)}${excluded.length ? ` · ${excluded.length} secret${excluded.length === 1 ? '' : 's'} left out` : ''}`)
+      step('pack', 'done', `${plural(files.length, 'file')} · ${megabytes(bytes)}${excluded.length ? ` · ${excluded.length} credential file${excluded.length === 1 ? '' : 's'} left out` : ''}`)
       h.redraw()
       return { base64, files: files.length, excluded: excluded.length, bytes }
     } finally {
