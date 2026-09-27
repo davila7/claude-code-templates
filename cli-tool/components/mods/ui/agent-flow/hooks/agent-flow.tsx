@@ -21,10 +21,16 @@
  *   columns: number      width asked for the docked pane (default 52)
  *   maxAgents: number    subagents kept, oldest finished dropped first (default 60)
  *   openOnStart: boolean open the pane when the session starts (default false)
+ *   openOnSpawn: boolean open the pane, unfocused, when a subagent spawns (default false)
+ *   closeAfterIdleMs: number close a pane openOnSpawn opened once no subagent ran
+ *                        for this long; 0 keeps it (default 15000)
+ *   clearOnAutoOpen: boolean a reopen by openOnSpawn shows only the new round (default true)
  */
-import type { ContextCategory, Register } from 'claude-code'
+import type { ConfigRow, ContextCategory, PluginOptions, Register } from 'claude-code'
 import {
   MAIN,
+  announcedRunning,
+  clearsOnAutoOpen,
   STATUS_MARK,
   bar,
   completed,
@@ -35,10 +41,14 @@ import {
   fit,
   fmtDuration,
   fmtTokens,
+  hideFinished,
+  idleCloseMs,
   mainTurn,
   maxAgents,
+  opensOnSpawn,
   paneColumns,
   rows,
+  showAll,
   spawned,
   stepped,
   synced,
@@ -54,6 +64,11 @@ const KEY = 'ag:'
 
 let flow: Flow = createFlow()
 let isOpen = false
+// closed by hand this session: a spawn does not reopen it until the next /agent-flow
+let dismissed = false
+// opened by a spawn, not by /agent-flow: the only pane the idle timer closes
+let autoOpened = false
+let idleClose: { cancel: () => void } | undefined
 let selected: string | undefined
 let breakdown: ContextCategory[] | undefined
 
@@ -66,6 +81,24 @@ function statusText(): string | undefined {
   if (c.failed) parts.push(`${c.failed} failed`)
   const ctx = flow.percent !== undefined ? ` · ctx ${flow.percent}%` : ''
   return `agents: ${parts.join(' · ')}${ctx}`
+}
+
+/**
+ * A spawn option as /config holds it now, read when it is needed so a change there
+ * applies at once; the options register() got stand in when /config has no row for it.
+ */
+async function setting(
+  $: { plugin: { name: string }; config: { list: () => Promise<ConfigRow[]> } },
+  options: PluginOptions,
+  field: string,
+): Promise<unknown> {
+  // the row key is `<plugin>.<field>`, where <plugin> may be the bare name or the full id
+  // (`agent-flow@skills-dir`, `agent-flow@inline`)
+  const name = $.plugin.name
+  const matches = (key: string) =>
+    key === `${name}.${field}` || (key.startsWith(`${name}@`) && key.endsWith(`.${field}`))
+  const row = await $.config.list().then(rows => rows.find(row => matches(row.key))).catch(() => undefined)
+  return row ? row.value : options[field]
 }
 
 /** Tokens handed down to a node's children and handed back up by them. */
@@ -87,9 +120,16 @@ export const register: Register = (on, options) => {
   const keep = maxAgents(options.maxAgents)
   const openOnStart = options.openOnStart === true
 
+  const cancelIdleClose = () => {
+    idleClose?.cancel()
+    idleClose = undefined
+  }
+
   on('session.start', async ($, e, next) => {
     const r = await next(e)
     flow = createFlow(Date.now())
+    dismissed = false
+    cancelIdleClose()
     selected = undefined
     breakdown = undefined
     await $.command
@@ -117,6 +157,7 @@ export const register: Register = (on, options) => {
     if (arg === 'stop' || arg === 'close') {
       await $.ui.close({ id: PANE }).catch(() => undefined)
       isOpen = false
+      dismissed = true
       $.ui.status(undefined)
       return { text: 'agent-flow closed' }
     }
@@ -130,6 +171,7 @@ export const register: Register = (on, options) => {
       return { text: 'agent-flow: finished agents cleared' }
     }
     synced(flow, await $.agent.list().catch(() => []))
+    showAll(flow)
     try {
       await $.ui.open({ id: PANE, title: 'agents', focus: true, columns })
     } catch (err) {
@@ -137,6 +179,9 @@ export const register: Register = (on, options) => {
       return { text: `agent-flow: pane not opened: ${err}` }
     }
     isOpen = true
+    dismissed = false
+    autoOpened = false
+    cancelIdleClose()
     $.ui.status(statusText())
     $.ui.invalidate('ui.render')
     const c = counts(flow)
@@ -174,6 +219,24 @@ export const register: Register = (on, options) => {
         Date.now(),
       )
       trimmed(flow, keep)
+      cancelIdleClose()
+      const opens = !isOpen && !dismissed && opensOnSpawn(await setting($, options, 'openOnSpawn'))
+      const clears = opens && clearsOnAutoOpen(await setting($, options, 'clearOnAutoOpen'))
+      // checked again after the reads: a parallel spawn may have opened the pane meanwhile
+      if (opens && !isOpen && !dismissed) {
+        if (clears) {
+          hideFinished(flow)
+          selected = undefined
+        }
+        // no focus: the prompt keeps the keyboard
+        isOpen = true
+        autoOpened = true
+        await $.ui.open({ id: PANE, title: 'agents', columns }).catch(err => {
+          isOpen = false
+          autoOpened = false
+          $.ui.log(`agent-flow: pane not opened: ${err}`)
+        })
+      }
       if (isOpen) {
         $.ui.status(statusText())
         $.ui.invalidate('ui.render')
@@ -225,6 +288,24 @@ export const register: Register = (on, options) => {
       $.ui.status(statusText())
       $.ui.invalidate('ui.render')
     }
+    if (isOpen && autoOpened && !idleClose && announcedRunning(flow) === 0) {
+      const ms = idleCloseMs(await setting($, options, 'closeAfterIdleMs'))
+      // checked again after the read: a spawn, /agent-flow or a close may have landed meanwhile
+      if (ms > 0 && isOpen && autoOpened && !idleClose && announcedRunning(flow) === 0) {
+        idleClose = $.clock.after(ms, () => {
+          idleClose = undefined
+          // a spawn, /agent-flow and ui.close cancel the timer; a subagent resumed meanwhile
+          // does not, and its own turn.complete arms the timer again
+          if (announcedRunning(flow) > 0) return
+          // the close this callback raises does not reach this plugin's own ui.close hook,
+          // so the state changes here
+          isOpen = false
+          autoOpened = false
+          $.ui.status(undefined)
+          void $.ui.close({ id: PANE }).catch(() => undefined)
+        })
+      }
+    }
     return r
   })
 
@@ -245,6 +326,9 @@ export const register: Register = (on, options) => {
     if (e.id !== PANE) return next(e)
     const r = await next(e)
     isOpen = false
+    dismissed = true
+    autoOpened = false
+    cancelIdleClose()
     $.ui.status(undefined)
     return r
   })

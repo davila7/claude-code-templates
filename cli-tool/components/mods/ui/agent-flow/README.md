@@ -29,6 +29,17 @@ Agents (1 running · 2 done)
 
 Run `/agent-flow` to open it, `/agent-flow clear` to forget finished agents, `/agent-flow stop` to close it.
 
+## Opening on its own
+
+With `openOnSpawn` on, the first subagent opens the pane without taking focus. Once no subagent has run for `closeAfterIdleMs` (15s), the pane closes, and the next spawn opens it again showing only the new round. `/agent-flow` brings the finished agents back.
+
+- A spawn inside the idle window cancels the close.
+- A pane you open with `/agent-flow` never closes on its own, even if the timer was already running.
+- Closing the pane yourself (`/agent-flow stop` or `[ close ]`) keeps it closed until the next `/agent-flow` or a new session.
+- A `loop <id>` row does not keep the pane open. Such a loop can run without ever raising `turn.complete`, so only the subagents a spawn announced, or that `$.agent.list()` knows, count as running.
+
+The three options are read from `/config` whenever they are needed, so a change there takes effect without a restart.
+
 ## What it shows
 
 - **The general context.** The main loop's window (tokens used of the window, %, a bar) and the prompt of the current turn. Select the `main` row to see the window broken down by category, as `/context` counts it, plus how much the main loop handed down to its subagents and got back from them.
@@ -67,6 +78,12 @@ It reads `$.agent.list()` to fold in status changes it did not see (a background
   columns: number      width asked for the docked pane, 32-120 (default 52)
   maxAgents: number    subagents kept, oldest finished dropped first (default 60)
   openOnStart: boolean open the pane when a session starts (default false)
+  openOnSpawn: boolean open the pane, unfocused, when a subagent spawns (default false)
+  closeAfterIdleMs: number
+                       close a pane openOnSpawn opened once no subagent has run
+                       for this long, in ms; 0 keeps it open (default 15000)
+  clearOnAutoOpen: boolean
+                       a reopen by openOnSpawn shows only the new round (default true)
 ```
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in user settings (`~/.claude/settings.json`, never project settings), with `--settings <file>` or in managed settings, under the plugin's full id:
