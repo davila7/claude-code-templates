@@ -194,8 +194,11 @@ const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
 const messageOf = (err: unknown) => (err instanceof Error ? err.message : String(err))
 const shortTree = (sha: string) => sha.slice(0, 7)
 
+/** Both ends: how a run started and, where a test or build prints its failures and summary, how it ended. */
 function cap(text: string, max = MAX_OUTPUT): string {
-  return text.length > max ? `${text.slice(0, max)}\n… (${text.length - max} more characters cut by jev-vercel-sandbox)` : text
+  if (text.length <= max) return text
+  const head = Math.floor(max / 2)
+  return `${text.slice(0, head)}\n… (${text.length - max} characters in the middle cut by jev-vercel-sandbox)\n${text.slice(-(max - head))}`
 }
 
 /** The tail, where a test run's summary is. */
@@ -528,6 +531,7 @@ export const register: Register = (on, options) => {
     steps = freshSteps(uploadWorkspace)
     h.status(statusLine())
     h.redraw()
+    let vm: Promise<SandboxInfo> | undefined
     try {
       let root = ''
       let cwd = ''
@@ -541,7 +545,7 @@ export const register: Register = (on, options) => {
         step(key, 'fail', messageOf(err))
         throw err
       }
-      const vm = startVm(h, api).catch(failing('vm'))
+      vm = startVm(h, api).catch(failing('vm'))
       const packing = uploadWorkspace ? pack(h, root).catch(failing('pack')) : undefined
       // when one half fails the other runs on unobserved
       vm.catch(() => undefined)
@@ -569,7 +573,9 @@ export const register: Register = (on, options) => {
       state = 'failed'
       h.log(`${TAG} the sandbox did not start: ${lastError}`)
       h.toast(`jev-vercel-sandbox: the sandbox did not start (${lastError})`)
-      // never leave a half-started microVM running (and billed)
+      // never leave a half-started microVM running (and billed): when packing failed first,
+      // the create request may still be in flight, so wait for it before stopping what it made
+      await vm?.catch(() => undefined)
       if (info) await api.stop(info).catch(() => undefined)
     }
     h.status(statusLine())

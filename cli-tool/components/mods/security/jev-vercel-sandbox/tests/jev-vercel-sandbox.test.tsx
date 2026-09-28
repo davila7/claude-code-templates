@@ -21,6 +21,8 @@ type World = {
   cmd: string
   cmdStatus: number
   createStatus: number
+  /** Holds the create request this long, so a failed pack can finish first. */
+  createDelayMs: number
   sessionStatus: string
   getStatus: string
   /** The compressed project's size, for the cap. */
@@ -116,12 +118,13 @@ function fakeEngine(on: On, w: World) {
   })
   on('fs.stat', () => ({ value: { kind: 'file', size: w.archiveBytes, mtimeMs: 1_000, isLink: false } }))
   on('fs.read', () => ({ value: { base64: 'UFJPSkVDVA==' } }))
-  on('http.fetch', ($, e) => {
+  on('http.fetch', async ($, e) => {
     const init = e.init ?? {}
     const call: Call = { method: init.method ?? 'GET', url: e.url, auth: init.headers?.authorization, body: init.body ? JSON.parse(init.body) : undefined }
     w.calls.push(call)
     const reply = (status: number, text: string) => ({ value: { status, ok: status < 300, headers: {}, text } })
     if (e.url.startsWith('https://api.vercel.com/v3/sandboxes')) {
+      if (w.createDelayMs) await new Promise(r => setTimeout(r, w.createDelayMs))
       return reply(w.createStatus, w.createStatus < 300 ? JSON.stringify({ sandbox: SANDBOX, session: { ...SESSION, status: w.sessionStatus }, routes: [] }) : JSON.stringify({ error: { message: 'Forbidden' } }))
     }
     if (/\/v2\/sandboxes\/sessions\/[^/]+\/cmd/.test(e.url)) {
@@ -157,6 +160,7 @@ const world = (extra: Partial<World> = {}): World => ({
   cmd: ndjson({ command: COMMAND }, { stream: 'stdout', data: 'removed\n' }, { stream: 'stderr', data: 'warn\n' }, { command: { ...COMMAND, exitCode: 0, durationMs: 4200 } }),
   cmdStatus: 200,
   createStatus: 200,
+  createDelayMs: 0,
   sessionStatus: 'running',
   getStatus: 'running',
   archiveBytes: 2_048,
@@ -509,6 +513,28 @@ describe('jev-vercel-sandbox', () => {
     await ui.unmount()
     expect(w.calls.some(c => c.url.includes('/stop'))).toBe(true)
     expect(w.calls.filter(isScript)).toEqual([])
+  })
+
+  test('a sandbox created after the pack failed is stopped too', async ($, on) => {
+    const w = world({ archiveBytes: 50 * 1_048_576, createDelayMs: 200 })
+    fakeEngine(on, w)
+    await started($, w)
+    expect(w.logs.some(l => l.includes('over workspaceMaxMB (10 MB)'))).toBe(true)
+    // the create answers after the failure was logged
+    await new Promise(r => setTimeout(r, 400))
+    expect(w.calls.some(c => c.method === 'POST' && c.url.includes(`/sessions/${SESSION.id}/stop`))).toBe(true)
+  })
+
+  test('a long job keeps the end of its output, where the summary is', async ($, on) => {
+    const long = `START\n${'x'.repeat(300_000)}\nTests: 3 failed, 97 passed\n`
+    const w = world({ cmd: ndjson({ command: COMMAND }, { stream: 'stdout', data: long }, { command: { ...COMMAND, exitCode: 1, durationMs: 4200 } }) })
+    fakeEngine(on, w)
+    await started($, w)
+    await bash($, 'rm -rf src/legacy')
+    const out = (await tool($, 'sandbox_result', { job: 'j1' })).result!
+    expect(out).toContain('START')
+    expect(out).toContain('Tests: 3 failed, 97 passed')
+    expect(out).toContain('characters in the middle cut')
   })
 
   test('an OIDC token carries the team and project itself', async ($, on) => {
