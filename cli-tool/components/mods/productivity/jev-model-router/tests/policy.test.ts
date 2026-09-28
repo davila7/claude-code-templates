@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import {
   effortLevel,
   effortRank,
@@ -18,6 +18,9 @@ import {
   bareCommand,
 } from '../hooks/policy.ts'
 import type { Decision, PolicyConfig } from '../hooks/policy.ts'
+
+// the testing kit has no toBeCloseTo, so compare at the two decimals these fixtures carry
+const near = (n?: number) => Math.round((n ?? NaN) * 100) / 100
 
 const config: PolicyConfig = {
   tiers: { fast: 'haiku', balanced: 'sonnet', deep: 'opus' },
@@ -46,8 +49,8 @@ const on = (model: string, effort?: string) => ({ model, effort })
 test('confidence is the highest probability, since the Gateway sends no confidence field', () => {
   const decision = readDecision(gatewayAnswer('balanced', { fast: 0.1, balanced: 0.85, deep: 0.05 }))
   expect(decision?.tier).toBe('balanced')
-  expect(decision?.confidence).toBeCloseTo(0.85)
-  expect(decision?.effort).toBeCloseTo(1.4)
+  expect(near(decision?.confidence)).toBe(0.85)
+  expect(near(decision?.effort)).toBe(1.4)
 })
 
 test('a distribution is optional in the response schema, so confidence may be absent', () => {
@@ -176,9 +179,9 @@ const typesafeAnswer = (tier: string, confidence: number, noul = 0.01) =>
 test('a TypeSafe answer is read from its own confidence and noul fields', () => {
   const decision = readDecision(typesafeAnswer('deep', 0.91, 0.04))
   expect(decision?.tier).toBe('deep')
-  expect(decision?.confidence).toBeCloseTo(0.91)
-  expect(decision?.effort).toBeCloseTo(2.1)
-  expect(decision?.risky).toBeCloseTo(0.04)
+  expect(near(decision?.confidence)).toBe(0.91)
+  expect(near(decision?.effort)).toBe(2.1)
+  expect(near(decision?.risky)).toBe(0.04)
 })
 
 test('a low-confidence TypeSafe downgrade is refused, like the Gateway path', () => {
