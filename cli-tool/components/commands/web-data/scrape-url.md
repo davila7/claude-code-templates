@@ -76,20 +76,20 @@ if parsed:
     except ValueError:
         sys.exit("ERROR: expected JSON but the response is not valid JSON (see the saved file)")
     text = json.dumps(data, indent=2, ensure_ascii=False)
-    if len(text) <= LIMIT:
+    size = len(text.encode("utf-8"))
+    if size <= LIMIT:
         print(text)
     else:
         if isinstance(data, dict):
-            outline = {k: list(v)[:30] if isinstance(v, dict) else type(v).__name__ for k, v in data.items()}
+            outline = {k: list(v)[:20] if isinstance(v, dict) else type(v).__name__ for k, v in list(data.items())[:20]}
         else:
             outline = f"list of {len(data)} items"
-        print(f"Parsed JSON is {len(text)} characters, too large to print in full. Outline: {outline}")
+        print(f"Parsed JSON is {size} bytes, too large to print in full. Outline: {str(outline)[:2000]}")
         print("Read the fields you need from the saved file instead of guessing.")
 else:
-    text = body.decode("utf-8", "replace")
-    print(text[:LIMIT])
-    if len(text) > LIMIT:
-        print(f"\n[HTML truncated to {LIMIT} characters; the full page is in the saved file]")
+    print(body[:LIMIT].decode("utf-8", "ignore"))
+    if len(body) > LIMIT:
+        print(f"\n[HTML truncated to {LIMIT} bytes; the full page is in the saved file]")
 PY
 ```
 
