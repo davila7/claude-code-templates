@@ -136,5 +136,104 @@ class CohesivityPluginGenerationTest(unittest.TestCase):
         )
 
 
+class DefaultDirectoryPluginGenerationTest(unittest.TestCase):
+    def generate(self, source, declared_skills=None, root_name="consulting"):
+        marketplace = {
+            "name": "example-consulting-marketplace",
+            "plugins": [{"name": "consulting", "source": source}],
+        }
+        plugin = {"name": root_name}
+        if declared_skills is not None:
+            plugin["skills"] = declared_skills
+        files = {
+            ".claude-plugin/marketplace.json": json.dumps(marketplace),
+            ".claude-plugin/plugin.json": json.dumps(plugin),
+            "skills/due-diligence/SKILL.md": (
+                "---\nname: due-diligence\ndescription: Review evidence\n---\n"
+            ),
+        }
+        listings = {
+            "": [{"name": "skills", "type": "dir"}],
+            "skills": [
+                {"name": "due-diligence", "type": "dir"},
+                {"name": "engagement-pricing", "type": "dir"},
+            ],
+        }
+        repo_info = {
+            "name": "consulting-plugin",
+            "owner": {"login": "example"},
+            "description": "Consulting workflows",
+        }
+        with (
+            patch.object(generator, "gh_api", return_value=repo_info),
+            patch.object(generator, "gh_file_content", side_effect=lambda _repo, path: files.get(path)),
+            patch.object(generator, "gh_dir_listing", side_effect=lambda _repo, path: listings.get(path, [])) as listing,
+        ):
+            result = generator.process_repo("example/consulting-plugin")
+        return result, listing
+
+    def test_default_skills_keep_pack_and_install_names(self):
+        for source in (
+            "./",
+            {"source": "github", "repo": "example/consulting-plugin"},
+            {"source": "url", "url": "https://github.com/example/consulting-plugin.git"},
+        ):
+            with self.subTest(source=source):
+                result, _ = self.generate(source)
+                self.assertEqual(result["type"], "plugin")
+                self.assertEqual(result["contains"], {"skills": 2})
+                self.assertEqual(result["tags"], ["skills"])
+                self.assertEqual(result["marketplace_name"], "example-consulting-marketplace")
+                self.assertEqual(result["plugin_name"], "consulting")
+                self.assertEqual(result["plugin_manifest"], {
+                    "skills": ["due-diligence", "engagement-pricing"],
+                })
+
+    def test_explicit_components_are_preserved_without_root_scan(self):
+        result, listing = self.generate(
+            {"source": "url", "url": "https://github.com/example/consulting-plugin.git"},
+            declared_skills=["./custom-skills/review"],
+        )
+        self.assertEqual(result["contains"], {"skills": 1})
+        self.assertEqual(result["plugin_manifest"], {"skills": ["./custom-skills/review"]})
+        listing.assert_not_called()
+
+    def test_same_name_external_or_subdirectory_plugin_is_not_scanned(self):
+        for source in (
+            {"source": "url", "url": "https://github.com/example/elsewhere.git"},
+            {"source": "github", "repo": "example/elsewhere"},
+            {"source": "github", "repo": "example/consulting-plugin", "path": "nested"},
+        ):
+            with self.subTest(source=source):
+                result, listing = self.generate(source)
+                self.assertEqual(result["contains"], {})
+                listing.assert_not_called()
+
+    def test_unrelated_root_plugin_is_not_scanned(self):
+        result, listing = self.generate(
+            {"source": "url", "url": "https://github.com/example/elsewhere.git"},
+            root_name="other-plugin",
+        )
+        self.assertEqual(result["contains"], {})
+        listing.assert_not_called()
+
+    def test_root_scan_reads_descriptions_without_leading_slash(self):
+        files = {
+            "skills/review/SKILL.md": "---\ndescription: Review evidence\n---\n",
+            ".claude-plugin/plugin.json": json.dumps({"name": "review"}),
+        }
+        listings = {
+            "": [{"name": "skills", "type": "dir"}],
+            "skills": [{"name": "review", "type": "dir"}],
+        }
+        with (
+            patch.object(generator, "gh_file_content", side_effect=lambda _repo, path: files.get(path)),
+            patch.object(generator, "gh_dir_listing", side_effect=lambda _repo, path: listings.get(path, [])),
+        ):
+            counts, items = generator.scan_plugin_dir_components("example/review", "")
+        self.assertEqual(counts, {"skills": 1})
+        self.assertEqual(items["skills"], [{"name": "review", "description": "Review evidence"}])
+
+
 if __name__ == "__main__":
     unittest.main()
