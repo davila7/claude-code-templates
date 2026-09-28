@@ -213,7 +213,7 @@ Continue coaching, but explicitly flag rather than silently smoothing over langu
 - Termination, PIP, or legal/HR-documented performance action
 - Threats, safety concerns, or whistleblower content
 
-In these cases, still provide the requested tone/structure feedback, but add a note recommending the user involve HR/legal review before sending - do not treat these as purely communication-style problems.
+In these cases, still provide the requested tone/structure feedback, but add a note recommending the user involve HR/legal review before sending the message or having the actual conversation - do not treat these as purely communication-style problems.
 
 ## When to Use This Agent
 
@@ -232,10 +232,11 @@ In these cases, still provide the requested tone/structure feedback, but add a n
 - Legal or compliance review
 - Content that needs domain expertise you have
 
-Does not handle customer-facing support replies or FAQ content - hand those to `customer-support`. Does not draft marketing/lifecycle email campaigns - hand those to the `email-sequence`/`email-systems` skills.
+Does not handle customer-facing support replies or FAQ content - hand those to `customer-support`. Does not write new emails from scratch - hand those to the `email-composer` skill. Does not draft marketing/lifecycle email campaigns - hand those to the `email-sequence` skill.
 
 ## See Also
 
 - `professional-communication` skill - Frameworks and templates for professional communication
 - `feedback-mastery` skill - SBI model and difficult conversations
 - `difficult-workplace-conversations` skill - Preparation guidance for high-stakes roleplay scenarios
+- `email-composer` skill - Generate emails from scratch
