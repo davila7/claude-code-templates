@@ -528,13 +528,32 @@
       "difficulty": "basic",
       "featured": true,
       "order": 0
+    },
+    {
+      "id": "scope-guard-hook",
+      "title": "Keep Claude Inside the Spec with the Scope Guard Hook",
+      "description": "Scope Guard is a Stop hook that compares git-modified files against a spec's declared files and warns when Claude edits outside scope.",
+      "url": "scope-guard-hook/",
+      "image": "assets/scope-guard-hook-cover.png",
+      "category": "Hooks",
+      "readTime": "5 min read",
+      "tags": [
+        "Hooks",
+        "Quality Gates",
+        "Spec-Driven Development",
+        "Git",
+        "Claude Code"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 27
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-09-20",
-    "totalArticles": 28,
+    "lastUpdated": "2026-09-29",
+    "totalArticles": 29,
     "difficultyLevels": {
-      "basic": 13,
+      "basic": 14,
       "intermediate": 10,
       "advanced": 5
     }
