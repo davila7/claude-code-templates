@@ -22,19 +22,20 @@ Legacy modernization checklist:
 - Runbook and 1-hour walkthrough doc produced per migrated module
 - Rollback ready consistently
 - Metrics (modules migrated, coverage delta, perf delta) reported to stakeholders after each phase
+- Legacy code path fully decommissioned and traffic cutover complete for each migrated slice — a migrated-but-still-running legacy remnant is not "done"
 
-Legacy assessment:
-- Code quality analysis
-- Technical debt measurement
-- Dependency analysis
+Legacy assessment (also the basis for system-analysis and roadmap-approval work in the Development Workflow phases below — don't re-derive these from scratch there):
+- Code quality analysis and technical debt measurement (SonarQube, CAST Highlight/Imaging, or equivalent static-analysis/debt-scoring tooling)
+- Dependency analysis and mapping
 - Security audit
 - Performance baseline
 - Architecture review
-- Documentation gaps
-- Knowledge transfer needs
+- Documentation gaps and knowledge transfer needs
+- Business impact, stakeholder alignment, and team-skill assessment
+- Resource, timeline, and success-criteria estimation
 
 Modernization roadmap:
-- Priority ranking
+- Priority ranking (start with the smallest, best-tested, lowest-technical-debt module first to build team confidence and validate the toolchain before tackling higher-risk modules)
 - Risk assessment
 - Migration phases
 - Resource planning
@@ -46,7 +47,7 @@ Modernization roadmap:
 Migration strategies:
 - Strangler fig pattern
 - Branch by abstraction
-- Parallel run approach
+- Parallel run approach (shadow traffic — duplicate live requests and diff old vs. new system responses before cutover, especially for high-value transactions)
 - Event interception
 - Asset capture
 - Database refactoring
@@ -75,8 +76,8 @@ Technology updates:
 
 Common legacy stacks & upgrade paths:
 - COBOL/mainframe: rehost (emulation/cloud mainframe) first, then refactor hot paths to Java or .NET
-- Java EE/WebLogic/WebSphere: migrate to Spring Boot, replacing EJBs with POJOs and app-server-managed resources with embedded runtimes
-- .NET Framework 4.x: assess project types first; migrate supported projects to .NET 8 and create separate migration/rewrite plans for Web Forms and WCF
+- Java EE/WebLogic/WebSphere: migrate to Spring Boot, replacing EJBs with POJOs and app-server-managed resources with embedded runtimes (Windup/MTA — Migration Toolkit for Applications — for automated assessment and rule-based blockers; OpenRewrite for mechanical codemods)
+- .NET Framework 4.x: assess project types first; migrate supported projects to .NET 8 using the .NET Upgrade Assistant and create separate migration/rewrite plans for Web Forms and WCF
 - AngularJS/Backbone/jQuery-based UIs: extract components incrementally into React/Angular (current) behind a strangler-fig routing layer
 - Python 2: migrate to Python 3 using a maintained conversion tool, or run 2to3 from a Python <=3.12 environment, addressing string/bytes handling first
 - PHP 5/7: upgrade to PHP 8, resolving deprecated dynamic properties and removed extensions
@@ -94,6 +95,7 @@ Risk mitigation:
 - A/B testing
 - Canary deployments
 - Rollback procedures
+- Data synchronization strategy agreed before migration code is written (dual-write consistency checks, drift detection) — shared-database/dual-write drift between old and new systems is a common silent failure source during parallel run
 - Data backup
 - Performance monitoring
 - Error tracking
@@ -138,6 +140,15 @@ Performance optimization:
 - Load distribution
 - Monitoring setup
 
+## Output
+
+- Modernization roadmap and per-phase reports (project's existing docs location, falling back to docs/modernization/)
+- Per-module runbook and 1-hour walkthrough doc (alongside the module or under docs/modernization/runbooks/)
+- Characterization test suite establishing a behavioral safety net before refactoring
+- Rollback procedure doc per migration phase, including the data-synchronization/reconciliation steps needed to safely revert
+- Phase metrics report (modules migrated, coverage delta, performance delta, security issues fixed) delivered to stakeholders after each phase
+- Legacy decommissioning confirmation per migrated slice (traffic cutover verified, legacy path removed or scheduled for removal)
+
 ## Communication Protocol
 
 ### Legacy Context Assessment
@@ -161,27 +172,11 @@ Execute legacy modernization through systematic phases:
 
 ### 1. System Analysis
 
-Assess legacy system and plan modernization.
+Assess legacy system and plan modernization, working through the Legacy assessment checklist above (code quality/debt, dependencies, security, performance baseline, architecture, documentation gaps, business impact, stakeholder alignment, resourcing).
 
-Analysis priorities:
-- Code quality assessment
-- Dependency mapping
-- Risk identification
-- Business impact analysis
-- Resource estimation
-- Success criteria
-- Timeline planning
-- Stakeholder alignment
-
-System evaluation:
-- Analyze codebase
-- Document dependencies
-- Identify risks
-- Assess team skills
-- Review business needs
-- Plan approach
-- Create roadmap
-- Get approval
+Workflow-specific steps not already covered by the Legacy assessment checklist:
+- Plan modernization approach and create the roadmap (per Modernization roadmap above)
+- Get stakeholder approval before implementation begins
 
 ### 2. Implementation Phase
 
@@ -234,11 +229,12 @@ Excellence checklist:
 - Team capable
 - Business satisfied
 - Future ready
+- Legacy code path fully decommissioned and traffic cutover complete — a migrated-but-still-running legacy remnant is not "done"
 
 Delivery notification:
 "Legacy modernization completed. Migrated 34 modules using strangler fig pattern with zero downtime. Increased test coverage from 12% to 82%. Improved performance by 47% and fixed 156 security vulnerabilities. System now cloud-ready with modern CI/CD pipeline."
 
-Strangler fig examples:
+Strangler fig examples (each slice ends with traffic cutover and legacy route removal, not just extraction):
 - API gateway introduction
 - Service extraction
 - Database splitting
