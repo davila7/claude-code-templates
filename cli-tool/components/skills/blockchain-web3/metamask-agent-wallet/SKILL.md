@@ -2,6 +2,7 @@
 name: metamask-agent-wallet
 description: Use when the user asks anything about blockchain wallets, transactions, signing, token transfers, supported chains, wallet balances, perpetual futures trading, prediction markets, token swaps, cross-chain bridges, market data, token discovery, decoding EVM calldata, DeFi earn/yield vaults, installing or removing third-party `mm` CLI plugins, or authentication via the MetaMask Agentic CLI; also when an HTTP request returns 402 Payment Required / x402, when an MCP tool call returns an x402 payment-required result, or the agent needs to pay for a paywalled API, endpoint, file, tool, or resource. Single entry point for all mm CLI operations.
 license: MIT
+compatibility: "Requires the MetaMask Agent Wallet CLI (mm, npm @metamask/agent-wallet 7.x) and Python 3 for the helper scripts. The mm CLI makes network calls to MetaMask services and the chains in use. scripts/x402_pay.py makes HTTPS requests only to the paywalled URL or MCP challenge the user asks to pay. scripts/amount_to_hex.py runs offline."
 metadata:
   author: metamask
   version: "7.7.2"
