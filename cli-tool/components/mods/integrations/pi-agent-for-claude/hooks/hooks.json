@@ -1,0 +1,4 @@
+{
+  "description": "Answers an Agent call on the pi subagent type from the pi CLI, recorded as the Agent tool's own result",
+  "modules": ["./register.ts"]
+}

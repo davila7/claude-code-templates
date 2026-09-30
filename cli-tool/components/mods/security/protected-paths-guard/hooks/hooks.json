@@ -1,0 +1,6 @@
+{
+  "description": "Denies Edit, Write and NotebookEdit calls on sensitive paths (.env files, lockfiles, CI workflows, git internals, private keys) with a glob allowlist override. A tool.call hook with an array matcher.",
+  "modules": [
+    "./protected-paths-guard.ts"
+  ]
+}

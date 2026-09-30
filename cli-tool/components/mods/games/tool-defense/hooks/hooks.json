@@ -1,0 +1,6 @@
+{
+  "description": "Tool Defense above the prompt: /defense opens it, tool.call sends an enemy per call, turn.start/complete tell the board whether Claude is working, ui.message keeps the best score",
+  "modules": [
+    "./register.tsx"
+  ]
+}

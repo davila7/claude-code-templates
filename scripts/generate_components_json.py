@@ -6,6 +6,7 @@ import subprocess
 from collections import defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
+from generate_trending_data import fetch_with_retry
 
 # Load environment variables
 load_dotenv()
@@ -189,15 +190,55 @@ def run_security_validation():
         print(f"⚠️ Error running security validation: {e}")
         return {}
 
+def previous_download_stats(catalog_path='docs/components.json'):
+    """
+    The download counts already in the generated catalog, keyed the way
+    fetch_download_stats() keys them (type/category/name, templates/name,
+    plugins/name). Used by --skip-downloads (a content-only regeneration
+    keeps yesterday's counts instead of resetting them to 0, and the daily
+    cron brings them up to date) and whenever fetch_download_stats() fails.
+    """
+    try:
+        with open(catalog_path, 'r', encoding='utf-8') as f:
+            catalog = json.load(f)
+    except (OSError, ValueError) as e:
+        print(f"⚠️ Warning: could not read {catalog_path} ({e}); download counts start at 0")
+        return {}
+    counts = {}
+    for component_type, entries in catalog.items():
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if not isinstance(entry, dict) or 'downloads' not in entry:
+                continue
+            name = entry.get('name')
+            if component_type == 'templates':
+                key = f"templates/{name}"
+            elif component_type == 'plugins':
+                key = f"plugins/{name}"
+            else:
+                key = f"{component_type}/{entry.get('category')}/{name}"
+            counts[key] = entry['downloads']
+    print(f"📊 Keeping {len(counts)} download counts from {catalog_path}")
+    return counts
+
+
 def fetch_download_stats():
     """
     Fetch download statistics from Supabase
-    Returns a dictionary with component_type-component_name as key and download count as value
-    Supports: agents, commands, mcps, settings, hooks, sandbox, skills, templates, plugins
+    Returns a dictionary with type/category/name as key and download count as value,
+    or None when the table could not be read in full (the caller then keeps the
+    counts already in the catalog rather than publishing a partial count)
+    Supports: agents, commands, mcps, settings, hooks, sandbox, skills, loops, mods,
+    templates, plugins
     """
     print("📊 Fetching download statistics from Supabase...")
 
     # Define type mapping once (DRY principle)
+    # Maps the raw `component_type` in Supabase to the plural directory name under
+    # cli-tool/components/. `function-hook` is the pre-#910 name for `mod` and older
+    # CLI versions still write it, so it has to map to 'mods' too or those downloads
+    # are looked up under a key no component has and silently dropped.
     TYPE_MAPPING = {
         'agent': 'agents',
         'command': 'commands',
@@ -205,6 +246,10 @@ def fetch_download_stats():
         'hook': 'hooks',
         'mcp': 'mcps',
         'skill': 'skills',
+        'loop': 'loops',
+        'mod': 'mods',
+        'function-hook': 'mods',
+        'function-hooks': 'mods',
         'template': 'templates',
         'plugin': 'plugins',
         'sandbox': 'sandbox'
@@ -215,142 +260,66 @@ def fetch_download_stats():
     supabase_api_key = os.getenv("SUPABASE_API_KEY")
 
     if not supabase_url or not supabase_api_key:
-        print("⚠️ Warning: Missing Supabase credentials, skipping download stats")
-        return {}
+        print("⚠️ Warning: Missing Supabase credentials, keeping existing download counts")
+        return None
     
-    try:
-        headers = {
-            'apikey': supabase_api_key,
-            'Authorization': f'Bearer {supabase_api_key}'
-        }
-        
-        # First, let's query component_downloads to aggregate counts per component
-        # We need to handle pagination since there can be many records
-        api_url = f"{supabase_url}/rest/v1/component_downloads"
-        
-        all_downloads = []
-        offset = 0
-        limit = 1000
+    headers = {
+        'apikey': supabase_api_key,
+        'Authorization': f'Bearer {supabase_api_key}'
+    }
 
-        # Fetch all records with pagination
-        max_pages = 1000  # Safety limit (1000 pages * 1000 records = 1,000,000 max)
-        for page in range(max_pages):
-            paginated_headers = headers.copy()
-            paginated_headers['Range'] = f'{offset}-{offset + limit - 1}'
-            
-            response = requests.get(api_url, headers=paginated_headers)
-            
-            if response.status_code not in [200, 206]:
-                print(f"  Page {page+1}: Got status {response.status_code}, stopping")
-                break
-                
-            batch = response.json()
-            if not batch:
-                break
-                
-            all_downloads.extend(batch)
-            
-            # Check if we have more records to fetch
-            content_range = response.headers.get('content-range', '')
-            
-            # If we get a range like "45000-45977/*", check if we got less than limit records
-            if len(batch) < limit:
-                break  # We've reached the end
-            
-            # Also check for explicit total if provided
-            if content_range and '/' in content_range:
-                parts = content_range.split('/')
-                if parts[1] != '*':
-                    try:
-                        total = int(parts[1])
-                        if offset + limit >= total:
-                            break
-                    except ValueError:
-                        pass
-            
-            offset += limit
-            
-            # Progress indicator every 10 pages
-            if (page + 1) % 10 == 0:
-                print(f"  Fetched {len(all_downloads)} records so far...")
-        
-        print(f"📊 Total records fetched: {len(all_downloads)}")
-        
-        # If we fetched records, use them
-        if len(all_downloads) > 0:
-            # Process component_downloads data
-            downloads = all_downloads
-            
-            # Aggregate downloads by component
-            download_counts = {}
-            component_totals = defaultdict(int)
-            
-            for download in downloads:
-                component_type = download.get('component_type', '')
-                component_name = download.get('component_name', '')
+    # Keyset pagination on the primary key, the same way generate_trending_data.py
+    # reads this table. The old Range/offset paging made Postgres scan and discard
+    # every earlier row, so deep pages timed out (HTTP 500 around row 98,000 of
+    # 1.6M) and the loop kept whatever it had: the catalog then published a
+    # fraction of each component's downloads and the counts dropped overnight.
+    page_size = 1000
+    last_id = 0
+    component_totals = defaultdict(int)
+    records = 0
+    while True:
+        api_url = (f"{supabase_url}/rest/v1/component_downloads"
+                   f"?select=id,component_type,component_name"
+                   f"&id=gt.{last_id}&order=id.asc&limit={page_size}")
+        response = fetch_with_retry(api_url, headers, max_retries=5, timeout=60)
+        if response is None:
+            # A partial read undercounts every component, so it must never be
+            # published: the caller keeps the counts the catalog already has.
+            print(f"❌ Supabase read failed after id {last_id} ({records:,} records); "
+                  f"download counts NOT updated")
+            return None
 
-                if component_type and component_name:
-                    # Handle case where component_name already includes category
-                    if '/' in component_name:
-                        category = component_name.split('/')[0]
-                        actual_name = component_name.split('/')[-1]
-                    else:
-                        actual_name = component_name
-                        category = 'general'
-
-                    # Create a key for aggregation matching trending data structure
-                    key = f"{component_type}|{category}|{actual_name}"
-                    component_totals[key] += 1
-
-            # Convert to the format we need using the TYPE_MAPPING constant
-            for key, count in component_totals.items():
-                parts = key.split('|')
-                if len(parts) == 3:
-                    component_type, category, component_name = parts
-                    mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
-                    final_key = f"{mapped_type}/{category}/{component_name}"
-                    download_counts[final_key] = count
-            
-            print(f"✅ Fetched and aggregated {len(download_counts)} component download stats")
-            return download_counts
-        else:
-            # Try alternative: fetch from download_stats table if it exists
-            print("⚠️ No data from component_downloads, trying download_stats table...")
-            alt_url = f"{supabase_url}/rest/v1/download_stats"
-            alt_response = requests.get(alt_url, headers=headers)
-            
-            if alt_response.status_code == 200:
-                print("📊 Using download_stats table instead...")
-                stats = alt_response.json()
-                download_counts = {}
-                
-                for stat in stats:
-                    component_type = stat.get('component_type', '')
-                    component_name = stat.get('component_name', '')
-                    total_downloads = stat.get('total_downloads', 0)
-
-                    # Handle case where component_name already includes category
-                    if '/' in component_name:
-                        category = component_name.split('/')[0]
-                        actual_name = component_name.split('/')[-1]
-                    else:
-                        actual_name = component_name
-                        category = 'general'
-
-                    # Map to plural form using TYPE_MAPPING constant
-                    mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
-                    key = f"{mapped_type}/{category}/{actual_name}"
-                    download_counts[key] = total_downloads
-                
-                print(f"✅ Fetched stats for {len(download_counts)} components from download_stats")
-                return download_counts
+        batch = response.json()
+        for download in batch:
+            component_type = download.get('component_type', '')
+            component_name = download.get('component_name', '')
+            if not (component_type and component_name):
+                continue
+            # component_name may already include the category
+            if '/' in component_name:
+                category = component_name.split('/')[0]
+                actual_name = component_name.split('/')[-1]
             else:
-                print("⚠️ No download stats available")
-                return {}
-        
-    except Exception as e:
-        print(f"⚠️ Error fetching download stats: {e}")
-        return {}
+                actual_name = component_name
+                category = 'general'
+            mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
+            # Several raw types can share one key (e.g. mod + function-hook)
+            component_totals[f"{mapped_type}/{category}/{actual_name}"] += 1
+
+        records += len(batch)
+        if len(batch) < page_size:
+            break
+        last_id = batch[-1]['id']
+        if (records // page_size) % 100 == 0:
+            print(f"  Fetched {records:,} records so far...")
+
+    print(f"📊 Total records fetched: {records:,}")
+    if records == 0:
+        print("❌ component_downloads returned no rows; download counts NOT updated")
+        return None
+
+    print(f"✅ Fetched and aggregated {len(component_totals)} component download stats")
+    return dict(component_totals)
 
 def scan_directory_recursively(directory_path, relative_to_path=None):
     """
@@ -372,7 +341,7 @@ def scan_directory_recursively(directory_path, relative_to_path=None):
     
     return files_list
 
-def generate_components_json():
+def generate_components_json(skip_downloads=False):
     """
     Scans the cli-tool/components and cli-tool/templates directories and generates a components.json file
     for the static website, including the content of each file and download statistics.
@@ -381,14 +350,18 @@ def generate_components_json():
     templates_base_path = 'cli-tool/templates'
     plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
-    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'function-hooks': [], 'templates': [], 'plugins': []}
+    components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'mods': [], 'templates': [], 'plugins': []}
 
     # Run security validation
     security_metadata = run_security_validation()
 
-    # Fetch download statistics
-    download_stats = fetch_download_stats()
-    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'function-hooks']
+    # Fetch download statistics. Pulling the whole component_downloads table
+    # from Supabase is what makes a run take minutes; a content-only refresh
+    # keeps the counts the catalog already has.
+    download_stats = None if skip_downloads else fetch_download_stats()
+    if download_stats is None:
+        download_stats = previous_download_stats(output_path)
+    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -495,6 +468,87 @@ def generate_components_json():
                                 print(f"  Processed skill: {category}/{name}")
             continue  # Skip the normal file scanning for skills
 
+        # Mods: one directory per plugin, exactly Anthropic's mods/ layout
+        # (.claude-plugin/plugin.json + hooks/hooks.json + hooks/** + optional
+        # types/, tests/, README.md). The README is the content shown on the
+        # site; every text file travels in the content file so the site's
+        # explorer and the "send to repo" flow have the whole plugin.
+        if component_type == 'mods':
+            MOD_TEXT_EXT = ('.ts', '.tsx', '.js', '.jsx', '.mjs', '.json', '.md', '.d.ts', '.txt', '.css', '.yml', '.yaml', 'LICENSE')
+            for category in sorted(os.listdir(type_path)):
+                category_path = os.path.join(type_path, category)
+                if not os.path.isdir(category_path) or category in ('types',):
+                    continue
+                for mod_dir in sorted(os.listdir(category_path)):
+                    mod_path = os.path.join(category_path, mod_dir)
+                    manifest_path = os.path.join(mod_path, '.claude-plugin', 'plugin.json')
+                    hooks_path = os.path.join(mod_path, 'hooks', 'hooks.json')
+                    if not (os.path.isdir(mod_path) and os.path.isfile(manifest_path) and os.path.isfile(hooks_path)):
+                        continue
+                    try:
+                        with open(manifest_path, 'r', encoding='utf-8') as f:
+                            manifest = json.load(f)
+                        with open(hooks_path, 'r', encoding='utf-8') as f:
+                            hooks_json = json.load(f)
+                    except (OSError, ValueError) as e:
+                        print(f"Warning: skipping mod {category}/{mod_dir}: {e}")
+                        continue
+                    name = manifest.get('name') or mod_dir
+                    description = manifest.get('description') or hooks_json.get('description', '')
+                    author_field = manifest.get('author', '')
+                    author = author_field.get('name', '') if isinstance(author_field, dict) else str(author_field)
+                    repo = manifest.get('repository') or manifest.get('homepage') or ''
+                    modules = [str(m).lstrip('./') for m in (hooks_json.get('modules') or [])]
+
+                    readme_path = os.path.join(mod_path, 'README.md')
+                    content = ''
+                    if os.path.isfile(readme_path):
+                        with open(readme_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                    if not content:
+                        content = f"# {name}\n\n{description}\n"
+
+                    files = {}
+                    references = []
+                    for rel in sorted(scan_directory_recursively(mod_path, mod_path)):
+                        if rel == 'README.md' or '/node_modules/' in rel or rel.startswith('.git/'):
+                            continue
+                        references.append(rel)
+                        if rel.endswith(MOD_TEXT_EXT) or os.path.basename(rel) == 'LICENSE':
+                            try:
+                                with open(os.path.join(mod_path, rel), 'r', encoding='utf-8') as f:
+                                    files[rel] = f.read()
+                            except (OSError, UnicodeDecodeError):
+                                pass
+
+                    download_key = f"{component_type}/{category}/{name}"
+                    downloads = download_stats.get(download_key, 0)
+                    security = security_metadata.get(download_key, {
+                        'validated': False, 'valid': None, 'score': None,
+                        'errorCount': 0, 'warningCount': 0, 'lastValidated': None
+                    })
+                    components_data[component_type].append({
+                        'name': name,
+                        'path': f"{category}/{mod_dir}",
+                        'category': category,
+                        'type': 'mod',
+                        'content': content,
+                        'description': description,
+                        'author': author,
+                        'repo': repo,
+                        'version': manifest.get('version', ''),
+                        'license': manifest.get('license', ''),
+                        'keywords': manifest.get('keywords', []) if isinstance(manifest.get('keywords'), list) else [],
+                        'downloads': downloads,
+                        'security': security,
+                        'modules': modules,
+                        'userConfig': manifest.get('userConfig', {}),
+                        'references': references,
+                        'files': files,
+                    })
+                    print(f"  Processed mod: {category}/{mod_dir} ({len(references)} files)")
+            continue
+
         # Normal scanning for other component types
         for category in os.listdir(type_path):
             category_path = os.path.join(type_path, category)
@@ -512,8 +566,6 @@ def generate_components_json():
                         version = ''
                         license_field = ''
                         keywords = []
-                        module_file = ''
-                        module_source = ''
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
@@ -531,23 +583,10 @@ def generate_components_json():
                                                 if isinstance(server_config, dict) and 'description' in server_config:
                                                     description = server_config['description']
                                                     break  # Use the first description found
-                                    elif component_type in ['settings', 'hooks', 'function-hooks']:
+                                    elif component_type in ['settings', 'hooks']:
                                         # Extract metadata from settings/hooks JSON files
                                         if 'description' in json_data:
                                             description = json_data['description']
-                                        # Function hooks (experimental): hooks.json names a TypeScript
-                                        # hooks-module beside it via "modules". Read it so the site can
-                                        # show the code and the CLI can install it.
-                                        if component_type == 'function-hooks':
-                                            modules = json_data.get('modules') or []
-                                            if modules:
-                                                module_file = modules[0].lstrip('./')
-                                                module_path = os.path.join(category_path, module_file)
-                                                try:
-                                                    with open(module_path, 'r', encoding='utf-8') as mf:
-                                                        module_source = mf.read()
-                                                except OSError:
-                                                    print(f"Warning: module {module_file} not found for {file_path}")
                                         if 'author' in json_data:
                                             author = json_data['author']
                                         if 'repo' in json_data:
@@ -620,9 +659,6 @@ def generate_components_json():
                             'downloads': downloads,  # Add download count
                             'security': security  # Add security metadata
                         }
-                        if module_file:
-                            component['module'] = module_file          # e.g. "secret-redactor.ts"
-                            component['moduleSource'] = module_source  # stripped from indexes, kept in content files
                         components_data[component_type].append(component)
 
     # Scan templates (new logic)
@@ -827,7 +863,7 @@ def generate_components_json():
     dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
 
     # Component types that carry a 'content' field
-    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'function-hooks']
+    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
 
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
@@ -842,9 +878,9 @@ def generate_components_json():
             content_file_path = os.path.join(dashboard_content_dir, ctype, slug + '.json')
             os.makedirs(os.path.dirname(content_file_path), exist_ok=True)
             content_payload = {'content': raw_content}
-            if component.get('module'):
-                content_payload['module'] = component['module']
-                content_payload['moduleSource'] = component.get('moduleSource', '')
+            if component.get('files'):
+                # Mods: the whole plugin (every text file) rides in the content file
+                content_payload['files'] = component['files']
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
                     json.dump(content_payload, f, ensure_ascii=False)
@@ -860,7 +896,7 @@ def generate_components_json():
     index_data = {}
     for k, v in components_data.items():
         if k in content_bearing_types:
-            index_data[k] = [{key: val for key, val in c.items() if key not in ('content', 'moduleSource')} for c in v]
+            index_data[k] = [{key: val for key, val in c.items() if key not in ('content', 'files')} for c in v]
         else:
             index_data[k] = v
 
@@ -884,7 +920,7 @@ def generate_components_json():
     #   components/{type}.json   → per-type slice (grid loads only active type)
     #   search-index.json        → flat [{type,name,path,description,category}]
     # ---------------------------------------------------------------------------
-    STRIP_KEYS = {'content', 'security', 'moduleSource'}
+    STRIP_KEYS = {'content', 'security', 'files'}
 
     def strip_for_dashboard(component):
         return {key: val for key, val in component.items() if key not in STRIP_KEYS}
@@ -985,4 +1021,9 @@ def generate_components_json():
     print("--------------------------")
 
 if __name__ == '__main__':
-    generate_components_json()
+    import argparse
+    parser = argparse.ArgumentParser(description='Generate docs/components.json and the dashboard/public artifacts')
+    parser.add_argument('--skip-downloads', action='store_true',
+                        help='do not query Supabase; keep the download counts already in docs/components.json (seconds instead of minutes)')
+    args = parser.parse_args()
+    generate_components_json(skip_downloads=args.skip_downloads)

@@ -1,0 +1,6 @@
+{
+  "description": "Times every tool call and wraps the engine's ToolUse rendering with a colored duration badge from the surface's own element table, on the terminal, Desktop and mobile. Hooks tool.call and ui.render using JSX.",
+  "modules": [
+    "./tool-timing-badge.tsx"
+  ]
+}

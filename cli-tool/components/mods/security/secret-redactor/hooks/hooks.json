@@ -1,0 +1,6 @@
+{
+  "description": "Redacts API keys, tokens, JWTs, private keys and connection strings from every tool result before the model reads them, notes the redaction through context, and refuses to echo a redacted placeholder back into a Bash command. A tool.call hook in the after placement.",
+  "modules": [
+    "./secret-redactor.ts"
+  ]
+}

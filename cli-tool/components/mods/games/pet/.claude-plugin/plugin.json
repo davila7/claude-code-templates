@@ -1,0 +1,18 @@
+{
+  "name": "pet",
+  "version": "0.2.0",
+  "description": "A virtual pet above the Claude Code prompt that grows as Claude works: passing tests, commits and edits grant XP and mood, failing tests cost mood, idling drains it; egg → baby → kid → adult → legend. Zero tokens. Split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal.",
+  "author": {
+    "name": "Seza Akgün"
+  },
+  "homepage": "https://github.com/sezaakgun/cc-arcade",
+  "repository": "https://github.com/sezaakgun/cc-arcade",
+  "license": "MIT",
+  "keywords": [
+    "pet",
+    "tamagotchi",
+    "terminal",
+    "tui",
+    "function-hooks"
+  ]
+}

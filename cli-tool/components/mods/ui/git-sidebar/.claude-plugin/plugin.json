@@ -1,0 +1,39 @@
+{
+  "name": "git-sidebar",
+  "version": "0.1.0",
+  "description": "A lazygit-style side pane: every worktree of the repository and its local branches as rows you click. A worktree row moves the session there with /cd; a branch row shows its last commits and offers switch (clean tree only) or open worktree. Docked floor to ceiling beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "ui",
+    "git",
+    "worktree",
+    "sidebar"
+  ],
+  "userConfig": {
+    "columns": {
+      "type": "number",
+      "title": "Pane width",
+      "description": "Columns asked for the docked pane in the fullscreen layout (28-120); a width you drag it to wins",
+      "default": 44
+    },
+    "maxBranches": {
+      "type": "number",
+      "title": "Branches listed",
+      "description": "How many local branches to list, most recently committed first",
+      "default": 40
+    },
+    "openOnStart": {
+      "type": "boolean",
+      "title": "Open on start",
+      "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+      "default": false
+    }
+  }
+}
