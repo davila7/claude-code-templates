@@ -6,6 +6,7 @@ import subprocess
 from collections import defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
+from generate_trending_data import fetch_with_retry
 
 # Load environment variables
 load_dotenv()
@@ -193,9 +194,9 @@ def previous_download_stats(catalog_path='docs/components.json'):
     """
     The download counts already in the generated catalog, keyed the way
     fetch_download_stats() keys them (type/category/name, templates/name,
-    plugins/name). Used by --skip-downloads: a content-only regeneration
+    plugins/name). Used by --skip-downloads (a content-only regeneration
     keeps yesterday's counts instead of resetting them to 0, and the daily
-    cron brings them up to date.
+    cron brings them up to date) and whenever fetch_download_stats() fails.
     """
     try:
         with open(catalog_path, 'r', encoding='utf-8') as f:
@@ -218,14 +219,16 @@ def previous_download_stats(catalog_path='docs/components.json'):
             else:
                 key = f"{component_type}/{entry.get('category')}/{name}"
             counts[key] = entry['downloads']
-    print(f"📊 Keeping {len(counts)} download counts from {catalog_path} (--skip-downloads)")
+    print(f"📊 Keeping {len(counts)} download counts from {catalog_path}")
     return counts
 
 
 def fetch_download_stats():
     """
     Fetch download statistics from Supabase
-    Returns a dictionary with component_type-component_name as key and download count as value
+    Returns a dictionary with type/category/name as key and download count as value,
+    or None when the table could not be read in full (the caller then keeps the
+    counts already in the catalog rather than publishing a partial count)
     Supports: agents, commands, mcps, settings, hooks, sandbox, skills, loops, mods,
     templates, plugins
     """
@@ -257,143 +260,66 @@ def fetch_download_stats():
     supabase_api_key = os.getenv("SUPABASE_API_KEY")
 
     if not supabase_url or not supabase_api_key:
-        print("⚠️ Warning: Missing Supabase credentials, skipping download stats")
-        return {}
+        print("⚠️ Warning: Missing Supabase credentials, keeping existing download counts")
+        return None
     
-    try:
-        headers = {
-            'apikey': supabase_api_key,
-            'Authorization': f'Bearer {supabase_api_key}'
-        }
-        
-        # First, let's query component_downloads to aggregate counts per component
-        # We need to handle pagination since there can be many records
-        api_url = f"{supabase_url}/rest/v1/component_downloads"
-        
-        all_downloads = []
-        offset = 0
-        limit = 1000
+    headers = {
+        'apikey': supabase_api_key,
+        'Authorization': f'Bearer {supabase_api_key}'
+    }
 
-        # Fetch all records with pagination
-        max_pages = 1000  # Safety limit (1000 pages * 1000 records = 1,000,000 max)
-        for page in range(max_pages):
-            paginated_headers = headers.copy()
-            paginated_headers['Range'] = f'{offset}-{offset + limit - 1}'
-            
-            response = requests.get(api_url, headers=paginated_headers)
-            
-            if response.status_code not in [200, 206]:
-                print(f"  Page {page+1}: Got status {response.status_code}, stopping")
-                break
-                
-            batch = response.json()
-            if not batch:
-                break
-                
-            all_downloads.extend(batch)
-            
-            # Check if we have more records to fetch
-            content_range = response.headers.get('content-range', '')
-            
-            # If we get a range like "45000-45977/*", check if we got less than limit records
-            if len(batch) < limit:
-                break  # We've reached the end
-            
-            # Also check for explicit total if provided
-            if content_range and '/' in content_range:
-                parts = content_range.split('/')
-                if parts[1] != '*':
-                    try:
-                        total = int(parts[1])
-                        if offset + limit >= total:
-                            break
-                    except ValueError:
-                        pass
-            
-            offset += limit
-            
-            # Progress indicator every 10 pages
-            if (page + 1) % 10 == 0:
-                print(f"  Fetched {len(all_downloads)} records so far...")
-        
-        print(f"📊 Total records fetched: {len(all_downloads)}")
-        
-        # If we fetched records, use them
-        if len(all_downloads) > 0:
-            # Process component_downloads data
-            downloads = all_downloads
-            
-            # Aggregate downloads by component
-            download_counts = {}
-            component_totals = defaultdict(int)
-            
-            for download in downloads:
-                component_type = download.get('component_type', '')
-                component_name = download.get('component_name', '')
+    # Keyset pagination on the primary key, the same way generate_trending_data.py
+    # reads this table. The old Range/offset paging made Postgres scan and discard
+    # every earlier row, so deep pages timed out (HTTP 500 around row 98,000 of
+    # 1.6M) and the loop kept whatever it had: the catalog then published a
+    # fraction of each component's downloads and the counts dropped overnight.
+    page_size = 1000
+    last_id = 0
+    component_totals = defaultdict(int)
+    records = 0
+    while True:
+        api_url = (f"{supabase_url}/rest/v1/component_downloads"
+                   f"?select=id,component_type,component_name"
+                   f"&id=gt.{last_id}&order=id.asc&limit={page_size}")
+        response = fetch_with_retry(api_url, headers, max_retries=5, timeout=60)
+        if response is None:
+            # A partial read undercounts every component, so it must never be
+            # published: the caller keeps the counts the catalog already has.
+            print(f"❌ Supabase read failed after id {last_id} ({records:,} records); "
+                  f"download counts NOT updated")
+            return None
 
-                if component_type and component_name:
-                    # Handle case where component_name already includes category
-                    if '/' in component_name:
-                        category = component_name.split('/')[0]
-                        actual_name = component_name.split('/')[-1]
-                    else:
-                        actual_name = component_name
-                        category = 'general'
-
-                    # Create a key for aggregation matching trending data structure
-                    key = f"{component_type}|{category}|{actual_name}"
-                    component_totals[key] += 1
-
-            # Convert to the format we need using the TYPE_MAPPING constant
-            for key, count in component_totals.items():
-                parts = key.split('|')
-                if len(parts) == 3:
-                    component_type, category, component_name = parts
-                    mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
-                    final_key = f"{mapped_type}/{category}/{component_name}"
-                    # Several raw types can share one key (e.g. mod + function-hook)
-                    download_counts[final_key] = download_counts.get(final_key, 0) + count
-            
-            print(f"✅ Fetched and aggregated {len(download_counts)} component download stats")
-            return download_counts
-        else:
-            # Try alternative: fetch from download_stats table if it exists
-            print("⚠️ No data from component_downloads, trying download_stats table...")
-            alt_url = f"{supabase_url}/rest/v1/download_stats"
-            alt_response = requests.get(alt_url, headers=headers)
-            
-            if alt_response.status_code == 200:
-                print("📊 Using download_stats table instead...")
-                stats = alt_response.json()
-                download_counts = {}
-                
-                for stat in stats:
-                    component_type = stat.get('component_type', '')
-                    component_name = stat.get('component_name', '')
-                    total_downloads = stat.get('total_downloads', 0)
-
-                    # Handle case where component_name already includes category
-                    if '/' in component_name:
-                        category = component_name.split('/')[0]
-                        actual_name = component_name.split('/')[-1]
-                    else:
-                        actual_name = component_name
-                        category = 'general'
-
-                    # Map to plural form using TYPE_MAPPING constant
-                    mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
-                    key = f"{mapped_type}/{category}/{actual_name}"
-                    download_counts[key] = download_counts.get(key, 0) + total_downloads
-                
-                print(f"✅ Fetched stats for {len(download_counts)} components from download_stats")
-                return download_counts
+        batch = response.json()
+        for download in batch:
+            component_type = download.get('component_type', '')
+            component_name = download.get('component_name', '')
+            if not (component_type and component_name):
+                continue
+            # component_name may already include the category
+            if '/' in component_name:
+                category = component_name.split('/')[0]
+                actual_name = component_name.split('/')[-1]
             else:
-                print("⚠️ No download stats available")
-                return {}
-        
-    except Exception as e:
-        print(f"⚠️ Error fetching download stats: {e}")
-        return {}
+                actual_name = component_name
+                category = 'general'
+            mapped_type = TYPE_MAPPING.get(component_type, component_type + 's')
+            # Several raw types can share one key (e.g. mod + function-hook)
+            component_totals[f"{mapped_type}/{category}/{actual_name}"] += 1
+
+        records += len(batch)
+        if len(batch) < page_size:
+            break
+        last_id = batch[-1]['id']
+        if (records // page_size) % 100 == 0:
+            print(f"  Fetched {records:,} records so far...")
+
+    print(f"📊 Total records fetched: {records:,}")
+    if records == 0:
+        print("❌ component_downloads returned no rows; download counts NOT updated")
+        return None
+
+    print(f"✅ Fetched and aggregated {len(component_totals)} component download stats")
+    return dict(component_totals)
 
 def scan_directory_recursively(directory_path, relative_to_path=None):
     """
@@ -432,7 +358,9 @@ def generate_components_json(skip_downloads=False):
     # Fetch download statistics. Pulling the whole component_downloads table
     # from Supabase is what makes a run take minutes; a content-only refresh
     # keeps the counts the catalog already has.
-    download_stats = previous_download_stats(output_path) if skip_downloads else fetch_download_stats()
+    download_stats = None if skip_downloads else fetch_download_stats()
+    if download_stats is None:
+        download_stats = previous_download_stats(output_path)
     component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")

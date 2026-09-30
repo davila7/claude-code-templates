@@ -1,12 +1,32 @@
 {
-  "lastUpdated": "2026-09-26T03:06:54.668595+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-09-30T03:07:38.793634+00:00",
+  "totalJobs": 91,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "anth-5397654008",
+      "company": "Anthropic",
+      "position": "Product Designer, Claude Developer Platform",
+      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Design at Anthropic sits at the intersection of craft, research, and product intuition. We're a small team working on products that millions of people use daily—and on interactions that don't have established conventions yet. Our work shapes how people experience AI: whether Claude feels like a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5397654008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5397654008",
+      "postedAt": "2026-09-28T17:06:36-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5428014008",
       "company": "Anthropic",
@@ -31,7 +51,7 @@
       "id": "anth-5382518008",
       "company": "Anthropic",
       "position": "Applied AI Architect, Public Sector ",
-      "location": "San Francisco, CA | New York City, NY | Washington, DC",
+      "location": "Washington, DC",
       "remote": false,
       "salary": "",
       "description": "As an Applied AI Solutions Architect supporting a dedicated national security mission program, you will be the customer's trusted technical advisor — helping them understand the value of Claude and how to successfully integrate and deploy it into their technology stack. You'll combine deep...",
