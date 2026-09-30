@@ -1,6 +1,6 @@
 // Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test security/jev-vercel-sandbox
 import { describe, expect, test } from 'claude-code/testing'
-import { decide, isPlainRead, readJudgement, requestBody, requestHeaders } from '../hooks/judge.ts'
+import { builtinLabels, decide, isPlainRead, parseUseCases, readJudgement, requestBody, requestHeaders } from '../hooks/judge.ts'
 import { commandBody, oidcClaims, readCommandStream, readSandbox, resolveCredentials } from '../hooks/vercel.ts'
 
 describe('judge', () => {
@@ -13,26 +13,28 @@ describe('judge', () => {
     }
   })
 
-  test('a hazard at the threshold, or a severe score alone, sends it to the sandbox', () => {
-    const j = (p: number, severity: number | null = 0) => ({
-      probabilities: { destructive: p, remote_code: 0.01, system_change: 0.02, exfiltration: 0.01 },
-      severity,
-    })
-    expect(decide(j(0.91), 0.5, 2)).toMatchObject({ route: 'sandbox', hazard: 'destructive' })
-    expect(decide(j(0.5), 0.5, 2).route).toBe('sandbox')
-    expect(decide(j(0.2), 0.5, 2).route).toBe('local')
-    expect(decide(j(0.2, 2.4), 0.5, 2)).toMatchObject({ route: 'sandbox', bySeverity: true })
+  test('the likeliest use case counts once it reaches the threshold', () => {
+    const j = { tests: 0.1, external_repo: 0.05, untrusted_code: 0.02, repo_change: 0.8, clean_build: 0.3 }
+    expect(decide(j, 0.5)).toEqual({ useCase: 'repo_change', probability: 0.8, by: 'jev' })
+    expect(decide({ ...j, repo_change: 0.5 }, 0.5).useCase).toBe('repo_change')
+    expect(decide({ ...j, repo_change: 0.4 }, 0.5)).toEqual({ useCase: null, probability: 0.4, by: 'jev' })
   })
 
-  test('both backends: the Gateway carries its protocol header, answers read from noul or probability', () => {
+  test('both backends: one question per use case turned on; answers read from noul or probability', () => {
     expect(requestHeaders('gateway', 'k', 'typesafe-ai/jev')['ai-gateway-protocol-version']).toBe('0.0.1')
-    expect(JSON.parse(requestBody('typesafe', 'state', 'jev-latest')).questions.remote_code.type).toBe('noul')
-    const answers = { destructive: { noul: 0.8 }, remote_code: { probability: 0.1 }, system_change: { noul: 0 }, exfiltration: { noul: 0 }, severity: { score: 2.5 } }
-    expect(readJudgement(JSON.stringify({ answers }))).toEqual({
-      probabilities: { destructive: 0.8, remote_code: 0.1, system_change: 0, exfiltration: 0 },
-      severity: 2.5,
-    })
-    expect(readJudgement(JSON.stringify({ answers: { destructive: { noul: 1 } } }))).toBeNull()
+    const typesafe = JSON.parse(requestBody('typesafe', 'state', 'jev-latest'))
+    expect(Object.keys(typesafe.questions)).toEqual(['tests', 'external_repo', 'untrusted_code', 'repo_change', 'clean_build'])
+    expect(typesafe.questions.tests.type).toBe('noul')
+    expect(JSON.parse(requestBody('gateway', 'state', 'm', ['tests'])).questions).toEqual({ tests: expect.objectContaining({ type: 'boolean' }) })
+    const answers = { tests: { noul: 0.8 }, repo_change: { probability: 0.1 } }
+    expect(readJudgement(JSON.stringify({ answers }), ['tests', 'repo_change'])).toEqual({ tests: 0.8, repo_change: 0.1 })
+    expect(readJudgement(JSON.stringify({ answers }))).toBeNull()
+  })
+
+  test('the useCases option picks which jobs are looked for', () => {
+    expect(parseUseCases('')).toEqual(['tests', 'external_repo', 'untrusted_code', 'repo_change', 'clean_build'])
+    expect(parseUseCases('tests, clean-build, bogus')).toEqual(['tests', 'clean_build'])
+    expect(builtinLabels(['tests'])).toEqual(['none', 'tests'])
   })
 })
 

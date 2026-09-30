@@ -139,9 +139,14 @@ export function createBody(c: Credentials, o: CreateOptions): string {
 
 /** The Bash tool's command, run by bash in the sandbox with no local env forwarded. */
 export function commandBody(command: string, timeoutMs: number, cwd?: string): string {
+  return execBody('bash', ['-c', command], timeoutMs, cwd)
+}
+
+/** Any program by its argv (the mod's own upload and bookkeeping scripts). */
+export function execBody(command: string, args: readonly string[], timeoutMs: number, cwd?: string): string {
   return JSON.stringify({
-    command: 'bash',
-    args: ['-c', command],
+    command,
+    args,
     cwd: cwd || undefined,
     env: {},
     sudo: false,
@@ -234,11 +239,14 @@ export function readCommandStream(text: string): RunResult {
 export type Client = {
   create(o: CreateOptions): Promise<SandboxInfo>
   get(s: SandboxInfo): Promise<SandboxInfo>
-  run(s: SandboxInfo, command: string, timeoutMs: number): Promise<RunResult>
+  /** The Bash tool's command, by bash, in `cwd` (the sandbox's own when absent). */
+  run(s: SandboxInfo, command: string, timeoutMs: number, cwd?: string): Promise<RunResult>
+  /** A bash script of the mod's own with positional arguments (`bash -c script _ …args`). */
+  script(s: SandboxInfo, script: string, args: readonly string[], timeoutMs: number): Promise<RunResult>
   stop(s: SandboxInfo): Promise<void>
 }
 
-/** The four calls this mod makes, over the fetch it is handed. Each throws with the API's message on a non-2xx. */
+/** The calls this mod makes, over the fetch it is handed. Each throws with the API's message on a non-2xx. */
 export function client(fetch: Fetch, c: Credentials, base = DEFAULT_API_URL): Client {
   const call = async (path: string, init: HttpInit) => {
     const r = await fetch(apiUrl(base, path, c.teamId), { ...init, headers: headers(c) })
@@ -258,10 +266,17 @@ export function client(fetch: Fetch, c: Credentials, base = DEFAULT_API_URL): Cl
       if (!info) throw new Error('Vercel Sandbox: unreadable session response')
       return { ...info, image: info.image ?? s.image }
     },
-    async run(s, command, timeoutMs) {
+    async run(s, command, timeoutMs, cwd) {
       const r = await call(`/v2/sandboxes/sessions/${encodeURIComponent(s.sessionId)}/cmd`, {
         method: 'POST',
-        body: commandBody(command, timeoutMs, s.cwd),
+        body: commandBody(command, timeoutMs, cwd || s.cwd),
+      })
+      return readCommandStream(r.text)
+    },
+    async script(s, script, args, timeoutMs) {
+      const r = await call(`/v2/sandboxes/sessions/${encodeURIComponent(s.sessionId)}/cmd`, {
+        method: 'POST',
+        body: execBody('bash', ['-c', script, 'jev', ...args], timeoutMs, s.cwd),
       })
       return readCommandStream(r.text)
     },
