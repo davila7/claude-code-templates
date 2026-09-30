@@ -136,7 +136,7 @@ The consent screen also lists the `dataAccess` entries for each command. The ful
 
 An approved install writes a record under `plugins` in `~/.metamask/config.json`. The record holds `version`, `integrity`, `manifestHash`, `approvedCapabilities`, `approvedCommandIds`, and `approvedAt`.
 
-A fresh consent prompt appears whenever the version or the manifest hash changes, including on `mm plugins update`. Until the new manifest is approved, the plugin's commands run with zero capabilities, and any call that needs one fails with `PERMISSION_DENIED`. The same downgrade applies when no approval record exists, and when the command id is missing from `approvedCommandIds`.
+A fresh consent prompt appears whenever the version or the manifest hash changes, including on `mm plugins update`. Until the new manifest is approved, the plugin's commands run with zero capabilities, and any call that needs one fails with `PERMISSION_DENIED`. The same downgrade applies when the approval record is missing, and when the command id is missing from `approvedCommandIds`.
 
 When a plugin command returns `PERMISSION_DENIED`, do not retry it. Run `mm plugins install <pkg>` or `mm plugins update <pkg>` so the user can approve the current manifest, then run the command again.
 
@@ -146,7 +146,7 @@ When a plugin command returns `PERMISSION_DENIED`, do not retry it. Run `mm plug
 mm plugins uninstall @acme/mm-report
 ```
 
-This removes the plugin code and deletes its approval record from `~/.metamask/config.json`. It is not beta gated and shows no consent prompt, so it still works after `experimentalPlugins` is set back to `false`. The argument is the installed package name, with or without a version or dist tag suffix.
+This removes the plugin code and deletes its approval record from `~/.metamask/config.json`. It is not beta gated and does not prompt for consent, so it still works after `experimentalPlugins` is set back to `false`. The argument is the installed package name, with or without a version or dist tag suffix.
 
 Reset removes everything the user installed or linked.
 

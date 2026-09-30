@@ -183,7 +183,7 @@ mm swap quote --from USDC --to USDC --amount 50 --from-chain-id 1 --to-chain-id 
 
 When the user has chosen a specific route, such as "use Across", and the original quote expires before execution:
 
-1. Never use `--yes` to auto-execute a re-quote — it picks the recommended quote, which may differ from the user's chosen route.
+1. Never pass `--yes` on a re-quote. It executes the recommended quote, which may differ from the user's chosen route.
 2. Re-quote with `--all-quotes` to get fresh quotes from all routes.
 3. Find the quote matching the user's chosen route by `bridgeId` or `protocols`.
 4. Execute with that specific `--quote-id`.

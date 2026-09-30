@@ -26,7 +26,7 @@ This command does not support additional flags beyond output format options.
 | `initialized` | boolean | Whether you have run `mm init` (wallet mode and trading mode are set for server wallets) |
 | `recommendedSkills` | object | Installed MetaMask AI skill status for `metamask-agent-wallet` and `metamask-agent-workflows` |
 | `compatible` | boolean or null | Whether the installed CLI version is compatible with the installed skills. `null` if no skills are detected |
-| `skillSource` | string or null | `plugin` (marketplace plugin), `skills-cli` (`npx skills add`), or `null` |
+| `skillSource` | string or null | `plugin` (marketplace plugin), `skills-cli` (installed with the `skills` CLI), or `null` |
 | `agentHost` | string or null | Detected calling agent host (`claude-code`, `cursor`, `codex`, `antigravity`, `grok`, …) or `null` |
 | `installSource` | string or null | First-touch channel from `~/.metamask/attribution.json`, or `null` |
 | `hints` | string[] | Actionable guidance, for example missing skills, auth issues, init needed, or version mismatch |
@@ -41,7 +41,7 @@ This command does not support additional flags beyond output format options.
 
 When the lock file exists but contains no MetaMask entries, it falls back to scanning the current project for installed `metamask-agent-wallet` / `metamask-agent-workflows` skills. It parses `SKILL.md` frontmatter for the skill `version` and `cliVersion` metadata, then checks the CLI `major.minor` against the skill `cliVersion` requirement.
 
-When skills come from the plugin, upgrade hints point at the marketplace and pin `npm install -g @metamask/agent-wallet@<cliVersion>` instead of `npx skills add`.
+When skills come from the plugin, upgrade hints point at the marketplace and pin `npm install -g @metamask/agent-wallet@<cliVersion>` instead of the `skills` CLI.
 
 ### Example
 

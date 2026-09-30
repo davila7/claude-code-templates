@@ -69,7 +69,7 @@ On eligible chains and accounts, the CLI automatically batches approval + trade 
 
 ## Edge cases
 
-- Quote expired: re-quote and ask the user to review the new quote. If the user previously chose a specific route, re-quote with `--all-quotes`, find the matching route by `bridgeId`/`protocols`, and execute that specific `--quote-id`. Never use `--yes` to auto-execute when a specific route was requested.
+- Quote expired: re-quote and ask the user to review the new quote. If the user previously chose a specific route, re-quote with `--all-quotes`, find the matching route by `bridgeId`/`protocols`, and execute that specific `--quote-id`. Never pass `--yes` when a specific route was requested.
 - `--all-quotes` and `--yes` cannot be used together (`INVALID_SWAP_PARAMS`).
 - Insufficient balance: surface the error verbatim.
 - `INSUFFICIENT_GAS`: no affordable quote found. Advise the user to fund native gas, or re-quote with `--strategy output` / `--all-quotes` to find a gasless option.

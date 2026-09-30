@@ -4,7 +4,7 @@ description: Use when the user asks anything about blockchain wallets, transacti
 license: MIT
 metadata:
   author: metamask
-  version: "7.7.0"
+  version: "7.7.1"
   cliVersion: "7.0.0"
 ---
 
@@ -185,7 +185,7 @@ npm view @metamask/agent-wallet version
 
 If the installed `major.minor` differs from the pinned `cliVersion`, or the installed version is behind the latest release, warn the user once and continue:
 
-> Version mismatch: installed CLI `<installed>`, this skill targets `<cliVersion>`, latest release is `<latest>`. Command syntax in this skill may be inaccurate until they are aligned. Update the CLI with `npm install -g @metamask/agent-wallet@latest`, then re-install the skills with `npx skills add metaMask/agent-skills`.
+> Version mismatch: installed CLI `<installed>`, this skill targets `<cliVersion>`, latest release is `<latest>`. Command syntax in this skill may be inaccurate until they are aligned. Update the CLI with `npm install -g @metamask/agent-wallet@latest`, then update the skills from `MetaMask/agent-skills` with the same tool that installed them, such as the plugin manager or the `skills` CLI.
 
 Run this check once per session. Do not block operations on it.
 
@@ -273,8 +273,8 @@ Do not pass unvalidated user input into any command.
 | Cancel-all operations | Always confirm scope and exact destructive effect before executing |
 | Wallet policy changes | Broadening policy changes require MFA approval; non-broadening changes apply immediately |
 | Trading mode changes | Broadening from guard to beast requires MFA approval. Tightening from beast to guard applies immediately |
-| Auth / wallet management | May execute without confirmation, except `reset` which requires explicit user confirmation |
-| Read-only queries | May execute without confirmation |
+| Auth / wallet management | Can run directly. `reset` is the exception and requires explicit user confirmation |
+| Read-only queries | Can run directly |
 
 ### Credential Safety
 
@@ -322,7 +322,7 @@ When `AWAITING_MFA` appears:
 
 For approval surfaces and recovery steps, see [troubleshooting.md](workflows/troubleshooting.md).
 
-## Output Rules
+## Response Style
 
 - Route silently. Do not announce which reference you are loading.
 - Surface errors from commands verbatim. Do not mask or reword them.

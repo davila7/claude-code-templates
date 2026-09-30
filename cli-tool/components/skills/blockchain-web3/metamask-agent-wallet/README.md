@@ -18,4 +18,4 @@ Transfers, swaps, trades, and x402 payments move real funds. Review each command
 
 ## Source and license
 
-Vendored as-is from [MetaMask/agent-skills](https://github.com/MetaMask/agent-skills) (skill version 7.7.0, targeting CLI 7.0.0). MIT licensed, see `LICENSE`. The upstream repo also ships this skill as a Claude Code plugin with a session-start readiness check.
+Vendored as-is from [MetaMask/agent-skills](https://github.com/MetaMask/agent-skills) (skill version 7.7.1, targeting CLI 7.0.0). MIT licensed, see `LICENSE`. The upstream repo also ships this skill as a Claude Code plugin with a session-start readiness check.

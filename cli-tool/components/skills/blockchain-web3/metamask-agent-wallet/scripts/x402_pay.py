@@ -48,8 +48,8 @@ payment with a single retry; rerunning makes a new payment, so guard repeated
 calls at the caller. A local idempotency ledger is a possible future addition.
 
 Examples:
-    python3 x402_pay.py inspect https://api.example.com/premium
-    python3 x402_pay.py pay https://api.example.com/premium --confirm
+    python3 x402_pay.py inspect https://paid.example.com/premium
+    python3 x402_pay.py pay https://paid.example.com/premium --confirm
 """
 
 import argparse

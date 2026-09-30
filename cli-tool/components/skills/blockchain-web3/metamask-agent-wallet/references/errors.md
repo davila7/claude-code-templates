@@ -149,7 +149,7 @@ This reference lists error codes the CLI actually emits. SDK-only or remapped co
 | `RWA_GEO_RESTRICTED` | RWA asset not available in your region |
 | `RWA_NATIVE_TOKEN_UNSUPPORTED` | RWA cannot be swapped against native asset |
 | `RWA_MARKET_UNAVAILABLE` | RWA market temporarily unavailable |
-| `QUOTE_PERSIST_FAILED` | Failed to persist the quote to `~/.metamask/swap-quotes/`. The CLI already retries a transient directory-creation failure once, so this means the path is genuinely unwritable. Create it manually with `mkdir -p ~/.metamask/swap-quotes && chmod 700 ~/.metamask/swap-quotes`, then re-run `mm swap quote` |
+| `QUOTE_PERSIST_FAILED` | Failed to persist the quote to `~/.metamask/swap-quotes/`. The CLI already retries a transient directory-creation failure once, so this means the path is genuinely unwritable. Create it manually with `mkdir -p "$HOME/.metamask/swap-quotes" && chmod u=rwx,go= "$HOME/.metamask/swap-quotes"`, then re-run `mm swap quote` |
 | `QUOTE_NOT_FOUND` | Quote not found |
 | `EXECUTE_FAILED` | Swap execution failed. When the job is paused on MFA and no hash is available yet, the message names the wait and `mm wallet requests watch` — treat as an MFA pause, not a missing hash |
 | `NO_TRADE_DATA` | No trade data available |

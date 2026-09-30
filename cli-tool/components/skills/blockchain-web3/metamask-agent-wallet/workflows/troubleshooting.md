@@ -39,7 +39,7 @@ If `auth status` reports anything other than authenticated, fix authentication b
 | `INSUFFICIENT_GAS` | No affordable swap quote; wallet lacks native gas | Fund native gas, or re-quote with `--strategy output` / `--all-quotes` to find a gasless option |
 | `GASLESS_UNSUPPORTED` | Gasless relay not available on this chain | Fund native gas or use a different chain |
 | `UNSUPPORTED_CHAIN` on swap or predict | Chain not supported for this feature | Run `mm chains list` and use a chain with the required feature |
-| `QUOTE_PERSIST_FAILED` on `swap quote` | `~/.metamask/swap-quotes/` is not writable; the CLI already retried once | Run `mkdir -p ~/.metamask/swap-quotes && chmod 700 ~/.metamask/swap-quotes`, then re-run the quote |
+| `QUOTE_PERSIST_FAILED` on `swap quote` | `~/.metamask/swap-quotes/` is not writable; the CLI already retried once | Run `mkdir -p "$HOME/.metamask/swap-quotes" && chmod u=rwx,go= "$HOME/.metamask/swap-quotes"`, then re-run the quote |
 | `INVALID_DATA` on `price history` | Price API returned an empty or malformed body | Retry once, then check the asset is priced with `mm price spot --asset-ids <chain-id>/<asset-type>` |
 | `INVALID_ASSET_ID` on `price spot` / `price history` / `token assets` | Malformed CAIP-19 id, or a bare chain id where a full asset id is required | Use `eip155:1/slip44:60` (or `erc20:0x…`). On `price spot` only, `eip155:1` expands to the native asset |
 | `PREDICT_UNAVAILABLE_FOR_LEGAL_REASONS` | Polymarket HTTP 451 | Distinct from `PREDICT_GEOBLOCKED`. Run `mm predict geoblock` and do not retry trading from a restricted region |
