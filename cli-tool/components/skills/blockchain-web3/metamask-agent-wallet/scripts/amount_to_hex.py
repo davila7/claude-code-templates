@@ -11,13 +11,38 @@ Examples:
 """
 
 import sys
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation, localcontext
+
+
+def fail(message):
+    print(f"error: {message}", file=sys.stderr)
+    sys.exit(1)
+
 
 if len(sys.argv) != 3:
     print(f"Usage: {sys.argv[0]} <amount> <decimals>", file=sys.stderr)
     sys.exit(1)
 
-decimals = int(sys.argv[2])
-value = int(Decimal(sys.argv[1]) * 10 ** decimals)
+raw_amount, raw_decimals = sys.argv[1], sys.argv[2]
 
-print(hex(value))
+if not raw_decimals.isdigit() or int(raw_decimals) > 255:
+    fail(f"decimals must be an integer from 0 to 255, got {raw_decimals!r}")
+decimals = int(raw_decimals)
+
+try:
+    amount = Decimal(raw_amount)
+except InvalidOperation:
+    fail(f"amount is not a number: {raw_amount!r}")
+if not amount.is_finite() or amount < 0:
+    fail(f"amount must be a finite, non-negative number, got {raw_amount!r}")
+
+with localcontext() as ctx:
+    # Enough precision that scaling never rounds a large amount.
+    ctx.prec = 400
+    scaled = amount.scaleb(decimals)
+if scaled != scaled.to_integral_value():
+    # Refuse rather than truncate: submitting a smaller amount than the user
+    # asked for is worse than stopping.
+    fail(f"{raw_amount} has more than {decimals} decimal places and cannot be represented exactly")
+
+print(hex(int(scaled)))

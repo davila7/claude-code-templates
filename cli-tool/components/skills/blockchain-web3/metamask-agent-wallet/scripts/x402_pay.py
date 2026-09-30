@@ -16,19 +16,26 @@ call. The settlement comes back in the response `_meta["x402/payment-response"]`
 
 Usage:
     python3 x402_pay.py inspect <url> [--method M] [--data BODY]
-    python3 x402_pay.py pay <url> --confirm [--method M] [--data BODY]
+    python3 x402_pay.py pay <url> --confirm --approved <approvalId>
+                                  [--method M] [--data BODY]
                                   [--asset <contract>] [--network <network>]
     python3 x402_pay.py mcp-inspect [--challenge JSON | --challenge-file PATH]
     python3 x402_pay.py mcp-sign [--challenge JSON | --challenge-file PATH]
-                                 --confirm [--asset <contract>] [--network <network>]
+                                 --confirm --approved <approvalId>
+                                 [--asset <contract>] [--network <network>]
 
 `inspect` fetches the URL and prints the payment requirement(s) as JSON
-(asset, amount, network, payTo, resource) without signing or spending. Review
-this before paying.
+(asset, amount, network, payTo, resource) without signing or spending. Each
+option carries an `approvalId` that fingerprints its debit terms. Show the terms
+to the user and keep the `approvalId` of the option they approve.
 
 `pay` runs the payment for a single offered option and prints the settlement
-(transaction hash) and the resource body. It requires --confirm. When the 402
-offers more than one eligible option, select one with --asset or --network.
+(transaction hash) and the resource body. It requires --confirm and
+--approved <approvalId>. It fetches the 402 again and refuses to sign when the
+fresh offer's terms no longer match the approved ones. When the 402 offers more
+than one eligible option, select one with --asset or --network. A 200 response
+without a decodable settlement receipt is reported as `paid_unverified`, not
+`settled`; do not pay again in that case.
 
 `mcp-inspect` parses an MCP payment challenge (the tool-call response, the tool
 result, or the bare PaymentRequired object; from --challenge, --challenge-file,
@@ -37,7 +44,8 @@ spending.
 
 `mcp-sign` signs one offered option from an MCP challenge and prints the
 payment payload for the retry's `_meta["x402/payment"]`. It requires --confirm
-and takes the same --asset/--network disambiguators as `pay`.
+and --approved <approvalId> from `mcp-inspect`, and takes the same
+--asset/--network disambiguators as `pay`.
 
 The resource may use any HTTP method; pass --method (and --data for a request
 body) and the same request is replayed with the payment attached.
@@ -54,6 +62,7 @@ Examples:
 
 import argparse
 import base64
+import hashlib
 import json
 import re
 import secrets
@@ -122,18 +131,42 @@ def request_parts(data, content_type):
     return data.encode("utf-8"), {"Content-Type": content_type}
 
 
-def _mm_json(args):
-    """Run an `mm` command and return its JSON result.
+def _json_objects(text):
+    """Return every top-level JSON object in `text`, in order.
 
-    The JSON is sliced out of stdout because `mm` may emit non-JSON warnings
-    (e.g. Node startup notices) around it.
+    `mm` may print non-JSON warnings (e.g. Node startup notices) around its
+    result, and with --json it writes an MFA notice as its own NDJSON line
+    before the result. Decoding object by object keeps those apart instead of
+    gluing the first "{" to the last "}" into one invalid document.
+    """
+    decoder = json.JSONDecoder()
+    objects = []
+    i = text.find("{")
+    while i != -1:
+        try:
+            obj, end = decoder.raw_decode(text, i)
+        except ValueError:
+            i = text.find("{", i + 1)
+            continue
+        if isinstance(obj, dict):
+            objects.append(obj)
+        i = text.find("{", end)
+    return objects
+
+
+def _mm_json(args):
+    """Run an `mm` command and return its JSON result, skipping notices.
+
+    Objects carrying `_notice` (such as `AWAITING_MFA`) are status lines, not
+    the result. When the output holds only notices, the last one is returned
+    so the caller can surface the approval state to the user.
     """
     out = subprocess.run(["mm", *args], capture_output=True, text=True)
-    text = out.stdout
-    start, end = text.find("{"), text.rfind("}")
-    if start == -1 or end == -1:
+    objects = _json_objects(out.stdout)
+    if not objects:
         raise CeremonyError("mm produced no JSON (%s): %s" % (out.returncode, out.stderr.strip()))
-    return json.loads(text[start : end + 1])
+    results = [o for o in objects if "_notice" not in o]
+    return results[-1] if results else objects[-1]
 
 
 _chains_cache = None
@@ -155,9 +188,18 @@ def chain_id_for(network):
     """
     if network.startswith("eip155:"):
         try:
-            return int(network.split(":", 1)[1])
+            wanted = int(network.split(":", 1)[1])
         except ValueError:
             raise CeremonyError("unparseable CAIP-2 network: %s" % network)
+        # A parseable id is not enough: only chains mm lists can be signed on.
+        for c in _chains():
+            try:
+                listed = int(c.get("chainId"))
+            except (TypeError, ValueError):
+                listed = None
+            if listed == wanted or c.get("caip2") == network:
+                return wanted
+        raise CeremonyError("network '%s' is not supported by mm (see `mm chains list`)" % network)
     for c in _chains():
         if (
             network in (c.get("key"), c.get("caip2"))
@@ -377,9 +419,31 @@ def read_challenge(challenge, challenge_file):
         raise CeremonyError("challenge is not valid JSON: %s" % e)
 
 
+def approval_id(option):
+    """Fingerprint the debit terms the user approves.
+
+    Covers every field that decides what is paid, to whom, and where. `pay`
+    and `mcp-sign` recompute it on the offer they are about to sign and refuse
+    on any mismatch, so a server that changes its offer after `inspect` cannot
+    get a different debit authorized.
+    """
+    terms = {
+        "scheme": option.get("scheme"),
+        "network": option.get("network"),
+        "asset": (option.get("asset") or "").lower(),
+        "payTo": (option.get("payTo") or "").lower(),
+        "amount": option.get("amount"),
+        "assetTransferMethod": (option.get("extra") or {}).get("assetTransferMethod")
+        or "eip3009",
+    }
+    digest = hashlib.sha256(json.dumps(terms, sort_keys=True).encode()).hexdigest()
+    return "x402-" + digest[:16]
+
+
 def describe(option):
     """Annotate an option with chain and display metadata; never raises."""
     out = dict(option)
+    out["approvalId"] = approval_id(option)
     try:
         chain_id = chain_id_for(option["network"])
     except CeremonyError:
@@ -575,7 +639,9 @@ def validate(option, chain_id):
         raise CeremonyError("402 option missing EIP-712 domain name/version in 'extra'")
 
 
-def sign_challenge(version, options, want_asset, want_network, resource_info, target, transport=""):
+def sign_challenge(
+    version, options, want_asset, want_network, resource_info, target, approved, transport=""
+):
     """Run the signing ceremony for one eligible option of a challenge.
 
     Both transports converge here — select, validate, build and sign the
@@ -585,6 +651,12 @@ def sign_challenge(version, options, want_asset, want_network, resource_info, ta
     user sees in the signing intent (and the v2 resource fallback over HTTP).
     """
     option = select(options, want_asset, want_network)
+    if option["approvalId"] != approved:
+        raise CeremonyError(
+            "the offer's terms differ from the approved ones (approved %s, offered %s): "
+            "%s. Nothing was signed. Show the new terms to the user and re-run with the "
+            "approvalId they approve." % (approved, option["approvalId"], json.dumps(option))
+        )
     chain_id = option["chainId"]
     validate(option, chain_id)
 
@@ -668,18 +740,27 @@ def cmd_inspect(url, method, data, content_type):
     )
 
 
-def cmd_pay(url, method, data, content_type, confirm, want_asset, want_network):
-    """Run the payment for one offered option and print the settlement."""
-    if not confirm:
+def _require_approval(confirm, approved, inspect_cmd, retry_cmd):
+    """Refuse to sign unless the user approved specific terms."""
+    if not confirm or not approved:
         raise CeremonyError(
-            "refusing to pay without --confirm; run 'inspect' first and "
-            "get user approval, then re-run 'pay <url> --confirm'"
+            "refusing to sign without --confirm and --approved <approvalId>; run '%s' "
+            "first, get user approval for one option, then re-run '%s --confirm "
+            "--approved <approvalId>'" % (inspect_cmd, retry_cmd)
         )
+
+
+def cmd_pay(url, method, data, content_type, confirm, approved, want_asset, want_network):
+    """Run the payment for one approved option and print the settlement."""
+    _require_approval(confirm, approved, "inspect", "pay <url>")
     body, headers = request_parts(data, content_type)
-    # Fetch fresh so the short 402 window is never stale.
+    # Fetch fresh so the short 402 window is never stale; sign_challenge then
+    # refuses unless the fresh offer still matches the approved terms.
     status, rheaders, rbody = http(url, method, headers, body)
     version, options, resource_info = parse_402(status, rheaders, rbody)
-    option, payment = sign_challenge(version, options, want_asset, want_network, resource_info, url)
+    option, payment = sign_challenge(
+        version, options, want_asset, want_network, resource_info, url, approved
+    )
     b64 = base64.b64encode(json.dumps(payment).encode()).decode()
     header = "X-PAYMENT" if version == 1 else "PAYMENT-SIGNATURE"
 
@@ -692,25 +773,31 @@ def cmd_pay(url, method, data, content_type, confirm, want_asset, want_network):
         )
 
     settle = settlement(rheaders, version, rbody)
+    transaction = (settle or {}).get("transaction") or (settle or {}).get("txHash")
     try:
         resource = json.loads(rbody.decode("utf-8"))
     except ValueError:
         resource = rbody.decode("utf-8", "replace")
-    print(
-        json.dumps(
-            {
-                "status": "settled",
-                "asset": option.get("symbol", option["asset"]),
-                "amount": option.get("humanAmount", option["amount"]),
-                "network": option["network"],
-                "payTo": option["payTo"],
-                "transaction": (settle or {}).get("transaction") or (settle or {}).get("txHash"),
-                "settlement": settle,
-                "resource": resource,
-            },
-            indent=2,
+    result = {
+        "status": "settled" if transaction else "paid_unverified",
+        "asset": option.get("symbol", option["asset"]),
+        "amount": option.get("humanAmount", option["amount"]),
+        "network": option["network"],
+        "payTo": option["payTo"],
+        "transaction": transaction,
+        "settlement": settle,
+        "resource": resource,
+    }
+    if not transaction:
+        # The server accepted the signed authorization but sent no receipt, so
+        # settlement cannot be confirmed here. Paying again would sign a second
+        # authorization with a new nonce.
+        result["note"] = (
+            "The server returned HTTP 200 without a decodable settlement receipt. "
+            "The authorization was sent and may settle. Do not pay again; check "
+            "the wallet's transaction history before any retry."
         )
-    )
+    print(json.dumps(result, indent=2))
 
 
 def cmd_mcp_inspect(challenge, challenge_file):
@@ -730,18 +817,14 @@ def cmd_mcp_inspect(challenge, challenge_file):
     )
 
 
-def cmd_mcp_sign(challenge, challenge_file, confirm, want_asset, want_network):
+def cmd_mcp_sign(challenge, challenge_file, confirm, approved, want_asset, want_network):
     """Sign one option from an MCP challenge and print the payment payload.
 
     The MCP session belongs to the caller, so delivery is the caller's move:
     place the printed `payment` object, as-is, in `_meta["x402/payment"]` of
     the retried tool call.
     """
-    if not confirm:
-        raise CeremonyError(
-            "refusing to sign without --confirm; run 'mcp-inspect' first and "
-            "get user approval, then re-run 'mcp-sign --confirm'"
-        )
+    _require_approval(confirm, approved, "mcp-inspect", "mcp-sign")
     options, resource_info, _ = parse_mcp_challenge(read_challenge(challenge, challenge_file))
     # Fail closed before signing: the v2 payload must forward the resource, so
     # a challenge that names none could only yield a payload the facilitator
@@ -752,7 +835,7 @@ def cmd_mcp_sign(challenge, challenge_file, confirm, want_asset, want_network):
             "(its top-level resource is forwarded into the payment payload)"
         )
     option, payment = sign_challenge(
-        2, options, want_asset, want_network, resource_info, resource_info["url"], "MCP"
+        2, options, want_asset, want_network, resource_info, resource_info["url"], approved, "MCP"
     )
     payment_b64 = base64.b64encode(json.dumps(payment).encode()).decode()
     print(
@@ -800,6 +883,12 @@ def main(argv=None):
     spend = argparse.ArgumentParser(add_help=False)
     spend.add_argument(
         "--confirm", action="store_true", help="Required. Explicit user approval to sign and spend."
+    )
+    spend.add_argument(
+        "--approved",
+        metavar="APPROVAL_ID",
+        help="Required. The approvalId of the option the user approved, from inspect/mcp-inspect. "
+        "Signing is refused if the offer's terms no longer match.",
     )
     spend.add_argument("--asset", help="Disambiguate by asset contract when multiple are offered.")
     spend.add_argument("--network", help="Disambiguate by network when multiple are offered.")
@@ -849,6 +938,7 @@ def main(argv=None):
                 args.data,
                 args.content_type,
                 args.confirm,
+                args.approved,
                 args.asset,
                 args.network,
             )
@@ -859,6 +949,7 @@ def main(argv=None):
                 args.challenge,
                 args.challenge_file,
                 args.confirm,
+                args.approved,
                 args.asset,
                 args.network,
             )

@@ -24,13 +24,16 @@ The caller owns the MCP session; the script only signs.
    (`--challenge-file <path>`, or `--challenge -` to read stdin, also work for large
    challenges.)
 3. Show the user the asset, amount, network, `payTo`, and resource, and get explicit approval.
+   Keep the `approvalId` of the option they approve.
 4. Sign:
 
    ```bash
-   python3 "$SKILL_DIR/scripts/x402_pay.py" mcp-sign --challenge '<json>' --confirm
+   python3 "$SKILL_DIR/scripts/x402_pay.py" mcp-sign --challenge '<json>' --confirm --approved <approvalId>
    ```
 
-   Add `--asset`/`--network` if the challenge offered more than one eligible option.
+   Add `--asset`/`--network` if the challenge offered more than one eligible option. If it
+   reports that the terms differ from the approved ones, nothing was signed. Show the new terms
+   and get approval again.
 5. Retry the same tool call with the printed `payment` object placed, as a raw JSON object, in
    the request params' `_meta["x402/payment"]`.
 6. Check the response `_meta["x402/payment-response"]`: `success: true` with a `transaction`

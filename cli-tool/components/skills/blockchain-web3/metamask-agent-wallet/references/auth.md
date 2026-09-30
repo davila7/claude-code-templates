@@ -26,11 +26,11 @@ mm init [--wallet <mode>] [--mode <mode>] [--mnemonic <phrase>] [--password <pas
 ```bash
 mm init
 mm init --wallet server-wallet --mode beast
-export MM_MNEMONIC="word1 word2 ..."
+read -rs MM_MNEMONIC && export MM_MNEMONIC   # paste the phrase; nothing is echoed or saved to history
 mm init --wallet byok --mode guard
 
-export MM_MNEMONIC="word1 word2 ..."
-export MM_PASSWORD="mypassword"
+read -rs MM_MNEMONIC && export MM_MNEMONIC   # paste the phrase; nothing is echoed or saved to history
+read -rs MM_PASSWORD && export MM_PASSWORD   # type the password; nothing is echoed or saved to history
 mm init --wallet byok --mode guard
 ```
 
@@ -256,14 +256,15 @@ mm wallet password set [--new <password>]
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `--new` | No | New password. If omitted, the CLI prompts interactively. |
+| `--new` | No | New password. Never pass it inline. Omit it so the CLI prompts interactively. |
 
 ### Example
 
 ```bash
 mm wallet password set
-mm wallet password set --new "mypassword"
 ```
+
+The CLI prompts for the new password. Do not pass `--new` with a value, because it would appear in shell history, process listings, and the agent transcript.
 
 ## `wallet password change` Command
 
@@ -279,15 +280,16 @@ mm wallet password change [--current <password>] [--new <password>]
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `--current` | No | Current password. If omitted, the CLI prompts interactively. |
-| `--new` | No | New password. If omitted, the CLI prompts interactively. |
+| `--current` | No | Current password. Never pass it inline. Omit it so the CLI prompts interactively. |
+| `--new` | No | New password. Never pass it inline. Omit it so the CLI prompts interactively. |
 
 ### Example
 
 ```bash
 mm wallet password change
-mm wallet password change --current "oldpassword" --new "newpassword"
 ```
+
+The CLI prompts for the current and new passwords. Do not pass `--current` or `--new` with a value.
 
 ## `wallet password remove` Command
 
@@ -303,14 +305,15 @@ mm wallet password remove [--current <password>]
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `--current` | No | Current password. If omitted, the CLI prompts interactively. |
+| `--current` | No | Current password. Never pass it inline. Omit it so the CLI prompts interactively. |
 
 ### Example
 
 ```bash
 mm wallet password remove
-mm wallet password remove --current "mypassword"
 ```
+
+The CLI prompts for the current password. Do not pass `--current` with a value.
 
 ## Wallet Modes
 

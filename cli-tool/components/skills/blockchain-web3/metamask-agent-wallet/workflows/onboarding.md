@@ -70,18 +70,18 @@ mm init --wallet server-wallet --mode guard
 
 BYOK:
 
-Never pass `--mnemonic` or `--password` as inline flags. Always instruct the user to set environment variables instead.
+Never pass `--mnemonic` or `--password` as inline flags. Always instruct the user to set environment variables instead. The user runs these `read` commands in their own terminal, so the secret never appears in the command line, shell history, or this conversation.
 
 ```bash
-export MM_MNEMONIC="word1 word2 ..."
+read -rs MM_MNEMONIC && export MM_MNEMONIC   # paste the phrase; nothing is echoed or saved to history
 mm init --wallet byok --mode guard
 ```
 
 If the user wants to encrypt their mnemonic with a password during init:
 
 ```bash
-export MM_MNEMONIC="word1 word2 ..."
-export MM_PASSWORD="mypassword"
+read -rs MM_MNEMONIC && export MM_MNEMONIC   # paste the phrase; nothing is echoed or saved to history
+read -rs MM_PASSWORD && export MM_PASSWORD   # type the password; nothing is echoed or saved to history
 mm init --wallet byok --mode guard
 ```
 

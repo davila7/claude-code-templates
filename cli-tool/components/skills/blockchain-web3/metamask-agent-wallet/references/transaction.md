@@ -52,6 +52,8 @@ python3 "$SKILL_DIR/scripts/amount_to_hex.py" <amount> <decimals>
 python3 "$SKILL_DIR/scripts/amount_to_hex.py" 1.5 18   # -> 0x14d1120d7b160000
 ```
 
+The script exits with an error instead of rounding when the amount has more decimal places than the token supports, is negative, or is not a number. Surface that error to the user and ask for a corrected amount.
+
 ## Notes
 
 - If the chain is not mentioned by the user, ask for the chain.

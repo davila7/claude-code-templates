@@ -22,24 +22,25 @@ script, not an `mm` command, so do not pass `--toon`/`--format`; it always print
 python3 "$SKILL_DIR/scripts/x402_pay.py" inspect <url>
 ```
 
-Prints the payment requirement(s) as JSON: asset, human-readable amount, network, `payTo`, and
-resource. This is read-only and does not spend.
+Prints the payment requirement(s) as JSON: asset, human-readable amount, network, `payTo`,
+resource, and an `approvalId` for each option. This is read-only and does not spend.
 
 ## Confirm
 
 Show the user the asset, amount, network, `payTo`, and resource URL from the inspect output, and
-get explicit approval. A signature authorizes a real token debit.
+get explicit approval. Keep the `approvalId` of the option they approve. A signature authorizes a
+real token debit.
 
 ## Pay
 
 ```bash
-python3 "$SKILL_DIR/scripts/x402_pay.py" pay <url> --confirm
+python3 "$SKILL_DIR/scripts/x402_pay.py" pay <url> --confirm --approved <approvalId>
 ```
 
 Add `--asset <contract>` or `--network <network>` if the `402` offered more than one eligible
 option. For a non-GET resource add `--method` (and `--data` for a body); the same request is
-replayed with the payment attached. On success the script prints the settlement transaction and
-the resource body.
+replayed with the payment attached. On success the script prints `"status": "settled"`, the
+settlement transaction, and the resource body.
 
 ## Edge cases
 
@@ -49,6 +50,12 @@ the resource body.
   or assets (e.g. Base and Polygon). Rerun `pay` with `--network` or `--asset` to choose one.
 - `error` mentioning "permit2": the only options use the Permit2 transfer method, which this skill
   does not sign (it supports EIP-3009 only). Tell the user it is unsupported.
+- `error` with "terms differ from the approved ones": the server changed the offer after
+  `inspect`. Nothing was signed. Show the user the new terms from the error, get approval again,
+  and rerun `pay` with the new `approvalId`.
+- `"status": "paid_unverified"`: the server returned the resource but no settlement receipt.
+  The authorization was sent and may still settle. Do not pay again. Tell the user settlement is
+  unconfirmed and check the wallet's transaction history.
 - `error` with "payment not accepted": surface it. Do not rerun blindly; rerunning makes a new
   payment.
 - `error` with "not a standard x402 challenge": the endpoint returned a 402 in a different payment
