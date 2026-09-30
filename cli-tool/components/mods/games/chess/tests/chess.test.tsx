@@ -1,10 +1,11 @@
 // Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test games/chess
 import { describe, expect, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
-import type { ModelForkUsage, On } from 'claude-code'
+import type { ModelUsage, On } from 'claude-code'
 import { START_FEN, ending, findMove, legalMoves, makeMove, parseFen, san, toFen } from '../hooks/chess.ts'
 import type { Position } from '../hooks/chess.ts'
-import { fmt, gameUsage, movePrompt, newGame, play, readReply, resultText } from '../hooks/game.ts'
+import { asReply, fmt, gameUsage, movePrompt, newGame, play, readReply, resultText } from '../hooks/game.ts'
+import { DEFAULT_BASE_URL, endpoint, jevMove, readAnswer, requestBody, requestHeaders, selectProvider } from '../hooks/jev.ts'
 
 function perft(p: Position, depth: number): number {
   if (!depth) return 1
@@ -54,7 +55,7 @@ describe('rules', () => {
   })
 })
 
-const U = (input: number, output: number, read: number, write: number): ModelForkUsage => ({
+const U = (input: number, output: number, read: number, write: number): ModelUsage => ({
   input_tokens: input,
   output_tokens: output,
   cache_read_input_tokens: read,
@@ -95,17 +96,22 @@ describe('the game', () => {
 })
 
 // Beneath the plugin: the model answers from a script and every prompt is kept.
-type Calls = { prompts: string[]; replies: (string | null)[]; completes: string[] }
+// A reply is the fork's text, null for nothing to fork, or an error arm.
+type Scripted = string | null | { error: string }
+type Calls = { prompts: string[]; replies: Scripted[]; completes: string[] }
 
 function fakeModel(on: On, calls: Calls) {
   on('model.fork', async ($, e) => {
     calls.prompts.push(e.prompt)
-    const text = calls.replies.shift()
-    return { value: text === null || text === undefined ? null : { text, usage: U(12, 5, 30_000, 100) } }
+    const next = calls.replies.shift()
+    if (next === null || next === undefined) return { value: { isAnswered: false as const, reason: 'nothing-to-fork' as const } }
+    if (typeof next === 'object')
+      return { value: { isAnswered: false as const, reason: 'api-error' as const, status: 529, error: 'overloaded' as const, usage: U(0, 0, 0, 0) } }
+    return { value: { isAnswered: true as const, text: next, usage: U(12, 5, 30_000, 100) } }
   })
   on('model.complete', async ($, e) => {
     calls.completes.push(e.model)
-    return { value: 'd5' }
+    return { value: { isAnswered: true as const, text: 'd5', usage: U(180, 3, 0, 0) } }
   })
   on('ui.open', () => ({ value: undefined }))
   on('ui.close', () => ({ value: undefined }))
@@ -139,6 +145,13 @@ describe('the pane', () => {
     await openBoard($)
     const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
     await ui.press({ key: 'sq:e2' })
+    await ui.redraw()
+    // the picked pawn's two squares are marked, nothing else is
+    expect((await ui.find({ key: 'sq:e3' }))?.text).toContain('•')
+    expect((await ui.find({ key: 'sq:e4' }))?.text).toContain('•')
+    expect((await ui.find({ key: 'sq:e5' }))?.text).not.toContain('•')
+    expect((await ui.find({ key: 'sq:e3' }))?.text).not.toContain('×')
+    expect(await ui.find({ type: 'Text', text: /click a highlighted square/ })).toBeDefined()
     await ui.press({ key: 'sq:e4' })
     await ui.redraw()
     expect(calls.prompts.length).toBe(1)
@@ -162,7 +175,7 @@ describe('the pane', () => {
     await ui.unmount()
   })
 
-  test('with no transcript to fork, the fallback model moves and usage reads not reported', async ($, on) => {
+  test('with no transcript to fork, the fallback model moves and its usage counts', async ($, on) => {
     const calls: Calls = { prompts: [], replies: [null], completes: [] }
     fakeModel(on, calls)
     await openBoard($)
@@ -171,7 +184,8 @@ describe('the pane', () => {
     await ui.press({ key: 'sq:e4' })
     await ui.redraw()
     expect(calls.completes).toEqual(['haiku'])
-    expect(await ui.find({ type: 'Text', text: /last d5: not reported/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /last d5: 183/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /haiku: no transcript to fork yet/ })).toBeDefined()
     await ui.unmount()
   })
 
@@ -183,5 +197,107 @@ describe('the pane', () => {
     const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
     expect(await ui.find({ type: 'Text', text: /Your move \(Black\)/ })).toBeDefined()
     await ui.unmount()
+  })
+})
+
+describe('pieces follow the theme', () => {
+  for (const [theme, whiteKing] of [['dark', '♚'], ['light', '♔']] as const) {
+    test(`${theme} theme: White's king is ${whiteKing}`, async ($, on) => {
+      const calls: Calls = { prompts: [], replies: [], completes: [] }
+      fakeModel(on, calls)
+      on('config.list', () => ({
+        value: [{ key: 'theme', label: 'Theme', kind: 'choice', value: theme, provider: { plugin: 'engine', tier: 'core' }, isLocked: false }],
+      }))
+      await openBoard($)
+      const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
+      expect((await ui.find({ key: 'sq:e1' }))?.text).toContain(whiteKing)
+      await ui.unmount()
+    })
+  }
+})
+
+describe('capture marks', () => {
+  test('en passant is marked as a capture on its empty square', async ($, on) => {
+    const calls: Calls = { prompts: [], replies: ['a6', 'd5'], completes: [] }
+    fakeModel(on, calls)
+    await openBoard($)
+    const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
+    await ui.input({ key: 'move', text: 'e4' })
+    await ui.input({ key: 'move', text: 'e5' })
+    await ui.press({ key: 'sq:e5' })
+    await ui.redraw()
+    expect((await ui.find({ key: 'sq:d6' }))?.text).toContain('×')
+    expect((await ui.find({ key: 'sq:e6' }))?.text).toContain('•')
+    await ui.unmount()
+  })
+})
+
+describe('a failing model never leaves Claude thinking', () => {
+  test('two API errors: a random legal move, and it is your turn again', async ($, on) => {
+    const calls: Calls = { prompts: [], replies: [{ error: 'overloaded' }, { error: 'overloaded' }], completes: [] }
+    fakeModel(on, calls)
+    await openBoard($)
+    const ui = await $.ui.mount({ plugin: 'chess', surface: 'terminal', component: 'Pane', requestId: 'chess', props: PANE_PROPS })
+    await ui.input({ key: 'move', text: 'e4' })
+    await ui.redraw()
+    expect(calls.prompts.length).toBe(2)
+    expect(await ui.find({ type: 'Text', text: /random: no reply \(api-error\)/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Your move \(White\)/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('a result in the pre-2.1.283 shape still plays', () => {
+    expect(asReply('e5')).toEqual({ text: 'e5' })
+    expect(asReply(null)).toEqual({ reason: 'nothing-to-fork' })
+    expect(asReply({ isAnswered: false, reason: 'nothing-to-fork' })).toEqual({ reason: 'nothing-to-fork' })
+  })
+})
+
+describe('Jev', () => {
+  test('a key selects the backend; TypeSafe first, "claude" forces Claude', () => {
+    expect(selectProvider('auto', '', '')).toBeNull()
+    expect(selectProvider('auto', 'ts', 'gw')).toBe('typesafe')
+    expect(selectProvider('auto', '', 'gw')).toBe('gateway')
+    expect(selectProvider('typesafe', '', 'gw')).toBeNull()
+    expect(selectProvider('claude', 'ts', 'gw')).toBeNull()
+    expect(endpoint('typesafe', 'https://api.typesafe.ai/')).toBe('https://api.typesafe.ai/v1/systemone')
+    expect(endpoint('gateway', DEFAULT_BASE_URL.gateway)).toBe('https://ai-gateway.vercel.sh/v4/ai/evaluation-model')
+    expect(requestHeaders('gateway', 'k', 'typesafe-ai/jev')['ai-model-id']).toBe('typesafe-ai/jev')
+  })
+
+  test('the question is a choice over exactly the legal moves', () => {
+    const g = play(newGame('w'), findMove(parseFen(START_FEN), 'e4')!, { by: 'you' })
+    const body = JSON.parse(requestBody('typesafe', g, 'jev-latest'))
+    expect(body.model).toBe('jev-latest')
+    expect(body.state.you_play).toBe('Black')
+    expect(body.state.moves_so_far).toBe('1. e4')
+    expect(body.questions.move.type).toBe('choice')
+    expect(Object.keys(body.questions.move.criteria).length).toBe(20)
+    expect(body.questions.move.criteria.Nf6).toBe('knight g8-f6')
+    const gw = JSON.parse(requestBody('gateway', g, 'typesafe-ai/jev'))
+    expect(gw.model).toBeUndefined()
+  })
+
+  test('the answer: choice, confidence, and usage only when reported', () => {
+    expect(readAnswer(JSON.stringify({ answers: { move: { choice: 'e5', confidence: 0.4 } } }))).toEqual({ san: 'e5', confidence: 0.4, usage: null })
+    const withUsage = readAnswer(JSON.stringify({ answers: { move: { choice: 'c5', probabilities: { c5: 0.7, e5: 0.3 } } }, usage: { prompt_tokens: 900, completion_tokens: 2 } }))
+    expect(withUsage?.confidence).toBe(0.7)
+    expect(withUsage?.usage?.input_tokens).toBe(900)
+    expect(withUsage?.usage?.output_tokens).toBe(2)
+    expect(readAnswer('not json')).toBeNull()
+    expect(readAnswer('{"answers":{}}')).toBeNull()
+  })
+
+  test("Jev's response to a move: legal choice, errors, timeouts", () => {
+    const g = play(newGame('w'), findMove(parseFen(START_FEN), 'e4')!, { by: 'you' })
+    const ok = (body: unknown) => ({ ok: true, status: 200, text: JSON.stringify(body) })
+    const played = jevMove(g.pos, ok({ answers: { move: { choice: 'c5' } }, usage: { input_tokens: 700, output_tokens: 1 } }), 'typesafe')
+    expect(played.move?.to).toBe(34)
+    expect(played.usage?.input_tokens).toBe(700)
+    expect(played.why).toBeUndefined()
+    expect(jevMove(g.pos, { ok: false, status: 401, text: '' }, 'typesafe').why).toBe('typesafe responded 401')
+    expect(jevMove(g.pos, undefined, 'gateway').why).toBe('no answer in time')
+    expect(jevMove(g.pos, ok({ answers: { move: { choice: 'Ke2' } } }), 'typesafe').why).toBe('"Ke2" was not legal')
+    expect(resultText({ ...g, resigned: 'b' }, 'Jev')).toBe('Jev resigned: White wins')
   })
 })
