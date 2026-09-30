@@ -5,6 +5,7 @@ const os = require('os');
 const { execSync } = require('child_process');
 const ora = require('ora');
 const boxen = require('boxen');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 /**
  * Health Check module for Claude Code CLI
@@ -538,7 +539,7 @@ class HealthChecker {
 
   checkPermissions() {
     const homeDir = os.homedir();
-    const claudeDir = path.join(homeDir, '.claude');
+    const claudeDir = getClaudeConfigDir(homeDir);
     
     try {
       if (fs.existsSync(claudeDir)) {
@@ -747,7 +748,7 @@ class HealthChecker {
 
   checkPersonalCommands() {
     const homeDir = os.homedir();
-    const commandsDir = path.join(homeDir, '.claude', 'commands');
+    const commandsDir = path.join(getClaudeConfigDir(homeDir), 'commands');
     
     if (fs.existsSync(commandsDir)) {
       const commands = fs.readdirSync(commandsDir).filter(file => file.endsWith('.md'));
@@ -820,7 +821,7 @@ class HealthChecker {
 
   checkPersonalAgents() {
     const homeDir = os.homedir();
-    const agentsDir = path.join(homeDir, '.claude', 'agents');
+    const agentsDir = path.join(getClaudeConfigDir(homeDir), 'agents');
     
     if (fs.existsSync(agentsDir)) {
       const agents = this.countAgentsRecursively(agentsDir);
@@ -925,7 +926,7 @@ class HealthChecker {
 
   checkUserHooks() {
     const homeDir = os.homedir();
-    const settingsPath = path.join(homeDir, '.claude', 'settings.json');
+    const settingsPath = path.join(getClaudeConfigDir(homeDir), 'settings.json');
     
     if (fs.existsSync(settingsPath)) {
       try {
@@ -1003,7 +1004,7 @@ class HealthChecker {
 
   checkHookCommands() {
     const hookSettingsFiles = [
-      path.join(os.homedir(), '.claude', 'settings.json'),
+      path.join(getClaudeConfigDir(), 'settings.json'),
       path.join(process.cwd(), '.claude', 'settings.json'),
       path.join(process.cwd(), '.claude', 'settings.local.json')
     ];
@@ -1109,7 +1110,7 @@ class HealthChecker {
 
   checkUserSettings() {
     const homeDir = os.homedir();
-    const userSettingsPath = path.join(homeDir, '.claude', 'settings.json');
+    const userSettingsPath = path.join(getClaudeConfigDir(homeDir), 'settings.json');
     
     if (!fs.existsSync(userSettingsPath)) {
       return {

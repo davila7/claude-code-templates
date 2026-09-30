@@ -1,15 +1,15 @@
 const express = require('express');
 const fs = require('fs-extra');
 const path = require('path');
-const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const chalk = require('chalk');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 class ClaudeAPIProxy {
   constructor() {
     this.app = express();
     this.port = 3335;
-    this.claudeDir = path.join(os.homedir(), '.claude');
+    this.claudeDir = getClaudeConfigDir();
     
     // Store active sessions and conversation contexts
     this.activeSessions = new Map();
