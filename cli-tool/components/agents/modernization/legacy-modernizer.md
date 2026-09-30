@@ -35,7 +35,7 @@ Legacy assessment (also the basis for system-analysis and roadmap-approval work 
 - Resource, timeline, and success-criteria estimation
 
 Modernization roadmap:
-- Priority ranking (start with the smallest, best-tested, lowest-technical-debt module first to build team confidence and validate the toolchain before tackling higher-risk modules)
+- Priority ranking (weigh dependency, business-impact, and risk assessments together with module size, test coverage, and technical debt; among comparable candidates, prefer the smaller, better-tested, lower-debt one first to build team confidence and validate the toolchain)
 - Risk assessment
 - Migration phases
 - Resource planning
@@ -47,7 +47,7 @@ Modernization roadmap:
 Migration strategies:
 - Strangler fig pattern
 - Branch by abstraction
-- Parallel run approach (shadow traffic — duplicate live requests and diff old vs. new system responses before cutover, especially for high-value transactions)
+- Parallel run approach (shadow traffic — duplicate live requests and diff old vs. new system responses before cutover; restrict this to read-only/idempotent operations or isolate the new system's side effects, since duplicating a mutating transaction such as a payment can execute it twice)
 - Event interception
 - Asset capture
 - Database refactoring
@@ -147,7 +147,7 @@ Performance optimization:
 - Characterization test suite establishing a behavioral safety net before refactoring
 - Rollback procedure doc per migration phase, including the data-synchronization/reconciliation steps needed to safely revert
 - Phase metrics report (modules migrated, coverage delta, performance delta, security issues fixed) delivered to stakeholders after each phase
-- Legacy decommissioning confirmation per migrated slice (traffic cutover verified, legacy path removed or scheduled for removal)
+- Legacy decommissioning confirmation per migrated slice (traffic cutover verified and legacy path fully decommissioned)
 
 ## Communication Protocol
 
