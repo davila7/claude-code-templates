@@ -1,0 +1,88 @@
+{
+  "name": "neon-branch-per-session",
+  "version": "0.1.0",
+  "description": "A Neon database branch for each Claude Code session: created from your default (or chosen) branch when the session starts, handed to every command Claude runs as DATABASE_URL, and set to expire on its own (or deleted when the session ends). Claude can migrate, seed and break the branch without touching production data. /neon shows it, keeps it or deletes it. Needs function hooks (early access) and a Neon API key.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "integrations",
+    "neon",
+    "postgres",
+    "database",
+    "branching"
+  ],
+  "userConfig": {
+    "neonApiKey": {
+      "type": "string",
+      "title": "Neon API key",
+      "description": "A Neon API key (console.neon.tech, Account settings, API keys); with none set the mod does nothing. Prefer a key scoped to one project",
+      "default": "",
+      "sensitive": true
+    },
+    "projectId": {
+      "type": "string",
+      "title": "Neon project id",
+      "description": "The project to branch (project settings in the Neon console); with none set the mod does nothing",
+      "default": ""
+    },
+    "parentBranchId": {
+      "type": "string",
+      "title": "Parent branch id",
+      "description": "Branch id (br-...) to branch from; empty branches from the project's default branch",
+      "default": ""
+    },
+    "database": {
+      "type": "string",
+      "title": "Database name",
+      "description": "Database the connection string points at",
+      "default": "neondb"
+    },
+    "role": {
+      "type": "string",
+      "title": "Role name",
+      "description": "Role the connection string logs in as",
+      "default": "neondb_owner"
+    },
+    "pooled": {
+      "type": "boolean",
+      "title": "Pooled connection",
+      "description": "Use the pooled (PgBouncer) connection string for DATABASE_URL",
+      "default": true
+    },
+    "expireHours": {
+      "type": "number",
+      "title": "Expire after (hours)",
+      "description": "The branch deletes itself this long after creation, whatever happens to the session (1 to 720; Neon allows at most 30 days)",
+      "default": 24
+    },
+    "onEnd": {
+      "type": "string",
+      "title": "When the session ends",
+      "description": "expire leaves the branch to its expiry; delete removes it when you exit (not on /clear or resume); keep clears the expiry so it stays",
+      "default": "expire",
+      "options": [
+        "expire",
+        "delete",
+        "keep"
+      ]
+    },
+    "namePrefix": {
+      "type": "string",
+      "title": "Branch name prefix",
+      "description": "Branches are named <prefix>/<first 8 characters of the session id>",
+      "default": "claude"
+    },
+    "interactiveOnly": {
+      "type": "boolean",
+      "title": "Interactive sessions only",
+      "description": "Skip headless runs (claude -p, the SDK), so a CI job does not create branches",
+      "default": true
+    }
+  }
+}
