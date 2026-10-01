@@ -47317,6 +47317,207 @@
       ]
     },
     {
+      "name": "linear-tickets",
+      "path": "integrations/linear-tickets",
+      "category": "integrations",
+      "type": "mod",
+      "description": "Your Linear tickets in a side pane, with their status and a chart of how you are progressing: tickets grouped by state (in progress, todo, backlog, done), a stacked status bar, a bar chart of tickets closed per day over the last two weeks and, when your tickets sit in a cycle, that cycle's scope and completed burn-up. Read-only; it polls Linear's GraphQL API. /linear opens it. Needs function hooks (early access) and a Linear API key.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "integrations",
+        "linear",
+        "tickets",
+        "ui",
+        "chart"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "linear-tickets.tsx"
+      ],
+      "userConfig": {
+        "linearApiKey": {
+          "type": "string",
+          "title": "Linear API key",
+          "description": "A Linear personal API key (Linear, Settings, Security & access); with none set the mod does nothing. It only reads issues and cycles",
+          "default": "",
+          "sensitive": true
+        },
+        "assignee": {
+          "type": "string",
+          "title": "Whose tickets",
+          "description": "me lists tickets assigned to you; anyone lists everyone's (narrow it with teamKey or project)",
+          "default": "me",
+          "options": [
+            "me",
+            "anyone"
+          ]
+        },
+        "teamKey": {
+          "type": "string",
+          "title": "Team key",
+          "description": "Only this team's tickets, by its key (the CLA of CLA-143); empty for every team",
+          "default": ""
+        },
+        "project": {
+          "type": "string",
+          "title": "Project name contains",
+          "description": "Only tickets of Linear projects whose name contains this text (case-insensitive); empty for all",
+          "default": ""
+        },
+        "days": {
+          "type": "number",
+          "title": "Days of history",
+          "description": "How far back the done list and the closed-per-day chart reach (7-60)",
+          "default": 14
+        },
+        "pollSeconds": {
+          "type": "number",
+          "title": "Refresh interval (s)",
+          "description": "Seconds between refreshes while the pane or the status line is on (30-3600)",
+          "default": 120
+        },
+        "status": {
+          "type": "boolean",
+          "title": "Status line entry",
+          "description": "Keep a summary (in progress, todo, done) under the prompt and keep polling while the pane is closed",
+          "default": false
+        },
+        "openOnStart": {
+          "type": "boolean",
+          "title": "Open on start",
+          "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+          "default": false
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/linear-api.ts",
+        "hooks/linear-tickets.tsx",
+        "tests/linear-tickets.test.tsx"
+      ]
+    },
+    {
+      "name": "neon-branch-per-session",
+      "path": "integrations/neon-branch-per-session",
+      "category": "integrations",
+      "type": "mod",
+      "description": "A Neon database branch for each Claude Code session: created from your default (or chosen) branch when the session starts, handed to every command Claude runs as DATABASE_URL, and set to expire on its own (or deleted when the session ends). Claude can migrate, seed and break the branch without touching production data. /neon shows it, keeps it or deletes it. Needs function hooks (early access) and a Neon API key.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "integrations",
+        "neon",
+        "postgres",
+        "database",
+        "branching"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "neon-branch-per-session.ts"
+      ],
+      "userConfig": {
+        "neonApiKey": {
+          "type": "string",
+          "title": "Neon API key",
+          "description": "A Neon API key (console.neon.tech, Account settings, API keys); with none set the mod does nothing. Prefer a key scoped to one project",
+          "default": "",
+          "sensitive": true
+        },
+        "projectId": {
+          "type": "string",
+          "title": "Neon project id",
+          "description": "The project to branch (project settings in the Neon console); with none set the mod does nothing",
+          "default": ""
+        },
+        "parentBranchId": {
+          "type": "string",
+          "title": "Parent branch id",
+          "description": "Branch id (br-...) to branch from; empty branches from the project's default branch",
+          "default": ""
+        },
+        "database": {
+          "type": "string",
+          "title": "Database name",
+          "description": "Database the connection string points at",
+          "default": "neondb"
+        },
+        "role": {
+          "type": "string",
+          "title": "Role name",
+          "description": "Role the connection string logs in as",
+          "default": "neondb_owner"
+        },
+        "pooled": {
+          "type": "boolean",
+          "title": "Pooled connection",
+          "description": "Use the pooled (PgBouncer) connection string for DATABASE_URL",
+          "default": true
+        },
+        "expireHours": {
+          "type": "number",
+          "title": "Expire after (hours)",
+          "description": "The branch deletes itself this long after creation, whatever happens to the session (1 to 720; Neon allows at most 30 days)",
+          "default": 24
+        },
+        "onEnd": {
+          "type": "string",
+          "title": "When the session ends",
+          "description": "expire leaves the branch to its expiry; delete removes it when you exit (not on /clear or resume); keep clears the expiry so it stays",
+          "default": "expire",
+          "options": [
+            "expire",
+            "delete",
+            "keep"
+          ]
+        },
+        "namePrefix": {
+          "type": "string",
+          "title": "Branch name prefix",
+          "description": "Branches are named <prefix>/<first 8 characters of the session id>",
+          "default": "claude"
+        },
+        "interactiveOnly": {
+          "type": "boolean",
+          "title": "Interactive sessions only",
+          "description": "Skip headless runs (claude -p, the SDK), so a CI job does not create branches",
+          "default": true
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/neon-api.ts",
+        "hooks/neon-branch-per-session.ts",
+        "tests/neon-branch-per-session.test.ts"
+      ]
+    },
+    {
       "name": "pi-agent-for-claude",
       "path": "integrations/pi-agent-for-claude",
       "category": "integrations",
@@ -47353,6 +47554,95 @@
         "agents/pi.md",
         "hooks/hooks.json",
         "hooks/register.ts"
+      ]
+    },
+    {
+      "name": "vercel-deploys",
+      "path": "integrations/vercel-deploys",
+      "category": "integrations",
+      "type": "mod",
+      "description": "Your Vercel projects in a side pane: each connected site with the state of its latest deployment (building, ready, failed), the production domain, the Git commit behind it and whether the site answers right now. It polls Vercel's REST API (faster while something builds) and toasts when a deployment finishes or fails. /vercel opens it. Needs function hooks (early access) and a Vercel access token.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "integrations",
+        "vercel",
+        "deployments",
+        "ui"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "vercel-deploys.tsx"
+      ],
+      "userConfig": {
+        "vercelToken": {
+          "type": "string",
+          "title": "Vercel access token",
+          "description": "A Vercel access token (vercel.com/account/tokens); with none set the mod does nothing. Read-only use: it lists projects and deployments",
+          "default": "",
+          "sensitive": true
+        },
+        "teamId": {
+          "type": "string",
+          "title": "Team id or slug",
+          "description": "A team (team_... id) to list instead of your personal account; empty lists the account the token belongs to",
+          "default": ""
+        },
+        "maxProjects": {
+          "type": "number",
+          "title": "Projects listed",
+          "description": "How many projects to show, most recently updated first (1-50)",
+          "default": 20
+        },
+        "pollSeconds": {
+          "type": "number",
+          "title": "Refresh interval (s)",
+          "description": "Seconds between refreshes while nothing is building, 10-3600 (every 10 s while something is); polling pauses while the pane is closed and the status line is off",
+          "default": 60
+        },
+        "healthCheck": {
+          "type": "boolean",
+          "title": "Check that sites answer",
+          "description": "Send one GET to each project's production domain (at most once a minute) and show whether it answers with a non-error status",
+          "default": true
+        },
+        "status": {
+          "type": "boolean",
+          "title": "Status line entry",
+          "description": "Keep a summary (live, building, failed) under the prompt and keep polling while the pane is closed",
+          "default": true
+        },
+        "toast": {
+          "type": "boolean",
+          "title": "Toast on finish",
+          "description": "A toast when a deployment turns ready or fails",
+          "default": true
+        },
+        "openOnStart": {
+          "type": "boolean",
+          "title": "Open on start",
+          "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+          "default": false
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/vercel-api.ts",
+        "hooks/vercel-deploys.tsx",
+        "tests/vercel-deploys.test.tsx"
       ]
     },
     {
@@ -47412,6 +47702,86 @@
         ".claude-plugin/plugin.json",
         "hooks/hooks.json",
         "hooks/websearch-to-exa.ts"
+      ]
+    },
+    {
+      "name": "prompt-cache-control",
+      "path": "observability/prompt-cache-control",
+      "category": "observability",
+      "type": "mod",
+      "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL comes from the environment variables Claude Code honours (5 minutes by default, 1 hour with ENABLE_PROMPT_CACHING_1H). /cache opens a per-turn table. Needs function hooks (early access).",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "observability",
+        "prompt-caching",
+        "cost"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "prompt-cache-control.tsx"
+      ],
+      "userConfig": {
+        "ttl": {
+          "type": "string",
+          "title": "Cache lifetime",
+          "description": "How long the cache lives after a request: auto follows ENABLE_PROMPT_CACHING_1H / FORCE_PROMPT_CACHING_5M (5 minutes when neither is set); 5m or 1h overrides it",
+          "default": "auto",
+          "options": [
+            "auto",
+            "5m",
+            "1h"
+          ]
+        },
+        "warnSeconds": {
+          "type": "number",
+          "title": "Warn before expiry (s)",
+          "description": "Seconds left on the countdown at which the band turns yellow and a toast reminds you the cache is about to lapse",
+          "default": 60
+        },
+        "compactAtTokens": {
+          "type": "number",
+          "title": "Large context (tokens)",
+          "description": "From this prompt size up, an expired cache suggests /compact (or /clear) before you pay to write the whole prefix again",
+          "default": 100000
+        },
+        "band": {
+          "type": "boolean",
+          "title": "Band above the prompt",
+          "description": "Show the meter as a row above the prompt",
+          "default": true
+        },
+        "status": {
+          "type": "boolean",
+          "title": "Status line entry",
+          "description": "Also pin a short entry (hit rate and countdown) under the prompt",
+          "default": false
+        },
+        "toast": {
+          "type": "boolean",
+          "title": "Toast near expiry",
+          "description": "One toast per cache entry when the countdown reaches the warning threshold (only for prompts of 20k tokens or more)",
+          "default": true
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/cache.ts",
+        "hooks/hooks.json",
+        "hooks/prompt-cache-control.tsx",
+        "tests/cache.test.tsx"
       ]
     },
     {
