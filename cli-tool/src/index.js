@@ -1809,7 +1809,7 @@ async function installIndividualMod(modName, targetDir, options = {}) {
     console.log(chalk.gray(`   Validate / test it: claude plugin validate ${relPluginDir}  ·  claude plugin test ${relPluginDir}`));
     if (userConfig) {
       console.log(chalk.gray(`   Options (${Object.keys(userConfig).join(', ')}): set them in /config, or in ~/.claude/settings.json (user, not project):`));
-      console.log(chalk.gray(`   { "pluginConfigs": { "${manifest.name || baseName}": { "options": { ... } } } }`));
+      console.log(chalk.gray(`   { "pluginConfigs": { "${manifest.name || baseName}@skills-dir": { "options": { ... } } } }`));
     }
     console.log(chalk.gray('   Early access: the $ API may change between releases. Reference: https://github.com/anthropics/claude-code/tree/main/mods\n'));
 

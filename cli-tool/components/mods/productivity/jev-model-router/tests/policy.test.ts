@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import {
   effortLevel,
   effortRank,
@@ -46,8 +46,8 @@ const on = (model: string, effort?: string) => ({ model, effort })
 test('confidence is the highest probability, since the Gateway sends no confidence field', () => {
   const decision = readDecision(gatewayAnswer('balanced', { fast: 0.1, balanced: 0.85, deep: 0.05 }))
   expect(decision?.tier).toBe('balanced')
-  expect(decision?.confidence).toBeCloseTo(0.85)
-  expect(decision?.effort).toBeCloseTo(1.4)
+  expect(Math.abs((decision?.confidence) - (0.85)) < 0.005).toBe(true)
+  expect(Math.abs((decision?.effort) - (1.4)) < 0.005).toBe(true)
 })
 
 test('a distribution is optional in the response schema, so confidence may be absent', () => {
@@ -176,9 +176,9 @@ const typesafeAnswer = (tier: string, confidence: number, noul = 0.01) =>
 test('a TypeSafe answer is read from its own confidence and noul fields', () => {
   const decision = readDecision(typesafeAnswer('deep', 0.91, 0.04))
   expect(decision?.tier).toBe('deep')
-  expect(decision?.confidence).toBeCloseTo(0.91)
-  expect(decision?.effort).toBeCloseTo(2.1)
-  expect(decision?.risky).toBeCloseTo(0.04)
+  expect(Math.abs((decision?.confidence) - (0.91)) < 0.005).toBe(true)
+  expect(Math.abs((decision?.effort) - (2.1)) < 0.005).toBe(true)
+  expect(Math.abs((decision?.risky) - (0.04)) < 0.005).toBe(true)
 })
 
 test('a low-confidence TypeSafe downgrade is refused, like the Gateway path', () => {

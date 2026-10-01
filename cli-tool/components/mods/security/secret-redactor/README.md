@@ -25,7 +25,7 @@ plugin above ever sees the raw value on the way up.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "secret-redactor": { "options": { } } } }
+{ "pluginConfigs": { "secret-redactor@skills-dir": { "options": { } } } }
 ```
 
 ## Install

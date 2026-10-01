@@ -205,7 +205,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "jev-skill-suggestion": { "options": { "typesafeApiKey": "" } } } }
+{ "pluginConfigs": { "jev-skill-suggestion@skills-dir": { "options": { "typesafeApiKey": "" } } } }
 ```
 
 The entry's key is the plugin's id, and the id follows how the plugin was loaded: `"jev-skill-suggestion@skills-dir"` when auto-loaded from `.claude/skills/` (the `--mod` install), `"jev-skill-suggestion"` with `--plugin-dir`. Under the wrong key every option stays at its default, and the `ready on` line reports `no key set`.

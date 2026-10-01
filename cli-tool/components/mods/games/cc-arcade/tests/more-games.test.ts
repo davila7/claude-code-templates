@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { BIRD_X, flap, gapSize, newFlappy, tick as flappyTick } from '../hooks/games/flappy.ts'
 import { newPong, nudge, place, tick as pongTick, WIN } from '../hooks/games/pong.ts'
 import { accuracy, LINES, newTyping, press, wpm } from '../hooks/games/typing.ts'
@@ -12,11 +12,11 @@ test('flappy', () => {
   expect(gapSize(12)).toBe(4)
   // gravity pulls down; the pipes move a column left
   const fell = flappyTick(g, zero)
-  expect(fell.y).toBeCloseTo(6.15)
+  expect(Math.abs((fell.y) - (6.15)) < 0.005).toBe(true)
   expect(fell.pipes[0].x).toBe(38)
   expect(fell.over).toBe(false)
   // a flap sends it up
-  expect(flappyTick(flap(g), zero).y).toBeCloseTo(5.25)
+  expect(Math.abs((flappyTick(flap(g), zero).y) - (5.25)) < 0.005).toBe(true)
   // the floor ends it; the ceiling only stops the bird
   expect(flappyTick({ ...g, y: 11.4, vy: 0.8 }, zero).over).toBe(true)
   const ceiling = flappyTick({ ...g, y: 0.2, vy: -0.9 }, zero)
@@ -41,10 +41,10 @@ test('pong', () => {
   const moved = pongTick(g, zero)
   expect(moved.ball.x).toBe(21)
   expect(moved.ball.y).toBe(5.5)
-  expect(moved.cpu).toBeCloseTo(4.5)
+  expect(Math.abs((moved.cpu) - (4.5)) < 0.005).toBe(true)
   // the top wall reflects
   const wall = pongTick({ ...g, ball: { x: 10, y: 0.2, dx: 1, dy: -0.5 } }, zero)
-  expect(wall.ball.y).toBeCloseTo(0.3)
+  expect(Math.abs((wall.ball.y) - (0.3)) < 0.005).toBe(true)
   expect(wall.ball.dy).toBe(0.5)
   // your paddle sends it back
   const hit = pongTick({ ...g, you: 4, ball: { x: 1, y: 5, dx: -1, dy: 0 } }, zero)

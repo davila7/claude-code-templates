@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { BASE, build, kindOf, newDefense, PATH, spawn, step } from '../hooks/games/defense.ts'
 
 let seed = 7

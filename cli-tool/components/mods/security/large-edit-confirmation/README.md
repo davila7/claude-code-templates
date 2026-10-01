@@ -19,7 +19,7 @@ the `headless` option decides what happens then (deny by default).
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "large-edit-confirmation": { "options": { } } } }
+{ "pluginConfigs": { "large-edit-confirmation@skills-dir": { "options": { } } } }
 ```
 
 ## Install

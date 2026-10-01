@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { fire, formation, newInvaders, step, wave } from '../hooks/games/invaders.ts'
 
 test('a formation is two characters of code per alien, blanks left out', () => {
