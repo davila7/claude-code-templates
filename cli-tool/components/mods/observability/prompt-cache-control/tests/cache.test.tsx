@@ -56,6 +56,10 @@ describe('the countdown counts from the start of the request', () => {
     expect(remainingMs(s, '5m', T0 + 400_000)).toBe(0)
   })
 
+  test('a request that touched no cache has no countdown', () => {
+    expect(remainingMs(sample({ read: 0, write: 0 }), '5m', T0 + 1000)).toBe(0)
+  })
+
   test('formatting', () => {
     expect(fmtClock(200_000)).toBe('3:20')
     expect(fmtClock(3_500_000)).toBe('58:20')

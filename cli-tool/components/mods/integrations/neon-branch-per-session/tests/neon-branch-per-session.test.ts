@@ -36,12 +36,14 @@ describe('neon-api helpers', () => {
 })
 
 type Call = { method: string; url: string; auth?: string; body?: Record<string, unknown> }
+const SESSION = '3f9a1c2e-7b40-4d11-9e0a-aaaaaaaaaaaa'
+
 type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number }
 
 const world = (): World => ({ calls: [], env: {}, store: {}, toasts: [], exists: true, fail: 0 })
 
 function fakeEngine(on: On, w: World) {
-  on('session.id', () => ({ value: '3f9a1c2e-7b40-4d11-9e0a-aaaaaaaaaaaa' }))
+  on('session.id', () => ({ value: SESSION }))
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
   on('session.end', async () => ({ sessionId: 's1' }) as never)
   on('store.get', ($, e) => ({ value: w.store[e.key] }))
@@ -143,7 +145,7 @@ describe('the session branch', () => {
 
   test('a resumed session reuses its branch', { options: OPTIONS }, async ($, on) => {
     const w = world()
-    w.store['neon-branch-per-session:branches'] = { 'claude/3f9a1c2e': 'br-new-1' }
+    w.store['neon-branch-per-session:branches'] = { [SESSION]: 'br-new-1' }
     fakeEngine(on, w)
     await start($)
     expect(w.calls.some(c => c.method === 'POST')).toBe(false)
@@ -151,9 +153,21 @@ describe('the session branch', () => {
     expect(w.env.DATABASE_URL).toBe(URI)
   })
 
+  test('a session sharing the first eight characters does not inherit the branch', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.store['neon-branch-per-session:branches'] = { '3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb': 'br-other' }
+    fakeEngine(on, w)
+    await start($)
+    expect(w.calls.some(c => c.method === 'POST')).toBe(true)
+    expect(w.store['neon-branch-per-session:branches']).toEqual({
+      '3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb': 'br-other',
+      [SESSION]: 'br-new-1',
+    })
+  })
+
   test('a stored branch that is gone is made again', { options: OPTIONS }, async ($, on) => {
     const w = world()
-    w.store['neon-branch-per-session:branches'] = { 'claude/3f9a1c2e': 'br-new-1' }
+    w.store['neon-branch-per-session:branches'] = { [SESSION]: 'br-new-1' }
     w.exists = false
     fakeEngine(on, w)
     await start($)

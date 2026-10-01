@@ -194,7 +194,7 @@ export const register: Register = (on, options) => {
     const now = Date.now()
     const noop = () => {}
     const counts: Counts = count(tickets)
-    const perDay = doneByDay(tickets, now, days, new Date().getTimezoneOffset())
+    const perDay = doneByDay(tickets, now, days)
     const chart = barChart(perDay.slice(-Math.min(days, width - 2)), 4)
     const bar = stacked(
       [

@@ -216,11 +216,15 @@ export function currentCycleId(tickets: readonly Ticket[], now: number): string 
 
 const DAY = 86_400_000
 
-/** Local day number of a time: whole days since the epoch in the viewer's timezone. */
-export const dayOf = (ms: number, tzOffsetMin: number) => Math.floor((ms - tzOffsetMin * 60_000) / DAY)
+/**
+ * Local day number of a time: whole days since the epoch in the viewer's timezone.
+ * Without `tzOffsetMin` each time uses the offset in force at that moment, so a
+ * daylight-saving change inside the window does not shift older days.
+ */
+export const dayOf = (ms: number, tzOffsetMin = new Date(ms).getTimezoneOffset()) => Math.floor((ms - tzOffsetMin * 60_000) / DAY)
 
 /** Tickets closed on each of the last `days` days, oldest first, today last. */
-export function doneByDay(tickets: readonly Ticket[], now: number, days: number, tzOffsetMin: number): number[] {
+export function doneByDay(tickets: readonly Ticket[], now: number, days: number, tzOffsetMin?: number): number[] {
   const today = dayOf(now, tzOffsetMin)
   const out = new Array<number>(days).fill(0)
   for (const t of tickets) {

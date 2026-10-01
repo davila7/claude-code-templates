@@ -84,6 +84,10 @@ describe('charts', () => {
     // a viewer 3 hours behind UTC still sees the 09:00 and 10:00 UTC closes on the same day
     expect(doneByDay(list, NOW, 3, 180).reduce((a, b) => a + b, 0)).toBe(3)
     expect(dayOf(NOW, 0)).toBe(Math.floor(NOW / 86_400_000))
+    // no offset given: each time uses the offset in force at that time
+    const old = NOW - 200 * 86_400_000
+    expect(dayOf(old)).toBe(dayOf(old, new Date(old).getTimezoneOffset()))
+    expect(doneByDay(list, NOW, 5)).toHaveLength(5)
   })
 
   test('sparkline and bar chart scale to the biggest value', () => {

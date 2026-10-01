@@ -97,7 +97,8 @@ export const register: Register = (on, options) => {
       const sessionId = await $.session.id()
       const name = branchName(prefix, sessionId)
       const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
-      let branch = stored[name] ? await getBranch(f, apiKey, project, stored[name]) : undefined
+      // keyed by the full session id: the 8 characters in the branch name are not unique enough to share a branch on
+      let branch = stored[sessionId] ? await getBranch(f, apiKey, project, stored[sessionId]) : undefined
       const isReused = branch !== undefined
       if (!branch) {
         branch = await createBranch(f, apiKey, project, {
@@ -105,7 +106,9 @@ export const register: Register = (on, options) => {
           parentId: parentId || undefined,
           expiresAt: expiryIso(Date.now(), expireHours),
         })
-        await $.store.set(STORE_KEY, { ...stored, [name]: branch.id })
+        // re-read so a session that started meanwhile keeps its entry
+        const latest = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
+        await $.store.set(STORE_KEY, { ...latest, [sessionId]: branch.id })
       }
       // held before the URI is read: a branch that exists can always be kept or deleted with /neon
       held = { branch, host: '', isKept: !branch.expiresAt }
@@ -147,7 +150,7 @@ export const register: Register = (on, options) => {
       try {
         await deleteBranch(f, apiKey, project, held.branch.id)
         const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
-        delete stored[gone]
+        for (const k of Object.keys(stored)) if (stored[k] === held.branch.id) delete stored[k]
         await $.store.set(STORE_KEY, stored)
         held = undefined
         await $.env.set('DATABASE_URL', undefined)
@@ -175,7 +178,7 @@ export const register: Register = (on, options) => {
       if (onEnd === 'delete' && !held.isKept) {
         await deleteBranch(f, apiKey, project, held.branch.id)
         const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
-        delete stored[held.branch.name]
+        for (const k of Object.keys(stored)) if (stored[k] === held.branch.id) delete stored[k]
         await $.store.set(STORE_KEY, stored)
       } else if (onEnd === 'keep' && !held.isKept) {
         await keepBranch(f, apiKey, project, held.branch.id)
