@@ -74,8 +74,9 @@ function fakeEngine(on: On, w: World) {
     if (w.fail) return reply(w.fail, { message: 'project not found' })
     const path = e.url.replace('https://console.neon.tech/api/v2', '')
     if (method === 'POST' && path === `/projects/${PROJECT}/branches`) {
-      if (init.body && JSON.parse(init.body).branch.name === w.taken) return reply(409, { message: 'branch name already exists' })
-      return reply(201, { branch: { id: 'br-new-1', name: 'claude/3f9a1c2e', expires_at: '2026-10-02T12:00:00Z' } })
+      const asked = init.body ? (JSON.parse(init.body).branch.name as string) : 'claude/3f9a1c2e'
+      if (asked === w.taken) return reply(409, { message: 'branch name already exists' })
+      return reply(201, { branch: { id: 'br-new-1', name: asked, expires_at: '2026-10-02T12:00:00Z' } })
     }
     if (method === 'GET' && path === `/projects/${PROJECT}/branches/br-new-1`) {
       return w.exists ? reply(200, { branch: { id: 'br-new-1', name: 'claude/3f9a1c2e', expires_at: '2026-10-02T12:00:00Z' } }) : reply(404, { message: 'branch not found' })
@@ -177,6 +178,7 @@ describe('the session branch', () => {
     const posts = w.calls.filter(c => c.method === 'POST').map(c => (c.body?.branch as { name: string }).name)
     expect(posts).toEqual(['claude/3f9a1c2e', 'claude/3f9a1c2e-7b40-4d'])
     expect(w.env.DATABASE_URL).toBe(URI)
+    expect(w.env.NEON_BRANCH).toBe('claude/3f9a1c2e-7b40-4d')
   })
 
   test('an entry stored under the branch name by an earlier version is reused', { options: OPTIONS }, async ($, on) => {

@@ -84,7 +84,7 @@ describe('charts', () => {
     // a viewer 3 hours behind UTC still sees the 09:00 and 10:00 UTC closes on the same day
     expect(doneByDay(list, NOW, 3, 180).reduce((a, b) => a + b, 0)).toBe(3)
     expect(dayOf(NOW, 0)).toBe(Math.floor(NOW / 86_400_000))
-    expect(doneByDay(list, NOW, 5)).toHaveLength(5)
+    expect(doneByDay(list, NOW, 5)).toEqual([0, 0, 1, 0, 2])
   })
 
   test('each completion uses the offset in force at its own time', () => {

@@ -218,7 +218,8 @@ const DAY = 86_400_000
 
 /**
  * Local day number of a time: whole days since the epoch in the viewer's timezone.
- * Without `tzOffsetMin` each time uses the offset in force at that moment, so a
+ * `tz` is an offset in minutes (as `Date.getTimezoneOffset` returns) or a function
+ * of the time. Left out, each time uses the offset in force at that moment, so a
  * daylight-saving change inside the window does not shift older days.
  */
 export type TzOffset = number | ((ms: number) => number)

@@ -142,7 +142,7 @@ describe('per-turn rows', () => {
 // The module end to end: a main-loop request feeds the band, a subagent's does not.
 type Calls = { status: (string | undefined)[]; logs: string[] }
 
-function fakeEngine(on: On, env: Record<string, string>, calls: Calls) {
+function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = { read: 80_000, write: 1_000 }) {
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
   on('session.end', async () => ({ sessionId: 's1' }) as never)
   on('env.get', ($, e) => ({ value: env[e.name] }))
@@ -167,7 +167,7 @@ function fakeEngine(on: On, env: Record<string, string>, calls: Calls) {
       answer: '',
       toolUses: [],
       stopReason: 'end_turn',
-      usage: { model: 'claude-sonnet-5-5', input_tokens: 300, output_tokens: 50, cache_read_input_tokens: 80_000, cache_creation_input_tokens: 1_000 },
+      usage: { model: 'claude-sonnet-5-5', input_tokens: 300, output_tokens: 50, cache_read_input_tokens: cache.read, cache_creation_input_tokens: cache.write },
     } as never
   })
 }
@@ -227,6 +227,17 @@ describe('the band', () => {
     expect(calls.logs.join('\n')).toContain('5m cache (option)')
   })
 
+  test('a request that touched no cache shows no countdown', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, {}, calls, { read: 0, write: 0 })
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /not cached/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /⏱/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
   test('DISABLE_PROMPT_CACHING says so instead of a countdown', async ($, on) => {
     const calls: Calls = { status: [], logs: [] }
     fakeEngine(on, { DISABLE_PROMPT_CACHING: '1' }, calls)
@@ -234,5 +245,11 @@ describe('the band', () => {
     const ui = await band($)
     expect(await ui.find({ type: 'Text', text: /prompt caching is off/ })).toBeDefined()
     await ui.unmount()
+
+    // after a request the band still shows no countdown
+    await step($)
+    const after = await band($)
+    expect(await after.find({ type: 'Text', text: /⏱/ })).toBeUndefined()
+    await after.unmount()
   })
 })
