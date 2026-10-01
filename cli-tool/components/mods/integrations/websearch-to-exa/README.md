@@ -21,7 +21,7 @@ Never hardcode it in this file.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "websearch-to-exa": { "options": { } } } }
+{ "pluginConfigs": { "websearch-to-exa@skills-dir": { "options": { } } } }
 ```
 
 ## Install

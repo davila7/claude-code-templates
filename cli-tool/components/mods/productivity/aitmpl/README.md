@@ -79,7 +79,7 @@ design.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "aitmpl": { "options": { "pageSize": 12 } } } }
+{ "pluginConfigs": { "aitmpl@skills-dir": { "options": { "pageSize": 12 } } } }
 ```
 
 ## Install

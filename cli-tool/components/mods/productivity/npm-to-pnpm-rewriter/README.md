@@ -16,7 +16,7 @@ keeps the command it wrote, for prompt-cache stability).
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "npm-to-pnpm-rewriter": { "options": { } } } }
+{ "pluginConfigs": { "npm-to-pnpm-rewriter@skills-dir": { "options": { } } } }
 ```
 
 ## Install

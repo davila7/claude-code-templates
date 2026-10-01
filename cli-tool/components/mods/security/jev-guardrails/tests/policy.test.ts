@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import {
   BUILTIN_LABELS,
   HAZARD_ACTION,
@@ -112,7 +112,7 @@ test('the surest hazard among those agreeing on the action is the one named', ()
   const r = route(screen({ jailbreak: 0.72, harmful_request: 0.9, medical_advice: 0.01, self_harm: 0.01 }, 1.0), strict)
   expect(r.action).toBe('block')
   expect(r.hazard).toBe('harmful_request')
-  expect(r.probability).toBeCloseTo(0.9)
+  expect(Math.abs((r.probability) - (0.9)) < 0.005).toBe(true)
 })
 
 test('output side: a jailbroken reply blocks on broke_policy', () => {
@@ -146,13 +146,13 @@ test('resolvePolicy overrides one number and keeps the rest; an unknown name rea
 
 test('a TypeSafe answer reads noul per hazard and score for severity', () => {
   const s = readScreen(typesafeAnswer({ jailbreak: 0.98, harmful_request: 0.1, medical_advice: 0.02, self_harm: 0.03 }, 1.1), 'input', none)
-  expect(s?.nouls.jailbreak).toBeCloseTo(0.98)
-  expect(s?.severity).toBeCloseTo(1.1)
+  expect(Math.abs((s?.nouls.jailbreak) - (0.98)) < 0.005).toBe(true)
+  expect(Math.abs((s?.severity) - (1.1)) < 0.005).toBe(true)
 })
 
 test('a Gateway answer reads probability per hazard', () => {
   const s = readScreen(gatewayAnswer({ broke_policy: 0.9, harmful_request: 0.2, medical_advice: 0.1, self_harm: 0.0 }, 2.0), 'output', none)
-  expect(s?.nouls.broke_policy).toBeCloseTo(0.9)
+  expect(Math.abs((s?.nouls.broke_policy) - (0.9)) < 0.005).toBe(true)
   expect(s?.nouls.jailbreak).toBeUndefined()
 })
 

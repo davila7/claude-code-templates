@@ -36,7 +36,7 @@ string. Values are read from **user** settings (`~/.claude/settings.json`),
 `--settings <file>` or managed settings, never from project settings:
 
 ```json
-{ "pluginConfigs": { "npm-to-pnpm-rewriter": { "options": { "manager": "yarn" } } } }
+{ "pluginConfigs": { "npm-to-pnpm-rewriter@skills-dir": { "options": { "manager": "yarn" } } } }
 ```
 
 `types/claude-code.d.ts` is Anthropic's declaration file as `/plugin-types`
