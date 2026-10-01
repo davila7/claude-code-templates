@@ -51,6 +51,10 @@ function fakeEngine(on: On, w: World) {
     w.store[e.key] = e.value
     return { value: undefined }
   })
+  on('store.delete', ($, e) => {
+    delete w.store[e.key]
+    return { value: undefined }
+  })
   on('env.set', ($, e) => {
     w.env[e.name] = e.value
     return { value: undefined }
@@ -146,7 +150,7 @@ describe('the session branch', () => {
 
   test('a resumed session reuses its branch', { options: OPTIONS }, async ($, on) => {
     const w = world()
-    w.store['neon-branch-per-session:branches'] = { [SESSION]: 'br-new-1' }
+    w.store[`neon-branch-per-session:session:${SESSION}`] = 'br-new-1'
     fakeEngine(on, w)
     await start($)
     expect(w.calls.some(c => c.method === 'POST')).toBe(false)
@@ -156,14 +160,13 @@ describe('the session branch', () => {
 
   test('a session sharing the first eight characters does not inherit the branch', { options: OPTIONS }, async ($, on) => {
     const w = world()
-    w.store['neon-branch-per-session:branches'] = { '3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb': 'br-other' }
+    w.store['neon-branch-per-session:session:3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb'] = 'br-other'
     fakeEngine(on, w)
     await start($)
     expect(w.calls.some(c => c.method === 'POST')).toBe(true)
-    expect(w.store['neon-branch-per-session:branches']).toEqual({
-      '3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb': 'br-other',
-      [SESSION]: 'br-new-1',
-    })
+    // each session has its own key, so neither write can drop the other
+    expect(w.store['neon-branch-per-session:session:3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb']).toBe('br-other')
+    expect(w.store[`neon-branch-per-session:session:${SESSION}`]).toBe('br-new-1')
   })
 
   test('a taken branch name is retried with a longer one', { options: OPTIONS }, async ($, on) => {
@@ -187,7 +190,7 @@ describe('the session branch', () => {
 
   test('a stored branch that is gone is made again', { options: OPTIONS }, async ($, on) => {
     const w = world()
-    w.store['neon-branch-per-session:branches'] = { [SESSION]: 'br-new-1' }
+    w.store[`neon-branch-per-session:session:${SESSION}`] = 'br-new-1'
     w.exists = false
     fakeEngine(on, w)
     await start($)
@@ -224,7 +227,7 @@ describe('/neon', () => {
     expect((await run($, 'delete')).text).toContain('deleted claude/3f9a1c2e')
     expect(w.calls.some(c => c.method === 'DELETE' && c.url.endsWith('/branches/br-new-1'))).toBe(true)
     expect(w.env.DATABASE_URL).toBeUndefined()
-    expect(w.store['neon-branch-per-session:branches']).toEqual({})
+    expect(w.store[`neon-branch-per-session:session:${SESSION}`]).toBeUndefined()
   })
 })
 

@@ -46,9 +46,12 @@ import { NeonError } from './neon-api.ts'
 import type { Branch } from './neon-api.ts'
 
 const COMMAND = 'neon'
-const STORE_KEY = 'neon-branch-per-session:branches'
+// the first release kept one map under this key; it is only read now, for sessions that began before the split
+const LEGACY_KEY = 'neon-branch-per-session:branches'
+// one key per session, so two sessions starting together never overwrite each other's entry
+const sessionKey = (id: string) => `neon-branch-per-session:session:${id}`
 
-type Held = { branch: Branch; host: string; isKept: boolean }
+type Held = { branch: Branch; host: string; isKept: boolean; sessionId: string }
 
 let held: Held | undefined
 
@@ -97,10 +100,10 @@ export const register: Register = (on, options) => {
     try {
       const sessionId = await $.session.id()
       const name = branchName(prefix, sessionId)
-      const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
+      const legacy = ((await $.store.get(LEGACY_KEY)) ?? {}) as Record<string, string>
       // keyed by the full session id: the 8 characters in the branch name are not unique enough to share a branch on
       // an entry written under the branch name by an earlier version is still honoured
-      const known = stored[sessionId] ?? stored[name]
+      const known = ((await $.store.get(sessionKey(sessionId))) as string | undefined) ?? legacy[name]
       let branch = known ? await getBranch(f, apiKey, project, known) : undefined
       const isReused = branch !== undefined
       if (!branch) {
@@ -111,12 +114,10 @@ export const register: Register = (on, options) => {
           if (!(err instanceof NeonError) || (err.status !== 409 && err.status !== 422)) throw err
           return make(branchName(prefix, sessionId, 16))
         })
-        // re-read so a session that started meanwhile keeps its entry
-        const latest = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
-        await $.store.set(STORE_KEY, { ...latest, [sessionId]: branch.id })
+        await $.store.set(sessionKey(sessionId), branch.id)
       }
       // held before the URI is read: a branch that exists can always be kept or deleted with /neon
-      held = { branch, host: '', isKept: !branch.expiresAt }
+      held = { branch, host: '', isKept: !branch.expiresAt, sessionId }
       const uri = await connectionUri(f, apiKey, project, { branchId: branch.id, database, role, pooled })
       await $.env.set('DATABASE_URL', uri)
       await $.env.set('NEON_BRANCH', branch.name)
@@ -154,9 +155,7 @@ export const register: Register = (on, options) => {
       const gone = held.branch.name
       try {
         await deleteBranch(f, apiKey, project, held.branch.id)
-        const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
-        for (const k of Object.keys(stored)) if (stored[k] === held.branch.id) delete stored[k]
-        await $.store.set(STORE_KEY, stored)
+        await $.store.delete(sessionKey(held.sessionId))
         held = undefined
         await $.env.set('DATABASE_URL', undefined)
         await $.env.set('NEON_BRANCH', undefined)
@@ -182,9 +181,7 @@ export const register: Register = (on, options) => {
     try {
       if (onEnd === 'delete' && !held.isKept) {
         await deleteBranch(f, apiKey, project, held.branch.id)
-        const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
-        for (const k of Object.keys(stored)) if (stored[k] === held.branch.id) delete stored[k]
-        await $.store.set(STORE_KEY, stored)
+        await $.store.delete(sessionKey(held.sessionId))
       } else if (onEnd === 'keep' && !held.isKept) {
         await keepBranch(f, apiKey, project, held.branch.id)
       }
