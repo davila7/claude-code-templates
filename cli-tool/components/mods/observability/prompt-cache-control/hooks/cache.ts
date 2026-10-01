@@ -91,7 +91,9 @@ export function hitRatio(s: Sample): number {
 /** When the cache entry the sample touched lapses, ms since the epoch. */
 export const expiresAt = (s: Sample, ttl: Ttl) => s.startedAt + ttlMs(ttl)
 
+/** Zero for a request that read and wrote nothing: it created or refreshed no entry, so there is nothing to count down. */
 export function remainingMs(s: Sample, ttl: Ttl, now: number): number {
+  if (s.read + s.write === 0) return 0
   return Math.max(0, expiresAt(s, ttl) - now)
 }
 

@@ -84,6 +84,18 @@ describe('charts', () => {
     // a viewer 3 hours behind UTC still sees the 09:00 and 10:00 UTC closes on the same day
     expect(doneByDay(list, NOW, 3, 180).reduce((a, b) => a + b, 0)).toBe(3)
     expect(dayOf(NOW, 0)).toBe(Math.floor(NOW / 86_400_000))
+    expect(doneByDay(list, NOW, 5)).toEqual([0, 0, 1, 0, 2])
+  })
+
+  test('each completion uses the offset in force at its own time', () => {
+    // 23:30 local the evening before a daylight-saving change: UTC-5 before it, UTC-4 after
+    const change = Date.UTC(2026, 2, 8, 7)
+    const tz = (ms: number) => (ms < change ? 300 : 240)
+    const before = Date.UTC(2026, 2, 8, 4, 30) // 23:30 on Mar 7 at UTC-5
+    const after = Date.UTC(2026, 2, 8, 12) // 08:00 on Mar 8 at UTC-4
+    expect(dayOf(after, tz) - dayOf(before, tz)).toBe(1)
+    // with today's offset applied to both, the earlier close slides into Mar 8
+    expect(dayOf(after, 240) - dayOf(before, 240)).toBe(0)
   })
 
   test('sparkline and bar chart scale to the biggest value', () => {

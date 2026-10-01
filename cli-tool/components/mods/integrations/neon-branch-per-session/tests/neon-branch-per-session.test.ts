@@ -36,17 +36,23 @@ describe('neon-api helpers', () => {
 })
 
 type Call = { method: string; url: string; auth?: string; body?: Record<string, unknown> }
-type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number }
+const SESSION = '3f9a1c2e-7b40-4d11-9e0a-aaaaaaaaaaaa'
+
+type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number; taken?: string }
 
 const world = (): World => ({ calls: [], env: {}, store: {}, toasts: [], exists: true, fail: 0 })
 
 function fakeEngine(on: On, w: World) {
-  on('session.id', () => ({ value: '3f9a1c2e-7b40-4d11-9e0a-aaaaaaaaaaaa' }))
+  on('session.id', () => ({ value: SESSION }))
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
   on('session.end', async () => ({ sessionId: 's1' }) as never)
   on('store.get', ($, e) => ({ value: w.store[e.key] }))
   on('store.set', ($, e) => {
     w.store[e.key] = e.value
+    return { value: undefined }
+  })
+  on('store.delete', ($, e) => {
+    delete w.store[e.key]
     return { value: undefined }
   })
   on('env.set', ($, e) => {
@@ -68,7 +74,9 @@ function fakeEngine(on: On, w: World) {
     if (w.fail) return reply(w.fail, { message: 'project not found' })
     const path = e.url.replace('https://console.neon.tech/api/v2', '')
     if (method === 'POST' && path === `/projects/${PROJECT}/branches`) {
-      return reply(201, { branch: { id: 'br-new-1', name: 'claude/3f9a1c2e', expires_at: '2026-10-02T12:00:00Z' } })
+      const asked = init.body ? (JSON.parse(init.body).branch.name as string) : 'claude/3f9a1c2e'
+      if (asked === w.taken) return reply(409, { message: 'branch name already exists' })
+      return reply(201, { branch: { id: 'br-new-1', name: asked, expires_at: '2026-10-02T12:00:00Z' } })
     }
     if (method === 'GET' && path === `/projects/${PROJECT}/branches/br-new-1`) {
       return w.exists ? reply(200, { branch: { id: 'br-new-1', name: 'claude/3f9a1c2e', expires_at: '2026-10-02T12:00:00Z' } }) : reply(404, { message: 'branch not found' })
@@ -143,7 +151,7 @@ describe('the session branch', () => {
 
   test('a resumed session reuses its branch', { options: OPTIONS }, async ($, on) => {
     const w = world()
-    w.store['neon-branch-per-session:branches'] = { 'claude/3f9a1c2e': 'br-new-1' }
+    w.store[`neon-branch-per-session:session:${SESSION}`] = 'br-new-1'
     fakeEngine(on, w)
     await start($)
     expect(w.calls.some(c => c.method === 'POST')).toBe(false)
@@ -151,9 +159,40 @@ describe('the session branch', () => {
     expect(w.env.DATABASE_URL).toBe(URI)
   })
 
-  test('a stored branch that is gone is made again', { options: OPTIONS }, async ($, on) => {
+  test('a session sharing the first eight characters does not inherit the branch', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.store['neon-branch-per-session:session:3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb'] = 'br-other'
+    fakeEngine(on, w)
+    await start($)
+    expect(w.calls.some(c => c.method === 'POST')).toBe(true)
+    // each session has its own key, so neither write can drop the other
+    expect(w.store['neon-branch-per-session:session:3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb']).toBe('br-other')
+    expect(w.store[`neon-branch-per-session:session:${SESSION}`]).toBe('br-new-1')
+  })
+
+  test('a taken branch name is retried with a longer one', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.taken = 'claude/3f9a1c2e'
+    fakeEngine(on, w)
+    await start($)
+    const posts = w.calls.filter(c => c.method === 'POST').map(c => (c.body?.branch as { name: string }).name)
+    expect(posts).toEqual(['claude/3f9a1c2e', 'claude/3f9a1c2e-7b40-4d'])
+    expect(w.env.DATABASE_URL).toBe(URI)
+    expect(w.env.NEON_BRANCH).toBe('claude/3f9a1c2e-7b40-4d')
+  })
+
+  test('an entry stored under the branch name by an earlier version is reused', { options: OPTIONS }, async ($, on) => {
     const w = world()
     w.store['neon-branch-per-session:branches'] = { 'claude/3f9a1c2e': 'br-new-1' }
+    fakeEngine(on, w)
+    await start($)
+    expect(w.calls.some(c => c.method === 'POST')).toBe(false)
+    expect(w.env.DATABASE_URL).toBe(URI)
+  })
+
+  test('a stored branch that is gone is made again', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.store[`neon-branch-per-session:session:${SESSION}`] = 'br-new-1'
     w.exists = false
     fakeEngine(on, w)
     await start($)
@@ -190,7 +229,7 @@ describe('/neon', () => {
     expect((await run($, 'delete')).text).toContain('deleted claude/3f9a1c2e')
     expect(w.calls.some(c => c.method === 'DELETE' && c.url.endsWith('/branches/br-new-1'))).toBe(true)
     expect(w.env.DATABASE_URL).toBeUndefined()
-    expect(w.store['neon-branch-per-session:branches']).toEqual({})
+    expect(w.store[`neon-branch-per-session:session:${SESSION}`]).toBeUndefined()
   })
 })
 
