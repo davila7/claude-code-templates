@@ -1,0 +1,13 @@
+{
+  "description": "Spark-X2.5 (local, llama.cpp) - Run Claude Code against a local Spark-X2.5 GGUF through the Anthropic-compatible API of llama.cpp's llama-server, with no API key or cloud account. Start the server first: llama-server -m Spark-X2.5-4B-Q4_K_M.gguf --jinja -c 65536 --alias spark-x2.5 --port 8080 (llama.cpp b10828 or later). Claude Code's system prompt alone is about 18K tokens, so keep the context at 64K or more. The Ollama build of Spark-X2.5 does not advertise tool calling and cannot drive Claude Code; use llama.cpp. Weights: https://huggingface.co/XHToken/Spark-X2.5-4B-GGUF",
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8080",
+    "ANTHROPIC_AUTH_TOKEN": "llama.cpp",
+    "ANTHROPIC_MODEL": "spark-x2.5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "spark-x2.5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "spark-x2.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "spark-x2.5",
+    "API_TIMEOUT_MS": "600000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  }
+}
