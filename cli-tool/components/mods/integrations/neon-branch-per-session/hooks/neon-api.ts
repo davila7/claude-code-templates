@@ -33,10 +33,10 @@ export class NeonError extends Error {
 
 const MAX_HOURS = 720
 
-/** `<prefix>/<first 8 characters of the session id>`, with anything a branch name should not hold dropped. */
-export function branchName(prefix: string, sessionId: string): string {
+/** `<prefix>/<first `length` characters of the session id>`, with anything a branch name should not hold dropped. */
+export function branchName(prefix: string, sessionId: string, length = 8): string {
   const clean = (s: string) => s.replace(/[^A-Za-z0-9._-]/g, '')
-  const id = clean(sessionId).slice(0, 8) || 'session'
+  const id = clean(sessionId).slice(0, length) || 'session'
   const head = clean(prefix)
   return head ? `${head}/${id}` : id
 }

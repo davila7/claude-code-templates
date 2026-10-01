@@ -42,6 +42,7 @@ import {
   keepBranch,
   uriHost,
 } from './neon-api.ts'
+import { NeonError } from './neon-api.ts'
 import type { Branch } from './neon-api.ts'
 
 const COMMAND = 'neon'
@@ -98,13 +99,17 @@ export const register: Register = (on, options) => {
       const name = branchName(prefix, sessionId)
       const stored = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>
       // keyed by the full session id: the 8 characters in the branch name are not unique enough to share a branch on
-      let branch = stored[sessionId] ? await getBranch(f, apiKey, project, stored[sessionId]) : undefined
+      // an entry written under the branch name by an earlier version is still honoured
+      const known = stored[sessionId] ?? stored[name]
+      let branch = known ? await getBranch(f, apiKey, project, known) : undefined
       const isReused = branch !== undefined
       if (!branch) {
-        branch = await createBranch(f, apiKey, project, {
-          name,
-          parentId: parentId || undefined,
-          expiresAt: expiryIso(Date.now(), expireHours),
+        const make = (n: string) =>
+          createBranch(f, apiKey, project, { name: n, parentId: parentId || undefined, expiresAt: expiryIso(Date.now(), expireHours) })
+        // another session may already hold the 8-character name: retry once with the tail of the full id
+        branch = await make(name).catch(err => {
+          if (!(err instanceof NeonError) || (err.status !== 409 && err.status !== 422)) throw err
+          return make(branchName(prefix, sessionId, 16))
         })
         // re-read so a session that started meanwhile keeps its entry
         const latest = ((await $.store.get(STORE_KEY)) ?? {}) as Record<string, string>

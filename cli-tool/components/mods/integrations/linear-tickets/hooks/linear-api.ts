@@ -221,15 +221,18 @@ const DAY = 86_400_000
  * Without `tzOffsetMin` each time uses the offset in force at that moment, so a
  * daylight-saving change inside the window does not shift older days.
  */
-export const dayOf = (ms: number, tzOffsetMin = new Date(ms).getTimezoneOffset()) => Math.floor((ms - tzOffsetMin * 60_000) / DAY)
+export type TzOffset = number | ((ms: number) => number)
+const localOffset = (ms: number) => new Date(ms).getTimezoneOffset()
+export const dayOf = (ms: number, tz: TzOffset = localOffset) =>
+  Math.floor((ms - (typeof tz === 'function' ? tz(ms) : tz) * 60_000) / DAY)
 
 /** Tickets closed on each of the last `days` days, oldest first, today last. */
-export function doneByDay(tickets: readonly Ticket[], now: number, days: number, tzOffsetMin?: number): number[] {
-  const today = dayOf(now, tzOffsetMin)
+export function doneByDay(tickets: readonly Ticket[], now: number, days: number, tz?: TzOffset): number[] {
+  const today = dayOf(now, tz)
   const out = new Array<number>(days).fill(0)
   for (const t of tickets) {
     if (t.bucket !== 'done' || t.completedAt === undefined) continue
-    const ago = today - dayOf(t.completedAt, tzOffsetMin)
+    const ago = today - dayOf(t.completedAt, tz)
     if (ago >= 0 && ago < days) out[days - 1 - ago] += 1
   }
   return out

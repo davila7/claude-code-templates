@@ -38,7 +38,7 @@ describe('neon-api helpers', () => {
 type Call = { method: string; url: string; auth?: string; body?: Record<string, unknown> }
 const SESSION = '3f9a1c2e-7b40-4d11-9e0a-aaaaaaaaaaaa'
 
-type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number }
+type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number; taken?: string }
 
 const world = (): World => ({ calls: [], env: {}, store: {}, toasts: [], exists: true, fail: 0 })
 
@@ -70,6 +70,7 @@ function fakeEngine(on: On, w: World) {
     if (w.fail) return reply(w.fail, { message: 'project not found' })
     const path = e.url.replace('https://console.neon.tech/api/v2', '')
     if (method === 'POST' && path === `/projects/${PROJECT}/branches`) {
+      if (init.body && JSON.parse(init.body).branch.name === w.taken) return reply(409, { message: 'branch name already exists' })
       return reply(201, { branch: { id: 'br-new-1', name: 'claude/3f9a1c2e', expires_at: '2026-10-02T12:00:00Z' } })
     }
     if (method === 'GET' && path === `/projects/${PROJECT}/branches/br-new-1`) {
@@ -163,6 +164,25 @@ describe('the session branch', () => {
       '3f9a1c2e-0000-4000-8000-bbbbbbbbbbbb': 'br-other',
       [SESSION]: 'br-new-1',
     })
+  })
+
+  test('a taken branch name is retried with a longer one', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.taken = 'claude/3f9a1c2e'
+    fakeEngine(on, w)
+    await start($)
+    const posts = w.calls.filter(c => c.method === 'POST').map(c => (c.body?.branch as { name: string }).name)
+    expect(posts).toEqual(['claude/3f9a1c2e', 'claude/3f9a1c2e-7b40-4d'])
+    expect(w.env.DATABASE_URL).toBe(URI)
+  })
+
+  test('an entry stored under the branch name by an earlier version is reused', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.store['neon-branch-per-session:branches'] = { 'claude/3f9a1c2e': 'br-new-1' }
+    fakeEngine(on, w)
+    await start($)
+    expect(w.calls.some(c => c.method === 'POST')).toBe(false)
+    expect(w.env.DATABASE_URL).toBe(URI)
   })
 
   test('a stored branch that is gone is made again', { options: OPTIONS }, async ($, on) => {

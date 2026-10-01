@@ -244,7 +244,9 @@ export const register: Register = (on, options) => {
             ? `read ${fmtTokens(last.read)} · wrote ${fmtTokens(last.write)} · new ${fmtTokens(last.fresh)}`
             : `${fmtTokens(promptTokens(last))} tok`}
         </Text>
-        <Text color={color}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
+        {advice.kind !== 'uncached' && advice.kind !== 'off' && (
+          <Text color={color}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
+        )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
       </Box>
     )
