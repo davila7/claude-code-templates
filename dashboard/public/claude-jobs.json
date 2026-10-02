@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-01T03:17:10.481240+00:00",
+  "lastUpdated": "2026-10-02T03:15:06.316264+00:00",
   "totalJobs": 94,
   "sources": [
     "Anthropic",
@@ -8,6 +8,28 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49925202",
+      "company": "VOYGR (YC W26)",
+      "position": "Product Engineer",
+      "location": "San Francisco",
+      "remote": false,
+      "salary": "$150K-$200K",
+      "description": "I'm Yarik, cofounder and CTO. Before this I spent 20 years in tech with 10+ years running infra, ML and search teams at Google, Meta and Apple. We love maps and build location/businesses APIs for AI apps and agents. If ChatGPT tells you a restaurant is open and it actually closed in March, that's...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49925202",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49925202",
+      "postedAt": "2026-10-01T18:21:27+00:00",
+      "tags": [
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "Cursor",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5439830008",
       "company": "Anthropic",
@@ -1846,26 +1868,6 @@
       "tags": [
         "TypeScript",
         "Python",
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5096878008",
-      "company": "Anthropic",
-      "position": "Research Product Manager, Labs",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As a Research Product Manager for the Labs teams at Anthropic, you will own the ideation and development of new, moonshot products as we advance transformative, safe AI. The Labs team runs Anthropic's most ambitious experiments: new product categories that don't exist yet. The team focuses on...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5096878008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5096878008",
-      "postedAt": "2026-01-26T16:58:37-05:00",
-      "tags": [
         "Rust",
         "AWS",
         "Claude Code",
