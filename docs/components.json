@@ -48257,6 +48257,52 @@
       ]
     },
     {
+      "name": "session-time-machine",
+      "path": "productivity/session-time-machine",
+      "category": "productivity",
+      "type": "mod",
+      "description": "/timemachine draws the session as a timeline of prompts, tool calls and turn ends from its own transcript. Press a point and give a new instruction: the mod writes a copy of the transcript cut there under a new session id and gives you the `claude --resume` command that continues it, so you can try the other approach without losing this one. Hooks session.start, command.run, turn.complete and ui.render on Pane.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "productivity",
+        "timeline",
+        "fork",
+        "sessions"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "register.tsx"
+      ],
+      "userConfig": {
+        "copyCommand": {
+          "type": "boolean",
+          "title": "Copy the resume command",
+          "description": "Copy the `claude --resume` command of a fork to the clipboard",
+          "default": true
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/register.tsx",
+        "hooks/transcript.ts",
+        "tests/session-time-machine.test.ts"
+      ]
+    },
+    {
       "name": "webfetch-cache",
       "path": "productivity/webfetch-cache",
       "category": "productivity",
