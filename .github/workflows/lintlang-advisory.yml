@@ -1,0 +1,87 @@
+name: LintLang Advisory
+
+# Runs lintlang (Hermes Labs, pinned 0.8.2) on instruction files changed in a
+# PR: skills, agents and commands across cli-tool/components, .claude-plugin,
+# .claude and .claude/rules. Advisory only: findings are reported to a single
+# job summary and can never fail the workflow or block the PR. One job loops
+# over the changed-file list instead of a matrix, so a 30-file PR costs one
+# checkout and one install, not thirty.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/skills/**'
+      - 'cli-tool/components/agents/**'
+      - 'cli-tool/components/commands/**'
+      - '.claude-plugin/skills/**'
+      - '.claude/agents/**'
+      - '.claude/commands/**'
+      - '.claude/rules/**'
+      - '.github/workflows/lintlang-advisory.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  collect-changed:
+    name: Collect changed instruction files
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.diff.outputs.files }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # full history so git diff against the base ref works
+
+      - name: Diff changed instruction files vs base
+        id: diff
+        run: |
+          CHANGED="$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}" -- \
+            'cli-tool/components/skills/**' \
+            'cli-tool/components/agents/**' \
+            'cli-tool/components/commands/**' \
+            '.claude-plugin/skills/**' \
+            '.claude/agents/**' \
+            '.claude/commands/**' \
+            '.claude/rules/**' \
+            | grep -Ei '\.(md|mdx)$' || true)"
+          if [ -z "$CHANGED" ]; then
+            echo 'files=[]' >> "$GITHUB_OUTPUT"
+          else
+            echo "files=$(printf '%s\n' "$CHANGED" | jq -R . | jq -cs .)" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Changed instruction files:"
+          echo "$CHANGED"
+
+  lint:
+    name: LintLang advisory
+    needs: collect-changed
+    if: needs.collect-changed.outputs.files != '' && needs.collect-changed.outputs.files != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install lintlang (pinned 0.8.2)
+        continue-on-error: true
+        run: python3 -m pip install lintlang==0.8.2
+
+      - name: Scan changed files and write summary
+        if: always()
+        env:
+          FILES_JSON: ${{ needs.collect-changed.outputs.files }}
+        run: |
+          {
+            echo "## LintLang advisory"
+            echo
+            echo "$FILES_JSON" | jq -r '.[]' | while IFS= read -r f; do
+              echo "### \`$f\`"
+              echo
+              echo '```'
+              lintlang scan "$f" 2>&1 || true
+              echo '```'
+              echo
+            done
+            echo "_Advisory only: lintlang findings never fail the workflow or block the PR._"
+          } >> "$GITHUB_STEP_SUMMARY" || true
