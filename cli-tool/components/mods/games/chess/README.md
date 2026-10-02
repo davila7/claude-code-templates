@@ -39,6 +39,8 @@ Run `/chess` to open the board (`/chess black` to play Black, `/chess white` for
 
 Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`. A mod cannot see what `auto` resolved to, so if your terminal is light under `auto`, set the `board` option to `light`.
 
+The board is drawn as 64 fixed 3 x 1 cells on every surface. On Claude Code Desktop (HTML) a square used to size itself to its text, so empty squares came out narrower than ones with a piece and the rows drifted; the cells now have a fixed size, and the desktop gets no-break spaces so the label's padding is not collapsed. The terminal draws exactly what it did before.
+
 Mouse clicks land in the fullscreen layout. Everywhere else, focus the pane (ctrl+x tab), then move with Tab and press with Enter. The Claude Code mobile app has no text field, so there you click.
 
 The full rules are enforced: castling, en passant, promotion, check, checkmate, stalemate, the fifty-move rule, threefold repetition and insufficient material.
