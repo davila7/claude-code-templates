@@ -26,9 +26,11 @@ permissions:
 jobs:
   collect-changed:
     name: Collect changed instruction files
+    continue-on-error: true  # collection infrastructure failures are advisory too
     runs-on: ubuntu-latest
     outputs:
       files: ${{ steps.diff.outputs.files }}
+      incomplete: ${{ steps.collection-failure.outputs.incomplete }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -66,6 +68,14 @@ jobs:
               output.write(f'files={json.dumps(files)}\n')
           print(f'Changed instruction files: {json.dumps(files)}')
           PYTHON
+
+      - name: Report collection failure
+        id: collection-failure
+        if: failure()
+        run: |
+          echo 'incomplete=true' >> "$GITHUB_OUTPUT"
+          echo '::warning::LintLang changed-file collection failed; the advisory scan is incomplete. See the failed step and job summary.'
+          echo '**LintLang collection failure: scan incomplete. Changed instruction files could not be determined. See the failed step logs.**' >> "$GITHUB_STEP_SUMMARY"
 
   lint:
     name: LintLang advisory
