@@ -17,6 +17,10 @@ export type Point = {
   /** 1-based number of the user prompt this point belongs to (0 before the first) */
   turn: number
   label: string
+  /** the tool's name on a tool point, what colors its glyph */
+  tool?: string
+  /** the label without its kind: the prompt's text, the call's argument, the turn's last reply */
+  detail: string
   /** how many rows of the chain a fork from here keeps (before closing tool pairs) */
   keep: number
 }
@@ -86,8 +90,8 @@ function toolLabel(block: any): string {
 /** Prompts, tool calls and turn ends of the chain, in order, each with the prefix a fork keeps. */
 export function buildTimeline(chain: readonly Row[]): Point[] {
   const points: Point[] = []
-  const add = (kind: PointKind, turn: number, label: string, keep: number) =>
-    points.push({ n: points.length + 1, kind, turn, label, keep })
+  const add = (kind: PointKind, turn: number, label: string, keep: number, detail = label, tool?: string) =>
+    points.push({ n: points.length + 1, kind, turn, label, keep, detail, tool })
 
   const resultAt = new Map<string, number>()
   chain.forEach((row, i) => {
@@ -98,7 +102,7 @@ export function buildTimeline(chain: readonly Row[]): Point[] {
   let turn = 0
   let lastText = ''
   const endTurn = (end: number) => {
-    if (turn > 0) add('turn', turn, lastText ? `turn ${turn} ended: ${clip(lastText, 60)}` : `turn ${turn} ended`, end)
+    if (turn > 0) add('turn', turn, lastText ? `turn ${turn} ended: ${clip(lastText, 60)}` : `turn ${turn} ended`, end, clip(lastText, 90) || `turn ${turn} ended`)
   }
   chain.forEach((row, i) => {
     const text = promptText(row)
@@ -106,7 +110,7 @@ export function buildTimeline(chain: readonly Row[]): Point[] {
       endTurn(i)
       turn += 1
       lastText = ''
-      add('prompt', turn, `before: ${clip(text, 70)}`, i)
+      add('prompt', turn, `before: ${clip(text, 70)}`, i, clip(text, 90))
       return
     }
     if (row.type !== 'assistant') return
@@ -114,7 +118,7 @@ export function buildTimeline(chain: readonly Row[]): Point[] {
       if (b?.type === 'text' && String(b.text ?? '').trim()) lastText = String(b.text)
       else if (b?.type === 'tool_use') {
         const at = resultAt.get(b.id)
-        if (at !== undefined) add('tool', turn, toolLabel(b), at + 1)
+        if (at !== undefined) add('tool', turn, toolLabel(b), at + 1, toolLabel(b).slice(String(b.name).length).trim(), String(b.name))
       }
     }
   })
