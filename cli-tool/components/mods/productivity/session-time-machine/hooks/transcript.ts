@@ -77,7 +77,7 @@ export function promptText(row: Row): string | undefined {
 }
 
 export const clip = (text: string, max: number): string => {
-  const one = text.replace(/\s+/g, ' ').trim()
+  const one = text.replace(/[`\s]+/g, ' ').trim()
   return one.length > max ? `${one.slice(0, Math.max(1, max - 1))}…` : one
 }
 

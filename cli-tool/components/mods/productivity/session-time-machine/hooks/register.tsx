@@ -141,7 +141,8 @@ export const register: Register = (on, options) => {
     const last = Math.max(0, points.length - room)
     const start = Math.min(Math.max(offset, 0), last)
     const shown = points.slice(start, start + room)
-    const wide = Math.max(16, (e.viewport?.columns ?? 60) - 16)
+    // viewport.columns is wider than the pane body (95 reported for a 150-column terminal), so take a share of it
+    const wide = Math.max(16, Math.floor((e.viewport?.columns ?? 60) * 0.55) - 12)
     const turns = points.filter(p => p.kind === 'prompt').length
     const tools = points.filter(p => p.kind === 'tool').length
     const pick = points.find(p => p.n === armed)

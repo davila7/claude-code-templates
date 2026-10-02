@@ -3,6 +3,7 @@ import { describe, expect, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 import {
   buildTimeline,
+  clip,
   closePrefix,
   forkTranscript,
   mainChain,
@@ -64,6 +65,10 @@ describe('the chain', () => {
 })
 
 describe('the timeline', () => {
+  test('backticks and line breaks of a reply never reach a label', () => {
+    expect(clip('```ts\nexport const a = 1\n```', 40)).toBe('ts export const a = 1')
+  })
+
   test('prompts cut before themselves, tool calls after their result, turns after their last row', () => {
     const chain = mainChain(session())
     const t = buildTimeline(chain)
