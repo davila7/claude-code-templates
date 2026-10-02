@@ -417,6 +417,8 @@ export const register: Register = (on, options) => {
     const ranks = g.you === 'w' ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7]
     const files = g.you === 'w' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0]
     const isWhite = (p: Piece) => p !== '' && p === p.toUpperCase()
+    // HTML collapses runs of spaces and trims a text's ends; a no-break space keeps them
+    const pad = (text: string) => (e.surface === 'terminal' ? text : text.replace(/ /g, '\u00a0'))
     const glyph = (p: Piece) => {
       if (p === '' || letters) return p || ' '
       const solid = isWhite(p) === darkTheme
@@ -425,7 +427,9 @@ export const register: Register = (on, options) => {
 
     const board = ranks.map(rank => (
       <Box key={`rank:${rank}`} flexDirection="row">
-        <Text dimColor>{`${rank + 1} `}</Text>
+        <Box key="rank-label" width={2} flexShrink={0}>
+          <Text dimColor>{pad(`${rank + 1} `)}</Text>
+        </Box>
         {files.map(file => {
           const sq = rank * 8 + file
           const p = g.pos.board[sq]
@@ -439,12 +443,16 @@ export const register: Register = (on, options) => {
           // the marker keeps a capture readable without the red
           const label = capture ? `×${p === '' ? ' ' : glyph(p)} ` : target ? ' • ' : ` ${glyph(p)} `
           return (
-            <Box key={`cell:${sq}`} backgroundColor={bg}>
+            // Every square is a fixed 3 x 1 cell. Without it a desktop (HTML) sizes a
+            // square to its text: whitespace collapses, so an empty square came out
+            // narrower than one holding a piece and rows 3-6 drifted out of the grid.
+            // The terminal already drew exactly 3 x 1, so nothing changes there.
+            <Box key={`cell:${sq}`} backgroundColor={bg} width={3} height={1} flexShrink={0} justifyContent="center">
               <Button
                 key={`sq:${squareName(sq)}`}
                 plain
                 dimColor={darkTheme && p !== '' && !isWhite(p)}
-                label={label}
+                label={pad(label)}
                 onPress={noop}
               />
             </Box>
@@ -472,7 +480,14 @@ export const register: Register = (on, options) => {
         <Text bold>{`You ${colorName(g.you)} vs ${opponent} ${colorName(claudeColor(g))}`}</Text>
         <Box key="board" flexDirection="column" marginTop={1}>
           {board}
-          <Text dimColor>{`  ${files.map(f => ` ${'abcdefgh'[f]} `).join('')}`}</Text>
+          <Box key="files" flexDirection="row">
+            <Box key="files-gap" width={2} flexShrink={0} />
+            {files.map(f => (
+              <Box key={`file:${f}`} width={3} flexShrink={0} justifyContent="center">
+                <Text dimColor>{'abcdefgh'[f]}</Text>
+              </Box>
+            ))}
+          </Box>
         </Box>
 
         <Box key="turn" marginTop={1} flexDirection="column">

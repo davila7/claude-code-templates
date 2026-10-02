@@ -301,3 +301,32 @@ describe('Jev', () => {
     expect(resultText({ ...g, resigned: 'b' }, 'Jev')).toBe('Jev resigned: White wins')
   })
 })
+
+describe('the board is a uniform grid on every surface', () => {
+  for (const surface of ['terminal', 'desktop'] as const) {
+    test(`${surface}: all 64 squares are 3 x 1 cells and a square never reads as bare spaces`, async ($, on) => {
+      const calls: Calls = { prompts: [], replies: [], completes: [] }
+      fakeModel(on, calls)
+      await openBoard($)
+      const ui = await $.ui.mount({ plugin: 'chess', surface, component: 'Pane', requestId: 'chess', props: PANE_PROPS })
+      const boxes = await ui.findAll({ type: 'Box' })
+      const cells = boxes.filter(b => b.key?.startsWith('cell:'))
+      expect(cells.length).toBe(64)
+      for (const cell of cells) {
+        expect(cell.props.width).toBe(3)
+        expect(cell.props.height).toBe(1)
+        expect(cell.props.flexShrink).toBe(0)
+      }
+      // an empty square (e4) and one with a piece (e2) carry the same 3-character label
+      const empty = (await ui.find({ key: 'sq:e4' }))!
+      const piece = (await ui.find({ key: 'sq:e2' }))!
+      expect(String(empty.props.label).length).toBe(3)
+      expect(String(piece.props.label).length).toBe(3)
+      // a desktop collapses spaces, so it gets no-break ones; the terminal keeps plain ones
+      expect(/ /.test(String(empty.props.label))).toBe(surface === 'desktop')
+      // the file letters sit in 3-wide boxes too, so they line up under the squares
+      expect(boxes.filter(b => b.key?.startsWith('file:')).length).toBe(8)
+      await ui.unmount()
+    })
+  }
+})
