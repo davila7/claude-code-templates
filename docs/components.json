@@ -47848,10 +47848,10 @@
       "path": "productivity/aitmpl",
       "category": "productivity",
       "type": "mod",
-      "description": "/aitmpl opens a component browser above the prompt: the aitmpl.com catalog (agents, commands, MCPs, settings, hooks, skills, loops, mods) read live from the site's public JSON through $.http.fetch. Pick a type or a trending component, filter, page, open a component and install it from there ($.process.run with the fixed CLI argv and a validated path, no shell), drop its install command into the prompt, or open its page in your browser. Hooks session.start, command.run and ui.render on AbovePrompt; browsing costs no tokens.",
+      "description": "/aitmpl opens a side pane that looks like VS Code's Extensions view: a search box, quick filters for the aitmpl.com component types, an Installed section (agents, commands, skills and mods found in .claude/ and ~/.claude/), a Popular/Results list with download counts, and a button on every row that opens the component's page. A row's name opens its detail with install ($.process.run with the fixed CLI argv and a validated path, no shell) and put-command-in-prompt. The catalog is read live from the site's public JSON through $.http.fetch; browsing costs no tokens.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "license": "MIT",
       "keywords": [
         "mod",
@@ -47859,7 +47859,7 @@
         "productivity",
         "aitmpl",
         "catalog",
-        "tui"
+        "sidebar"
       ],
       "downloads": 5,
       "security": {
@@ -47883,8 +47883,14 @@
         "pageSize": {
           "type": "number",
           "title": "Rows per page",
-          "description": "Components listed per page, capped by the rows the band has",
+          "description": "Rows shown per section before \"show more\"",
           "default": 8
+        },
+        "columns": {
+          "type": "number",
+          "title": "Pane width",
+          "description": "Columns asked for the docked pane in the fullscreen layout (28-120); a width you drag it to wins",
+          "default": 48
         }
       },
       "references": [
@@ -47892,7 +47898,8 @@
         "hooks/catalog.ts",
         "hooks/hooks.json",
         "hooks/register.tsx",
-        "tests/catalog.test.ts"
+        "tests/catalog.test.ts",
+        "tests/sidebar.test.tsx"
       ]
     },
     {
