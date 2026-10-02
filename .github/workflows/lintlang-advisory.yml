@@ -3,7 +3,8 @@ name: LintLang Advisory
 # Runs lintlang (Hermes Labs, pinned 0.8.2) on instruction files changed in a
 # PR: skills, agents and commands across cli-tool/components, .claude-plugin,
 # .claude and .claude/rules. Advisory only: findings are reported to a single
-# job summary and can never fail the workflow or block the PR. One job loops
+# job summary and never block the PR. Infrastructure failures are marked in
+# the failed step, warning annotation and summary; the job is non-blocking. One job loops
 # over the changed-file list instead of a matrix, so a 30-file PR costs one
 # checkout and one install, not thirty.
 
@@ -32,30 +33,43 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # full history so git diff against the base ref works
+          fetch-depth: 0  # includes the event's recorded base commit
 
       - name: Diff changed instruction files vs base
         id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          CHANGED="$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}" -- \
-            'cli-tool/components/skills/**' \
-            'cli-tool/components/agents/**' \
-            'cli-tool/components/commands/**' \
-            '.claude-plugin/skills/**' \
-            '.claude/agents/**' \
-            '.claude/commands/**' \
-            '.claude/rules/**' \
-            | grep -Ei '\.(md|mdx)$' || true)"
-          if [ -z "$CHANGED" ]; then
-            echo 'files=[]' >> "$GITHUB_OUTPUT"
-          else
-            echo "files=$(printf '%s\n' "$CHANGED" | jq -R . | jq -cs .)" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Changed instruction files:"
-          echo "$CHANGED"
+          python3 - <<'PYTHON'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          paths = [
+              'cli-tool/components/skills/**',
+              'cli-tool/components/agents/**',
+              'cli-tool/components/commands/**',
+              '.claude-plugin/skills/**',
+              '.claude/agents/**',
+              '.claude/commands/**',
+              '.claude/rules/**',
+          ]
+          changed = subprocess.check_output([
+              'git', 'diff', '--name-only', '-z', '--diff-filter=ACMR',
+              os.environ['BASE_SHA'], '--', *paths,
+          ])
+          files = [os.fsdecode(path) for path in changed.split(b'\0') if path]
+          files = [path for path in files
+                   if Path(path).suffix.lower() in {'.md', '.mdx', '.yaml', '.yml', '.json'}]
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'files={json.dumps(files)}\n')
+          print(f'Changed instruction files: {json.dumps(files)}')
+          PYTHON
 
   lint:
     name: LintLang advisory
+    continue-on-error: true  # infrastructure failures remain visible but non-blocking
     needs: collect-changed
     if: needs.collect-changed.outputs.files != '' && needs.collect-changed.outputs.files != '[]'
     runs-on: ubuntu-latest
@@ -64,24 +78,42 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install lintlang (pinned 0.8.2)
-        continue-on-error: true
         run: python3 -m pip install lintlang==0.8.2
 
       - name: Scan changed files and write summary
-        if: always()
         env:
           FILES_JSON: ${{ needs.collect-changed.outputs.files }}
         run: |
-          {
-            echo "## LintLang advisory"
-            echo
-            echo "$FILES_JSON" | jq -r '.[]' | while IFS= read -r f; do
-              echo "### \`$f\`"
-              echo
-              echo '```'
-              lintlang scan "$f" 2>&1 || true
-              echo '```'
-              echo
-            done
-            echo "_Advisory only: lintlang findings never fail the workflow or block the PR._"
-          } >> "$GITHUB_STEP_SUMMARY" || true
+          python3 - <<'PYTHON'
+          import json
+          import os
+          import subprocess
+          import sys
+
+          failed = False
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## LintLang advisory\n\n')
+              for path in json.loads(os.environ['FILES_JSON']):
+                  summary.write(f'### {json.dumps(path, ensure_ascii=False)}\n\n')
+                  # No verdict/score failure flags: findings exit 0 in LintLang 0.8.2.
+                  result = subprocess.run(
+                      ['lintlang', 'scan', path], stdout=subprocess.PIPE,
+                      stderr=subprocess.STDOUT, text=True,
+                  )
+                  # Indent output so embedded Markdown fences stay literal.
+                  summary.writelines(f'    {line}\n' for line in result.stdout.splitlines())
+                  summary.write('\n')
+                  if result.returncode != 0:
+                      failed = True
+                      summary.write(f'**Scanner failure (exit {result.returncode}); '
+                                    'this file was not successfully scanned.**\n\n')
+              if not failed:
+                  summary.write('_Scan completed. Findings are advisory only._\n')
+          sys.exit(1 if failed else 0)
+          PYTHON
+
+      - name: Report infrastructure failure
+        if: failure()
+        run: |
+          echo '::warning::LintLang infrastructure failed; the advisory scan is incomplete. See the failed step and job summary.'
+          echo '**LintLang infrastructure failure: scan incomplete. This is not a clean or advisory result. See the failed step logs.**' >> "$GITHUB_STEP_SUMMARY"
