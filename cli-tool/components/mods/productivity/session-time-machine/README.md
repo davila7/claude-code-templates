@@ -11,14 +11,26 @@ it. The session you are in is not touched, so you can try the other approach
 and still go back.
 
 ```
-Time machine                                   9 points · press one to fork from it
-   1 ▸ before: add a retry to the upload client
-   2 · Read src/upload.ts
-   3 · Edit src/upload.ts
-   4 · Bash npm test
-   5 ■ turn 1 ended: Tests pass, retry added with backoff.
->  6 · Bash npm test                       <- armed
+⏱ Time machine
+ 9 points  3 prompts  5 calls
+──────────────────────────────────────
+  1 ┏ ● prompt 1  add a retry to the upload client
+  2 ┃ ◆ Read  src/upload.ts
+  3 ┃ ◆ Edit  src/upload.ts                  <- armed (highlighted row)
+  4 ┃ ◆ Bash  npm test
+  5 ┗ ■ turn end  Tests pass, retry added with backoff.
+╭────────────────────────────────────╮
+│ Fork from #3                       │
+│ after: src/upload.ts               │
+│ Type the new instruction after     │
+│ /timemachine fork 3 and press Enter│
+╰────────────────────────────────────╯
+↑ older   ↓ newer   ⟳ reload   ✕ clear
 ```
+
+Colors mark the kind: blue prompts, violet turn ends, and a glyph per tool
+(green Bash, amber Edit/Write, teal Read/Grep/Glob, orange Web, pink Agent,
+lilac MCP). The armed row is highlighted and rows light up under the pointer.
 
 ```
 > /timemachine fork 3 keep the retry but use the existing queue helper instead
@@ -101,5 +113,6 @@ Hooks: `session.start` (registers `/timemachine`), `command.run`,
 `$.prompt.fill`, `$.ui.copy`. No network, no process spawn.
 
 Tests: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test productivity/session-time-machine`
-covers the transcript parsing, the cut points, the tool-pair closing and the
-resume command.
+cover the transcript parsing, the cut points, the tool-pair closing, the
+resume command, and mount the pane on the terminal and desktop surfaces to
+press a point.

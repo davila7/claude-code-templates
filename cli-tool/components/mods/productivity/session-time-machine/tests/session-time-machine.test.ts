@@ -1,5 +1,6 @@
 // Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test productivity/session-time-machine
 import { describe, expect, test } from 'claude-code/testing'
+import type { On } from 'claude-code'
 import {
   buildTimeline,
   closePrefix,
@@ -71,6 +72,11 @@ describe('the timeline', () => {
     expect(t[2]!.label).toBe('Read src/x.ts')
     expect(t[3]!.label).toBe('turn 1 ended: Tests pass.')
     expect(t.map(p => p.n)).toEqual([1, 2, 3, 4, 5, 6])
+    // the pane colors by tool and shows the detail without its kind
+    expect(t[1]!.tool).toBe('Bash')
+    expect(t[1]!.detail).toBe('npm test')
+    expect(t[0]!.detail).toBe('first task')
+    expect(t[3]!.detail).toBe('Tests pass.')
   })
 })
 
@@ -117,5 +123,57 @@ describe('forking', () => {
     expect(parseArgs('fork 3 use the other approach\nplease')).toEqual({ kind: 'fork', n: 3, instruction: 'use the other approach\nplease' })
     expect(parseArgs('fork 3').kind).toBe('error')
     expect(parseArgs('fork x y').kind).toBe('error')
+  })
+})
+
+describe('the pane', () => {
+  const fixture = () => session().map(r => JSON.stringify(r)).join('\n')
+  const PANE = { title: 'Time machine', isFocused: true, bodyColumns: 60, placement: 'dock' as const, scroll: { offset: 0, bodyRows: 30 }, view: {} }
+
+  const world = (on: On, fills: string[], wrote: string[] = []) => {
+    on('env.get', ($, e) => ({ value: e.name === 'HOME' ? '/home/me' : undefined }))
+    on('session.cwd', () => ({ value: '/work' }))
+    on('session.id', () => ({ value: 'old' }))
+    on('fs.read', () => ({ value: fixture() }))
+    on('fs.write', ($, e) => {
+      wrote.push(e.path)
+      return { value: undefined }
+    })
+    on('command.register', () => ({ value: undefined }) as never)
+    on('ui.open', () => ({ value: undefined }))
+    on('ui.invalidate', () => ({ value: undefined }))
+    on('ui.status', () => ({ value: undefined }))
+    on('prompt.fill', ($, e) => {
+      fills.push(e.text)
+      return { value: { isFilled: true } } as never
+    })
+  }
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    test(`${surface}: the points are drawn, pressing one arms it and fills the fork command`, async ($, on) => {
+      const fills: string[] = []
+      world(on, fills)
+      await $.command.run({ command: 'timemachine', args: '', origin: { kind: 'composer' } } as never)
+      const ui = await $.ui.mount({ plugin: 'session-time-machine', surface, component: 'Pane', requestId: 'time-machine', props: PANE } as never)
+      expect(await ui.find({ key: 'p2' })).toBeDefined()
+      expect(await ui.find({ key: 'p6' })).toBeDefined()
+      await ui.press({ key: 'p3' })
+      await ui.redraw()
+      expect(fills).toEqual(['/timemachine fork 3 '])
+      expect(await ui.find({ type: 'Text', text: /Fork from #3/ })).toBeDefined()
+      await ui.unmount()
+    })
+  }
+
+  test('fork writes the cut transcript and answers the resume command', async ($, on) => {
+    const fills: string[] = []
+    const wrote: string[] = []
+    world(on, fills, wrote)
+    on('ui.copy', () => ({ value: { isCopied: true } }) as never)
+    const out = (await $.command.run({ command: 'timemachine', args: 'fork 2 try the other approach', origin: { kind: 'composer' } } as never)) as { text?: string }
+    expect(wrote[0]).toMatch(/^\/home\/me\/\.claude\/projects\/-work\/[0-9a-f-]{36}\.jsonl$/)
+    expect(out.text).toContain("claude --resume ")
+    expect(out.text).toContain("'try the other approach'")
+    expect(out.text).toContain('resume command copied')
   })
 })

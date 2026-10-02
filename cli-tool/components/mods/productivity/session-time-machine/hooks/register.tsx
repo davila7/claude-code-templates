@@ -35,7 +35,27 @@ import {
 } from './transcript.ts'
 
 const PANE = 'time-machine'
-const MARK: Record<Point['kind'], string> = { prompt: '▸', tool: '·', turn: '■' }
+const C = {
+  accent: '#58a6ff',
+  prompt: '#5eb1ff',
+  turn: '#b392f0',
+  ink: '#e6edf3',
+  chip: '#2a313c',
+  rail: '#4b5563',
+  armed: '#1f3a5f',
+  hover: '#2d3b52',
+  bad: '#f85149',
+  tool: { Bash: '#7ee787', Edit: '#f2cc60', Read: '#6cb6c9', Web: '#ff9d5c', Agent: '#f778ba', Mcp: '#d2a8ff', Other: '#8b949e' },
+}
+
+const toolColor = (name = ''): string =>
+  /^(Edit|Write|MultiEdit|NotebookEdit)$/.test(name) ? C.tool.Edit
+  : name === 'Bash' ? C.tool.Bash
+  : /^(Read|Grep|Glob|LS)$/.test(name) ? C.tool.Read
+  : /^Web/.test(name) ? C.tool.Web
+  : /^(Agent|Task)$/.test(name) ? C.tool.Agent
+  : name.startsWith('mcp__') ? C.tool.Mcp
+  : C.tool.Other
 
 let chain: Row[] = []
 let points: Point[] = []
@@ -116,61 +136,117 @@ export const register: Register = (on, options) => {
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const { Box, Text, Button } = $.ui.resolve(e)
-    const room = Math.max(3, (e.viewport?.rows ?? 24) - 6)
+    // header, count chips, rule, footer bar and the paging row take 9 of the pane's rows
+    const room = Math.max(3, (e.viewport?.rows ?? 24) - 9)
     const last = Math.max(0, points.length - room)
     const start = Math.min(Math.max(offset, 0), last)
     const shown = points.slice(start, start + room)
-    const wide = Math.max(20, (e.viewport?.columns ?? 60) - 10)
+    const wide = Math.max(16, (e.viewport?.columns ?? 60) - 16)
+    const turns = points.filter(p => p.kind === 'prompt').length
+    const tools = points.filter(p => p.kind === 'tool').length
+    const pick = points.find(p => p.n === armed)
+    const repaint = () => $.ui.invalidate('ui.render')
     return (
-      <Box flexDirection="column">
-        <Text dimColor>
-          {points.length} points · press one to fork from it ({armed ? `armed #${armed}` : 'none armed'})
-        </Text>
-        {problem && <Text color="red">{problem}</Text>}
-        {points.length === 0 && !problem && <Text dimColor>Nothing recorded yet.</Text>}
-        {shown.map(p => (
-          <Button
-            key={`p${p.n}`}
-            plain
-            onPress={() => {
-              armed = p.n
-              $.ui.invalidate('ui.render')
-              void $.prompt.fill({ text: `/timemachine fork ${p.n} ` })
-            }}
-          >
-            {`${armed === p.n ? '>' : ' '} ${String(p.n).padStart(3)} ${MARK[p.kind]} ${clip(p.label, wide)}`}
-          </Button>
-        ))}
-        <Box>
+      <Box key="tm" flexDirection="column">
+        <Box key="head" flexDirection="row">
+          <Text bold color={C.accent}>
+            {'⏱ Time machine'}
+          </Text>
+        </Box>
+        <Box key="chips" flexDirection="row" marginTop={1}>
+          <Text color={C.ink} backgroundColor={C.chip}>{` ${points.length} points `}</Text>
+          <Text>{' '}</Text>
+          <Text color={C.prompt} backgroundColor={C.chip}>{` ${turns} prompts `}</Text>
+          <Text>{' '}</Text>
+          <Text color={C.tool.Bash} backgroundColor={C.chip}>{` ${tools} calls `}</Text>
+        </Box>
+        <Text color={C.rail}>{'─'.repeat(Math.max(10, (e.viewport?.columns ?? 60) - 6))}</Text>
+        {problem && <Text color={C.bad}>{problem}</Text>}
+        {points.length === 0 && !problem && <Text dimColor>Nothing recorded yet: send a prompt, then reload.</Text>}
+        {shown.map(p => {
+          const isArmed = armed === p.n
+          const tint = p.kind === 'prompt' ? C.prompt : p.kind === 'turn' ? C.turn : toolColor(p.tool)
+          const rail = p.kind === 'prompt' ? '┏' : p.kind === 'turn' ? '┗' : '┃'
+          const glyph = p.kind === 'prompt' ? '●' : p.kind === 'turn' ? '■' : '◆'
+          const kind = p.kind === 'prompt' ? `prompt ${p.turn}` : p.kind === 'turn' ? 'turn end' : (p.tool ?? 'tool')
+          return (
+            <Box key={`r${p.n}`} flexDirection="row" backgroundColor={isArmed ? C.armed : undefined}>
+              <Text dimColor>{String(p.n).padStart(3)} </Text>
+              <Text color={C.rail}>{rail}</Text>
+              <Text bold color={tint}>{` ${glyph} `}</Text>
+              <Button
+                key={`p${p.n}`}
+                plain
+                hover={{ backgroundColor: C.hover, bold: true }}
+                onPress={() => {
+                  armed = p.n
+                  repaint()
+                  void $.prompt.fill({ text: `/timemachine fork ${p.n} ` }).catch(() => undefined)
+                }}
+              >
+                {clip(`${kind}  ${p.detail}`, wide)}
+              </Button>
+            </Box>
+          )
+        })}
+        <Box key="foot" flexDirection="column" marginTop={1} borderStyle="round" borderColor={pick ? C.accent : C.rail} paddingX={1}>
+          {pick ? (
+            <Box key="armed" flexDirection="column">
+              <Text bold color={C.accent}>{`Fork from #${pick.n}`}</Text>
+              <Text dimColor wrap="truncate-end">{`${pick.kind === 'prompt' ? 'before' : 'after'}: ${clip(pick.detail, wide)}`}</Text>
+              <Text color={C.ink}>{`Type the new instruction after /timemachine fork ${pick.n} and press Enter.`}</Text>
+            </Box>
+          ) : (
+            <Text dimColor>Press any point to fork the session from there with a new instruction.</Text>
+          )}
+        </Box>
+        <Box key="nav" flexDirection="row" marginTop={1}>
           <Button
             key="older"
+            hover={{ color: C.accent }}
             onPress={() => {
               offset = Math.max(0, start - room)
-              $.ui.invalidate('ui.render')
+              repaint()
             }}
           >
-            older
+            ↑ older
           </Button>
+          <Text>{'   '}</Text>
           <Button
             key="newer"
+            hover={{ color: C.accent }}
             onPress={() => {
               offset = Math.min(last, start + room)
-              $.ui.invalidate('ui.render')
+              repaint()
             }}
           >
-            newer
+            ↓ newer
           </Button>
+          <Text>{'   '}</Text>
           <Button
             key="reload"
+            hover={{ color: C.accent }}
             onPress={async () => {
               await $.fs
                 .read(transcriptPath((await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`, await $.session.cwd(), await $.session.id()))
                 .then(ingest, fail)
-              $.ui.invalidate('ui.render')
+              repaint()
             }}
           >
-            reload
+            ⟳ reload
           </Button>
+          {pick && (
+            <Button
+              key="clear"
+              hover={{ color: C.bad }}
+              onPress={() => {
+                armed = undefined
+                repaint()
+              }}
+            >
+              {'   ✕ clear'}
+            </Button>
+          )}
         </Box>
       </Box>
     )
