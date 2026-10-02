@@ -1,0 +1,105 @@
+# session-time-machine
+
+> **Early access.** Claude Mods load in Claude Code >= 2.1.259 with
+> `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases.
+
+`/timemachine` draws the session as a timeline: every prompt, tool call and
+turn end, read from the session's own transcript. Press a point, type what
+you want done differently, and the mod writes a copy of the session cut at
+that point under a new session id and gives you the command that continues
+it. The session you are in is not touched, so you can try the other approach
+and still go back.
+
+```
+Time machine                                   9 points · press one to fork from it
+   1 ▸ before: add a retry to the upload client
+   2 · Read src/upload.ts
+   3 · Edit src/upload.ts
+   4 · Bash npm test
+   5 ■ turn 1 ended: Tests pass, retry added with backoff.
+>  6 · Bash npm test                       <- armed
+```
+
+```
+> /timemachine fork 3 keep the retry but use the existing queue helper instead
+Forked at point 3 (Edit src/upload.ts): 41 rows kept.
+New session 7c1e…, resume command copied. In a new terminal:
+cd '/home/me/app' && claude --resume 7c1e… 'keep the retry but use the existing queue helper instead'
+```
+
+## Usage
+
+| Command | Does |
+| --- | --- |
+| `/timemachine` | opens the pane; pressing a point arms it and puts `/timemachine fork <n> ` in the prompt, you type the instruction and press Enter |
+| `/timemachine list` | the same points as text, numbered |
+| `/timemachine fork <n> <instruction>` | forks at point `n` |
+
+Points are of three kinds. **▸ prompt**: the fork keeps everything *before*
+that prompt, so the instruction replaces it. **· tool call**: the fork keeps
+the conversation up to and including that call's result. **■ turn end**: the
+fork keeps the whole turn. The timeline refreshes when a turn completes; the
+pane's `reload` button re-reads it on demand.
+
+## How it forks, and what it cannot do
+
+The mod API (checked against the declarations Claude Code 2.1.288 writes; the repo copy at `types/claude-code.d.ts` is 2.1.283)
+has no call that forks or rewinds the live session. `$.model.fork` is a
+tool-less side question over the transcript, and `$.session` offers `messages`,
+`append`, `compact` and `send`, none of which branches. So the fork is a new
+session, not a branch inside the one you are in:
+
+1. the mod reads `~/.claude/projects/<project>/<session-id>.jsonl` (or under
+   `CLAUDE_CONFIG_DIR`) with `$.fs.read`,
+2. follows the `parentUuid` chain back from the last row, which drops rewound
+   branches and subagent sidechains,
+3. keeps the rows up to the chosen point, extended so no `tool_use` it keeps
+   is left without its `tool_result`,
+4. writes them under a new id next to the original with `$.fs.write`,
+5. returns `claude --resume <new-id> '<instruction>'`, copied to the
+   clipboard. Run it in a new terminal.
+
+The resumed session starts from the cut with the instruction as its next
+message. Verified by hand on Claude Code 2.1.288: a fork cut at a tool call
+resumed with `claude -p --resume` and answered from the context at that point.
+
+Limits:
+
+- **You open the fork yourself.** The mod cannot start another Claude Code
+  session; it hands you the command.
+- **Files are not rewound.** The fork restores the conversation, not the
+  working tree. If the original session already edited files after the cut,
+  the fork's model will not know; use git (or a worktree) to reset them.
+- **4 MiB.** `$.fs.read` rejects files over 4 MiB, so a very long transcript
+  shows an error in the pane instead of a timeline.
+- **Rows only.** The timeline is the transcript's prompts, tool calls and
+  turn ends; thinking and attachments are kept in the fork but not listed.
+- **Pane not drawn in `claude -p`.** `/timemachine list` and `fork` work
+  there; the pane needs the terminal UI.
+
+## Options
+
+Read from user settings, keyed by the plugin's full id:
+
+```json
+{ "pluginConfigs": { "session-time-machine@skills-dir": { "options": { "copyCommand": false } } } }
+```
+
+| Option | Default | |
+| --- | --- | --- |
+| `copyCommand` | `true` | copy the resume command to the clipboard |
+
+## Install
+
+```bash
+npx claude-code-templates@latest --mod productivity/session-time-machine
+```
+
+Hooks: `session.start` (registers `/timemachine`), `command.run`,
+`turn.complete`, `ui.render` on `Pane`. Calls: `$.fs.read`, `$.fs.write`,
+`$.env.get` (`HOME`, `CLAUDE_CONFIG_DIR`), `$.session.cwd`, `$.session.id`,
+`$.prompt.fill`, `$.ui.copy`. No network, no process spawn.
+
+Tests: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test productivity/session-time-machine`
+covers the transcript parsing, the cut points, the tool-pair closing and the
+resume command.
