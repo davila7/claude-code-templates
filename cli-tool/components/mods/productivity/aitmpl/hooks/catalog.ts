@@ -207,3 +207,66 @@ export function formatCount(n: number): string {
 export function padRight(text: string, width: number): string {
   return truncate(text, width).padEnd(width)
 }
+
+// --- sidebar: what is installed, and one list across types -------------------------------------
+
+export type Scope = 'project' | 'user'
+
+/** A component found on disk under `.claude/` (project) or `~/.claude/` (user). */
+export type Installed = { type: TypeKey; name: string; scope: Scope }
+
+/** A catalog row with the type it belongs to, for lists that span types. */
+export type Entry = { type: TypeInfo; item: Item }
+
+// The name the CLI writes the component under: the last segment of its path (`security/audit` -> `audit`)
+export function itemKey(item: Item): string {
+  const path = cleanPath(item)
+  return path.slice(path.lastIndexOf('/') + 1)
+}
+
+export function stripExt(file: string): string {
+  return file.replace(/\.(md|json)$/, '')
+}
+
+// Installed rows deduplicated by type and name (project wins over user), sorted by name.
+export function dedupeInstalled(rows: readonly Installed[]): Installed[] {
+  const seen = new Map<string, Installed>()
+  for (const r of rows) {
+    const k = `${r.type}:${r.name}`
+    if (!seen.has(k) || (seen.get(k)!.scope === 'user' && r.scope === 'project')) seen.set(k, r)
+  }
+  return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name))
+}
+
+export function isInstalled(installed: readonly Installed[], type: TypeInfo, item: Item): boolean {
+  const key = itemKey(item)
+  return installed.some(i => i.type === type.key && i.name === key)
+}
+
+// The catalog row behind an installed name, when that type's catalog is loaded.
+export function catalogItemFor(items: readonly Item[] | undefined, row: Installed): Item | undefined {
+  return items?.find(it => itemKey(it) === row.name)
+}
+
+export function filterInstalled(rows: readonly Installed[], filter: TypeKey | 'all', query: string): Installed[] {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean)
+  return rows.filter(r => (filter === 'all' || r.type === filter) && words.every(w => r.name.toLowerCase().includes(w)))
+}
+
+// Catalog rows across the given types that match the query, most downloaded first.
+export function searchEntries(
+  byType: ReadonlyMap<TypeKey, readonly Item[]>,
+  types: readonly TypeInfo[],
+  query: string,
+): Entry[] {
+  const out: Entry[] = []
+  for (const type of types) {
+    for (const item of filterItems(byType.get(type.key) ?? [], query)) out.push({ type, item })
+  }
+  return out.sort((a, b) => b.item.downloads - a.item.downloads || a.item.name.localeCompare(b.item.name))
+}
+
+// HTML collapses runs of spaces and trims a text's ends; a no-break space keeps them.
+export function nbsp(text: string, surface: string): string {
+  return surface === 'terminal' ? text : text.replace(/ /g, ' ')
+}
