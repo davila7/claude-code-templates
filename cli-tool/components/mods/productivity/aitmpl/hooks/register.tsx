@@ -46,6 +46,7 @@ import {
   isInstalled,
   itemKey,
   nbsp,
+  parseCounts,
   parseItems,
   parseTrending,
   searchEntries,
@@ -63,6 +64,8 @@ import {
 } from './catalog.ts'
 
 const PANE = 'aitmpl'
+// the order of the site's Browse menu
+const MENU: readonly TypeKey[] = ['skills', 'agents', 'commands', 'settings', 'hooks', 'mcps', 'mods', 'loops']
 
 type View = { kind: 'browse' } | { kind: 'detail'; type: TypeInfo; item: Item }
 type Entry = { name: string; kind: 'file' | 'dir' | 'other' }
@@ -73,6 +76,7 @@ let filter: TypeKey | 'all' = 'all'
 let query = ''
 let installed: Installed[] = []
 let stats: GlobalStats | undefined
+let counts: Record<string, number> | undefined
 const cache = new Map<TypeKey, Item[]>()
 const loading = new Set<string>()
 // a fetch that failed is not retried by a repaint: only refresh (or a new /aitmpl) clears it
@@ -222,6 +226,26 @@ export const register: Register = (on, options) => {
           repaint()
         })
     }
+    const loadCounts = () => {
+      if (counts || loading.has('counts') || failed.has('counts')) return
+      loading.add('counts')
+      $.http
+        .fetch(dataUrl('counts.json'))
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
+          counts = parseCounts(res.text)
+        })
+        .catch(err => {
+          // the menu stands without its counts
+          $.ui.log(`aitmpl: counts.json: ${message(err)}`)
+          failed.add('counts')
+          counts = {}
+        })
+        .finally(() => {
+          loading.delete('counts')
+          repaint()
+        })
+    }
     const loadType = (type: TypeInfo) => {
       if (cache.has(type.key) || loading.has(type.key) || failed.has(type.key)) return
       loading.add(type.key)
@@ -260,22 +284,22 @@ export const register: Register = (on, options) => {
     const install = (type: TypeInfo, item: Item) => {
       if (installing) return
       const argv = installArgv(item, type)
-      if (!argv) return say('✗ this component has an unsafe path in the catalog; not installing it', 'bad')
+      if (!argv) return say('This component has an unsafe path in the catalog; not installing it', 'bad')
       installing = true
-      say(`installing ${item.name}…`, 'info')
-      $.ui.status(`aitmpl: installing ${item.name}…`)
+      say(`Installing ${item.name}`, 'info')
+      $.ui.status(`aitmpl: installing ${item.name}`)
       $.process
         .run(argv, { timeoutMs: 180_000 })
         .then(res => {
           if (res.exitCode === 0) {
-            say(`✓ installed ${item.name} into this project`, 'ok')
+            say(`Installed ${item.name} into this project`, 'ok')
             $.ui.toast(`aitmpl: installed ${item.name}`)
             return rescan()
           }
           const tail = (res.stderr || res.stdout).trim().split('\n').pop() ?? ''
-          say(`✗ install failed (exit ${res.exitCode}) ${tail}`, 'bad')
+          say(`Install failed (exit ${res.exitCode}) ${tail}`, 'bad')
         })
-        .catch(err => say(`✗ install failed: ${message(err)}`, 'bad'))
+        .catch(err => say(`Install failed: ${message(err)}`, 'bad'))
         .finally(() => {
           installing = false
           $.ui.status(undefined)
@@ -285,7 +309,7 @@ export const register: Register = (on, options) => {
     // the platform's URL opener, each an argv without a shell: `explorer.exe` on Windows (by its OS
     // variable), else `open` (macOS) then `xdg-open` (Linux); the URL was validated as http(s)
     const openUrl = (url: string) => {
-      say('opening in the browser…', 'info')
+      say('Opening in the browser', 'info')
       $.env
         .get('OS')
         .then(os => {
@@ -300,22 +324,24 @@ export const register: Register = (on, options) => {
             Promise.reject(new Error('no opener')),
           )
         })
-        .then(() => say(`✓ opened ${url}`, 'ok'))
-        .catch(err => say(`✗ could not open a browser (${message(err)}) · ${url}`, 'bad'))
+        .then(() => say(`Opened ${url}`, 'ok'))
+        .catch(err => say(`Could not open a browser (${message(err)}) · ${url}`, 'bad'))
     }
     const toPrompt = (type: TypeInfo, item: Item) => {
       $.prompt
         .fill({ text: `Install the ${singular(type)} "${item.name}" from aitmpl.com by running: ${installCommandFor(item, type)}` })
-        .then(r => say(r.isFilled ? '✓ install request written into the prompt: Enter sends it' : 'the prompt box is busy, try again', r.isFilled ? 'ok' : 'bad'))
-        .catch(err => say(`✗ prompt.fill failed: ${message(err)}`, 'bad'))
+        .then(r => say(r.isFilled ? 'Install request written into the prompt: Enter sends it' : 'the prompt box is busy, try again', r.isFilled ? 'ok' : 'bad'))
+        .catch(err => say(`prompt.fill failed: ${message(err)}`, 'bad'))
     }
     const refresh = () => {
       stats = undefined
+      counts = undefined
       cache.clear()
       failed.clear()
       error = undefined
       notice = undefined
       loadTrending()
+      loadCounts()
       void rescan()
       repaint()
     }
@@ -325,30 +351,28 @@ export const register: Register = (on, options) => {
       repaint()
     }
 
-    // --- header: title, totals, refresh / close
+    // Flat on purpose: plain text only, no colour, no icons, no borders. Hierarchy is layout, the
+    // text labels the actions, and every aligned cell is a fixed-width Box.
     const facts = [
       stats?.totalComponents !== undefined ? `${formatCount(stats.totalComponents)} components` : undefined,
       stats?.totalDownloads !== undefined ? `${formatCount(stats.totalDownloads)} downloads` : undefined,
     ].filter((f): f is string => f !== undefined)
     loadTrending()
+    loadCounts()
     const header = (
       <Box key="header" flexDirection="column" width={W}>
         <Box key="title-row" flexDirection="row" width={W}>
           <Box key="title" flexGrow={1} flexShrink={1}>
-            <Text bold wrap="truncate-end">{'aitmpl.com'}</Text>
+            <Text wrap="truncate-end">{'aitmpl.com'}</Text>
           </Box>
-          <Box key="tools" flexShrink={0} flexDirection="row" columnGap={1}>
-            <Button key="aitmpl:refresh" label="refresh" hotkey="r" dimColor onPress={refresh} />
-            <Button key="aitmpl:close" label="close" dimColor onPress={() => void $.ui.close({ id: PANE })} />
+          <Box key="tools" flexShrink={0} flexDirection="row" columnGap={2}>
+            <Button key="aitmpl:refresh" plain label="refresh" hotkey="r" onPress={refresh} />
+            <Button key="aitmpl:close" plain label="close" onPress={() => void $.ui.close({ id: PANE })} />
           </Box>
         </Box>
-        {facts.length > 0 ? <Text dimColor wrap="truncate-end">{truncate(facts.join(' · '), W)}</Text> : null}
-        {error ? <Text color="red" wrap="truncate-end">{truncate(`⚠ ${error}`, W)}</Text> : null}
-        {notice ? (
-          <Text color={notice.tone === 'ok' ? 'green' : notice.tone === 'bad' ? 'red' : 'yellow'} wrap="wrap">
-            {notice.text}
-          </Text>
-        ) : null}
+        {facts.length > 0 ? <Text wrap="truncate-end">{truncate(facts.join(' · '), W)}</Text> : null}
+        {error ? <Text wrap="truncate-end">{truncate(`Error: ${error}`, W)}</Text> : null}
+        {notice ? <Text wrap="wrap">{notice.text}</Text> : null}
       </Box>
     )
 
@@ -361,33 +385,28 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column" width={W}>
           {header}
           <Box key="back" marginTop={1}>
-            <Button key="aitmpl:back" label="◀ back" hotkey="b" dimColor onPress={() => {
+            <Button key="aitmpl:back" plain label="back" hotkey="b" onPress={() => {
               view = { kind: 'browse' }
               notice = undefined
               repaint()
             }} />
           </Box>
           <Box key="name" marginTop={1} width={W}>
-            <Text bold wrap="wrap">{item.name}</Text>
+            <Text wrap="wrap">{item.name}</Text>
           </Box>
-          <Text dimColor wrap="truncate-end">
-            {truncate(`${singular(type)} · ${item.category || 'uncategorized'} · ↓ ${formatCount(item.downloads)}${isHere ? ' · ✓ installed' : ''}`, W)}
+          <Text wrap="truncate-end">
+            {truncate(`${singular(type)} · ${item.category || 'uncategorized'} · ${formatCount(item.downloads)} downloads${isHere ? ' · installed' : ''}`, W)}
           </Text>
-          <Box key="desc" marginTop={1} borderStyle="round" borderDimColor paddingX={1} width={W}>
-            <Text wrap="wrap">{item.description || 'no description'}</Text>
+          <Box key="desc" marginTop={1} width={W}>
+            <Text wrap="wrap">{item.description || 'No description'}</Text>
           </Box>
-          <Box key="cmd" marginTop={1} flexDirection="row" columnGap={1} width={W}>
-            <Box key="cmd-prompt" flexShrink={0} width={1}>
-              <Text dimColor>{'$'}</Text>
-            </Box>
-            <Box key="cmd-text" flexGrow={1} flexShrink={1}>
-              <Text color="green" wrap="wrap">{installCommandFor(item, type)}</Text>
-            </Box>
+          <Box key="cmd" marginTop={1} width={W}>
+            <Text wrap="wrap">{installCommandFor(item, type)}</Text>
           </Box>
-          <Box key="actions" marginTop={1} flexDirection="column" rowGap={0}>
-            <Button key="aitmpl:install" label={installing ? 'installing…' : isHere ? 'reinstall here' : 'install here'} hotkey="i" onPress={() => install(type, item)} />
-            {url ? <Button key="aitmpl:open" label="open on aitmpl.com ↗" hotkey="o" onPress={() => openUrl(url)} /> : null}
-            <Button key="aitmpl:prompt" label="put command in prompt" hotkey="c" onPress={() => toPrompt(type, item)} />
+          <Box key="actions" marginTop={1} flexDirection="column">
+            <Button key="aitmpl:install" plain label={installing ? 'installing' : isHere ? 'reinstall here' : 'install here'} hotkey="i" onPress={() => install(type, item)} />
+            {url ? <Button key="aitmpl:open" plain label="open on aitmpl.com" hotkey="o" onPress={() => openUrl(url)} /> : null}
+            <Button key="aitmpl:prompt" plain label="put command in prompt" hotkey="c" onPress={() => toPrompt(type, item)} />
           </Box>
         </Box>
       )
@@ -407,15 +426,23 @@ export const register: Register = (on, options) => {
     const entries = searchEntries(cache, activeTypes, query)
     const visible = entries.slice(0, shown || pageSize)
 
-    const chips = (
-      <Box key="chips" flexDirection="row" flexWrap="wrap" columnGap={1} width={W}>
-        {[{ key: 'all' as const, label: 'All' }, ...TYPES.map(t => ({ key: t.key, label: t.label }))].map(c => (
-          <Button
-            key={`aitmpl:chip:${c.key}`}
-            label={filter === c.key ? `[${c.label}]` : c.label}
-            dimColor={filter !== c.key}
-            onPress={() => setFilter(c.key)}
-          />
+    // the site's Browse menu: one line per type, its count on the right, the chosen one in brackets
+    const menuItems: { key: TypeKey | 'all'; label: string; n: number | undefined }[] = [
+      { key: 'all', label: 'All', n: counts ? Object.values(counts).reduce((a, b) => a + b, 0) : undefined },
+      ...MENU.map(k => ({ key: k, label: typeByKey(k)!.label, n: counts?.[k] })),
+    ]
+    const menu = (
+      <Box key="menu" flexDirection="column" width={W}>
+        <Text>{'BROWSE'}</Text>
+        {menuItems.map(m => (
+          <Box key={`menu:${m.key}`} flexDirection="row" width={W}>
+            <Box key="label" flexGrow={1} flexShrink={1}>
+              <Button key={`aitmpl:chip:${m.key}`} plain label={pad(filter === m.key ? `[${m.label}]` : m.label)} onPress={() => setFilter(m.key)} />
+            </Box>
+            <Box key="n" flexShrink={0} width={6} justifyContent="flex-end">
+              <Text>{m.n !== undefined ? String(m.n) : ''}</Text>
+            </Box>
+          </Box>
         ))}
       </Box>
     )
@@ -432,7 +459,7 @@ export const register: Register = (on, options) => {
         repaint()
       }
       const meta = item
-        ? `↓ ${formatCount(item.downloads)}${item.category ? ` · ${item.category}` : ''}`
+        ? `${formatCount(item.downloads)} downloads${item.category ? ` · ${item.category}` : ''}`
         : `${scope ?? 'local'} · not in the catalog`
       return (
         <Box key={`row:${id}`} flexDirection="column" width={W} marginTop={1}>
@@ -441,28 +468,28 @@ export const register: Register = (on, options) => {
               {item ? (
                 <Button key={`aitmpl:open:${id}`} plain label={pad(truncate(name, W - 10))} onPress={open} />
               ) : (
-                <Text bold wrap="truncate-end">{truncate(name, W - 10)}</Text>
+                <Text wrap="truncate-end">{truncate(name, W - 10)}</Text>
               )}
             </Box>
             <Box key="type" flexShrink={0} width={9} justifyContent="flex-end">
-              <Text dimColor>{singular(type)}</Text>
+              <Text>{singular(type)}</Text>
             </Box>
           </Box>
           {item && item.description ? (
             <Box key="l2" width={W}>
-              <Text dimColor wrap="truncate-end">{truncate(item.description, W)}</Text>
+              <Text wrap="truncate-end">{truncate(item.description, W)}</Text>
             </Box>
           ) : null}
-          <Box key="l3" flexDirection="row" width={W} columnGap={1}>
+          <Box key="l3" flexDirection="row" width={W} columnGap={2}>
             <Box key="meta" flexGrow={1} flexShrink={1}>
-              <Text dimColor wrap="truncate-end">{truncate(meta, W - 16)}</Text>
+              <Text wrap="truncate-end">{truncate(meta, W - 22)}</Text>
             </Box>
-            <Box key="act" flexShrink={0} flexDirection="row" columnGap={1}>
-              {url ? <Button key={`aitmpl:view:${id}`} label="view ↗" dimColor onPress={() => openUrl(url)} /> : null}
+            <Box key="act" flexShrink={0} flexDirection="row" columnGap={2}>
+              {url ? <Button key={`aitmpl:view:${id}`} plain label="view" onPress={() => openUrl(url)} /> : null}
               {isHere ? (
-                <Text color="green">{'✓'}</Text>
+                <Text>{'installed'}</Text>
               ) : item ? (
-                <Button key={`aitmpl:install:${id}`} label={installing ? '…' : 'install'} onPress={() => install(type, item)} />
+                <Button key={`aitmpl:install:${id}`} plain label={installing ? 'installing' : 'install'} onPress={() => install(type, item)} />
               ) : null}
             </Box>
           </Box>
@@ -477,15 +504,15 @@ export const register: Register = (on, options) => {
             <Button
               key={`aitmpl:sec:${key}`}
               plain
-              label={pad(`${collapsed[key] ? '▸' : '▾'} ${title}`)}
+              label={pad(title.toUpperCase())}
               onPress={() => {
                 collapsed[key] = !collapsed[key]
                 repaint()
               }}
             />
           </Box>
-          <Box key="count" flexShrink={0} minWidth={4} justifyContent="flex-end">
-            <Text bold color="cyan">{String(count)}</Text>
+          <Box key="count" flexShrink={0} minWidth={6} justifyContent="flex-end">
+            <Text>{String(count)}</Text>
           </Box>
         </Box>
         {collapsed[key] ? null : body}
@@ -502,8 +529,8 @@ export const register: Register = (on, options) => {
         <Box key="more" marginTop={1}>
           <Button
             key="aitmpl:more"
+            plain
             label={`show ${Math.min(pageSize, entries.length - visible.length)} more of ${entries.length - visible.length}`}
-            dimColor
             onPress={() => {
               shown = (shown || pageSize) + pageSize
               repaint()
@@ -515,7 +542,7 @@ export const register: Register = (on, options) => {
     if (entries.length === 0) {
       listBody.push(
         <Box key="none" marginTop={1}>
-          <Text dimColor>{pending > 0 ? 'loading…' : query ? `nothing matches "${query}"` : 'nothing to show'}</Text>
+          <Text>{pending > 0 ? 'Loading' : query ? `Nothing matches "${query}"` : 'Nothing to show'}</Text>
         </Box>,
       )
     }
@@ -526,7 +553,7 @@ export const register: Register = (on, options) => {
         <Box key="search" marginTop={1} width={W}>
           <Input
             key="aitmpl:search"
-            placeholder="Search components on aitmpl.com"
+            placeholder="Search components"
             value={query}
             autoFocus
             submitLabel="search"
@@ -542,14 +569,14 @@ export const register: Register = (on, options) => {
             }}
           />
         </Box>
-        <Box key="chips-wrap" marginTop={1}>
-          {chips}
+        <Box key="menu-wrap" marginTop={1}>
+          {menu}
         </Box>
         {section('installed', 'Installed', installedRows.length, installedBody)}
         {section('list', query ? 'Results' : 'Popular', entries.length, listBody)}
         <Box key="foot" marginTop={1} width={W}>
-          <Text dimColor wrap="wrap">
-            {'Installed lists agents, commands, skills and mods found in .claude/ and ~/.claude/. ↓ is total downloads.'}
+          <Text wrap="wrap">
+            {'Installed lists agents, commands, skills and mods found in .claude/ and ~/.claude/. Downloads are totals.'}
           </Text>
         </Box>
       </Box>

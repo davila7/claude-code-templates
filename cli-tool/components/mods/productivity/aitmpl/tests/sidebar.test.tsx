@@ -110,7 +110,7 @@ function fakeHost(on: On, calls: { opened: unknown[]; urls: string[]; ran: strin
   on('fs.exists', (_$, e) => ({ value: e.path.endsWith('/.claude/skills/my-mod/.claude-plugin/plugin.json') }))
   on('http.fetch', (_$, e) => {
     calls.urls.push(e.url)
-    const body = e.url.endsWith('components/agents.json') ? AGENTS : e.url.endsWith('components/skills.json') ? SKILLS : e.url.endsWith('trending-data.json') ? '{"globalStats":{"totalComponents":2000,"totalDownloads":1300000}}' : '[]'
+    const body = e.url.endsWith('components/agents.json') ? AGENTS : e.url.endsWith('components/skills.json') ? SKILLS : e.url.endsWith('counts.json') ? '{"agents":2,"skills":1}' : e.url.endsWith('trending-data.json') ? '{"globalStats":{"totalComponents":2000,"totalDownloads":1300000}}' : '[]'
     return { value: { status: 200, ok: true, headers: {}, text: body } }
   })
   on('process.run', (_$, e) => {
@@ -123,6 +123,24 @@ async function openPane($: Engine, args = '') {
   return $.command.run({ command: 'aitmpl', args, origin: { kind: 'composer' }, presentation: { isFullscreen: true, columns: 200 } })
 }
 
+describe('the sidebar is flat', () => {
+  test('no colour, no bold, no border and no icon glyph anywhere in the tree', async ($, on) => {
+    const calls = { opened: [] as unknown[], urls: [] as string[], ran: [] as string[][] }
+    fakeHost(on, calls)
+    await openPane($)
+    const ui = await $.ui.mount({ plugin: 'aitmpl', surface: 'terminal', component: 'Pane', requestId: 'aitmpl', props: PANE_PROPS })
+    await ui.redraw()
+    await ui.redraw()
+    const all = await ui.findAll({})
+    expect(all.length).toBeGreaterThan(30)
+    for (const el of all) {
+      for (const prop of ['color', 'dimColor', 'bold', 'inverse', 'borderStyle', 'backgroundColor']) expect(el.props[prop]).toBeUndefined()
+      expect(/[\u2190-\u21ff\u2500-\u27bf]/.test(String(el.props.label ?? el.text ?? ''))).toBe(false)
+    }
+    await ui.unmount()
+  })
+})
+
 describe('the sidebar', () => {
   for (const surface of ['terminal', 'desktop'] as const) {
     test(`${surface}: opens docked, lists installed with downloads, filters by type and search`, async ($, on) => {
@@ -134,15 +152,16 @@ describe('the sidebar', () => {
       await ui.redraw()
       await ui.redraw()
 
-      // the search box and a chip per type (plus All)
+      // the search box and a menu line per type (plus All), with the live counts
       expect(await ui.find({ key: 'aitmpl:search' })).toBeDefined()
       for (const t of TYPES) expect(await ui.find({ key: `aitmpl:chip:${t.key}` })).toBeDefined()
       expect(await ui.find({ key: 'aitmpl:chip:all' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /^2$/ })).toBeDefined()
 
       // installed: the agent and the skill by name; the mod directory is a mod, not a skill
       expect(await ui.find({ key: 'aitmpl:open:inst:agents:react-expert' })).toBeDefined()
       expect(await ui.find({ key: 'aitmpl:open:inst:skills:docs-writer' })).toBeDefined()
-      expect(await ui.find({ type: 'Text', text: /↓ 1\.5k/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /1\.5k downloads/ })).toBeDefined()
       expect((await ui.findAll({ type: 'Box' })).some(b => b.key === 'row:inst:mods:my-mod')).toBe(true)
       expect((await ui.findAll({ type: 'Box' })).some(b => b.key === 'row:inst:skills:my-mod')).toBe(false)
 

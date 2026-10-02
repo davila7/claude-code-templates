@@ -1,35 +1,50 @@
 # aitmpl
 
 `/aitmpl` opens a side pane laid out like VS Code's Extensions view for the
-catalog of [aitmpl.com](https://www.aitmpl.com): a search box, quick filters
-for the component types, an **Installed** section, a **Popular** list (or
+catalog of [aitmpl.com](https://www.aitmpl.com): a search box, a Browse
+menu like the site's sidebar (one line per type, with its count), an **Installed** section, a **Popular** list (or
 **Results** while you search), the download count on every row and a button
 that opens the component's page. In the fullscreen layout (`/tui fullscreen`)
 Claude Code docks it beside the transcript; otherwise it sits above the
 prompt. Claude Desktop and VS Code draw it in their own pane.
 
 ```
-aitmpl.com                      refresh close
-2.0k components · 1.3M downloads
- ______________________________________
-| Search components on aitmpl.com      |
- --------------------------------------
-[All] Agents Commands MCPs Settings Hooks Skills Loops Mods
-▾ Installed                                  3
- frontend-developer                    agent
- Frontend specialist for React apps…
- ↓ 3.9k · development-team    view ↗  ✓
-▾ Popular                                 2.0k
- code-reviewer                         skill
- Reviews code for bugs and style…
- ↓ 3.2k · quality        view ↗  install
- show 8 more of 1.9k
+aitmpl.com                      refresh  close
+2.2k components · 1.6M downloads
+[search components                    ]
+BROWSE
+[All]                                  2.2k
+Skills                                  889
+Agents                                  422
+Commands                                288
+Settings                                 72
+Hooks                                    62
+MCPs                                    104
+Mods                                     38
+Loops                                    18
+
+INSTALLED                                 3
+frontend-developer                    agent
+Frontend specialist for React apps…
+3.9k downloads · development-team  view
+
+POPULAR                                2.2k
+code-reviewer                         skill
+Reviews code for bugs and style…
+3.2k downloads · quality  view  install
 ```
 
+The pane is deliberately flat: plain text only, no colours, no icons, no
+borders, no bold. Hierarchy is layout (the `BROWSE` / `INSTALLED` / `POPULAR`
+headings, counts on the right) and every action is a word (`view`,
+`install`, `installed`, `back`). Sections collapse when you press their
+heading.
+
 - **Search** filters as you type (every word must appear in the name,
-  category or description); it spans every type, or only the chip selected.
-- **Filters** are one chip per type of the site (Agents, Commands, MCPs,
-  Settings, Hooks, Skills, Loops, Mods) plus All; they narrow both sections.
+  category or description); it spans every type, or only the type chosen in Browse.
+- **Browse** is the site's menu: one line per type (Skills, Agents, Commands,
+  Settings, Hooks, MCPs, Mods, Loops) plus All, each with its count from
+  `counts.json`; the chosen type narrows both sections.
 - **Installed** lists what is already on disk, with the project's `.claude/`
   winning over `~/.claude/`: agents (`agents/*.md`), commands
   (`commands/**.md`), skills and mods (`skills/{name}/`; a directory with
@@ -38,16 +53,16 @@ aitmpl.com                      refresh close
   listed. A name found on disk that the catalog does not know is shown as
   local. The list is rescanned when the pane opens, after an install and at
   the end of every turn.
-- **Rows** show the type, the description, the category, `↓` downloads and two
-  actions: `view ↗` opens the component's page on aitmpl.com in your browser
+- **Rows** show the type, the description, the category, downloads and two
+  actions: `view` opens the component's page on aitmpl.com in your browser
   (`open` on macOS, `xdg-open` on Linux, `explorer.exe` on Windows, each an
-  argv; the URL is http(s) only) and `install` (✓ once installed). A row's
+  argv; the URL is http(s) only) and `install` (`installed` once it is on disk). A row's
   name opens its detail: description, the install command, **install here**
   (`$.process.run(["npx", "claude-code-templates@latest", "--agent", "…", "--yes"])`:
   always the fixed CLI, the type's own flag and a validated path, never a
   command string from the catalog, never a shell), **open on aitmpl.com** and
   **put command in prompt** (`$.prompt.fill`, nothing is submitted).
-- **Downloads** (`↓`) come from the `downloads` field of the site's
+- **Downloads** come from the `downloads` field of the site's
   `components/{type}.json`: the total per component the catalog generator
   publishes (the header totals come from `trending-data.json`). The catalog is
   fetched live through `$.http.fetch` and cached for the session; `refresh`
