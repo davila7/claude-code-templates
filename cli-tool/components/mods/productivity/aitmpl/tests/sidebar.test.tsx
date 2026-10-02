@@ -11,6 +11,7 @@ import {
   itemKey,
   nbsp,
   searchEntries,
+  TYPE_STYLE,
   type Installed,
   type Item,
 } from '../hooks/catalog.ts'
@@ -123,20 +124,27 @@ async function openPane($: Engine, args = '') {
   return $.command.run({ command: 'aitmpl', args, origin: { kind: 'composer' }, presentation: { isFullscreen: true, columns: 200 } })
 }
 
-describe('the sidebar is flat', () => {
-  test('no colour, no bold, no border and no icon glyph anywhere in the tree', async ($, on) => {
+describe('the sidebar has a design', () => {
+  test('every type has its own icon and colour, and the menu draws them', async ($, on) => {
     const calls = { opened: [] as unknown[], urls: [] as string[], ran: [] as string[][] }
     fakeHost(on, calls)
     await openPane($)
+    const colors = new Set(Object.values(TYPE_STYLE).map(s => s.color))
+    const icons = new Set(Object.values(TYPE_STYLE).map(s => s.icon))
+    expect(colors.size).toBe(TYPES.length)
+    expect(icons.size).toBe(TYPES.length)
+    for (const s of Object.values(TYPE_STYLE)) expect(s.icon.length).toBe(1)
     const ui = await $.ui.mount({ plugin: 'aitmpl', surface: 'terminal', component: 'Pane', requestId: 'aitmpl', props: PANE_PROPS })
     await ui.redraw()
     await ui.redraw()
-    const all = await ui.findAll({})
-    expect(all.length).toBeGreaterThan(30)
-    for (const el of all) {
-      for (const prop of ['color', 'dimColor', 'bold', 'inverse', 'borderStyle', 'backgroundColor']) expect(el.props[prop]).toBeUndefined()
-      expect(/[\u2190-\u21ff\u2500-\u27bf]/.test(String(el.props.label ?? el.text ?? ''))).toBe(false)
+    for (const s of Object.values(TYPE_STYLE)) {
+      expect(await ui.find({ type: 'Text', text: s.icon })).toBeDefined()
     }
+    // the chosen menu line carries the bar, the others do not
+    expect(await ui.find({ type: 'Text', text: '▌' })).toBeDefined()
+    // a type tag is drawn in its type's colour
+    const tags = (await ui.findAll({ type: 'Text' })).filter(t => t.props.color === TYPE_STYLE.agents.color)
+    expect(tags.length).toBeGreaterThan(0)
     await ui.unmount()
   })
 })
@@ -156,12 +164,12 @@ describe('the sidebar', () => {
       expect(await ui.find({ key: 'aitmpl:search' })).toBeDefined()
       for (const t of TYPES) expect(await ui.find({ key: `aitmpl:chip:${t.key}` })).toBeDefined()
       expect(await ui.find({ key: 'aitmpl:chip:all' })).toBeDefined()
-      expect(await ui.find({ type: 'Text', text: /^2$/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /^\s*2\s*$/ })).toBeDefined()
 
       // installed: the agent and the skill by name; the mod directory is a mod, not a skill
       expect(await ui.find({ key: 'aitmpl:open:inst:agents:react-expert' })).toBeDefined()
       expect(await ui.find({ key: 'aitmpl:open:inst:skills:docs-writer' })).toBeDefined()
-      expect(await ui.find({ type: 'Text', text: /1\.5k downloads/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /↓ 1\.5k/ })).toBeDefined()
       expect((await ui.findAll({ type: 'Box' })).some(b => b.key === 'row:inst:mods:my-mod')).toBe(true)
       expect((await ui.findAll({ type: 'Box' })).some(b => b.key === 'row:inst:skills:my-mod')).toBe(false)
 

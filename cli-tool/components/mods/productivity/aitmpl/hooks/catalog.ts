@@ -270,3 +270,16 @@ export function searchEntries(
 export function nbsp(text: string, surface: string): string {
   return surface === 'terminal' ? text : text.replace(/ /g, ' ')
 }
+
+// One icon and one terminal colour per type, shared by the menu, the rows and the detail. ANSI names
+// follow the person's terminal theme; every icon is a single BMP glyph.
+export const TYPE_STYLE: Record<TypeKey, { icon: string; color: string }> = {
+  skills: { icon: '◆', color: 'magenta' },
+  agents: { icon: '◉', color: 'blue' },
+  commands: { icon: '❯', color: 'green' },
+  settings: { icon: '⚙', color: 'yellow' },
+  hooks: { icon: '↪', color: 'red' },
+  mcps: { icon: '⬡', color: 'cyan' },
+  mods: { icon: '▣', color: 'magentaBright' },
+  loops: { icon: '↻', color: 'yellowBright' },
+}
