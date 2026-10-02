@@ -47848,10 +47848,10 @@
       "path": "productivity/aitmpl",
       "category": "productivity",
       "type": "mod",
-      "description": "/aitmpl opens a side pane that looks like VS Code's Extensions view: a search box, quick filters for the aitmpl.com component types, an Installed section (agents, commands, skills and mods found in .claude/ and ~/.claude/), a Popular/Results list with download counts, and a button on every row that opens the component's page. A row's name opens its detail with install ($.process.run with the fixed CLI argv and a validated path, no shell) and put-command-in-prompt. The catalog is read live from the site's public JSON through $.http.fetch; browsing costs no tokens.",
+      "description": "/aitmpl opens a flat side pane (plain text, no colours or icons) for the aitmpl.com catalog: a search box, the site's Browse menu with counts, an Installed section (agents, commands, skills and mods found in .claude/ and ~/.claude/), a Popular/Results list with download counts, and view/install on every row. Install runs the fixed CLI argv ($.process.run, validated path, no shell). The catalog is read live through $.http.fetch; browsing costs no tokens.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "license": "MIT",
       "keywords": [
         "mod",
