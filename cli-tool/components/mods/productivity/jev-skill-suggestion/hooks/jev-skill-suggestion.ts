@@ -299,7 +299,7 @@ export const register: Register = (on, options) => {
         const relative = skillFileCandidates(skill.name, plugin)
         // The engine reads the project's `.claude/` (the working directory
         // only, not its ancestors) and the user's, which is the config dir.
-        const candidates = [...relative, ...(configDir ? relative.map((file) => `${configDir}/${file.slice('.claude/'.length)}`) : [])]
+        const candidates = [...relative, ...(configDir ? relative.map((file) => `${configDir}/${file.replace(/^\.claude\//, '')}`) : [])]
         if (plugin && configDir) {
           const installed = `${configDir}/plugins/installed_plugins.json`
           if (await $.fs.exists(installed)) {

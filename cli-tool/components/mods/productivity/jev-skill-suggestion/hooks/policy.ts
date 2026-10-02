@@ -253,8 +253,8 @@ export function syncedFileCandidates(configDir: string, accounts: readonly strin
 }
 
 /**
- * The same files under a plugin's install path, as
- * `~/.claude/plugins/installed_plugins.json` records it.
+ * The same files under a plugin's install path, as the config dir's
+ * `plugins/installed_plugins.json` records it.
  */
 export function pluginFileCandidates(installPath: string, name: string, plugin: string): string[] {
   if (!safeName(name) || !safeName(plugin)) return []
@@ -755,7 +755,7 @@ export interface SkillSettings {
   disableBundledSkills: boolean | undefined
 }
 
-/** Reads the two fields from `~/.claude/settings.json`; malformed reads as empty. */
+/** Reads the two fields from the config dir's `settings.json`; malformed reads as empty. */
 export function readSkillSettings(json: string | null): SkillSettings {
   let parsed: unknown = null
   try {

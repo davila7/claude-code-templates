@@ -165,7 +165,7 @@ Three places tell you different things, and only one of them is what the model w
 |---|---|---|
 | `/skills` | each skill's state (`on`, `name-only`, `user-only`, `off`) and its estimated listing cost | after `setup`: the hidden ones read `user-only` |
 | `/context` → Skills | an estimate rendered from the roster, without asking the `prompt.attachment` hooks | **no** while skills are `on`: it reads the same with the mod as without (5.4k tokens for a 40-skill roster in our test). After `setup` it counts only what is still listed — the plugin skills |
-| the API request | what the model read | **yes**: the first request's `input_tokens` in the session's `.jsonl` under `~/.claude/projects/` drop by the listing's size (5,496 tokens in that test), `/context`'s "Messages" row — computed from what was sent — drops the same, and a model asked *"is there a skill listing in your context?"* answers no |
+| the API request | what the model read | **yes**: the first request's `input_tokens` in the session's `.jsonl` under `projects/` in the config dir (`$CLAUDE_CONFIG_DIR`, default `~/.claude`) drop by the listing's size (5,496 tokens in that test), `/context`'s "Messages" row — computed from what was sent — drops the same, and a model asked *"is there a skill listing in your context?"* answers no |
 
 So the mod is at work from the first prompt, and `setup` is what makes the two panels agree with it. The transcript lines (above) are the running proof: `withheld the skill listing (N skills, …)` says what was kept from the model on that prompt, and `injected /name from …` that the one skill needed went in instead.
 
@@ -202,7 +202,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 
 `inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
 
-Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
+Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`settings.json` in the config dir — `$CLAUDE_CONFIG_DIR`, default `~/.claude` — not project settings), with `--settings <file>` or in managed settings:
 
 ```json
 { "pluginConfigs": { "jev-skill-suggestion@skills-dir": { "options": { "typesafeApiKey": "" } } } }
