@@ -9,36 +9,32 @@ Claude Code docks it beside the transcript; otherwise it sits above the
 prompt. Claude Desktop and VS Code draw it in their own pane.
 
 ```
-aitmpl.com                      refresh  close
+aitmpl.com                            refresh  close
 2.2k components · 1.6M downloads
-[search components                    ]
+[ Search components on aitmpl.com        ] [search]
 BROWSE
-[All]                                  2.2k
-Skills                                  889
-Agents                                  422
-Commands                                288
-Settings                                 72
-Hooks                                    62
-MCPs                                    104
-Mods                                     38
-Loops                                    18
-
-INSTALLED                                 3
-frontend-developer                    agent
-Frontend specialist for React apps…
-3.9k downloads · development-team  view
-
-POPULAR                                2.2k
-code-reviewer                         skill
-Reviews code for bugs and style…
-3.2k downloads · quality  view  install
+▌✦ All                                    [ 1919 ]
+ ◆ Skills                                 [  889 ]
+ ◉ Agents                                 [  422 ]
+ ❯ Commands                               [  288 ]
+ ⚙ Settings                               [   72 ]
+ ↪ Hooks                                  [   62 ]
+ ⬡ MCPs                                   [  104 ]
+ ▣ Mods                                   [   39 ]
+ ↻ Loops                                  [   18 ]
+────────────────────────────────────────────────
+▾ INSTALLED                                [  3 ]
+ ◉ frontend-developer                      agent
+   Frontend specialist for React apps…
+   ↓ 3.9k · development-team        view ↗  ✓
 ```
 
-The pane is deliberately flat: plain text only, no colours, no icons, no
-borders, no bold. Hierarchy is layout (the `BROWSE` / `INSTALLED` / `POPULAR`
-headings, counts on the right) and every action is a word (`view`,
-`install`, `installed`, `back`). Sections collapse when you press their
-heading.
+Each type has its own icon and ANSI colour (skills magenta, agents blue,
+commands green, settings yellow, hooks red, MCPs cyan, mods bright magenta,
+loops bright yellow), used by the menu, the rows and the detail; counts are
+pills, downloads are yellow, `install` is the primary button and a ✓ marks
+what is on disk. Colours are ANSI names, so the terminal's theme chooses the
+shade. Sections collapse when you press their heading.
 
 - **Search** filters as you type (every word must appear in the name,
   category or description); it spans every type, or only the type chosen in Browse.

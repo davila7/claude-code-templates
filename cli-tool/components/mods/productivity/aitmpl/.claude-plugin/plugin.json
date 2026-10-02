@@ -1,7 +1,7 @@
 {
   "name": "aitmpl",
-  "version": "0.3.0",
-  "description": "/aitmpl opens a flat side pane (plain text, no colours or icons) for the aitmpl.com catalog: a search box, the site's Browse menu with counts, an Installed section (agents, commands, skills and mods found in .claude/ and ~/.claude/), a Popular/Results list with download counts, and view/install on every row. Install runs the fixed CLI argv ($.process.run, validated path, no shell). The catalog is read live through $.http.fetch; browsing costs no tokens.",
+  "version": "0.4.0",
+  "description": "/aitmpl opens a side pane for the aitmpl.com catalog: search box, the site's Browse menu with an icon, colour and count per type, an Installed section (agents, commands, skills and mods found in .claude/ and ~/.claude/), a Popular/Results list with download counts, and view/install on every row. Install runs the fixed CLI argv ($.process.run, validated path, no shell). The catalog is read live through $.http.fetch; browsing costs no tokens.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
