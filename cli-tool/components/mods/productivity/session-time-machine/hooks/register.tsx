@@ -142,7 +142,7 @@ export const register: Register = (on, options) => {
     const start = Math.min(Math.max(offset, 0), last)
     const shown = points.slice(start, start + room)
     // viewport.columns is wider than the pane body (95 reported for a 150-column terminal), so take a share of it
-    const wide = Math.max(16, Math.floor((e.viewport?.columns ?? 60) * 0.55) - 12)
+    const wide = Math.max(16, Math.floor((e.viewport?.columns ?? 60) * 0.55) - 8)
     const turns = points.filter(p => p.kind === 'prompt').length
     const tools = points.filter(p => p.kind === 'tool').length
     const pick = points.find(p => p.n === armed)
@@ -161,7 +161,7 @@ export const register: Register = (on, options) => {
           <Text>{' '}</Text>
           <Text color={C.tool.Bash} backgroundColor={C.chip}>{` ${tools} calls `}</Text>
         </Box>
-        <Text color={C.rail}>{'─'.repeat(Math.max(10, (e.viewport?.columns ?? 60) - 6))}</Text>
+        <Text color={C.rail}>{'─'.repeat(Math.max(10, wide + 10))}</Text>
         {problem && <Text color={C.bad}>{problem}</Text>}
         {points.length === 0 && !problem && <Text dimColor>Nothing recorded yet: send a prompt, then reload.</Text>}
         {shown.map(p => {
