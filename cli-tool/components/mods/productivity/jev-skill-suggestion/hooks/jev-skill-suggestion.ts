@@ -46,9 +46,10 @@
  * engine itself would have shown.
  *
  * The second request reads the opening of each shortlisted skill's SKILL.md,
- * found on disk by how Claude Code lays skills out (project and user
- * `.claude/skills` and `.claude/commands`, a plugin's install path from
- * `~/.claude/plugins/installed_plugins.json`). A body that cannot be found
+ * found on disk by how Claude Code lays skills out (`.claude/skills` and
+ * `.claude/commands` in the project, `skills` and `commands` in the config
+ * dir — `$CLAUDE_CONFIG_DIR`, else `~/.claude` — and a plugin's install path
+ * from the config dir's `plugins/installed_plugins.json`). A body that cannot be found
  * leaves that skill with its one-line description; nothing fails over it.
  *
  * Only the main conversation is handled. A subagent's own listing is left as
@@ -294,12 +295,13 @@ export const register: Register = (on, options) => {
       let found: { path: string; markdown: string } | null = null
       try {
         const home = (await $.env.get('HOME')) ?? ''
+        const configDir = (await $.env.get('CLAUDE_CONFIG_DIR')) || (home && `${home}/.claude`)
         const relative = skillFileCandidates(skill.name, plugin)
         // The engine reads the project's `.claude/` (the working directory
-        // only, not its ancestors) and the user's.
-        const candidates = [...relative, ...(home ? relative.map((file) => `${home}/${file}`) : [])]
-        if (plugin && home) {
-          const installed = `${home}/.claude/plugins/installed_plugins.json`
+        // only, not its ancestors) and the user's, which is the config dir.
+        const candidates = [...relative, ...(configDir ? relative.map((file) => `${configDir}/${file.slice('.claude/'.length)}`) : [])]
+        if (plugin && configDir) {
+          const installed = `${configDir}/plugins/installed_plugins.json`
           if (await $.fs.exists(installed)) {
             for (const path of installPathsOf(await $.fs.read(installed), plugin)) {
               candidates.push(...pluginFileCandidates(path, skill.name, plugin))
@@ -308,11 +310,11 @@ export const register: Register = (on, options) => {
         }
         // A claude.ai-synced skill sits under an account directory only
         // `$.fs.list` can name.
-        if (home) {
-          const synced = `${home}/.claude/skills/synced`
+        if (configDir) {
+          const synced = `${configDir}/skills/synced`
           if (await $.fs.exists(synced)) {
             const accounts = (await $.fs.list(synced)).filter((entry) => entry.kind === 'dir').map((entry) => entry.name)
-            candidates.push(...syncedFileCandidates(home, accounts, skill.name))
+            candidates.push(...syncedFileCandidates(configDir, accounts, skill.name))
           }
         }
         for (const file of candidates) {
@@ -341,8 +343,10 @@ export const register: Register = (on, options) => {
       commands = await $.command.list()
       if (!displayToId && commands.some((command) => !commandLike(command.name))) {
         const found: { dir: string; markdown: string }[] = []
-        for (const root of [await $.session.cwd(), (await $.env.get('HOME')) ?? '']) {
-          const dir = root && `${root}/.claude/skills`
+        const home = (await $.env.get('HOME')) ?? ''
+        const configDir = (await $.env.get('CLAUDE_CONFIG_DIR')) || (home && `${home}/.claude`)
+        // The project's skills and the user's, which are in the config dir.
+        for (const dir of [`${await $.session.cwd()}/.claude/skills`, configDir && `${configDir}/skills`]) {
           if (!dir || !(await $.fs.exists(dir))) continue
           for (const entry of await $.fs.list(dir)) {
             const file = `${dir}/${entry.name}/SKILL.md`
@@ -499,8 +503,10 @@ export const register: Register = (on, options) => {
       commands = await $.command.list()
       if (!displayToId && commands.some((command) => !commandLike(command.name))) {
         const found: { dir: string; markdown: string }[] = []
-        for (const root of [await $.session.cwd(), (await $.env.get('HOME')) ?? '']) {
-          const dir = root && `${root}/.claude/skills`
+        const home = (await $.env.get('HOME')) ?? ''
+        const configDir = (await $.env.get('CLAUDE_CONFIG_DIR')) || (home && `${home}/.claude`)
+        // The project's skills and the user's, which are in the config dir.
+        for (const dir of [`${await $.session.cwd()}/.claude/skills`, configDir && `${configDir}/skills`]) {
           if (!dir || !(await $.fs.exists(dir))) continue
           for (const entry of await $.fs.list(dir)) {
             const file = `${dir}/${entry.name}/SKILL.md`
@@ -515,8 +521,10 @@ export const register: Register = (on, options) => {
       return next({ ...e, text: setupAborted(`the skills could not be listed (${String(error)})`) })
     }
     const home = (await $.env.get('HOME')) ?? '~'
-    const settingsPath = `${home}/.claude/settings.json`
-    const backupPath = `${home}/.claude/jev-skill-suggestion.skill-overrides.backup.json`
+    const customConfigDir = await $.env.get('CLAUDE_CONFIG_DIR')
+    const configDir = customConfigDir || `${home}/.claude`
+    const settingsPath = `${configDir}/settings.json`
+    const backupPath = `${configDir}/jev-skill-suggestion.skill-overrides.backup.json`
     let json: string | null = null
     try {
       if (await $.fs.exists(settingsPath)) json = await $.fs.read(settingsPath)
@@ -550,7 +558,7 @@ export const register: Register = (on, options) => {
         `[jev-skill-suggestion] setup (${mode}): ${plan.hide.length} to hide, ${plan.alreadyHidden.length} already hidden, ${plan.locked.length} locked by a plugin`,
       )
     }
-    return next({ ...e, text: setupInstructions(mode, plan, settings, settingsPath, backupPath, backupExists) })
+    return next({ ...e, text: setupInstructions(mode, plan, settings, settingsPath, backupPath, backupExists, Boolean(customConfigDir)) })
   })
 
   on('skill.prompt', async ($, e, next) => {
