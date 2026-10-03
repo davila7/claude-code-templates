@@ -379,7 +379,8 @@ test('the status line distinguishes a change from a deliberate no-change', () =>
 test('a family alias resolves to a full id for the main loop', () => {
   expect(requestModelId('haiku')).toBe('claude-haiku-4-5-20251001')
   expect(requestModelId('Sonnet')).toBe('claude-sonnet-5')
-  expect(requestModelId('opus')).toBe('claude-opus-5')
+  // What `--model opus` resolves to in Claude Code 2.1.280.
+  expect(requestModelId('opus')).toBe('claude-opus-5-5')
 })
 
 test('a full id or an unknown name is passed through unchanged', () => {
@@ -400,4 +401,45 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
+})
+
+// A risky turn used to skip the same-tier check along with the thresholds, so
+// a session on Opus 5.5 [1m] was rewritten to the `opus` alias.
+test('a risky turn in the tier the session already runs keeps its exact id', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.97 }, 0.93))
+  const routing = route(decision, on('claude-opus-5-5[1m]', 'medium'), config)
+  expect(routing.model).toBeNull()
+  expect(routing.effort).toBe('high')
+  expect(routing.reason).toContain('risk')
+  // Already deep and already thinking hard: nothing to change, and the line says why.
+  const settled = route(decision, on('claude-opus-5-5[1m]', 'xhigh'), config)
+  expect(settled.model).toBeNull()
+  expect(settled.effort).toBeNull()
+  expect(settled.reason).toBe('deep, forced by risk; already on claude-opus-5-5[1m]/xhigh')
+})
+
+// A subagent has no effort to set (the Agent tool takes none), and a spawn left
+// as it was used to be logged as if it had been routed.
+test('with no current effort and no model change, nothing is routed', () => {
+  const decision = readDecision(gatewayAnswer('deep', { deep: 0.95 }, 0.01, 2.2))
+  const routing = route(decision, { model: 'claude-opus-5-5' }, config)
+  expect(routing.model).toBeNull()
+  expect(routing.effort).toBeNull()
+  expect(routing.reason).toContain('kept claude-opus-5-5')
+})
+
+test('a Haiku turn lifted to Opus by risk also gets real reasoning', () => {
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.97 }, 0.93, 0))
+  const routing = route(decision, { model: 'claude-haiku-4-5-20251001' }, config)
+  expect(routing.model).toBe('opus')
+  expect(routing.effort).toBe('high')
+})
+
+test('Fable is the deep tier: a move off it is a downgrade, with the strict bar', () => {
+  expect(rankOf('claude-fable-5-1', config.tiers)).toBe(2)
+  const decision = readDecision(gatewayAnswer('fast', { fast: 0.5 }, 0.01, 0))
+  expect(route(decision, on('claude-fable-5-1', 'high'), config).model).toBeNull()
+  // The same decision clears a lower bar, so it is the bar that holds it.
+  const lowerBar = { ...config, minDowngradeConfidence: 0.4 }
+  expect(route(decision, on('claude-fable-5-1', 'high'), lowerBar).model).toBe('haiku')
 })
