@@ -20,7 +20,7 @@ be replayed on another.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "webfetch-cache": { "options": { } } } }
+{ "pluginConfigs": { "webfetch-cache@skills-dir": { "options": { } } } }
 ```
 
 ## Install

@@ -152,7 +152,7 @@ change, so a session on `claude-opus-5[1m]` keeps its 1M-context id.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "jev-model-router": { "options": { "typesafeApiKey": "" } } } }
+{ "pluginConfigs": { "jev-model-router@skills-dir": { "options": { "typesafeApiKey": "" } } } }
 ```
 
 The entry's key is the plugin's id, and the id follows how the plugin was

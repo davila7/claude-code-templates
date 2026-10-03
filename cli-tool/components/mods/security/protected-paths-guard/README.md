@@ -16,7 +16,7 @@ tools); on a match it returns `{ deny }` without calling `next`.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "protected-paths-guard": { "options": { } } } }
+{ "pluginConfigs": { "protected-paths-guard@skills-dir": { "options": { } } } }
 ```
 
 ## Install

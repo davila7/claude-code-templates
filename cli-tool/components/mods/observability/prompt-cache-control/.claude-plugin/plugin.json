@@ -1,0 +1,61 @@
+{
+  "name": "prompt-cache-control",
+  "version": "0.1.0",
+  "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL comes from the environment variables Claude Code honours (5 minutes by default, 1 hour with ENABLE_PROMPT_CACHING_1H). /cache opens a per-turn table. Needs function hooks (early access).",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "observability",
+    "prompt-caching",
+    "cost"
+  ],
+  "userConfig": {
+    "ttl": {
+      "type": "string",
+      "title": "Cache lifetime",
+      "description": "How long the cache lives after a request: auto follows ENABLE_PROMPT_CACHING_1H / FORCE_PROMPT_CACHING_5M (5 minutes when neither is set); 5m or 1h overrides it",
+      "default": "auto",
+      "options": [
+        "auto",
+        "5m",
+        "1h"
+      ]
+    },
+    "warnSeconds": {
+      "type": "number",
+      "title": "Warn before expiry (s)",
+      "description": "Seconds left on the countdown at which the band turns yellow and a toast reminds you the cache is about to lapse",
+      "default": 60
+    },
+    "compactAtTokens": {
+      "type": "number",
+      "title": "Large context (tokens)",
+      "description": "From this prompt size up, an expired cache suggests /compact (or /clear) before you pay to write the whole prefix again",
+      "default": 100000
+    },
+    "band": {
+      "type": "boolean",
+      "title": "Band above the prompt",
+      "description": "Show the meter as a row above the prompt",
+      "default": true
+    },
+    "status": {
+      "type": "boolean",
+      "title": "Status line entry",
+      "description": "Also pin a short entry (hit rate and countdown) under the prompt",
+      "default": false
+    },
+    "toast": {
+      "type": "boolean",
+      "title": "Toast near expiry",
+      "description": "Toasts as the cache lapses: at the warning threshold, then at 10, 3, 2 and 1 seconds, once per cache entry each (only for prompts of 20k tokens or more)",
+      "default": true
+    }
+  }
+}

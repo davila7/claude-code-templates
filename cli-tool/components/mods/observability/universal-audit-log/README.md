@@ -30,7 +30,7 @@ beneath it can bypass the log. A hook that fails is skipped by the engine
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "universal-audit-log": { "options": { } } } }
+{ "pluginConfigs": { "universal-audit-log@skills-dir": { "options": { } } } }
 ```
 
 ## Install

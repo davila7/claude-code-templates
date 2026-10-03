@@ -15,7 +15,7 @@ PreToolUse shell hooks, the tool itself) runs; otherwise it passes through.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "block-destructive-commands": { "options": { } } } }
+{ "pluginConfigs": { "block-destructive-commands@skills-dir": { "options": { } } } }
 ```
 
 ## Install
