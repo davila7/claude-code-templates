@@ -25,6 +25,8 @@ export type Ttl = '5m' | '1h'
 export type CacheEnv = {
   enable1h?: string
   force5m?: string
+  /** CLAUDE_CODE_PROMPT_CACHE_TTL: "5m" or "1h" for the main conversation */
+  ttlVar?: string
   disableAll?: string
   disableHaiku?: string
   disableSonnet?: string
@@ -60,10 +62,50 @@ export type Policy = {
 
 export const isOn = (v: string | undefined) => v === '1' || v?.toLowerCase() === 'true'
 
-export function resolveTtl(option: unknown, env: CacheEnv): Ttl {
-  if (option === '5m' || option === '1h') return option
-  if (isOn(env.force5m)) return '5m'
-  return isOn(env.enable1h) ? '1h' : '5m'
+/** What the account is billed as, as far as the mod can tell. */
+export type Account = 'subscription' | 'credits' | 'other'
+
+export type TtlChoice = { ttl: Ttl; source: string }
+
+const asTtl = (v: unknown): Ttl | undefined => (v === '5m' || v === '1h' ? v : undefined)
+
+/**
+ * Which lifetime Claude Code asks for on the main conversation, in the order
+ * its documentation gives (https://code.claude.com/docs/en/prompt-caching,
+ * "Choose the TTL yourself"), after the mod's own `ttl` option:
+ *
+ *   FORCE_PROMPT_CACHING_5M, CLAUDE_CODE_PROMPT_CACHE_TTL, the promptCacheTtl
+ *   setting, ENABLE_PROMPT_CACHING_1H, then the default of the account: one
+ *   hour on a Claude subscription within its plan usage, five minutes on usage
+ *   credits, an API key or a cloud provider.
+ */
+export function decideTtl(option: unknown, env: CacheEnv, setting?: unknown, account?: Account): TtlChoice {
+  const pinned = asTtl(option)
+  if (pinned) return { ttl: pinned, source: 'the ttl option' }
+  if (isOn(env.force5m)) return { ttl: '5m', source: 'FORCE_PROMPT_CACHING_5M' }
+  const fromVar = asTtl(env.ttlVar)
+  if (fromVar) return { ttl: fromVar, source: 'CLAUDE_CODE_PROMPT_CACHE_TTL' }
+  const fromSetting = asTtl(setting)
+  if (fromSetting) return { ttl: fromSetting, source: 'the promptCacheTtl setting' }
+  if (isOn(env.enable1h)) return { ttl: '1h', source: 'ENABLE_PROMPT_CACHING_1H' }
+  if (account === 'subscription') return { ttl: '1h', source: 'Claude subscription default' }
+  if (account === 'credits') return { ttl: '5m', source: 'usage credits default' }
+  return { ttl: '5m', source: 'default' }
+}
+
+export const resolveTtl = (option: unknown, env: CacheEnv, setting?: unknown, account?: Account): Ttl =>
+  decideTtl(option, env, setting, account).ttl
+
+/**
+ * The account, from the rate-limit windows the last response reported: a
+ * five-hour or seven-day window means a Claude subscription, and one that is
+ * full means the next requests draw on usage credits. No window (an API key,
+ * a cloud provider, or no response yet) says nothing.
+ */
+export function accountOf(windows: readonly { kind: string; percentUsed: number }[]): Account {
+  const plan = windows.filter(w => w.kind === 'five_hour' || w.kind === 'seven_day')
+  if (plan.length === 0) return 'other'
+  return plan.some(w => w.percentUsed >= 100) ? 'credits' : 'subscription'
 }
 
 export function ttlMs(ttl: Ttl): number {
