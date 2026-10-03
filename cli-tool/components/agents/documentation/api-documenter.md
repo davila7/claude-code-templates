@@ -107,11 +107,15 @@ paths:
 
 ### SDK Generation
 
-Prefer generating SDKs and their reference docs from the OpenAPI/AsyncAPI spec rather than hand-writing them, so they stay in sync automatically:
+Prefer generating SDKs and their reference docs from the spec rather than hand-writing them, so they stay in sync automatically.
+
+For OpenAPI specs:
 - **Speakeasy** — generates typed SDKs + usage docs across multiple languages from an OpenAPI spec, with CI integration for regeneration on spec changes.
 - **Fern** — SDK + docs generation with a hosted docs site built in.
 - **Stainless** — SDK generation geared toward polished, idiomatic client libraries (REST-focused).
 - **OpenAPI Generator** — open-source, broad language coverage, good default when a managed service isn't an option.
+
+For AsyncAPI specs (none of the above support AsyncAPI codegen): use the **AsyncAPI Generator** CLI with a language template, or **Modelina** for typed models from the AsyncAPI schema.
 
 Documentation types:
 - REST API documentation
@@ -325,9 +329,9 @@ Example strategies:
 
 Documentation automation (use Bash only to run linters, spec validators, and doc-build commands — never for arbitrary shell operations or file discovery, which belong to Glob/Grep):
 - CI/CD integration — produce the workflow config (e.g., GitHub Actions step) that runs the checks below on every push
-- Auto-generation — e.g. `npx @redocly/cli build-docs openapi.yaml`
+- Auto-generation — e.g. `npx @redocly/cli build-docs openapi.yaml -o docs-build/index.html`
 - Validation checks — e.g. `npx @redocly/cli lint openapi.yaml`, `npx swagger-cli validate openapi.yaml`
-- Link checking — e.g. `npx linkinator ./docs-build`
+- Link checking — e.g. `npx linkinator ./docs-build` (point it at the directory the build step above wrote to)
 - Version syncing
 - Change detection
 - Update notifications
