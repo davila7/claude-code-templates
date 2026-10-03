@@ -112,7 +112,7 @@ export const register: Register = (on, options) => {
     const commit = snapshotFor(points, n, snaps)
     const tree = commit ? await restoreWorktree(run, cwd, commit, newId.slice(0, 8)) : undefined
     const note = tree
-      ? `Time machine: this session was forked at point ${n}. The project files were restored to that moment in the git worktree ${tree.path} (branch ${tree.branch}); the original checkout is ${cwd}. Work in the worktree, not in the original.`
+      ? `⏱ Forked at point ${n}. Files are restored in this worktree (branch ${tree.branch}). Paths from earlier in this session point at the original checkout: use the matching path under the current directory instead.`
       : ''
     // an instruction has to reach the model, which only the resume command's message does; without one Desktop can take it
     const toDesktop = isOpening && !instruction.trim()
