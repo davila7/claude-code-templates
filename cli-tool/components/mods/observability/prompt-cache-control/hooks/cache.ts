@@ -243,3 +243,33 @@ export function lifeColor(leftMs: number, ttl: Ttl, warnMs: number): LifeColor {
   if (leftMs <= warnMs) return 'red'
   return leftMs / ttlMs(ttl) <= 0.4 ? 'yellow' : 'green'
 }
+
+// requests are timed from their start, so a little slack keeps a hit that
+// landed just inside the lifetime from reading as proof of the longer one
+const SLACK_MS = 10_000
+
+/**
+ * What the traffic says about the cache lifetime, given the request before and
+ * `known`, what earlier requests already showed.
+ *
+ *   - a hit (the cache served at least half of the previous prompt) more than
+ *     5 minutes after the previous request began proves the 1-hour lifetime,
+ *     and nothing later undoes it: a miss afterwards is more likely a changed
+ *     prefix than a lapse
+ *   - a miss with the same model and a prompt that did not shrink, 5 minutes to
+ *     an hour after the previous request, says the entry lapsed: 5 minutes
+ *     (weaker: a changed prefix looks the same, so a later hit overrules it)
+ *
+ * Needed because the API names the TTL of a write (`cache_creation.ephemeral_*`)
+ * but Claude Code's mod API passes on only the four token counts.
+ */
+export function observeTtl(prev: Sample | undefined, cur: Sample, known: Ttl | undefined): Ttl | undefined {
+  if (!prev || prev.read + prev.write === 0 || cur.model !== prev.model) return known
+  const gap = cur.startedAt - prev.startedAt
+  const before = promptTokens(prev)
+  if (gap <= ttlMs('5m') + SLACK_MS) return known
+  if (cur.read >= before * 0.5) return '1h'
+  if (known === '1h') return known
+  const lapsed = cur.write > 0 && promptTokens(cur) >= before * 0.7 && gap < ttlMs('1h') + SLACK_MS
+  return lapsed ? '5m' : known
+}

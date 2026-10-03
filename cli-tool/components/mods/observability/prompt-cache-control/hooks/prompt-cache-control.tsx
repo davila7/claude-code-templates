@@ -16,9 +16,10 @@
  *
  * The lifetime is counted from the start of the request that last wrote or
  * read the cache, as Anthropic documents it, and the TTL comes from the
- * environment variables Claude Code honours (see ./cache.ts). The API's usage
- * block does not say which TTL a write used, so `ttl: "auto"` is the
- * environment's request, not an observation; set `ttl` to override it.
+ * environment variables Claude Code honours (see ./cache.ts) until the traffic
+ * shows otherwise: the API names the TTL of a write, but the mod API passes on
+ * only the token counts, so the mod watches the gaps instead (a hit after more
+ * than 5 minutes proves 1 hour; see observeTtl). `ttl: "5m" | "1h"` pins it.
  *
  * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
  *
@@ -42,6 +43,7 @@ import {
   hitRatio,
   isCachingDisabled,
   isOn,
+  observeTtl,
   lifeColor,
   lifeRatio,
   nextToastMark,
@@ -62,7 +64,11 @@ const TOAST_MIN_TOKENS = 20_000
 
 let samples: Sample[] = []
 let ttl: Ttl = '5m'
+let baseTtl: Ttl = '5m'
+let pinned = false
+let observed: Ttl | undefined
 let ttlSource = 'default'
+let envSource = 'default'
 let env: CacheEnv = {}
 let timer: { cancel: () => void } | undefined
 let lastKey = ''
@@ -121,15 +127,18 @@ export const register: Register = (on, options) => {
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
-    ttl = resolveTtl(options.ttl, env)
-    ttlSource =
-      options.ttl === '5m' || options.ttl === '1h'
-        ? 'option'
-        : isOn(env.force5m)
-          ? 'FORCE_PROMPT_CACHING_5M'
-          : isOn(env.enable1h)
-            ? 'ENABLE_PROMPT_CACHING_1H'
-            : 'default'
+    baseTtl = resolveTtl(options.ttl, env)
+    pinned = options.ttl === '5m' || options.ttl === '1h'
+    observed = undefined
+    ttl = baseTtl
+    envSource = pinned
+      ? 'option'
+      : isOn(env.force5m)
+        ? 'FORCE_PROMPT_CACHING_5M'
+        : isOn(env.enable1h)
+          ? 'ENABLE_PROMPT_CACHING_1H'
+          : 'default'
+    ttlSource = envSource
 
     await $.command
       .register({
@@ -175,6 +184,9 @@ export const register: Register = (on, options) => {
       samples = []
       lastKey = ''
       toastedFor = 0
+      observed = undefined
+      ttl = baseTtl
+      ttlSource = envSource
       $.ui.invalidate('ui.render')
       return next(e)
     }
@@ -200,6 +212,15 @@ export const register: Register = (on, options) => {
         output: r.usage.output_tokens,
       })
       if (samples.length > KEEP) samples = samples.slice(-KEEP)
+      if (!pinned) {
+        const seen = observeTtl(samples[samples.length - 2], samples[samples.length - 1], observed)
+        if (seen !== observed) {
+          observed = seen
+          ttl = seen ?? baseTtl
+          ttlSource = `observed from request timing; ${envSource} said ${baseTtl}`
+          $.ui.log(`prompt-cache-control: cache lifetime is ${ttl} (${ttlSource})`, { to: 'debug' })
+        }
+      }
       lastKey = ''
       if (showStatus) $.ui.status(shortLine(policy, Date.now()))
       $.ui.invalidate('ui.render')

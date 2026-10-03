@@ -19,7 +19,7 @@
     "ttl": {
       "type": "string",
       "title": "Cache lifetime",
-      "description": "How long the cache lives after a request: auto follows ENABLE_PROMPT_CACHING_1H / FORCE_PROMPT_CACHING_5M (5 minutes when neither is set); 5m or 1h overrides it",
+      "description": "How long the cache lives after a request: auto follows ENABLE_PROMPT_CACHING_1H / FORCE_PROMPT_CACHING_5M (5 minutes when neither is set) and switches to what request timing shows; 5m or 1h pins it",
       "default": "auto",
       "options": [
         "auto",

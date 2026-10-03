@@ -4,6 +4,7 @@ import {
   advise,
   lifeColor,
   segments,
+  observeTtl,
   nextToastMark,
   bar,
   byTurn,
@@ -293,5 +294,29 @@ describe('countdown toasts', () => {
     expect(nextToastMark(2, 60, 2)).toBeUndefined()
     expect(nextToastMark(5, 5, Infinity)).toBe(5)
     expect(nextToastMark(30, 5, Infinity)).toBeUndefined()
+  })
+})
+
+describe('observed lifetime', () => {
+  const prev = sample({ startedAt: T0 })
+  const MIN = 60_000
+  test('a hit more than 5 minutes later proves the 1-hour lifetime and sticks', () => {
+    const hit = sample({ startedAt: T0 + 20 * MIN, read: 80_000, write: 500 })
+    expect(observeTtl(prev, hit, undefined)).toBe('1h')
+    const miss = sample({ startedAt: T0 + 40 * MIN, read: 0, write: 81_000 })
+    expect(observeTtl(hit, miss, '1h')).toBe('1h')
+  })
+  test('a miss 5 minutes to an hour later says 5 minutes; a later hit overrules it', () => {
+    const miss = sample({ startedAt: T0 + 7 * MIN, read: 0, write: 81_000 })
+    expect(observeTtl(prev, miss, undefined)).toBe('5m')
+    const hit = sample({ startedAt: T0 + 20 * MIN, read: 80_000, write: 500 })
+    expect(observeTtl(miss, hit, '5m')).toBe('1h')
+  })
+  test('says nothing inside 5 minutes, across a model change, after /compact, or when nothing was cached', () => {
+    expect(observeTtl(prev, sample({ startedAt: T0 + 2 * MIN, read: 0, write: 81_000 }), undefined)).toBeUndefined()
+    expect(observeTtl(prev, sample({ startedAt: T0 + 20 * MIN, model: 'claude-opus-5-5', read: 0, write: 81_000 }), undefined)).toBeUndefined()
+    expect(observeTtl(prev, sample({ startedAt: T0 + 20 * MIN, read: 0, write: 5_000, fresh: 100 }), undefined)).toBeUndefined()
+    expect(observeTtl(sample({ read: 0, write: 0 }), sample({ startedAt: T0 + 20 * MIN }), undefined)).toBeUndefined()
+    expect(observeTtl(prev, sample({ startedAt: T0 + 2 * MIN, read: 80_000 }), undefined)).toBeUndefined()
   })
 })

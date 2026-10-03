@@ -33,7 +33,13 @@ Claude Code's own switches are read from the environment at session start:
 | `FORCE_PROMPT_CACHING_5M=1` | forces 5 minutes, beating the one above |
 | `DISABLE_PROMPT_CACHING=1` (and `_HAIKU`, `_SONNET`, `_OPUS`) | the band says caching is off for that model |
 
-**What the mod cannot see.** The usage block does not say which TTL a write used, so `ttl: "auto"` is what the environment asks for, not an observation. If Claude Code picks a different lifetime for your plan or provider, set the `ttl` option to override it. The `ENABLE_PROMPT_CACHING_1H` and `FORCE_PROMPT_CACHING_5M` variables are described in an open documentation issue ([anthropics/claude-code#48082](https://github.com/anthropics/claude-code/issues/48082)) and may be renamed.
+**Where the lifetime comes from.** The API reports the TTL of each write (`cache_creation.ephemeral_5m_input_tokens` / `ephemeral_1h_input_tokens`), but Claude Code's mod API passes on only the four token counts, so the mod cannot read it. It decides in this order:
+
+1. the `ttl` option (`5m` or `1h`), if you set one;
+2. what the traffic shows: a request that **hits** the cache more than 5 minutes after the previous one proves the 1-hour lifetime (and a later miss does not undo it, since a changed prefix looks the same); a **miss** 5 to 60 minutes after the previous request, with the same model and a prompt that did not shrink, says the entry lapsed, so 5 minutes (a later hit overrules it);
+3. the environment: `FORCE_PROMPT_CACHING_5M` / `ENABLE_PROMPT_CACHING_1H` (5 minutes when neither is set).
+
+So until the first long pause the countdown follows the environment; after it, it follows what the account actually does. The pane header says which source is in use. The two variables are described in an open documentation issue ([anthropics/claude-code#48082](https://github.com/anthropics/claude-code/issues/48082)) and may be renamed.
 
 ## What it hooks
 
