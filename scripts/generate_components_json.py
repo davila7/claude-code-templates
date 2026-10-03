@@ -11,6 +11,34 @@ from generate_trending_data import fetch_with_retry
 # Load environment variables
 load_dotenv()
 
+def _unescape_frontmatter_scalar(raw):
+    """Unescape a YAML scalar value extracted by naive line-splitting.
+
+    This script reads frontmatter with a line-by-line string split rather than
+    a full YAML parser, so a quoted field's escape sequences (e.g. a literal
+    `\\n` meant to decode to a real newline) are otherwise left as raw text.
+    Only double- and single-quoted scalars need unescaping; unquoted ones are
+    returned unchanged, matching plain YAML scalar rules.
+    """
+    raw = raw.strip()
+    if len(raw) >= 2 and raw[0] == '"' and raw[-1] == '"':
+        inner = raw[1:-1]
+        chars = []
+        i = 0
+        escapes = {'n': '\n', 't': '\t', 'r': '\r', '"': '"', '\\': '\\'}
+        while i < len(inner):
+            ch = inner[i]
+            if ch == '\\' and i + 1 < len(inner) and inner[i + 1] in escapes:
+                chars.append(escapes[inner[i + 1]])
+                i += 2
+            else:
+                chars.append(ch)
+                i += 1
+        return ''.join(chars)
+    if len(raw) >= 2 and raw[0] == "'" and raw[-1] == "'":
+        return raw[1:-1].replace("''", "'")
+    return raw
+
 def run_security_validation():
     """
     Run security validation on all components and return the results.
@@ -406,7 +434,7 @@ def generate_components_json(skip_downloads=False):
                                             frontmatter = content[3:frontmatter_end]
                                             for line in frontmatter.split('\n'):
                                                 if line.startswith('description:'):
-                                                    description = line.split('description:', 1)[1].strip()
+                                                    description = _unescape_frontmatter_scalar(line.split('description:', 1)[1])
                                                 elif line.startswith('author:'):
                                                     author = line.split('author:', 1)[1].strip()
                                                 elif line.startswith('repo:'):
@@ -609,7 +637,7 @@ def generate_components_json(skip_downloads=False):
                                         frontmatter = content[3:frontmatter_end]
                                         for line in frontmatter.split('\n'):
                                             if line.startswith('description:'):
-                                                description = line.split('description:', 1)[1].strip()
+                                                description = _unescape_frontmatter_scalar(line.split('description:', 1)[1])
                                             elif line.startswith('author:'):
                                                 author = line.split('author:', 1)[1].strip()
                                             elif line.startswith('repo:'):

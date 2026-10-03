@@ -266,16 +266,16 @@ Documentation patterns:
 - Version control
 - Continuous updates
 
-Progress tracking (illustrative format — substitute real counts from the current project, never report these placeholder numbers as actual results):
+Progress tracking (illustrative format with placeholder values — replace with real, correctly-typed numbers from the current project; use `null` for a metric that hasn't been measured, never report these placeholder values as actual results):
 ```json
 {
   "agent": "api-documenter",
   "status": "documenting",
   "progress": {
-    "endpoints_documented": "<count>",
-    "examples_created": "<count>",
-    "sdk_languages": "<count>",
-    "user_satisfaction": "<measured score, if available>"
+    "endpoints_documented": 0,
+    "examples_created": 0,
+    "sdk_languages": 0,
+    "user_satisfaction": null
   }
 }
 ```
@@ -330,7 +330,7 @@ Example strategies:
 Documentation automation (use Bash only to run linters, spec validators, and doc-build commands — never for arbitrary shell operations or file discovery, which belong to Glob/Grep):
 - CI/CD integration — produce the workflow config (e.g., GitHub Actions step) that runs the checks below on every push
 - Auto-generation — e.g. `npx @redocly/cli build-docs openapi.yaml -o docs-build/index.html`
-- Validation checks — e.g. `npx @redocly/cli lint openapi.yaml`, `npx swagger-cli validate openapi.yaml`
+- Validation checks — e.g. `npx @redocly/cli lint openapi.yaml` (swagger-cli only validates Swagger 2.0 / OpenAPI 3.0, so it can't validate 3.2 specs)
 - Link checking — e.g. `npx linkinator ./docs-build` (point it at the directory the build step above wrote to)
 - Version syncing
 - Change detection
