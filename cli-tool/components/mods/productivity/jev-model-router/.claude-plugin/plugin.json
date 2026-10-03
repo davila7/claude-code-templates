@@ -113,6 +113,18 @@
       "description": "Change the model of the main conversation; off by default because switching models mid-session invalidates the prompt cache",
       "default": false
     },
+    "effortCacheSafeModels": {
+      "type": "string",
+      "title": "Models whose effort may change freely",
+      "description": "Comma-separated model id prefixes on which Claude Code changes effort without dropping the prompt cache; on any other model the main loop's effort moves only when risk raises it or the model changes too. \"claude-\" routes effort on every model, as before",
+      "default": "claude-opus-5-5,claude-fable-5-1"
+    },
+    "maxContextForModelSwitch": {
+      "type": "number",
+      "title": "Largest context the main loop's model may move with (tokens)",
+      "description": "With main-loop model routing on, the model changes only while the context plus the prompt being sent (a token a character) is at most this many tokens: moved into a smaller window (Haiku 4.5 has 200k), Claude Code compacts the session down to its last messages. 0 lifts the cap",
+      "default": 150000
+    },
     "timeoutMs": {
       "type": "number",
       "title": "Latency budget (ms)",
