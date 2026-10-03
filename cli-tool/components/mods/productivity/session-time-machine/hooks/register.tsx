@@ -33,7 +33,7 @@ import {
   type Point,
   type Row,
 } from './transcript.ts'
-import { MUTATING, loadSnapshots, openInTerminal, restoreWorktree, snapshotFor, takeSnapshot, type Run } from './snapshots.ts'
+import { MUTATING, loadSnapshots, openInDesktop, openInTerminal, restoreWorktree, snapshotFor, takeSnapshot, type Run } from './snapshots.ts'
 
 const PANE = 'time-machine'
 const C = {
@@ -114,7 +114,9 @@ export const register: Register = (on, options) => {
     const note = tree
       ? `Time machine: this session was forked at point ${n}. The project files were restored to that moment in the git worktree ${tree.path} (branch ${tree.branch}); the original checkout is ${cwd}. Work in the worktree, not in the original.`
       : ''
-    const plan = planFork(chain, points, n, [note, instruction].filter(Boolean).join('\n\n'), tree?.path ?? cwd, dir, newId)
+    // an instruction has to reach the model, which only the resume command's message does; without one Desktop can take it
+    const toDesktop = isOpening && !instruction.trim()
+    const plan = planFork(chain, points, n, toDesktop ? '' : [note, instruction].filter(Boolean).join('\n\n'), tree?.path ?? cwd, dir, newId, toDesktop ? note : '')
     if ('error' in plan) {
       if (tree) await run(['git', 'worktree', 'remove', '--force', tree.path], { cwd }).catch(() => undefined)
       return `time machine: ${plan.error}`
@@ -122,12 +124,14 @@ export const register: Register = (on, options) => {
     await c.write(plan.file, plan.body)
     armed = undefined
     c.repaint()
-    const opened = isOpening && (await openInTerminal(run, plan.command))
+    const inDesktop = toDesktop && (await openInDesktop(run, tree?.path ?? cwd, plan.newId))
+    const inTerminal = !inDesktop && isOpening && (await openInTerminal(run, plan.command))
+    const opened = inDesktop || inTerminal
     const copied = !opened && isCopying ? await c.copy(plan.command).catch(() => false) : false
     return [
       `Forked at point ${plan.n} (${plan.label}): ${plan.kept} rows kept.`,
       tree ? `Files restored in worktree ${tree.path} (branch ${tree.branch}); your checkout is untouched.` : commit === undefined ? 'No file snapshot for this point (not a git project, or taken before the mod was loaded): conversation only.' : 'Could not create the worktree: conversation only.',
-      opened ? 'Opened in a new Terminal window.' : `New session ${plan.newId}${copied ? ', resume command copied' : ''}. In a new terminal:\n${plan.command}`,
+      inDesktop ? 'Opened in Claude Desktop.' : inTerminal ? 'Opened in a new Terminal window.' : `New session ${plan.newId}${copied ? ', resume command copied' : ''}. In a new terminal:\n${plan.command}`,
     ].join('\n')
   }
 

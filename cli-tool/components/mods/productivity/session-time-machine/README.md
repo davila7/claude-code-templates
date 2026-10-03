@@ -74,7 +74,7 @@ that to make it one click:
      the point, closes any `tool_use` left without its `tool_result`,
    - writes them under a new session id for the worktree, with a first message
      that tells the model the files live in the worktree,
-   - opens a new Terminal window (macOS) running `claude --resume <new-id>` in
+   - opens it in Claude Desktop (`claude --desktop --resume <new-id>`, macOS), or in a new Terminal window when you gave an instruction (it travels as the resume command's message) or Desktop cannot take it, running in
      that worktree. Elsewhere, or if the window cannot open, the command is
      copied to the clipboard instead.
 
@@ -82,8 +82,8 @@ Your checkout and the session you are in are not touched.
 
 Limits:
 
-- **Terminal, not Desktop.** A mod cannot open a session inside Claude Desktop,
-  so the fork opens in Terminal (macOS). Elsewhere you paste the command.
+- **macOS only.** The fork opens through `claude --desktop`, or Terminal;
+  elsewhere you paste the command.
 - **Snapshots only exist from when the mod was loaded.** A point without one
   forks the conversation only, and the pane says so before you press.
 - **Git projects only.** Outside a git repository there is no file snapshot.

@@ -166,9 +166,13 @@ export function closePrefix(chain: readonly Row[], keep: number): number {
 }
 
 /** The JSONL of a fork: the first `keep` chain rows, under `newId`, with their uuids and parents intact. */
-export function forkTranscript(chain: readonly Row[], keep: number, newId: string, cwd?: string): string {
+export function forkTranscript(chain: readonly Row[], keep: number, newId: string, cwd?: string, note = ''): string {
   const n = closePrefix(chain, keep)
-  return chain.slice(0, n).map(row => JSON.stringify({ ...row, sessionId: newId, ...(cwd ? { cwd } : {}) })).join('\n') + (n > 0 ? '\n' : '')
+  const rows: unknown[] = chain.slice(0, n).map(row => ({ ...row, sessionId: newId, ...(cwd ? { cwd } : {}) }))
+  const last = rows[n - 1] as Row | undefined
+  // a closing user message: the model reads where its files are before the person says anything
+  if (note && last) rows.push({ parentUuid: last.uuid, isSidechain: false, userType: 'external', cwd, sessionId: newId, version: last.version, type: 'user', message: { role: 'user', content: note }, uuid: newSessionId(), timestamp: new Date().toISOString() })
+  return rows.map(r => JSON.stringify(r)).join('\n') + (n > 0 ? '\n' : '')
 }
 
 /** `/` and every other non-alphanumeric of the directory become `-`, as Claude Code names a project folder. */
@@ -204,11 +208,11 @@ export function parseArgs(args: string): ForkArgs {
 export type ForkPlan = { error: string } | { newId: string; file: string; body: string; kept: number; command: string; label: string; n: number }
 
 /** Everything a fork needs short of writing the file: shared by the command and the pane's button. */
-export function planFork(chain: readonly Row[], points: readonly Point[], n: number, instruction: string, cwd: string, configDir: string, newId = newSessionId()): ForkPlan {
+export function planFork(chain: readonly Row[], points: readonly Point[], n: number, instruction: string, cwd: string, configDir: string, newId = newSessionId(), note = ''): ForkPlan {
   const point = points.find(p => p.n === n)
   if (!point) return { error: `no point ${n} (1-${points.length}); /timemachine list shows them` }
-  const body = forkTranscript(chain, point.keep, newId, cwd)
-  const kept = body ? body.trimEnd().split('\n').length : 0
+  const body = forkTranscript(chain, point.keep, newId, cwd, note)
+  const kept = body ? body.trimEnd().split('\n').length - (note ? 1 : 0) : 0
   if (kept === 0) return { error: 'nothing before that point to fork from' }
   return { newId, file: transcriptPath(configDir, cwd, newId), body, kept, command: resumeCommand(cwd, newId, instruction), label: clip(point.label, 60), n }
 }

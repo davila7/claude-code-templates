@@ -110,3 +110,15 @@ export async function openInTerminal(run: Run, command: string): Promise<boolean
     return false
   }
 }
+
+/** Opens the saved session in Claude Desktop (`claude --desktop --resume`, which wants a terminal, so `script` gives it one); resolves whether Desktop took it. */
+export async function openInDesktop(run: Run, cwd: string, sessionId: string): Promise<boolean> {
+  try {
+    const os = await run(['uname', '-s'])
+    if (os.stdout.trim() !== 'Darwin') return false
+    const res = await run(['script', '-q', '/dev/null', 'claude', '--desktop', '--resume', sessionId], { cwd, timeoutMs: 60_000 })
+    return res.exitCode === 0 && /Opening session/.test(res.stdout)
+  } catch {
+    return false
+  }
+}
