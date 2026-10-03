@@ -5,6 +5,7 @@ import {
   bigClock,
   bigClockWidth,
   segments,
+  nextToastMark,
   bar,
   byTurn,
   fmtClock,
@@ -272,5 +273,26 @@ describe('pane helpers', () => {
     expect(s[0] + s[1] + s[2]).toBe(48)
     expect(s[2]).toBeGreaterThanOrEqual(1)
     expect(segments(0, 0, 0, 48)).toEqual([0, 0, 0])
+  })
+})
+
+describe('countdown toasts', () => {
+  test('fires at the threshold, then 10, 3, 2 and 1 seconds, once each', () => {
+    let level = Infinity
+    const fired: number[] = []
+    for (let secs = 70; secs >= 1; secs--) {
+      const m = nextToastMark(secs, 60, level)
+      if (m !== undefined) {
+        fired.push(secs)
+        level = m
+      }
+    }
+    expect(fired).toEqual([60, 10, 3, 2, 1])
+  })
+  test('a stalled clock skips to the newest mark; a short warning drops the early ones', () => {
+    expect(nextToastMark(2, 60, Infinity)).toBe(2)
+    expect(nextToastMark(2, 60, 2)).toBeUndefined()
+    expect(nextToastMark(5, 5, Infinity)).toBe(5)
+    expect(nextToastMark(30, 5, Infinity)).toBeUndefined()
   })
 })

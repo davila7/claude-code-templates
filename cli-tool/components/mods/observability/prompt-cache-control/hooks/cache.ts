@@ -253,3 +253,17 @@ export function segments(read: number, write: number, fresh: number, width: numb
   }
   return [cells[0], cells[1], cells[2]]
 }
+
+/** Seconds left at which a toast counts down after the one at the warning threshold. */
+export const COUNTDOWN_MARKS = [10, 3, 2, 1]
+
+/**
+ * The toast mark to fire now, or undefined. `level` is the mark last fired for
+ * this cache entry (Infinity before any); a late tick skips straight to the
+ * newest mark crossed, so a stalled clock never replays old ones.
+ */
+export function nextToastMark(secsLeft: number, warnSecs: number, level: number): number | undefined {
+  const marks = [warnSecs, ...COUNTDOWN_MARKS].filter(m => m <= warnSecs)
+  const due = marks.filter(m => secsLeft <= m && m < level)
+  return due.length ? Math.min(...due) : undefined
+}

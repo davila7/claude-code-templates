@@ -28,11 +28,12 @@
  *   compactAtTokens: number     prompt size that makes an expired cache suggest /compact (default 100000)
  *   band: boolean               row above the prompt (default true)
  *   status: boolean             entry under the prompt (default false)
- *   toast: boolean              one toast per entry near expiry (default true)
+ *   toast: boolean              toasts near expiry: at warnSeconds, then 10, 3, 2 and 1 s (default true)
  */
 import type { Register } from 'claude-code'
 import {
   advise,
+  COUNTDOWN_MARKS,
   bar,
   bigClock,
   bigClockWidth,
@@ -44,6 +45,7 @@ import {
   isCachingDisabled,
   isOn,
   lifeRatio,
+  nextToastMark,
   padLeft,
   positive,
   promptTokens,
@@ -67,6 +69,7 @@ let env: CacheEnv = {}
 let timer: { cancel: () => void } | undefined
 let lastKey = ''
 let toastedFor = 0
+let toastLevel = Infinity
 let isPaneOpen = false
 
 type Policy = { warnMs: number; compactAtTokens: number }
@@ -150,15 +153,19 @@ export const register: Register = (on, options) => {
         if (showStatus) $.ui.status(shortLine(policy, now))
         $.ui.invalidate('ui.render')
       }
-      if (
-        wantToast &&
-        last &&
-        advice.kind === 'soon' &&
-        toastedFor !== last.startedAt &&
-        promptTokens(last) >= TOAST_MIN_TOKENS
-      ) {
-        toastedFor = last.startedAt
-        $.ui.toast(`cache expires in ${fmtClock(left)}: send a message to keep ${fmtTokens(promptTokens(last))} tokens warm`)
+      if (wantToast && last && left > 0 && promptTokens(last) >= TOAST_MIN_TOKENS) {
+        if (toastedFor !== last.startedAt) {
+          toastedFor = last.startedAt
+          toastLevel = Infinity
+        }
+        // the first toast comes at warnSeconds, then 10, 3, 2 and 1 seconds; a late tick skips to the newest one
+        const secs = Math.ceil(left / 1000)
+        const mark = nextToastMark(secs, policy.warnMs / 1000, toastLevel)
+        if (mark !== undefined) {
+          toastLevel = mark
+          const tail = secs <= COUNTDOWN_MARKS[0] ? 'send a message now' : `send a message to keep ${fmtTokens(promptTokens(last))} tokens warm`
+          $.ui.toast(`cache expires in ${secs >= 60 ? fmtClock(left) : `${secs}s`}: ${tail}`)
+        }
       }
     })
     return r

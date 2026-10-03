@@ -47772,7 +47772,7 @@
         "toast": {
           "type": "boolean",
           "title": "Toast near expiry",
-          "description": "One toast per cache entry when the countdown reaches the warning threshold (only for prompts of 20k tokens or more)",
+          "description": "Toasts as the cache lapses: at the warning threshold, then at 10, 3, 2 and 1 seconds, once per cache entry each (only for prompts of 20k tokens or more)",
           "default": true
         }
       },

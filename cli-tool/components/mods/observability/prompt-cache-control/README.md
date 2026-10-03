@@ -48,7 +48,7 @@ Claude Code's own switches are read from the environment at session start:
 - `turn.step`: reads each main-loop request's usage (subagents have their own prefixes and are left out)
 - `$.clock.every(1000)`: redraws the countdown, and only while its text changes, so an idle expired session costs nothing
 - `ui.render` on `AbovePrompt` (the band) and on `Pane` (`/cache`)
-- `$.ui.toast`: once per cache entry when the countdown reaches the warning threshold, for prompts of 20k tokens or more
+- `$.ui.toast`: once per cache entry at the warning threshold (60 s by default) and again at 10, 3, 2 and 1 seconds left, for prompts of 20k tokens or more
 
 ## Options
 
@@ -58,7 +58,7 @@ Claude Code's own switches are read from the environment at session start:
   compactAtTokens: number   prompt size that makes an expired cache suggest /compact (default 100000)
   band: boolean             row above the prompt (default true)
   status: boolean           entry under the prompt, "cache 98% · 3:41" (default false)
-  toast: boolean            one toast per entry near expiry (default true)
+  toast: boolean            toasts at the threshold, 10, 3, 2 and 1 s (default true)
 ```
 
 The 100k `compactAtTokens` is a judgement, not a figure from the documentation: lower it if your model's cache writes are expensive for you.
