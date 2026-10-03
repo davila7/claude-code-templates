@@ -28,12 +28,15 @@
  *   compactAtTokens: number     prompt size that makes an expired cache suggest /compact (default 100000)
  *   band: boolean               row above the prompt (default true)
  *   status: boolean             entry under the prompt (default false)
- *   toast: boolean              one toast per entry near expiry (default true)
+ *   toast: boolean              toasts near expiry: at warnSeconds, then 10, 3, 2 and 1 s (default true)
  */
 import type { Register } from 'claude-code'
 import {
   advise,
+  COUNTDOWN_MARKS,
   bar,
+  bigClock,
+  bigClockWidth,
   byTurn,
   fit,
   fmtClock,
@@ -41,11 +44,15 @@ import {
   hitRatio,
   isCachingDisabled,
   isOn,
+  lifeRatio,
+  nextToastMark,
+  padLeft,
   positive,
   promptTokens,
   remainingMs,
   resolveTtl,
   rowRatio,
+  segments,
 } from './cache.ts'
 import type { Advice, CacheEnv, Sample, Ttl } from './cache.ts'
 
@@ -62,6 +69,7 @@ let env: CacheEnv = {}
 let timer: { cancel: () => void } | undefined
 let lastKey = ''
 let toastedFor = 0
+let toastLevel = Infinity
 let isPaneOpen = false
 
 type Policy = { warnMs: number; compactAtTokens: number }
@@ -145,15 +153,19 @@ export const register: Register = (on, options) => {
         if (showStatus) $.ui.status(shortLine(policy, now))
         $.ui.invalidate('ui.render')
       }
-      if (
-        wantToast &&
-        last &&
-        advice.kind === 'soon' &&
-        toastedFor !== last.startedAt &&
-        promptTokens(last) >= TOAST_MIN_TOKENS
-      ) {
-        toastedFor = last.startedAt
-        $.ui.toast(`cache expires in ${fmtClock(left)}: send a message to keep ${fmtTokens(promptTokens(last))} tokens warm`)
+      if (wantToast && last && left > 0 && promptTokens(last) >= TOAST_MIN_TOKENS) {
+        if (toastedFor !== last.startedAt) {
+          toastedFor = last.startedAt
+          toastLevel = Infinity
+        }
+        // the first toast comes at warnSeconds, then 10, 3, 2 and 1 seconds; a late tick skips to the newest one
+        const secs = Math.ceil(left / 1000)
+        const mark = nextToastMark(secs, policy.warnMs / 1000, toastLevel)
+        if (mark !== undefined) {
+          toastLevel = mark
+          const tail = secs <= COUNTDOWN_MARKS[0] ? 'send a message now' : `send a message to keep ${fmtTokens(promptTokens(last))} tokens warm`
+          $.ui.toast(`cache expires in ${secs >= 60 ? fmtClock(left) : `${secs}s`}: ${tail}`)
+        }
       }
     })
     return r
@@ -236,16 +248,21 @@ export const register: Register = (on, options) => {
     const wide = columns >= 90
     return (
       <Box flexDirection="row" columnGap={1}>
-        <Text dimColor>cache</Text>
+        <Text bold color={color}>{advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'off' || advice.kind === 'cold' || advice.kind === 'uncached' ? '○' : '✖'}</Text>
+        <Text bold color="cyan">cache</Text>
         <Text color={color}>{bar(ratio, wide ? 10 : 6)}</Text>
         <Text bold>{`${Math.round(ratio * 100)}%`}</Text>
-        <Text dimColor>
-          {wide
-            ? `read ${fmtTokens(last.read)} · wrote ${fmtTokens(last.write)} · new ${fmtTokens(last.fresh)}`
-            : `${fmtTokens(promptTokens(last))} tok`}
-        </Text>
+        {wide ? (
+          <>
+            <Text color="green">{`read ${fmtTokens(last.read)}`}</Text>
+            <Text color="yellow">{`wrote ${fmtTokens(last.write)}`}</Text>
+            <Text color="cyan">{`new ${fmtTokens(last.fresh)}`}</Text>
+          </>
+        ) : (
+          <Text dimColor>{`${fmtTokens(promptTokens(last))} tok`}</Text>
+        )}
         {advice.kind !== 'uncached' && advice.kind !== 'off' && (
-          <Text color={color}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
+          <Text bold color={color}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
       </Box>
@@ -256,39 +273,123 @@ export const register: Register = (on, options) => {
     if (e.requestId !== PANE) return next(e)
     const { Box, Text, Button } = $.ui.resolve(e)
     const width = Math.max(30, e.props.bodyColumns - 1)
+    // HTML collapses runs of spaces and trims a text's ends; a no-break space keeps them
+    const sp = (t: string) => (e.surface === 'terminal' ? t : t.replace(/ /g, ' '))
     const now = Date.now()
     const { last, advice, left } = current(policy, now)
     const all = byTurn(samples)
-    const rows = all.slice(-Math.max(3, (e.viewport?.rows ?? 24) - 9))
     const color = COLOR[advice.kind]
-    const head = (n: string, w: number) => n.padStart(w)
+    const clock = fmtClock(left)
+    const counting = !!last && advice.kind !== 'uncached' && advice.kind !== 'off'
+    // the last seconds blink between yellow and red
+    const hot = advice.kind === 'soon' && Math.ceil(left / 1000) % 2 === 0 ? 'red' : color
+    const hitColor = (pct: number) => (pct >= 80 ? 'green' : pct >= 40 ? 'yellow' : 'red')
+    const cell = (key: string, w: number, text: string, c?: string, bold = false) => (
+      <Box key={key} width={w} flexShrink={0} justifyContent="flex-end">
+        <Text color={c} bold={bold} dimColor={!c}>{sp(text)}</Text>
+      </Box>
+    )
+
+    const big = counting && bigClockWidth(clock) <= width ? bigClock(left > 0 ? clock : '0:00') : undefined
+    const barW = Math.min(width, 48)
+    const life = lifeRatio(left, ttl)
+    const lifeFilled = Math.round(life * barW)
+    const [sr, sw, sn] = last ? segments(last.read, last.write, last.fresh, barW) : [0, 0, 0]
+
+    // a turn row: 4 + 5 + 7 + 7 + 7 + (bar 6 + pct 5) + single gaps
+    const withBar = width >= 50
+    const rows = all.slice(-Math.max(3, (e.viewport?.rows ?? 24) - (big ? 24 : 17)))
 
     return (
       <Box flexDirection="column">
-        <Text bold>{`${ttl} cache (${ttlSource})${left > 0 ? ` · ⏱ ${fmtClock(left)}` : ''}`}</Text>
-        <Text color={color}>{fit(advice.text, width)}</Text>
+        <Box key="title" flexDirection="row" columnGap={1}>
+          <Text bold color="cyan">{sp('⚡ PROMPT CACHE')}</Text>
+          <Text dimColor>{sp(`· ${ttl} lifetime (${ttlSource})`)}</Text>
+        </Box>
+
+        <Box key="clock" flexDirection="column" marginTop={1}>
+          {big ? (
+            big.map((line, i) => (
+              <Text key={`big:${i}`} bold color={left > 0 ? hot : 'red'}>{sp(line)}</Text>
+            ))
+          ) : (
+            <Text bold color={hot}>{sp(counting ? `⏱ ${left > 0 ? clock : '0:00'}` : '⏱ --:--')}</Text>
+          )}
+          {counting ? (
+            <Text>
+              <Text color={hot}>{'█'.repeat(lifeFilled)}</Text>
+              <Text dimColor>{'░'.repeat(barW - lifeFilled)}</Text>
+              <Text dimColor>{sp(` ${Math.round(life * 100)}% left`)}</Text>
+            </Text>
+          ) : null}
+        </Box>
+
+        <Box key="advice" marginTop={1} flexDirection="column">
+          <Text bold color={color}>{sp(`${advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'expired' || advice.kind === 'miss' ? '✖' : '○'} ${advice.text}`)}</Text>
+          {last ? (
+            <Text dimColor>{sp(fit(`${last.model} · prompt ${fmtTokens(promptTokens(last))} tokens`, width))}</Text>
+          ) : null}
+        </Box>
+
         {last ? (
-          <Text dimColor>{fit(`${last.model} · prompt ${fmtTokens(promptTokens(last))} tokens`, width)}</Text>
+          <Box key="stack" flexDirection="column" marginTop={1}>
+            <Text>
+              <Text color="green">{'█'.repeat(sr)}</Text>
+              <Text color="yellow">{'█'.repeat(sw)}</Text>
+              <Text color="cyan">{'█'.repeat(sn)}</Text>
+              <Text bold color={hitColor(Math.round(hitRatio(last) * 100))}>{sp(` ${Math.round(hitRatio(last) * 100)}% hit`)}</Text>
+            </Text>
+            <Box flexDirection="row" columnGap={2}>
+              <Text color="green">{sp(`■ read ${fmtTokens(last.read)}`)}</Text>
+              <Text color="yellow">{sp(`■ wrote ${fmtTokens(last.write)}`)}</Text>
+              <Text color="cyan">{sp(`■ new ${fmtTokens(last.fresh)}`)}</Text>
+            </Box>
+          </Box>
         ) : null}
 
         <Box key="table" flexDirection="column" marginTop={1}>
-          <Text bold color="cyan">{`${head('turn', 4)} ${head('steps', 5)} ${head('read', 7)} ${head('wrote', 7)} ${head('new', 7)} ${head('hit', 4)}`}</Text>
-          {rows.length === 0 ? <Text dimColor>no requests yet</Text> : null}
+          <Text bold>{sp('TURNS')}</Text>
+          <Box key="head" flexDirection="row" columnGap={1}>
+            {cell('h:turn', 4, 'turn', 'cyan', true)}
+            {cell('h:steps', 5, 'steps', 'cyan', true)}
+            {cell('h:read', 7, 'read', 'green', true)}
+            {cell('h:wrote', 7, 'wrote', 'yellow', true)}
+            {cell('h:new', 7, 'new', 'cyan', true)}
+            {cell('h:hit', withBar ? 11 : 4, 'hit', 'magenta', true)}
+          </Box>
+          <Text dimColor>{'─'.repeat(withBar ? 50 : 42)}</Text>
+          {rows.length === 0 ? <Text dimColor>{sp('no requests yet')}</Text> : null}
           {rows.map((row, i) => {
             const n = all.length - rows.length + i + 1
             const pct = Math.round(rowRatio(row) * 100)
+            const c = hitColor(pct)
             return (
-              <Text key={`t:${row.turnId}`}>
-                {`${head(String(n), 4)} ${head(String(row.steps), 5)} ${head(fmtTokens(row.read), 7)} ${head(fmtTokens(row.write), 7)} ${head(fmtTokens(row.fresh), 7)} `}
-                <Text color={pct >= 80 ? 'green' : pct >= 40 ? 'yellow' : 'red'}>{head(`${pct}%`, 4)}</Text>
-              </Text>
+              <Box key={`t:${row.turnId}`} flexDirection="row" columnGap={1}>
+                {cell(`c:turn:${row.turnId}`, 4, String(n))}
+                {cell(`c:steps:${row.turnId}`, 5, String(row.steps))}
+                {cell(`c:read:${row.turnId}`, 7, fmtTokens(row.read), 'green')}
+                {cell(`c:wrote:${row.turnId}`, 7, fmtTokens(row.write), 'yellow')}
+                {cell(`c:new:${row.turnId}`, 7, fmtTokens(row.fresh), 'cyan')}
+                {withBar ? (
+                  <Box key={`c:bar:${row.turnId}`} width={11} flexShrink={0} flexDirection="row" columnGap={1}>
+                    <Text color={c}>{bar(pct / 100, 6)}</Text>
+                    <Text color={c} bold>{sp(padLeft(`${pct}%`, 4))}</Text>
+                  </Box>
+                ) : (
+                  cell(`c:hit:${row.turnId}`, 4, `${pct}%`, c, true)
+                )}
+              </Box>
             )
           })}
         </Box>
 
         <Box key="foot" marginTop={1} flexDirection="column">
           <Button key="close" label="close" onPress={() => {}} />
-          <Text dimColor>{fit('read = served by the cache · wrote = new cache entry · new = uncached', width)}</Text>
+          <Box key="legend" marginTop={1} flexDirection="column">
+            <Text color="green">{sp('■ read   served by the cache')}</Text>
+            <Text color="yellow">{sp('■ wrote  new cache entry')}</Text>
+            <Text color="cyan">{sp('■ new    sent uncached')}</Text>
+          </Box>
         </Box>
       </Box>
     )
