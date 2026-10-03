@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "deja-vu": {
+      "description": "Searches the session history your coding agents already wrote to disk, including sessions from before it was installed: Claude Code, Codex, Cursor and 32 more. One deja tool answers in modes such as recall (past sessions), fix (how an error was solved before) and blame (which session wrote a line). Local index, no LLM, no embeddings, no API key.",
+      "command": "npx",
+      "args": ["-y", "@vshulcz/deja-vu", "mcp"]
+    }
+  }
+}
