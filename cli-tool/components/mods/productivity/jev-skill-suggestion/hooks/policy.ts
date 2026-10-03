@@ -242,18 +242,19 @@ export function canonical<T extends { name: string }>(commands: readonly T[], id
 
 /**
  * A claude.ai-synced skill's file: Claude Code keeps them under
- * `~/.claude/skills/synced/<account>/<skill>/SKILL.md`, listed to the model
- * with a prefix (`anthropic-skills:pptx`) that is not on disk.
+ * `<config dir>/skills/synced/<account>/<skill>/SKILL.md` (the config dir is
+ * `$CLAUDE_CONFIG_DIR`, else `~/.claude`), listed to the model with a prefix
+ * (`anthropic-skills:pptx`) that is not on disk.
  */
-export function syncedFileCandidates(home: string, accounts: readonly string[], name: string): string[] {
+export function syncedFileCandidates(configDir: string, accounts: readonly string[], name: string): string[] {
   if (!safeName(name)) return []
   const short = name.includes(':') ? name.slice(name.lastIndexOf(':') + 1) : name
-  return accounts.filter(safeName).map((account) => `${home}/.claude/skills/synced/${account}/${short}/SKILL.md`)
+  return accounts.filter(safeName).map((account) => `${configDir}/skills/synced/${account}/${short}/SKILL.md`)
 }
 
 /**
- * The same files under a plugin's install path, as
- * `~/.claude/plugins/installed_plugins.json` records it.
+ * The same files under a plugin's install path, as the config dir's
+ * `plugins/installed_plugins.json` records it.
  */
 export function pluginFileCandidates(installPath: string, name: string, plugin: string): string[] {
   if (!safeName(name) || !safeName(plugin)) return []
@@ -754,7 +755,7 @@ export interface SkillSettings {
   disableBundledSkills: boolean | undefined
 }
 
-/** Reads the two fields from `~/.claude/settings.json`; malformed reads as empty. */
+/** Reads the two fields from the config dir's `settings.json`; malformed reads as empty. */
 export function readSkillSettings(json: string | null): SkillSettings {
   let parsed: unknown = null
   try {
@@ -850,15 +851,24 @@ export function setupInstructions(
    * do, so a rerun must leave it alone.
    */
   backupExists = false,
+  /**
+   * Whether `CLAUDE_CONFIG_DIR` is set. When it is not, the backup is removed
+   * with the exact command `commands/setup.md` allows, so it runs without a
+   * prompt; when it is, with the backup's own path, quoted for the shell.
+   */
+  customConfigDir = false,
 ): string {
   const lines: string[] = ['<jev_skill_suggestion_setup>']
   if (mode === 'restore') {
+    const removeBackup = customConfigDir
+      ? `rm '${backupPath.replace(/'/g, `'\\''`)}'`
+      : 'rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json'
     lines.push(
       `The user asked to undo jev-skill-suggestion's setup: put their skills back the way they were before it ran.`,
       `1. Read ${backupPath}. It holds {"skillOverrides": {...}, "disableBundledSkills": ...} as they were before the setup.`,
       `   If it does not exist, say so and stop: there is nothing to restore.`,
       `2. Show the user what will change in ${settingsPath}: the "skillOverrides" entries that go back to their saved value (an entry not in the backup is removed), and "disableBundledSkills" back to its saved value (removed when the backup says null).`,
-      `3. Ask the user to confirm. Only after a clear yes, edit ${settingsPath} with the Edit tool, changing nothing else in the file, then remove the backup by running exactly this command with the Bash tool: rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json`,
+      `3. Ask the user to confirm. Only after a clear yes, edit ${settingsPath} with the Edit tool, changing nothing else in the file, then remove the backup by running exactly this command with the Bash tool: ${removeBackup}`,
       `4. Tell the user to restart Claude Code for /skills and /context to show the change.`,
       '</jev_skill_suggestion_setup>',
     )

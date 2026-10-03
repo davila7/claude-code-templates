@@ -36,11 +36,11 @@ The first prompt of the session prints `[jev-skill-suggestion] ready on …; wit
 
 The mod fills the command in at run time with your real roster and Claude shows you, in your language, three lists before touching anything:
 
-- the skills it will set to `user-invocable-only` in `~/.claude/settings.json` (`skillOverrides`) — your user-level skills, the project's (the working directory's `.claude/`, not its ancestors: a git worktree only sees its own copies) and those synced from claude.ai;
+- the skills it will set to `user-invocable-only` in `settings.json` (`skillOverrides`) in your config dir (`$CLAUDE_CONFIG_DIR`, default `~/.claude`) — your user-level skills, the project's (the working directory's `.claude/`, not its ancestors: a git worktree only sees its own copies) and those synced from claude.ai;
 - Claude Code's bundled skills (`simplify`, `loop`, `init`, …), turned off together with `disableBundledSkills: true`;
 - the skills a plugin ships, which `skillOverrides` cannot touch: they stay listed unless you disable the plugin in `/plugin`.
 
-Say yes, and Claude first writes the previous values to `~/.claude/jev-skill-suggestion.skill-overrides.backup.json`, then edits `~/.claude/settings.json` with the Edit tool — so the change shows as a diff and asks for permission like any other file edit. Nothing is written before your yes. Running the command again proposes only what is still to change (`0` on a machine already set up) and leaves the backup from the first run untouched, so it is safe to repeat after installing new skills.
+Say yes, and Claude first writes the previous values to `jev-skill-suggestion.skill-overrides.backup.json` in the same config dir, then edits `settings.json` there with the Edit tool — so the change shows as a diff and asks for permission like any other file edit. Nothing is written before your yes. Running the command again proposes only what is still to change (`0` on a machine already set up) and leaves the backup from the first run untouched, so it is safe to repeat after installing new skills.
 
 **3. Restart Claude Code** — `/skills` and `/context` read the settings at start-up.
 
@@ -110,7 +110,7 @@ Their mean is the gate: under `gateThreshold` (0.30) nothing is suggested, whate
 
 This is where lookalikes separate — on one line the skill that *edits* `.pptx` files reads nearly the same as the one that *authors* them; on 700 characters they do not.
 
-The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project and under `~`, `~/.claude/skills/synced/<account>/<name>/SKILL.md` for a skill synced from claude.ai, and for a plugin's skill its install path from `~/.claude/plugins/installed_plugins.json`. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session, and the same read is what gets injected.
+The skill bodies come from disk, by where Claude Code keeps them: `.claude/skills/<name>/SKILL.md` and `.claude/commands/<name>.md` in the project, `skills/<name>/SKILL.md` and `commands/<name>.md` in the config dir (`$CLAUDE_CONFIG_DIR`, default `~/.claude`), `skills/synced/<account>/<name>/SKILL.md` there for a skill synced from claude.ai, and for a plugin's skill its install path from `plugins/installed_plugins.json` there. A body that cannot be found leaves that candidate with its one-line description; the request still goes out. Bodies are read once per session, and the same read is what gets injected.
 
 - The Gateway answers a `noul` as a `boolean` with a `probability`; both shapes are read.
 - `rerank: false` skips the second request and suggests the top of the ranking, once the gate passes. A second request that was *attempted* and failed suggests nothing: the ranking's winner has not had its false-positive check.
@@ -165,7 +165,7 @@ Three places tell you different things, and only one of them is what the model w
 |---|---|---|
 | `/skills` | each skill's state (`on`, `name-only`, `user-only`, `off`) and its estimated listing cost | after `setup`: the hidden ones read `user-only` |
 | `/context` → Skills | an estimate rendered from the roster, without asking the `prompt.attachment` hooks | **no** while skills are `on`: it reads the same with the mod as without (5.4k tokens for a 40-skill roster in our test). After `setup` it counts only what is still listed — the plugin skills |
-| the API request | what the model read | **yes**: the first request's `input_tokens` in the session's `.jsonl` under `~/.claude/projects/` drop by the listing's size (5,496 tokens in that test), `/context`'s "Messages" row — computed from what was sent — drops the same, and a model asked *"is there a skill listing in your context?"* answers no |
+| the API request | what the model read | **yes**: the first request's `input_tokens` in the session's `.jsonl` under `projects/` in the config dir (`$CLAUDE_CONFIG_DIR`, default `~/.claude`) drop by the listing's size (5,496 tokens in that test), `/context`'s "Messages" row — computed from what was sent — drops the same, and a model asked *"is there a skill listing in your context?"* answers no |
 
 So the mod is at work from the first prompt, and `setup` is what makes the two panels agree with it. The transcript lines (above) are the running proof: `withheld the skill listing (N skills, …)` says what was kept from the model on that prompt, and `injected /name from …` that the one skill needed went in instead.
 
@@ -202,7 +202,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 
 `inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
 
-Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
+Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`settings.json` in the config dir — `$CLAUDE_CONFIG_DIR`, default `~/.claude` — not project settings), with `--settings <file>` or in managed settings:
 
 ```json
 { "pluginConfigs": { "jev-skill-suggestion@skills-dir": { "options": { "typesafeApiKey": "" } } } }
@@ -229,7 +229,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-skill
 
 Either way, `claude plugin validate .claude/skills/jev-skill-suggestion` prints every event it hooks and every `$` call it makes.
 
-**The setup command.** `/jev-skill-suggestion:setup` is a markdown command the plugin ships (`commands/setup.md`) whose text the mod replaces in its `skill.prompt` hook with the plan built from `$.command.list()` and the settings as they are; its `disable-model-invocation: true` keeps it out of the model's listing. A skill whose frontmatter `name:` is not its directory name (`name: "PocketBase API Rules"` in `pb-api-rules/`) is written by its directory name, which is what the engine lists, runs and overrides. `setup restore` reads `~/.claude/jev-skill-suggestion.skill-overrides.backup.json` and puts every saved entry back, removing the ones the setup added. Both modes end with a restart of Claude Code. The command only ever proposes an edit; Claude makes it with the Edit tool after you confirm, so a `--permission-mode plan` session shows the plan and changes nothing.
+**The setup command.** `/jev-skill-suggestion:setup` is a markdown command the plugin ships (`commands/setup.md`) whose text the mod replaces in its `skill.prompt` hook with the plan built from `$.command.list()` and the settings as they are; its `disable-model-invocation: true` keeps it out of the model's listing. A skill whose frontmatter `name:` is not its directory name (`name: "PocketBase API Rules"` in `pb-api-rules/`) is written by its directory name, which is what the engine lists, runs and overrides. `setup restore` reads `jev-skill-suggestion.skill-overrides.backup.json` in the config dir (`$CLAUDE_CONFIG_DIR`, default `~/.claude`) and puts every saved entry back, removing the ones the setup added; with `CLAUDE_CONFIG_DIR` set, the final `rm` of the backup asks for permission. Both modes end with a restart of Claude Code. The command only ever proposes an edit; Claude makes it with the Edit tool after you confirm, so a `--permission-mode plan` session shows the plan and changes nothing.
 
 Uninstalling: run `/jev-skill-suggestion:setup restore` first, or your skills stay hidden from the model with nothing left to inject them.
 
