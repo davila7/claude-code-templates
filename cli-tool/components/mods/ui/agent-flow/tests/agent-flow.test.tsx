@@ -13,9 +13,11 @@ import {
   rows,
   spawned,
   stepped,
+  synced,
   toolLabel,
   toolRan,
   trimmed,
+  visibleIds,
 } from '../hooks/flow.ts'
 
 const usage = (input: number, cached = 0, output = 10) => ({
@@ -68,12 +70,61 @@ describe('flow.ts', () => {
     expect(counts(flow)).toEqual({ running: 0, done: 1, failed: 0 })
   })
 
-  test('a loop no spawn announced is still drawn, marked unlisted', () => {
+  test('a loop no spawn announced is recorded, marked unlisted', () => {
     const flow = createFlow()
     stepped(flow, 'wf-1', usage(10), 1)
     expect(flow.nodes.get('wf-1')?.unlisted).toBe(true)
     stepped(flow, undefined, usage(20_000), 2)
     expect(flow.nodes.get(MAIN)?.contextTokens).toBe(20_000)
+  })
+
+  test('an unlisted loop stays out of the tree and the counts until agent.list knows it or a child of it shows', () => {
+    const flow = createFlow(0)
+    spawned(flow, spawn('a1'), 1)
+    toolRan(flow, 'fork-1', { tool: 'Read', label: 'MEMORY.md' } as never, 2)
+    stepped(flow, 'fork-2', usage(10), 3)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a1'])
+    expect(counts(flow)).toEqual({ running: 1, done: 0, failed: 0 })
+
+    synced(flow, [{ id: 'fork-1', status: 'running', type: 'general-purpose', description: 'workflow step' }])
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a1', 'fork-1'])
+    expect(counts(flow).running).toBe(2)
+
+    spawned(flow, spawn('kid', 'fork-2'), 4)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['a1', 'fork-1', 'fork-2', 'kid'])
+  })
+
+  test('an unlisted loop drawn only to hold its child is not counted, so it cannot stay running', () => {
+    const flow = createFlow(0)
+    stepped(flow, 'wf-1', usage(10), 1)
+    spawned(flow, spawn('kid', 'wf-1'), 2)
+    expect(counts(flow)).toEqual({ running: 1, done: 0, failed: 0 })
+    completed(flow, 'kid', { answer: 'ok', reason: 'answer', durationMs: 1 }, 3)
+    expect(rows(flow).map(r => r.node.id)).toEqual(['wf-1', 'kid'])
+    expect(counts(flow)).toEqual({ running: 0, done: 1, failed: 0 })
+  })
+
+  test('visibleIds keeps an unlisted parent for a listed child, and stays linear on a deep chain', () => {
+    const flow = createFlow(0)
+    stepped(flow, 'wf-1', usage(10), 1)
+    spawned(flow, spawn('kid', 'wf-1'), 2)
+    stepped(flow, 'wf-2', usage(10), 3)
+    expect([...visibleIds(flow)].sort()).toEqual(['kid', 'wf-1'])
+
+    // 500 agents nested one under the other, the most maxAgents keeps
+    const deep = createFlow(0)
+    let parent: string | undefined
+    for (let i = 0; i < 500; i++) {
+      spawned(deep, spawn(`d${i}`, parent), i)
+      parent = `d${i}`
+    }
+    const t0 = performance.now()
+    for (let i = 0; i < 10; i++) {
+      rows(deep)
+      counts(deep)
+    }
+    expect(rows(deep)).toHaveLength(500)
+    expect(performance.now() - t0).toBeLessThan(500)
   })
 
   test('trim drops finished branches only, never one with a running agent', () => {
@@ -100,7 +151,10 @@ describe('flow.ts', () => {
 
 // The engine beneath the plugin: every event the flow listens to, answered plainly.
 function fakeEngine(on: On) {
-  on('agent.spawn', async ($, e) => ({ model: 'claude-haiku-4-5', agentId: e.description === 'nested' ? 'sub-2' : 'sub-1' }))
+  on('agent.spawn', async ($, e) => ({
+    model: 'claude-haiku-4-5',
+    agentId: e.description === 'nested' ? 'sub-2' : e.description.startsWith('sub-') ? e.description : 'sub-1',
+  }))
   on('turn.step', async function* ($, e) {
     return {
       turnId: e.turnId,
@@ -186,6 +240,25 @@ describe('the pane', () => {
     await ui.redraw()
     expect(await ui.find({ type: 'Text', text: /2 subagents|1 subagents/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Messages/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('a selected unlisted loop leaves the detail once the child that drew it is cleared', async ($, on) => {
+    fakeEngine(on)
+    await $.tool.call({ tool: 'Read', file_path: 'MEMORY.md', agentId: 'wf-1' } as never)
+    await $.agent.spawn({ prompt: 'p', description: 'sub-wk', subagentType: 'Explore', parentAgentId: 'wf-1' } as never)
+    await $.turn.complete({ answer: 'ok', durationMs: 10, isAborted: false, turnId: 't1', agentId: 'sub-wk', reason: 'answer' })
+
+    const ui = await $.ui.mount({ plugin: 'agent-flow', surface: 'terminal', component: 'Pane', requestId: 'agent-flow', props: PANE_PROPS })
+    expect(await ui.find({ key: 'ag:wf-1' })).toBeDefined()
+    await ui.press({ key: 'ag:wf-1' })
+    await ui.redraw()
+    expect(await ui.find({ type: 'Text', text: /↓ in: not seen/ })).toBeDefined()
+
+    await ui.press({ key: 'clear' })
+    await ui.redraw()
+    expect(await ui.find({ key: 'ag:wf-1' })).toBeFalsy()
+    expect(await ui.find({ type: 'Text', text: /↓ in: not seen/ })).toBeFalsy()
     await ui.unmount()
   })
 })
