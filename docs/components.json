@@ -48292,12 +48292,25 @@
           "title": "Copy the resume command",
           "description": "Copy the `claude --resume` command of a fork to the clipboard",
           "default": true
+        },
+        "snapshots": {
+          "type": "boolean",
+          "title": "Snapshot the working tree",
+          "description": "Commit the working tree with a throwaway git index at each point so a fork can restore the files into a worktree",
+          "default": true
+        },
+        "openTerminal": {
+          "type": "boolean",
+          "title": "Open forks in Terminal",
+          "description": "macOS: open the forked session in a new Terminal window instead of only copying the command",
+          "default": true
         }
       },
       "references": [
         ".claude-plugin/plugin.json",
         "hooks/hooks.json",
         "hooks/register.tsx",
+        "hooks/snapshots.ts",
         "hooks/transcript.ts",
         "tests/session-time-machine.test.ts"
       ]
