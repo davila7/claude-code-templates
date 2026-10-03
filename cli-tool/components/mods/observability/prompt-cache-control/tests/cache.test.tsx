@@ -2,6 +2,9 @@
 import { describe, expect, test } from 'claude-code/testing'
 import {
   advise,
+  bigClock,
+  bigClockWidth,
+  segments,
   bar,
   byTurn,
   fmtClock,
@@ -193,7 +196,9 @@ describe('the band', () => {
     await step($)
     const ui = await band($)
     expect(await ui.find({ type: 'Text', text: /98%/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /read 80k · wrote 1k · new 300/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /read 80k/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /wrote 1k/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /new 300/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /5m · warm/ })).toBeDefined()
     await ui.unmount()
     expect(calls.status.at(-1)).toMatch(/^cache 98% · [45]:\d\d$/)
@@ -251,5 +256,21 @@ describe('the band', () => {
     const after = await band($)
     expect(await after.find({ type: 'Text', text: /⏱/ })).toBeUndefined()
     await after.unmount()
+  })
+})
+
+describe('pane helpers', () => {
+  test('bigClock draws five rows of equal width', () => {
+    const rows = bigClock('4:22')
+    expect(rows).toHaveLength(5)
+    expect(new Set(rows.map(r => r.length)).size).toBe(1)
+    expect(bigClockWidth('4:22')).toBe(4 + 1 + 1 + 1 + 4 + 1 + 4)
+    expect(rows[0].startsWith('█  █ ')).toBe(true)
+  })
+  test('segments sum to the width and keep small parts visible', () => {
+    const s = segments(113_000, 4_000, 2, 48)
+    expect(s[0] + s[1] + s[2]).toBe(48)
+    expect(s[2]).toBeGreaterThanOrEqual(1)
+    expect(segments(0, 0, 0, 48)).toEqual([0, 0, 0])
   })
 })

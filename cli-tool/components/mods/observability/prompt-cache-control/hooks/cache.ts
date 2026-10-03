@@ -198,3 +198,58 @@ export function fit(text: string, width: number): string {
 export function positive(v: unknown, fallback: number): number {
   return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : fallback
 }
+
+// Block-letter digits, 4 columns by 5 rows, for the pane's big clock.
+const GLYPHS: Record<string, readonly string[]> = {
+  '0': ['████', '█  █', '█  █', '█  █', '████'],
+  '1': [' ██ ', '  █ ', '  █ ', '  █ ', ' ███'],
+  '2': ['████', '   █', '████', '█   ', '████'],
+  '3': ['████', '   █', ' ███', '   █', '████'],
+  '4': ['█  █', '█  █', '████', '   █', '   █'],
+  '5': ['████', '█   ', '████', '   █', '████'],
+  '6': ['████', '█   ', '████', '█  █', '████'],
+  '7': ['████', '   █', '  █ ', ' █  ', ' █  '],
+  '8': ['████', '█  █', '████', '█  █', '████'],
+  '9': ['████', '█  █', '████', '   █', '████'],
+  ':': [' ', '█', ' ', '█', ' '],
+}
+
+export const BIG_ROWS = 5
+
+/** The five text rows of `text` (digits and colons, as fmtClock writes it) in block letters. */
+export function bigClock(text: string): string[] {
+  const rows: string[] = Array.from({ length: BIG_ROWS }, () => '')
+  const chars = [...text].filter(c => c in GLYPHS)
+  chars.forEach((c, i) => {
+    for (let r = 0; r < BIG_ROWS; r++) rows[r] += (i > 0 ? ' ' : '') + GLYPHS[c][r]
+  })
+  return rows
+}
+
+/** Columns bigClock(text) takes. */
+export const bigClockWidth = (text: string) => bigClock(text)[0].length
+
+/** Share of the cache lifetime left, 0 to 1. */
+export function lifeRatio(leftMs: number, ttl: Ttl): number {
+  return Math.min(1, Math.max(0, leftMs / ttlMs(ttl)))
+}
+
+export const padLeft = (text: string, width: number) => (text.length >= width ? text : ' '.repeat(width - text.length) + text)
+
+/**
+ * Widths of the three stacked-bar segments (read, wrote, new) over `width`
+ * cells: proportional, each non-empty part at least one cell, summing to width.
+ */
+export function segments(read: number, write: number, fresh: number, width: number): [number, number, number] {
+  const total = read + write + fresh
+  if (total === 0 || width <= 0) return [0, 0, 0]
+  const parts = [read, write, fresh]
+  const cells = parts.map(p => (p > 0 ? Math.max(1, Math.round((p / total) * width)) : 0))
+  let over = cells.reduce((a, b) => a + b, 0) - width
+  while (over !== 0) {
+    const i = over > 0 ? cells.indexOf(Math.max(...cells)) : parts.indexOf(Math.max(...parts))
+    cells[i] += over > 0 ? -1 : 1
+    over += over > 0 ? -1 : 1
+  }
+  return [cells[0], cells[1], cells[2]]
+}

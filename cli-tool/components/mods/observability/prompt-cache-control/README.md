@@ -12,7 +12,15 @@ cache ░░░░░░░░░░  0% read 0 · wrote 52k · new 300 ⏱ 4:58
 cache ██████████ 98% read 150k · wrote 1k · new 300 ⏱ 0:00 5m · expired: the next message rewrites 151k tokens. /compact first, or /clear if the task is done
 ```
 
-`/cache` opens a pane with one row per turn (requests, read, wrote, new, hit rate).
+`/cache` opens a pane: a big block-letter countdown that ticks every second and changes colour with the state (green warm, yellow then blinking red near expiry, red expired), a bar with the share of the lifetime left, a stacked bar of the last request (read / wrote / new), and a colour-coded table with one row per turn. Cells have fixed widths and no-break spaces so the terminal and the Desktop (HTML) pane render the same columns.
+
+```
+█  █   ████ ████
+█  █ █    █    █
+████   ████ ████
+   █ █ █    █   
+   █   ████ ████
+```
 
 ## How the countdown works
 
