@@ -25,15 +25,30 @@ From Anthropic's [prompt caching](https://platform.claude.com/docs/en/build-with
 - Writes cost 1.25x base input for 5 minutes and 2x for 1 hour; reads cost about 0.1x (less on some models). The expensive moment is an expired cache on a large context, which is when this mod suggests `/compact`.
 - `/clear` starts a new conversation in the same process, so the meter and the `/cache` table start over with it. A change in the prefix (model, effort or thinking settings, tool set, system prompt, `CLAUDE.md`) makes the next request write instead of read. The mod names the cause when it sees a miss: model changed, the cache had lapsed, or the prefix changed.
 
-Claude Code's own switches are read from the environment at session start:
+## Which lifetime your account gets
+
+The mod follows Claude Code's own rules ([prompt caching: cache lifetime](https://code.claude.com/docs/en/prompt-caching#cache-lifetime), Claude Code 2.1.242 or later). For the main conversation the TTL is the first match of:
+
+| # | Source | Result |
+| --- | --- | --- |
+| 1 | the mod's `ttl` option (`5m` / `1h`) | what you set |
+| 2 | `FORCE_PROMPT_CACHING_5M=1` | 5 minutes |
+| 3 | `CLAUDE_CODE_PROMPT_CACHE_TTL` | `5m` or `1h` |
+| 4 | the `promptCacheTtl` setting (local, project or user settings file) | `5m` or `1h` |
+| 5 | `ENABLE_PROMPT_CACHING_1H=1` | 1 hour |
+| 6 | the account | **1 hour on a Claude subscription within its plan usage**; 5 minutes on usage credits, an API key or a cloud provider |
+
+The account comes from the rate-limit windows the last response reported: a `five_hour` or `seven_day` window means a subscription, and one at 100% means requests now draw on usage credits. An API key or a cloud provider reports no such window, and before the first response nothing is known, so the mod starts from 5 minutes there. Managed settings are not readable from a mod.
+
+On top of that the mod watches the traffic, which beats rows 2 to 6: a request that **hits** the cache more than 5 minutes after the previous one proves the 1-hour lifetime (a later miss does not undo it, since a changed prefix looks the same), and a **miss** 5 to 60 minutes after the previous request, with the same model and a prompt that did not shrink, says the entry lapsed, so 5 minutes (a later hit overrules it). That covers what the mod cannot see: managed settings, a gateway that rewrites the TTL, or a subscription that ran out of plan usage mid-session. The pane header names the source in use.
+
+Why the mod infers instead of reading it: the API names the TTL of each write (`cache_creation.ephemeral_5m_input_tokens` / `ephemeral_1h_input_tokens`) and Claude Code's status line exposes it as `prompt_cache.ttl`, but the mod API passes on only the four token counts. To check by hand, `claude -p "hello" --output-format json` and read `usage.cache_creation`.
+
+Other switches read from the environment at session start:
 
 | Variable | Effect on the meter |
 | --- | --- |
-| `ENABLE_PROMPT_CACHING_1H=1` (or `true`) | the countdown runs 1 hour |
-| `FORCE_PROMPT_CACHING_5M=1` | forces 5 minutes, beating the one above |
 | `DISABLE_PROMPT_CACHING=1` (and `_HAIKU`, `_SONNET`, `_OPUS`) | the band says caching is off for that model |
-
-**What the mod cannot see.** The usage block does not say which TTL a write used, so `ttl: "auto"` is what the environment asks for, not an observation. If Claude Code picks a different lifetime for your plan or provider, set the `ttl` option to override it. The `ENABLE_PROMPT_CACHING_1H` and `FORCE_PROMPT_CACHING_5M` variables are described in an open documentation issue ([anthropics/claude-code#48082](https://github.com/anthropics/claude-code/issues/48082)) and may be renamed.
 
 ## What it hooks
 

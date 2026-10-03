@@ -4,6 +4,9 @@ import {
   advise,
   lifeColor,
   segments,
+  observeTtl,
+  decideTtl,
+  accountOf,
   nextToastMark,
   bar,
   byTurn,
@@ -145,7 +148,8 @@ describe('per-turn rows', () => {
 // The module end to end: a main-loop request feeds the band, a subagent's does not.
 type Calls = { status: (string | undefined)[]; logs: string[] }
 
-function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = { read: 80_000, write: 1_000 }) {
+function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = { read: 80_000, write: 1_000 }, limits: { kind: string; percentUsed: number }[] = []) {
+  on('session.usage', () => ({ value: { startedAt: 0, context: {}, rateLimits: limits } }) as never)
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
   on('session.end', async () => ({ sessionId: 's1' }) as never)
   on('env.get', ($, e) => ({ value: env[e.name] }))
@@ -225,11 +229,25 @@ describe('the band', () => {
     await ui.unmount()
   })
 
+  test('a Claude subscription defaults to an hour, usage credits to five minutes', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, {}, calls, undefined, [{ kind: 'five_hour', percentUsed: 12 }])
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(calls.logs.join('\n')).toContain('1h cache (Claude subscription default)')
+  })
+
+  test('CLAUDE_CODE_PROMPT_CACHE_TTL beats the subscription default', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, { CLAUDE_CODE_PROMPT_CACHE_TTL: '5m' }, calls, undefined, [{ kind: 'five_hour', percentUsed: 12 }])
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(calls.logs.join('\n')).toContain('5m cache (CLAUDE_CODE_PROMPT_CACHE_TTL)')
+  })
+
   test('the ttl option beats the environment', { options: { ttl: '5m' } }, async ($, on) => {
     const calls: Calls = { status: [], logs: [] }
     fakeEngine(on, { ENABLE_PROMPT_CACHING_1H: '1' }, calls)
     await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
-    expect(calls.logs.join('\n')).toContain('5m cache (option)')
+    expect(calls.logs.join('\n')).toContain('5m cache (the ttl option)')
   })
 
   test('a request that touched no cache shows no countdown', async ($, on) => {
@@ -293,5 +311,48 @@ describe('countdown toasts', () => {
     expect(nextToastMark(2, 60, 2)).toBeUndefined()
     expect(nextToastMark(5, 5, Infinity)).toBe(5)
     expect(nextToastMark(30, 5, Infinity)).toBeUndefined()
+  })
+})
+
+describe('observed lifetime', () => {
+  const prev = sample({ startedAt: T0 })
+  const MIN = 60_000
+  test('a hit more than 5 minutes later proves the 1-hour lifetime and sticks', () => {
+    const hit = sample({ startedAt: T0 + 20 * MIN, read: 80_000, write: 500 })
+    expect(observeTtl(prev, hit, undefined)).toBe('1h')
+    const miss = sample({ startedAt: T0 + 40 * MIN, read: 0, write: 81_000 })
+    expect(observeTtl(hit, miss, '1h')).toBe('1h')
+  })
+  test('a miss 5 minutes to an hour later says 5 minutes; a later hit overrules it', () => {
+    const miss = sample({ startedAt: T0 + 7 * MIN, read: 0, write: 81_000 })
+    expect(observeTtl(prev, miss, undefined)).toBe('5m')
+    const hit = sample({ startedAt: T0 + 20 * MIN, read: 80_000, write: 500 })
+    expect(observeTtl(miss, hit, '5m')).toBe('1h')
+  })
+  test('says nothing inside 5 minutes, across a model change, after /compact, or when nothing was cached', () => {
+    expect(observeTtl(prev, sample({ startedAt: T0 + 2 * MIN, read: 0, write: 81_000 }), undefined)).toBeUndefined()
+    expect(observeTtl(prev, sample({ startedAt: T0 + 20 * MIN, model: 'claude-opus-5-5', read: 0, write: 81_000 }), undefined)).toBeUndefined()
+    expect(observeTtl(prev, sample({ startedAt: T0 + 20 * MIN, read: 0, write: 5_000, fresh: 100 }), undefined)).toBeUndefined()
+    expect(observeTtl(sample({ read: 0, write: 0 }), sample({ startedAt: T0 + 20 * MIN }), undefined)).toBeUndefined()
+    expect(observeTtl(prev, sample({ startedAt: T0 + 2 * MIN, read: 80_000 }), undefined)).toBeUndefined()
+  })
+})
+
+describe('which lifetime Claude Code asks for', () => {
+  test('follows the documented order: force 5m, CLAUDE_CODE_PROMPT_CACHE_TTL, setting, ENABLE_1H, account', () => {
+    expect(decideTtl('auto', { force5m: '1', ttlVar: '1h' }, '1h', 'subscription').ttl).toBe('5m')
+    expect(decideTtl('auto', { ttlVar: '5m', enable1h: '1' }, '1h', 'subscription')).toEqual({ ttl: '5m', source: 'CLAUDE_CODE_PROMPT_CACHE_TTL' })
+    expect(decideTtl('auto', { enable1h: '1' }, '5m', 'other')).toEqual({ ttl: '5m', source: 'the promptCacheTtl setting' })
+    expect(decideTtl('auto', { enable1h: '1' }, undefined, 'other').ttl).toBe('1h')
+    expect(decideTtl('auto', {}, 'junk', 'subscription')).toEqual({ ttl: '1h', source: 'Claude subscription default' })
+    expect(decideTtl('auto', {}, undefined, 'credits').ttl).toBe('5m')
+    expect(decideTtl('auto', {}, undefined, 'other').ttl).toBe('5m')
+    expect(decideTtl('1h', { force5m: '1' }, '5m', 'other').ttl).toBe('1h')
+  })
+  test('the account comes from the plan windows the last response reported', () => {
+    expect(accountOf([])).toBe('other')
+    expect(accountOf([{ kind: 'spend_limit', percentUsed: 10 }])).toBe('other')
+    expect(accountOf([{ kind: 'five_hour', percentUsed: 20 }, { kind: 'seven_day', percentUsed: 5 }])).toBe('subscription')
+    expect(accountOf([{ kind: 'five_hour', percentUsed: 100 }])).toBe('credits')
   })
 })
