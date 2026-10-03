@@ -21,6 +21,8 @@ export type Point = {
   tool?: string
   /** the label without its kind: the prompt's text, the call's argument, the turn's last reply */
   detail: string
+  /** the whole text behind the label (a prompt, a command, a reply), capped at 2000 characters */
+  full: string
   /** how many rows of the chain a fork from here keeps (before closing tool pairs) */
   keep: number
 }
@@ -87,11 +89,23 @@ function toolLabel(block: any): string {
   return typeof arg === 'string' ? `${block.name} ${clip(arg, 60)}` : String(block.name)
 }
 
+function toolFull(block: any): string {
+  const input = block.input ?? {}
+  if (typeof input.command === 'string') return input.command
+  if (typeof input.file_path === 'string' && typeof input.new_string === 'string') return `${input.file_path}\n- ${input.old_string ?? ''}\n+ ${input.new_string}`
+  if (typeof input.file_path === 'string' && typeof input.content === 'string') return `${input.file_path}\n${input.content}`
+  try {
+    return JSON.stringify(input)
+  } catch {
+    return String(block.name)
+  }
+}
+
 /** Prompts, tool calls and turn ends of the chain, in order, each with the prefix a fork keeps. */
 export function buildTimeline(chain: readonly Row[]): Point[] {
   const points: Point[] = []
-  const add = (kind: PointKind, turn: number, label: string, keep: number, detail = label, tool?: string) =>
-    points.push({ n: points.length + 1, kind, turn, label, keep, detail, tool })
+  const add = (kind: PointKind, turn: number, label: string, keep: number, detail = label, tool?: string, full = detail) =>
+    points.push({ n: points.length + 1, kind, turn, label, keep, detail, tool, full: full.trim().slice(0, 2000) })
 
   const resultAt = new Map<string, number>()
   chain.forEach((row, i) => {
@@ -102,7 +116,7 @@ export function buildTimeline(chain: readonly Row[]): Point[] {
   let turn = 0
   let lastText = ''
   const endTurn = (end: number) => {
-    if (turn > 0) add('turn', turn, lastText ? `turn ${turn} ended: ${clip(lastText, 60)}` : `turn ${turn} ended`, end, clip(lastText, 90) || `turn ${turn} ended`)
+    if (turn > 0) add('turn', turn, lastText ? `turn ${turn} ended: ${clip(lastText, 60)}` : `turn ${turn} ended`, end, clip(lastText, 90) || `turn ${turn} ended`, undefined, lastText || `turn ${turn} ended`)
   }
   chain.forEach((row, i) => {
     const text = promptText(row)
@@ -110,7 +124,7 @@ export function buildTimeline(chain: readonly Row[]): Point[] {
       endTurn(i)
       turn += 1
       lastText = ''
-      add('prompt', turn, `before: ${clip(text, 70)}`, i, clip(text, 90))
+      add('prompt', turn, `before: ${clip(text, 70)}`, i, clip(text, 90), undefined, text)
       return
     }
     if (row.type !== 'assistant') return
@@ -118,7 +132,7 @@ export function buildTimeline(chain: readonly Row[]): Point[] {
       if (b?.type === 'text' && String(b.text ?? '').trim()) lastText = String(b.text)
       else if (b?.type === 'tool_use') {
         const at = resultAt.get(b.id)
-        if (at !== undefined) add('tool', turn, toolLabel(b), at + 1, toolLabel(b).slice(String(b.name).length).trim(), String(b.name))
+        if (at !== undefined) add('tool', turn, toolLabel(b), at + 1, toolLabel(b).slice(String(b.name).length).trim(), String(b.name), toolFull(b))
       }
     }
   })
@@ -164,7 +178,8 @@ export const transcriptPath = (configDir: string, cwd: string, sessionId: string
 export const shellQuote = (text: string): string => `'${text.replace(/'/g, `'\\''`)}'`
 
 export function resumeCommand(cwd: string, newId: string, instruction: string): string {
-  return `cd ${shellQuote(cwd)} && claude --resume ${newId} ${shellQuote(instruction)}`
+  const base = `cd ${shellQuote(cwd)} && claude --resume ${newId}`
+  return instruction.trim() ? `${base} ${shellQuote(instruction)}` : base
 }
 
 /** A random v4 uuid; the module has no crypto, so Math.random does (an id, not a secret). */
@@ -179,7 +194,27 @@ export function parseArgs(args: string): ForkArgs {
   const text = args.trim()
   if (!text) return { kind: 'open' }
   if (text === 'list') return { kind: 'list' }
-  const m = /^fork\s+(\d+)\s+([\s\S]+)$/.exec(text)
-  if (m) return { kind: 'fork', n: Number(m[1]), instruction: m[2]!.trim() }
-  return { kind: 'error', text: 'usage: /timemachine · /timemachine list · /timemachine fork <n> <new instruction>' }
+  const m = /^fork\s+(\d+)(?:\s+([\s\S]+))?$/.exec(text)
+  if (m) return { kind: 'fork', n: Number(m[1]), instruction: (m[2] ?? '').trim() }
+  return { kind: 'error', text: 'usage: /timemachine · /timemachine list · /timemachine fork <n> [new instruction]' }
 }
+
+export type ForkPlan = { error: string } | { newId: string; file: string; body: string; kept: number; command: string; label: string; n: number }
+
+/** Everything a fork needs short of writing the file: shared by the command and the pane's button. */
+export function planFork(chain: readonly Row[], points: readonly Point[], n: number, instruction: string, cwd: string, configDir: string): ForkPlan {
+  const point = points.find(p => p.n === n)
+  if (!point) return { error: `no point ${n} (1-${points.length}); /timemachine list shows them` }
+  const newId = newSessionId()
+  const body = forkTranscript(chain, point.keep, newId)
+  const kept = body ? body.trimEnd().split('\n').length : 0
+  if (kept === 0) return { error: 'nothing before that point to fork from' }
+  return { newId, file: transcriptPath(configDir, cwd, newId), body, kept, command: resumeCommand(cwd, newId, instruction), label: clip(point.label, 60), n }
+}
+
+export const forkMessage = (plan: Extract<ForkPlan, { newId: string }>, copied: boolean): string =>
+  [
+    `Forked at point ${plan.n} (${plan.label}): ${plan.kept} rows kept.`,
+    `New session ${plan.newId}${copied ? ', resume command copied' : ''}. In a new terminal:`,
+    plan.command,
+  ].join('\n')

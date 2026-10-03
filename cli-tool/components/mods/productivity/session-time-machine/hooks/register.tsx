@@ -23,12 +23,11 @@ import type { Register } from 'claude-code'
 import {
   buildTimeline,
   clip,
-  forkTranscript,
   mainChain,
-  newSessionId,
+  forkMessage,
+  planFork,
   parseArgs,
   parseRows,
-  resumeCommand,
   transcriptPath,
   type Point,
   type Row,
@@ -61,6 +60,8 @@ let chain: Row[] = []
 let points: Point[] = []
 let armed: number | undefined
 let offset = 0
+let isExpanded = false
+let forkResult: string | undefined
 let problem: string | undefined
 
 const ingest = (text: string) => {
@@ -112,37 +113,26 @@ export const register: Register = (on, options) => {
       return { text: points.map(p => `${String(p.n).padStart(3)}  ${p.label}`).join('\n') || 'No points yet.' }
     }
 
-    const point = points.find(p => p.n === args.n)
-    if (!point) return { text: `time machine: no point ${args.n} (1-${points.length}); /timemachine list shows them` }
-    const newId = newSessionId()
-    const body = forkTranscript(chain, point.keep, newId)
-    const kept = body ? body.trimEnd().split('\n').length : 0
-    if (kept === 0) return { text: 'time machine: nothing before that point to fork from' }
-    const file = transcriptPath(dir, cwd, newId)
-    await $.fs.write(file, body)
-    const command = resumeCommand(cwd, newId, args.instruction)
+    const plan = planFork(chain, points, args.n, args.instruction, cwd, dir)
+    if ('error' in plan) return { text: `time machine: ${plan.error}` }
+    await $.fs.write(plan.file, plan.body)
     armed = undefined
     $.ui.invalidate('ui.render')
     let copied = false
-    if (isCopying) copied = (await $.ui.copy({ text: command }).catch(() => ({ isCopied: false }))).isCopied === true
-    return {
-      text: [
-        `Forked at point ${point.n} (${clip(point.label, 60)}): ${kept} rows kept.`,
-        `New session ${newId}${copied ? ', resume command copied' : ''}. In a new terminal:`,
-        command,
-      ].join('\n'),
-    }
+    if (isCopying) copied = (await $.ui.copy({ text: plan.command }).catch(() => ({ isCopied: false }))).isCopied === true
+    return { text: forkMessage(plan, copied) }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const { Box, Text, Button } = $.ui.resolve(e)
     // header, count chips, rule, footer bar and the paging row take 9 of the pane's rows
-    const room = Math.max(3, (e.viewport?.rows ?? 24) - 9)
+    const room = Math.max(3, Math.floor(((e.viewport?.rows ?? 24) - 9) / (isExpanded ? 2 : 1)))
     const last = Math.max(0, points.length - room)
     const start = Math.min(Math.max(offset, 0), last)
     const shown = points.slice(start, start + room)
-    // viewport.columns is wider than the pane body (95 reported for a 150-column terminal), so take a share of it
-    const wide = Math.max(16, Math.floor((e.viewport?.columns ?? 60) * 0.55) - 8)
+    // the pane's own width: viewport.columns is the whole surface (95 reported for a 150-column terminal)
+    const cols = e.props.bodyColumns || (e.viewport?.columns ?? 60)
+    const wide = Math.max(16, cols - 12)
     const turns = points.filter(p => p.kind === 'prompt').length
     const tools = points.filter(p => p.kind === 'tool').length
     const pick = points.find(p => p.n === armed)
@@ -161,7 +151,7 @@ export const register: Register = (on, options) => {
           <Text>{' '}</Text>
           <Text color={C.tool.Bash} backgroundColor={C.chip}>{` ${tools} calls `}</Text>
         </Box>
-        <Text color={C.rail}>{'─'.repeat(Math.max(10, wide + 10))}</Text>
+        <Text color={C.rail}>{'─'.repeat(Math.max(10, cols - 2))}</Text>
         {problem && <Text color={C.bad}>{problem}</Text>}
         {points.length === 0 && !problem && <Text dimColor>Nothing recorded yet: send a prompt, then reload.</Text>}
         {shown.map(p => {
@@ -171,22 +161,31 @@ export const register: Register = (on, options) => {
           const glyph = p.kind === 'prompt' ? '●' : p.kind === 'turn' ? '■' : '◆'
           const kind = p.kind === 'prompt' ? `prompt ${p.turn}` : p.kind === 'turn' ? 'turn end' : (p.tool ?? 'tool')
           return (
-            <Box key={`r${p.n}`} flexDirection="row" backgroundColor={isArmed ? C.armed : undefined}>
-              <Text dimColor>{String(p.n).padStart(3)} </Text>
-              <Text color={C.rail}>{rail}</Text>
-              <Text bold color={tint}>{` ${glyph} `}</Text>
-              <Button
-                key={`p${p.n}`}
-                plain
-                hover={{ backgroundColor: C.hover, bold: true }}
-                onPress={() => {
-                  armed = p.n
-                  repaint()
-                  void $.prompt.fill({ text: `/timemachine fork ${p.n} ` }).catch(() => undefined)
-                }}
-              >
-                {clip(`${kind}  ${p.detail}`, wide)}
-              </Button>
+            <Box key={`r${p.n}`} flexDirection="column" backgroundColor={isArmed ? C.armed : undefined}>
+              <Box flexDirection="row">
+                <Text dimColor>{String(p.n).padStart(3)} </Text>
+                <Text color={C.rail}>{rail}</Text>
+                <Text bold color={tint}>{` ${glyph} `}</Text>
+                <Button
+                  key={`p${p.n}`}
+                  plain
+                  hover={{ backgroundColor: C.hover, bold: true }}
+                  onPress={() => {
+                    armed = p.n
+                    repaint()
+                    void $.prompt.fill({ text: `/timemachine fork ${p.n} ` }).catch(() => undefined)
+                  }}
+                >
+                  {clip(`${kind}  ${p.detail}`, wide)}
+                </Button>
+              </Box>
+              {isExpanded && (
+                <Box key={`d${p.n}`} flexDirection="row">
+                  <Text>{'      '}</Text>
+                  <Text color={C.rail}>{p.kind === 'tool' ? '┃ ' : '  '}</Text>
+                  <Text dimColor wrap="wrap">{clip(p.full, wide * 3)}</Text>
+                </Box>
+              )}
             </Box>
           )
         })}
@@ -194,13 +193,50 @@ export const register: Register = (on, options) => {
           {pick ? (
             <Box key="armed" flexDirection="column">
               <Text bold color={C.accent}>{`Fork from #${pick.n}`}</Text>
-              <Text dimColor wrap="truncate-end">{`${pick.kind === 'prompt' ? 'before' : 'after'}: ${clip(pick.detail, wide)}`}</Text>
-              <Text color={C.ink}>{`Type the new instruction after /timemachine fork ${pick.n} and press Enter.`}</Text>
+              <Text dimColor>{`${pick.kind === 'prompt' ? 'The session is cut before this prompt' : pick.kind === 'turn' ? 'The session is cut after this turn' : `The session is cut after this ${pick.tool ?? 'tool'} call`}:`}</Text>
+              <Text color={C.ink} wrap="wrap">{clip(pick.full, 900)}</Text>
+              <Box key="forkrow" flexDirection="row" marginTop={1}>
+                <Button
+                  key="forknow"
+                  variant="primary"
+                  onPress={async () => {
+                    // $.command.run would skip this plugin's own command hook, so the fork is planned and written here
+                    const plan = planFork(chain, points, pick.n, '', await $.session.cwd(), (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`)
+                    if ('error' in plan) forkResult = `time machine: ${plan.error}`
+                    else {
+                      await $.fs.write(plan.file, plan.body)
+                      let copied = false
+                      if (isCopying) copied = (await $.ui.copy({ text: plan.command }).catch(() => ({ isCopied: false }))).isCopied === true
+                      forkResult = forkMessage(plan, copied)
+                      armed = undefined
+                    }
+                    repaint()
+                  }}
+                >
+                  ⎇ Fork here
+                </Button>
+              </Box>
+              <Text dimColor>{`or type a new instruction after /timemachine fork ${pick.n} and press Enter`}</Text>
             </Box>
           ) : (
             <Text dimColor>Press any point to fork the session from there with a new instruction.</Text>
           )}
         </Box>
+        {forkResult && (
+          <Box key="result" flexDirection="column" marginTop={1} borderStyle="round" borderColor={C.tool.Bash} paddingX={1}>
+            <Text wrap="wrap" color={C.ink}>{forkResult}</Text>
+            <Button
+              key="dismiss"
+              hover={{ color: C.bad }}
+              onPress={() => {
+                forkResult = undefined
+                repaint()
+              }}
+            >
+              ✕ dismiss
+            </Button>
+          </Box>
+        )}
         <Box key="nav" flexDirection="row" marginTop={1}>
           <Button
             key="older"
@@ -222,6 +258,17 @@ export const register: Register = (on, options) => {
             }}
           >
             ↓ newer
+          </Button>
+          <Text>{'   '}</Text>
+          <Button
+            key="expand"
+            hover={{ color: C.accent }}
+            onPress={() => {
+              isExpanded = !isExpanded
+              repaint()
+            }}
+          >
+            {isExpanded ? '⤡ collapse' : '⤢ expand'}
           </Button>
           <Text>{'   '}</Text>
           <Button

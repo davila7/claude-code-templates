@@ -43,15 +43,16 @@ cd '/home/me/app' && claude --resume 7c1e… 'keep the retry but use the existin
 
 | Command | Does |
 | --- | --- |
-| `/timemachine` | opens the pane; pressing a point arms it and puts `/timemachine fork <n> ` in the prompt, you type the instruction and press Enter |
+| `/timemachine` | opens the pane; pressing a point arms it: the fork bar shows the point's whole text, `⎇ Fork here` forks at once, or type an instruction after the `/timemachine fork <n> ` it puts in the prompt |
 | `/timemachine list` | the same points as text, numbered |
-| `/timemachine fork <n> <instruction>` | forks at point `n` |
+| `/timemachine fork <n> [instruction]` | forks at point `n`; with an instruction the resume command carries it as the first message |
 
 Points are of three kinds. **▸ prompt**: the fork keeps everything *before*
 that prompt, so the instruction replaces it. **· tool call**: the fork keeps
 the conversation up to and including that call's result. **■ turn end**: the
 fork keeps the whole turn. The timeline refreshes when a turn completes; the
-pane's `reload` button re-reads it on demand.
+pane's `reload` button re-reads it on demand, and `⤢ expand` adds a second line
+with more of each point's text. Row width follows the pane's own width.
 
 ## How it forks, and what it cannot do
 
