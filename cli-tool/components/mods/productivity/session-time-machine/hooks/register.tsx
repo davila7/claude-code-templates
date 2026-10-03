@@ -26,12 +26,14 @@ import {
   mainChain,
   forkMessage,
   planFork,
+  newSessionId,
   parseArgs,
   parseRows,
   transcriptPath,
   type Point,
   type Row,
 } from './transcript.ts'
+import { MUTATING, loadSnapshots, openInDesktop, openInTerminal, restoreWorktree, snapshotFor, takeSnapshot, type Run } from './snapshots.ts'
 
 const PANE = 'time-machine'
 const C = {
@@ -62,6 +64,7 @@ let armed: number | undefined
 let offset = 0
 let isExpanded = false
 let forkResult: string | undefined
+let snaps = new Map<string, string>()
 let problem: string | undefined
 
 const ingest = (text: string) => {
@@ -77,6 +80,60 @@ const fail = (err: unknown) => {
 
 export const register: Register = (on, options) => {
   const isCopying = options.copyCommand !== false
+  const isSnapshotting = options.snapshots !== false
+  const isOpening = options.openTerminal !== false
+
+  /** What a helper needs from `$`, as plain values and closures: the engine refuses `$` itself passed to a function. */
+  type Ctx = {
+    cwd: string
+    sid: string
+    dir: string
+    run: Run
+    read: (path: string) => Promise<string>
+    write: (path: string, text: string) => Promise<void>
+    copy: (text: string) => Promise<boolean>
+    repaint: () => void
+  }
+
+  const reread = async (c: Ctx) => {
+    await c.read(transcriptPath(c.dir, c.cwd, c.sid)).then(ingest, fail)
+    snaps = await loadSnapshots(c.run, c.cwd, c.sid)
+  }
+  const snapshot = async (c: Ctx, key: string) => {
+    if (!isSnapshotting) return
+    const id = await takeSnapshot(c.run, c.cwd, c.sid, key)
+    if (id) snaps.set(key, id)
+  }
+
+  /** Forks at point `n`: restores the files into a git worktree when a snapshot exists, writes the cut session, opens it. */
+  const forkAt = async (c: Ctx, n: number, instruction: string): Promise<string> => {
+    const { cwd, dir, run } = c
+    const newId = newSessionId()
+    const commit = snapshotFor(points, n, snaps)
+    const tree = commit ? await restoreWorktree(run, cwd, commit, newId.slice(0, 8)) : undefined
+    const note = tree
+      ? `Time machine: this session was forked at point ${n}. The project files were restored to that moment in the git worktree ${tree.path} (branch ${tree.branch}); the original checkout is ${cwd}. Work in the worktree, not in the original.`
+      : ''
+    // an instruction has to reach the model, which only the resume command's message does; without one Desktop can take it
+    const toDesktop = isOpening && !instruction.trim()
+    const plan = planFork(chain, points, n, toDesktop ? '' : [note, instruction].filter(Boolean).join('\n\n'), tree?.path ?? cwd, dir, newId, toDesktop ? note : '')
+    if ('error' in plan) {
+      if (tree) await run(['git', 'worktree', 'remove', '--force', tree.path], { cwd }).catch(() => undefined)
+      return `time machine: ${plan.error}`
+    }
+    await c.write(plan.file, plan.body)
+    armed = undefined
+    c.repaint()
+    const inDesktop = toDesktop && (await openInDesktop(run, tree?.path ?? cwd, plan.newId))
+    const inTerminal = !inDesktop && isOpening && (await openInTerminal(run, plan.command))
+    const opened = inDesktop || inTerminal
+    const copied = !opened && isCopying ? await c.copy(plan.command).catch(() => false) : false
+    return [
+      `Forked at point ${plan.n} (${plan.label}): ${plan.kept} rows kept.`,
+      tree ? `Files restored in worktree ${tree.path} (branch ${tree.branch}); your checkout is untouched.` : commit === undefined ? 'No file snapshot for this point (not a git project, or taken before the mod was loaded): conversation only.' : 'Could not create the worktree: conversation only.',
+      inDesktop ? 'Opened in Claude Desktop.' : inTerminal ? 'Opened in a new Terminal window.' : `New session ${plan.newId}${copied ? ', resume command copied' : ''}. In a new terminal:\n${plan.command}`,
+    ].join('\n')
+  }
 
   on('session.start', async ($, e, next) => {
     await $.command.register({
@@ -86,11 +143,56 @@ export const register: Register = (on, options) => {
     return next(e)
   })
 
+  on('prompt.submit', async ($, e, next) => {
+    if (isSnapshotting && !e.text.trimStart().startsWith('/')) {
+      const c: Ctx = {
+        cwd: await $.session.cwd(),
+        sid: await $.session.id(),
+        dir: (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`,
+        run: (argv, init) => $.process.run(argv, init),
+        read: path => $.fs.read(path),
+        write: (path, text) => $.fs.write(path, text),
+        copy: async text => (await $.ui.copy({ text })).isCopied === true,
+        repaint: () => $.ui.invalidate('ui.render'),
+      }
+      await reread(c)
+      await snapshot(c, `prompt-${points.filter(p => p.kind === 'prompt').length + 1}`)
+    }
+    return next(e)
+  })
+
+  on('tool.call', async ($, e, next) => {
+    const result = await next(e)
+    if (isSnapshotting && e.agentId === undefined && MUTATING.test(String(e.tool)) && e.tool_use_id) {
+      const c: Ctx = {
+        cwd: await $.session.cwd(),
+        sid: await $.session.id(),
+        dir: (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`,
+        run: (argv, init) => $.process.run(argv, init),
+        read: path => $.fs.read(path),
+        write: (path, text) => $.fs.write(path, text),
+        copy: async text => (await $.ui.copy({ text })).isCopied === true,
+        repaint: () => $.ui.invalidate('ui.render'),
+      }
+      await snapshot(c, `tool-${e.tool_use_id}`)
+    }
+    return result
+  })
+
   on('turn.complete', async ($, e, next) => {
     if (e.agentId === undefined) {
-      await $.fs
-        .read(transcriptPath((await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`, await $.session.cwd(), await $.session.id()))
-        .then(ingest, fail)
+      const c: Ctx = {
+        cwd: await $.session.cwd(),
+        sid: await $.session.id(),
+        dir: (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`,
+        run: (argv, init) => $.process.run(argv, init),
+        read: path => $.fs.read(path),
+        write: (path, text) => $.fs.write(path, text),
+        copy: async text => (await $.ui.copy({ text })).isCopied === true,
+        repaint: () => $.ui.invalidate('ui.render'),
+      }
+      await reread(c)
+      await snapshot(c, `turn-${points.filter(p => p.kind === 'prompt').length}`)
       $.ui.status(points.length > 0 ? `⏱ ${points.length} points · /timemachine` : undefined)
       $.ui.invalidate('ui.render')
     }
@@ -100,9 +202,17 @@ export const register: Register = (on, options) => {
   on('command.run', { command: 'timemachine' }, async ($, e) => {
     const args = parseArgs(e.args)
     if (args.kind === 'error') return { text: args.text }
-    const cwd = await $.session.cwd()
-    const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`
-    await $.fs.read(transcriptPath(dir, cwd, await $.session.id())).then(ingest, fail)
+    const c: Ctx = {
+        cwd: await $.session.cwd(),
+        sid: await $.session.id(),
+        dir: (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`,
+        run: (argv, init) => $.process.run(argv, init),
+        read: path => $.fs.read(path),
+        write: (path, text) => $.fs.write(path, text),
+        copy: async text => (await $.ui.copy({ text })).isCopied === true,
+        repaint: () => $.ui.invalidate('ui.render'),
+      }
+    await reread(c)
     if (problem) return { text: `time machine: ${problem}` }
 
     if (args.kind === 'open') {
@@ -112,15 +222,7 @@ export const register: Register = (on, options) => {
     if (args.kind === 'list') {
       return { text: points.map(p => `${String(p.n).padStart(3)}  ${p.label}`).join('\n') || 'No points yet.' }
     }
-
-    const plan = planFork(chain, points, args.n, args.instruction, cwd, dir)
-    if ('error' in plan) return { text: `time machine: ${plan.error}` }
-    await $.fs.write(plan.file, plan.body)
-    armed = undefined
-    $.ui.invalidate('ui.render')
-    let copied = false
-    if (isCopying) copied = (await $.ui.copy({ text: plan.command }).catch(() => ({ isCopied: false }))).isCopied === true
-    return { text: forkMessage(plan, copied) }
+    return { text: await forkAt(c, args.n, args.instruction) }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
@@ -137,6 +239,45 @@ export const register: Register = (on, options) => {
     const tools = points.filter(p => p.kind === 'tool').length
     const pick = points.find(p => p.n === armed)
     const repaint = () => $.ui.invalidate('ui.render')
+    const files = pick ? (snapshotFor(points, pick.n, snaps) ? 'Files: restored from a git snapshot into a new worktree.' : 'Files: no snapshot for this point, so the fork is conversation only.') : ''
+    const preview = (
+    <Box key="foot" flexDirection="column" marginTop={1} borderStyle="round" borderColor={pick ? C.accent : C.rail} paddingX={1}>
+      {pick ? (
+        <Box key="armed" flexDirection="column">
+          <Text bold color={C.accent}>{`Fork from #${pick.n}`}</Text>
+          <Text dimColor>{`${pick.kind === 'prompt' ? 'The session is cut before this prompt' : pick.kind === 'turn' ? 'The session is cut after this turn' : `The session is cut after this ${pick.tool ?? 'tool'} call`}:`}</Text>
+          <Text color={C.ink} wrap="wrap">{clip(pick.full, 900)}</Text>
+          <Text dimColor wrap="wrap">{files}</Text>
+          <Box key="forkrow" flexDirection="row" marginTop={1}>
+            <Button
+              key="forknow"
+              variant="primary"
+              onPress={async () => {
+                forkResult = 'Forking…'
+                repaint()
+                forkResult = await forkAt({
+                  cwd: await $.session.cwd(),
+                  sid: await $.session.id(),
+                  dir: (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`,
+                  run: (argv, init) => $.process.run(argv, init),
+                  read: path => $.fs.read(path),
+                  write: (path, text) => $.fs.write(path, text),
+                  copy: async text => (await $.ui.copy({ text })).isCopied === true,
+                  repaint,
+                }, pick.n, '')
+                repaint()
+              }}
+            >
+              ⎇ Fork here
+            </Button>
+          </Box>
+          <Text dimColor>{`Fork here opens the new session for you; or type /timemachine fork ${pick.n} <instruction> to start it with a message`}</Text>
+        </Box>
+      ) : (
+        <Text dimColor>Press any point to fork the session from there with a new instruction.</Text>
+      )}
+    </Box>
+    )
     return (
       <Box key="tm" flexDirection="column">
         <Box key="head" flexDirection="row">
@@ -152,6 +293,22 @@ export const register: Register = (on, options) => {
           <Text color={C.tool.Bash} backgroundColor={C.chip}>{` ${tools} calls `}</Text>
         </Box>
         <Text color={C.rail}>{'─'.repeat(Math.max(10, cols - 2))}</Text>
+        {forkResult && (
+          <Box key="result" flexDirection="column" marginTop={1} borderStyle="round" borderColor={C.tool.Bash} paddingX={1}>
+            <Text wrap="wrap" color={C.ink}>{forkResult}</Text>
+            <Button
+              key="dismiss"
+              hover={{ color: C.bad }}
+              onPress={() => {
+                forkResult = undefined
+                repaint()
+              }}
+            >
+              ✕ dismiss
+            </Button>
+          </Box>
+        )}
+        {pick && preview}
         {problem && <Text color={C.bad}>{problem}</Text>}
         {points.length === 0 && !problem && <Text dimColor>Nothing recorded yet: send a prompt, then reload.</Text>}
         {shown.map(p => {
@@ -189,54 +346,7 @@ export const register: Register = (on, options) => {
             </Box>
           )
         })}
-        <Box key="foot" flexDirection="column" marginTop={1} borderStyle="round" borderColor={pick ? C.accent : C.rail} paddingX={1}>
-          {pick ? (
-            <Box key="armed" flexDirection="column">
-              <Text bold color={C.accent}>{`Fork from #${pick.n}`}</Text>
-              <Text dimColor>{`${pick.kind === 'prompt' ? 'The session is cut before this prompt' : pick.kind === 'turn' ? 'The session is cut after this turn' : `The session is cut after this ${pick.tool ?? 'tool'} call`}:`}</Text>
-              <Text color={C.ink} wrap="wrap">{clip(pick.full, 900)}</Text>
-              <Box key="forkrow" flexDirection="row" marginTop={1}>
-                <Button
-                  key="forknow"
-                  variant="primary"
-                  onPress={async () => {
-                    // $.command.run would skip this plugin's own command hook, so the fork is planned and written here
-                    const plan = planFork(chain, points, pick.n, '', await $.session.cwd(), (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`)
-                    if ('error' in plan) forkResult = `time machine: ${plan.error}`
-                    else {
-                      await $.fs.write(plan.file, plan.body)
-                      let copied = false
-                      if (isCopying) copied = (await $.ui.copy({ text: plan.command }).catch(() => ({ isCopied: false }))).isCopied === true
-                      forkResult = forkMessage(plan, copied)
-                      armed = undefined
-                    }
-                    repaint()
-                  }}
-                >
-                  ⎇ Fork here
-                </Button>
-              </Box>
-              <Text dimColor>{`or type a new instruction after /timemachine fork ${pick.n} and press Enter`}</Text>
-            </Box>
-          ) : (
-            <Text dimColor>Press any point to fork the session from there with a new instruction.</Text>
-          )}
-        </Box>
-        {forkResult && (
-          <Box key="result" flexDirection="column" marginTop={1} borderStyle="round" borderColor={C.tool.Bash} paddingX={1}>
-            <Text wrap="wrap" color={C.ink}>{forkResult}</Text>
-            <Button
-              key="dismiss"
-              hover={{ color: C.bad }}
-              onPress={() => {
-                forkResult = undefined
-                repaint()
-              }}
-            >
-              ✕ dismiss
-            </Button>
-          </Box>
-        )}
+        {!pick && preview}
         <Box key="nav" flexDirection="row" marginTop={1}>
           <Button
             key="older"
@@ -275,9 +385,16 @@ export const register: Register = (on, options) => {
             key="reload"
             hover={{ color: C.accent }}
             onPress={async () => {
-              await $.fs
-                .read(transcriptPath((await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`, await $.session.cwd(), await $.session.id()))
-                .then(ingest, fail)
+              await reread({
+                cwd: await $.session.cwd(),
+                sid: await $.session.id(),
+                dir: (await $.env.get('CLAUDE_CONFIG_DIR')) || `${(await $.env.get('HOME')) ?? '~'}/.claude`,
+                run: (argv, init) => $.process.run(argv, init),
+                read: path => $.fs.read(path),
+                write: (path, text) => $.fs.write(path, text),
+                copy: async text => (await $.ui.copy({ text })).isCopied === true,
+                repaint: () => $.ui.invalidate('ui.render'),
+              })
               repaint()
             }}
           >
