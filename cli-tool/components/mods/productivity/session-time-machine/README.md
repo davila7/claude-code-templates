@@ -56,33 +56,39 @@ with more of each point's text. Row width follows the pane's own width.
 
 ## How it forks, and what it cannot do
 
-The mod API (checked against the declarations Claude Code 2.1.288 writes; the repo copy at `types/claude-code.d.ts` is 2.1.283)
-has no call that forks or rewinds the live session. `$.model.fork` is a
-tool-less side question over the transcript, and `$.session` offers `messages`,
-`append`, `compact` and `send`, none of which branches. So the fork is a new
-session, not a branch inside the one you are in:
+The mod API has no call that forks or rewinds the live session, so the fork is a
+new session, not a branch inside the one you are in. What the mod does around
+that to make it one click:
 
-1. the mod reads `~/.claude/projects/<project>/<session-id>.jsonl` (or under
-   `CLAUDE_CONFIG_DIR`) with `$.fs.read`,
-2. follows the `parentUuid` chain back from the last row, which drops rewound
-   branches and subagent sidechains,
-3. keeps the rows up to the chosen point, extended so no `tool_use` it keeps
-   is left without its `tool_result`,
-4. writes them under a new id next to the original with `$.fs.write`,
-5. returns `claude --resume <new-id> '<instruction>'`, copied to the
-   clipboard. Run it in a new terminal.
+1. **Snapshots.** While the mod is loaded it commits the whole working tree
+   (tracked, modified and untracked files, `.gitignore` honored) with a
+   throwaway git index: before each prompt, after each `Edit`/`Write`/`Bash`
+   call and at each turn end. Your index, branch and stash are never touched;
+   each snapshot is pinned by `refs/time-machine/<session-id>/<point>`.
+2. **Fork here** (or `/timemachine fork <n> [instruction]`) then
+   - creates a git worktree on its own branch `time-machine/<id>` at the
+     snapshot of that point, under `.claude/worktrees/`,
+   - reads `~/.claude/projects/<project>/<session-id>.jsonl` (or under
+     `CLAUDE_CONFIG_DIR`), follows the `parentUuid` chain from the last row
+     (dropping rewound branches and subagent sidechains), keeps the rows up to
+     the point, closes any `tool_use` left without its `tool_result`,
+   - writes them under a new session id for the worktree, with a first message
+     that tells the model the files live in the worktree,
+   - opens a new Terminal window (macOS) running `claude --resume <new-id>` in
+     that worktree. Elsewhere, or if the window cannot open, the command is
+     copied to the clipboard instead.
 
-The resumed session starts from the cut with the instruction as its next
-message. Verified by hand on Claude Code 2.1.288: a fork cut at a tool call
-resumed with `claude -p --resume` and answered from the context at that point.
+Your checkout and the session you are in are not touched.
 
 Limits:
 
-- **You open the fork yourself.** The mod cannot start another Claude Code
-  session; it hands you the command.
-- **Files are not rewound.** The fork restores the conversation, not the
-  working tree. If the original session already edited files after the cut,
-  the fork's model will not know; use git (or a worktree) to reset them.
+- **Terminal, not Desktop.** A mod cannot open a session inside Claude Desktop,
+  so the fork opens in Terminal (macOS). Elsewhere you paste the command.
+- **Snapshots only exist from when the mod was loaded.** A point without one
+  forks the conversation only, and the pane says so before you press.
+- **Git projects only.** Outside a git repository there is no file snapshot.
+- **Bash side effects outside the repo** (installed packages, databases) are not
+  part of a snapshot.
 - **4 MiB.** `$.fs.read` rejects files over 4 MiB, so a very long transcript
   shows an error in the pane instead of a timeline.
 - **Rows only.** The timeline is the transcript's prompts, tool calls and
@@ -91,6 +97,8 @@ Limits:
   there; the pane needs the terminal UI.
 
 ## Options
+
+`snapshots` (boolean, default true) and `openTerminal` (boolean, default true) are declared next to `copyCommand` in `plugin.json`.
 
 Read from user settings, keyed by the plugin's full id:
 
