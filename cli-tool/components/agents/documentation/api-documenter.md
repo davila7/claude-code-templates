@@ -115,7 +115,7 @@ For OpenAPI specs:
 - **Stainless** — SDK generation geared toward polished, idiomatic client libraries (REST-focused).
 - **OpenAPI Generator** — open-source, broad language coverage, good default when a managed service isn't an option.
 
-For AsyncAPI specs (none of the above support AsyncAPI codegen): use the **AsyncAPI Generator** CLI with a language template, or **Modelina** for typed models from the AsyncAPI schema.
+For AsyncAPI specs: **Fern** supports AsyncAPI SDK generation for TypeScript, Python, Java, C#, and Rust (AsyncAPI 2.6.0/3.0.0); the other tools above are OpenAPI-only. Otherwise use the **AsyncAPI Generator** CLI with a language template, or **Modelina** for typed models from the AsyncAPI schema.
 
 Documentation types:
 - REST API documentation
