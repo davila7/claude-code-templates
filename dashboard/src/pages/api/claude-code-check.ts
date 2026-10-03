@@ -168,8 +168,8 @@ async function handleCheck() {
       console.log(`Version saved to database (ID: ${versionId})`);
     }
 
-    for (const change of parsed.changes) {
-      await sql`
+    if (parsed.changes.length > 0) {
+      const changeStatements = parsed.changes.map((change) => sql`
         INSERT INTO claude_code_changes (
           version_id,
           change_type,
@@ -181,7 +181,8 @@ async function handleCheck() {
           ${change.description},
           ${change.category}
         )
-      `;
+      `);
+      await sql.transaction(changeStatements);
     }
     console.log(`Saved ${parsed.changes.length} individual changes`);
 

@@ -50,32 +50,35 @@ export const POST: APIRoute = async ({ request }) => {
 
     const country = request.headers.get('x-vercel-ip-country') || null;
     const sql = getNeonClient();
+    const truncatedReferrer = referrer ? referrer.substring(0, 1000) : null;
 
-    let inserted = 0;
-    for (const event of events) {
-      await sql`
-        INSERT INTO website_events (
-          event_type, event_data, page_path,
-          referrer, session_id, visitor_id,
-          country, screen_width
-        ) VALUES (
-          ${event.event_type},
-          ${event.event_data ? JSON.stringify(event.event_data) : null},
-          ${event.page_path || null},
-          ${referrer ? referrer.substring(0, 1000) : null},
-          ${session_id || null},
-          ${visitor_id || null},
-          ${country},
-          ${screen_width || null}
-        )
-      `;
-      inserted++;
-    }
+    const statements = (events as Array<{
+      event_type: string;
+      event_data?: unknown;
+      page_path?: string;
+    }>).map((event) => sql`
+      INSERT INTO website_events (
+        event_type, event_data, page_path,
+        referrer, session_id, visitor_id,
+        country, screen_width
+      ) VALUES (
+        ${event.event_type},
+        ${event.event_data ? JSON.stringify(event.event_data) : null},
+        ${event.page_path || null},
+        ${truncatedReferrer},
+        ${session_id || null},
+        ${visitor_id || null},
+        ${country},
+        ${screen_width || null}
+      )
+    `);
+
+    await sql.transaction(statements);
 
     return jsonResponse({
       success: true,
-      message: `${inserted} events tracked`,
-      data: { count: inserted, timestamp: new Date().toISOString() },
+      message: `${statements.length} events tracked`,
+      data: { count: statements.length, timestamp: new Date().toISOString() },
     });
   } catch (error) {
     console.error('Website events tracking error:', error);
