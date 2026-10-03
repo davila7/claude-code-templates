@@ -2,8 +2,7 @@
 import { describe, expect, test } from 'claude-code/testing'
 import {
   advise,
-  bigClock,
-  bigClockWidth,
+  lifeColor,
   segments,
   nextToastMark,
   bar,
@@ -261,12 +260,12 @@ describe('the band', () => {
 })
 
 describe('pane helpers', () => {
-  test('bigClock draws five rows of equal width', () => {
-    const rows = bigClock('4:22')
-    expect(rows).toHaveLength(5)
-    expect(new Set(rows.map(r => r.length)).size).toBe(1)
-    expect(bigClockWidth('4:22')).toBe(4 + 1 + 1 + 1 + 4 + 1 + 4)
-    expect(rows[0].startsWith('█  █ ')).toBe(true)
+  test('the countdown is green, then yellow below 40%, then red from the warning threshold', () => {
+    expect(lifeColor(250_000, '5m', 60_000)).toBe('green')
+    expect(lifeColor(110_000, '5m', 60_000)).toBe('yellow')
+    expect(lifeColor(60_000, '5m', 60_000)).toBe('red')
+    expect(lifeColor(5_000, '1h', 60_000)).toBe('red')
+    expect(lifeColor(1_800_000, '1h', 60_000)).toBe('green')
   })
   test('segments sum to the width and keep small parts visible', () => {
     const s = segments(113_000, 4_000, 2, 48)

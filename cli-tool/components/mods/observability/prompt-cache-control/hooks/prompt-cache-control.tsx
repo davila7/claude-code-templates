@@ -35,8 +35,6 @@ import {
   advise,
   COUNTDOWN_MARKS,
   bar,
-  bigClock,
-  bigClockWidth,
   byTurn,
   fit,
   fmtClock,
@@ -44,9 +42,9 @@ import {
   hitRatio,
   isCachingDisabled,
   isOn,
+  lifeColor,
   lifeRatio,
   nextToastMark,
-  padLeft,
   positive,
   promptTokens,
   remainingMs,
@@ -262,7 +260,7 @@ export const register: Register = (on, options) => {
           <Text dimColor>{`${fmtTokens(promptTokens(last))} tok`}</Text>
         )}
         {advice.kind !== 'uncached' && advice.kind !== 'off' && (
-          <Text bold color={color}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
+          <Text bold color={left > 0 ? lifeColor(left, ttl, policy.warnMs) : 'red'}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
       </Box>
@@ -278,27 +276,29 @@ export const register: Register = (on, options) => {
     const now = Date.now()
     const { last, advice, left } = current(policy, now)
     const all = byTurn(samples)
-    const color = COLOR[advice.kind]
-    const clock = fmtClock(left)
     const counting = !!last && advice.kind !== 'uncached' && advice.kind !== 'off'
-    // the last seconds blink between yellow and red
-    const hot = advice.kind === 'soon' && Math.ceil(left / 1000) % 2 === 0 ? 'red' : color
+    // the countdown goes green, then yellow, then red as the cache runs out
+    const clockColor = counting ? lifeColor(left, ttl, policy.warnMs) : undefined
+    const stateColor = advice.kind === 'expired' || advice.kind === 'miss' ? 'red' : (clockColor ?? COLOR[advice.kind])
     const hitColor = (pct: number) => (pct >= 80 ? 'green' : pct >= 40 ? 'yellow' : 'red')
+    // solid bars are filled Boxes, not block characters, so HTML draws no seams between cells
+    const solid = (key: string, parts: [number, string | undefined][]) => (
+      <Box key={key} flexDirection="row" height={1} flexShrink={0}>
+        {parts.map(([w, c], i) => (w > 0 ? <Box key={`${key}:${i}`} width={w} height={1} flexShrink={0} backgroundColor={c} /> : null))}
+      </Box>
+    )
     const cell = (key: string, w: number, text: string, c?: string, bold = false) => (
       <Box key={key} width={w} flexShrink={0} justifyContent="flex-end">
         <Text color={c} bold={bold} dimColor={!c}>{sp(text)}</Text>
       </Box>
     )
 
-    const big = counting && bigClockWidth(clock) <= width ? bigClock(left > 0 ? clock : '0:00') : undefined
-    const barW = Math.min(width, 48)
+    const barW = Math.min(width, 40)
     const life = lifeRatio(left, ttl)
     const lifeFilled = Math.round(life * barW)
     const [sr, sw, sn] = last ? segments(last.read, last.write, last.fresh, barW) : [0, 0, 0]
-
-    // a turn row: 4 + 5 + 7 + 7 + 7 + (bar 6 + pct 5) + single gaps
-    const withBar = width >= 50
-    const rows = all.slice(-Math.max(3, (e.viewport?.rows ?? 24) - (big ? 24 : 17)))
+    const rows = all.slice(-Math.max(3, (e.viewport?.rows ?? 24) - 16))
+    const icon = advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'expired' || advice.kind === 'miss' ? '✖' : '○'
 
     return (
       <Box flexDirection="column">
@@ -308,37 +308,26 @@ export const register: Register = (on, options) => {
         </Box>
 
         <Box key="clock" flexDirection="column" marginTop={1}>
-          {big ? (
-            big.map((line, i) => (
-              <Text key={`big:${i}`} bold color={left > 0 ? hot : 'red'}>{sp(line)}</Text>
-            ))
-          ) : (
-            <Text bold color={hot}>{sp(counting ? `⏱ ${left > 0 ? clock : '0:00'}` : '⏱ --:--')}</Text>
-          )}
+          <Text bold color={clockColor}>{sp(counting ? `⏱ ${left > 0 ? fmtClock(left) : '0:00'}` : '⏱ --:--')}</Text>
           {counting ? (
-            <Text>
-              <Text color={hot}>{'█'.repeat(lifeFilled)}</Text>
-              <Text dimColor>{'░'.repeat(barW - lifeFilled)}</Text>
-              <Text dimColor>{sp(` ${Math.round(life * 100)}% left`)}</Text>
-            </Text>
+            <Box flexDirection="row" columnGap={1}>
+              {solid('life', [[lifeFilled, clockColor], [barW - lifeFilled, 'gray']])}
+              <Text dimColor>{sp(`${Math.round(life * 100)}%`)}</Text>
+            </Box>
           ) : null}
         </Box>
 
         <Box key="advice" marginTop={1} flexDirection="column">
-          <Text bold color={color}>{sp(`${advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'expired' || advice.kind === 'miss' ? '✖' : '○'} ${advice.text}`)}</Text>
-          {last ? (
-            <Text dimColor>{sp(fit(`${last.model} · prompt ${fmtTokens(promptTokens(last))} tokens`, width))}</Text>
-          ) : null}
+          <Text bold color={stateColor}>{sp(`${icon} ${advice.text}`)}</Text>
+          {last ? <Text dimColor>{sp(fit(`${last.model} · prompt ${fmtTokens(promptTokens(last))} tokens`, width))}</Text> : null}
         </Box>
 
         {last ? (
           <Box key="stack" flexDirection="column" marginTop={1}>
-            <Text>
-              <Text color="green">{'█'.repeat(sr)}</Text>
-              <Text color="yellow">{'█'.repeat(sw)}</Text>
-              <Text color="cyan">{'█'.repeat(sn)}</Text>
-              <Text bold color={hitColor(Math.round(hitRatio(last) * 100))}>{sp(` ${Math.round(hitRatio(last) * 100)}% hit`)}</Text>
-            </Text>
+            <Box flexDirection="row" columnGap={1}>
+              {solid('stack', [[sr, 'green'], [sw, 'yellow'], [sn, 'cyan']])}
+              <Text bold color={hitColor(Math.round(hitRatio(last) * 100))}>{sp(`${Math.round(hitRatio(last) * 100)}% hit`)}</Text>
+            </Box>
             <Box flexDirection="row" columnGap={2}>
               <Text color="green">{sp(`■ read ${fmtTokens(last.read)}`)}</Text>
               <Text color="yellow">{sp(`■ wrote ${fmtTokens(last.write)}`)}</Text>
@@ -348,36 +337,26 @@ export const register: Register = (on, options) => {
         ) : null}
 
         <Box key="table" flexDirection="column" marginTop={1}>
-          <Text bold>{sp('TURNS')}</Text>
           <Box key="head" flexDirection="row" columnGap={1}>
             {cell('h:turn', 4, 'turn', 'cyan', true)}
             {cell('h:steps', 5, 'steps', 'cyan', true)}
-            {cell('h:read', 7, 'read', 'green', true)}
-            {cell('h:wrote', 7, 'wrote', 'yellow', true)}
-            {cell('h:new', 7, 'new', 'cyan', true)}
-            {cell('h:hit', withBar ? 11 : 4, 'hit', 'magenta', true)}
+            {cell('h:read', 6, 'read', 'green', true)}
+            {cell('h:wrote', 6, 'wrote', 'yellow', true)}
+            {cell('h:new', 5, 'new', 'cyan', true)}
+            {cell('h:hit', 4, 'hit', 'magenta', true)}
           </Box>
-          <Text dimColor>{'─'.repeat(withBar ? 50 : 42)}</Text>
           {rows.length === 0 ? <Text dimColor>{sp('no requests yet')}</Text> : null}
           {rows.map((row, i) => {
             const n = all.length - rows.length + i + 1
             const pct = Math.round(rowRatio(row) * 100)
-            const c = hitColor(pct)
             return (
               <Box key={`t:${row.turnId}`} flexDirection="row" columnGap={1}>
                 {cell(`c:turn:${row.turnId}`, 4, String(n))}
                 {cell(`c:steps:${row.turnId}`, 5, String(row.steps))}
-                {cell(`c:read:${row.turnId}`, 7, fmtTokens(row.read), 'green')}
-                {cell(`c:wrote:${row.turnId}`, 7, fmtTokens(row.write), 'yellow')}
-                {cell(`c:new:${row.turnId}`, 7, fmtTokens(row.fresh), 'cyan')}
-                {withBar ? (
-                  <Box key={`c:bar:${row.turnId}`} width={11} flexShrink={0} flexDirection="row" columnGap={1}>
-                    <Text color={c}>{bar(pct / 100, 6)}</Text>
-                    <Text color={c} bold>{sp(padLeft(`${pct}%`, 4))}</Text>
-                  </Box>
-                ) : (
-                  cell(`c:hit:${row.turnId}`, 4, `${pct}%`, c, true)
-                )}
+                {cell(`c:read:${row.turnId}`, 6, fmtTokens(row.read), 'green')}
+                {cell(`c:wrote:${row.turnId}`, 6, fmtTokens(row.write), 'yellow')}
+                {cell(`c:new:${row.turnId}`, 5, fmtTokens(row.fresh), 'cyan')}
+                {cell(`c:hit:${row.turnId}`, 4, `${pct}%`, hitColor(pct), true)}
               </Box>
             )
           })}
@@ -386,9 +365,9 @@ export const register: Register = (on, options) => {
         <Box key="foot" marginTop={1} flexDirection="column">
           <Button key="close" label="close" onPress={() => {}} />
           <Box key="legend" marginTop={1} flexDirection="column">
-            <Text color="green">{sp('■ read   served by the cache')}</Text>
-            <Text color="yellow">{sp('■ wrote  new cache entry')}</Text>
-            <Text color="cyan">{sp('■ new    sent uncached')}</Text>
+            <Text color="green">{sp('■ read: served by the cache')}</Text>
+            <Text color="yellow">{sp('■ wrote: new cache entry')}</Text>
+            <Text color="cyan">{sp('■ new: sent uncached')}</Text>
           </Box>
         </Box>
       </Box>

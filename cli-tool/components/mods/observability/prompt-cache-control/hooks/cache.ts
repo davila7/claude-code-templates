@@ -199,42 +199,10 @@ export function positive(v: unknown, fallback: number): number {
   return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : fallback
 }
 
-// Block-letter digits, 4 columns by 5 rows, for the pane's big clock.
-const GLYPHS: Record<string, readonly string[]> = {
-  '0': ['████', '█  █', '█  █', '█  █', '████'],
-  '1': [' ██ ', '  █ ', '  █ ', '  █ ', ' ███'],
-  '2': ['████', '   █', '████', '█   ', '████'],
-  '3': ['████', '   █', ' ███', '   █', '████'],
-  '4': ['█  █', '█  █', '████', '   █', '   █'],
-  '5': ['████', '█   ', '████', '   █', '████'],
-  '6': ['████', '█   ', '████', '█  █', '████'],
-  '7': ['████', '   █', '  █ ', ' █  ', ' █  '],
-  '8': ['████', '█  █', '████', '█  █', '████'],
-  '9': ['████', '█  █', '████', '   █', '████'],
-  ':': [' ', '█', ' ', '█', ' '],
-}
-
-export const BIG_ROWS = 5
-
-/** The five text rows of `text` (digits and colons, as fmtClock writes it) in block letters. */
-export function bigClock(text: string): string[] {
-  const rows: string[] = Array.from({ length: BIG_ROWS }, () => '')
-  const chars = [...text].filter(c => c in GLYPHS)
-  chars.forEach((c, i) => {
-    for (let r = 0; r < BIG_ROWS; r++) rows[r] += (i > 0 ? ' ' : '') + GLYPHS[c][r]
-  })
-  return rows
-}
-
-/** Columns bigClock(text) takes. */
-export const bigClockWidth = (text: string) => bigClock(text)[0].length
-
 /** Share of the cache lifetime left, 0 to 1. */
 export function lifeRatio(leftMs: number, ttl: Ttl): number {
   return Math.min(1, Math.max(0, leftMs / ttlMs(ttl)))
 }
-
-export const padLeft = (text: string, width: number) => (text.length >= width ? text : ' '.repeat(width - text.length) + text)
 
 /**
  * Widths of the three stacked-bar segments (read, wrote, new) over `width`
@@ -266,4 +234,12 @@ export function nextToastMark(secsLeft: number, warnSecs: number, level: number)
   const marks = [warnSecs, ...COUNTDOWN_MARKS].filter(m => m <= warnSecs)
   const due = marks.filter(m => secsLeft <= m && m < level)
   return due.length ? Math.min(...due) : undefined
+}
+
+export type LifeColor = 'green' | 'yellow' | 'red'
+
+/** Countdown colour: green while there is plenty, yellow below 40% of the lifetime, red from the warning threshold down. */
+export function lifeColor(leftMs: number, ttl: Ttl, warnMs: number): LifeColor {
+  if (leftMs <= warnMs) return 'red'
+  return leftMs / ttlMs(ttl) <= 0.4 ? 'yellow' : 'green'
 }
