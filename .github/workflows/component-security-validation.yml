@@ -60,8 +60,11 @@ jobs:
           path: cli-tool/security-report.json
           retention-days: 30
 
+      # Fork PRs run with a read-only GITHUB_TOKEN, so createComment 403s and
+      # fails the job. Skip commenting for forks; the report is still available
+      # in the security-audit-report artifact.
       - name: Comment PR with Results
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
           script: |
