@@ -15,7 +15,7 @@ Commands that guide users through multi-step processes:
 ```markdown
 ---
 description: Complete PR review workflow
-argument-hint: [pr-number]
+argument-hint: "[pr-number]"
 allowed-tools: Bash(gh:*), Read, Grep
 ---
 
@@ -132,7 +132,7 @@ Commands that adapt based on conditions:
 ```markdown
 ---
 description: Smart deployment workflow
-argument-hint: [environment]
+argument-hint: "[environment]"
 allowed-tools: Bash(git:*), Bash(npm:*), Read
 ---
 
@@ -454,7 +454,7 @@ Ready for next deployment.
 ```markdown
 ---
 description: Deploy with optional version
-argument-hint: [environment] [version]
+argument-hint: "[environment] [version]"
 ---
 
 Environment: ${1:-staging}
@@ -472,7 +472,7 @@ Note: Using defaults for missing arguments:
 ```markdown
 ---
 description: Deploy to validated environment
-argument-hint: [environment]
+argument-hint: "[environment]"
 ---
 
 Environment: $1
@@ -494,7 +494,7 @@ Environment validated. Proceeding...
 ```markdown
 ---
 description: Deploy with shorthand
-argument-hint: [env-shorthand]
+argument-hint: "[env-shorthand]"
 ---
 
 Input: $1
@@ -641,7 +641,7 @@ If any step fails, resume with:
 ```markdown
 ---
 description: Initialize deployment
-argument-hint: [environment]
+argument-hint: "[environment]"
 allowed-tools: Write, Bash(git:*)
 ---
 
