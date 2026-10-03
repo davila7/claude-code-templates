@@ -3,6 +3,7 @@ import { describe, expect, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 import {
   buildTimeline,
+  clip,
   closePrefix,
   forkTranscript,
   mainChain,
@@ -64,6 +65,10 @@ describe('the chain', () => {
 })
 
 describe('the timeline', () => {
+  test('backticks and line breaks of a reply never reach a label', () => {
+    expect(clip('```ts\nexport const a = 1\n```', 40)).toBe('ts export const a = 1')
+  })
+
   test('prompts cut before themselves, tool calls after their result, turns after their last row', () => {
     const chain = mainChain(session())
     const t = buildTimeline(chain)
@@ -77,6 +82,10 @@ describe('the timeline', () => {
     expect(t[1]!.detail).toBe('npm test')
     expect(t[0]!.detail).toBe('first task')
     expect(t[3]!.detail).toBe('Tests pass.')
+    // the whole text stays available for the armed point and the expanded rows
+    expect(t[1]!.full).toBe('npm test')
+    expect(t[0]!.full).toBe('first task')
+    expect(t[3]!.full).toBe('Tests pass.')
   })
 })
 
@@ -111,6 +120,10 @@ describe('forking', () => {
     )
   })
 
+  test('without an instruction the command resumes the fork bare', () => {
+    expect(resumeCommand('/work', 'abc', '')).toBe(`cd '/work' && claude --resume abc`)
+  })
+
   test('paths and ids', () => {
     expect(projectSlug('/home/me/my.repo')).toBe('-home-me-my-repo')
     expect(transcriptPath('/h/.claude/', '/home/me', 's1')).toBe('/h/.claude/projects/-home-me/s1.jsonl')
@@ -121,7 +134,9 @@ describe('forking', () => {
     expect(parseArgs('')).toEqual({ kind: 'open' })
     expect(parseArgs(' list ')).toEqual({ kind: 'list' })
     expect(parseArgs('fork 3 use the other approach\nplease')).toEqual({ kind: 'fork', n: 3, instruction: 'use the other approach\nplease' })
-    expect(parseArgs('fork 3').kind).toBe('error')
+    // the instruction is optional: a click can fork on its own
+    expect(parseArgs('fork 3')).toEqual({ kind: 'fork', n: 3, instruction: '' })
+    expect(parseArgs('fork').kind).toBe('error')
     expect(parseArgs('fork x y').kind).toBe('error')
   })
 })
@@ -161,6 +176,36 @@ describe('the pane', () => {
       await ui.redraw()
       expect(fills).toEqual(['/timemachine fork 3 '])
       expect(await ui.find({ type: 'Text', text: /Fork from #3/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /cut after this Read call/ })).toBeDefined()
+      await ui.unmount()
+    })
+
+    test(`${surface}: Fork here forks without an instruction and shows the command`, async ($, on) => {
+      const wrote: string[] = []
+      world(on, [], wrote)
+      on('ui.copy', () => ({ value: { isCopied: true } }) as never)
+      await $.command.run({ command: 'timemachine', args: '', origin: { kind: 'composer' } } as never)
+      const ui = await $.ui.mount({ plugin: 'session-time-machine', surface, component: 'Pane', requestId: 'time-machine', props: PANE } as never)
+      await ui.press({ key: 'p3' })
+      await ui.redraw()
+      await ui.press({ key: 'forknow' })
+      await ui.redraw()
+      expect(wrote.length).toBe(1)
+      expect(await ui.find({ type: 'Text', text: /claude --resume [0-9a-f-]{36}$/m })).toBeDefined()
+      await ui.unmount()
+    })
+
+    test(`${surface}: expand shows a second line of detail under each point`, async ($, on) => {
+      world(on, [])
+      await $.command.run({ command: 'timemachine', args: '', origin: { kind: 'composer' } } as never)
+      const ui = await $.ui.mount({ plugin: 'session-time-machine', surface, component: 'Pane', requestId: 'time-machine', props: { ...PANE, bodyColumns: 24 } } as never)
+      expect(await ui.find({ key: 'd2' })).toBeUndefined()
+      await ui.press({ key: 'expand' })
+      await ui.redraw()
+      expect(await ui.find({ key: 'd2' })).toBeDefined()
+      await ui.press({ key: 'expand' })
+      await ui.redraw()
+      expect(await ui.find({ key: 'd2' })).toBeUndefined()
       await ui.unmount()
     })
   }
