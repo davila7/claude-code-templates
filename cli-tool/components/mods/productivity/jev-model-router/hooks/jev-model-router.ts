@@ -38,11 +38,13 @@
  * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
- * Privacy: with a key set, the prompt text is sent to whichever backend the
- * key belongs to.
+ * Privacy: with a key set, the prompt text (a long one as its two ends) and
+ * up to `contextChars` characters of the last assistant message are sent to
+ * whichever backend the key belongs to.
  */
 import type { Register } from 'claude-code'
 import {
+  clipPrompt,
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
   describeDecision,
@@ -50,6 +52,7 @@ import {
   describeStatus,
   endpoint,
   pendingDecisions,
+  promptState,
   readDecision,
   selectProvider,
   requestBody,
@@ -101,6 +104,12 @@ export const register: Register = (on, options) => {
   const routeMainModel = flag('routeMainModel', false)
   const routeMainLoop = routeMainEffort || routeMainModel
   const logDecisions = flag('logDecisions', true)
+  // How much of the last assistant message goes to the backend beside the
+  // prompt; 0 sends the prompt alone.
+  const contextChars = number('contextChars', 2000)
+  // A longer prompt goes to the backend as its two ends; 0 sends it whole.
+  // See clipPrompt.
+  const maxPromptChars = number('maxPromptChars', 4000)
 
   const policy: PolicyConfig = {
     tiers: {
@@ -163,13 +172,29 @@ export const register: Register = (on, options) => {
 
     const startedAt = await $.clock.now()
     let decision: Decision | null = null
+    // How many characters of the previous assistant message went with the
+    // prompt, for the log: a follow-up classified without it reads as trivial.
+    let contextSent = 0
     if (active) {
+      // The message this prompt answers: "yes" after a plan to migrate
+      // production is not the "yes" after an offer to rename a variable.
+      let previous: string | null = null
+      if (contextChars > 0) {
+        try {
+          const messages = await $.session.messages()
+          previous = [...messages].reverse().find((m) => m.role === 'assistant' && m.text)?.text ?? null
+        } catch (error) {
+          $.ui.log(`[jev-model-router] could not read the transcript: ${String(error)}`)
+        }
+      }
+      const state = promptState(clipPrompt(e.text, maxPromptChars), previous, contextChars)
+      contextSent = state.previousAssistantMessage?.length ?? 0
       try {
         const response = await Promise.race([
           $.http.fetch(url, {
             method: 'POST',
             headers: requestHeaders(active, apiKey, modelId),
-            body: requestBody(active, { prompt: e.text }, modelId),
+            body: requestBody(active, state, modelId),
           }),
           $.clock.sleep(timeoutMs),
         ])
@@ -202,7 +227,8 @@ export const register: Register = (on, options) => {
     // does with it. This is the line that proves the classification ran.
     if (logDecisions) {
       const ms = (await $.clock.now()) - startedAt
-      $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}`)
+      const context = contextSent > 0 ? ` · with ${contextSent} chars of the last reply` : ''
+      $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}${context}`)
     }
 
     pending.put(decision)
@@ -288,7 +314,7 @@ export const register: Register = (on, options) => {
             headers: requestHeaders(active, apiKey, modelId),
             body: requestBody(
               active,
-              { prompt: e.prompt, description: e.description, agentType: e.subagentType },
+              { prompt: clipPrompt(e.prompt, maxPromptChars), description: e.description, agentType: e.subagentType },
               modelId,
             ),
           }),
