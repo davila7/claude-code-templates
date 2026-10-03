@@ -1,3 +1,10 @@
+---
+description: Analyze a file for quality and security issues.
+allowed-tools: Read, Bash, Bash(grep:*), Bash(sed:*), Bash(awk:*)
+argument-hint: "[file-path]"
+
+---
+
 # File Analysis Tool
 
 Perform comprehensive analysis of $ARGUMENTS to identify code quality issues, security vulnerabilities, and optimization opportunities.

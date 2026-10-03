@@ -1,3 +1,9 @@
+---
+description: "General-purpose Storybook assistance for SvelteKit projects, including setup guidance, best practices, and common tasks."
+allowed-tools: Read, Write, Edit, Bash
+
+---
+
 # /svelte:storybook
 
 General-purpose Storybook assistance for SvelteKit projects, including setup guidance, best practices, and common tasks.

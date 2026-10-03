@@ -1,3 +1,9 @@
+---
+description: "Display all available development tools"
+allowed-tools: Read, Bash, Bash(claude:*)
+
+---
+
 # Display All Available Development Tools
 
 Display all available development tools
