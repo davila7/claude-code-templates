@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "apmzoom": {
+      "description": "apMZoomAI (앱엠줌AI) - search wholesale fashion items listed by stalls in the Dongdaemun market in Seoul, see new arrivals and find stalls by building, floor and stall number, with links to apMZoomAI. Public and read-only: no API key, no prices or contact details. Eight languages.",
+      "type": "http",
+      "url": "https://www.apmzoom.com/mcp"
+    }
+  }
+}
