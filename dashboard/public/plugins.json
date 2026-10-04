@@ -23544,5 +23544,23 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "continuum",
+    "name": "Continuum",
+    "author": "rays23",
+    "description": "Continues Claude Code sessions when their rate limit window opens again. No tmux, no PTY wrapper, no keystrokes.",
+    "github": "https://github.com/rays23/continuum",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "commands"
+    ],
+    "contains": {
+      "commands": 3
+    },
+    "highlights": [],
+    "marketplace_name": "continuum",
+    "plugin_name": "continuum"
   }
 ]
