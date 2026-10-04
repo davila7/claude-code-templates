@@ -1,12 +1,12 @@
 /**
- * block-destructive-commands — Claude Mod (EARLY ACCESS)
+ * block-destructive-commands — Claude Mod
  *
  * Denies Bash commands that match destructive patterns before they run.
  * A `tool.call` hook under a `{ tool: "Bash" }` matcher: on a match it returns
  * `{ deny }` without calling `next`, so nothing beneath (other plugins,
  * PreToolUse shell hooks, the tool itself) runs; otherwise it passes through.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options (plugin.json "userConfig" / hooks module options):

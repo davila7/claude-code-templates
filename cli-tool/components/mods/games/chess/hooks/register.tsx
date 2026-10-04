@@ -1,5 +1,5 @@
 /**
- * chess — Claude Mod (EARLY ACCESS)
+ * chess — Claude Mod
  *
  * Chess against Claude in a side pane while you work. `/chess` opens it; in
  * the fullscreen layout (`/tui fullscreen`) the engine docks it beside the
@@ -25,7 +25,7 @@
  *
  * Nothing here touches files, git or the transcript.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
+ * Needs Claude Code >= 2.1.287.
  *
  * Options (pluginConfigs["chess@skills-dir"].options):
  *   columns: number        width asked for the docked pane (default 40)

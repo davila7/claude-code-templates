@@ -1,7 +1,7 @@
 {
   "name": "vercel-deploys",
   "version": "0.1.0",
-  "description": "Your Vercel projects in a side pane: each connected site with the state of its latest deployment (building, ready, failed), the production domain, the Git commit behind it and whether the site answers right now. It polls Vercel's REST API (faster while something builds) and toasts when a deployment finishes or fails. /vercel opens it. Needs function hooks (early access) and a Vercel access token.",
+  "description": "Your Vercel projects in a side pane: each connected site with the state of its latest deployment (building, ready, failed), the production domain, the Git commit behind it and whether the site answers right now. It polls Vercel's REST API (faster while something builds) and toasts when a deployment finishes or fails. /vercel opens it. Needs a Vercel access token.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"

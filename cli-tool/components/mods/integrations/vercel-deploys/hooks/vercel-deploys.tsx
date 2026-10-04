@@ -1,5 +1,5 @@
 /**
- * vercel-deploys — Claude Mod (EARLY ACCESS)
+ * vercel-deploys — Claude Mod
  *
  * Your Vercel projects in a pane: one row per connected site with the state of
  * its latest deployment, the production domain, the commit behind it and
@@ -16,7 +16,7 @@
  * a minute. The token is only ever sent to api.vercel.com in an Authorization
  * header and is never logged or drawn. Never hardcode it in this file.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259) and a
+ * Needs Claude Code >= 2.1.287 and a
  * Vercel access token in the plugin's options.
  *
  * Options (pluginConfigs["vercel-deploys@skills-dir"].options):

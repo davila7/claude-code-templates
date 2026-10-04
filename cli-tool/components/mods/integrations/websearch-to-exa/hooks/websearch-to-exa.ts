@@ -1,5 +1,5 @@
 /**
- * websearch-to-exa — Claude Mod (EARLY ACCESS)
+ * websearch-to-exa — Claude Mod
  *
  * Overrides the built-in WebSearch tool and routes the query to the Exa
  * search API through `$.http.fetch`. On success the hook answers `{ result }`
@@ -10,7 +10,7 @@
  * The API key comes from the plugin's options (userConfig "exaApiKey").
  * Never hardcode it in this file.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

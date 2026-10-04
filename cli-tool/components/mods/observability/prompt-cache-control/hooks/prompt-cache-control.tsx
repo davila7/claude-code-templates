@@ -1,5 +1,5 @@
 /**
- * prompt-cache-control — Claude Mod (EARLY ACCESS)
+ * prompt-cache-control — Claude Mod
  *
  * A prompt-cache meter for Claude Code. Every main-loop request reports how
  * many prompt tokens the cache served (`cache_read_input_tokens`), wrote
@@ -23,7 +23,7 @@
  * so the mod also watches the gaps between requests (a hit after more than 5
  * minutes proves 1 hour; see observeTtl). `ttl: "5m" | "1h"` pins it.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
+ * Needs Claude Code >= 2.1.287.
  *
  * Options (pluginConfigs["prompt-cache-control@skills-dir"].options):
  *   ttl: "auto" | "5m" | "1h"   cache lifetime (default auto)

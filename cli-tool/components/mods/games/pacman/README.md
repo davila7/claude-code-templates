@@ -1,6 +1,6 @@
 # pacman
 
-Pac-Man above the Claude Code prompt: a 19×15 maze, four ghosts that chase, scatter and flee, power pellets, three lives and faster levels. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. Needs function hooks (early access) and an interactive terminal. Zero tokens: the mod answers every key and click itself and never asks the model anything.
+Pac-Man above the Claude Code prompt: a 19×15 maze, four ghosts that chase, scatter and flee, power pellets, three lives and faster levels. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. Needs an interactive terminal. Zero tokens: the mod answers every key and click itself and never asks the model anything.
 
 ## Play
 
@@ -17,10 +17,10 @@ Your best score is kept in the plugin's store across sessions.
 
 ```sh
 npx claude-code-templates@latest --mod games/pacman
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/pacman/`, which Claude Code auto-loads as `pacman@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/pacman`. `claude plugin validate .claude/skills/pacman` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/pacman/`, which Claude Code auto-loads as `pacman@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/pacman`. `claude plugin validate .claude/skills/pacman` prints every event it hooks and every `$` call it makes.
 
 ## How it is built
 
@@ -28,7 +28,7 @@ It is written to `.claude/skills/pacman/`, which Claude Code auto-loads as `pacm
 
 ## Requirements
 
-- Claude Code 2.1.269 or later (the first build whose function hooks draw above the prompt) with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`. The `$` API is early access and may change between releases.
+- Claude Code 2.1.287 or later (mods are on by default from that version).
 - An interactive terminal that reports the mouse. Nothing draws in `claude -p`, the desktop app or mobile.
 - A terminal font with box-drawing and block characters.
 

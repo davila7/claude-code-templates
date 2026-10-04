@@ -1,5 +1,5 @@
 /**
- * admin-capability-lockdown — Claude Mod (EARLY ACCESS)
+ * admin-capability-lockdown — Claude Mod
  *
  * An organization-level mod that (1) withholds the `http` and `process`
  * nouns from `$` so no plugin seated beneath it can reach the network or
@@ -17,7 +17,7 @@
  * wins) and it judges every `plugin.register` after it. Loaded with
  * --plugin-dir it sits in the user tier and only binds plugins listed after it.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:
