@@ -16938,6 +16938,27 @@
       }
     },
     {
+      "name": "pricewin",
+      "path": "web-data/pricewin.json",
+      "category": "web-data",
+      "type": "mcp",
+      "description": "Live hotel and flight prices compared across Booking.com, Agoda, Trip.com and Traveloka, in USD, with links to book at the source. Can send a booking request to a direct-listed partner hotel (no payment; the guest pays at the property). Public endpoint, no API key required.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "scavio",
       "path": "web-data/scavio.json",
       "category": "web-data",
@@ -44841,6 +44862,28 @@
         "scripts/scrape_html.sh",
         "scripts/screenshot.sh"
       ]
+    },
+    {
+      "name": "pricewin-travel-search",
+      "path": "web-data/pricewin-travel-search",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Search and compare live hotel and flight prices with the PriceWin MCP server, look up one named hotel, inspect OpenTravel direct listings, send a booking request to a partner hotel (no payment; the guest pays at the property), and cancel one. Use when the user asks to find hotels or flights for dates, compare travel prices, inspect a hotel or room, check a rate's cancellation policy, book a partner hotel, or cancel a booking they made this way.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
     },
     {
       "name": "scrape",
