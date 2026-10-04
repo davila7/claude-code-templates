@@ -13,7 +13,7 @@ item under the time it arrived and its sender.
 
 | Input | Does |
 |-------|------|
-| `/dnd` | off: turns it on for 30 minutes; on, or with messages a refused summary kept: turns it off and delivers |
+| `/dnd` | off: turns it on for 30 minutes; on or if a refused summary left messages waiting: turns it off and delivers |
 | `/dnd 10` | turns it on for 10 minutes; it ends by itself and delivers |
 | `/dnd off` | turns it off and delivers now |
 | band `[ 🔕 DND · 4 waiting · deliver ]` | delivers now; shown only while DND is on |
