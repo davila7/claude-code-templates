@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "chirpie": {
+      "description": "Chirpie, the publishing connector for AI agents. Post, thread and schedule to X, Bluesky, LinkedIn, Mastodon and Telegram, attach images and video, save drafts, read post analytics and answer comments. Hosted remote server with OAuth sign-in (no API key to paste); free plan available. Docs: https://chirpie.ai/docs/mcp",
+      "type": "http",
+      "url": "https://chirpie.ai/mcp"
+    }
+  }
+}
