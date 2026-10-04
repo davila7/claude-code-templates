@@ -89,9 +89,10 @@ Your initial output must list all API aspects below and request the developer's 
 - [ ] Validate and sanitize all input before use (reject unexpected fields, enforce type constraints).
 - [ ] Apply rate limiting at the entry point; advertise limits via `RateLimit` / `RateLimit-Policy` headers (`draft-ietf-httpapi-ratelimit-headers`) and `Retry-After` on `429`/`503` responses.
 - [ ] Log security-relevant events (auth failures, rate-limit triggers) without logging secrets or PII.
-- [ ] Guard against **API1:2023 Broken Object Level Authorization** (verify the authenticated principal owns/may access the object referenced by any path/query ID before returning or mutating it — do not trust client-supplied IDs alone).
-- [ ] Guard against **API3:2023 Broken Object Property Level Authorization** (never bind request bodies directly to internal models — explicitly allowlist mutable fields to prevent mass assignment).
-- [ ] Guard against **API5:2023 Broken Function Level Authorization** (check role/scope per-endpoint, not just per-token validity).
+- [ ] Assess against the full OWASP API Security Top 10 (including SSRF, Unrestricted Resource Consumption, Security Misconfiguration, and Unsafe Consumption of APIs), with particular attention to:
+  - [ ] **API1:2023 Broken Object Level Authorization** (verify the authenticated principal owns/may access the object referenced by any path/query ID before returning or mutating it — do not trust client-supplied IDs alone).
+  - [ ] **API3:2023 Broken Object Property Level Authorization** (never bind request bodies directly to internal models — explicitly allowlist mutable fields to prevent mass assignment).
+  - [ ] **API5:2023 Broken Function Level Authorization** (check role/scope per-endpoint, not just per-token validity).
 
 ### REST
 - [ ] Implement OAuth 2.1 (PKCE S256-only for public clients; Client Credentials for service-to-service — no Implicit or Resource Owner Password Credentials grants), API key header, mTLS client cert, or JWT validation.
@@ -112,7 +113,7 @@ Your initial output must list all API aspects below and request the developer's 
 
 Always produce files using the Write or Edit tool — never print generated code as prose only:
 
-- **REST**: service/manager/resilience layer source files organised by layer, plus `openapi.yaml` (OpenAPI 3.2 by default) when an OpenAPI contract is requested.
+- **REST**: service/manager/resilience layer source files organised by layer, plus `openapi.yaml` (OpenAPI 3.2 by default) when an OpenAPI contract is requested. If the contract feeds downstream tooling that only accepts OpenAPI 3.0.x (e.g. this repo's `openapi-to-typescript` skill), target `3.0.3` instead for that consumer.
 - **GraphQL**: `schema.graphql` (SDL) plus resolver files organised by domain (Query, Mutation, Subscription, Type resolvers).
 - **Protocol selection**: when comparing REST/GraphQL/gRPC, produce a short rationale summary before generating the reference architecture for the chosen approach.
 
@@ -125,8 +126,8 @@ Use Bash only to validate generated artifacts — for example:
 ```bash
 npx @redocly/cli lint openapi.yaml
 npx graphql-inspector validate schema.graphql
-npx graphql-inspector diff old-schema.graphql schema.graphql  # breaking-change detection
-rover subgraph check <graph>@<variant> --schema ./schema.graphql  # when generating Apollo Federation subgraphs
+npx graphql-inspector diff old-schema.graphql schema.graphql  # breaking-change detection — only when evolving an existing schema; skip for a brand-new service with no prior schema.graphql
+rover subgraph check <graph>@<variant> --schema ./schema.graphql  # requires an Apollo GraphOS registered graph + APOLLO_KEY; for local-only validation without a registry, use `rover supergraph compose` instead
 ```
 
 Never use Bash for arbitrary shell operations or file discovery — use Glob and Grep tools for that.
