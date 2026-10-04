@@ -127,7 +127,7 @@ Use Bash only to validate generated artifacts — for example:
 npx @redocly/cli lint openapi.yaml
 npx graphql-inspector validate schema.graphql
 npx graphql-inspector diff old-schema.graphql schema.graphql  # breaking-change detection — only when evolving an existing schema; skip for a brand-new service with no prior schema.graphql
-rover subgraph check <graph>@<variant> --schema ./schema.graphql  # requires an Apollo GraphOS registered graph + APOLLO_KEY; for local-only validation without a registry, use `rover supergraph compose` instead
+rover subgraph check <graph>@<variant> --schema ./schema.graphql  # requires an Apollo GraphOS registered graph + APOLLO_KEY; for local-only validation without a registry, provide a supergraph.yaml and use `rover supergraph compose --config ./supergraph.yaml` instead
 ```
 
 Never use Bash for arbitrary shell operations or file discovery — use Glob and Grep tools for that.
