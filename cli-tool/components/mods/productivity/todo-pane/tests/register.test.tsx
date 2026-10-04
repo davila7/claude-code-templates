@@ -166,6 +166,19 @@ describe('todo-pane', () => {
     }
   })
 
+  test('the delete x sits one column apart from the task text', async ($, on) => {
+    const { files } = host(on, '- [ ] a\n')
+    await $.classic.SessionStart({ source: 'resume' })
+    for (const surface of SURFACES) {
+      const ui = await $.ui.mount({ plugin: 'todo-pane', surface, ...PANE })
+      expect((await ui.find({ key: 'gap0' }))?.props.marginLeft).toBe(1)
+      await ui.unmount()
+    }
+    const ui = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
+    await ui.press({ key: 'delete0' })
+    expect(files.get(PATH)).toBe('')
+  })
+
   test('a change made outside the pane is kept, and a stale row does nothing', async ($, on) => {
     const { files } = host(on, '- [ ] a\n- [ ] b\n')
     await $.classic.SessionStart({ source: 'clear' })

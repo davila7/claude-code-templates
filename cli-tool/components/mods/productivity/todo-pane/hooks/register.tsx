@@ -211,12 +211,15 @@ export const register: Register = (on, options) => {
               ) : (
                 <Text key={`text${line.index}`}>{line.text}</Text>
               )}
-              <Button
-                key={`delete${line.index}`}
-                label="x"
-                plain
-                onPress={() => save($, at(raws, value => remove(value, line.index)))}
-              />
+              {/* One column apart, so the x does not run into the task's text. */}
+              <Box key={`gap${line.index}`} marginLeft={1}>
+                <Button
+                  key={`delete${line.index}`}
+                  label="x"
+                  plain
+                  onPress={() => save($, at(raws, value => remove(value, line.index)))}
+                />
+              </Box>
             </Box>
           ) : (
             <Text key={`line${line.index}`}>{line.text === '' ? ' ' : line.text}</Text>
