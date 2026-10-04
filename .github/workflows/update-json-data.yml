@@ -60,9 +60,15 @@ jobs:
           npm ci --ignore-scripts
 
       - name: Create .env file with secrets
+        # Secrets go through env: so the shell reads them as data. Interpolating
+        # ${{ secrets.X }} straight into the script would let a value containing
+        # a quote or newline break out of the echo.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
         run: |
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
-          echo "SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}" >> .env
+          printf 'SUPABASE_URL=%s\n' "$SUPABASE_URL" >> .env
+          printf 'SUPABASE_API_KEY=%s\n' "$SUPABASE_API_KEY" >> .env
 
       - name: Generate components.json
         run: python scripts/generate_components_json.py
