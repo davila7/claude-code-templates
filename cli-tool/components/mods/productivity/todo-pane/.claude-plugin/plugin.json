@@ -1,0 +1,28 @@
+{
+  "name": "todo-pane",
+  "version": "0.1.0",
+  "description": "A `📝 todo (n)` button above the prompt, n being the open tasks, and a pane that edits the repository's todo.md in place: toggle, edit, delete and add checkbox tasks while every other line stays byte for byte. /todo opens it.",
+  "author": {
+    "name": "Aleš Lednej",
+    "url": "https://github.com/aleslednej"
+  },
+  "homepage": "https://github.com/overheadlabs",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity",
+    "todo",
+    "pane",
+    "markdown"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "toggleAction": {
+      "type": "string",
+      "title": "Shortcut action",
+      "description": "A keybinding action the band button borrows for a shortcut (one of the README's list, e.g. app:cycleDiffBase); your chord for it in ~/.claude/keybindings.json then toggles the pane from the prompt, in the terminal. Empty: no shortcut.",
+      "default": ""
+    }
+  }
+}
