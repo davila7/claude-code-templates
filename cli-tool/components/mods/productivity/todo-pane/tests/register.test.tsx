@@ -223,8 +223,8 @@ describe('todo-pane', () => {
     const { files, links, toasts } = host(on, '- [ ] a\n')
     await $.classic.SessionStart({ source: 'clear' })
     links.add(PATH)
+    // Drawn from before the link, so the field still offers an add.
     const ui = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
-    await ui.press({ key: 'toggle0' })
     await ui.input({ key: 'new', text: 'b' })
     expect(files.get(PATH)).toBe('- [ ] a\n')
     expect(toasts).toContain('todo-pane: todo.md is a symbolic link, left alone')
@@ -244,6 +244,7 @@ describe('todo-pane', () => {
     expect((await band.find({ key: 'todo' }))?.text).toBe('📝 todo')
     const pane = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
     expect(await pane.find({ key: 'toggle0' })).toBeUndefined()
+    expect(await pane.find({ key: 'new' })).toBeUndefined()
     expect(await pane.find({ type: 'Text', text: /left alone/ })).toBeDefined()
   })
 })

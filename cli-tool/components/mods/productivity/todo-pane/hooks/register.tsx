@@ -222,7 +222,8 @@ export const register: Register = (on, options) => {
             <Text key={`line${line.index}`}>{line.text === '' ? ' ' : line.text}</Text>
           ),
         )}
-        {Input && (
+        {/* A file left alone takes no new task: its save would always be refused. */}
+        {Input && current !== false && (
           <Input
             key="new"
             placeholder="new task"
