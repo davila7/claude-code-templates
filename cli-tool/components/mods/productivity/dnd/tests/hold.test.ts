@@ -27,6 +27,7 @@ describe('hold', () => {
       { from: 'peer', at: at + 60_000, text: 'second' },
       { from: 'cron', at, text: 'first' },
     ])
+    expect(text).toContain('> first')
     expect(text.indexOf('> first')).toBeLessThan(text.indexOf('> second'))
   })
 

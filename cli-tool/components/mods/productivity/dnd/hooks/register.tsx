@@ -17,12 +17,26 @@ let timer: Timer | undefined
 let clearedKey: string | undefined
 // Store writes, run one at a time.
 let writes: Promise<unknown> = Promise.resolve()
-// The lists of summaries on their way into the session; the store keeps them until they entered.
-let sending: (readonly Held[])[] = []
+// A summary on its way into the session, and the store key that keeps its messages until it entered.
+type Batch = { key: string; held: readonly Held[] }
+let sending: Batch[] = []
+
+function isSame(a: Held, b: Held) {
+  return a.from === b.from && a.at === b.at && a.text === b.text
+}
 
 // A stored message whose summary is on its way already: kept there for a reload, not delivered twice.
 function isSending(item: Held) {
-  return sending.some(list => list.some(held => held.from === item.from && held.at === item.at && held.text === item.text))
+  return sending.some(batch => batch.held.some(held => isSame(held, item)))
+}
+
+// Takes a summary's messages out of the list stored under its key.
+async function forget($: EngineInterface, batch: Batch) {
+  const stored = storedState(await $.store.get(batch.key))
+  if (stored !== undefined) {
+    const held = stored.held.filter(item => !batch.held.some(sent => isSame(sent, item)))
+    await (stored.until === null && held.length === 0 ? $.store.delete(batch.key) : $.store.set(batch.key, { ...stored, held }))
+  }
 }
 
 async function storeKey($: EngineInterface) {
@@ -54,6 +68,11 @@ async function load($: EngineInterface, afterClear = false) {
       await update($, dnd, state => ({ until: state.until ?? stored.until ?? null, held: held.reduce(hold, state.held) }))
     }
   }
+  // A summary still on its way follows the session (a /clear, resume or fork), kept under one key only.
+  for (const batch of sending.filter(batch => batch.key !== key)) {
+    await forget($, batch)
+    batch.key = key
+  }
   await persist($)
   if (keys[0] !== key) {
     await $.store.delete(keys[0] ?? key)
@@ -75,7 +94,7 @@ async function persist($: EngineInterface) {
   const write = writes.then(async () => {
     const key = await storeKey($)
     const state = await read($, dnd)
-    const held = sending.flat().reduce(hold, state.held)
+    const held = sending.flatMap(batch => batch.held).reduce(hold, state.held)
     await (state.until === null && held.length === 0 ? $.store.delete(key) : $.store.set(key, { ...state, held }))
   })
   writes = write.catch(() => undefined)
@@ -128,33 +147,35 @@ async function release($: EngineInterface, end?: number | null): Promise<number 
   if (list === undefined) {
     return undefined
   }
-  const batch = list
-  if (batch.length > 0) {
+  const batch = { key: await storeKey($), held: list }
+  if (list.length > 0) {
     sending = [...sending, batch]
   }
   await persist($)
   await showStatus($)
-  if (batch.length > 0) {
-    const text = batchText(batch, localZones(await $.env.get('TZ')))
+  if (list.length > 0) {
+    const text = batchText(list, localZones(await $.env.get('TZ')))
     // Never submitted from the hook itself: a command.run hook holds the turn the submit waits for.
     $.clock.after(0, () => deliver($, text, batch))
   }
 
-  return batch.length
+  return list.length
 }
 
 // Submits a release's summary; once it entered, its messages leave the store. A refused one puts
 // them back among the held messages (DND stays off), for /dnd off or the next load to deliver.
-async function deliver($: EngineInterface, text: string, batch: readonly Held[]) {
+async function deliver($: EngineInterface, text: string, batch: Batch) {
   const entered = await $.prompt.submit({ text }).then(
     result => result.drop === undefined,
     () => false,
   )
-  sending = sending.filter(list => list !== batch)
+  sending = sending.filter(other => other !== batch)
   if (!entered) {
-    await update($, dnd, state => ({ ...state, held: batch.reduce(hold, state.held) }))
-    $.ui.toast(`DND: the summary was refused, ${messages(batch.length)} kept; /dnd off delivers them`)
+    await update($, dnd, state => ({ ...state, held: batch.held.reduce(hold, state.held) }))
+    $.ui.toast(`DND: the summary was refused, ${messages(batch.held.length)} kept; /dnd off delivers them`)
   }
+  // Out of the key that keeps it now, whichever session this delivery's `$` still names.
+  await forget($, batch)
   await persist($)
 }
 

@@ -188,11 +188,33 @@ describe('dnd', () => {
     await $.command.run({ command: 'dnd', args: '', ...RUN })
     await $.prompt.submit(prompt('peer', 'ping'))
     await $.command.run({ command: 'dnd', args: 'off', ...RUN })
-    // A reload now finds the list without an end, which its load delivers.
+    // What a reload now would find: the list without an end, which a load delivers at once
+    // (the older-version test below loads exactly that).
     expect(store.get('held:session-1')).toEqual({ until: null, held: [expect.objectContaining({ text: 'ping' })] })
     await clock.settle()
     expect(prompts).toHaveLength(1)
     expect(store.has('held:session-1')).toBe(false)
+  })
+
+  test('a summary still on its way when /clear lands is delivered once and leaves no key behind', async ($, on) => {
+    const { clock, prompts, session, store } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.prompt.submit(prompt('peer', 'ping'))
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    await $.session.end({ reason: 'clear', sessionId: 'session-1', resume: { id: 'session-1' } })
+    session.id = 'session-2'
+    await $.classic.SessionStart({ source: 'clear' })
+    // Kept under the new session's key alone until the summary entered.
+    expect([...store.keys()]).toEqual(['held:session-2'])
+    // The delivery may run with the $ of the session that released it.
+    session.id = 'session-1'
+    await clock.settle()
+    session.id = 'session-2'
+    expect(prompts).toHaveLength(1)
+    expect([...store.keys()]).toEqual([])
+    await $.classic.SessionStart({ source: 'resume' })
+    await clock.settle()
+    expect(prompts).toHaveLength(1)
   })
 
   test('a summary refused beneath keeps the held messages for /dnd off', async ($, on) => {
