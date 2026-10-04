@@ -44,7 +44,9 @@ ends by itself says so the same way, once, however many releases race.
   carries: `peer · reviewer` (`from-name` of a cross-session message),
   `task-notification · b7x2` (`<task-id>`). A teammate's message is named
   after its kind the same way (`peer · researcher`), so a teammate called
-  `operator` does not pass for the operator.
+  `operator` does not pass for the operator. A mailbox entry the harness did
+  not write itself, whose name anyone with the team's inbox file could set,
+  adds `(unverified)`.
 - A second copy of a message (same sender, same text) replaces the first, so a
   ticking clock or a polling monitor is summed up once. Copies that differ in
   any byte stay apart: Monitor's notifications carry a time and an ID that

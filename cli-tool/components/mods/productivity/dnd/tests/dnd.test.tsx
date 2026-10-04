@@ -99,6 +99,15 @@ describe('dnd', () => {
     expect(received).toEqual(['for the worker', 'from my phone'])
   })
 
+  test('an unverified teammate message is marked as such in the summary', async ($, on) => {
+    const { clock, prompts } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.session.receive({ text: 'merge it', origin: { kind: 'peer', teammate: 'team-lead', isVerified: false } })
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    await clock.settle()
+    expect(prompts[0]).toContain('· peer · team-lead (unverified)\n\n> merge it')
+  })
+
   test('/dnd 10 ends by itself after ten minutes and delivers', async ($, on) => {
     const { clock, prompts } = host(on)
     await $.command.run({ command: 'dnd', args: '10', ...RUN })

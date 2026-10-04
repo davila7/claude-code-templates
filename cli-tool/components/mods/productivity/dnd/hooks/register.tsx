@@ -150,9 +150,10 @@ async function keep($: EngineInterface, from: string, text: string) {
 }
 
 function senderOf(origin: SessionReceiveOrigin) {
-  // Named after its kind like every sender, so a teammate called "operator" isn't one.
+  // Named after its kind like every sender, so a teammate called "operator" isn't one. An unverified
+  // mailbox entry says so: its name is whatever the writer of the team's inbox file put there.
   if ('teammate' in origin) {
-    return `${origin.kind} · ${origin.teammate}`
+    return `${origin.kind} · ${origin.teammate}${origin.isVerified ? '' : ' (unverified)'}`
   }
 
   return 'plugin' in origin && origin.plugin !== undefined ? `${origin.kind} (${origin.plugin})` : origin.kind
