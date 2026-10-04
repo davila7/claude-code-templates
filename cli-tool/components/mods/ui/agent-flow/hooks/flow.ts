@@ -47,6 +47,8 @@ export type FlowNode = {
   turn: number
   /** a loop the flow saw work but no spawn for (a workflow's agent, an engine fork) */
   unlisted?: boolean
+  /** finished in an earlier round and off the pane (hideFinished); the data stays */
+  hidden?: boolean
 }
 
 export type Flow = {
@@ -173,6 +175,8 @@ export function stepped(flow: Flow, agentId: string | undefined, usage: Usage | 
   const node = nodeFor(flow, agentId, now)
   node.steps += 1
   if (node.id !== MAIN && node.status !== 'running') node.status = 'running'
+  // a hidden agent that runs again (a subagent resumed) belongs to this round
+  node.hidden = false
   if (!usage) return
   const ctx = contextOf(usage)
   node.contextTokens = ctx
@@ -247,11 +251,62 @@ export function subtree(flow: Flow, id: string): string[] {
 
 export type Row = { node: FlowNode; depth: number; prefix: string }
 
+/**
+ * The subagents drawn and counted: every one not hidden, and a hidden one when something
+ * under it shows. One post-order pass, so rows() and counts() stay linear.
+ */
+export function visibleIds(flow: Flow): Set<string> {
+  const kids = new Map<string, string[]>()
+  for (const id of flow.order) {
+    const n = flow.nodes.get(id)
+    if (!n || n.id === MAIN) continue
+    const parent = n.parentId ?? MAIN
+    const list = kids.get(parent)
+    if (list) list.push(id)
+    else kids.set(parent, [id])
+  }
+  const out = new Set<string>()
+  const visit = (id: string): boolean => {
+    let any = false
+    for (const kid of kids.get(id) ?? []) if (visit(kid)) any = true
+    const n = flow.nodes.get(id)
+    const own = !!n && n.hidden !== true
+    if (id !== MAIN && (own || any)) out.add(id)
+    return own || any
+  }
+  visit(MAIN)
+  return out
+}
+
+/**
+ * Takes every finished agent off the pane; `showAll` brings them back. A loop no spawn
+ * announced goes too: it may never report its end, and would carry into the new round.
+ */
+export function hideFinished(flow: Flow): void {
+  for (const n of flow.nodes.values()) if (n.id !== MAIN && (n.status !== 'running' || n.unlisted)) n.hidden = true
+}
+
+export function showAll(flow: Flow): void {
+  for (const n of flow.nodes.values()) n.hidden = false
+}
+
+/**
+ * Subagents still running that a spawn announced or `$.agent.list()` knows. A loop no
+ * spawn announced (an engine fork) can run without ever raising turn.complete, so
+ * counting it would keep the pane open forever.
+ */
+export function announcedRunning(flow: Flow): number {
+  let running = 0
+  for (const n of flow.nodes.values()) if (n.id !== MAIN && !n.unlisted && n.status === 'running') running += 1
+  return running
+}
+
 /** The tree in spawn order, depth first, with its box-drawing prefix. */
 export function rows(flow: Flow): Row[] {
   const out: Row[] = []
+  const vis = visibleIds(flow)
   const walk = (id: string, depth: number, lead: string) => {
-    const kids = children(flow, id)
+    const kids = children(flow, id).filter(kid => vis.has(kid.id))
     kids.forEach((kid, i) => {
       const last = i === kids.length - 1
       out.push({ node: kid, depth, prefix: `${lead}${last ? '└─' : '├─'}` })
@@ -266,8 +321,9 @@ export function counts(flow: Flow): { running: number; done: number; failed: num
   let running = 0
   let done = 0
   let failed = 0
+  const vis = visibleIds(flow)
   for (const n of flow.nodes.values()) {
-    if (n.id === MAIN) continue
+    if (!vis.has(n.id)) continue
     if (n.status === 'running') running += 1
     else if (n.status === 'done') done += 1
     else failed += 1
@@ -343,4 +399,19 @@ export function paneColumns(value: unknown): number {
 export function maxAgents(value: unknown): number {
   const n = typeof value === 'number' && Number.isFinite(value) ? Math.floor(value) : 60
   return Math.min(500, Math.max(1, n))
+}
+
+/** `openOnSpawn`: off unless set to true. */
+export function opensOnSpawn(value: unknown): boolean {
+  return value === true
+}
+
+/** `clearOnAutoOpen`: on unless set to false. */
+export function clearsOnAutoOpen(value: unknown): boolean {
+  return value !== false
+}
+
+/** `closeAfterIdleMs`: 15s by default, 0 turns it off. */
+export function idleCloseMs(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 15_000
 }
