@@ -48,14 +48,17 @@ ends by itself says so the same way, once, however many releases race.
   not write itself, whose name anyone with the team's inbox file could set,
   adds `(unverified)`.
 - A second copy of a message (same sender, same text) replaces the first, so a
-  ticking clock or a polling monitor is summed up once. Copies that differ in
-  any byte stay apart: Monitor's notifications carry a time and an ID that
+  message repeated word for word, such as a poll that reports the same thing
+  again, is summed up once. Copies that differ in any byte stay apart: Monitor's notifications carry a time and an ID that
   change each time, so they are not merged. Guessing which differences are
   noise risks dropping a real event, so the mod does not try.
 - The end of DND and the held list are kept in the plugin's store under
   `held:<session id>` too. They survive a reload of the mod and move over to the
   new session on `/clear`, so DND stays on until it ends, as set. A resumed
-  session whose end has already passed delivers what was held at once.
+  session whose end has already passed delivers what was held at once. The
+  held messages stay in the store until the summary has entered the session: a
+  reload before then delivers them on the next load, and a summary a hook
+  refuses puts them back (DND stays off) for `/dnd off` to deliver again.
 
 ## Known limits
 

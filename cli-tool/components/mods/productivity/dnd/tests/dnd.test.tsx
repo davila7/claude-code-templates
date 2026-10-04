@@ -22,6 +22,8 @@ function host(on: On, stored: Record<string, unknown> = {}, env: Record<string, 
   // mock.store, with the values left where a test can read them and deletes that can be slowed.
   const store = new Map(Object.entries(stored))
   const slow = { deletes: false }
+  // A settings hook beneath that refuses the plugin's prompts while set.
+  const refuse = { submits: false }
   on('store.get', ($, e) => ({ value: store.get(e.key) }))
   on('store.set', ($, e) => (store.set(e.key, e.value), { value: undefined }))
   on('store.delete', async ($, e) => {
@@ -39,6 +41,9 @@ function host(on: On, stored: Record<string, unknown> = {}, env: Record<string, 
   on('ui.toast', ($, e) => (toasts.push(e.text), { value: undefined }))
   on('command.register', ($, e) => ({ value: { command: e.name } }))
   on('prompt.submit', ($, e) => {
+    if (refuse.submits) {
+      return { drop: 'blocked by a settings hook' }
+    }
     prompts.push(e.text)
     return { text: e.text }
   })
@@ -52,7 +57,7 @@ function host(on: On, stored: Record<string, unknown> = {}, env: Record<string, 
     return <Text>other mod</Text>
   })
 
-  return { clock, prompts, received, session, slow, store, toasts }
+  return { clock, prompts, received, refuse, session, slow, store, toasts }
 }
 
 const prompt = (kind: PromptOrigin['kind'], text: string) => ({ text, wait: false, origin: { kind } as PromptOrigin })
@@ -178,6 +183,36 @@ describe('dnd', () => {
     expect(toasts.slice(1)).toEqual(['DND off, delivering 1 message'])
   })
 
+  test('the store keeps the held messages until the summary has entered', async ($, on) => {
+    const { clock, prompts, store } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.prompt.submit(prompt('peer', 'ping'))
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    // A reload now finds the list without an end, which its load delivers.
+    expect(store.get('held:session-1')).toEqual({ until: null, held: [expect.objectContaining({ text: 'ping' })] })
+    await clock.settle()
+    expect(prompts).toHaveLength(1)
+    expect(store.has('held:session-1')).toBe(false)
+  })
+
+  test('a summary refused beneath keeps the held messages for /dnd off', async ($, on) => {
+    const { clock, prompts, refuse, store, toasts } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.prompt.submit(prompt('peer', 'ping'))
+    refuse.submits = true
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    await clock.settle()
+    expect(prompts).toEqual([])
+    expect(toasts.at(-1)).toBe('DND: the summary was refused, 1 message kept; /dnd off delivers them')
+    expect(store.get('held:session-1')).toEqual({ until: null, held: [expect.objectContaining({ text: 'ping' })] })
+    refuse.submits = false
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    await clock.settle()
+    expect(prompts).toHaveLength(1)
+    expect(prompts[0]).toContain('· peer\n\n> ping')
+    expect(store.has('held:session-1')).toBe(false)
+  })
+
   test('a message kept while DND ends is delivered, not left behind', async ($, on) => {
     const { clock, prompts } = host(on)
     await $.command.run({ command: 'dnd', args: '', ...RUN })
@@ -209,6 +244,22 @@ describe('dnd', () => {
     expect(prompts).toHaveLength(1)
     expect(prompts[0]).toContain('· peer\n\n> before the clear')
     expect(prompts[0]).toContain('· peer\n\n> after the clear')
+  })
+
+  test('only the session a /clear starts takes over the cleared list', async ($, on) => {
+    const { clock, prompts, session, store } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.prompt.submit(prompt('peer', 'before the clear'))
+    await $.session.end({ reason: 'clear', sessionId: 'session-1', resume: { id: 'session-1' } })
+    session.id = 'session-3'
+    await $.classic.SessionStart({ source: 'resume' })
+    expect(store.has('held:session-1')).toBe(true)
+    session.id = 'session-2'
+    await $.classic.SessionStart({ source: 'clear' })
+    await clock.settle()
+    expect(store.has('held:session-1')).toBe(false)
+    expect(store.get('held:session-2')).toEqual({ until: expect.any(Number), held: [expect.objectContaining({ text: 'before the clear' })] })
+    expect(prompts).toEqual([])
   })
 
   test('a session that lost its state takes the end of DND back from the store', async ($, on) => {

@@ -17,6 +17,13 @@ let timer: Timer | undefined
 let clearedKey: string | undefined
 // Store writes, run one at a time.
 let writes: Promise<unknown> = Promise.resolve()
+// The lists of summaries on their way into the session; the store keeps them until they entered.
+let sending: (readonly Held[])[] = []
+
+// A stored message whose summary is on its way already: kept there for a reload, not delivered twice.
+function isSending(item: Held) {
+  return sending.some(list => list.some(held => held.from === item.from && held.at === item.at && held.text === item.text))
+}
 
 async function storeKey($: EngineInterface) {
   return `held:${await $.session.id()}`
@@ -32,21 +39,26 @@ function storedState(stored: unknown): Dnd | undefined {
 }
 
 // Takes the end and the held list back from the store, so DND outlives /clear and a reload.
-async function load($: EngineInterface) {
+// Only the session a /clear starts (`afterClear`) takes over the list the cleared one left.
+async function load($: EngineInterface, afterClear = false) {
   const key = await storeKey($)
-  const keys = clearedKey === undefined || clearedKey === key ? [key] : [clearedKey, key]
-  clearedKey = undefined
+  const cleared = afterClear ? clearedKey : undefined
+  const keys = cleared === undefined || cleared === key ? [key] : [cleared, key]
+  if (afterClear) {
+    clearedKey = undefined
+  }
   for (const from of keys) {
     const stored = storedState(await $.store.get(from))
     if (stored !== undefined) {
-      await update($, dnd, state => ({ until: state.until ?? stored.until ?? null, held: stored.held.reduce(hold, state.held) }))
+      const held = stored.held.filter(item => !isSending(item))
+      await update($, dnd, state => ({ until: state.until ?? stored.until ?? null, held: held.reduce(hold, state.held) }))
     }
   }
   await persist($)
   if (keys[0] !== key) {
     await $.store.delete(keys[0] ?? key)
   }
-  // A list that comes back without an end, as an older version stored it, is delivered now.
+  // A list that comes back without an end (an older version's, or a summary a reload cut off) is delivered now.
   const { until, held } = await read($, dnd)
   if (until === null && held.length > 0) {
     await release($, null)
@@ -58,11 +70,13 @@ async function load($: EngineInterface) {
 }
 
 // Writes the state as it is when its turn comes, so a write from before a later change never lands last.
+// A summary still on its way stays in the store with it: a reload before it entered delivers it on load.
 async function persist($: EngineInterface) {
   const write = writes.then(async () => {
     const key = await storeKey($)
     const state = await read($, dnd)
-    await (state.until === null && state.held.length === 0 ? $.store.delete(key) : $.store.set(key, state))
+    const held = sending.flat().reduce(hold, state.held)
+    await (state.until === null && held.length === 0 ? $.store.delete(key) : $.store.set(key, { ...state, held }))
   })
   writes = write.catch(() => undefined)
   await write
@@ -114,15 +128,34 @@ async function release($: EngineInterface, end?: number | null): Promise<number 
   if (list === undefined) {
     return undefined
   }
+  const batch = list
+  if (batch.length > 0) {
+    sending = [...sending, batch]
+  }
   await persist($)
   await showStatus($)
-  if (list.length > 0) {
-    const text = batchText(list, localZones(await $.env.get('TZ')))
+  if (batch.length > 0) {
+    const text = batchText(batch, localZones(await $.env.get('TZ')))
     // Never submitted from the hook itself: a command.run hook holds the turn the submit waits for.
-    $.clock.after(0, () => $.prompt.submit({ text }))
+    $.clock.after(0, () => deliver($, text, batch))
   }
 
-  return list.length
+  return batch.length
+}
+
+// Submits a release's summary; once it entered, its messages leave the store. A refused one puts
+// them back among the held messages (DND stays off), for /dnd off or the next load to deliver.
+async function deliver($: EngineInterface, text: string, batch: readonly Held[]) {
+  const entered = await $.prompt.submit({ text }).then(
+    result => result.drop === undefined,
+    () => false,
+  )
+  sending = sending.filter(list => list !== batch)
+  if (!entered) {
+    await update($, dnd, state => ({ ...state, held: batch.reduce(hold, state.held) }))
+    $.ui.toast(`DND: the summary was refused, ${messages(batch.length)} kept; /dnd off delivers them`)
+  }
+  await persist($)
 }
 
 // Confirms a release that ran; one that found DND already ended says nothing, so two at once toast once.
@@ -202,7 +235,7 @@ export const register: Register = on => {
 
   on('classic.SessionStart', async ($, e, next) => {
     if (e.source === 'clear' || e.source === 'resume' || e.source === 'fork') {
-      await load($)
+      await load($, e.source === 'clear')
     }
 
     return next(e)

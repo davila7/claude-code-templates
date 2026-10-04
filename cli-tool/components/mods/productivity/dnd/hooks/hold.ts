@@ -6,7 +6,7 @@ const FROM_NAME = /^<[\w-]+[^>\n]*\bfrom-name="([^"]+)"/
 const TASK_ID = /<task-id>([^<]+)<\/task-id>/
 
 // Adds a message to the held list; an earlier copy with the same sender and
-// text is replaced, so a ticking clock or a polling monitor is summed up once.
+// text is replaced, so a message repeated word for word is summed up once.
 export function hold(list: readonly Held[], item: Held): Held[] {
   return [...list.filter(held => held.from !== item.from || held.text !== item.text), item]
 }
@@ -57,7 +57,8 @@ function quoted(text: string): string {
 
 // The one message that delivers everything held, each item with its sender and time.
 export function batchText(list: readonly Held[], zones: readonly string[] = []): string {
-  const items = list.map(held => `### ${clock(held.at, zones)} · ${oneLine(held.from)}\n\n${quoted(held.text)}`)
+  // Sorted by arrival: a list taken over on /clear is joined after the new session's own.
+  const items = [...list].sort((a, b) => a.at - b.at).map(held => `### ${clock(held.at, zones)} · ${oneLine(held.from)}\n\n${quoted(held.text)}`)
 
   return [
     `While the operator had Do Not Disturb on, ${list.length} message(s) were held back. ` +
