@@ -69,17 +69,17 @@ async function readTodo($: EngineInterface, path: string): Promise<TodoLines | u
   }
 }
 
+// A file left alone shows no tasks, never the ones read before it became unreadable.
 async function load($: EngineInterface) {
   const current = await readTodo($, await pathOf($))
-  if (current !== undefined) {
-    await update($, lines, () => current)
-  }
+  await update($, lines, () => (current === undefined ? false : current))
 }
 
 async function applySave($: EngineInterface, change: (current: TodoLines) => string[] | undefined) {
   const path = await pathOf($)
   const current = await readTodo($, path)
   if (current === undefined) {
+    await update($, lines, () => false as const)
     return
   }
   const next = change(current)
@@ -164,7 +164,7 @@ export const register: Register = (on, options) => {
     }
     const { Box, Button } = $.ui.resolve(e)
     const current = await read($, lines)
-    const label = current === null ? '📝 todo' : `📝 todo (${openCount(current)})`
+    const label = Array.isArray(current) ? `📝 todo (${openCount(current)})` : '📝 todo'
 
     return (
       <Box flexDirection="column">
@@ -187,12 +187,13 @@ export const register: Register = (on, options) => {
     // Mobile draws no Input: there the pane toggles and deletes, and shows the text.
     const Input = 'Input' in elements ? elements.Input : undefined
     const current = await read($, lines)
-    const raws = current ?? []
+    const raws = current || []
 
     return (
       <Box flexDirection="column">
         {current === null && <Text dimColor>No todo.md yet: the first task creates it.</Text>}
-        {parse(current ?? []).map(line =>
+        {current === false && <Text dimColor>todo.md is left alone: a symbolic link, or it cannot be read.</Text>}
+        {parse(raws).map(line =>
           line.kind === 'task' ? (
             <Box key={`row${line.index}`} flexDirection="row">
               <Button

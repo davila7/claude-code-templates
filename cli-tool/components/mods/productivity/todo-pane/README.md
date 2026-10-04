@@ -109,7 +109,10 @@ the same way as in the terminal.
   nothing and says so.
 - **A symbolic link is left alone.** When `todo.md` is a link, the pane does
   not read or write it (a write would land wherever the link points) and says
-  so in a toast.
+  so in a toast. Like a file that cannot be read, it shows no tasks and the
+  band no count. The check runs just before each read; the engine's
+  `$.fs.write` has no no-follow mode, so a link swapped in between that check
+  and the write is not caught.
 
 ## Install
 
@@ -121,7 +124,7 @@ Hooks: `session.start` (registers `/todo`), `classic.SessionStart`,
 `tool.call`, `command.run`, `ui.render` on `AbovePrompt` and on its `Pane`.
 Calls: `$.command.register`, `$.fs.read`, `$.fs.write`, `$.fs.exists`, `$.fs.stat`, `$.session.cwd`,
 `$.process.run` (`git rev-parse --show-toplevel`, argv, no shell),
-`$.ui.open`, `$.ui.close`, `$.ui.panes`, `$.ui.toast`. No network. The only
+`$.ui.open`, `$.ui.close`, `$.ui.panes`, `$.ui.resolve`, `$.ui.toast`. No network. The only
 file it writes is `<repo root>/todo.md`.
 
 Tests: `claude plugin test productivity/todo-pane` cover the todo.md parsing

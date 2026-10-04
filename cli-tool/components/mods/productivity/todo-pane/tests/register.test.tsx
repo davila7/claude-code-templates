@@ -229,4 +229,21 @@ describe('todo-pane', () => {
     expect(files.get(PATH)).toBe('- [ ] a\n')
     expect(toasts).toContain('todo-pane: todo.md is a symbolic link, left alone')
   })
+
+  test('a todo.md that becomes a symbolic link shows none of the tasks read before', async ($, on) => {
+    const { links } = host(on, '- [ ] a\n')
+    await $.classic.SessionStart({ source: 'clear' })
+    links.add(PATH)
+    await $.command.run({
+      command: 'todo',
+      args: '',
+      origin: { kind: 'composer' },
+      presentation: { isFullscreen: true, columns: 120 },
+    })
+    const band = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...BAND })
+    expect((await band.find({ key: 'todo' }))?.text).toBe('📝 todo')
+    const pane = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
+    expect(await pane.find({ key: 'toggle0' })).toBeUndefined()
+    expect(await pane.find({ type: 'Text', text: /left alone/ })).toBeDefined()
+  })
 })

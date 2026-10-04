@@ -43,6 +43,8 @@ describe('todo-file', () => {
     expect(setText(lines, 4, 'call dad')[4]).toBe('* [ ] call dad')
     expect(changedAt(setText(lines, 4, 'call dad'))).toEqual([4])
     expect(setText(lines, 7, 'filled')[7]).toBe('- [ ] filled')
+    expect(setText(lines, 2, '')[2]).toBe('- [ ]')
+    expect(toggle(toLines('- [ ] \n'), 0)[0]).toBe('- [x] ')
 
     expect(remove(lines, 3)).toEqual([...lines.slice(0, 3), ...lines.slice(4)])
   })
@@ -54,5 +56,7 @@ describe('todo-file', () => {
     expect(toFile(add(toLines(''), 'first'))).toBe('- [ ] first\n')
     expect(toFile(add(toLines('a\r\n'), 'b'))).toBe('a\r\n- [ ] b\r\n')
     expect(toFile(add(toLines('a\r\n- [ ] b'), 'c'))).toBe('a\r\n- [ ] b\r\n- [ ] c')
+    expect(toFile(add(toLines('# Todo\n- [ ] a\r\n'), 'b'))).toBe('# Todo\n- [ ] a\r\n- [ ] b\r\n')
+    expect(toFile(add(toLines('# Todo\n- [ ] a\r\n- [ ] b'), 'c'))).toBe('# Todo\n- [ ] a\r\n- [ ] b\r\n- [ ] c')
   })
 })

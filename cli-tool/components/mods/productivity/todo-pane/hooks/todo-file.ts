@@ -38,8 +38,10 @@ const withTask = (raw: string, change: (isDone: boolean, text: string) => [boole
     return raw
   }
   const [isDone, text] = change(match[2] !== ' ', match[4] ?? '')
+  // The text after "] ", nothing once it is cleared; a bare "- [ ] " keeps its space byte for byte.
+  const tail = text !== '' ? ` ${text}` : match[4] === '' ? ' ' : ''
 
-  return `${match[1]}${isDone ? 'x' : ' '}]${text === '' && match[3] === undefined ? '' : ` ${text}`}${cr}`
+  return `${match[1]}${isDone ? 'x' : ' '}]${tail}${cr}`
 }
 
 export const toggle = (lines: readonly string[], index: number): string[] =>
@@ -52,12 +54,13 @@ export const remove = (lines: readonly string[], index: number): string[] =>
   lines.filter((_, i) => i !== index)
 
 // Appended after the last non-empty line, so a trailing newline stays the file's last byte.
-// A file written with "\r\n" gets the new line in "\r\n" too.
+// The new line ends as the last line that has an ending does ("\r\n" or "\n"), so a file
+// whose header and tasks differ gets it in the tasks' style.
 export const add = (lines: readonly string[] | null, text: string): string[] => {
   if (lines === null || (lines.length === 1 && lines[0] === '')) {
     return [`- [ ] ${text}`, '']
   }
-  const cr = lines.length > 1 ? splitCr(lines[0] ?? '').cr : ''
+  const cr = lines.length > 1 ? splitCr(lines[lines.length - 2] ?? '').cr : ''
   if (lines[lines.length - 1] === '') {
     return [...lines.slice(0, -1), `- [ ] ${text}${cr}`, '']
   }
