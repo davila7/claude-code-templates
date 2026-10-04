@@ -287,7 +287,8 @@ export const register: Register = (on, options) => {
     const { last, advice, left } = current(policy, Date.now())
     if (!last && advice.kind !== 'off') return next(e)
     const { Box, Text } = $.ui.resolve(e)
-    const columns = e.viewport?.columns ?? 100
+    // the band is the transcript column, narrower than the viewport while a Pane is docked
+    const columns = e.props.bodyColumns ?? e.viewport?.columns ?? 100
     const color = COLOR[advice.kind]
     // the band is shared: what the mods after this one draw goes under this row instead of being replaced
     const rest = await next(e)

@@ -217,8 +217,11 @@ describe('the band', () => {
     await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
     await step($)
     const ui = await band($)
-    expect(await ui.find({ type: 'Text', text: /98%/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: 'drawn after this mod' })).toBeDefined()
+    // the later drawing goes under the meter's row, not above it
+    const shown = (await ui.findAll({ type: 'Text' })).map(t => t.text)
+    const meter = shown.findIndex(t => t.includes('98%'))
+    const later = shown.indexOf('drawn after this mod')
+    expect(meter >= 0 && later > meter).toBe(true)
     await ui.unmount()
   })
 
@@ -292,14 +295,14 @@ describe('the band', () => {
 })
 
 describe('the shared band', () => {
-  test('nothing, empty text and empty boxes are blank; a text, a filled box or an engine drawing is not', () => {
+  test('only nothing and empty strings are blank; any element is a drawing, even an empty one', () => {
     expect(isBlank(undefined)).toBe(true)
     expect(isBlank(null)).toBe(true)
     expect(isBlank('')).toBe(true)
-    expect(isBlank({ type: 'Box', props: {}, children: [] })).toBe(true)
-    expect(isBlank({ type: 'Box', props: { children: [{ type: 'Text', props: {}, children: [' '] }] } })).toBe(true)
+    expect(isBlank([null, ' '])).toBe(true)
     expect(isBlank({ type: 'Text', props: {}, children: ['repo#12 clean'] })).toBe(false)
-    expect(isBlank({ type: 'Box', props: { backgroundColor: 'green', width: 4 }, children: [] })).toBe(false)
+    expect(isBlank({ type: 'Text', props: { backgroundColor: 'red' }, children: [' '] })).toBe(false)
+    expect(isBlank({ type: 'Box', props: { height: 1 } })).toBe(false)
     expect(isBlank({ type: 'engine', ref: 1 })).toBe(false)
   })
 })

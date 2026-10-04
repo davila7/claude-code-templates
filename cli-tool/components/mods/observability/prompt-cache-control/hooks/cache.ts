@@ -317,19 +317,13 @@ export function observeTtl(prev: Sample | undefined, cur: Sample, known: Ttl | u
 }
 
 /**
- * Nothing to show: what the band's `next` gave back when no mod after this one
- * drew anything. Nothing at all, empty text, or boxes and texts holding only
- * those. A box with a background or a border draws even when empty, and an
- * engine reference or any other element counts as a drawing too.
+ * Nothing at all: what the band's `next` gave back when no mod after this one
+ * drew. Any element counts as a drawing, even an empty one, since it can
+ * reserve space or carry a background.
  */
 export function isBlank(node: unknown): boolean {
-  if (node == null || node === false || node === '') return true
-  if (Array.isArray(node)) return node.every(isBlank)
+  if (node == null || node === false) return true
   if (typeof node === 'string') return node.trim() === ''
-  if (typeof node === 'object') {
-    const el = node as { type?: unknown; children?: unknown; props?: { children?: unknown; backgroundColor?: unknown; borderStyle?: unknown } }
-    if (el.type === 'Box' && (el.props?.backgroundColor || el.props?.borderStyle)) return false
-    if (el.type === 'Box' || el.type === 'Text') return isBlank(el.children ?? el.props?.children)
-  }
+  if (Array.isArray(node)) return node.every(isBlank)
   return false
 }
