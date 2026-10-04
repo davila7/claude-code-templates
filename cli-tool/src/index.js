@@ -1708,12 +1708,11 @@ function parseLoopReferencedComponents(loopContent) {
  * every component it references (agents, skills, hooks, commands, settings, mcps).
  */
 /**
- * Install a Claude Mod (EARLY ACCESS) as a local Claude Code plugin.
+ * Install a Claude Mod as a local Claude Code plugin.
  *
  * A mod is a plugin whose behaviour lives in a function-hooks module
  * (https://github.com/anthropics/claude-code/tree/main/mods). It loads in
- * Claude Code >= 2.1.259 with CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; the API is
- * early access and may change between releases.
+ * Claude Code >= 2.1.287, where mods are on by default.
  *
  * The catalog stores each mod as a complete plugin directory, exactly
  * Anthropic's layout: cli-tool/components/mods/{category}/{name}/ holds
@@ -1726,7 +1725,6 @@ function parseLoopReferencedComponents(loopContent) {
  */
 async function installIndividualMod(modName, targetDir, options = {}) {
   console.log(chalk.blue(`ƒ  Installing mod: ${modName}`));
-  console.log(chalk.yellow('⚠️  Early access: mods need CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259); the API may change between releases.'));
   const startTime = Date.now();
 
   try {
@@ -1803,15 +1801,14 @@ async function installIndividualMod(modName, targetDir, options = {}) {
     console.log(chalk.cyan(`📁 Installed to: ${relPluginDir}/  (${Object.keys(downloadedFiles).length} files)`));
     console.log(chalk.gray(`   hooks/hooks.json  ->  { "modules": ${JSON.stringify(modules)} }`));
     console.log(chalk.blue(`\n🧪 Claude Code loads it as "${manifest.name || baseName}@skills-dir" on the next session (after the workspace trust prompt).`));
-    console.log(chalk.gray('   Mods need the function-hooks flag (Claude Code >= 2.1.259):'));
-    console.log(chalk.white(`   CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`));
+    console.log(chalk.gray('   Mods are on by default in Claude Code >= 2.1.287.'));
     console.log(chalk.gray(`   Or load it for one session with hot reload: claude --plugin-dir ${relPluginDir}`));
     console.log(chalk.gray(`   Validate / test it: claude plugin validate ${relPluginDir}  ·  claude plugin test ${relPluginDir}`));
     if (userConfig) {
       console.log(chalk.gray(`   Options (${Object.keys(userConfig).join(', ')}): set them in /config, or in ~/.claude/settings.json (user, not project):`));
       console.log(chalk.gray(`   { "pluginConfigs": { "${manifest.name || baseName}@skills-dir": { "options": { ... } } } }`));
     }
-    console.log(chalk.gray('   Early access: the $ API may change between releases. Reference: https://github.com/anthropics/claude-code/tree/main/mods\n'));
+    console.log(chalk.gray('   Reference: https://code.claude.com/docs/en/plugins/mods/overview\n'));
 
     trackingService.trackDownload('mod', modName, {
       installation_type: 'individual_mod',
@@ -1991,7 +1988,7 @@ async function installMultipleComponents(options, targetDir) {
     console.log(chalk.gray(`   Skills: ${components.skills.length}`));
     console.log(chalk.gray(`   Loops: ${components.loops.length}`));
     if (components.mods.length > 0) {
-      console.log(chalk.gray(`   Mods (early access): ${components.mods.length}`));
+      console.log(chalk.gray(`   Mods: ${components.mods.length}`));
     }
 
     // Counter for successfully installed components
@@ -2104,7 +2101,7 @@ async function installMultipleComponents(options, targetDir) {
       if (loopSuccess) successfullyInstalled++;
     }
 
-    // Install mods (early access: local plugin with a TypeScript hooks-module)
+    // Install mods (local plugin with a TypeScript hooks-module)
     for (const mod of components.mods) {
       console.log(chalk.gray(`   Installing mod: ${mod}`));
       const modSuccess = await installIndividualMod(mod, targetDir, { ...options, silent: true, batchId });

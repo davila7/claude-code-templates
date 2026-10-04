@@ -1,5 +1,5 @@
 /**
- * webfetch-cache — Claude Mod (EARLY ACCESS)
+ * webfetch-cache — Claude Mod
  *
  * Short-circuits repeated WebFetch calls for the same URL + prompt within a
  * session. On a cache hit the hook answers `{ result }` itself without calling
@@ -10,7 +10,7 @@
  * number names the messages core produced for one specific call and must not
  * be replayed on another.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

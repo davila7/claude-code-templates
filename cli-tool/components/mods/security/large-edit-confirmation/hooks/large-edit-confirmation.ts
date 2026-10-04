@@ -1,5 +1,5 @@
 /**
- * large-edit-confirmation — Claude Mod (EARLY ACCESS)
+ * large-edit-confirmation — Claude Mod
  *
  * Asks the user, in the engine's own AskUserQuestion dialog, before Claude
  * edits or overwrites a file larger than a configurable number of lines.
@@ -9,7 +9,7 @@
  * `$.ui.ask` rejects in a headless (`claude -p`) run, where nobody can answer;
  * the `headless` option decides what happens then (deny by default).
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

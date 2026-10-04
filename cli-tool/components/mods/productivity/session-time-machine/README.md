@@ -1,7 +1,6 @@
 # session-time-machine
 
-> **Early access.** Claude Mods load in Claude Code >= 2.1.259 with
-> `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases.
+> **Requirements.** Mods are on by default in Claude Code 2.1.287+.
 
 `/timemachine` draws the session as a timeline: every prompt, tool call and
 turn end, read from the session's own transcript. Press a point, type what
@@ -121,7 +120,7 @@ Hooks: `session.start` (registers `/timemachine`), `command.run`,
 `$.env.get` (`HOME`, `CLAUDE_CONFIG_DIR`), `$.session.cwd`, `$.session.id`,
 `$.prompt.fill`, `$.ui.copy`. No network, no process spawn.
 
-Tests: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test productivity/session-time-machine`
+Tests: `claude plugin test productivity/session-time-machine`
 cover the transcript parsing, the cut points, the tool-pair closing, the
 resume command, and mount the pane on the terminal and desktop surfaces to
 press a point.

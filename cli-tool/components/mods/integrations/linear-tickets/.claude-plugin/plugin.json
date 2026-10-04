@@ -1,7 +1,7 @@
 {
   "name": "linear-tickets",
   "version": "0.1.0",
-  "description": "Your Linear tickets in a side pane, with their status and a chart of how you are progressing: tickets grouped by state (in progress, todo, backlog, done), a stacked status bar, a bar chart of tickets closed per day over the last two weeks and, when your tickets sit in a cycle, that cycle's scope and completed burn-up. Read-only; it polls Linear's GraphQL API. /linear opens it. Needs function hooks (early access) and a Linear API key.",
+  "description": "Your Linear tickets in a side pane, with their status and a chart of how you are progressing: tickets grouped by state (in progress, todo, backlog, done), a stacked status bar, a bar chart of tickets closed per day over the last two weeks and, when your tickets sit in a cycle, that cycle's scope and completed burn-up. Read-only; it polls Linear's GraphQL API. /linear opens it. Needs a Linear API key.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"

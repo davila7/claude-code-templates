@@ -1,5 +1,5 @@
 /**
- * secret-redactor — Claude Mod (EARLY ACCESS)
+ * secret-redactor — Claude Mod
  *
  * Replaces credential-shaped strings in every tool result before the model
  * reads it, and refuses to echo a redacted placeholder back into a Bash
@@ -12,7 +12,7 @@
  * Seat it as low as possible (an org appends it in managed settings) so no
  * plugin above ever sees the raw value on the way up.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

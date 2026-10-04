@@ -21,10 +21,10 @@
     <line x1="1000" y1="0" x2="1000" y2="630"/>
   </g>
 
-  <!-- Experimental badge -->
+  <!-- Badge -->
   <g transform="translate(60, 30)">
     <rect width="160" height="30" rx="15" fill="#1a1400" stroke="#f59e0b" stroke-width="1.5"/>
-    <text x="80" y="20" text-anchor="middle" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#f59e0b">EXPERIMENTAL</text>
+    <text x="80" y="20" text-anchor="middle" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#f59e0b">CLAUDE MODS</text>
   </g>
 
   <!-- LEFT: Claude Code terminal -->

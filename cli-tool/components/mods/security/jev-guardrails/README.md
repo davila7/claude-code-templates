@@ -95,7 +95,7 @@ It also keeps a one-line status on screen, replaced as it goes: `guard · in: pa
 
 1. **You ran `claude -p` (or the SDK).** A headless run has no transcript and no status row: every line still goes to the debug log, `~/.claude/debug/<session-id>.txt` (`latest` is a symlink to the newest), and an SDK host receives each one as `ui_log`.
 2. **The plugin was never loaded.** Claude Code adopts a plugin from a project's `.claude/skills/` (where `--mod` writes it) only once the project is trusted: an untrusted folder's `.claude/` is not read at all, and `claude -p` never asks. Open `claude` interactively in the folder and accept the trust prompt, or name the plugin with `--plugin-dir` (see Install). `claude --debug` settles it: a loaded module prints `hooks module jev-guardrails@skills-dir loaded (worker, …); events: prompt.submit,turn.step`.
-3. **Function hooks are off.** Without `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` the debug log says `installed plugins' hooks modules not loaded: rollout flag (tengu_plugin_hooks_modules) is off`. Set the flag; Claude Code must be 2.1.259+.
+3. **Claude Code is too old.** Mods are on by default from 2.1.287; on an older build the debug log says `installed plugins' hooks modules not loaded: rollout flag (tengu_plugin_hooks_modules) is off`. Update Claude Code.
 
 A `ready on the built-in classifier, no key set` line when you did set a key means the key sits under the wrong `pluginConfigs` entry (see Options).
 
@@ -140,7 +140,7 @@ To point the batteries at your own product, edit `INPUT_BATTERY` and `OUTPUT_BAT
 
 ```sh
 npx claude-code-templates@latest --mod security/jev-guardrails
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
 `--mod` writes the plugin to `.claude/skills/jev-guardrails/` in the project, and Claude Code auto-loads it as `jev-guardrails@skills-dir` **in a trusted project**: a folder's `.claude/` is repository content and is not read until you accept the trust prompt on the first interactive `claude` there (`-p` never asks). The options then go under the `"jev-guardrails@skills-dir"` key in `pluginConfigs`.
@@ -148,7 +148,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 For one session with hot reload, or in a folder you do not want to trust, name it on the command line instead — it loads as `jev-guardrails@inline` and reads options from the `"jev-guardrails"` key:
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-guardrails
+claude --plugin-dir .claude/skills/jev-guardrails
 ```
 
 Either way, `claude plugin validate .claude/skills/jev-guardrails` prints every event it hooks and every `$` call it makes.
@@ -161,6 +161,6 @@ bun test cli-tool/components/mods/security/jev-guardrails/tests
 
 The tests replay the cookbook's published rows (`melatonin_dose` → review, `dosage_request` → block by severity, `self_harm` → support, `novelist_poison` → pass, `neurosemantical` → block under strict and review under permissive) against `route()`, and read both wire shapes.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
 A mod runs without `node_modules`, so neither `typesafe-sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape (a `noul` with `criteria: { true, false }`, a `score` with a criteria list) follows the cookbook's `Noul`/`NoulCriteria`/`Score` as `typesafe-sdk` 0.5.7 serialises them; the Gateway's, which is `experimental` in the AI SDK and not documented publicly, was read from `@ai-sdk/gateway` v4.0.87 and `@ai-sdk/provider` v4.0.17. Either may change.

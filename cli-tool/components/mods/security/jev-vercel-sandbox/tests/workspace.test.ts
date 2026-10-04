@@ -1,4 +1,4 @@
-// Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test security/jev-vercel-sandbox
+// Run with: claude plugin test security/jev-vercel-sandbox
 import { describe, expect, test } from 'claude-code/testing'
 import { describeChanges, filesToUpload, folderName, isExcluded, isGitRef, isGitUrl, nulList, patchTargets, readChanges, readReport, relativeCwd, uploadBatches } from '../hooks/workspace.ts'
 

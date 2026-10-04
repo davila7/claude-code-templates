@@ -1,5 +1,5 @@
 /**
- * npm-to-pnpm-rewriter — Claude Mod (EARLY ACCESS)
+ * npm-to-pnpm-rewriter — Claude Mod
  *
  * Rewrites npm / npx invocations to the package manager your project uses
  * (pnpm by default, yarn or bun via options). The "modifying" placement: the
@@ -7,7 +7,7 @@
  * tells the model what ran through `context` (the model's own tool_use block
  * keeps the command it wrote, for prompt-cache stability).
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

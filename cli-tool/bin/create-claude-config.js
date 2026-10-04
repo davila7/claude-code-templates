@@ -39,7 +39,7 @@ program
   .option('--hook <hook>', 'install specific hook component (supports comma-separated values)')
   .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
   .option('--loop <loop>', 'install specific loop component and its referenced components (supports comma-separated values)')
-  .option('--mod <mod>', 'install specific Claude Mod (function-hooks plugin) as a local plugin (EARLY ACCESS: needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; supports comma-separated values)')
+  .option('--mod <mod>', 'install specific Claude Mod (function-hooks plugin) as a local plugin (supports comma-separated values)')
   .addOption(new Option('--function-hook <mod>', 'alias of --mod (kept for older docs)').hideHelp())
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation or in sandbox')

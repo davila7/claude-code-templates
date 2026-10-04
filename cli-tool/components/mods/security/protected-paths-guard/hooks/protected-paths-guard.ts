@@ -1,12 +1,12 @@
 /**
- * protected-paths-guard — Claude Mod (EARLY ACCESS)
+ * protected-paths-guard — Claude Mod
  *
  * Denies Edit / Write / NotebookEdit calls that target sensitive files
  * (.env, lockfiles, CI workflows, git internals, private keys) unless the path
  * is allowlisted. A `tool.call` hook under an array matcher (any of the named
  * tools); on a match it returns `{ deny }` without calling `next`.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

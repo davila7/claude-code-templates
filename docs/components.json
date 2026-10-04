@@ -46640,7 +46640,7 @@
       "path": "games/2048",
       "category": "games",
       "type": "mod",
-      "description": "2048 above the Claude Code prompt: slide and merge tiles up to 2048. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "2048 above the Claude Code prompt: slide and merge tiles up to 2048. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -46682,7 +46682,7 @@
       "path": "games/cc-arcade",
       "category": "games",
       "type": "mod",
-      "description": "Games above the Claude Code prompt (snake, Tetris, 2048, Minesweeper, Flappy, Pong, typing test, Space Invaders, Doom) plus a pet that grows as Claude tests, commits and edits. Clones of the genre, not affiliated with or endorsed by Tetris Holding, Taito, Atari or id Software. Needs function hooks (early access) and an interactive terminal.",
+      "description": "Games above the Claude Code prompt (snake, Tetris, 2048, Minesweeper, Flappy, Pong, typing test, Space Invaders, Doom) plus a pet that grows as Claude tests, commits and edits. Clones of the genre, not affiliated with or endorsed by Tetris Holding, Taito, Atari or id Software. Needs an interactive terminal.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -46754,7 +46754,7 @@
       "path": "games/chess",
       "category": "games",
       "type": "mod",
-      "description": "Play chess against Claude (or Jev, when a Jev key is set) in a side pane while you work. Click a piece and a square, or type a move; Claude answers through a fork of the session, Jev through TypeSafe's decision API, and the pane shows the tokens each move cost as the API reported them, and the running total. Docked beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+      "description": "Play chess against Claude (or Jev, when a Jev key is set) in a side pane while you work. Click a piece and a square, or type a move; Claude answers through a fork of the session, Jev through TypeSafe's decision API, and the pane shows the tokens each move cost as the API reported them, and the running total. Docked beside the transcript in the fullscreen layout, above the prompt otherwise.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -46886,7 +46886,7 @@
       "path": "games/diff-invaders",
       "category": "games",
       "type": "mod",
-      "description": "Space Invaders above the Claude Code prompt where every wave is the code Claude just wrote: each line an Edit or Write added becomes a row of the formation and every two characters one alien, so you shoot your own diff. Ship, one shot at a time, bombs, three lives, best score. Zero tokens. Needs function hooks (early access) and an interactive terminal.",
+      "description": "Space Invaders above the Claude Code prompt where every wave is the code Claude just wrote: each line an Edit or Write added becomes a row of the formation and every two characters one alien, so you shoot your own diff. Ship, one shot at a time, bombs, three lives, best score. Zero tokens. Needs an interactive terminal.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -46929,7 +46929,7 @@
       "path": "games/doom",
       "category": "games",
       "type": "mod",
-      "description": "Doom above the Claude Code prompt: a corridor shooter: imps, a shotgun, and the floor below. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Doom above the Claude Code prompt: a corridor shooter: imps, a shotgun, and the floor below. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -46971,7 +46971,7 @@
       "path": "games/flappy",
       "category": "games",
       "type": "mod",
-      "description": "Flappy above the Claude Code prompt: flap through the gaps in the pipes. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Flappy above the Claude Code prompt: flap through the gaps in the pipes. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47013,7 +47013,7 @@
       "path": "games/invaders",
       "category": "games",
       "type": "mod",
-      "description": "Space Invaders above the Claude Code prompt: shoot each wave before it lands. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Space Invaders above the Claude Code prompt: shoot each wave before it lands. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47055,7 +47055,7 @@
       "path": "games/minesweeper",
       "category": "games",
       "type": "mod",
-      "description": "Minesweeper above the Claude Code prompt: open every cell that is not a mine. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Minesweeper above the Claude Code prompt: open every cell that is not a mine. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47097,7 +47097,7 @@
       "path": "games/pacman",
       "category": "games",
       "type": "mod",
-      "description": "Pac-Man above the Claude Code prompt: a 19×15 maze, four ghosts that chase, scatter and flee, power pellets, three lives and faster levels. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. Needs function hooks (early access) and an interactive terminal.",
+      "description": "Pac-Man above the Claude Code prompt: a 19×15 maze, four ghosts that chase, scatter and flee, power pellets, three lives and faster levels. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. Needs an interactive terminal.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47139,7 +47139,7 @@
       "path": "games/pet",
       "category": "games",
       "type": "mod",
-      "description": "A virtual pet above the Claude Code prompt that grows as Claude works: passing tests, commits and edits grant XP and mood, failing tests cost mood, idling drains it; egg → baby → kid → adult → legend. Zero tokens. Split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal.",
+      "description": "A virtual pet above the Claude Code prompt that grows as Claude works: passing tests, commits and edits grant XP and mood, failing tests cost mood, idling drains it; egg → baby → kid → adult → legend. Zero tokens. Split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47178,7 +47178,7 @@
       "path": "games/pong",
       "category": "games",
       "type": "mod",
-      "description": "Pong above the Claude Code prompt: first to 5 against the computer. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Pong above the Claude Code prompt: first to 5 against the computer. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47220,7 +47220,7 @@
       "path": "games/snake",
       "category": "games",
       "type": "mod",
-      "description": "Snake above the Claude Code prompt: eat, grow, and keep off the walls and yourself. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Snake above the Claude Code prompt: eat, grow, and keep off the walls and yourself. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47262,7 +47262,7 @@
       "path": "games/tetris",
       "category": "games",
       "type": "mod",
-      "description": "Tetris above the Claude Code prompt: fit the falling pieces and clear lines. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Tetris above the Claude Code prompt: fit the falling pieces and clear lines. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47304,7 +47304,7 @@
       "path": "games/tool-defense",
       "category": "games",
       "type": "mod",
-      "description": "A tower defense above the Claude Code prompt where every enemy is one of Claude's real tool calls: Bash sends runners, an Edit or Write a slow tank, a web or MCP call a flyer, an Agent a boss. Build and upgrade towers by clicking beside the road, hold the base through Claude's turn. Zero tokens. Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "A tower defense above the Claude Code prompt where every enemy is one of Claude's real tool calls: Bash sends runners, an Edit or Write a slow tank, a web or MCP call a flyer, an Agent a boss. Build and upgrade towers by clicking beside the road, hold the base through Claude's turn. Zero tokens. Needs an interactive terminal with a mouse.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47347,7 +47347,7 @@
       "path": "games/typing-test",
       "category": "games",
       "type": "mod",
-      "description": "Typing test above the Claude Code prompt: retype a line of code as fast as you can. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+      "description": "Typing test above the Claude Code prompt: retype a line of code as fast as you can. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
       "author": "Seza Akgün",
       "repo": "https://github.com/sezaakgun/cc-arcade",
       "version": "0.2.0",
@@ -47389,7 +47389,7 @@
       "path": "integrations/linear-tickets",
       "category": "integrations",
       "type": "mod",
-      "description": "Your Linear tickets in a side pane, with their status and a chart of how you are progressing: tickets grouped by state (in progress, todo, backlog, done), a stacked status bar, a bar chart of tickets closed per day over the last two weeks and, when your tickets sit in a cycle, that cycle's scope and completed burn-up. Read-only; it polls Linear's GraphQL API. /linear opens it. Needs function hooks (early access) and a Linear API key.",
+      "description": "Your Linear tickets in a side pane, with their status and a chart of how you are progressing: tickets grouped by state (in progress, todo, backlog, done), a stacked status bar, a bar chart of tickets closed per day over the last two weeks and, when your tickets sit in a cycle, that cycle's scope and completed burn-up. Read-only; it polls Linear's GraphQL API. /linear opens it. Needs a Linear API key.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47483,7 +47483,7 @@
       "path": "integrations/neon-branch-per-session",
       "category": "integrations",
       "type": "mod",
-      "description": "A Neon database branch for each Claude Code session: created from your default (or chosen) branch when the session starts, handed to every command Claude runs as DATABASE_URL, and set to expire on its own (or deleted when the session ends). Claude can migrate, seed and break the branch without touching production data. /neon shows it, keeps it or deletes it. Needs function hooks (early access) and a Neon API key.",
+      "description": "A Neon database branch for each Claude Code session: created from your default (or chosen) branch when the session starts, handed to every command Claude runs as DATABASE_URL, and set to expire on its own (or deleted when the session ends). Claude can migrate, seed and break the branch without touching production data. /neon shows it, keeps it or deletes it. Needs a Neon API key.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47629,7 +47629,7 @@
       "path": "integrations/vercel-deploys",
       "category": "integrations",
       "type": "mod",
-      "description": "Your Vercel projects in a side pane: each connected site with the state of its latest deployment (building, ready, failed), the production domain, the Git commit behind it and whether the site answers right now. It polls Vercel's REST API (faster while something builds) and toasts when a deployment finishes or fails. /vercel opens it. Needs function hooks (early access) and a Vercel access token.",
+      "description": "Your Vercel projects in a side pane: each connected site with the state of its latest deployment (building, ready, failed), the production domain, the Git commit behind it and whether the site answers right now. It polls Vercel's REST API (faster while something builds) and toasts when a deployment finishes or fails. /vercel opens it. Needs a Vercel access token.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47777,7 +47777,7 @@
       "path": "observability/prompt-cache-control",
       "category": "observability",
       "type": "mod",
-      "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL follows Claude Code's own rules for your account (1 hour on a Claude subscription, 5 minutes on an API key, cloud provider or usage credits, plus the TTL variables and setting) and corrects itself from request timing. /cache opens a per-turn table. Needs function hooks (early access).",
+      "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL follows Claude Code's own rules for your account (1 hour on a Claude subscription, 5 minutes on an API key, cloud provider or usage credits, plus the TTL variables and setting) and corrects itself from request timing. /cache opens a per-turn table.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -48476,7 +48476,7 @@
       "path": "security/jev-auto-mode",
       "category": "security",
       "type": "mod",
-      "description": "A permission layer driven by a JSON policy: allow, ask or deny every tool call (Bash, edits, web, MCP, subagents, skills), every slash command or skill you type, and every skill preloaded into a subagent. Rules decide first (deny > ask > allow, compound Bash commands split); what no rule covers can go to TypeSafe's Jev, which judges the action against your latest request with thresholds you set. Claude can never edit the policy. Needs function hooks (early access).",
+      "description": "A permission layer driven by a JSON policy: allow, ask or deny every tool call (Bash, edits, web, MCP, subagents, skills), every slash command or skill you type, and every skill preloaded into a subagent. Rules decide first (deny > ask > allow, compound Bash commands split); what no rule covers can go to TypeSafe's Jev, which judges the action against your latest request with thresholds you set. Claude can never edit the policy.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -48737,7 +48737,7 @@
       "path": "security/jev-vercel-sandbox",
       "category": "security",
       "type": "mod",
-      "description": "A Vercel Sandbox Claude sends work to on purpose: long test runs in the background, someone else's repository, an installer of unknown origin, a bulk change to preview as a patch, a clean build. TypeSafe's Jev reads each Bash command and spots those jobs; by default you are asked whether it runs in the sandbox or locally (confirmSandbox), or it always goes to the sandbox with the question off. Claude also gets sandbox_run, sandbox_jobs, sandbox_result and sandbox_apply. Each job starts from the project as it is now (tracked files, credentials left out) in its own worktree, every result is marked remote, and a job's changes reach your disk only as a patch you apply after a question. /jev-vercel-sandbox starts it and opens a side pane with the jobs. Falls back to the engine's built-in classifier without a Jev key. Needs function hooks (early access).",
+      "description": "A Vercel Sandbox Claude sends work to on purpose: long test runs in the background, someone else's repository, an installer of unknown origin, a bulk change to preview as a patch, a clean build. TypeSafe's Jev reads each Bash command and spots those jobs; by default you are asked whether it runs in the sandbox or locally (confirmSandbox), or it always goes to the sandbox with the question off. Claude also gets sandbox_run, sandbox_jobs, sandbox_result and sandbox_apply. Each job starts from the project as it is now (tracked files, credentials left out) in its own worktree, every result is marked remote, and a job's changes reach your disk only as a patch you apply after a question. /jev-vercel-sandbox starts it and opens a side pane with the jobs. Falls back to the engine's built-in classifier without a Jev key.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.3.0",
@@ -49087,7 +49087,7 @@
       "path": "ui/agent-flow",
       "category": "ui",
       "type": "mod",
-      "description": "A side pane that draws the session's agent flow live: the main loop's context window, every subagent it spawns as a tree, and for each one the context handed down (its prompt, or the whole parent context for a fork), what it did with it (steps, tools, context size) and the answer it handed back up. Docked beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+      "description": "A side pane that draws the session's agent flow live: the main loop's context window, every subagent it spawns as a tree, and for each one the context handed down (its prompt, or the whole parent context for a fork), what it did with it (steps, tools, context size) and the answer it handed back up. Docked beside the transcript in the fullscreen layout, above the prompt otherwise.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -49146,7 +49146,7 @@
       "path": "ui/git-sidebar",
       "category": "ui",
       "type": "mod",
-      "description": "A lazygit-style side pane: every worktree of the repository and its local branches as rows you click. A worktree row moves the session there with /cd; a branch row shows its last commits and offers switch (clean tree only) or open worktree. Docked floor to ceiling beside the transcript in the fullscreen layout, above the prompt otherwise. Needs function hooks (early access).",
+      "description": "A lazygit-style side pane: every worktree of the repository and its local branches as rows you click. A worktree row moves the session there with /cd; a branch row shows its last commits and offers switch (clean tree only) or open worktree. Docked floor to ceiling beside the transcript in the fullscreen layout, above the prompt otherwise.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -49251,8 +49251,8 @@
       "language": "javascript-typescript",
       "description": "Angular-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/components.md",
-        ".claude/commands/services.md"
+        ".claude/commands/services.md",
+        ".claude/commands/components.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=angular-app --yes",
       "downloads": 0
@@ -49265,11 +49265,11 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".claude/commands/git-workflow.md",
-        ".claude/commands/project-setup.md",
-        ".mcp.json",
         "README.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".mcp.json",
+        ".claude/commands/project-setup.md",
+        ".claude/commands/git-workflow.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -49283,10 +49283,10 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
+        "CLAUDE.md",
         ".claude/commands/django-model.md",
         ".claude/commands/admin.md",
-        ".claude/commands/views.md",
-        "CLAUDE.md"
+        ".claude/commands/views.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -49300,12 +49300,12 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        ".claude/commands/database.md",
+        "CLAUDE.md",
         ".claude/commands/auth.md",
-        ".claude/commands/api-endpoints.md",
-        ".claude/commands/deployment.md",
         ".claude/commands/testing.md",
-        "CLAUDE.md"
+        ".claude/commands/database.md",
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/deployment.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -49319,13 +49319,13 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/app-factory.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/deployment.md",
+        "CLAUDE.md",
         ".claude/commands/testing.md",
+        ".claude/commands/flask-route.md",
+        ".claude/commands/database.md",
+        ".claude/commands/deployment.md",
         ".claude/commands/blueprint.md",
-        "CLAUDE.md"
+        ".claude/commands/app-factory.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -49338,8 +49338,8 @@
       "category": "languages",
       "description": "Go project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=go --yes",
       "downloads": 0
@@ -49352,17 +49352,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
+        "README.md",
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/refactor.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/api-endpoint.md",
         ".claude/commands/test.md",
+        ".claude/commands/api-endpoint.md",
+        ".claude/commands/npm-scripts.md",
         ".claude/commands/lint.md",
         ".claude/commands/debug.md",
-        ".claude/commands/npm-scripts.md",
-        ".mcp.json",
-        "README.md",
-        "CLAUDE.md"
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/refactor.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -49376,11 +49376,11 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
-        ".claude/commands/database.md",
+        "CLAUDE.md",
         ".claude/commands/api-endpoint.md",
+        ".claude/commands/database.md",
         ".claude/commands/route.md",
-        ".claude/commands/middleware.md",
-        "CLAUDE.md"
+        ".claude/commands/middleware.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -49393,11 +49393,11 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/test.md",
-        ".claude/commands/lint.md",
-        ".mcp.json",
-        "CLAUDE.md"
+        ".claude/commands/lint.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -49411,8 +49411,8 @@
       "language": "ruby",
       "description": "Rails-App with Ruby",
       "files": [
-        ".claude/commands/authentication.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/commands/authentication.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
@@ -49426,10 +49426,10 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
+        "CLAUDE.md",
         ".claude/commands/hooks.md",
         ".claude/commands/state-management.md",
-        ".claude/commands/component.md",
-        "CLAUDE.md"
+        ".claude/commands/component.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -49442,11 +49442,11 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/model.md",
-        ".claude/commands/test.md",
+        "CLAUDE.md",
         ".mcp.json",
-        "CLAUDE.md"
+        ".claude/settings.json",
+        ".claude/commands/test.md",
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
@@ -49459,8 +49459,8 @@
       "category": "languages",
       "description": "Rust project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rust --yes",
       "downloads": 0
@@ -49474,8 +49474,8 @@
       "language": "javascript-typescript",
       "description": "Vue-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/components.md",
-        ".claude/commands/composables.md"
+        ".claude/commands/composables.md",
+        ".claude/commands/components.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0
