@@ -43,6 +43,7 @@ import {
   fmtClock,
   fmtTokens,
   hitRatio,
+  isBlank,
   isCachingDisabled,
   accountOf,
   decideTtl,
@@ -288,12 +289,14 @@ export const register: Register = (on, options) => {
     const { Box, Text } = $.ui.resolve(e)
     const columns = e.viewport?.columns ?? 100
     const color = COLOR[advice.kind]
+    // the band is shared: what the mods after this one draw goes under this row instead of being replaced
+    const rest = await next(e)
 
-    if (!last) return <Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>
-
-    const ratio = hitRatio(last)
+    const ratio = last ? hitRatio(last) : 0
     const wide = columns >= 90
-    return (
+    const row = !last ? (
+      <Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>
+    ) : (
       <Box flexDirection="row" columnGap={1}>
         <Text bold color={color}>{advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'off' || advice.kind === 'cold' || advice.kind === 'uncached' ? '○' : '✖'}</Text>
         <Text bold color="cyan">cache</Text>
@@ -312,6 +315,12 @@ export const register: Register = (on, options) => {
           <Text bold color={left > 0 ? lifeColor(left, ttl, policy.warnMs) : 'red'}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
+      </Box>
+    )
+    return isBlank(rest) ? row : (
+      <Box flexDirection="column">
+        {row}
+        {rest}
       </Box>
     )
   })

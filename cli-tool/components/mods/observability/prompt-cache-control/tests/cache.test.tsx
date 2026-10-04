@@ -13,6 +13,7 @@ import {
   fmtClock,
   fmtTokens,
   hitRatio,
+  isBlank,
   isCachingDisabled,
   missReason,
   remainingMs,
@@ -167,6 +168,8 @@ function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = {
     calls.status.push((e as { text?: string }).text)
     return { value: undefined }
   })
+  // stands for what the mods after this one draw in the band
+  on('ui.render', () => ({ type: 'Text', props: {}, children: ['drawn after this mod'] }) as never)
   on('turn.step', async function* ($, e) {
     return {
       turnId: e.turnId,
@@ -206,6 +209,17 @@ describe('the band', () => {
     expect(await ui.find({ type: 'Text', text: /5m · warm/ })).toBeDefined()
     await ui.unmount()
     expect(calls.status.at(-1)).toMatch(/^cache 98% · [45]:\d\d$/)
+  })
+
+  test('keeps what the mods after it draw under its row', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, {}, calls)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /98%/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'drawn after this mod' })).toBeDefined()
+    await ui.unmount()
   })
 
   test('a subagent request is not the main loop and leaves the meter alone', { options: { status: true } }, async ($, on) => {
@@ -274,6 +288,19 @@ describe('the band', () => {
     const after = await band($)
     expect(await after.find({ type: 'Text', text: /⏱/ })).toBeUndefined()
     await after.unmount()
+  })
+})
+
+describe('the shared band', () => {
+  test('nothing, empty text and empty boxes are blank; a text, a filled box or an engine drawing is not', () => {
+    expect(isBlank(undefined)).toBe(true)
+    expect(isBlank(null)).toBe(true)
+    expect(isBlank('')).toBe(true)
+    expect(isBlank({ type: 'Box', props: {}, children: [] })).toBe(true)
+    expect(isBlank({ type: 'Box', props: { children: [{ type: 'Text', props: {}, children: [' '] }] } })).toBe(true)
+    expect(isBlank({ type: 'Text', props: {}, children: ['repo#12 clean'] })).toBe(false)
+    expect(isBlank({ type: 'Box', props: { backgroundColor: 'green', width: 4 }, children: [] })).toBe(false)
+    expect(isBlank({ type: 'engine', ref: 1 })).toBe(false)
   })
 })
 
