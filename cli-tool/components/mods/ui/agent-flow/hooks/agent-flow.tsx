@@ -285,7 +285,9 @@ export const register: Register = (on, options) => {
     const main = flow.nodes.get(MAIN)!
     const tree = rows(flow)
     const c = counts(flow)
-    const chosen = selected ? flow.nodes.get(selected) : undefined
+    // only a drawn agent has a detail: an unlisted loop leaves the tree with the child that held it
+    const drawn = selected === MAIN || tree.some(r => r.node.id === selected)
+    const chosen = selected && drawn ? flow.nodes.get(selected) : undefined
 
     const agentRow = (node: FlowNode, prefix: string) => {
       const ctx = node.contextTokens !== undefined ? fmtTokens(node.contextTokens) : ''
