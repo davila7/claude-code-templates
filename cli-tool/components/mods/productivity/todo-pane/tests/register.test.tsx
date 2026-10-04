@@ -19,12 +19,21 @@ const PANE = {
 // The engine beneath the plugin: a repo at /repo, its files in memory, and the panes it opened.
 function host(on: On, file?: string) {
   const files = new Map<string, string>(file === undefined ? [] : [[PATH, file]])
+  // Paths that are symbolic links rather than files of their own.
+  const links = new Set<string>()
   const panes = new Set<string>()
   on('process.run', () => ({
     value: { exitCode: 0, stdout: '/repo\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false },
   }))
   on('session.cwd', () => ({ value: '/repo/sub' }))
   on('fs.exists', ($, e) => ({ value: files.has(e.path) }))
+  on('fs.stat', ($, e) => {
+    const text = files.get(e.path)
+    if (text === undefined) {
+      throw new Error(`ENOENT: ${e.path}`)
+    }
+    return { value: { kind: 'file' as const, size: text.length, mtimeMs: 0, isLink: links.has(e.path) } }
+  })
   on('fs.read', ($, e) => {
     const text = files.get(e.path)
     if (text === undefined) {
@@ -61,7 +70,7 @@ function host(on: On, file?: string) {
     return <Text>other mod</Text>
   })
 
-  return { files, panes, toasts }
+  return { files, links, panes, toasts }
 }
 
 describe('todo-pane', () => {
@@ -208,5 +217,16 @@ describe('todo-pane', () => {
       expect(files.get(PATH)).toBe('- [ ] first\n')
       await ui.unmount()
     }
+  })
+
+  test('a todo.md that is a symbolic link is never written through', async ($, on) => {
+    const { files, links, toasts } = host(on, '- [ ] a\n')
+    await $.classic.SessionStart({ source: 'clear' })
+    links.add(PATH)
+    const ui = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
+    await ui.press({ key: 'toggle0' })
+    await ui.input({ key: 'new', text: 'b' })
+    expect(files.get(PATH)).toBe('- [ ] a\n')
+    expect(toasts).toContain('todo-pane: todo.md is a symbolic link, left alone')
   })
 })

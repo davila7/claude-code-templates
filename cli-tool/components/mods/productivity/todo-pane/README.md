@@ -107,6 +107,9 @@ the same way as in the terminal.
   Every action reads the file afresh before writing, so such a change is never
   written over; an action on a line that has changed since it was drawn does
   nothing and says so.
+- **A symbolic link is left alone.** When `todo.md` is a link, the pane does
+  not read or write it (a write would land wherever the link points) and says
+  so in a toast.
 
 ## Install
 
@@ -116,7 +119,7 @@ npx claude-code-templates@latest --mod productivity/todo-pane
 
 Hooks: `session.start` (registers `/todo`), `classic.SessionStart`,
 `tool.call`, `command.run`, `ui.render` on `AbovePrompt` and on its `Pane`.
-Calls: `$.command.register`, `$.fs.read`, `$.fs.write`, `$.fs.exists`, `$.session.cwd`,
+Calls: `$.command.register`, `$.fs.read`, `$.fs.write`, `$.fs.exists`, `$.fs.stat`, `$.session.cwd`,
 `$.process.run` (`git rev-parse --show-toplevel`, argv, no shell),
 `$.ui.open`, `$.ui.close`, `$.ui.panes`, `$.ui.toast`. No network. The only
 file it writes is `<repo root>/todo.md`.

@@ -51,9 +51,14 @@ async function pathOf($: EngineInterface) {
   return `${root}/todo.md`
 }
 
-// The file as lines, null when it does not exist, undefined when it cannot be read.
+// The file as lines, null when it does not exist, undefined when it cannot be read or is a
+// symbolic link (a write would land wherever the link points, outside the repo too).
 async function readTodo($: EngineInterface, path: string): Promise<TodoLines | undefined> {
   try {
+    if ((await $.fs.stat(path)).isLink) {
+      $.ui.toast('todo-pane: todo.md is a symbolic link, left alone')
+      return undefined
+    }
     return toLines(await $.fs.read(path))
   } catch {
     if (!(await $.fs.exists(path))) {
