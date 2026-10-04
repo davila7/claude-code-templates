@@ -30,13 +30,26 @@ function isSending(item: Held) {
   return sending.some(batch => batch.held.some(held => isSame(held, item)))
 }
 
+// Runs a store write after the ones queued before it.
+async function queue(write: () => Promise<unknown>) {
+  const run = writes.then(write)
+  writes = run.catch(() => undefined)
+  await run
+}
+
+// Stores a state under a key, or drops the key when there is nothing left to keep.
+function writeKey($: EngineInterface, key: string, state: Dnd) {
+  return state.until === null && state.held.length === 0 ? $.store.delete(key) : $.store.set(key, state)
+}
+
 // Takes a summary's messages out of the list stored under its key.
 async function forget($: EngineInterface, batch: Batch) {
-  const stored = storedState(await $.store.get(batch.key))
-  if (stored !== undefined) {
-    const held = stored.held.filter(item => !batch.held.some(sent => isSame(sent, item)))
-    await (stored.until === null && held.length === 0 ? $.store.delete(batch.key) : $.store.set(batch.key, { ...stored, held }))
-  }
+  await queue(async () => {
+    const stored = storedState(await $.store.get(batch.key))
+    if (stored !== undefined) {
+      await writeKey($, batch.key, { ...stored, held: stored.held.filter(item => !batch.held.some(sent => isSame(sent, item))) })
+    }
+  })
 }
 
 async function storeKey($: EngineInterface) {
@@ -90,15 +103,13 @@ async function load($: EngineInterface, afterClear = false) {
 
 // Writes the state as it is when its turn comes, so a write from before a later change never lands last.
 // A summary still on its way stays in the store with it: a reload before it entered delivers it on load.
-async function persist($: EngineInterface) {
-  const write = writes.then(async () => {
-    const key = await storeKey($)
+// `key` names the session the state belongs to when `$` may still name an older one.
+async function persist($: EngineInterface, key?: string) {
+  await queue(async () => {
     const state = await read($, dnd)
     const held = sending.flatMap(batch => batch.held).reduce(hold, state.held)
-    await (state.until === null && held.length === 0 ? $.store.delete(key) : $.store.set(key, { ...state, held }))
+    await writeKey($, key ?? (await storeKey($)), { ...state, held })
   })
-  writes = write.catch(() => undefined)
-  await write
 }
 
 async function showStatus($: EngineInterface) {
@@ -163,7 +174,7 @@ async function release($: EngineInterface, end?: number | null): Promise<number 
 }
 
 // Submits a release's summary; once it entered, its messages leave the store. A refused one puts
-// them back among the held messages (DND stays off), for /dnd off or the next load to deliver.
+// them back among the held messages (DND stays off), for /dnd, /dnd off or the next load to deliver.
 async function deliver($: EngineInterface, text: string, batch: Batch) {
   const entered = await $.prompt.submit({ text }).then(
     result => result.drop === undefined,
@@ -174,9 +185,9 @@ async function deliver($: EngineInterface, text: string, batch: Batch) {
     await update($, dnd, state => ({ ...state, held: batch.held.reduce(hold, state.held) }))
     $.ui.toast(`DND: the summary was refused, ${messages(batch.held.length)} kept; /dnd off delivers them`)
   }
-  // Out of the key that keeps it now, whichever session this delivery's `$` still names.
-  await forget($, batch)
-  await persist($)
+  // Written under the key that keeps the batch now (a load moves it to the current session),
+  // whichever session this delivery's `$` still names.
+  await persist($, batch.key)
 }
 
 // Confirms a release that ran; one that found DND already ended says nothing, so two at once toast once.
@@ -215,7 +226,9 @@ function senderOf(origin: SessionReceiveOrigin) {
 
 async function runCommand($: EngineInterface, args: string) {
   const arg = args.trim()
-  const isOn = (await read($, dnd)).until !== null
+  const { until, held } = await read($, dnd)
+  // Messages a refused summary kept count as on, so a bare /dnd delivers them rather than holding them longer.
+  const isOn = until !== null || held.length > 0
   if (arg === 'off' || (arg === '' && isOn)) {
     tellReleased($, await release($))
     return {}

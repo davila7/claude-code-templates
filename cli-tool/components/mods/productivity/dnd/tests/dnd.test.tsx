@@ -217,6 +217,39 @@ describe('dnd', () => {
     expect(prompts).toHaveLength(1)
   })
 
+  test('a /dnd in the new session while the old summary is on its way stays under the new key', async ($, on) => {
+    const { clock, prompts, session, store } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.prompt.submit(prompt('peer', 'ping'))
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    await $.session.end({ reason: 'clear', sessionId: 'session-1', resume: { id: 'session-1' } })
+    session.id = 'session-2'
+    await $.classic.SessionStart({ source: 'clear' })
+    await $.command.run({ command: 'dnd', args: '30', ...RUN })
+    // The delivery may run with the $ of the session that released it.
+    session.id = 'session-1'
+    await clock.settle()
+    session.id = 'session-2'
+    expect(prompts).toHaveLength(1)
+    expect([...store.keys()]).toEqual(['held:session-2'])
+    expect(store.get('held:session-2')).toEqual({ until: expect.any(Number), held: [] })
+  })
+
+  test('a bare /dnd after a refused summary delivers what it kept', async ($, on) => {
+    const { clock, prompts, refuse, toasts } = host(on)
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await $.prompt.submit(prompt('peer', 'ping'))
+    refuse.submits = true
+    await $.command.run({ command: 'dnd', args: 'off', ...RUN })
+    await clock.settle()
+    refuse.submits = false
+    await $.command.run({ command: 'dnd', args: '', ...RUN })
+    await clock.settle()
+    expect(toasts.at(-1)).toBe('DND off, delivering 1 message')
+    expect(prompts).toHaveLength(1)
+    expect(prompts[0]).toContain('· peer\n\n> ping')
+  })
+
   test('a summary refused beneath keeps the held messages for /dnd off', async ($, on) => {
     const { clock, prompts, refuse, store, toasts } = host(on)
     await $.command.run({ command: 'dnd', args: '', ...RUN })

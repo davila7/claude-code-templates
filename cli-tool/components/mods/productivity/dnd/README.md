@@ -13,7 +13,7 @@ item under the time it arrived and its sender.
 
 | Input | Does |
 |-------|------|
-| `/dnd` | off: turns it on for 30 minutes; on: turns it off and delivers |
+| `/dnd` | off: turns it on for 30 minutes; on, or with messages a refused summary kept: turns it off and delivers |
 | `/dnd 10` | turns it on for 10 minutes; it ends by itself and delivers |
 | `/dnd off` | turns it off and delivers now |
 | band `[ 🔕 DND · 4 waiting · deliver ]` | delivers now; shown only while DND is on |
@@ -58,10 +58,14 @@ ends by itself says so the same way, once, however many releases race.
   session whose end has already passed delivers what was held at once. The
   held messages stay in the store until the summary has entered the session: a
   reload before then delivers them on the next load, and a summary a hook
-  refuses puts them back (DND stays off) for `/dnd off` to deliver again.
+  refuses puts them back (DND stays off) for `/dnd` or `/dnd off` to deliver again.
 
 ## Known limits
 
+- **A reload while the summary waits.** The summary is submitted once the turn
+  ends, and its messages stay in the store until it has entered. A reload of the
+  mod in between delivers them again on load, so the summary can arrive twice;
+  dropping them sooner would lose them when the reload took the summary along.
 - **The "Prompt dropped" line.** Every prompt held at `prompt.submit` leaves a
   system line in the transcript; the engine has no silent drop. The mod
   rewrites the line to `🔕 held · <sender> · N waiting`, but the screen may
