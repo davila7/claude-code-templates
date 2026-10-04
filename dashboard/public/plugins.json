@@ -23549,7 +23549,7 @@
     "slug": "continuum",
     "name": "Continuum",
     "author": "rays23",
-    "description": "Continues Claude Code sessions when their rate limit window opens again. No tmux, no PTY wrapper, no keystrokes.",
+    "description": "macOS only. Continues Claude Code sessions when their rate limit window opens again. No tmux, no PTY wrapper, no keystrokes.",
     "github": "https://github.com/rays23/continuum",
     "stars": 0,
     "type": "plugin",
