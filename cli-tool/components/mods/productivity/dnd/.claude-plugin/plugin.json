@@ -1,0 +1,20 @@
+{
+  "name": "dnd",
+  "version": "0.1.0",
+  "description": "Do Not Disturb for a Claude Code session: /dnd holds back messages from teammates, other sessions, Monitor and background-task notifications, crons, /loop and relays, and delivers them in one summary message when it ends (after N minutes, on /dnd off, or from the band button). A status line counts what is waiting.",
+  "author": {
+    "name": "Aleš Lednej",
+    "url": "https://github.com/aleslednej"
+  },
+  "homepage": "https://github.com/overheadlabs",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity",
+    "dnd",
+    "notifications",
+    "focus"
+  ],
+  "types": "./types/index.d.ts"
+}

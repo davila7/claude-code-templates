@@ -1,0 +1,6 @@
+{
+  "description": "dnd: session.start registers /dnd and restores held state from the store; session.receive and prompt.submit hold outside messages while DND is on; session.append rewrites the 'Prompt dropped' notice; ui.render on AbovePrompt draws the deliver button; a $.clock timer ends DND and submits one summary prompt",
+  "modules": [
+    "./register.tsx"
+  ]
+}
