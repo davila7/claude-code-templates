@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-03T03:23:08.765962+00:00",
-  "totalJobs": 85,
+  "lastUpdated": "2026-10-04T01:07:32.490432+00:00",
+  "totalJobs": 86,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,29 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49946276",
+      "company": "Mattermost",
+      "position": "Senior Full Stack Engineer",
+      "location": "Remote (US and Canada)",
+      "remote": true,
+      "salary": "$142,723 - $172,723",
+      "description": "Mattermost ( https://mattermost.com ) is an open-core collaboration and workflow automation platform for air-gapped, on-prem and private clouds. Our customers are in defense, intelligence, security and critical infrastructure, including the USAF and NASA. Y Combinator led our Series B, their...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49946276",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49946276",
+      "postedAt": "2026-10-03T17:52:07+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Go",
+        "PostgreSQL",
+        "Claude Code",
+        "Cursor",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49939260",
       "company": "Privy.pro",
