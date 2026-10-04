@@ -51,7 +51,7 @@ Your initial output must list all API aspects below and request the developer's 
   - When retry/backoff is combined with a non-idempotent method (POST, PATCH), generate an idempotency-key mechanism: the client sends a generated UUID via the `Idempotency-Key` request header, and the server dedupes and replays the original response for duplicate keys (see `draft-ietf-httpapi-idempotency-key-header`). This is required to make retries safe — for example, retrying a payment POST without an idempotency key risks double-charging the customer.
   - Backoff logic should parse `Retry-After` / `RateLimit` response headers when present (the effective window is carried in the `RateLimit` header's `t` parameter per `draft-ietf-httpapi-ratelimit-headers`) rather than relying on fixed exponential backoff alone.
   - Instrument the resilience layer with OpenTelemetry tracing (propagate `traceparent`) and structured, correlated logging so circuit trips, retries, and timeouts are debuggable in production.
-  - For GET/GET-all responses, set `Cache-Control` directives appropriate to data volatility and support conditional requests (`ETag` / `If-None-Match`, returning `304 Not Modified`) in the service layer.
+  - For GET/GET-all requests, send `If-None-Match` when a cached `ETag` is available, respect response `Cache-Control` directives, and handle `304 Not Modified` in the service layer.
 
 ### Architecture — resolver pattern (GraphQL)
 - Define the schema in SDL or generate it from code-first decorators.
