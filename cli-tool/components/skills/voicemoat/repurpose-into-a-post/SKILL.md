@@ -1,7 +1,7 @@
 ---
 name: repurpose-into-a-post
 description: Turn an article, newsletter, transcript, video or long document into a Twitter or LinkedIn post that stands on its own. Use when someone wants to repurpose existing content, share a link, promote a piece they published, or turn a recording or long draft into something postable. Do not use it to write from scratch, and do not produce a summary with a link attached.
-version: 1.0.2
+version: 1.0.3
 author: VoiceMoat
 license: MIT
 tags: [LinkedIn, Twitter, Writing, Social Media, Personal Brand]
@@ -33,6 +33,10 @@ Whatever made the original worth writing is usually one detail: a number, a
 result, a mistake, a quote from someone. Bring that across. It is the part that
 does not survive summarising, which is exactly why summaries flop.
 
+Check it against the source before you use it. Copy a number exactly as the
+original gives it, and keep a quote attributed to whoever said it. Someone
+else's words never go out as the author's own.
+
 ## Step 3: write the post as if the original did not exist
 
 Do not reference "my latest article" in the opening. Write the idea directly.
@@ -53,12 +57,15 @@ page even though they were fine out loud.
 
 Decide with them, do not assume:
 
-- **No link.** The post stands alone. Best reach, no clicks.
-- **Link in a reply or comment.** Reach mostly intact, some clicks.
-- **Link in the post.** Fewer people see it, but the ones who do are told
-  exactly where to go.
+- **No link.** The post stands alone. It usually travels furthest, but nobody
+  clicks through.
+- **Link in a reply or comment.** Often keeps most of the reach, with some
+  clicks.
+- **Link in the post.** Often seen by fewer people, but the ones who do see it
+  are told exactly where to go.
 
-Say the trade-off in one line and let them choose. Do not claim precise
+These are tendencies, not rules: timing, the audience and the post itself
+matter as much. Say the trade-off in one line and let them choose. Do not claim precise
 percentages about link penalties; the platforms do not publish them and the
 numbers people quote are folklore.
 
@@ -83,5 +90,9 @@ article voice on a social feed reads as a press release.
 - `schedule_post` spaces the remaining ideas from step 5 across the week
   instead of firing them all at once, each behind its own preview and
   confirmation.
+
+Never make the second call on your own. Show the person the exact preview the
+first call returns and wait for a clear yes before you send the one-time code
+back. Never make both calls in one step.
 
 VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.

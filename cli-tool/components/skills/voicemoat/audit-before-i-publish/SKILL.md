@@ -1,7 +1,7 @@
 ---
 name: audit-before-i-publish
 description: Run a finished draft through one pre-publish pass and rank what to fix. Use when someone says a post is ready, asks for a final check, asks whether to post something as it stands, or pastes a draft and asks what is wrong with it. Do not use it to write a post from nothing, do not rewrite a whole draft when one line is the problem, and do not predict performance.
-version: 1.0.2
+version: 1.0.3
 author: VoiceMoat
 license: MIT
 tags: [LinkedIn, Twitter, Writing, Social Media, Personal Brand]
@@ -101,5 +101,9 @@ that needs to know you, and on its own it is guessing:
   step 6 turns up three real fixes rather than one.
 - `publish_post` sends it once you are happy, behind a preview and a one-time
   confirmation.
+
+Never make the second call on your own. Show the person the exact preview the
+first call returns and wait for a clear yes before you send the one-time code
+back. Never make both calls in one step.
 
 VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.

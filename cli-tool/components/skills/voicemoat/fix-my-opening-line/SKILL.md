@@ -1,7 +1,7 @@
 ---
 name: fix-my-opening-line
 description: Diagnose why a post's opening line is not stopping anyone, and rewrite it from several genuinely different angles. Use when someone says a post flopped, asks for a better hook, first line or opener, asks why nobody read something, or is stuck on how to start. Do not use it to write the whole post, and do not promise that a new opening will make a post perform.
-version: 1.0.2
+version: 1.0.3
 author: VoiceMoat
 license: MIT
 tags: [LinkedIn, Twitter, Writing, Social Media, Personal Brand]
@@ -10,10 +10,11 @@ repo: https://github.com/prateeks367/voicemoat-skills
 
 # Fix my opening line
 
-On both Twitter and LinkedIn most people see the first line and nothing else.
-The rest of the post is only read by people the first line already convinced.
-So a post that "did not work" is usually a first line that did not work
-attached to a body nobody reached.
+On both Twitter and LinkedIn the first line decides whether most people read
+on. The rest of the post mostly reaches people the first line already
+convinced. So when a post did not work, start with the first line, but do not
+stop there: the topic, the timing and the body can sink a post with a good
+opening.
 
 ## Step 1: read the opening as a stranger would
 

@@ -1,7 +1,7 @@
 ---
 name: write-in-my-voice
 description: Draft a Twitter or LinkedIn post that sounds like the person asking, by working out their voice from writing they have already published and checking the draft against it. Use when someone asks for a post, a thread, a hook or a rewrite, or asks whether a piece of text sounds like them. Do not use it for writing that is not going on social media.
-version: 1.0.2
+version: 1.0.3
 author: VoiceMoat
 license: MIT
 tags: [LinkedIn, Twitter, Writing, Social Media, Personal Brand]
@@ -96,5 +96,9 @@ connected, the guesswork in steps 1, 2 and 4 is replaced with real data:
 - `publish_post` and `schedule_post` put the finished post on Twitter or
   LinkedIn, behind a preview and a one-time confirmation so nothing goes out
   that you have not read.
+
+Never make the second call on your own. Show the person the exact preview the
+first call returns and wait for a clear yes before you send the one-time code
+back. Never make both calls in one step.
 
 VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.

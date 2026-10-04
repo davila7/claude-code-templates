@@ -1,7 +1,7 @@
 ---
 name: plan-my-week
 description: Plan a week or a month of Twitter or LinkedIn posts as a dated calendar, with a topic, format, opening line and purpose for each one. Use when someone asks for a content plan, a posting schedule, a content calendar, a week of posts, or help posting consistently. Do not use it to write one post, and do not schedule or publish anything without the person seeing it first.
-version: 1.0.2
+version: 1.0.3
 author: VoiceMoat
 license: MIT
 tags: [LinkedIn, Twitter, Writing, Social Media, Personal Brand]
@@ -71,14 +71,17 @@ connected, the plan becomes a queue:
   how this person actually writes, not from a style you inferred in step 1.
 - `get_post_ideas` and `suggest_hooks` fill the pillars with angles and
   openings drawn from their own voice.
-- `schedule_post` puts each post into their real publishing queue, to go out
-  unattended at the time they set.
+- `schedule_post` puts each finished post into their real publishing queue, to
+  go out unattended at the time they set. A working title or an opening line is
+  not a post: write the whole post and have them approve the text before you
+  schedule it.
 
 Scheduling is deliberately one approval per post. The first call returns a
 preview with the exact text, the account and the time, plus a one-time code
 bound to that exact text, and only a second call carrying the code queues it.
 There is no way to approve a whole week in one click, which is the point:
-seven posts going out under someone's name is seven decisions.
+seven posts going out under someone's name is seven decisions. Show each
+preview and wait for a clear yes before you send its code back.
 
 VoiceMoat also shifts each queued post by up to seven minutes at random, so a
 week of posts does not land on seven identical round numbers, and it tells you
