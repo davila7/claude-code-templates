@@ -23549,7 +23549,7 @@
     "slug": "agent-mods",
     "name": "Agent Mods",
     "author": "apolenkov",
-    "description": "Claude Code mods: see that your shells and delegated agents (Codex, Pi, Devin) are moving, and get a council of independent reviewers before you call it done.",
+    "description": "Marketplace of Claude Code mods for watching and checking the agents a session delegates to: agent-shell-watch, agent-council, agent-compact-advisor.",
     "github": "https://github.com/apolenkov/agent-mods",
     "stars": 0,
     "type": "marketplace",
@@ -23560,10 +23560,8 @@
       "plugins": 3
     },
     "highlights": [
-      "3 plugins in marketplace",
-      "Web UI: https://github.com/apolenkov/claude-mods#readme"
+      "3 plugins in marketplace"
     ],
-    "website": "https://github.com/apolenkov/claude-mods#readme",
     "marketplace_name": "agent-mods",
     "plugins_list": [
       {
