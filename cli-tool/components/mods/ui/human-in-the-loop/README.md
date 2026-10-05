@@ -134,7 +134,7 @@ claude plugin test human-in-the-loop
 | `hooks/text.ts` | Printable labels, ages, sizes |
 | `types/index.d.ts` | The `$.state` contract: the tasks, the selection, the open field |
 | `tests/register.test.tsx` | Assigning, the pane and `/my-tasks`, every response and when it reaches Claude, long answers, tasks carried across sessions |
-| `docs/DESIGN.md` | The design and the decisions behind it |
+| [`docs/DESIGN.md`](https://github.com/tzafrir/human-in-the-loop/blob/main/docs/DESIGN.md) | The design and the decisions behind it |
 
 ## License
 

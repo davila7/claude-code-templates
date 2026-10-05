@@ -20,7 +20,7 @@ import {
   sameAsk,
   statusOf,
 } from './tasks'
-import { HEARTBEAT_MS, adopt, elsewhereIn, endSlot, storedOf, withSlot } from './project'
+import { HEARTBEAT_MS, adopt, elsewhereIn, endSlot, storedOf, takenFrom, withSlot } from './project'
 import type { Stored } from './project'
 import { ago, oneLine, plural, printable } from './text'
 
@@ -250,7 +250,9 @@ export const register: Register = on => {
     }
 
     // Task numbers count per project, across its sessions: the store's count
-    // is read fresh, so two sessions at work in one project never share one.
+    // is read fresh. Two sessions assigning at the same moment can still draw
+    // one number; each shows and answers only its own, and where their tasks
+    // meet (one taking on the other's), `adopt` gives the later a new one.
     const counted = (await readStore($)).nextId
     const id = await read($, nextId).then(n => Math.max(n, counted))
     await update($, nextId, () => id + 1)
@@ -752,15 +754,48 @@ async function load($: EngineInterface) {
 /** Says this session is alive, and counts the tasks waiting in the project's other sessions. */
 async function beat($: EngineInterface) {
   const nowMs = await $.clock.now()
-  const stored = await readStore($)
+  const found = await readStore($)
+  const stored = await letGo($, found)
   const elsewhere = elsewhereIn(stored, live.sessionId, nowMs)
 
   await writeStore($, withSlot(stored, live.sessionId, await read($, tasks), nowMs))
 
-  if (elsewhere !== live.elsewhere) {
+  if (stored !== found || elsewhere !== live.elsewhere) {
     live.elsewhere = elsewhere
     await refresh($)
   }
+}
+
+/**
+ * Lets go of the tasks another session took on while this one was quiet (a
+ * laptop asleep, say): they are that session's now, and the user answers
+ * them there. Resolves the store with that note read, or `stored` itself.
+ */
+async function letGo($: EngineInterface, stored: Stored): Promise<Stored> {
+  const { ids, stored: rest } = takenFrom(stored, live.sessionId)
+
+  if (rest === stored) {
+    return stored
+  }
+
+  const lost = (await read($, tasks)).filter(task => ids.includes(task.id) && isShown(task))
+
+  await update($, tasks, list => list.filter(task => !ids.includes(task.id)))
+
+  for (const task of lost) {
+    await settle($, task.id)
+  }
+
+  if (lost.length > 0) {
+    const which = lost.map(task => `#${task.id}`).join(', ')
+    const [noun, them] = lost.length === 1 ? ['task', 'it'] : ['tasks', 'them']
+
+    $.ui.toast(`Another session in this project took on ${noun} ${which} while this one was away. Answer ${them} there.`, {
+      timeoutMs: 8000,
+    })
+  }
+
+  return rest
 }
 
 function storeKey(): string {
@@ -777,9 +812,9 @@ async function writeStore($: EngineInterface, stored: Stored) {
 
 /** Changes the task list and keeps this session's slot of the project's store in step. */
 async function change($: EngineInterface, fn: (list: readonly Task[]) => readonly Task[]) {
-  const list = await update($, tasks, fn)
   const nowMs = await $.clock.now()
-  const stored = await readStore($)
+  const stored = await letGo($, await readStore($))
+  const list = await update($, tasks, fn)
   const counted = { ...stored, nextId: Math.max(stored.nextId, await read($, nextId)) }
 
   await writeStore($, withSlot(counted, live.sessionId, list, nowMs))
@@ -841,6 +876,11 @@ async function delivered($: EngineInterface, ids: readonly number[]) {
   }
 
   await change($, list => list.map(task => (ids.includes(task.id) ? { ...task, update: 'delivered' } : task)))
+}
+
+/** Gives back updates marked delivered that never reached Claude: they wait again. */
+async function undelivered($: EngineInterface, ids: readonly number[]) {
+  await change($, list => list.map(task => (ids.includes(task.id) && task.update === 'delivered' ? { ...task, update: 'pending' } : task)))
 }
 
 /** Keeps the selection on a task still open, and drops a field whose task is gone. */
@@ -953,8 +993,23 @@ async function send($: EngineInterface, isTurnOver = false) {
   const which = ids.map(id => `#${id}`).join(', ')
 
   if (isTurnOver || !working()) {
+    // Marked delivered first, so no other path sends them meanwhile; a prompt
+    // that doesn't enter gives them back, to go with the next send.
     await delivered($, ids)
-    void $.prompt.submit({ text, asUser: true })
+    const refused = await $.prompt.submit({ text, asUser: true }).then(
+      entered => entered.drop,
+      (error: unknown) => (error instanceof Error ? error.message : String(error)),
+    )
+
+    if (refused !== undefined) {
+      await undelivered($, ids)
+      const reason = printable(refused, 200).replace(/[.!]+$/, '')
+
+      $.ui.toast(`Claude didn't get your response to ${which}: ${reason}. It's saved; press Send now in /my-tasks.`, {
+        timeoutMs: 8000,
+      })
+    }
+
     return
   }
 

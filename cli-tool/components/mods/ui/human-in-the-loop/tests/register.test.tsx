@@ -84,6 +84,8 @@ function seat(on: On, store: Record<string, unknown> = {}) {
     isNarrow: false,
     status: undefined as string | undefined,
     composer: '',
+    /** Set, the plugin's prompts don't enter: a hook beneath drops them with this reason. */
+    refusing: undefined as string | undefined,
     sessionId: 'session-1',
     store: JSON.parse(JSON.stringify(store)) as Record<string, unknown>,
   }
@@ -132,6 +134,10 @@ function seat(on: On, store: Record<string, unknown> = {}) {
   on('turn.start', ($, e) => ({ turnId: e.turnId }))
   on('turn.complete', ($, e) => ({ text: e.answer }))
   on('prompt.submit', ($, e) => {
+    if (e.origin.kind === 'plugin' && world.refusing !== undefined) {
+      return { drop: world.refusing }
+    }
+
     if (e.origin.kind === 'plugin') {
       world.submitted.push(e.text)
     }
@@ -393,6 +399,32 @@ describe('responding', () => {
     expect(world.submitted[0]).toContain("#2 Add STRIPE_SECRET_KEY to .env: I won't do this. I will do it after the deploy")
   })
 
+  test("a response whose prompt doesn't enter stays saved, and Send now tries again", async ($, on) => {
+    const { world, clock } = seat(on)
+    world.refusing = 'Another plugin held the prompt.'
+    await start($)
+
+    await $.tool.call(KEY_TASK)
+    const ui = await $.ui.mount(PANE)
+    await ui.press({ key: 'done' })
+    await clock.advance(1000)
+    await clock.settle()
+
+    expect(world.submitted).toHaveLength(0)
+    expect(world.toasts.at(-1)).toBe(
+      "Claude didn't get your response to #1: Another plugin held the prompt. It's saved; press Send now in /my-tasks.",
+    )
+    expect(world.status).toBe('✓ 1 not sent yet · /my-tasks')
+
+    world.refusing = undefined
+    await runTasks($)
+    await ui.press({ key: 'send-1' })
+    await clock.settle()
+
+    expect(world.submitted).toEqual(['My response to a task you gave me (Human in the loop):\n\n#1 Add STRIPE_SECRET_KEY to .env: Done.'])
+    expect(world.status).toBeUndefined()
+  })
+
   test('an answer that looks like a secret is held', async ($, on) => {
     const { world, clock } = seat(on)
     await start($)
@@ -556,8 +588,79 @@ describe('across sessions', () => {
     expect(world.status).toBe('☐ 2 tasks for you · /my-tasks')
     expect(await textOf(ui, 'task-7')).toContain('from an earlier session')
 
-    const stored = world.store['tasks:/repo'] as { sessions: Record<string, unknown> }
+    // The quiet one may come back (a laptop asleep): the store notes what it lets go of then.
+    const stored = world.store['tasks:/repo'] as { sessions: Record<string, unknown>; taken: Record<string, unknown> }
     expect(Object.keys(stored.sessions)).toEqual(['session-1'])
+    expect(stored.taken).toEqual({ 'session-x': { ids: [8], atMs: NOW } })
+  })
+
+  test('where two sessions drew one number, the session taking on both gives the later a new one', async ($, on) => {
+    seat(on, {
+      'tasks:/repo': {
+        nextId: 8,
+        sessions: {
+          'session-0': { tasks: [ROTATE], seenMs: NOW - 60_000, endedMs: NOW - 60_000 },
+          'session-x': {
+            tasks: [{ ...ROTATE, title: 'Approve the staging migration', sessionId: 'session-x' }],
+            seenMs: NOW - 60_000,
+            endedMs: NOW - 60_000,
+          },
+        },
+      },
+    })
+    await start($)
+
+    const context = await $.prompt.context({ blocks: [] })
+    expect(context.blocks.at(-1)?.text).toContain('#7 open (from an earlier session): Rotate the leaked token in Vault')
+    expect(context.blocks.at(-1)?.text).toContain('#8 open (from an earlier session): Approve the staging migration')
+
+    const assigned = await $.tool.call(KEY_TASK)
+    expect(String((assigned as { result?: unknown }).result)).toContain('Assigned task #9')
+  })
+
+  /** The store as another session leaves it on taking on session-1's tasks while session-1 slept. */
+  function takeOn(store: Record<string, unknown>) {
+    const project = store['tasks:/repo'] as { sessions: Record<string, { tasks: { id: number }[] }>; taken: Record<string, unknown> }
+    const mine = project.sessions['session-1']?.tasks ?? []
+
+    project.sessions = { 'session-2': { tasks: mine, seenMs: NOW } as never }
+    project.taken = { 'session-1': { ids: mine.map(task => task.id), atMs: NOW } }
+  }
+
+  test('a session back from sleep lets go of the tasks another session took on meanwhile', async ($, on) => {
+    const { world, clock } = seat(on)
+    await start($)
+
+    await $.tool.call(KEY_TASK)
+    await $.tool.call(XCODE_TASK)
+    takeOn(world.store)
+    await clock.advance(60_000)
+    await clock.settle()
+
+    expect(world.toasts.at(-1)).toBe('Another session in this project took on tasks #1, #2 while this one was away. Answer them there.')
+    expect(world.status).toBe('2 tasks in another session')
+    expect(world.isPaneOpen).toBe(false)
+
+    const stored = world.store['tasks:/repo'] as { sessions: Record<string, { tasks: { id: number }[] }>; taken: Record<string, unknown> }
+    expect(Object.keys(stored.sessions)).toEqual(['session-2'])
+    expect(stored.sessions['session-2']?.tasks.map(task => task.id)).toEqual([1, 2])
+    expect(stored.taken).toEqual({})
+  })
+
+  test('a task assigned on waking keeps its place, the ones taken on elsewhere go', async ($, on) => {
+    const { world } = seat(on)
+    await start($)
+
+    await $.tool.call(KEY_TASK)
+    takeOn(world.store)
+    const assigned = await $.tool.call(XCODE_TASK)
+
+    expect(String((assigned as { result?: unknown }).result)).toContain('Assigned task #2')
+    expect(world.toasts.at(-1)).toBe('Another session in this project took on task #1 while this one was away. Answer it there.')
+
+    const stored = world.store['tasks:/repo'] as { sessions: Record<string, { tasks: { id: number }[] }> }
+    expect(stored.sessions['session-1']?.tasks.map(task => task.id)).toEqual([2])
+    expect(stored.sessions['session-2']?.tasks.map(task => task.id)).toEqual([1])
   })
 
   test('the heartbeat keeps the slot alive and counts tasks other sessions take on', async ($, on) => {
