@@ -23561,7 +23561,7 @@
       "plugins": 35,
       "components": {
         "skills": 81,
-        "hooks": 6
+        "hooks": 5
       }
     },
     "highlights": [
@@ -23797,7 +23797,7 @@
         "source": "./plugins/beads-workflow",
         "components": {
           "skills": 4,
-          "hooks": 2
+          "hooks": 1
         },
         "components_items": {
           "skills": [
@@ -23811,20 +23811,16 @@
             },
             {
               "name": "triage-beads",
-              "description": ">-"
+              "description": "Autonomously sweep and triage ALL open beads (bd tasks) the way a careful engineer would by hand — reconcile each bead against reality (git history, passing tests, tool versions, whether its blockers have since closed), CLOSE the ones already satisfied with cited evidence, PARK the ones blocked on an external resource with a ready-to-run playbook, and SURFACE genuine JT-only decisions into an end-of-run report instead of guessing. Use this whenever the user wants to triage beads, clean up stale issues, sweep or prune open beads, audit the backlog, close out finished-but-still-open tasks, or asks why so many beads are piling up — and it is safe to run repeatedly and unattended (e.g. from a scheduled agent). Also fires on \"triage the backlog\", \"clear out stale beads\", \"which of these beads are already done\", and \"auto-triage\"."
             },
             {
               "name": "tripwire-scan",
-              "description": ">-"
+              "description": "Match a change-set against the tripwire anchors that parked beads (bd issues) declare, and surface each parked bead whose watched code you're about to change — the edit-time warning that `bd ready` can't give, because it only fires when someone asks for work, never when you touch the file a bead warns about. Use when reviewing or creating a PR, before finishing a change, or when asked to \"check tripwires\", \"scan for tripwires\", or \"what parked beads touch this change\". A parked bead plants a `tripwire-paths:` line naming where its knowledge bites; this scans your diff against those anchors and reports each hit as bead-id → matched file → the bead's one-line why. Safe and read-only."
             }
           ],
           "hooks": [
             {
-              "name": "hooks",
-              "description": ""
-            },
-            {
-              "name": "scripts",
+              "name": "PostToolUse",
               "description": ""
             }
           ]
@@ -23851,11 +23847,11 @@
           ],
           "hooks": [
             {
-              "name": "hooks",
+              "name": "SessionStart",
               "description": ""
             },
             {
-              "name": "scripts",
+              "name": "PostCompact",
               "description": ""
             }
           ]
@@ -24275,11 +24271,11 @@
           ],
           "hooks": [
             {
-              "name": "hooks",
+              "name": "SessionStart",
               "description": ""
             },
             {
-              "name": "scripts",
+              "name": "UserPromptSubmit",
               "description": ""
             }
           ]
@@ -24296,15 +24292,15 @@
           "skills": [
             {
               "name": "conduct",
-              "description": ">"
+              "description": "Operating stance for a main agent orchestrating delegated work — an implement → review → address pipeline across one or more repos/workspaces: boss/doer split, fresh agent per phase, work orders that carry the traps forward, verify-before-relay, and a \"Next for you:\" contract with the human. Use when the session's job is overseeing delegated agents (orchestrate, multi-agent workstream, boss mode, delegate a pipeline) rather than doing the work itself."
             },
             {
               "name": "patient-waiting",
-              "description": ">-"
+              "description": "Zero-token discipline for waiting on anything — a file/status change, a review submit, a PR, CI, a deploy, a human's approval. Use BEFORE setting up any poll, watch loop, recurring check-in, or ScheduleWakeup loop, whenever the user says \"check in on X\", \"watch for Y\", \"tell me when Z\", \"poll\", \"monitor this\", or when a background watcher was killed and you're about to work around it. Prevents the runaway pattern where the main (possibly premium-model) agent wakes on a schedule to read an unchanged status file."
             },
             {
               "name": "your-cue",
-              "description": ">"
+              "description": "Read-only briefing across every live agent session — who is working, who is waiting on the user, what finished overnight — ending in one cue per workstream and a single prioritized \"Next for you:\". Use for a morning briefing or a status sweep of delegated work."
             }
           ]
         }

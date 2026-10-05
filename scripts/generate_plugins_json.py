@@ -9,7 +9,7 @@ Usage:
 
 Requires:
     - GITHUB_TOKEN env var (or gh CLI authenticated)
-    - pip install requests python-dotenv
+    - pip install requests python-dotenv pyyaml
 """
 
 import json
@@ -19,6 +19,8 @@ import shutil
 import sys
 import time
 import subprocess
+
+import yaml
 
 # Build a clean env for gh CLI (avoid conflicting tokens)
 _GH_ENV = {k: v for k, v in os.environ.items()}
@@ -272,6 +274,14 @@ def extract_frontmatter_description(content):
     if end == -1:
         return ""
     frontmatter = content[3:end]
+    try:
+        # BaseLoader keeps scalars as strings and expands `>`/`|` block scalars,
+        # which the line scan below would return as a bare marker.
+        data = yaml.load(frontmatter, Loader=yaml.BaseLoader)
+    except yaml.YAMLError:
+        data = None
+    if isinstance(data, dict) and isinstance(data.get("description"), str):
+        return data["description"].strip()
     for line in frontmatter.split("\n"):
         line = line.strip()
         if line.startswith("description:"):
@@ -322,6 +332,8 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     component_dirs = ["skills", "agents", "commands", "hooks"]
 
     for comp_dir in component_dirs:
+        if comp_dir == "hooks":
+            continue
         if comp_dir in dir_names and dir_names[comp_dir] == "dir":
             # List items inside this component directory
             items = gh_dir_listing(repo, f"{dir_path}/{comp_dir}")
@@ -349,6 +361,15 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
                 if entries:
                     components[comp_dir] = len(entries)
                     component_items[comp_dir] = entries
+
+    # hooks/ holds hooks.json plus the scripts it runs, so its directory entries
+    # are not hooks; the events hooks.json registers are.
+    if dir_names.get("hooks") == "dir":
+        hooks_doc = parse_json_safe(gh_file_content(repo, f"{dir_path}/hooks/hooks.json"))
+        events = hooks_doc.get("hooks") if isinstance(hooks_doc, dict) else None
+        if isinstance(events, dict) and events:
+            components["hooks"] = len(events)
+            component_items["hooks"] = [{"name": k, "description": ""} for k in events.keys()]
 
     # Check for mcpServers in plugin.json
     plugin_json_raw = gh_file_content(repo, f"{dir_path}/.claude-plugin/plugin.json")
