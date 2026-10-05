@@ -45,26 +45,38 @@ still open, and a pane edits the file in place.
 A mod cannot register a keybinding of its own (anthropics/claude-code#91870).
 It can borrow one of the engine's keybinding actions: the band button then
 carries that action, and your chord for it toggles the pane from the prompt.
-Off by default; nothing is recommended, pick an action you do not use.
+Off by default; pick an action you do not use. The example below is the pair
+checked by hand on Claude Code 2.1.289.
 
-1. Set `toggleAction` in `/config`, or in user settings keyed by the plugin's
-   full id (`{ "pluginConfigs": { "todo-pane@skills-dir": { "options": {
-   "toggleAction": "app:cycleDiffBase" } } } }`), to one of the actions the
-   mod accepts. Each one's engine handler lives in a dialog, so at the prompt
-   nothing else answers its chord:
+1. Set `toggleAction` in `/config`, or in `~/.claude/settings.json` keyed by
+   the plugin's full id (`todo-pane@skills-dir` for a `--mod` install). The
+   value must sit under `options`: the flat shape without it is ignored with
+   no warning (the debug log says `no pluginConfigs["<id>"].options`).
+
+   ```json
+   {
+     "pluginConfigs": {
+       "todo-pane@skills-dir": { "options": { "toggleAction": "theme:toggleSyntaxHighlighting" } }
+     }
+   }
+   ```
+
+   It takes one of these actions; each one's engine handler lives in a
+   dialog, so at the prompt nothing else answers its chord:
    `app:cycleDiffBase`, `app:diffFileListDown`, `app:diffFileListUp`,
    `diff:nextFile`, `diff:previousFile`, `help:dismiss`, `plugin:toggle`,
    `settings:search`, `theme:toggleSyntaxHighlighting`.
-2. Bind a chord, or a modified key, to it in `~/.claude/keybindings.json`
+2. Bind a free chord, or a modified key, to it in `~/.claude/keybindings.json`
    (`/keybindings` opens the file), in the `Global` context:
 
    ```json
    {
      "bindings": [
-       { "context": "Global", "bindings": { "ctrl+k t": "app:cycleDiffBase" } }
+       { "context": "Global", "bindings": { "ctrl+x t": "theme:toggleSyntaxHighlighting" } }
      ]
    }
    ```
+3. Run `/reload-plugins`. The chord then opens and closes the pane.
 
 Any other name shows a toast with the list and leaves the shortcut off: the
 engine would refuse the whole band (every mod's part of it) over an action it
@@ -81,10 +93,10 @@ job; and while the dialog is open the chord is the dialog's, not the pane's.
 | pane: toggle ☐/☑, edit via `Input`, delete, add | tested | tested |
 | `/todo` | tested | tested |
 | `1` in an empty prompt | engine docs say yes | unknown |
-| `toggleAction` chord | engine docs say yes | no (terminal only) |
+| `toggleAction` chord | checked by hand | no (terminal only) |
 
 *tested* is `claude plugin test` drawing the mod on that surface, not a
-check by hand. Installed with `--mod`, the plugin loads in Desktop's Code tab
+check by hand; *checked by hand* is a live run on Claude Code 2.1.289. Installed with `--mod`, the plugin loads in Desktop's Code tab
 the same way as in the terminal.
 
 ## Known limits
