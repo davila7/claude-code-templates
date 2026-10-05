@@ -108,7 +108,7 @@ State of the AI and semiconductor complex right now: breadth, the day's biggest 
 
 ## get_market — Market cap, dominance and volume over time
 
-The AI and semiconductor universe as one market, over time: combined market cap, the weight of each segment or company, and traded dollar volume, session by session for up to a year (weekly points over five years), plus the map of one session (every company's market cap, volume and day change). Use it for 'how has NVIDIA's weight changed', 'which segment grew the most this year', 'where is the volume going'. Market cap of a past day = adjusted close × shares outstanding at that date (from SEC filings); the last point is today's figure. Built once per session after the close. Amounts in US dollars, weights as fractions. `enteredOn`: first session of a company listed during the period (an IPO, not a data gap).
+The AI and semiconductor universe as one market, over time: combined market cap, the weight of each segment or company, and traded dollar volume, session by session for up to a year (weekly points over five years), plus the map of one session (every company's market cap, volume and day change). Use it for 'how has NVIDIA's weight changed', 'which segment grew the most this year', 'where is the volume going'. Market cap of a past day = that day's close, adjusted for share splits only (the price that traded), × shares outstanding at that date (from SEC filings); the last point is today's figure. Built once per session after the close. Amounts in US dollars, weights as fractions. `enteredOn`: first session of a company listed during the period (an IPO, not a data gap).
 
 | Parameter | Required | Meaning |
 |---|---|---|
@@ -151,7 +151,7 @@ One figure for one company — revenue, gross profit, operating income or net in
 
 ## get_price_history — Daily price history
 
-Daily bars adjusted for splits and dividends, up to five years (about 1,260 sessions). Compact: `fields` names the columns once and each bar is one row in that order, oldest first. Use it to compute your own statistics rather than trusting a summary.
+Daily bars adjusted for share splits only — the prices that traded, in today's shares; dividends and spin-offs are not subtracted — up to five years (about 1,260 sessions). Compact: `fields` names the columns once and each bar is one row in that order, oldest first. Use it to compute your own statistics rather than trusting a summary.
 
 | Parameter | Required | Meaning |
 |---|---|---|
