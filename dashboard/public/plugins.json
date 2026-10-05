@@ -23544,5 +23544,43 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "agent-mods",
+    "name": "Agent Mods",
+    "author": "apolenkov",
+    "description": "Claude Code mods: see that your shells and delegated agents (Codex, Pi, Devin) are moving, and get a council of independent reviewers before you call it done.",
+    "github": "https://github.com/apolenkov/agent-mods",
+    "stars": 0,
+    "type": "marketplace",
+    "tags": [
+      "agents"
+    ],
+    "contains": {
+      "plugins": 3
+    },
+    "highlights": [
+      "3 plugins in marketplace",
+      "Web UI: https://github.com/apolenkov/claude-mods#readme"
+    ],
+    "website": "https://github.com/apolenkov/claude-mods#readme",
+    "marketplace_name": "agent-mods",
+    "plugins_list": [
+      {
+        "name": "agent-shell-watch",
+        "description": "Live view of every Bash call, background task and external agent run of the session: elapsed time, output freshness, errors.",
+        "source": "https://github.com/apolenkov/agent-shell-watch.git"
+      },
+      {
+        "name": "agent-council",
+        "description": "/council and an auto-review nudge: Codex, Pi, Devin and OpenCodeReview review your diff in parallel; one summary of agreements, disagreements and unique findings.",
+        "source": "https://github.com/apolenkov/agent-council.git"
+      },
+      {
+        "name": "agent-compact-advisor",
+        "description": "Tells you when the session is ready to compact: a score with reasons, a ready /compact suggestion, and a template that keeps goals, decisions and leftovers through any compaction.",
+        "source": "https://github.com/apolenkov/agent-compact-advisor.git"
+      }
+    ]
   }
 ]
