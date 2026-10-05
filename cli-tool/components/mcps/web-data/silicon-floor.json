@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "silicon-floor": {
+      "description": "AI and semiconductor stocks from primary sources: who owns them (13F, 13D/G, insiders, funds), financial statements as filed with the SEC, insider trades, FINRA short interest, dividends and filings, each figure with its date and source. About 220 companies. Read-only; public endpoint, no API key required.",
+      "type": "http",
+      "url": "https://siliconfloor.com/mcp"
+    }
+  }
+}
