@@ -13,7 +13,7 @@ List the AI and semiconductor companies tracked by Silicon Floor, optionally fil
 
 ## get_company — Company snapshot
 
-Everything known about one company in one call: price (with its market's session: open or closed, last close, next open; `listedOn` for a recent listing), performance, 52-week range, trend, SEC-filed fundamentals, balance sheet (cash, operating cash flow, runway, share count and dilution), risk (beta against the sector with its r², historical volatility and its one-year rank), FINRA short interest (positions at the latest settlement, a year of history) and FINRA short volume. Every figure carries the date of the data it comes from, and comes from the company's own XBRL filings rather than a data vendor's summary.
+Everything known about one company in one call: price (with its market's session: open or closed, last close, next open; `listedOn` for a recent listing), performance, 52-week range, trend, SEC-filed fundamentals, balance sheet (cash, operating cash flow, runway, share count and dilution), risk (beta against the sector with its r², historical volatility and its one-year rank), FINRA short interest (positions at the latest settlement, a year of history) and FINRA short volume. Every figure carries the date of the data it comes from. The fundamentals and the balance sheet come from the company's own XBRL filings rather than a data vendor's summary; prices, performance and risk from market data; short interest and short volume from FINRA.
 
 | Parameter | Required | Meaning |
 |---|---|---|

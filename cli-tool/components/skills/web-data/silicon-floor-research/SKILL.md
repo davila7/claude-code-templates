@@ -146,7 +146,8 @@ than asserting the number on your own authority.
   purchases and new stakes above 5%, each dated and linked to its filing.
 - "Which fund's AI picks did best last quarter, and how do I follow it?" → `get_holders` (`list: 'performance'`): the
   top managers with their return against SMH and their largest positions; then `get_holders` with the first one's
-  `holder` for its quarters, rank and `follow` (page and RSS feed); say it is the return of its declared AI picks.
-- "How much of SpaceX does Elon Musk own?" → `get_holders` ("Elon Musk"): the shares held per the Form 4 and the
-  larger figure of the Schedule 13G, broken down into shares held through trusts, restricted "bonus" shares and options
-  with their exercise price and expiry; link `https://siliconfloor.com/holders/elon-r-musk`.
+  `holder` for its quarters, rank and `follow` (page and Atom feed); say it is the return of its declared AI picks.
+- "How much of SpaceX (SPCX, listed since June 2026) does Elon Musk own?" → `get_holders` ("Elon Musk"): the shares
+  held per the Form 4 and the larger figure of the Schedule 13G, broken down into shares held through trusts,
+  restricted "bonus" shares and options with their exercise price and expiry; link
+  `https://siliconfloor.com/holders/elon-r-musk`.
