@@ -1,6 +1,6 @@
 ---
 description: "Display all available development tools"
-allowed-tools: Read, Bash, Bash(claude:*)
+allowed-tools: Read
 
 ---
 

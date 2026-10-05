@@ -1,6 +1,6 @@
 ---
 description: Analyze a file for quality and security issues.
-allowed-tools: Read, Bash, Bash(grep:*), Bash(sed:*), Bash(awk:*)
+allowed-tools: Read, Bash(grep:*), Bash(sed:*), Bash(awk:*)
 argument-hint: "[file-path]"
 
 ---
