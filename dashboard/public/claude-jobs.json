@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-04T04:09:08.141019+00:00",
-  "totalJobs": 86,
+  "lastUpdated": "2026-10-05T03:14:10.749584+00:00",
+  "totalJobs": 87,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -250,6 +250,27 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-steuart-nutrition-software-developer-ai-coding",
+      "company": "STEUART NUTRITION",
+      "position": "Software Developer AI Coding",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Minnesota URL: https://www.steuartnutrition.com/ About us Steuart Nutrition is a GMP-certified contract manufacturer making powders, liquids, capsules and stick packs for growing wellness brands. We run on Extreme Ownership, clear communication and fast turnaround, and we want a...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/steuart-nutrition-software-developer-ai-coding",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/steuart-nutrition-software-developer-ai-coding",
+      "postedAt": "2026-09-23T15:03:18+00:00",
+      "tags": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5382518008",
