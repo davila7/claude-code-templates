@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-05T03:14:10.749584+00:00",
-  "totalJobs": 87,
+  "lastUpdated": "2026-10-06T03:13:40.266306+00:00",
+  "totalJobs": 89,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,65 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-49964448",
+      "company": "ALBERT",
+      "position": "Software Engineer",
+      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
+      "remote": true,
+      "salary": "$750k",
+      "description": "We're a consumer fintech with 20M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49964448",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49964448",
+      "postedAt": "2026-10-05T13:15:08+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "React Native"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49962075",
+      "company": "Revieve Oy",
+      "position": "Senior Product Engineer",
+      "location": "REMOTE [Europe / (GMT+2)]",
+      "remote": true,
+      "salary": "",
+      "description": "Revieve (Helsinki, with a US office and a team in Asia) builds AI, AR and computer-vision personalization for beauty brands and retailers: skin analysis, virtual try-on and product recommendations. We work with 120+ brands and retailers in 40+ countries, and our product reaches millions of end...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49962075",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49962075",
+      "postedAt": "2026-10-05T08:17:54+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49961551",
+      "company": "AssumeAI",
+      "position": "Senior AI Engineer",
+      "location": "REMOTE (UK)",
+      "remote": true,
+      "salary": "",
+      "description": "We are a fast-growing AI startup. We help SMEs find where AI will produce a measurable return, then build the systems that deliver it: AI agents, Claude skills and production-grade business software, up to full business and enterprise systems. Stack: Claude Code, Vercel, Supabase. A good fit for...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49961551",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49961551",
+      "postedAt": "2026-10-05T07:01:46+00:00",
+      "tags": [
+        "Python",
+        "Supabase",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49946276",
       "company": "Mattermost",
@@ -1471,26 +1530,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5277834008",
-      "company": "Anthropic",
-      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
-      "postedAt": "2026-06-24T13:51:42-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5255912008",
