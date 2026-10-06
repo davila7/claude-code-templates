@@ -179,6 +179,27 @@ export function advise(last: Sample | undefined, prev: Sample | undefined, polic
   return { kind: 'warm', text: 'warm: keep going' }
 }
 
+// advice that comes with a countdown: none before the first request, for a request that touched no cache, or with caching off
+const COUNTING: Record<AdviceKind, boolean> = {
+  off: false,
+  cold: false,
+  uncached: false,
+  warm: true,
+  soon: true,
+  miss: true,
+  expired: true,
+}
+
+/**
+ * Whether the band shows, given `withinMs` (bandWithinSeconds): always when it
+ * is 0; otherwise only while a countdown runs with that long or less to go,
+ * and on once the cache has expired, since that is when its advice matters.
+ */
+export function isBandShown(kind: AdviceKind, leftMs: number, withinMs: number): boolean {
+  if (withinMs <= 0) return true
+  return COUNTING[kind] && leftMs <= withinMs
+}
+
 export function fmtTokens(n: number): string {
   if (n < 1000) return String(n)
   if (n < 100_000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`

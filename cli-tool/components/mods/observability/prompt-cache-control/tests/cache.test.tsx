@@ -13,6 +13,7 @@ import {
   fmtClock,
   fmtTokens,
   hitRatio,
+  isBandShown,
   isCachingDisabled,
   missReason,
   remainingMs,
@@ -108,6 +109,30 @@ describe('advice', () => {
   })
 })
 
+describe('bandWithinSeconds', () => {
+  const kinds = ['off', 'cold', 'uncached', 'warm', 'soon', 'miss', 'expired'] as const
+
+  test('unset, the band shows in every state', () => {
+    for (const kind of kinds) expect(isBandShown(kind, 250_000, 0)).toBe(true)
+  })
+
+  test('set, it waits for the threshold and stays once the cache has expired', () => {
+    expect(isBandShown('warm', 900_000, 600_000)).toBe(false)
+    expect(isBandShown('warm', 600_000, 600_000)).toBe(true)
+    expect(isBandShown('miss', 3_000_000, 600_000)).toBe(false)
+    expect(isBandShown('miss', 290_000, 600_000)).toBe(true)
+    expect(isBandShown('soon', 30_000, 600_000)).toBe(true)
+    expect(isBandShown('soon', 30_000, 10_000)).toBe(false)
+    expect(isBandShown('expired', 0, 600_000)).toBe(true)
+  })
+
+  test('no countdown, no band: before the first request, an uncached request, caching off', () => {
+    expect(isBandShown('cold', 0, 600_000)).toBe(false)
+    expect(isBandShown('uncached', 0, 600_000)).toBe(false)
+    expect(isBandShown('off', 250_000, 600_000)).toBe(false)
+  })
+})
+
 describe('misses', () => {
   const prev = sample({ read: 50_000, write: 1_000, fresh: 200 })
 
@@ -159,6 +184,11 @@ function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = {
   on('ui.close', () => ({ value: undefined }) as never)
   on('ui.invalidate', () => ({ value: undefined }) as never)
   on('ui.toast', () => ({ value: undefined }))
+  // the engine's own band, empty: what the mod's next(e) draws when it has nothing to show
+  on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+    const { Box } = $.ui.resolve(e)
+    return <Box />
+  })
   on('ui.log', ($, e) => {
     calls.logs.push(String((e as { text: unknown }).text))
     return { value: undefined }
@@ -274,6 +304,50 @@ describe('the band', () => {
     const after = await band($)
     expect(await after.find({ type: 'Text', text: /⏱/ })).toBeUndefined()
     await after.unmount()
+  })
+
+  test('bandWithinSeconds hides it until the countdown is that close', { options: { ttl: '1h', bandWithinSeconds: 600 } }, async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, {}, calls)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    const before = await band($)
+    expect(await before.find({ type: 'Text', text: /cache/ })).toBeUndefined()
+    await before.unmount()
+
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /cache/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('bandWithinSeconds longer than the lifetime shows it from the first request', { options: { ttl: '5m', bandWithinSeconds: 600 } }, async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, {}, calls)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /5m · warm/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /⏱ [45]:\d\d/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('bandWithinSeconds shows nothing without a countdown', { options: { bandWithinSeconds: 600 } }, async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, { DISABLE_PROMPT_CACHING: '1' }, calls)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    const off = await band($)
+    expect(await off.find({ type: 'Text', text: /prompt caching is off/ })).toBeUndefined()
+    await off.unmount()
+  })
+
+  test('bandWithinSeconds leaves an uncached request without a band', { options: { bandWithinSeconds: 600 } }, async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, {}, calls, { read: 0, write: 0 })
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /not cached/ })).toBeUndefined()
+    await ui.unmount()
   })
 })
 

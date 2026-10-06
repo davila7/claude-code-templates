@@ -64,9 +64,12 @@ Other switches read from the environment at session start:
   warnSeconds: number       countdown threshold for the yellow state and the toast (default 60)
   compactAtTokens: number   prompt size that makes an expired cache suggest /compact (default 100000)
   band: boolean             row above the prompt (default true)
+  bandWithinSeconds: number show the band only this close to expiry, and once expired (default 0: always)
   status: boolean           entry under the prompt, "cache 98% · 3:41" (default false)
   toast: boolean            toasts at the threshold, 10, 3, 2 and 1 s (default true)
 ```
+
+`bandWithinSeconds` keeps the band out of the way while the cache has a long time to live: set to 600, it comes up by itself with ten minutes left on the countdown (at once on a 5-minute cache) and stays once the cache has expired, which is when its advice to `/compact` or keep going matters. With no countdown there is no band: before the first request, after a request that touched no cache, and with caching off. The status line entry, the toasts and `/cache` are unchanged.
 
 The 100k `compactAtTokens` is a judgement, not a figure from the documentation: lower it if your model's cache writes are expensive for you.
 

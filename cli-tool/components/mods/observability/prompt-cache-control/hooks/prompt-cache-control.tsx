@@ -30,6 +30,7 @@
  *   warnSeconds: number         countdown threshold for the warning (default 60)
  *   compactAtTokens: number     prompt size that makes an expired cache suggest /compact (default 100000)
  *   band: boolean               row above the prompt (default true)
+ *   bandWithinSeconds: number   show the band only this close to expiry, and once expired (default 0: always)
  *   status: boolean             entry under the prompt (default false)
  *   toast: boolean              toasts near expiry: at warnSeconds, then 10, 3, 2 and 1 s (default true)
  */
@@ -43,6 +44,7 @@ import {
   fmtClock,
   fmtTokens,
   hitRatio,
+  isBandShown,
   isCachingDisabled,
   accountOf,
   decideTtl,
@@ -131,6 +133,8 @@ export const register: Register = (on, options) => {
     compactAtTokens: positive(options.compactAtTokens, 100_000),
   }
   const showBand = options.band !== false
+  // 0 (unset) keeps the band up the whole time
+  const bandWithinMs = positive(options.bandWithinSeconds, 0) * 1000
   const showStatus = options.status === true
   const wantToast = options.toast !== false
 
@@ -285,6 +289,8 @@ export const register: Register = (on, options) => {
     if (!showBand || e.props.hasSurvey || isPaneOpen) return next(e)
     const { last, advice, left } = current(policy, Date.now())
     if (!last && advice.kind !== 'off') return next(e)
+    // the clock redraws every second while it counts, so the band comes up on its own at the threshold
+    if (!isBandShown(advice.kind, left, bandWithinMs)) return next(e)
     const { Box, Text } = $.ui.resolve(e)
     const columns = e.viewport?.columns ?? 100
     const color = COLOR[advice.kind]
