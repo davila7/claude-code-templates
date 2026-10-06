@@ -4,7 +4,7 @@ Shows, **while you type**, the skills and subagents Claude will probably call fo
 
 ```
 ╭──────────────────────────────────────────────────────────────────────╮
-│ ✦ Claude may call 24 skills · 3 subagents                            │
+│ ✦ Claude may call 2 of 24 skills · 1 of 3 subagents                  │
 │ ▶ ◆ pptx                 ████████░░  82%  will be called · deck, slides│
 │   ▣ design-reviewer      ██░░░░░░░░  21%  slides                     │
 │   ● brand-guidelines     █░░░░░░░░░   9%  deck                       │

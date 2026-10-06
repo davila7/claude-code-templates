@@ -88,6 +88,7 @@ const COLOR: Record<Origin, string> = { user: 'green', plugin: 'magenta', agent:
 const WORDS = {
   en: {
     title: 'Claude may call',
+    of: 'of',
     skills: 'skills',
     agents: 'subagents',
     keywords: 'keyword match · pause for Jev to decide',
@@ -102,6 +103,7 @@ const WORDS = {
   },
   es: {
     title: 'Claude puede llamar',
+    of: 'de',
     skills: 'skills',
     agents: 'subagents',
     keywords: 'coincidencia por palabras · pausa para que Jev decida',
@@ -335,10 +337,21 @@ export const register: Register = (on, options) => {
     // HTML collapses runs of spaces; a no-break space keeps them (desktop).
     const pad = (s: string) => (e.surface === 'terminal' ? s : s.replace(/ /g, ' '))
     const fit = (s: string, n: number) => pad(s.length > n ? `${s.slice(0, n - 1)}…` : s.padEnd(n))
-    const meter = (score: number) => {
-      if (score < 0) return '·'.repeat(METER)
-      const full = Math.max(score > 0 ? 1 : 0, Math.round((score / 100) * METER))
-      return '█'.repeat(full) + '░'.repeat(METER - full)
+    const filled = (score: number) => (score < 0 ? 0 : Math.max(score > 0 ? 1 : 0, Math.round((score / 100) * METER)))
+    // The terminal draws block glyphs one cell wide. Desktop fonts draw them
+    // wider than a cell, so there the meter is two coloured boxes instead.
+    const meter = (score: number, color: string, isDim: boolean) => {
+      const full = filled(score)
+      if (e.surface === 'terminal') {
+        const bar = score < 0 ? '·'.repeat(METER) : '█'.repeat(full) + '░'.repeat(METER - full)
+        return <Text color={color} dimColor={isDim}>{bar}</Text>
+      }
+      return (
+        <Box flexDirection="row" width={METER} height={1} overflow="hidden">
+          {full > 0 ? <Box key="on" width={full} height={1} backgroundColor={color} /> : null}
+          {full < METER ? <Box key="off" width={METER - full} height={1} backgroundColor="gray" /> : null}
+        </Box>
+      )
     }
 
     const footer =
@@ -364,9 +377,11 @@ export const register: Register = (on, options) => {
           <Box key="name" width={26} flexShrink={0}>
             <Text bold={r.isChosen} color={accent}>{fit(r.name, 25)}</Text>
           </Box>
-          <Box key="meter" width={METER + 6} flexShrink={0}>
-            <Text color={r.isChosen ? 'green' : 'cyan'} dimColor={!r.isChosen}>{pad(`${meter(r.score)} `)}</Text>
-            <Text dimColor>{pad((r.score < 0 ? '—' : `${r.score}%`).padStart(4))}</Text>
+          <Box key="meter" width={METER + 1} flexShrink={0} overflow="hidden">
+            {meter(r.score, r.isChosen ? 'green' : 'cyan', !r.isChosen)}
+          </Box>
+          <Box key="score" width={6} flexShrink={0} justifyContent="flex-end" overflow="hidden">
+            <Text dimColor>{pad(`${r.score < 0 ? '—' : `${r.score}%`} `)}</Text>
           </Box>
           <Box key="detail" flexGrow={1} flexShrink={1}>
             <Text dimColor={!r.isChosen} color={r.isChosen ? 'green' : undefined} wrap="truncate-end">{detail}</Text>
@@ -375,7 +390,10 @@ export const register: Register = (on, options) => {
       )
     })
 
-    const counts = v.agents > 0 ? `${v.skills} ${words.skills} · ${v.agents} ${words.agents}` : `${v.skills} ${words.skills}`
+    // Shown out of available, per kind: "2 of 26 skills · 1 of 3 subagents".
+    const shownAgents = v.rows.filter((r) => r.origin === 'agent').length
+    const ofSkills = `${v.rows.length - shownAgents} ${words.of} ${v.skills} ${words.skills}`
+    const counts = v.agents > 0 ? `${ofSkills} · ${shownAgents} ${words.of} ${v.agents} ${words.agents}` : ofSkills
     return (
       <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' ? 'green' : 'cyan'} borderDimColor={v.phase !== 'decided'} paddingX={1}>
         <Box key="head" flexDirection="row">

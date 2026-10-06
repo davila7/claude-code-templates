@@ -90,7 +90,7 @@ describe('the band', () => {
     const ui = await draw($, on, prose({ rows: [row('code-explorer', 77, true, 'agent'), row('pdf', 10, false, 'plugin')] }))
     expect(await ui.find({ type: 'Text', text: /▣/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /◆/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /24 skills · 3 subagents/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /1 of 24 skills · 1 of 3 subagents/ })).toBeDefined()
     await ui.unmount()
   })
 
@@ -118,6 +118,11 @@ describe('the band', () => {
       }
       const label = await ui.find({ type: 'Text', text: /xlsx/ })
       expect(/\u00a0/.test(String(label?.text))).toBe(surface === 'desktop')
+      // The score sits in its own cell, never in the meter's.
+      for (const key of ['meter', 'score']) expect(boxes.filter((b) => b.key === key).every((b) => b.props.flexShrink === 0)).toBe(true)
+      // Desktop fonts draw block glyphs wider than a cell: the bar is boxes there.
+      const glyphs = await ui.findAll({ type: 'Text', text: /[█░]/ })
+      expect(glyphs.length > 0).toBe(surface === 'terminal')
       await ui.unmount()
     })
   }
