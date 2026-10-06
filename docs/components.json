@@ -589,17 +589,17 @@
       }
     },
     {
-      "name": "payment-integration",
-      "path": "business-marketing/payment-integration.md",
+      "name": "payment-gateway-integrator",
+      "path": "business-marketing/payment-gateway-integrator.md",
       "category": "business-marketing",
       "type": "agent",
-      "description": "Payment systems integration specialist. Use PROACTIVELY for Stripe, PayPal, and payment processor implementations, checkout flows, subscription billing, webhook handling, and PCI compliance.",
+      "description": "Use PROACTIVELY for Stripe, PayPal, and Square integrations: checkout flows, subscription billing, webhook handling, idempotency, PCI scope reduction, and SCA/3DS2 compliance. Specifically:\n\n<example>\nContext: An e-commerce site needs to add Stripe checkout for one-time purchases.\nuser: \"We need to add Stripe Checkout to our Next.js store so customers can buy products with a credit card.\"\nassistant: \"I'll confirm whether you want Stripe's hosted Checkout or an embedded Payment Element, your currencies/regions (for SCA requirements), and whether you need saved cards for repeat customers. Then I'll implement the server-side PaymentIntent/Checkout Session creation, the webhook endpoint with signature verification on the raw body, and idempotency keys for the create-session call, keeping raw card data off your servers entirely.\"\n<commentary>\nUse payment-gateway-integrator when building a new one-time-payment checkout flow. The agent clarifies the integration shape and PCI-scope implications before writing code, and always routes card data through Stripe-hosted elements rather than a raw form.\n</commentary>\n</example>\n\n<example>\nContext: A SaaS product wants to add subscription billing with trials and failed-payment recovery.\nuser: \"We want to launch subscription plans with a 14-day free trial, and we need to handle failed renewal payments gracefully.\"\nassistant: \"I'll set up Stripe Billing with a Subscription tied to a SetupIntent-captured payment method (so SCA/3DS2 triggers correctly if the customer is in the EU/UK), configure the trial period, and build the webhook handlers for invoice.payment_failed and customer.subscription.updated with Smart Retries/dunning logic. I'll also confirm which currencies you bill in before finalizing the event-handling code.\"\n<commentary>\nUse payment-gateway-integrator for subscription billing design. The agent surfaces SCA implications for EU/UK customers rather than defaulting to a US-only flow.\n</commentary>\n</example>\n\n<example>\nContext: A team's webhook endpoint is silently failing signature verification in production.\nuser: \"Our Stripe webhook worked in testing but now every event fails signature verification in production.\"\nassistant: \"This is almost always caused by the framework parsing the body as JSON before verification — Stripe's signature check needs the raw, unparsed request body. I'll check whether a global express.json() is mounted with app.use() ahead of the webhook route — if so, simply adding express.raw() on that route won't help, since the body stream is already consumed by then. The simplest fix is to mount the webhook route's own express.raw({type: 'application/json'}) middleware — scoped to its actual mount path, e.g. app.use('/webhook', express.raw({type: 'application/json'})) — before the global app.use(express.json()) call in the app setup, so Express never hands that route's body to the JSON parser in the first place; matching the real path matters, since a hardcoded or mismatched path (e.g. the webhook is actually mounted at /api/stripe/webhook) would silently let the global parser consume the body again. I'll also confirm you're using the correct signing secret for this endpoint/mode (test vs. live).\"\n<commentary>\nUse payment-gateway-integrator to debug webhook signature failures — a very common, specific bug (raw-body parsing order, including cases where a route-level express.raw() fix is insufficient because a global body-parser already ran) that the agent should recognize and fix directly.\n</commentary>\n</example>",
       "author": "",
       "repo": "",
       "version": "",
       "license": "",
       "keywords": [],
-      "downloads": 2085,
+      "downloads": 0,
       "security": {
         "validated": false,
         "valid": null,
