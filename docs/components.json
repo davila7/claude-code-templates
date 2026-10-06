@@ -48279,6 +48279,170 @@
       ]
     },
     {
+      "name": "jev-skill-typeahead",
+      "path": "productivity/jev-skill-typeahead",
+      "category": "productivity",
+      "type": "mod",
+      "description": "Shows, while you type, the skills and subagents Claude will probably call for your prompt: reads the draft on every edit and lists them in the band above the prompt, ranked by keyword match (English or Spanish). When you pause, Jev (TypeSafe's decision model) decides which one will be called and the band marks it. Slash commands are left out, since you run those yourself. Without a Jev key it stays on the instant local match.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "productivity",
+        "skills",
+        "subagents",
+        "typeahead"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "register.tsx"
+      ],
+      "userConfig": {
+        "typesafeApiKey": {
+          "type": "string",
+          "title": "TypeSafe API key",
+          "description": "Key for TypeSafe's own API; preferred over the Gateway since it reports a calibrated confidence",
+          "default": "",
+          "sensitive": true
+        },
+        "gatewayApiKey": {
+          "type": "string",
+          "title": "Vercel AI Gateway API key",
+          "description": "Key for the AI Gateway; with no key at all the band stays on the keyword match",
+          "default": "",
+          "sensitive": true
+        },
+        "provider": {
+          "type": "string",
+          "title": "Decision backend",
+          "description": "\"auto\" picks TypeSafe, then the Gateway, then keywords; \"builtin\" asks Claude Code's own small model once per pause; \"keywords\" never decides",
+          "default": "auto",
+          "options": [
+            "auto",
+            "typesafe",
+            "gateway",
+            "builtin",
+            "keywords"
+          ]
+        },
+        "typesafeBaseUrl": {
+          "type": "string",
+          "title": "TypeSafe base URL",
+          "description": "Empty uses https://api.typesafe.ai. Whatever is set here receives your key and your draft",
+          "default": ""
+        },
+        "typesafeModel": {
+          "type": "string",
+          "title": "TypeSafe model",
+          "description": "Empty uses jev-latest",
+          "default": ""
+        },
+        "gatewayBaseUrl": {
+          "type": "string",
+          "title": "AI Gateway base URL",
+          "description": "Empty uses https://ai-gateway.vercel.sh/v4/ai. Whatever is set here receives your key and your draft",
+          "default": ""
+        },
+        "gatewayModel": {
+          "type": "string",
+          "title": "AI Gateway model",
+          "description": "Empty uses typesafe-ai/jev",
+          "default": ""
+        },
+        "language": {
+          "type": "string",
+          "title": "Band language",
+          "description": "Language of the band's labels; matching understands both",
+          "default": "en",
+          "options": [
+            "en",
+            "es"
+          ]
+        },
+        "maxRows": {
+          "type": "number",
+          "title": "Rows",
+          "description": "How many skills the band lists (1 to 8; values outside are clamped)",
+          "default": 4
+        },
+        "pauseMs": {
+          "type": "number",
+          "title": "Pause before deciding (ms)",
+          "description": "How long the draft must sit still before Jev is asked (minimum 150)",
+          "default": 600
+        },
+        "minWords": {
+          "type": "number",
+          "title": "Words before suggesting",
+          "description": "Content words a prose draft needs before the band appears (minimum 1; a draft of 24+ characters also qualifies)",
+          "default": 2
+        },
+        "includeSubagents": {
+          "type": "boolean",
+          "title": "Include subagents",
+          "description": "Also suggest the subagent types the engine offers the model (seen once the first prompt of the session has gone out)",
+          "default": true
+        },
+        "timeoutMs": {
+          "type": "number",
+          "title": "Decision timeout (ms)",
+          "description": "How long to wait for Jev before the band falls back to the keyword match (minimum 500)",
+          "default": 4000
+        },
+        "gateThreshold": {
+          "type": "number",
+          "title": "Needs-a-skill threshold",
+          "description": "Mean of the gate answers under which no skill is expected to be used",
+          "default": 0.3
+        },
+        "confidenceThreshold": {
+          "type": "number",
+          "title": "Confidence threshold",
+          "description": "Probability the top skill needs when the backend reports one",
+          "default": 0.35
+        },
+        "attach": {
+          "type": "boolean",
+          "title": "Tell the model",
+          "description": "Name the skill the band marked as used to the model, for exactly the text you submit; turn off when jev-skill-suggestion is installed (it would say the same thing twice)",
+          "default": true
+        },
+        "neverSuggested": {
+          "type": "string",
+          "title": "Never suggested",
+          "description": "Comma-separated skill names left out of the band",
+          "default": ""
+        },
+        "logDecisions": {
+          "type": "boolean",
+          "title": "Log decisions",
+          "description": "Write each decision to the session log",
+          "default": true
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/jev.ts",
+        "hooks/policy.ts",
+        "hooks/register.tsx",
+        "tests/band.test.tsx",
+        "tests/policy.test.ts",
+        "types/index.d.ts"
+      ]
+    },
+    {
       "name": "npm-to-pnpm-rewriter",
       "path": "productivity/npm-to-pnpm-rewriter",
       "category": "productivity",
