@@ -38,6 +38,8 @@ check with `list_companies` and say plainly when a company is not covered instea
 | Who owns the company, insiders, funds; who sold, trimmed, bought or exited (every declared move); how ownership changed quarter by quarter since 2019, and since when each fund holds it | `get_ownership` |
 | What a fund, an investor or a person holds (Elon Musk, Jensen Huang): each stake broken down; what a fund declared each quarter since 2019; largest holders, buyers and sellers, sector rotation | `get_holders` |
 | Which manager's AI picks did best (last quarter, 1, 3 or 5 years) and how to follow it | `get_holders` (`list: 'performance'`, then `holder`) |
+| What hedge funds and institutions bought and sold in AI stocks last quarter: net flows, by segment, most bought and sold, biggest moves, new big bets | `get_fund_flows` (`quarter`) |
+| What CEOs, founders and directors bought and sold this quarter: biggest sellers and buyers, what they still hold, by company and role, new insiders | `get_insider_trading` (`quarter`: `latest`, `current`, `q3-2026`) |
 | Recent SEC filings, earnings, 8-K items, insider trades | `get_filings` |
 | What changed since a date (filings, restatements, ownership declarations, signals) | `what_changed` |
 | Dividend: does it pay, how much, is it covered; highest yields in the sector | `get_dividends` |
@@ -79,6 +81,13 @@ declared at the start of every quarter, held unchanged to its end, against SMH. 
 `holder` for its quarters and rank (`performance`) and `follow`: its page and an Atom feed of its filings. Say what the
 number is — the performance of its declared AI picks, not of its funds: 13F filings do not show trades within a
 quarter, cash, shorts or other stocks — and never present the change in declared value (`history`) as performance.
+
+**A quarter at a glance.** `get_fund_flows` for the funds (13F; default: the latest quarter whose deadline has passed,
+a quarter still being filed returns its first filers) and `get_insider_trading` for the insiders (Form 4; `current` for
+the quarter in progress, to date). Each row carries a `holder` to pass to `get_holders`. Insider purchases and sales
+(codes P and S) include private ones, and many large sales follow pre-arranged 10b5-1 plans: do not read intent into a
+sale; funds that report through a director they appoint and transfers between insiders are given apart, never as
+personal trades.
 
 **What a person really holds.** `get_holders` with the person's name: `breakdown` splits each stake into the shares
 held (and how: own name, trusts, companies), restricted ("bonus") shares, options (exercise price, expiry) and other

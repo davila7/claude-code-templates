@@ -130,6 +130,24 @@ The AI and semiconductor universe read by holder. Without `holder`: the largest 
 | `order` | no | With list 'performance': 'best' (default) or 'worst'. One of: `best`, `worst`. |
 | `limit` | no | Rows to return (default 25, max 100). |
 
+## get_insider_trading — Insider trading: what CEOs, founders and directors bought and sold (Form 4)
+
+What the executives, directors and founders of the tracked AI and semiconductor companies bought and sold in a quarter, from their SEC Form 4 filings: dollars sold and bought, by how many people and companies; the biggest sellers and buyers, each with role, company, trades, dates, the shares still held at the quarter's end and their value, and the filing; the companies most sold and most bought by their own insiders; sales by role (CEOs, CFOs, other executives, directors, 10% owners); month by month; and the people who filed their first Form 3 (new CEOs, CFOs, directors). Default: the last closed quarter (a Form 4 is due two business days after the trade); `quarter: 'current'` gives the quarter in progress, to date; quarters from Q3 2024. Counted: purchases and sales (Form 4 codes P and S, in the market or privately) by people filing on their own behalf, at the price they report, shares held through their trusts and family vehicles included. Not counted: grants, option exercises, shares withheld for taxes, gifts; funds that report through a director they appoint (Silver Lake at Dell, LS Power at NRG) and shares changing hands between insiders or their own accounts at the same price on the same day — both given apart, in dollars; shares a spouse also reports count once. Many large sales follow pre-arranged trading plans (Rule 10b5-1): each filing says so. For one company's insiders and what each holds, use get_ownership; for one person, get_holders with the `holder` value returned here.
+
+| Parameter | Required | Meaning |
+|---|---|---|
+| `quarter` | no | 'latest' (default: the last closed quarter), 'current' (the quarter in progress, to date) or a quarter such as 'q3-2026' (from 'q3-2024'). |
+| `limit` | no | Rows per list (default 8, max 25). |
+
+## get_fund_flows — What hedge funds and institutions bought and sold in AI stocks (13F)
+
+What hedge funds and institutions did with the tracked AI and semiconductor stocks in a quarter, from every SEC Form 13F: filings read, managers, value declared; the net flow of managers present at both quarters (bought, sold, stock pickers apart from index funds, market makers and wealth platforms); where the money went by segment; the companies most bought and sold (net value and share of capital, the biggest buyer or seller of each); what stock pickers bought and sold; the biggest moves of named funds; new big bets (new lines weighing 5% to 50% of a portfolio); positions sold in full; which stocks gained or lost the most holders; and whose declared AI picks returned the most over the quarter. Default: the latest quarter whose 13F deadline has passed (45 days after quarter end); a quarter still being filed returns its first filers (`wave`). Flows are share changes valued at the quarter's price — never changes in declared value; a stock listed during the quarter has no flows. A 13F shows long positions at quarter end, filed up to 45 days later: not what a fund holds today. For one fund or person, use get_holders; for one company's holders, get_ownership.
+
+| Parameter | Required | Meaning |
+|---|---|---|
+| `quarter` | no | 'latest' (default) or a quarter such as 'q2-2026'. |
+| `limit` | no | Rows per list (default 6, max 15). |
+
 ## get_financials — Financial statements as filed
 
 A company's income statement, balance sheet and cash flow statement as filed with the SEC in XBRL: the last 12 calendar quarters or the last 6 fiscal years, 30+ lines, with the filing behind each period. Lines computed from filed lines say how (`computed`); a null is a line the company did not file for that period: report it as unknown. Cash outflows (capex, buybacks, dividends paid) are negative. A foreign private issuer files once a year: its statements are fiscal years whatever the basis asked. Amounts are in the filing currency. For a foreign issuer that publishes its quarters only in releases filed as Form 6-K (TSMC), `releases` adds its monthly revenue, quarterly results and guidance — unaudited, and kept apart from the statements.
