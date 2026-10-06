@@ -167,6 +167,8 @@ describe('Jev', () => {
     expect(JSON.parse(requestBody('typesafe', 'hi', qs, 'jev-latest')).model).toBe('jev-latest')
     expect(JSON.parse(requestBody('gateway', 'hi', questions('gateway', SKILLS), 'm')).model).toBeUndefined()
     expect(requestHeaders('gateway', 'k', 'typesafe-ai/jev')['ai-model-id']).toBe('typesafe-ai/jev')
+    expect(requestHeaders('gateway', 'k', 'm')['ai-gateway-protocol-version']).toBe('0.0.1')
+    expect(requestHeaders('typesafe', 'k', 'x')['ai-gateway-protocol-version']).toBeUndefined()
     expect(requestHeaders('typesafe', 'k', 'x').authorization).toBe('Bearer k')
   })
 
