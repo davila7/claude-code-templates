@@ -1,0 +1,6 @@
+{
+  "description": "Reads the prompt draft on every edit (prompt.edit), ranks the installed skills against it as you type, asks Jev which one will be used once you pause, and draws the answer in the band above the prompt (ui.render on AbovePrompt).",
+  "modules": [
+    "./register.tsx"
+  ]
+}
