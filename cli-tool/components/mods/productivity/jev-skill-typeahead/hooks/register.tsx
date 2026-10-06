@@ -143,7 +143,7 @@ export const register: Register = (on, options) => {
   const timeoutMs = Math.max(500, number('timeoutMs', 4000))
   const minWords = Math.max(1, Math.round(number('minWords', 2)))
   const attach = flag('attach', true)
-  const logDecisions = flag('logDecisions', true)
+  const logDecisions = flag('logDecisions', false)
   const includeAgents = flag('includeSubagents', true)
   const words = WORDS[text('language', 'en') === 'es' ? 'es' : 'en']
   const excluded = parseNames(text('neverSuggested', ''))

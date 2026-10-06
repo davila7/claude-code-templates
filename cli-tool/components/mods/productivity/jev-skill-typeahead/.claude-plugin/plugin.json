@@ -136,8 +136,8 @@
     "logDecisions": {
       "type": "boolean",
       "title": "Log decisions",
-      "description": "Write each decision to the session log",
-      "default": true
+      "description": "Write each decision to the transcript (one line per decision, off by default)",
+      "default": false
     }
   }
 }

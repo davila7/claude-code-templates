@@ -73,7 +73,7 @@ claude
 
 The first session line reads `[jev-skill-typeahead] ready: … decisions by …`. Start typing a prompt: the band appears above the box.
 
-Options live in `pluginConfigs["jev-skill-typeahead@skills-dir"].options` of your user settings (not project settings): `typesafeApiKey` / `gatewayApiKey`, `provider`, `language` (`en` or `es`, labels only), `maxRows` (4, clamped to 1–8), `pauseMs` (600, min 150), `minWords` (2), `includeSubagents` (true), `timeoutMs` (4000, min 500), `attach`, `neverSuggested` (comma-separated names), `logDecisions`.
+Options live in `pluginConfigs["jev-skill-typeahead@skills-dir"].options` of your user settings (not project settings): `typesafeApiKey` / `gatewayApiKey`, `provider`, `language` (`en` or `es`, labels only), `maxRows` (4, clamped to 1–8), `pauseMs` (600, min 150), `minWords` (2), `includeSubagents` (true), `timeoutMs` (4000, min 500), `attach`, `neverSuggested` (comma-separated names), `logDecisions` (false; writes one transcript line per decision).
 
 ## Privacy
 
