@@ -81,6 +81,14 @@ const FALLBACK_TTL_MS = 30_000
 const LIVE_DELAY_MS = 60
 /** Cells of the score meter. */
 const METER = 8
+/** Dots of the meter off the terminal, where block glyphs are wider than a cell. */
+const DOTS = 5
+/** Rows kept per draft: the band shows `maxRows` of them, the details pane all. */
+const KEEP_ROWS = 8
+/** The details pane and the command that opens it. */
+const PANE = 'jev-skill-typeahead'
+/** Widest name column the band gives before cutting a name. */
+const NAME_MAX = 46
 
 /** How many of each kind the roster holds: the band's header counts against these. */
 const countsOf = (roster: Skill[]) => ({
@@ -111,6 +119,13 @@ const WORDS = {
     short: 'keep typing…',
     noMatch: 'no skill or subagent matches yet',
     noneOffered: 'no skills or subagents are offered to Claude in this session',
+    details: 'details: /jev-skill-typeahead',
+    paneTitle: 'Skill typeahead',
+    draft: 'Prompt',
+    matched: 'matched',
+    noScore: 'no score reported',
+    opened: 'Skill typeahead details opened.',
+    commandHelp: 'Show the skills and subagents Claude may call for the prompt you are typing, with full names and descriptions',
   },
   es: {
     title: 'Claude puede llamar',
@@ -131,6 +146,13 @@ const WORDS = {
     short: 'sigue escribiendo…',
     noMatch: 'ningún skill o subagent coincide todavía',
     noneOffered: 'Claude no tiene skills ni subagents en esta sesión',
+    details: 'detalles: /jev-skill-typeahead',
+    paneTitle: 'Skill typeahead',
+    draft: 'Prompt',
+    matched: 'coincide',
+    noScore: 'sin puntaje',
+    opened: 'Detalles de skill typeahead abiertos.',
+    commandHelp: 'Muestra los skills y subagents que Claude puede llamar para el prompt que escribes, con nombre y descripción completos',
   },
 }
 
@@ -193,9 +215,12 @@ export const register: Register = (on, options) => {
     const how = provider ? `Jev on ${provider}` : isBuiltin ? "Claude Code's classifier" : 'keyword match only (no Jev key)'
     $.ui.log(`[jev-skill-typeahead] ready: suggesting what Claude may call above the prompt as you type · decisions by ${how}`)
     const started = await next(e)
+    await $.command.register({ name: PANE, description: words.commandHelp }).catch((error: unknown) => {
+      $.ui.log(`[jev-skill-typeahead] could not register /${PANE}: ${String(error)}`, { to: 'debug' })
+    })
     // The band shows from the start: until the engine lists skills, the commands stand in for the counts.
     try {
-      fallback = skillsFromCommands(await $.command.list())
+      fallback = skillsFromCommands(await $.command.list()).filter((c) => !c.name.includes(PANE))
       fallbackAt = await $.clock.now()
       roster = rosterOf(fallback, [], excluded)
       index = buildIndex(roster)
@@ -283,7 +308,7 @@ export const register: Register = (on, options) => {
       const hitsOf = new Map(liveRows.map((r) => [keyOf(r), r.hits]))
       const ranked: Hit[] = [...probabilities.entries()]
         .filter(([, p]) => p === null || p >= 0.03)
-        .slice(0, maxRows)
+        .slice(0, Math.max(maxRows, KEEP_ROWS))
         .map(([k, p]) => ({ skill: byKey.get(k) as Skill, score: p === null ? -1 : Math.round(p * 100), hits: hitsOf.get(k) ?? [] }))
       const rows = (ranked.length > 0 ? ranked : liveRows.map((r): Hit => ({ skill: byKey.get(keyOf(r)) as Skill, score: r.score, hits: r.hits })))
         .filter((h) => h.skill)
@@ -302,7 +327,7 @@ export const register: Register = (on, options) => {
       if (skills.length === 0) {
         const now = await $.clock.now()
         if (now - fallbackAt >= FALLBACK_TTL_MS || fallback.length === 0) {
-          fallback = skillsFromCommands(await $.command.list())
+          fallback = skillsFromCommands(await $.command.list()).filter((c) => !c.name.includes(PANE))
           fallbackAt = now
         }
         skills = fallback
@@ -316,7 +341,7 @@ export const register: Register = (on, options) => {
         return update($, view, (old) => (JSON.stringify(old) === JSON.stringify(idle) ? old : idle))
       }
 
-      const rows = rankProse(index, draft.prose, maxRows).map((h) => toRow(h, false))
+      const rows = rankProse(index, draft.prose, Math.max(maxRows, KEEP_ROWS)).map((h) => toRow(h, false))
       const shown: View = {
         mode: 'prose',
         draft: draftText,
@@ -363,90 +388,163 @@ export const register: Register = (on, options) => {
     return next(e)
   })
 
+  on('command.run', { command: PANE }, async ($) => {
+    await $.ui.open({ id: PANE, title: words.paneTitle, focus: true })
+    return { text: words.opened }
+  }).catch(async ($, e, next) => {
+    $.ui.log(`[jev-skill-typeahead] /${PANE}: ${next.error.kind}`, { to: 'debug' })
+    return { text: `jev-skill-typeahead: the details pane could not open (${next.error.kind}).` }
+  })
+
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
     const v = await read($, view)
+    const rows = v.rows.slice(0, maxRows)
 
     const { Box, Text } = $.ui.resolve(e)
+    const isTerminal = e.surface === 'terminal'
     // HTML collapses runs of spaces; a no-break space keeps them (desktop).
-    const pad = (s: string) => (e.surface === 'terminal' ? s : s.replace(/ /g, ' '))
+    const pad = (s: string) => (isTerminal ? s : s.replace(/ /g, ' '))
     const fit = (s: string, n: number) => pad(s.length > n ? `${s.slice(0, n - 1)}…` : s.padEnd(n))
-    const filled = (score: number) => (score < 0 ? 0 : Math.max(score > 0 ? 1 : 0, Math.round((score / 100) * METER)))
-    // The terminal draws block glyphs one cell wide. Desktop fonts draw them
-    // wider than a cell, so there the meter is two coloured boxes instead.
-    const meter = (score: number, color: string, isDim: boolean) => {
-      const full = filled(score)
-      if (e.surface === 'terminal') {
-        const bar = score < 0 ? '·'.repeat(METER) : '█'.repeat(full) + '░'.repeat(METER - full)
-        return <Text color={color} dimColor={isDim}>{bar}</Text>
-      }
-      return (
-        <Box flexDirection="row" width={METER} height={1} overflow="hidden">
-          {full > 0 ? <Box key="on" width={full} height={1} backgroundColor={color} /> : null}
-          {full < METER ? <Box key="off" width={METER - full} height={1} backgroundColor="gray" /> : null}
-        </Box>
-      )
-    }
+    // The name column fits the longest name shown, so names are whole.
+    const nameWidth = Math.min(NAME_MAX, Math.max(12, ...rows.map((r) => r.name.length + 2)))
 
-    const isIdle = v.mode === 'idle'
-    const footer =
-      isIdle ? words.legend
-      : v.phase === 'thinking' ? words.thinking
-      : v.phase === 'decided' ? (v.by === 'jev' ? words.decidedJev : words.decidedBuiltin)
-      : v.phase === 'none' ? words.none
-      : v.phase === 'offline' ? words.offline
-      : canDecide ? words.keywords
-      : words.keywordsOnly
-    // What the band says when it has no rows to show.
-    const typed = v.draft.trimStart()
-    const hint =
-      v.skills + v.agents === 0 && (isIdle || v.rows.length === 0) ? words.noneOffered
-      : !isIdle ? words.noMatch
-      : typed === '' ? words.empty
-      : /^[\/!#]/.test(typed) ? words.command
-      : words.short
-    const footerColor = !isIdle && v.phase === 'decided' ? 'green' : v.phase === 'offline' ? 'yellow' : undefined
+    const footer = footerOf(v)
+    const footerColor = v.mode === 'prose' && v.phase === 'decided' ? 'green' : v.phase === 'offline' ? 'yellow' : undefined
 
-    const table = v.rows.map((r, i) => {
+    const table = rows.map((r, i) => {
       const accent = r.isChosen ? 'green' : COLOR[r.origin]
       const detail = r.isChosen ? `${words.willUse}${r.hits.length ? ` · ${r.hits.join(', ')}` : ''}` : r.hits.length > 0 ? r.hits.join(', ') : r.description
       return (
-        <Box key={`row:${i}:${r.origin}:${r.name}`} flexDirection="row">
+        <Box key={`row:${i}:${r.origin}:${r.name}`} flexDirection="row" overflow="hidden">
           <Box key="mark" width={2} flexShrink={0}>
             <Text bold color="green">{pad(r.isChosen ? '▶ ' : '  ')}</Text>
           </Box>
           <Box key="icon" width={2} flexShrink={0}>
             <Text color={COLOR[r.origin]}>{pad(`${ICON[r.origin]} `)}</Text>
           </Box>
-          <Box key="name" width={26} flexShrink={0}>
-            <Text bold={r.isChosen} color={accent}>{fit(r.name, 25)}</Text>
+          <Box key="score" width={5} flexShrink={0} justifyContent="flex-end" overflow="hidden">
+            <Text bold={r.isChosen} color={r.isChosen ? 'green' : undefined} dimColor={!r.isChosen}>{pad(`${scoreOf(r.score)} `)}</Text>
           </Box>
           <Box key="meter" width={METER + 1} flexShrink={0} overflow="hidden">
-            {meter(r.score, r.isChosen ? 'green' : 'cyan', !r.isChosen)}
+            <Text color={r.isChosen ? 'green' : 'cyan'} dimColor={!r.isChosen}>{pad(`${meterOf(r.score, isTerminal)} `)}</Text>
           </Box>
-          <Box key="score" width={6} flexShrink={0} justifyContent="flex-end" overflow="hidden">
-            <Text dimColor>{pad(`${r.score < 0 ? '—' : `${r.score}%`} `)}</Text>
+          <Box key="name" width={nameWidth} flexShrink={0} overflow="hidden">
+            <Text bold={r.isChosen} color={accent}>{fit(r.name, nameWidth - 1)}</Text>
           </Box>
-          <Box key="detail" flexGrow={1} flexShrink={1}>
+          <Box key="detail" flexGrow={1} flexShrink={1} minWidth={0} overflow="hidden">
             <Text dimColor={!r.isChosen} color={r.isChosen ? 'green' : undefined} wrap="truncate-end">{detail}</Text>
           </Box>
         </Box>
       )
     })
 
-    // Shown out of available, per kind: "2 of 26 skills · 1 of 3 subagents".
-    const shownAgents = v.rows.filter((r) => r.origin === 'agent').length
-    const ofSkills = `${v.rows.length - shownAgents} ${words.of} ${v.skills} ${words.skills}`
-    const counts = v.agents > 0 ? `${ofSkills} · ${shownAgents} ${words.of} ${v.agents} ${words.agents}` : ofSkills
     return (
-      <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' ? 'green' : 'cyan'} borderDimColor={v.phase !== 'decided'} paddingX={1}>
-        <Box key="head" flexDirection="row">
+      <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' && v.mode === 'prose' ? 'green' : 'cyan'} borderDimColor={!(v.phase === 'decided' && v.mode === 'prose')} paddingX={1} overflow="hidden">
+        <Box key="head" flexDirection="row" overflow="hidden">
           <Text bold color="cyan">{pad(`✦ ${words.title} `)}</Text>
-          <Text dimColor>{pad(counts)}</Text>
+          <Text dimColor wrap="truncate-end">{pad(headerOf(v, rows))}</Text>
         </Box>
-        {table.length > 0 ? table : <Text key="empty" dimColor wrap="truncate-end">{hint}</Text>}
-        <Text key="foot" dimColor={!footerColor} color={footerColor} wrap="truncate-end">{footer}</Text>
+        {table.length > 0 ? table : <Text key="empty" dimColor wrap="truncate-end">{hintOf(v)}</Text>}
+        <Box key="foot" flexDirection="row" overflow="hidden">
+          <Box key="state" flexGrow={1} flexShrink={1} minWidth={0} overflow="hidden">
+            <Text dimColor={!footerColor} color={footerColor} wrap="truncate-end">{footer}</Text>
+          </Box>
+          <Box key="more" flexShrink={0}>
+            <Text dimColor>{pad(`  ${words.details}`)}</Text>
+          </Box>
+        </Box>
       </Box>
     )
   })
+
+  // The details pane: every row kept for the draft, with whole names and descriptions.
+  on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
+    const v = await read($, view)
+    const { Box, Text } = $.ui.resolve(e)
+    const isTerminal = e.surface === 'terminal'
+    const pad = (s: string) => (isTerminal ? s : s.replace(/ /g, ' '))
+    const footer = footerOf(v)
+    const footerColor = v.mode === 'prose' && v.phase === 'decided' ? 'green' : v.phase === 'offline' ? 'yellow' : undefined
+
+    return (
+      <Box flexDirection="column" paddingX={1}>
+        <Box key="head" flexDirection="row">
+          <Text bold color="cyan">{pad(`✦ ${words.title} `)}</Text>
+          <Text dimColor>{pad(headerOf(v, v.rows))}</Text>
+        </Box>
+        {v.draft.trim() ? (
+          <Box key="draft" flexDirection="row" marginTop={1}>
+            <Text dimColor>{pad(`${words.draft}  `)}</Text>
+            <Text wrap="wrap">{v.draft.trim()}</Text>
+          </Box>
+        ) : null}
+        <Text key="state" dimColor={!footerColor} color={footerColor}>{footer}</Text>
+        {v.rows.length === 0 ? (
+          <Box key="empty" marginTop={1}>
+            <Text dimColor wrap="wrap">{hintOf(v)}</Text>
+          </Box>
+        ) : (
+          v.rows.map((r, i) => (
+            <Box key={`card:${i}:${r.origin}:${r.name}`} flexDirection="column" marginTop={1} borderStyle="round" borderColor={r.isChosen ? 'green' : 'gray'} borderDimColor={!r.isChosen} paddingX={1}>
+              <Box key="title" flexDirection="row">
+                <Text color={COLOR[r.origin]}>{pad(`${ICON[r.origin]} `)}</Text>
+                <Text bold color={r.isChosen ? 'green' : COLOR[r.origin]} wrap="wrap">{r.name}</Text>
+              </Box>
+              <Box key="score" flexDirection="row">
+                <Text color={r.isChosen ? 'green' : 'cyan'} dimColor={!r.isChosen}>{pad(`${meterOf(r.score, isTerminal)} `)}</Text>
+                <Text bold={r.isChosen} color={r.isChosen ? 'green' : undefined} dimColor={!r.isChosen}>{r.score < 0 ? words.noScore : `${r.score}%`}</Text>
+                {r.isChosen ? <Text color="green">{pad(` · ${words.willUse}`)}</Text> : null}
+              </Box>
+              {r.description ? <Text key="about" dimColor wrap="wrap">{r.description}</Text> : null}
+              {r.hits.length > 0 ? <Text key="hits" dimColor wrap="wrap">{`${words.matched}: ${r.hits.join(', ')}`}</Text> : null}
+            </Box>
+          ))
+        )}
+        <Box key="legend" marginTop={1}>
+          <Text dimColor>{words.legend}</Text>
+        </Box>
+      </Box>
+    )
+  })
+
+  /** The band's and the pane's status line. */
+  function footerOf(v: View): string {
+    if (v.mode === 'idle') return words.legend
+    if (v.phase === 'thinking') return words.thinking
+    if (v.phase === 'decided') return v.by === 'jev' ? words.decidedJev : words.decidedBuiltin
+    if (v.phase === 'none') return words.none
+    if (v.phase === 'offline') return words.offline
+    return canDecide ? words.keywords : words.keywordsOnly
+  }
+
+  /** What to say when there are no rows to show. */
+  function hintOf(v: View): string {
+    const typed = v.draft.trimStart()
+    if (v.skills + v.agents === 0) return words.noneOffered
+    if (v.mode === 'prose') return words.noMatch
+    if (typed === '') return words.empty
+    if (/^[\/!#]/.test(typed)) return words.command
+    return words.short
+  }
+
+  /** Shown out of available, per kind: "2 of 26 skills · 1 of 3 subagents". */
+  function headerOf(v: View, shown: Row[]): string {
+    const agents = shown.filter((r) => r.origin === 'agent').length
+    const skills = `${shown.length - agents} ${words.of} ${v.skills} ${words.skills}`
+    return v.agents > 0 ? `${skills} · ${agents} ${words.of} ${v.agents} ${words.agents}` : skills
+  }
+}
+
+/** A score as text: a percentage, or a dash when the backend reported none. */
+function scoreOf(score: number): string {
+  return score < 0 ? '—' : `${score}%`
+}
+
+/** The meter: block cells on the terminal, dots elsewhere (block glyphs are wider than a cell there). */
+function meterOf(score: number, isTerminal: boolean): string {
+  const cells = isTerminal ? METER : DOTS
+  if (score < 0) return '·'.repeat(cells)
+  const full = Math.max(score > 0 ? 1 : 0, Math.round((score / 100) * cells))
+  return isTerminal ? '█'.repeat(full) + '░'.repeat(cells - full) : '●'.repeat(full) + '○'.repeat(cells - full)
 }
