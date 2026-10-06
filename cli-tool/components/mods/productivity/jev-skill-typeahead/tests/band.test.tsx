@@ -56,9 +56,42 @@ async function draw($: Engine, on: On, v: View, surface: 'terminal' | 'desktop' 
 }
 
 describe('the band', () => {
-  test('draws nothing while the box is idle', async ($, on) => {
-    const ui = await draw($, on, { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', skills: 24, agents: 0 })
-    expect(await ui.find({ type: 'Text', text: /Claude may call/ })).toBeUndefined()
+  test('an empty box keeps the band, saying none yet and how many there are', async ($, on) => {
+    const ui = await draw($, on, { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', skills: 24, agents: 3 })
+    expect(await ui.find({ type: 'Text', text: /Claude may call/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /0 of 24 skills · 0 of 3 subagents/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /type a prompt/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /engine band/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('the session start fills the counts, so the band shows before anything is typed', async ($, on) => {
+    stubs(on)
+    on('command.list', () => ({ value: [
+      { name: 'help', description: 'Help', source: 'builtin' },
+      { name: 'pdf', description: 'PDF files', source: 'plugin' },
+      { name: 'commit', description: 'Commit', source: 'user' },
+    ] }) as never)
+    on('clock.now', () => ({ value: 1000 }) as never)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(memory.view?.mode).toBe('idle')
+    expect(memory.view?.skills).toBe(2)
+    const ui = await $.ui.mount({ plugin: 'jev-skill-typeahead', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+    expect(await ui.find({ type: 'Text', text: /0 of 2 skills/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('a session with nothing to offer says so', async ($, on) => {
+    const ui = await draw($, on, { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', skills: 0, agents: 0 })
+    expect(await ui.find({ type: 'Text', text: /no skills or subagents are offered/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('a survey above the prompt wins: the engine draws its own', async ($, on) => {
+    stubs(on)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    memory.view = prose()
+    const ui = await $.ui.mount({ plugin: 'jev-skill-typeahead', surface: 'terminal', component: 'AbovePrompt', props: { hasSurvey: true } as never })
     expect(await ui.find({ type: 'Text', text: /engine band/ })).toBeDefined()
     await ui.unmount()
   })
@@ -95,15 +128,17 @@ describe('the band', () => {
     await ui.unmount()
   })
 
-  test('a draft that is a command gets no band', async ($, on) => {
+  test('a draft that is a command gets no rows: commands run as typed', async ($, on) => {
     const ui = await draw($, on, { mode: 'idle', draft: '/pd', rows: [], phase: 'live', by: '', skills: 24, agents: 0 })
-    expect(await ui.find({ type: 'Text', text: /Claude may call/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /commands run as typed/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /pdf/ })).toBeUndefined()
     await ui.unmount()
   })
 
-  test('a prose draft nothing matches stays quiet until a decision says "no skill needed"', async ($, on) => {
+  test('a prose draft nothing matches says so until a decision says "no skill needed"', async ($, on) => {
     const quiet = await draw($, on, prose({ rows: [], phase: 'live' }))
-    expect(await quiet.find({ type: 'Text', text: /Claude may call/ })).toBeUndefined()
+    expect(await quiet.find({ type: 'Text', text: /no skill or subagent matches yet/ })).toBeDefined()
+    expect(await quiet.find({ type: 'Text', text: /0 of 24 skills/ })).toBeDefined()
     await quiet.unmount()
   })
 
