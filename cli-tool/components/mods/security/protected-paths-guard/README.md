@@ -5,6 +5,7 @@ Denies Edit / Write / NotebookEdit calls that target sensitive files
 is allowlisted. A `tool.call` hook under an array matcher (any of the named
 tools); on a match it returns `{ deny }` without calling `next`.
 
+**If the check itself fails** (it throws or runs out of its time budget), the edit is denied, never let through unchecked.
 
 ## Options
 

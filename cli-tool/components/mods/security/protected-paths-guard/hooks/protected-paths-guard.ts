@@ -76,5 +76,17 @@ export const register: Register = (on, options) => {
     }
 
     return next(e)
+  }).catch(async ($, e, next) => {
+    // The check had passed and the write ran: hand back its result (replayed, nothing runs twice).
+    if (next.called) {
+      try {
+        return await next(e)
+      } catch {
+        return { deny: `The ${e.tool} on ${e.tool === 'NotebookEdit' ? e.notebook_path : e.file_path} failed.` }
+      }
+    }
+    // A failed check never lets the write through unchecked (fail closed).
+    $.ui.log(`[protected-paths-guard] check failed (${next.error.kind}); denied ${e.tool}`)
+    return { deny: `protected-paths-guard could not check this path (${next.error.kind}), so the ${e.tool} was not run. Ask the user to make the change manually.` }
   })
 }

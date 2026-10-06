@@ -68,5 +68,21 @@ export const register: Register = (on, options) => {
 
     // Nothing matched: let the rest of the chain (and the real tool) run.
     return next(e)
+  }).catch(async ($, e, next) => {
+    // The check had passed and the command ran: hand back its result (replayed, nothing runs twice).
+    if (next.called) {
+      try {
+        return await next(e)
+      } catch {
+        return { deny: 'The Bash call failed.' }
+      }
+    }
+    // A failed check never lets the command through unchecked (fail closed).
+    $.ui.log(`[block-destructive-commands] check failed (${next.error.kind}); denied Bash call`)
+    return {
+      deny:
+        `block-destructive-commands could not check this command (${next.error.kind}), so it was not run. ` +
+        'Ask the user to run it manually.',
+    }
   })
 }

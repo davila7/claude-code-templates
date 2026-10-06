@@ -77,6 +77,19 @@ export const register: Register = (on, options) => {
     }
 
     return next(e)
+  }).catch(async ($, e, next) => {
+    if (e.tier !== 'user') return next(e)
+    // The check had passed: hand back what the rest of the chain decided (replayed, nothing runs twice).
+    if (next.called) {
+      try {
+        return await next(e)
+      } catch {
+        return { refuse: `Plugin "${e.name}" could not be registered.` }
+      }
+    }
+    // A user plugin that could not be checked is refused, never admitted unchecked (fail closed).
+    $.ui.log(`[admin-capability-lockdown] check failed (${next.error.kind}); refused plugin "${e.name}"`)
+    return { refuse: `Plugin "${e.name}" could not be checked against the organization's policy (${next.error.kind}), so it was not loaded.` }
   })
 
   // 3. Shell policy. The real security boundary is step 1 (no $.http /
@@ -99,6 +112,18 @@ export const register: Register = (on, options) => {
         }
       }
       return next(e)
+    }).catch(async ($, e, next) => {
+      // The check had passed and the command ran: hand back its result (replayed, nothing runs twice).
+      if (next.called) {
+        try {
+          return await next(e)
+        } catch {
+          return { deny: 'The Bash call failed.' }
+        }
+      }
+      // A failed check never lets the command through unchecked (fail closed).
+      $.ui.log(`[admin-capability-lockdown] guardrail check failed (${next.error.kind}); denied Bash call`)
+      return { deny: `admin-capability-lockdown could not check this command (${next.error.kind}), so it was not run.` }
     })
   }
 }

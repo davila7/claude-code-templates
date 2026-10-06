@@ -15,6 +15,7 @@ on("tool.call", async ($, e, next) => recursiveStrReplace(await next(e), ...))
 Seat it as low as possible (an org appends it in managed settings) so no
 plugin above ever sees the raw value on the way up.
 
+**If redaction itself fails** (it throws or runs out of its time budget), the output is withheld, never passed on unredacted. The tool has already run by then; only what it printed is kept back.
 
 ## Options
 
