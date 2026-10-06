@@ -95,6 +95,9 @@ async function applySave($: EngineInterface, change: (current: TodoLines) => str
 // change made outside the pane nor a second quick press is written over.
 let saving = Promise.resolve()
 
+// Tasks added from the new task field: part of that field's key, so each add draws a fresh one.
+let added = 0
+
 function save($: EngineInterface, change: (current: TodoLines) => string[] | undefined) {
   saving = saving
     .then(() => applySave($, change))
@@ -228,10 +231,25 @@ export const register: Register = (on, options) => {
         {/* A file left alone takes no new task: its save would always be refused. */}
         {Input && current !== false && (
           <Input
-            key="new"
+            // A new key after each add draws the field afresh: Desktop would put the typed text back
+            // into a field redrawn under the same key and value. autoFocus keeps Desktop's focus on it.
+            key={`new${added}`}
+            {...(e.surface === 'desktop' ? { autoFocus: true as const } : {})}
             placeholder="new task"
             submitLabel="add"
-            onSubmit={text => (text.trim() === '' ? undefined : save($, value => add(value, text.trim())))}
+            onSubmit={text => {
+              if (text.trim() === '') {
+                return undefined
+              }
+              added += 1
+              const key = `new${added}`
+              const saved = save($, value => add(value, text.trim()))
+              // The terminal draws the fresh field with the pane's focus ring on nothing, so the next
+              // keys would go to the prompt. $.ui.focus waits for the drawing that brings the new key.
+              // Best effort: where it fails, the keys go to the prompt, as before.
+              void saved.then(() => $.ui.focus({ requestId: PANE, key })).catch(() => undefined)
+              return saved
+            }}
           />
         )}
       </Box>

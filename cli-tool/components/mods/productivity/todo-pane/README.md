@@ -103,6 +103,10 @@ the same way as in the terminal.
 
 - **One line per task.** `Input` is single-line: no multi-line editing, no
   "open in `$EDITOR`".
+- **Narrow fields in Claude Desktop.** Desktop draws each `Input` at the
+  browser's default text-field width, whatever room the pane has, and a mod
+  has no prop or `Box` layout that widens it. A long task is cut off in its
+  field, though `todo.md` keeps it whole.
 - **iTerm2 and ctrl+x.** Terminals that do not pass ctrl+x chords (iTerm2 is
   reported, anthropics/claude-code#91870) cannot focus the band with
   ctrl+x tab; a click, the bare `1` in an empty prompt and `/todo` do not
@@ -136,7 +140,7 @@ Hooks: `session.start` (registers `/todo`), `classic.SessionStart`,
 `tool.call`, `command.run`, `ui.render` on `AbovePrompt` and on its `Pane`.
 Calls: `$.command.register`, `$.fs.read`, `$.fs.write`, `$.fs.exists`, `$.fs.stat`, `$.session.cwd`,
 `$.process.run` (`git rev-parse --show-toplevel`, argv, no shell),
-`$.ui.open`, `$.ui.close`, `$.ui.panes`, `$.ui.resolve`, `$.ui.toast`. No network. The only
+`$.ui.open`, `$.ui.close`, `$.ui.focus`, `$.ui.panes`, `$.ui.resolve`, `$.ui.toast`. No network. The only
 file it writes is `<repo root>/todo.md`.
 
 Tests: `claude plugin test productivity/todo-pane` cover the todo.md parsing

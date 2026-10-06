@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'claude-code/testing'
+import { describe, expect, test, type Mounted } from 'claude-code/testing'
 import type { On } from 'claude-code'
 
 import { ACTIONS } from '../hooks/register.tsx'
@@ -15,6 +15,18 @@ const PANE = {
   requestId: 'todo',
   props: { title: 'todo.md', isFocused: true, bodyColumns: 60, placement: 'dock', ...SITE },
 } as const
+
+type Pane = Mounted<(typeof SURFACES)[number], 'Pane'>
+
+// The new task field's key, found among the drawn fields: it changes with every add.
+async function newFieldKey(ui: Pick<Pane, 'findAll'>) {
+  return (await ui.findAll({ type: 'Input' })).find(field => field.key?.startsWith('new'))?.key
+}
+
+// Types a task into the new task field and presses Enter.
+async function addTask(ui: Pick<Pane, 'findAll' | 'input'>, text: string) {
+  await ui.input({ key: (await newFieldKey(ui)) ?? 'new', text })
+}
 
 // The engine beneath the plugin: a repo at /repo, its files in memory, and the panes it opened.
 function host(on: On, file?: string) {
@@ -160,7 +172,7 @@ describe('todo-pane', () => {
       expect(files.get(PATH)).toBe('# Todo\n- [x] a\n- [x] bee\n')
       await ui.press({ key: 'delete1' })
       expect(files.get(PATH)).toBe('# Todo\n- [x] bee\n')
-      await ui.input({ key: 'new', text: 'c' })
+      await addTask(ui, 'c')
       expect(files.get(PATH)).toBe('# Todo\n- [x] bee\n- [ ] c\n')
       await ui.unmount()
     }
@@ -177,6 +189,24 @@ describe('todo-pane', () => {
     const ui = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
     await ui.press({ key: 'delete0' })
     expect(files.get(PATH)).toBe('')
+  })
+
+  test('the new task field is drawn afresh after each add', async ($, on) => {
+    const { files } = host(on, '- [ ] a\n')
+    await $.classic.SessionStart({ source: 'clear' })
+    for (const surface of SURFACES) {
+      files.set(PATH, '- [ ] a\n')
+      const ui = await $.ui.mount({ plugin: 'todo-pane', surface, ...PANE })
+      const before = await newFieldKey(ui)
+      await addTask(ui, 'b')
+      // Desktop puts the typed text back into a field redrawn under the same key and value,
+      // where a second Enter would add the task again. The terminal needs the new key for the
+      // focus: the plugin puts the pane's ring on it (the kit keeps no ring, so that is checked live).
+      expect(await newFieldKey(ui)).not.toBe(before)
+      await addTask(ui, 'c')
+      expect(files.get(PATH)).toBe('- [ ] a\n- [ ] b\n- [ ] c\n')
+      await ui.unmount()
+    }
   })
 
   test('a change made outside the pane is kept, and a stale row does nothing', async ($, on) => {
@@ -226,7 +256,7 @@ describe('todo-pane', () => {
       await $.classic.SessionStart({ source: 'clear' })
       const ui = await $.ui.mount({ plugin: 'todo-pane', surface, ...PANE })
       expect(await ui.find({ type: 'Text', text: /No todo.md yet/ })).toBeDefined()
-      await ui.input({ key: 'new', text: 'first' })
+      await addTask(ui, 'first')
       expect(files.get(PATH)).toBe('- [ ] first\n')
       await ui.unmount()
     }
@@ -238,7 +268,7 @@ describe('todo-pane', () => {
     links.add(PATH)
     // Drawn from before the link, so the field still offers an add.
     const ui = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
-    await ui.input({ key: 'new', text: 'b' })
+    await addTask(ui, 'b')
     expect(files.get(PATH)).toBe('- [ ] a\n')
     expect(toasts).toContain('todo-pane: todo.md is a symbolic link, left alone')
   })
@@ -257,7 +287,7 @@ describe('todo-pane', () => {
     expect((await band.find({ key: 'todo' }))?.text).toBe('📝 todo')
     const pane = await $.ui.mount({ plugin: 'todo-pane', surface: 'terminal', ...PANE })
     expect(await pane.find({ key: 'toggle0' })).toBeUndefined()
-    expect(await pane.find({ key: 'new' })).toBeUndefined()
+    expect(await newFieldKey(pane)).toBeUndefined()
     expect(await pane.find({ type: 'Text', text: /left alone/ })).toBeDefined()
   })
 })
