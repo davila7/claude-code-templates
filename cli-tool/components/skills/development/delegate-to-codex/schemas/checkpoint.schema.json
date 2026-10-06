@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "status": {"type": "string", "enum": ["complete", "blocked", "extension_requested"]},
+    "summary": {"type": "string"},
+    "extension_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "completed_work": {"type": "array", "items": {"type": "string"}},
+        "remaining_work": {"type": "array", "items": {"type": "string"}},
+        "reason": {"type": "string"},
+        "requested_turns": {"type": "integer", "minimum": 0, "maximum": 24}
+      },
+      "required": ["completed_work", "remaining_work", "reason", "requested_turns"]
+    }
+  },
+  "required": ["status", "summary", "extension_request"]
+}

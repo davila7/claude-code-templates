@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+      "description": "Defaults to the task file stem when valid."
+    },
+    "repo_root": {
+      "type": "string",
+      "description": "Defaults to the Git top-level of the current working directory."
+    },
+    "base_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{40}$",
+      "description": "Defaults to the resolved checkout HEAD; tracked uncommitted edits are excluded."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "analyze",
+        "implement",
+        "review",
+        "test"
+      ]
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "context_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Defaults to allowed_changed_paths."
+    },
+    "forbidden_context": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "default": []
+    },
+    "allowed_changed_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "plan_status": {
+      "type": "string",
+      "const": "READY"
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "review_required": {
+      "type": "boolean"
+    },
+    "locked_decisions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
+    },
+    "max_turns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "default": 6
+    },
+    "max_total_turns": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Deprecated legacy field retained for preserved task compatibility; the bridge no longer enforces a task-wide turn ceiling."
+    },
+    "max_extensions": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Caps automatic continuation grants when auto_continue is enabled; manual continuation count remains unbounded."
+    },
+    "copy_ignored": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": [],
+      "description": "Repo-relative git-ignored paths or globs to copy into the worktree before launch, up to 200 MB total. Tracked paths and repository escapes are refused."
+    },
+    "auto_continue": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "Maximum automatic continuation grants after measurable worktree progress, capped by max_extensions when supplied."
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 1800,
+      "default": 900
+    },
+    "validation_command": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 24
+    },
+    "validation_timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1800,
+      "default": 600
+    },
+    "allow_subagents": {
+      "const": false,
+      "default": false
+    },
+    "require_subscription_auth": {
+      "const": true,
+      "default": true
+    }
+  },
+  "required": [
+    "mode",
+    "objective",
+    "allowed_changed_paths",
+    "acceptance_criteria"
+  ]
+}

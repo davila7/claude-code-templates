@@ -1,0 +1,26 @@
+{
+  "mode": "implement",
+  "objective": "One verifiable outcome, in a sentence.",
+  "allowed_changed_paths": [
+    "src/module.py",
+    "tests/test_module.py"
+  ],
+  "acceptance_criteria": [
+    "Observable behaviour 1",
+    "The focused tests pass",
+    "No other files change"
+  ],
+  "locked_decisions": [
+    "Keep the existing public interface"
+  ],
+  "validation_command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v"
+  ],
+  "validation_timeout_seconds": 600,
+  "copy_ignored": [],
+  "auto_continue": 0
+}
