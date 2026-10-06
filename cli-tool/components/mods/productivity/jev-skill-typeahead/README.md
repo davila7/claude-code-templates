@@ -3,16 +3,20 @@
 Shows, **while you type**, the skills and subagents Claude will probably call for the prompt you are writing, in the band above the prompt box. The draft is read on every edit, so the band follows the box key by key; once you pause, [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model, says which one will actually be called and the band marks it.
 
 ```
-╭──────────────────────────────────────────────────────────────────────╮
-│ ✦ Claude may call 2 of 24 skills · 1 of 3 subagents                  │
-│ ▶ ◆ pptx                 ████████░░  82%  will be called · deck, slides│
-│   ▣ design-reviewer      ██░░░░░░░░  21%  slides                     │
-│   ● brand-guidelines     █░░░░░░░░░   9%  deck                       │
-│ Jev decided                                                          │
-╰──────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ ✦ Claude may call 2 of 24 skills · 1 of 3 subagents                          │
+│ ▶ ◆  82% ███████░  anthropic-skills:pptx   will be called · deck, slides     │
+│   ▣  21% ██░░░░░░  design-reviewer         slides                            │
+│   ●   9% █░░░░░░░  brand-guidelines        deck                              │
+│ Jev decided                                    details: /jev-skill-typeahead │
+╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-`●` user or project skill, `◆` plugin skill, `▣` subagent. The border turns green when a decision is in.
+`●` user or project skill, `◆` plugin skill, `▣` subagent. The border turns green when a decision is in. Names are shown whole (the name column fits the longest one, up to 45 characters), and the detail column is cut at the band's edge. In Claude Desktop the meter is drawn with dots, since block glyphs are wider than a cell there.
+
+## Details pane
+
+`/jev-skill-typeahead` opens a side pane with more room: the prompt being read, the decision, and up to eight candidates, each with its full name, score, the whole description and the words that matched. It follows the prompt box live, like the band.
 
 ## What counts
 

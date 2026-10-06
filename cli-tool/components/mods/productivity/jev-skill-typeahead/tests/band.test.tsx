@@ -29,7 +29,7 @@ const prose = (over: Partial<View> = {}): View => ({
 /** The host's `$.state`, in memory: the one value this mod keeps. */
 const memory: { view: View | undefined; version: number } = { view: undefined, version: 0 }
 
-function stubs(on: On, isStateBroken = false) {
+function stubs(on: On, isStateBroken = false, opened: string[] = []) {
   memory.view = undefined
   memory.version = 0
   on('state.get', () => ({ value: { value: memory.view, version: memory.version } }) as never)
@@ -41,6 +41,11 @@ function stubs(on: On, isStateBroken = false) {
   })
   on('session.start', (_$, e) => ({ cwd: e.cwd }) as never)
   on('ui.log', () => ({ value: undefined }))
+  on('command.register', () => ({ value: undefined }) as never)
+  on('ui.open', (_$, e) => {
+    opened.push((e as { id: string }).id)
+    return { value: undefined } as never
+  })
   // what the engine draws when the mod passes
   on('ui.render', ($, e) => {
     const { Text } = $.ui.resolve(e)
@@ -78,6 +83,24 @@ describe('the band', () => {
     expect(memory.view?.skills).toBe(2)
     const ui = await $.ui.mount({ plugin: 'jev-skill-typeahead', surface: 'terminal', component: 'AbovePrompt', props: BAND })
     expect(await ui.find({ type: 'Text', text: /0 of 2 skills/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('names are shown whole: the name column fits the longest one', async ($, on) => {
+    const long = 'anthropic-skills:skill-creator'
+    const ui = await draw($, on, prose({ rows: [row(long, 63, true, 'plugin'), row('pdf', 12, false, 'plugin')] }), 'desktop')
+    expect(await ui.find({ type: 'Text', text: new RegExp(long) })).toBeDefined()
+    const boxes = await ui.findAll({ type: 'Box' })
+    const cell = boxes.find((b) => b.key === 'name')
+    expect(Number(cell?.props.width)).toBeGreaterThan(long.length)
+    const detail = boxes.find((b) => b.key === 'detail')
+    expect(detail?.props.overflow).toBe('hidden')
+    await ui.unmount()
+  })
+
+  test('the band points at the details pane', async ($, on) => {
+    const ui = await draw($, on, prose())
+    expect(await ui.find({ type: 'Text', text: /\/jev-skill-typeahead/ })).toBeDefined()
     await ui.unmount()
   })
 
@@ -149,7 +172,7 @@ describe('the band', () => {
       const name = boxes.filter((b) => b.key === 'name')
       expect(name.length).toBe(2)
       for (const b of name) {
-        expect(b.props.width).toBe(26)
+        expect(b.props.width).toBe(name[0].props.width)
         expect(b.props.flexShrink).toBe(0)
       }
       const label = await ui.find({ type: 'Text', text: /xlsx/ })
@@ -183,4 +206,38 @@ describe('submit', () => {
     expect(result.text).toBe('merge these pdf files')
     expect(result.context).toBeUndefined()
   })
+})
+
+describe('the details pane', () => {
+  test('the command opens it', async ($, on) => {
+    const opened: string[] = []
+    stubs(on, false, opened)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    const result = (await $.command.run({ command: 'jev-skill-typeahead', args: '', origin: { kind: 'composer' } } as never)) as { text?: string }
+    expect(opened).toEqual(['jev-skill-typeahead'])
+    expect(String(result.text)).toMatch(/opened/)
+  })
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    test(`${surface}: every row kept, with whole names and descriptions`, async ($, on) => {
+      stubs(on)
+      await $.session.start({ cwd: '/repo', surface, isInteractive: true } as never)
+      const long = 'Guided setup — install role-matched plugins, connect your tools, and pick what Claude should know about your work'
+      memory.view = prose({
+        rows: [
+          { ...row('anthropic-skills:skill-creator', 63, true, 'plugin'), description: 'Create new skills' },
+          { ...row('anthropic-skills:setup-cowork', 12, false, 'plugin'), description: long },
+          row('engineering:system-design', 7, false, 'plugin'),
+          row('anthropic-skills:docs', 6, false, 'plugin'),
+          row('code-explorer', 5, false, 'agent'),
+        ],
+      })
+      const ui = await $.ui.mount({ plugin: 'jev-skill-typeahead', surface, component: 'Pane', requestId: 'jev-skill-typeahead', props: {} as never })
+      expect(await ui.find({ type: 'Text', text: /^anthropic-skills:setup-cowork$/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: long })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /code-explorer/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /merge these pdf files/ })).toBeDefined()
+      await ui.unmount()
+    })
+  }
 })
