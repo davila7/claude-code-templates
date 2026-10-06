@@ -33,6 +33,9 @@ export const DEFAULT_MODEL: Record<Provider, string> = {
 /** The label the built-in classifier answers when no skill applies. */
 export const NONE = 'none'
 
+/** The Gateway's own protocol version, sent as `ai-gateway-protocol-version`; without it the Gateway answers 400. */
+const AI_GATEWAY_PROTOCOL_VERSION = '0.0.1'
+
 /** A forced backend whose key is missing resolves to null, never to the other one's key. */
 export function selectProvider(forced: string, typesafeKey: string, gatewayKey: string): Provider | null {
   if (forced === 'builtin' || forced === 'keywords') return null
@@ -90,6 +93,7 @@ export function requestHeaders(provider: Provider, apiKey: string, model: string
   if (provider === 'typesafe') return common
   return {
     ...common,
+    'ai-gateway-protocol-version': AI_GATEWAY_PROTOCOL_VERSION,
     'ai-gateway-auth-method': 'api-key',
     'ai-model-id': model,
     'ai-evaluation-model-specification-version': '4',
