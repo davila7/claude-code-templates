@@ -82,6 +82,12 @@ const LIVE_DELAY_MS = 60
 /** Cells of the score meter. */
 const METER = 8
 
+/** How many of each kind the roster holds: the band's header counts against these. */
+const countsOf = (roster: Skill[]) => ({
+  skills: roster.filter((s) => s.origin !== 'agent').length,
+  agents: roster.filter((s) => s.origin === 'agent').length,
+})
+
 const ICON: Record<Origin, string> = { user: '●', plugin: '◆', agent: '▣' }
 const COLOR: Record<Origin, string> = { user: 'green', plugin: 'magenta', agent: 'blue' }
 
@@ -100,6 +106,11 @@ const WORDS = {
     offline: 'decision unavailable · keyword match',
     willUse: 'will be called',
     legend: 'user ● · plugin ◆ · subagent ▣',
+    empty: 'type a prompt to see which skills or subagents Claude may call',
+    command: 'commands run as typed · nothing for Claude to pick',
+    short: 'keep typing…',
+    noMatch: 'no skill or subagent matches yet',
+    noneOffered: 'no skills or subagents are offered to Claude in this session',
   },
   es: {
     title: 'Claude puede llamar',
@@ -115,6 +126,11 @@ const WORDS = {
     offline: 'decisión no disponible · coincidencia por palabras',
     willUse: 'se llamará',
     legend: 'usuario ● · plugin ◆ · subagent ▣',
+    empty: 'escribe un prompt para ver qué skills o subagents puede llamar Claude',
+    command: 'los comandos se ejecutan tal cual · Claude no elige nada',
+    short: 'sigue escribiendo…',
+    noMatch: 'ningún skill o subagent coincide todavía',
+    noneOffered: 'Claude no tiene skills ni subagents en esta sesión',
   },
 }
 
@@ -176,7 +192,18 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     const how = provider ? `Jev on ${provider}` : isBuiltin ? "Claude Code's classifier" : 'keyword match only (no Jev key)'
     $.ui.log(`[jev-skill-typeahead] ready: suggesting what Claude may call above the prompt as you type · decisions by ${how}`)
-    return next(e)
+    const started = await next(e)
+    // The band shows from the start: until the engine lists skills, the commands stand in for the counts.
+    try {
+      fallback = skillsFromCommands(await $.command.list())
+      fallbackAt = await $.clock.now()
+      roster = rosterOf(fallback, [], excluded)
+      index = buildIndex(roster)
+      await update($, view, () => ({ ...EMPTY, ...countsOf(roster) }))
+    } catch (error) {
+      $.ui.log(`[jev-skill-typeahead] could not read the commands: ${String(error)}`, { to: 'debug' })
+    }
+    return started
   })
 
   // The skills the engine lists for the model. Observed, never changed.
@@ -208,7 +235,7 @@ export const register: Register = (on, options) => {
     /** The decision: one request to Jev (or the built-in classifier) for the draft as it stands. */
     const settle = async (draftText: string, prose: string, liveRows: Row[], mySeq: number) => {
       if (mySeq !== seq) return
-      const counts = { skills: roster.filter((s) => s.origin !== 'agent').length, agents: roster.filter((s) => s.origin === 'agent').length }
+      const counts = countsOf(roster)
       const base: View = { mode: 'prose', draft: draftText, rows: liveRows, phase: 'thinking', by: provider ? 'jev' : 'builtin', ...counts }
       await update($, view, () => base)
 
@@ -269,7 +296,6 @@ export const register: Register = (on, options) => {
     /** The instant half: no network, runs a moment after the last key. */
     const live = async (draftText: string, mySeq: number) => {
       const draft = readDraft(draftText, minWords)
-      if (draft.mode === 'idle') return update($, view, () => EMPTY)
 
       // The listings win; until the skill listing has been seen, the commands stand in.
       let skills = [...listedSkills.values()]
@@ -284,7 +310,11 @@ export const register: Register = (on, options) => {
       roster = rosterOf(skills, includeAgents ? [...offeredAgents.values()] : [], excluded)
       index = buildIndex(roster)
       if (mySeq !== seq) return
-      if (roster.length === 0) return update($, view, () => EMPTY)
+      // Idle, or nothing to pick from: the band stays, saying so, with the counts.
+      if (draft.mode === 'idle' || roster.length === 0) {
+        const idle: View = { ...EMPTY, draft: draftText, ...countsOf(roster) }
+        return update($, view, (old) => (JSON.stringify(old) === JSON.stringify(idle) ? old : idle))
+      }
 
       const rows = rankProse(index, draft.prose, maxRows).map((h) => toRow(h, false))
       const shown: View = {
@@ -293,8 +323,7 @@ export const register: Register = (on, options) => {
         rows,
         phase: 'live',
         by: '',
-        skills: roster.filter((s) => s.origin !== 'agent').length,
-        agents: roster.filter((s) => s.origin === 'agent').length,
+        ...countsOf(roster),
       }
       await update($, view, (old) => (JSON.stringify(old) === JSON.stringify(shown) ? old : shown))
 
@@ -317,7 +346,7 @@ export const register: Register = (on, options) => {
     const decided = decision
     decision = null
     latest = ''
-    await update($, view, () => EMPTY)
+    await update($, view, (old) => ({ ...EMPTY, skills: old.skills, agents: old.agents }))
 
     if (!attach || !decided?.skill || decided.draft !== e.text.trim()) return next(e)
     const pick = decided.skill
@@ -337,9 +366,6 @@ export const register: Register = (on, options) => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
     const v = await read($, view)
-    if (v.mode === 'idle') return next(e)
-    // A draft nothing matches stays quiet until a decision says something.
-    if (v.rows.length === 0 && (v.phase === 'live' || v.phase === 'offline')) return next(e)
 
     const { Box, Text } = $.ui.resolve(e)
     // HTML collapses runs of spaces; a no-break space keeps them (desktop).
@@ -362,14 +388,24 @@ export const register: Register = (on, options) => {
       )
     }
 
+    const isIdle = v.mode === 'idle'
     const footer =
-      v.phase === 'thinking' ? words.thinking
+      isIdle ? words.legend
+      : v.phase === 'thinking' ? words.thinking
       : v.phase === 'decided' ? (v.by === 'jev' ? words.decidedJev : words.decidedBuiltin)
       : v.phase === 'none' ? words.none
       : v.phase === 'offline' ? words.offline
       : canDecide ? words.keywords
       : words.keywordsOnly
-    const footerColor = v.phase === 'decided' ? 'green' : v.phase === 'offline' ? 'yellow' : undefined
+    // What the band says when it has no rows to show.
+    const typed = v.draft.trimStart()
+    const hint =
+      v.skills + v.agents === 0 && (isIdle || v.rows.length === 0) ? words.noneOffered
+      : !isIdle ? words.noMatch
+      : typed === '' ? words.empty
+      : /^[\/!#]/.test(typed) ? words.command
+      : words.short
+    const footerColor = !isIdle && v.phase === 'decided' ? 'green' : v.phase === 'offline' ? 'yellow' : undefined
 
     const table = v.rows.map((r, i) => {
       const accent = r.isChosen ? 'green' : COLOR[r.origin]
@@ -408,7 +444,7 @@ export const register: Register = (on, options) => {
           <Text bold color="cyan">{pad(`✦ ${words.title} `)}</Text>
           <Text dimColor>{pad(counts)}</Text>
         </Box>
-        {table.length > 0 ? table : <Text key="empty" dimColor>{pad(' ')}</Text>}
+        {table.length > 0 ? table : <Text key="empty" dimColor wrap="truncate-end">{hint}</Text>}
         <Text key="foot" dimColor={!footerColor} color={footerColor} wrap="truncate-end">{footer}</Text>
       </Box>
     )

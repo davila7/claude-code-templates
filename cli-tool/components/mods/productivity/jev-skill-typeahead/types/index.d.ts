@@ -19,7 +19,7 @@ export interface Row {
 }
 
 export interface View {
-  /** `prose` while a draft is being matched, `idle` when the band has nothing to say. */
+  /** `prose` while a draft is being matched; `idle` for an empty box, a command or a draft too short to read (the band says which). */
   mode: 'idle' | 'prose'
   /** The draft the rows were computed for. */
   draft: string

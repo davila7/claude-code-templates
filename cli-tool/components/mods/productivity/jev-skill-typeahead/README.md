@@ -16,7 +16,7 @@ Shows, **while you type**, the skills and subagents Claude will probably call fo
 
 ## What counts
 
-Only what **the model** calls on its own: skills (through the Skill tool) and subagent types (through the Agent tool). Slash commands are not suggested: you run those by typing `/name`, so nothing needs to guess them, and a draft starting with `/`, `!` (shell) or `#` (memory note) gets no band.
+Only what **the model** calls on its own: skills (through the Skill tool) and subagent types (through the Agent tool). Slash commands are not suggested: you run those by typing `/name`, so nothing needs to guess them, and a draft starting with `/`, `!` (shell) or `#` (memory note) gets no rows.
 
 The candidates are what the engine itself offers the model, observed as it builds its listings: the `skill_listing` attachment (`prompt.attachment`) and every agent type offered (`agent.offer`). Both hooks only watch and pass the event on. The engine renders those listings at a turn's first request, so **before the first prompt of a session** the skills come from `$.command.list()` (which also holds commands only you can run) and subagents are not known yet; the listings replace that as soon as they arrive.
 
@@ -24,7 +24,7 @@ The candidates are what the engine itself offers the model, observed as it build
 
 | You type | The band |
 |---|---|
-| nothing, `/…`, `!…`, `#…`, one or two stray words | stays away |
+| nothing, `/…`, `!…`, `#…`, one or two stray words | stays, with `0 of N skills` and a line saying why: type a prompt, commands run as typed, or keep typing |
 | `make me a deck for the board` | ranks candidates by keyword match over name and description, as you type; the word still being typed matches as a prefix. Spanish works too (`hazme una presentación`, `revisa la seguridad`) through a small Spanish-to-English alias table |
 | the same, and you stop for 600 ms | Jev decides which one will be called (see below) |
 
