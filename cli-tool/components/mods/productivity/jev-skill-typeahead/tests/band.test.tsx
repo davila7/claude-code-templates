@@ -90,7 +90,7 @@ describe('the band', () => {
     const ui = await draw($, on, prose({ rows: [row('code-explorer', 77, true, 'agent'), row('pdf', 10, false, 'plugin')] }))
     expect(await ui.find({ type: 'Text', text: /▣/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /◆/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /24 skills · 3 subagents/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /1 of 24 skills · 1 of 3 subagents/ })).toBeDefined()
     await ui.unmount()
   })
 

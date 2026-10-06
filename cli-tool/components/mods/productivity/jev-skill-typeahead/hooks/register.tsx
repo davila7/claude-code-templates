@@ -88,6 +88,7 @@ const COLOR: Record<Origin, string> = { user: 'green', plugin: 'magenta', agent:
 const WORDS = {
   en: {
     title: 'Claude may call',
+    of: 'of',
     skills: 'skills',
     agents: 'subagents',
     keywords: 'keyword match · pause for Jev to decide',
@@ -102,6 +103,7 @@ const WORDS = {
   },
   es: {
     title: 'Claude puede llamar',
+    of: 'de',
     skills: 'skills',
     agents: 'subagents',
     keywords: 'coincidencia por palabras · pausa para que Jev decida',
@@ -388,7 +390,10 @@ export const register: Register = (on, options) => {
       )
     })
 
-    const counts = v.agents > 0 ? `${v.skills} ${words.skills} · ${v.agents} ${words.agents}` : `${v.skills} ${words.skills}`
+    // Shown out of available, per kind: "2 of 26 skills · 1 of 3 subagents".
+    const shownAgents = v.rows.filter((r) => r.origin === 'agent').length
+    const ofSkills = `${v.rows.length - shownAgents} ${words.of} ${v.skills} ${words.skills}`
+    const counts = v.agents > 0 ? `${ofSkills} · ${shownAgents} ${words.of} ${v.agents} ${words.agents}` : ofSkills
     return (
       <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' ? 'green' : 'cyan'} borderDimColor={v.phase !== 'decided'} paddingX={1}>
         <Box key="head" flexDirection="row">
