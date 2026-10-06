@@ -644,6 +644,18 @@ class HealthChecker {
     }
   }
 
+  isValidRemoteUrl(value) {
+    if (typeof value !== 'string') {
+      return false;
+    }
+    try {
+      const parsed = new URL(value);
+      return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && parsed.hostname !== '';
+    } catch (error) {
+      return false;
+    }
+  }
+
   checkMCPConfigurationSyntax() {
     const configPaths = [
       path.join(process.cwd(), '.mcp.json')
@@ -675,12 +687,13 @@ class HealthChecker {
               // Remote (http/sse) servers need a url; stdio servers need a command
               const isRemote = serverConfig.type === 'http' || serverConfig.type === 'sse';
               if (isRemote) {
-                if (typeof serverConfig.url !== 'string' || !/^https?:\/\//i.test(serverConfig.url)) {
+                if (!this.isValidRemoteUrl(serverConfig.url)) {
                   invalidServers++;
                   issues.push(`Missing or invalid url for ${serverName} in ${path.basename(configPath)}`);
                   continue;
                 }
-                if (serverConfig.headers && (typeof serverConfig.headers !== 'object' || Array.isArray(serverConfig.headers))) {
+                const headers = serverConfig.headers;
+                if (headers !== undefined && (headers === null || typeof headers !== 'object' || Array.isArray(headers))) {
                   invalidServers++;
                   issues.push(`Invalid headers format for ${serverName} in ${path.basename(configPath)} (should be object)`);
                   continue;
