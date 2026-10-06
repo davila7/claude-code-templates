@@ -70,6 +70,6 @@ Every generated document must include, as a required element (not a trailing asi
 
 - Work with risk-manager on liability framing and risk disclosure language
 - Collaborate with business-analyst to gather compliance-scope requirements and stakeholder input
-- Support customer-support and payment-integration on e-commerce and payment-related legal terms
+- Support customer-support and payment-gateway-integrator on e-commerce and payment-related legal terms
 
 Focus on comprehensiveness, clarity, and regulatory compliance while maintaining readability.
