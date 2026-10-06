@@ -48591,7 +48591,8 @@
       "references": [
         ".claude-plugin/plugin.json",
         "hooks/hooks.json",
-        "hooks/webfetch-cache.ts"
+        "hooks/webfetch-cache.ts",
+        "tests/webfetch-cache.test.ts"
       ]
     },
     {
@@ -48632,7 +48633,8 @@
       "references": [
         ".claude-plugin/plugin.json",
         "hooks/block-destructive-commands.ts",
-        "hooks/hooks.json"
+        "hooks/hooks.json",
+        "tests/block-destructive-commands.test.ts"
       ]
     },
     {
@@ -49243,7 +49245,8 @@
       "references": [
         ".claude-plugin/plugin.json",
         "hooks/hooks.json",
-        "hooks/secret-redactor.ts"
+        "hooks/secret-redactor.ts",
+        "tests/secret-redactor.test.ts"
       ]
     },
     {
