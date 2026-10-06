@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "maqami-travel": {
-      "description": "Search hotels (3M+ hotels) and flights worldwide on MAQAMI, read hotel details, then prebook and book. Booking creates a real reservation and needs guest and payment details, so confirm with the user first. Remote Streamable HTTP endpoint, no API key required.",
+      "description": "Search hotels (3M+ hotels) and flights worldwide on MAQAMI, read hotel details, then prebook and book. Prebook and book create real reservations with guest and payment details; Claude Code asks for your permission before each tool call unless you allow it. Remote Streamable HTTP endpoint, no API key required.",
       "type": "http",
       "url": "https://mcp.maqami.co/"
     }
