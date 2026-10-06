@@ -45,6 +45,12 @@
       "description": "Show the meter as a row above the prompt",
       "default": true
     },
+    "bandWithinSeconds": {
+      "type": "number",
+      "title": "Band only near expiry (s)",
+      "description": "Show the band only once this many seconds or fewer are left on the countdown, and keep it up after the cache expires; nothing shows before the first request, for an uncached request or with caching off. 0 shows it the whole time",
+      "default": 0
+    },
     "status": {
       "type": "boolean",
       "title": "Status line entry",
