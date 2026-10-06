@@ -672,7 +672,23 @@ class HealthChecker {
                 continue;
               }
               
-              // Check required fields
+              // Remote (http/sse) servers need a url; stdio servers need a command
+              const isRemote = serverConfig.type === 'http' || serverConfig.type === 'sse';
+              if (isRemote) {
+                if (typeof serverConfig.url !== 'string' || !/^https?:\/\//i.test(serverConfig.url)) {
+                  invalidServers++;
+                  issues.push(`Missing or invalid url for ${serverName} in ${path.basename(configPath)}`);
+                  continue;
+                }
+                if (serverConfig.headers && (typeof serverConfig.headers !== 'object' || Array.isArray(serverConfig.headers))) {
+                  invalidServers++;
+                  issues.push(`Invalid headers format for ${serverName} in ${path.basename(configPath)} (should be object)`);
+                  continue;
+                }
+                validServers++;
+                continue;
+              }
+
               if (!serverConfig.command) {
                 invalidServers++;
                 issues.push(`Missing command for ${serverName} in ${path.basename(configPath)}`);
