@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "silicon-floor": {
-      "description": "Follow the AI stock market from Claude Code: 220 AI and semiconductor stocks, their news, the sector's market cap, dividends, and who owns each company and who's buying or selling, every SEC figure dated and linked to its filing. Read-only; public endpoint, no API key required.",
+      "description": "Follow the AI stock market from Claude Code: 220 AI and semiconductor stocks, their news, the sector's market cap, dividends, who owns each company, and what insiders and hedge funds bought and sold each quarter, every SEC figure dated and linked to its filing. Read-only; public endpoint, no API key required.",
       "type": "http",
       "url": "https://siliconfloor.com/mcp"
     }
