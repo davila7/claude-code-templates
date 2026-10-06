@@ -5,6 +5,7 @@ A `tool.call` hook under a `{ tool: "Bash" }` matcher: on a match it returns
 `{ deny }` without calling `next`, so nothing beneath (other plugins,
 PreToolUse shell hooks, the tool itself) runs; otherwise it passes through.
 
+**If the check itself fails** (it throws or runs out of its time budget), the command is denied, never let through unchecked.
 
 ## Options
 

@@ -9,6 +9,9 @@ Only the tool's own record (`result`) is cached, never core's `ref`: that
 number names the messages core produced for one specific call and must not
 be replayed on another.
 
+A long page read in pieces (WebFetch's `offset`, Claude Code 2.1.290+) is cached
+piece by piece: a read further down the page never gets the first page back.
+
 
 ## Options
 

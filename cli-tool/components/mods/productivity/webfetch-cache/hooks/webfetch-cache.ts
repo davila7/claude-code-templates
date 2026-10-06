@@ -32,7 +32,10 @@ export const register: Register = (on, options) => {
 
   on('tool.call', { tool: 'WebFetch' }, async ($, e, next) => {
     if (!e.url) return next(e)
-    const key = `${e.url}\n${e.prompt}`
+    // WebFetch reads a long page in pieces (`offset`, Claude Code 2.1.290+): each piece is its own entry,
+    // or a read past the first page would get the first page back. Not in the typings until they are regenerated (TODO: drop the cast then).
+    const offset = (e as { offset?: unknown }).offset
+    const key = `${e.url}\n${e.prompt}\n${typeof offset === 'number' ? offset : 0}`
     const now = Date.now()
 
     const hit = cache.get(key)
@@ -42,7 +45,7 @@ export const register: Register = (on, options) => {
       // Nothing below this hook runs: no network call.
       return {
         result: hit.result,
-        context: [`webfetch-cache served this result from a ${age}s-old cache entry for the same URL and prompt.`],
+        context: [`webfetch-cache served this result from a ${age}s-old cache entry for the same URL, prompt and offset.`],
       }
     }
 

@@ -20,6 +20,7 @@ so it is outermost: its `engine.create` step returns last (its withholding
 wins) and it judges every `plugin.register` after it. Loaded with
 --plugin-dir it sits in the user tier and only binds plugins listed after it.
 
+**If a check itself fails** (it throws or runs out of its time budget), a user plugin is refused and a guardrail-mode command is denied, never let through unchecked. The `engine.create` step has no time budget; a failure there fails the load.
 
 ## Options
 

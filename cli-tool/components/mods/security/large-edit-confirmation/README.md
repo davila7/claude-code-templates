@@ -8,6 +8,7 @@ asks through `$.ui.ask`, then either calls `next(e)` or returns `{ deny }`.
 `$.ui.ask` rejects in a headless (`claude -p`) run, where nobody can answer;
 the `headless` option decides what happens then (deny by default).
 
+**If the check itself fails** before the edit runs, the edit is denied, never let through unconfirmed.
 
 ## Options
 
