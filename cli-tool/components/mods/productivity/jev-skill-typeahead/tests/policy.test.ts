@@ -2,12 +2,13 @@
 import { describe, expect, test } from 'claude-code/testing'
 import {
   buildIndex,
-  exactSkill,
+  keyOf,
+  parseListing,
   parseNames,
   rankProse,
-  rankSlash,
   readDraft,
   rosterOf,
+  skillsFromCommands,
   stem,
   termsOf,
   toRow,
@@ -32,23 +33,16 @@ const SKILLS: Skill[] = [
   { name: 'security-review', description: 'Review the pending changes for security vulnerabilities', origin: 'user' },
   { name: 'code-review', description: 'Review a pull request for correctness bugs and style', origin: 'user' },
   { name: 'deploy-checklist', description: 'Pre-deployment verification checklist before shipping a release', origin: 'plugin' },
-  { name: 'linear:create-issue', description: 'Create a Linear issue', origin: 'mcp' },
+  { name: 'code-explorer', description: 'Explores a codebase to answer questions about how it works', origin: 'agent' },
 ]
 
 describe('what the draft is', () => {
-  test('empty, shell lines and memory notes get no band', () => {
-    for (const t of ['', '   ', '!ls -la', '#remember this', 'ok']) expect(readDraft(t).mode).toBe('idle')
-  })
-
-  test('a slash is a command being picked; a space after the name makes it a command being run', () => {
-    expect(readDraft('/')).toMatchObject({ mode: 'slash', token: '' })
-    expect(readDraft('/com')).toMatchObject({ mode: 'slash', token: 'com' })
-    expect(readDraft('/commit fix the typo')).toMatchObject({ mode: 'command', token: 'commit', args: 'fix the typo' })
-    expect(readDraft('  /pdf ')).toMatchObject({ mode: 'command', token: 'pdf' })
+  test('empty, commands, shell lines and memory notes get no band', () => {
+    for (const t of ['', '   ', '/commit fix the typo', '/', '!ls -la', '#remember this', 'ok']) expect(readDraft(t).mode).toBe('idle')
   })
 
   test('prose needs two content words, or enough characters', () => {
-    expect(readDraft('make me a')).toMatchObject({ mode: 'idle' })
+    expect(readDraft('make me a').mode).toBe('idle')
     expect(readDraft('review the code').mode).toBe('prose')
     expect(readDraft('revisa el código').mode).toBe('prose')
     expect(readDraft('quiero que me ayudes a entender esto por favor').mode).toBe('prose')
@@ -58,28 +52,6 @@ describe('what the draft is', () => {
     const d = readDraft('fix this ```const pdf = merge()``` please https://example.com/pdf/deck')
     expect(d.prose).not.toContain('merge()')
     expect(d.prose).not.toContain('example.com')
-  })
-})
-
-describe('slash ranking', () => {
-  test('exact, then prefix, then word start, then substring, then subsequence', () => {
-    const skills: Skill[] = ['review', 'review-code', 'code-review', 'preview', 'rvw'].map((name) => ({ name, description: '', origin: 'user' }))
-    expect(rankSlash(skills, 'review', 5).map((h) => h.skill.name)).toEqual(['review', 'review-code', 'code-review', 'preview'])
-    expect(rankSlash(skills, 'rw', 5).map((h) => h.skill.name)).toContain('rvw')
-  })
-
-  test('a bare slash lists user skills before plugins before MCP prompts', () => {
-    expect(rankSlash(SKILLS, '', 8).map((h) => h.skill.origin)).toEqual(['user', 'user', 'user', 'plugin', 'plugin', 'plugin', 'plugin', 'mcp'])
-  })
-
-  test('the part after the colon of a qualified name counts as a word start', () => {
-    expect(rankSlash(SKILLS, 'create', 3)[0].skill.name).toBe('linear:create-issue')
-  })
-
-  test('a complete name finds its skill, qualified or not', () => {
-    expect(exactSkill(SKILLS, 'commit')?.name).toBe('commit')
-    expect(exactSkill(SKILLS, 'create-issue')?.name).toBe('linear:create-issue')
-    expect(exactSkill(SKILLS, 'nope')).toBeUndefined()
   })
 })
 
@@ -109,6 +81,12 @@ describe('prose ranking', () => {
     expect(top('use the code-review skill on this')[0]).toBe('code-review')
   })
 
+  test('subagents compete with skills on the same footing', () => {
+    expect(top('explore the codebase and explain how it works')[0]).toBe('code-explorer')
+    expect(keyOf(SKILLS.find((x) => x.origin === 'agent')!)).toBe('agent:code-explorer')
+    expect(keyOf(SKILLS[0])).toBe('commit')
+  })
+
   test('nothing matches nothing', () => {
     expect(top('what is the capital of France')).toEqual([])
   })
@@ -127,20 +105,38 @@ describe('prose ranking', () => {
 })
 
 describe('the roster', () => {
-  test('built-ins, duplicates and excluded names are left out; sources map to origins', () => {
+  const LISTING = [
+    'The following skills are available for use with the Skill tool:',
+    '',
+    '- commit: Create a git commit',
+    '  with a good message',
+    '- engineering:code-review: Review code changes for security and performance',
+    '- bare',
+  ].join('\n')
+
+  test("the engine's skill listing is read: multi-line descriptions, plugin prefixes, bare names", () => {
+    const skills = parseListing(LISTING)
+    expect(skills.map((x) => [x.name, x.origin])).toEqual([['commit', 'user'], ['engineering:code-review', 'plugin'], ['bare', 'user']])
+    expect(skills[0].description).toBe('Create a git commit with a good message')
+  })
+
+  test('before the listing, commands stand in: built-ins and names with spaces are left out', () => {
+    const skills = skillsFromCommands([
+      { name: 'help', description: 'Help', source: 'builtin' },
+      { name: 'commit', description: ' Commit ', source: 'user' },
+      { name: 'pdf', description: 'PDF', source: 'plugin' },
+      { name: 'odd name', description: 'x', source: 'user' },
+    ])
+    expect(skills.map((x) => [x.name, x.origin])).toEqual([['commit', 'user'], ['pdf', 'plugin']])
+  })
+
+  test('skills and subagents are merged; a skill and an agent may share a name; excluded names go', () => {
     const roster = rosterOf(
-      [
-        { name: 'help', description: 'Help', source: 'builtin' },
-        { name: 'commit', description: ' Commit ', source: 'user' },
-        { name: 'commit', description: 'dup', source: 'plugin' },
-        { name: 'pdf', description: 'PDF', source: 'plugin' },
-        { name: 'x', description: 'X', source: 'user' },
-        { name: 'mcp__a__b', description: 'B', source: 'mcp' },
-      ],
+      [{ name: 'review', description: 'a', origin: 'user' }, { name: 'x', description: 'a', origin: 'user' }, { name: 'review', description: 'dup', origin: 'plugin' }],
+      [{ name: 'review', description: 'b', origin: 'agent' }],
       parseNames('/x, '),
     )
-    expect(roster.map((s) => [s.name, s.origin])).toEqual([['commit', 'user'], ['pdf', 'plugin'], ['mcp__a__b', 'mcp']])
-    expect(roster[0].description).toBe('Commit')
+    expect(roster.map(keyOf)).toEqual(['review', 'agent:review'])
   })
 
   test('rows cut long descriptions', () => {
@@ -165,7 +161,9 @@ describe('Jev', () => {
     expect(endpoint('typesafe', 'https://api.typesafe.ai/')).toBe('https://api.typesafe.ai/v1/systemone')
     expect(endpoint('gateway', 'https://ai-gateway.vercel.sh/v4/ai')).toBe('https://ai-gateway.vercel.sh/v4/ai/evaluation-model')
     const qs = questions('typesafe', SKILLS)
-    expect(Object.keys((qs.which as { criteria: object }).criteria)).toHaveLength(SKILLS.length)
+    const criteria = (qs.which as { criteria: Record<string, string> }).criteria
+    expect(Object.keys(criteria)).toHaveLength(SKILLS.length)
+    expect(criteria['agent:code-explorer']).toContain('Explores a codebase')
     expect(JSON.parse(requestBody('typesafe', 'hi', qs, 'jev-latest')).model).toBe('jev-latest')
     expect(JSON.parse(requestBody('gateway', 'hi', questions('gateway', SKILLS), 'm')).model).toBeUndefined()
     expect(requestHeaders('gateway', 'k', 'typesafe-ai/jev')['ai-model-id']).toBe('typesafe-ai/jev')
@@ -181,7 +179,7 @@ describe('Jev', () => {
         'gate::prose': { noul: gates[2] },
       },
     })
-  const known = new Set(SKILLS.map((s) => s.name))
+  const known = new Set(SKILLS.map(keyOf))
   const limits = { gate: 0.3, confidence: 0.35 }
 
   test('the answer is read: ranking surest first, gate oriented', () => {
@@ -194,6 +192,7 @@ describe('Jev', () => {
 
   test('the verdict: a confident choice passes the gate; prose-only drafts and unsure choices decide none', () => {
     expect(verdictOf(readDecision(answer({ pdf: 0.8, commit: 0.1 }, [0.9, 0.8, 0.1]))!, known, limits)).toBe('pdf')
+    expect(verdictOf(readDecision(answer({ 'agent:code-explorer': 0.8 }, [0.9, 0.8, 0.1]))!, known, limits)).toBe('agent:code-explorer')
     expect(verdictOf(readDecision(answer({ pdf: 0.8 }, [0.05, 0.1, 0.95]))!, known, limits)).toBeNull()
     expect(verdictOf(readDecision(answer({ pdf: 0.2, commit: 0.19 }, [0.9, 0.9, 0.1]))!, known, limits)).toBeNull()
     expect(verdictOf(readDecision(answer({ invented: 0.9 }, [0.9, 0.9, 0.1]))!, known, limits)).toBeNull()
@@ -202,6 +201,7 @@ describe('Jev', () => {
   test('the built-in classifier text carries the catalog and the none label', () => {
     const text = classifyText('merge pdfs', SKILLS)
     expect(text).toContain('- pdf: Read, merge, split')
+    expect(text).toContain('- agent:code-explorer:')
     expect(text).toContain('- none:')
     expect(text.endsWith('merge pdfs')).toBe(true)
   })

@@ -1,25 +1,20 @@
 /**
  * jev-skill-typeahead — the pure part: what the draft in the prompt box means
- * and which installed skills it points at. No `$` in here; the hook module
+ * and which skills and subagents it points at. No `$` in here; the hook module
  * does the I/O and these functions are what the tests exercise.
  *
- * What the draft is decides what the band does:
- *
- *   ''  / '!ls' / '#note'   nothing: a shell line or a memory note is not a task
- *   '/com'                  slash: the person is picking a command, so skills
- *                           are ranked by their NAME (prefix, then word start,
- *                           then substring, then subsequence)
- *   '/commit fix typo'      command: the name is complete; that skill is shown
- *                           as the one that will run, whatever follows
- *   'make me a deck…'       prose: skills are ranked by a keyword match over
- *                           name and description, English or Spanish
+ * Only what the MODEL calls on its own is a candidate: skills (through the
+ * Skill tool) and subagent types (through the Agent tool). Slash commands the
+ * person runs by typing `/name` are not: nothing needs to guess those. A draft
+ * that starts with `/`, `!` or `#` is a command, a shell line or a memory note
+ * and gets no band.
  *
  * The keyword match is deliberately plain (IDF-weighted term overlap, name
  * hits worth 2.5x a description hit, the word still being typed matched as a
- * prefix): it runs on every keystroke with no network. Deciding which skill
- * WILL be used is Jev's job once the person pauses (see jev.ts).
+ * prefix): it runs on every keystroke with no network. Deciding which one the
+ * model WILL call is Jev's job once the person pauses (see jev.ts).
  */
-import type { Mode, Origin, Row } from '../types'
+import type { Origin, Row } from '../types'
 
 export interface Skill {
   name: string
@@ -29,16 +24,12 @@ export interface Skill {
 
 /** What the draft is, as far as the band is concerned. */
 export interface Draft {
-  mode: Mode
-  /** The slash command being typed or run, without the slash; '' otherwise. */
-  token: string
-  /** The text after a complete `/name `. */
-  args: string
+  mode: 'idle' | 'prose'
   /** The prose to match: code fences and URLs removed, the tail kept. */
   prose: string
 }
 
-const IDLE: Draft = { mode: 'idle', token: '', args: '', prose: '' }
+const IDLE: Draft = { mode: 'idle', prose: '' }
 
 /** Words of a prompt that point at nothing, English and Spanish. */
 const STOP = new Set(
@@ -96,22 +87,13 @@ function words(text: string): string[] {
 /** What the draft is: see the header of this file. */
 export function readDraft(text: string, minWords = 2): Draft {
   const t = text.replace(/^\s+/, '')
-  if (!t || t.startsWith('!') || t.startsWith('#')) return IDLE
-  if (t.startsWith('/')) {
-    const m = /^\/([^\s]*)(?:\s+([\s\S]*))?$/.exec(t)
-    if (!m) return IDLE
-    return m[2] === undefined
-      ? { mode: 'slash', token: m[1], args: '', prose: '' }
-      : { mode: 'command', token: m[1], args: m[2], prose: '' }
-  }
+  if (!t || /^[/!#]/.test(t)) return IDLE
   const prose = t
     .replace(/```[\s\S]*?(```|$)/g, ' ')
     .replace(/https?:\/\/\S+/g, ' ')
     .slice(-600)
   const content = words(prose).filter((w) => !STOP.has(w))
-  return content.length >= minWords || prose.trim().length >= 24
-    ? { mode: 'prose', token: '', args: '', prose }
-    : IDLE
+  return content.length >= minWords || prose.trim().length >= 24 ? { mode: 'prose', prose } : IDLE
 }
 
 /** The search structure of one roster: each skill's words and how common each word is. */
@@ -208,48 +190,6 @@ export function rankProse(index: Index, prose: string, limit = 5, floor = 12): H
   return found.sort((a, b) => b.score - a.score || a.skill.name.localeCompare(b.skill.name)).slice(0, limit)
 }
 
-function isSubsequence(needle: string, hay: string): boolean {
-  let at = 0
-  for (const ch of hay) if (ch === needle[at]) at += 1
-  return at === needle.length
-}
-
-/** Ranking of the roster by name, for `/com`: what the typeahead would offer, in the order a person means it. */
-export function rankSlash(skills: readonly Skill[], query: string, limit = 5): Hit[] {
-  const q = fold(query)
-  const originRank: Record<Origin, number> = { user: 0, plugin: 1, mcp: 2 }
-  if (!q) {
-    return [...skills]
-      .sort((a, b) => originRank[a.origin] - originRank[b.origin] || a.name.localeCompare(b.name))
-      .slice(0, limit)
-      .map((skill) => ({ skill, score: 0, hits: [] }))
-  }
-  const found: Hit[] = []
-  for (const skill of skills) {
-    const n = fold(skill.name)
-    const parts = n.split(/[-_:/]/)
-    let score = 0
-    if (n === q) score = 100
-    else if (n.startsWith(q)) score = 90
-    else if (parts.some((p) => p.startsWith(q))) score = 75
-    else if (n.includes(q)) score = 55
-    else if (q.length >= 2 && isSubsequence(q, n)) score = 30
-    else if (q.length >= 3 && fold(skill.description).includes(q)) score = 15
-    if (score > 0) found.push({ skill, score, hits: [q] })
-  }
-  return found.sort((a, b) => b.score - a.score || a.skill.name.length - b.skill.name.length).slice(0, limit)
-}
-
-/** The skill a complete `/name` points at: the name as typed, or the plugin-qualified one that ends in it. */
-export function exactSkill(skills: readonly Skill[], token: string): Skill | undefined {
-  const q = fold(token)
-  if (!q) return undefined
-  return (
-    skills.find((s) => fold(s.name) === q) ??
-    skills.find((s) => fold(s.name).endsWith(`:${q}`))
-  )
-}
-
 /** One band row from a hit. */
 export function toRow(hit: Hit, isChosen: boolean, descriptionChars = 140): Row {
   const description = hit.skill.description.replace(/\s+/g, ' ').trim()
@@ -263,23 +203,59 @@ export function toRow(hit: Hit, isChosen: boolean, descriptionChars = 140): Row 
   }
 }
 
-/** The roster from `$.command.list()`: everything but built-ins and what the person excluded. */
-export function rosterOf(
-  commands: readonly { name: string; description: string; source: string }[],
-  excluded: ReadonlySet<string>,
-): Skill[] {
-  const seen = new Set<string>()
+/**
+ * The skills the model may call, from the engine's `skill_listing` attachment:
+ * a header line, then one `- name: description` per skill, a description
+ * possibly running over several lines. A name with a colon
+ * (`engineering:code-review`) belongs to a plugin.
+ */
+export function parseListing(text: string): Skill[] {
   const skills: Skill[] = []
-  for (const c of commands) {
-    if (c.source === 'builtin' || excluded.has(c.name) || seen.has(c.name)) continue
-    seen.add(c.name)
-    skills.push({
-      name: c.name,
-      description: (c.description ?? '').trim(),
-      origin: c.source === 'mcp' ? 'mcp' : c.source === 'plugin' ? 'plugin' : 'user',
-    })
+  let current: Skill | null = null
+  for (const raw of text.split('\n')) {
+    const line = raw.trimEnd()
+    const entry = /^- (\S+?)(?::\s(.*))?$/.exec(line)
+    if (entry) {
+      const name = entry[1] as string
+      current = { name, description: (entry[2] ?? '').trim(), origin: name.includes(':') ? 'plugin' : 'user' }
+      skills.push(current)
+    } else if (current && line.trim()) {
+      current.description = `${current.description} ${line.trim()}`.trim()
+    }
   }
   return skills
+}
+
+/**
+ * The skills before the engine's listing has been seen (it is rendered at the
+ * turn's first request): the commands the engine offers, less the built-ins.
+ * That list also holds commands only the person can run, so this is the
+ * fallback, and the listing replaces it as soon as it arrives.
+ */
+export function skillsFromCommands(
+  commands: readonly { name: string; description: string; source: string }[],
+): Skill[] {
+  return commands
+    .filter((c) => c.source !== 'builtin' && !/\s/.test(c.name))
+    .map((c) => ({ name: c.name, description: (c.description ?? '').trim(), origin: c.source === 'plugin' ? 'plugin' as const : 'user' as const }))
+}
+
+/** The key a candidate answers to in a decision request: a subagent shares no namespace with a skill. */
+export function keyOf(item: { name: string; origin: Origin }): string {
+  return item.origin === 'agent' ? `agent:${item.name}` : item.name
+}
+
+/** What a roster is built from: the skills, the subagent types, and the names the person left out. */
+export function rosterOf(skills: readonly Skill[], agents: readonly Skill[], excluded: ReadonlySet<string>): Skill[] {
+  const seen = new Set<string>()
+  const out: Skill[] = []
+  for (const item of [...skills, ...agents]) {
+    const key = `${item.origin === 'agent' ? 'agent' : 'skill'}:${item.name}`
+    if (excluded.has(item.name) || seen.has(key)) continue
+    seen.add(key)
+    out.push(item)
+  }
+  return out
 }
 
 /** Comma-separated option → set of names. */

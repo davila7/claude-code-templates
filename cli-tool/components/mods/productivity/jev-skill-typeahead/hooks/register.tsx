@@ -1,33 +1,40 @@
 /**
  * jev-skill-typeahead — Claude Mod
  *
- * Suggests the skills you could use while you type, in the band above the
- * prompt box. The draft is read on every edit (`prompt.edit`), so the band
- * follows the box key by key:
+ * Shows, in the band above the prompt box and while you type, the skills and
+ * subagents Claude will PROBABLY call for the prompt you are writing. Only
+ * what the model invokes on its own counts: skills (Skill tool) and subagent
+ * types (Agent tool). Slash commands are left out: you run those by typing
+ * `/name`, so a draft starting with `/`, `!` or `#` gets no band.
  *
- *   /com            you are picking a command: your installed skills ranked by
- *                   NAME (prefix, word start, substring, subsequence)
- *   /commit fix     the name is complete: that skill is the one that will run
- *   make a deck…    prose: your installed skills ranked by keyword match over
- *                   name and description (English and Spanish); once you
- *                   pause, Jev decides which ONE will be used and the band
- *                   marks it ▶ with the probability it answered
- *   !ls / #note     nothing: a shell line or a memory note is not a task
+ * The candidates are what the engine itself offers the model, observed as it
+ * builds the listings: the `skill_listing` attachment (`prompt.attachment`)
+ * and every agent type offered (`agent.offer`). Both hooks only watch and
+ * pass the event on. The engine renders those listings at a turn's first
+ * request, so before the first prompt of a session the skills come from
+ * `$.command.list()` instead (which also holds commands only you can run) and
+ * subagents are not known yet; the listings replace that as soon as they
+ * arrive.
+ *
+ * The draft is read on every edit (`prompt.edit`):
+ *
+ *   keywords   instant, local: candidates ranked by keyword match over name
+ *              and description, English or Spanish; the word still being
+ *              typed matches as a prefix
+ *   decision   once you pause, Jev decides which ONE will be called and the
+ *              band marks it ▶ with the probability it answered
  *
  * Phases the footer tells apart, so the band never claims more than it knows:
- * `keywords` (instant, local, a guess), `asking Jev…` (a decision is in
- * flight), `Jev decided` (the answer, with its confidence when the backend
- * reports one), `no skill needed` (the gate said prose is enough), `offline`
- * (the request failed; the keyword match stays).
+ * `keywords` (a guess), `asking Jev…`, `Jev decided` (with its confidence when
+ * the backend reports one), `no skill needed`, `offline` (the request failed;
+ * the keyword match stays).
  *
- * With `attach` on (the default) the skill the band marked ▶ for exactly the
- * text you submit is named to the model in a `<skill_relevance>` note, so what
- * the band says WILL be used is what the model is told. Text edited after the
- * decision, or submitted before it, gets no note. Turn it off when
- * jev-skill-suggestion is installed: that mod decides at submit, with its own
- * two-request pipeline.
+ * With `attach` on (the default) the candidate the band marked ▶ for exactly
+ * the text you submit is named to the model in a `<skill_relevance>` note.
+ * Text edited after the decision, or submitted before it, gets no note. Turn it
+ * off when jev-skill-suggestion is installed: that mod decides at submit.
  *
- * Privacy: with a Jev key set, the prompt draft and every skill's name and
+ * Privacy: with a Jev key set, the prompt draft and every candidate's name and
  * description are sent to the backend the key belongs to, once per pause.
  * Without a key nothing leaves the machine.
  *
@@ -37,7 +44,7 @@
 import { atom, read, update } from 'claude-code'
 import type { Register, Timer } from 'claude-code'
 
-import type { Mode, Origin, Row, View } from '../types'
+import type { Origin, Row, View } from '../types'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
@@ -54,61 +61,58 @@ import {
 import type { Provider } from './jev.ts'
 import {
   buildIndex,
-  exactSkill,
+  keyOf,
+  parseListing,
   parseNames,
   rankProse,
-  rankSlash,
   readDraft,
   rosterOf,
+  skillsFromCommands,
   toRow,
 } from './policy.ts'
 import type { Hit, Index, Skill } from './policy.ts'
 
-const EMPTY: View = { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', roster: 0 }
+const EMPTY: View = { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', skills: 0, agents: 0 }
 const view = atom({ plugin: 'jev-skill-typeahead', key: 'view' } as const, EMPTY)
 
-/** The roster is re-read this often: skills can be installed mid-session. */
-const ROSTER_TTL_MS = 30_000
+/** The command fallback is re-read this often: skills can be installed mid-session. */
+const FALLBACK_TTL_MS = 30_000
 /** Keys typed this close together are one redraw. */
 const LIVE_DELAY_MS = 60
 /** Cells of the score meter. */
 const METER = 8
 
-const ICON: Record<Origin, string> = { user: '●', plugin: '◆', mcp: '◇' }
-const COLOR: Record<Origin, string> = { user: 'green', plugin: 'magenta', mcp: 'yellow' }
+const ICON: Record<Origin, string> = { user: '●', plugin: '◆', agent: '▣' }
+const COLOR: Record<Origin, string> = { user: 'green', plugin: 'magenta', agent: 'blue' }
 
 const WORDS = {
   en: {
-    title: 'Skills',
-    installed: 'installed',
-    modes: { slash: 'command', command: 'running', prose: 'prompt', idle: '' } as Record<Mode, string>,
+    title: 'Claude may call',
+    skills: 'skills',
+    agents: 'subagents',
     keywords: 'keyword match · pause for Jev to decide',
     keywordsOnly: 'keyword match · set a Jev key to get a decision',
     thinking: 'asking Jev…',
     decidedJev: 'Jev decided',
     decidedBuiltin: 'Claude Code decided',
-    none: 'no skill needed for this',
+    none: 'nothing needed for this',
     offline: 'decision unavailable · keyword match',
-    willUse: 'will be used',
-    runs: 'runs',
-    nothing: 'no installed skill matches',
-    origins: 'user ● · plugin ◆ · mcp ◇',
+    willUse: 'will be called',
+    legend: 'user ● · plugin ◆ · subagent ▣',
   },
   es: {
-    title: 'Skills',
-    installed: 'instalados',
-    modes: { slash: 'comando', command: 'ejecuta', prose: 'prompt', idle: '' } as Record<Mode, string>,
+    title: 'Claude puede llamar',
+    skills: 'skills',
+    agents: 'subagents',
     keywords: 'coincidencia por palabras · pausa para que Jev decida',
     keywordsOnly: 'coincidencia por palabras · configura una key de Jev para decidir',
     thinking: 'consultando a Jev…',
     decidedJev: 'Jev decidió',
     decidedBuiltin: 'Claude Code decidió',
-    none: 'no hace falta ningún skill',
+    none: 'no hace falta ninguno',
     offline: 'decisión no disponible · coincidencia por palabras',
-    willUse: 'se usará',
-    runs: 'ejecuta',
-    nothing: 'ningún skill instalado coincide',
-    origins: 'usuario ● · plugin ◆ · mcp ◇',
+    willUse: 'se llamará',
+    legend: 'usuario ● · plugin ◆ · subagent ▣',
   },
 }
 
@@ -140,20 +144,25 @@ export const register: Register = (on, options) => {
   const minWords = Math.max(1, Math.round(number('minWords', 2)))
   const attach = flag('attach', true)
   const logDecisions = flag('logDecisions', true)
+  const includeAgents = flag('includeSubagents', true)
   const words = WORDS[text('language', 'en') === 'es' ? 'es' : 'en']
   const excluded = parseNames(text('neverSuggested', ''))
   const limits = { gate: number('gateThreshold', 0.3), confidence: number('confidenceThreshold', 0.35) }
 
+  // What the engine offers the model, as seen in its own listings.
+  const listedSkills = new Map<string, Skill>()
+  const offeredAgents = new Map<string, Skill>()
+  let fallback: Skill[] = []
+  let fallbackAt = -Infinity
+
   let roster: Skill[] = []
   let index: Index = buildIndex([])
-  let rosterAt = -Infinity
-  // Latest draft, and the counter that tells a late answer it was overtaken.
   let latest = ''
   let seq = 0
   let liveTimer: Timer | null = null
   let settleTimer: Timer | null = null
-  // The one decision still valid: for exactly this draft, this skill (or none).
-  let decision: { draft: string; name: string | null } | null = null
+  // The one decision still valid: for exactly this draft, this candidate (or none).
+  let decision: { draft: string; skill: Skill | null } | null = null
 
   const stop = () => {
     liveTimer?.cancel()
@@ -164,7 +173,19 @@ export const register: Register = (on, options) => {
 
   on('session.start', async ($, e, next) => {
     const how = provider ? `Jev on ${provider}` : isBuiltin ? "Claude Code's classifier" : 'keyword match only (no Jev key)'
-    $.ui.log(`[jev-skill-typeahead] ready: suggesting skills above the prompt as you type · decisions by ${how}`)
+    $.ui.log(`[jev-skill-typeahead] ready: suggesting what Claude may call above the prompt as you type · decisions by ${how}`)
+    return next(e)
+  })
+
+  // The skills the engine lists for the model. Observed, never changed.
+  on('prompt.attachment', { type: 'skill_listing' }, async ($, e, next) => {
+    for (const skill of parseListing(e.text)) listedSkills.set(skill.name, skill)
+    return next(e)
+  })
+
+  // The subagent types the engine offers the model. Observed, never changed.
+  on('agent.offer', async ($, e, next) => {
+    offeredAgents.set(e.agent, { name: e.agent, description: e.description, origin: 'agent' })
     return next(e)
   })
 
@@ -181,15 +202,16 @@ export const register: Register = (on, options) => {
     /** The decision: one request to Jev (or the built-in classifier) for the draft as it stands. */
     const settle = async (draftText: string, prose: string, liveRows: Row[], mySeq: number) => {
       if (mySeq !== seq) return
-      const base: View = { mode: 'prose', draft: draftText, rows: liveRows, phase: 'thinking', by: provider ? 'jev' : 'builtin', roster: roster.length }
+      const counts = { skills: roster.filter((s) => s.origin !== 'agent').length, agents: roster.filter((s) => s.origin === 'agent').length }
+      const base: View = { mode: 'prose', draft: draftText, rows: liveRows, phase: 'thinking', by: provider ? 'jev' : 'builtin', ...counts }
       await update($, view, () => base)
 
-      // The skills the keyword match likes go first: a backend that truncates keeps them.
-      const liked = new Set(liveRows.map((r) => r.name))
-      const candidates = [...roster.filter((s) => liked.has(s.name)), ...roster.filter((s) => !liked.has(s.name))].slice(0, 250)
-      const known = new Set(candidates.map((s) => s.name))
+      // The candidates the keyword match likes go first: a backend that truncates keeps them.
+      const liked = new Set(liveRows.map((r) => keyOf(r)))
+      const candidates = [...roster.filter((s) => liked.has(keyOf(s))), ...roster.filter((s) => !liked.has(keyOf(s)))].slice(0, 250)
+      const known = new Set(candidates.map(keyOf))
 
-      let name: string | null = null
+      let chosen: string | null = null
       let probabilities = new Map<string, number | null>()
       let failed = false
       try {
@@ -204,12 +226,12 @@ export const register: Register = (on, options) => {
           ])
           const decided = response && response.ok ? readDecision(response.text) : null
           if (!decided) throw new Error(response ? `${provider} answered ${response.status}` : `no answer in ${timeoutMs}ms`)
-          name = verdictOf(decided, known, limits)
+          chosen = verdictOf(decided, known, limits)
           probabilities = new Map(decided.ranked.filter((r) => known.has(r.name)).map((r) => [r.name, r.probability]))
         } else {
-          const label = await $.model.classify(classifyText(prose.trim(), candidates), [...candidates.map((s) => s.name), NONE])
-          name = label && label !== NONE && known.has(label) ? label : null
-          if (name) probabilities = new Map([[name, null]])
+          const label = await $.model.classify(classifyText(prose.trim(), candidates), [...candidates.map(keyOf), NONE])
+          chosen = label && label !== NONE && known.has(label) ? label : null
+          if (chosen) probabilities = new Map([[chosen, null]])
         }
       } catch (error) {
         failed = true
@@ -221,55 +243,56 @@ export const register: Register = (on, options) => {
         await update($, view, () => ({ ...base, phase: 'offline' }))
         return
       }
-      decision = { draft: draftText.trim(), name }
+      const byKey = new Map(roster.map((s) => [keyOf(s), s]))
+      decision = { draft: draftText.trim(), skill: chosen ? (byKey.get(chosen) ?? null) : null }
 
       // Rows: what the backend ranked (top few above 3%), else the keyword rows; the chosen one first.
-      const byName = new Map(roster.map((s) => [s.name, s]))
-      const hitsOf = new Map(liveRows.map((r) => [r.name, r.hits]))
+      const hitsOf = new Map(liveRows.map((r) => [keyOf(r), r.hits]))
       const ranked: Hit[] = [...probabilities.entries()]
         .filter(([, p]) => p === null || p >= 0.03)
         .slice(0, maxRows)
-        .map(([n, p]) => ({
-          skill: byName.get(n) as Skill,
-          score: p === null ? -1 : Math.round(p * 100),
-          hits: hitsOf.get(n) ?? [],
-        }))
-      const rows = (ranked.length > 0 ? ranked : liveRows.map((r): Hit => ({ skill: byName.get(r.name) as Skill, score: r.score, hits: r.hits })))
+        .map(([k, p]) => ({ skill: byKey.get(k) as Skill, score: p === null ? -1 : Math.round(p * 100), hits: hitsOf.get(k) ?? [] }))
+      const rows = (ranked.length > 0 ? ranked : liveRows.map((r): Hit => ({ skill: byKey.get(keyOf(r)) as Skill, score: r.score, hits: r.hits })))
         .filter((h) => h.skill)
-        .map((h) => toRow(h, h.skill.name === name))
+        .map((h) => toRow(h, keyOf(h.skill) === chosen))
         .sort((a, b) => Number(b.isChosen) - Number(a.isChosen))
-      if (logDecisions) $.ui.log(`[jev-skill-typeahead] ${name ? `/${name}` : 'no skill'}`)
-      await update($, view, () => ({ ...base, rows, phase: name ? 'decided' : 'none' }))
+      if (logDecisions) $.ui.log(`[jev-skill-typeahead] ${chosen ?? 'nothing'} called for the draft`)
+      await update($, view, () => ({ ...base, rows, phase: chosen ? 'decided' : 'none' }))
     }
 
     /** The instant half: no network, runs a moment after the last key. */
     const live = async (draftText: string, mySeq: number) => {
       const draft = readDraft(draftText, minWords)
       if (draft.mode === 'idle') return update($, view, () => EMPTY)
-      const now = await $.clock.now()
-      if (now - rosterAt >= ROSTER_TTL_MS || roster.length === 0) {
-        roster = rosterOf(await $.command.list(), excluded)
-        index = buildIndex(roster)
-        rosterAt = now
+
+      // The listings win; until the skill listing has been seen, the commands stand in.
+      let skills = [...listedSkills.values()]
+      if (skills.length === 0) {
+        const now = await $.clock.now()
+        if (now - fallbackAt >= FALLBACK_TTL_MS || fallback.length === 0) {
+          fallback = skillsFromCommands(await $.command.list())
+          fallbackAt = now
+        }
+        skills = fallback
       }
+      roster = rosterOf(skills, includeAgents ? [...offeredAgents.values()] : [], excluded)
+      index = buildIndex(roster)
       if (mySeq !== seq) return
       if (roster.length === 0) return update($, view, () => EMPTY)
 
-      let rows: Row[] = []
-      if (draft.mode === 'slash') {
-        rows = rankSlash(roster, draft.token, maxRows).map((h) => toRow(h, false))
-      } else if (draft.mode === 'command') {
-        const skill = exactSkill(roster, draft.token)
-        rows = skill
-          ? [toRow({ skill, score: 100, hits: [draft.token] }, true)]
-          : rankSlash(roster, draft.token, maxRows).map((h) => toRow(h, false))
-      } else {
-        rows = rankProse(index, draft.prose, maxRows).map((h) => toRow(h, false))
+      const rows = rankProse(index, draft.prose, maxRows).map((h) => toRow(h, false))
+      const shown: View = {
+        mode: 'prose',
+        draft: draftText,
+        rows,
+        phase: 'live',
+        by: '',
+        skills: roster.filter((s) => s.origin !== 'agent').length,
+        agents: roster.filter((s) => s.origin === 'agent').length,
       }
-      const shown: View = { mode: draft.mode, draft: draftText, rows, phase: 'live', by: '', roster: roster.length }
       await update($, view, (old) => (JSON.stringify(old) === JSON.stringify(shown) ? old : shown))
 
-      if (draft.mode === 'prose' && canDecide) {
+      if (canDecide) {
         settleTimer = $.clock.after(pauseMs, () => {
           void settle(draftText, draft.prose, rows, mySeq).catch(fail)
         })
@@ -290,14 +313,14 @@ export const register: Register = (on, options) => {
     latest = ''
     await update($, view, () => EMPTY)
 
-    const isSlash = e.text.trimStart().startsWith('/')
-    if (!attach || !decided?.name || isSlash || decided.draft !== e.text.trim()) return next(e)
-    if (logDecisions) $.ui.log(`[jev-skill-typeahead] told the model about /${decided.name}`)
-    const note = [
-      '<skill_relevance>',
-      `Relevant to the current request: ${decided.name}. Load it with the Skill tool if it fits; ignore this if it does not fit what the user actually asked for.`,
-      '</skill_relevance>',
-    ].join('\n')
+    if (!attach || !decided?.skill || decided.draft !== e.text.trim()) return next(e)
+    const pick = decided.skill
+    if (logDecisions) $.ui.log(`[jev-skill-typeahead] told the model about ${keyOf(pick)}`)
+    const advice =
+      pick.origin === 'agent'
+        ? `Relevant to the current request: the ${pick.name} subagent. Consider delegating to it with the Agent tool if it fits; ignore this if it does not fit what the user actually asked for.`
+        : `Relevant to the current request: the ${pick.name} skill. Load it with the Skill tool if it fits; ignore this if it does not fit what the user actually asked for.`
+    const note = ['<skill_relevance>', advice, '</skill_relevance>'].join('\n')
     return next({ ...e, context: [...(e.context ?? []), note] })
   })
 
@@ -305,8 +328,8 @@ export const register: Register = (on, options) => {
     if (e.props.hasSurvey) return next(e)
     const v = await read($, view)
     if (v.mode === 'idle') return next(e)
-    const isQuiet = v.rows.length === 0 && (v.mode === 'prose' ? v.phase === 'live' || v.phase === 'offline' : false)
-    if (isQuiet) return next(e)
+    // A draft nothing matches stays quiet until a decision says something.
+    if (v.rows.length === 0 && (v.phase === 'live' || v.phase === 'offline')) return next(e)
 
     const { Box, Text } = $.ui.resolve(e)
     // HTML collapses runs of spaces; a no-break space keeps them (desktop).
@@ -318,24 +341,20 @@ export const register: Register = (on, options) => {
       return '█'.repeat(full) + '░'.repeat(METER - full)
     }
 
-    const modeLabel = words.modes[v.mode]
     const footer =
       v.phase === 'thinking' ? words.thinking
-      : v.phase === 'decided' ? `${v.by === 'jev' ? words.decidedJev : words.decidedBuiltin}`
+      : v.phase === 'decided' ? (v.by === 'jev' ? words.decidedJev : words.decidedBuiltin)
       : v.phase === 'none' ? words.none
       : v.phase === 'offline' ? words.offline
-      : v.mode === 'prose' ? (canDecide ? words.keywords : words.keywordsOnly)
-      : words.origins
+      : canDecide ? words.keywords
+      : words.keywordsOnly
     const footerColor = v.phase === 'decided' ? 'green' : v.phase === 'offline' ? 'yellow' : undefined
 
     const table = v.rows.map((r, i) => {
       const accent = r.isChosen ? 'green' : COLOR[r.origin]
-      const detail = r.isChosen && v.mode === 'prose' ? `${words.willUse}${r.hits.length ? ` · ${r.hits.join(', ')}` : ''}`
-        : v.mode === 'command' && r.isChosen ? words.runs
-        : r.hits.length > 0 && v.mode === 'prose' ? r.hits.join(', ')
-        : r.description
+      const detail = r.isChosen ? `${words.willUse}${r.hits.length ? ` · ${r.hits.join(', ')}` : ''}` : r.hits.length > 0 ? r.hits.join(', ') : r.description
       return (
-        <Box key={`row:${i}:${r.name}`} flexDirection="row">
+        <Box key={`row:${i}:${r.origin}:${r.name}`} flexDirection="row">
           <Box key="mark" width={2} flexShrink={0}>
             <Text bold color="green">{pad(r.isChosen ? '▶ ' : '  ')}</Text>
           </Box>
@@ -343,14 +362,12 @@ export const register: Register = (on, options) => {
             <Text color={COLOR[r.origin]}>{pad(`${ICON[r.origin]} `)}</Text>
           </Box>
           <Box key="name" width={26} flexShrink={0}>
-            <Text bold={r.isChosen} color={accent}>{fit(`/${r.name}`, 25)}</Text>
+            <Text bold={r.isChosen} color={accent}>{fit(r.name, 25)}</Text>
           </Box>
-          {v.mode === 'slash' || v.mode === 'command' ? null : (
-            <Box key="meter" width={METER + 6} flexShrink={0}>
-              <Text color={r.isChosen ? 'green' : 'cyan'} dimColor={!r.isChosen}>{pad(`${meter(r.score)} `)}</Text>
-              <Text dimColor>{pad((r.score < 0 ? '—' : `${r.score}%`).padStart(4))}</Text>
-            </Box>
-          )}
+          <Box key="meter" width={METER + 6} flexShrink={0}>
+            <Text color={r.isChosen ? 'green' : 'cyan'} dimColor={!r.isChosen}>{pad(`${meter(r.score)} `)}</Text>
+            <Text dimColor>{pad((r.score < 0 ? '—' : `${r.score}%`).padStart(4))}</Text>
+          </Box>
           <Box key="detail" flexGrow={1} flexShrink={1}>
             <Text dimColor={!r.isChosen} color={r.isChosen ? 'green' : undefined} wrap="truncate-end">{detail}</Text>
           </Box>
@@ -358,14 +375,14 @@ export const register: Register = (on, options) => {
       )
     })
 
+    const counts = v.agents > 0 ? `${v.skills} ${words.skills} · ${v.agents} ${words.agents}` : `${v.skills} ${words.skills}`
     return (
       <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' ? 'green' : 'cyan'} borderDimColor={v.phase !== 'decided'} paddingX={1}>
         <Box key="head" flexDirection="row">
           <Text bold color="cyan">{pad(`✦ ${words.title} `)}</Text>
-          <Text dimColor>{pad(`${v.roster} ${words.installed}  `)}</Text>
-          {modeLabel ? <Text bold color="black" backgroundColor="cyan">{pad(` ${modeLabel} `)}</Text> : null}
+          <Text dimColor>{pad(counts)}</Text>
         </Box>
-        {table.length > 0 ? table : <Text key="empty" dimColor>{words.nothing}</Text>}
+        {table.length > 0 ? table : <Text key="empty" dimColor>{pad(' ')}</Text>}
         <Text key="foot" dimColor={!footerColor} color={footerColor} wrap="truncate-end">{footer}</Text>
       </Box>
     )

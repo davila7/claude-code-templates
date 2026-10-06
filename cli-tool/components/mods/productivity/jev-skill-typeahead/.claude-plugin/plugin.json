@@ -1,7 +1,7 @@
 {
   "name": "jev-skill-typeahead",
   "version": "0.1.0",
-  "description": "Suggests the skills you can use while you type: reads the prompt draft on every edit and shows, in the band above the prompt, your installed skills ranked for what you are writing (by name after a slash, by keyword match in prose, English or Spanish). When you pause, Jev (TypeSafe's decision model) decides which one will be used and the band marks it. Without a Jev key it stays on the instant keyword match.",
+  "description": "Shows, while you type, the skills and subagents Claude will probably call for your prompt: reads the draft on every edit and lists them in the band above the prompt, ranked by keyword match (English or Spanish). When you pause, Jev (TypeSafe's decision model) decides which one will be called and the band marks it. Slash commands are left out, since you run those yourself. Without a Jev key it stays on the instant local match.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -13,6 +13,7 @@
     "function-hooks",
     "productivity",
     "skills",
+    "subagents",
     "typeahead"
   ],
   "types": "./types/index.d.ts",
@@ -95,6 +96,12 @@
       "title": "Words before suggesting",
       "description": "Content words a prose draft needs before the band appears (minimum 1; a draft of 24+ characters also qualifies)",
       "default": 2
+    },
+    "includeSubagents": {
+      "type": "boolean",
+      "title": "Include subagents",
+      "description": "Also suggest the subagent types the engine offers the model (seen once the first prompt of the session has gone out)",
+      "default": true
     },
     "timeoutMs": {
       "type": "number",

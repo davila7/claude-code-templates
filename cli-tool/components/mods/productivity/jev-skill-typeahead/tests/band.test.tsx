@@ -6,7 +6,7 @@ import type { View } from '../types'
 
 const BAND = { hasSurvey: false } as never
 
-const row = (name: string, score: number, isChosen = false, origin: 'user' | 'plugin' | 'mcp' = 'user') => ({
+const row = (name: string, score: number, isChosen = false, origin: 'user' | 'plugin' | 'agent' = 'user') => ({
   name,
   description: `${name} does a thing`,
   origin,
@@ -21,7 +21,8 @@ const prose = (over: Partial<View> = {}): View => ({
   rows: [row('pdf', 82, true, 'plugin'), row('xlsx', 31, false, 'plugin')],
   phase: 'decided',
   by: 'jev',
-  roster: 24,
+  skills: 24,
+  agents: 3,
   ...over,
 })
 
@@ -55,17 +56,17 @@ async function draw($: Engine, on: On, v: View, surface: 'terminal' | 'desktop' 
 
 describe('the band', () => {
   test('draws nothing while the box is idle', async ($, on) => {
-    const ui = await draw($, on, { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', roster: 24 })
-    expect(await ui.find({ type: 'Text', text: /Skills/ })).toBeUndefined()
+    const ui = await draw($, on, { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', skills: 24, agents: 0 })
+    expect(await ui.find({ type: 'Text', text: /Claude may call/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: /engine band/ })).toBeDefined()
     await ui.unmount()
   })
 
-  test('a decided prompt marks the skill that will be used, with its probability', async ($, on) => {
+  test('a decided prompt marks the skill that will be called, with its probability', async ($, on) => {
     const ui = await draw($, on, prose())
-    expect(await ui.find({ type: 'Text', text: /\/pdf/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /pdf/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /82%/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /will be used/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /will be called/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Jev decided/ })).toBeDefined()
     await ui.unmount()
   })
@@ -74,7 +75,7 @@ describe('the band', () => {
     const ui = await draw($, on, prose({ phase: 'live', rows: [row('pdf', 82), row('xlsx', 31)] }))
     expect(await ui.find({ type: 'Text', text: /Jev decided/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: /keyword match/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /will be used/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /will be called/ })).toBeUndefined()
     await ui.unmount()
   })
 
@@ -85,17 +86,23 @@ describe('the band', () => {
     await ui.unmount()
   })
 
-  test('slash mode lists names without a meter', async ($, on) => {
-    const ui = await draw($, on, { mode: 'slash', draft: '/pd', rows: [row('pdf', 90)], phase: 'live', by: '', roster: 24 })
-    expect(await ui.find({ type: 'Text', text: /\/pdf/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /90%/ })).toBeUndefined()
-    expect(await ui.find({ type: 'Text', text: /command/ })).toBeDefined()
+  test('subagents get their own icon and the header counts both kinds', async ($, on) => {
+    const ui = await draw($, on, prose({ rows: [row('code-explorer', 77, true, 'agent'), row('pdf', 10, false, 'plugin')] }))
+    expect(await ui.find({ type: 'Text', text: /▣/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /◆/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /24 skills · 3 subagents/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('a draft that is a command gets no band', async ($, on) => {
+    const ui = await draw($, on, { mode: 'idle', draft: '/pd', rows: [], phase: 'live', by: '', skills: 24, agents: 0 })
+    expect(await ui.find({ type: 'Text', text: /Claude may call/ })).toBeUndefined()
     await ui.unmount()
   })
 
   test('a prose draft nothing matches stays quiet until a decision says "no skill needed"', async ($, on) => {
     const quiet = await draw($, on, prose({ rows: [], phase: 'live' }))
-    expect(await quiet.find({ type: 'Text', text: /Skills/ })).toBeUndefined()
+    expect(await quiet.find({ type: 'Text', text: /Claude may call/ })).toBeUndefined()
     await quiet.unmount()
   })
 
@@ -109,7 +116,7 @@ describe('the band', () => {
         expect(b.props.width).toBe(26)
         expect(b.props.flexShrink).toBe(0)
       }
-      const label = await ui.find({ type: 'Text', text: /\/xlsx/ })
+      const label = await ui.find({ type: 'Text', text: /xlsx/ })
       expect(/\u00a0/.test(String(label?.text))).toBe(surface === 'desktop')
       await ui.unmount()
     })

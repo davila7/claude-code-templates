@@ -2,7 +2,7 @@
  * jev-skill-typeahead — the decision: which one skill will this prompt use?
  *
  * One request to Jev, TypeSafe's System One decision model, per pause: a
- * `choice` over every skill's description ("which of these, if any, is the
+ * `choice` over every skill's and subagent's description ("which of these, if any, is the
  * right one to load") plus three yes/no gate questions that say whether the
  * prompt needs a skill at all. The same shapes jev-skill-suggestion sends as
  * the first request of TypeSafe's skill-suggestion cookbook; the second,
@@ -15,6 +15,7 @@
  * stays on the keyword match and says so; `provider: builtin` asks the
  * engine's own `$.model.classify` instead, one small-model request per pause.
  */
+import { keyOf } from './policy.ts'
 import type { Skill } from './policy.ts'
 
 export type Provider = 'typesafe' | 'gateway'
@@ -65,11 +66,11 @@ const GATE: Record<string, { text: string; isInverted: boolean }> = {
 
 export function questions(provider: Provider, skills: readonly Skill[]): Record<string, unknown> {
   const criteria: Record<string, string> = {}
-  for (const skill of skills) criteria[skill.name] = skill.description || `A skill named ${skill.name}.`
+  for (const skill of skills) criteria[keyOf(skill)] = skill.description || `A ${skill.origin === 'agent' ? 'subagent' : 'skill'} named ${skill.name}.`
   const out: Record<string, unknown> = {
     which: {
       type: 'choice',
-      instructions: "Which of these skills, if any, is the right one to load to help with the user's request?",
+      instructions: "Which of these skills and subagents (agent:name), if any, is the right one for the model to call to help with the user's request?",
       criteria,
     },
   }
@@ -156,11 +157,11 @@ export function verdictOf(decision: Decision, known: ReadonlySet<string>, limits
 /** The classifier text for `$.model.classify`: it takes bare labels, so the descriptions ride in the text. */
 export function classifyText(prompt: string, skills: readonly Skill[]): string {
   return [
-    'Which skill, going by its description, should be loaded before working on the prompt below? Answer "none" unless the prompt is clearly the kind of task a description names.',
+    'Which skill or subagent (agent:name), going by its description, should the model call before working on the prompt below? Answer "none" unless the prompt is clearly the kind of task a description names.',
     '',
-    'Skills:',
-    ...skills.map((s) => `- ${s.name}: ${s.description.replace(/\s+/g, ' ').slice(0, 200)}`),
-    `- ${NONE}: no listed skill is about this prompt`,
+    'Candidates:',
+    ...skills.map((s) => `- ${keyOf(s)}: ${s.description.replace(/\s+/g, ' ').slice(0, 200)}`),
+    `- ${NONE}: nothing listed is about this prompt`,
     '',
     'Prompt:',
     prompt,
