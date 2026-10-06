@@ -160,7 +160,7 @@ describe('the pane', () => {
     on('ui.status', () => ({ value: undefined }))
     on('prompt.fill', ($, e) => {
       fills.push(e.text)
-      return { value: { isFilled: true } } as never
+      return { isFilled: true } as never
     })
   }
 
