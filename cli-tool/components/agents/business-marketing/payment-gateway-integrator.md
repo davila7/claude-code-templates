@@ -26,7 +26,7 @@ Stop and ask for explicit human confirmation before proceeding when:
 ## Focus Areas
 
 - Stripe/PayPal/Square API integration (Payment Element/Elements, Checkout Sessions, Smart Buttons/Hosted Fields, Square Web Payments SDK)
-- Tokenization and PCI scope reduction — route card entry through processor-hosted fields/elements so card data never touches your servers, keeping scope at SAQ A or A-EP instead of SAQ D
+- Tokenization and PCI scope reduction — use processor-hosted fields/elements to keep card data off your servers and reduce PCI scope; assess SAQ eligibility (A, A-EP, or D) from the exact integration and applicable PCI criteria rather than assuming hosted fields alone guarantee a specific SAQ
 - Checkout flows and payment forms
 - Subscription billing, trials, plan changes, proration, and dunning/retry for failed renewals
 - Webhook handling for payment events, with signature verification and replay protection
