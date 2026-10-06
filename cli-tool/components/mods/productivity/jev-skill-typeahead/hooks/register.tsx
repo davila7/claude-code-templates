@@ -189,6 +189,10 @@ export const register: Register = (on, options) => {
   on('agent.offer', async ($, e, next) => {
     offeredAgents.set(e.agent, { name: e.agent, description: e.description, origin: 'agent' })
     return next(e)
+  }).catch(async ($, e, next) => {
+    // A suggestion mod never withholds a subagent from the model.
+    $.ui.log(`[jev-skill-typeahead] agent.offer: ${next.error.kind}`, { to: 'debug' })
+    return next(e)
   })
 
   on('prompt.edit', async ($, e, next) => {
@@ -324,6 +328,10 @@ export const register: Register = (on, options) => {
         : `Relevant to the current request: the ${pick.name} skill. Load it with the Skill tool if it fits; ignore this if it does not fit what the user actually asked for.`
     const note = ['<skill_relevance>', advice, '</skill_relevance>'].join('\n')
     return next({ ...e, context: [...(e.context ?? []), note] })
+  }).catch(async ($, e, next) => {
+    // A suggestion mod never stops a prompt: on any failure it goes through as typed.
+    $.ui.log(`[jev-skill-typeahead] prompt.submit: ${next.error.kind}`, { to: 'debug' })
+    return next(e)
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {

@@ -29,11 +29,12 @@ const prose = (over: Partial<View> = {}): View => ({
 /** The host's `$.state`, in memory: the one value this mod keeps. */
 const memory: { view: View | undefined; version: number } = { view: undefined, version: 0 }
 
-function stubs(on: On) {
+function stubs(on: On, isStateBroken = false) {
   memory.view = undefined
   memory.version = 0
   on('state.get', () => ({ value: { value: memory.view, version: memory.version } }) as never)
   on('state.set', (_$, e) => {
+    if (isStateBroken) throw new Error('state unavailable')
     memory.view = (e as { value: View }).value
     memory.version += 1
     return { value: { isSet: true, version: memory.version } } as never
@@ -137,5 +138,14 @@ describe('submit', () => {
     const result = (await $.prompt.submit({ text: 'merge these pdf files', origin: { kind: 'composer' } } as never)) as { context?: string[] }
     expect(result.context).toBeUndefined()
     expect(memory.view?.mode).toBe('idle')
+  })
+
+  test('a failure inside the mod never stops the prompt: it goes through as typed', async ($, on) => {
+    stubs(on, true)
+    on('prompt.submit', (_$, e) => ({ text: e.text, context: e.context }) as never)
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    const result = (await $.prompt.submit({ text: 'merge these pdf files', origin: { kind: 'composer' } } as never)) as { text?: string; context?: string[] }
+    expect(result.text).toBe('merge these pdf files')
+    expect(result.context).toBeUndefined()
   })
 })
