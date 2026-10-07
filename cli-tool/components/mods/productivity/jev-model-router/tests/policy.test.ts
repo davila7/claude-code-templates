@@ -3,6 +3,7 @@ import {
   effortLevel,
   effortRank,
   endpoint,
+  laterRequest,
   questions,
   describeDecision,
   describeSetup,
@@ -400,4 +401,20 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
+})
+
+// An overloaded routed model: Claude Code retries the turn's next request on
+// its fallback (`/model` mid-turn looks the same). That model stands; the
+// routed effort still applies.
+test('a later request keeps what the turn was given until the engine moves the model', () => {
+  const applied = { model: 'claude-opus-5', effort: 'high' as const }
+  expect(laterRequest(applied, 'claude-sonnet-5', 'claude-sonnet-5')).toBe(applied)
+  expect(laterRequest(applied, 'claude-sonnet-5', 'claude-haiku-4-5-20251001')).toEqual({ effort: 'high' })
+  expect(laterRequest({ model: 'claude-opus-5' }, 'claude-sonnet-5', 'claude-haiku-4-5-20251001')).toBeNull()
+})
+
+test('an effort-only change follows the request onto another model', () => {
+  const applied = { effort: 'low' as const }
+  expect(laterRequest(applied, 'claude-opus-5', 'claude-sonnet-5')).toBe(applied)
+  expect(laterRequest(null, 'claude-opus-5', 'claude-sonnet-5')).toBeNull()
 })
