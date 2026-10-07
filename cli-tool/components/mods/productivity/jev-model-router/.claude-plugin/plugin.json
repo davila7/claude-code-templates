@@ -113,6 +113,18 @@
       "description": "Change the model of the main conversation; off by default because switching models mid-session invalidates the prompt cache",
       "default": false
     },
+    "contextChars": {
+      "type": "number",
+      "title": "Context sent with the prompt (characters)",
+      "description": "How much of the last assistant message goes to the decision model beside the prompt (a longer one goes as its two ends), so a follow-up such as \"yes\" is read against the plan it confirms; 0 sends the prompt alone",
+      "default": 2000
+    },
+    "maxPromptChars": {
+      "type": "number",
+      "title": "Longest prompt sent whole (characters)",
+      "description": "A longer prompt or subagent brief goes to the decision model as its first and last halves of this size with the cut named; TypeSafe refuses about 80k characters and a refused turn is not routed. 0 sends it whole",
+      "default": 4000
+    },
     "timeoutMs": {
       "type": "number",
       "title": "Latency budget (ms)",
