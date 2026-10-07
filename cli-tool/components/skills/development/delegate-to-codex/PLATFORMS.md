@@ -17,6 +17,7 @@ This skill is built and tested on native Windows 10/11. On macOS (or Linux), por
    - Process control: `src/claude_codex_bridge/process.py` kills a Windows worker with a
      kill-on-close job object (and `taskkill` as a fallback); the POSIX branch signals the process group.
      Test the POSIX branch before relying on it.
+   - Lock staleness: `process_start_token` in `gitops.py` reads the process creation time on Windows and `/proc/<pid>/stat` on Linux, and returns nothing on macOS. There `pid_is_running` trusts the process id alone, so a recycled id can make a stale task lock look active. Add a macOS start token (for example from `ps -o lstart=`) when porting.
    - Links and permissions: junction and reparse-point detection (`revision.py`) and the state-folder
      permission report (`state.py`, which reads ACLs with `icacls`) are written for Windows; POSIX uses
      symlink checks and mode bits.

@@ -27,7 +27,7 @@ python -B "$SKILL/scripts/setup.py" doctor
 
 The first two work without Codex. `doctor` then checks the Codex sign-in and capacity without generating model work. `setup_required` means a check failed or capacity is exhausted; the output names what to do. The other statuses are `passed`, `installation_ready` and `codex_ready`.
 
-The first launch also needs your auto-review choice. The installer asks for it; otherwise the bridge answers `settings_required` (exit 4) with the question and the command that records it, for example `python -B "$SKILL/scripts/codex_bridge.py" settings set auto-review off`. `settings show` prints the current choice.
+The first launch also needs a one-time auto-review choice from you. The bridge never prompts: until it is recorded, a launch answers `settings_required` (exit 4) with the question and the command that records it, and Claude (or the standalone repository's installer) asks you. For example `python -B "$SKILL/scripts/codex_bridge.py" settings set auto-review off`. `settings show` prints the current choice.
 
 ## Documentation
 

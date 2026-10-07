@@ -58,7 +58,7 @@ The report is compact JSON (shortened here):
   "run": {"model": null, "effort": "medium", "auto_review": "off", "auto_review_source": "user setting"},
   "diffstat": {"stat": " textutil.py | 6 ++++++\n test_textutil.py | 14 ++++++++++++++"},
   "patch": ".../diff.patch",
-  "review_binding": {"snapshot_tree": "9f1c2b7e4a...", "patch_sha256": "c3a8d0e5b1..."}
+  "review_binding": {"snapshot_tree": "<full tree id>", "patch_sha256": "<full 64-character checksum>"}
 }
 ```
 
@@ -84,11 +84,12 @@ python -B "$SKILL/scripts/codex_bridge.py" revise --task "$TASK" --artifact "$AR
 ## 4. Accept
 
 Only when the diff is right, validation passed and the user authorized integration. Pass the report's
-`review_binding` so `accept` applies exactly what you reviewed:
+`review_binding` so `accept` applies exactly what you reviewed. The placeholders below stand for the full values
+from your report; a shortened checksum is refused (`--expect-tree` takes at least 12 characters of the tree id):
 
 ```bash
 python -B "$SKILL/scripts/codex_bridge.py" accept --task "$TASK" --artifact "$ARTIFACT" \
-    --expect-tree 9f1c2b7e4a... --expect-patch-sha256 c3a8d0e5b1...
+    --expect-tree "<snapshot_tree>" --expect-patch-sha256 "<patch_sha256>"
 ```
 
 `{"status":"accepted", ...}`: the patch is in the primary checkout, uncommitted, and the worker's worktree and branch

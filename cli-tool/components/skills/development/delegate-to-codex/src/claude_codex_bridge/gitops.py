@@ -188,8 +188,19 @@ def _config_options() -> list[str]:
 
 
 def _git_environment(base: dict[str, str] | None, extra: dict[str, str] | None) -> dict[str, str]:
-    environment = {key: value for key, value in (os.environ if base is None else base).items()
-                   if not key.upper().startswith("GIT_") or key.upper() in _KEPT_GIT_VARIABLES}
+    """Environment for a bridge git call: inherited ``GIT_*`` dropped and non-Git variables allow-listed.
+
+    Git can run repository-selected programs (clean/smudge/process filters are neutralised by
+    ``_filter_options``, but any that still run, such as a credential or askpass helper from the user's
+    configuration) outside the worker sandbox, so they get the same scrubbed environment validation gets
+    (``bridge.scrub_environment``: no tokens, keys or cloud credentials).
+    """
+    from .bridge import scrub_environment  # deferred: bridge imports this module
+
+    source = os.environ if base is None else base
+    kept_git = {key: value for key, value in source.items() if key.upper() in _KEPT_GIT_VARIABLES}
+    environment = scrub_environment(source)[0]
+    environment.update(kept_git)
     settings = {"GIT_TERMINAL_PROMPT": "0", **({"NoDefaultCurrentDirectoryInExePath": "1"} if os.name == "nt" else {}),
                 **(extra or {})}
     for name in settings:  # Windows names are case-insensitive: never leave two spellings in one environment
@@ -197,6 +208,64 @@ def _git_environment(base: dict[str, str] | None, extra: dict[str, str] | None) 
             del environment[existing]
     environment.update(settings)
     return environment
+
+
+_FILTER_KEY = re.compile(r"^filter\.(?P<name>.+)\.(?:clean|smudge|process|required)$", re.IGNORECASE | re.DOTALL)
+
+
+def _filter_options(cwd: Path, prefix: Sequence[str]) -> list[str]:
+    """``-c`` options that switch off every configured clean/smudge/process filter driver.
+
+    A filter named by ``.gitattributes`` is a command from the user's or repository's configuration, and the
+    script it points at can live in the worktree the worker edits. Pinning attributes to the base commit does
+    not pin that script, so the bridge never runs one: an empty driver command is a no-op and ``required`` is
+    cleared so that cannot become an error. Because every call (checkout, snapshot, diff, status, apply) is
+    treated alike, a worktree holds the stored blob bytes and snapshots hash those same bytes, so patches stay
+    byte-exact and apply cleanly in the primary checkout. The trade-off: a filter whose stored form differs
+    from its checked-out form (Git LFS pointers, keyword expansion) is seen in its stored form, so the worker
+    edits pointer text instead of the large file; text and binary content without filters is unaffected.
+    """
+    key = (str(cwd), tuple(prefix), _config_signature(cwd, prefix))
+    cached = _filter_option_cache.get(key)
+    if cached is not None:
+        return list(cached)
+    probe = subprocess.run(
+        [git_executable(), "--no-pager", "--no-optional-locks", *prefix, "config", "-z", "--get-regexp",
+         r"^filter\..*\.(clean|smudge|process|required)$"],
+        cwd=str(cwd), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=GIT_TIMEOUT_SECONDS,
+        shell=False, check=False, env=_git_environment(None, None))
+    names: set[str] = set()
+    for record in probe.stdout.decode("utf-8", "replace").split("\0"):
+        found = _FILTER_KEY.match(record.split("\n", 1)[0])
+        if found:
+            names.add(found.group("name"))
+    options: list[str] = []
+    for name in sorted(names):
+        for variable, value in (("clean", ""), ("smudge", ""), ("process", ""), ("required", "false")):
+            options.extend(("-c", f"filter.{name}.{variable}={value}"))
+    _filter_option_cache[key] = tuple(options)
+    return options
+
+
+# One bridge command is one process and asks the same repository the same question many times, so the answer
+# is kept for the process. The key includes the size and mtime of the repository's and the user's config files:
+# a filter driver added to them mid-command changes the key and is neutralised too.
+_filter_option_cache: dict[tuple[str, tuple[str, ...], tuple], tuple[str, ...]] = {}
+
+
+def _config_signature(cwd: Path, prefix: Sequence[str]) -> tuple:
+    gitdir = next((item.split("=", 1)[1] for item in prefix if item.startswith("--git-dir=")), None)
+    roots = [Path(gitdir)] if gitdir else [Path(cwd) / ".git"]
+    files = [root / name for root in roots for name in ("config", "config.worktree")]
+    files.append(Path(os.environ.get("GIT_CONFIG_GLOBAL") or Path.home() / ".gitconfig"))
+    signature = []
+    for path in files:
+        try:
+            info = path.stat()
+            signature.append((str(path), info.st_size, info.st_mtime_ns))
+        except OSError:
+            signature.append((str(path), None, None))
+    return tuple(signature)
 
 
 _git_versions: dict[str, tuple[int, int]] = {}
@@ -230,6 +299,16 @@ def _default_timeout(args: Sequence[str]) -> float:
     return GIT_HEAVY_TIMEOUT_SECONDS if command in _HEAVY_COMMANDS else GIT_TIMEOUT_SECONDS
 
 
+def _filter_capable(args: Sequence[str]) -> bool:
+    """False for read-only plumbing that never converts content, so it skips the filter lookup."""
+    index = 0
+    while index < len(args) and args[index].startswith("-"):
+        index += 2 if args[index] in _GLOBAL_OPTIONS_WITH_VALUE else 1
+    return (args[index] if index < len(args) else "") not in (
+        "rev-parse", "config", "check-ref-format", "rev-list", "merge-base", "show-ref", "symbolic-ref",
+        "update-ref", "for-each-ref", "ls-tree")
+
+
 def _run_git(cwd: Path, args: Sequence[str], *, check: bool = True, env: dict[str, str] | None = None,
              timeout: float | None = None, stdin: bytes | None = None, extra_env: dict[str, str] | None = None,
              attr_source: str | None = None, use_pin: bool = True) -> subprocess.CompletedProcess[bytes]:
@@ -253,7 +332,8 @@ def _run_git(cwd: Path, args: Sequence[str], *, check: bool = True, env: dict[st
     limit = _default_timeout(args) if timeout is None else timeout
     try:
         result = subprocess.run(
-            [git_executable(), "--no-pager", "--no-optional-locks", *_config_options(), *prefix, *args],
+            [git_executable(), "--no-pager", "--no-optional-locks", *_config_options(),
+             *(_filter_options(cwd, prefix) if _filter_capable(args) else []), *prefix, *args],
             cwd=str(cwd),
             **({"input": stdin} if stdin is not None else {"stdin": subprocess.DEVNULL}),
             stdout=subprocess.PIPE,

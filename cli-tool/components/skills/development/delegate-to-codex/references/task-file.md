@@ -36,7 +36,7 @@ One JSON file per task, saved outside the repository. Start from [assets/task.te
 | `max_turns` | 6 | 1-12. A budget of work steps told to the worker for one segment, not a Codex turn cap. |
 | `timeout_seconds` | 900 | 5-1800. Bounds one worker segment. |
 | `max_total_turns` | none | Ignored. Still accepted so a task file written for 1.0.0 loads; use `max_turns`, `timeout_seconds` and `max_extensions`. |
-| `max_extensions` | none | Caps automatic continuation grants when `auto_continue` is on. |
+| `max_extensions` | none | Caps automatic continuation grants (with `auto_continue`) only; your own `continue` commands are never counted or capped. |
 | `auto_continue` | 0 | 0-3 automatic continuation grants, each only after measurable progress. |
 | `copy_ignored` | none | Repo-relative git-ignored files, folders or globs copied into the worktree before launch (200 MB total). Details in [setup](setup.md#local-inputs-copy_ignored). Same path rules as above, wildcards allowed. |
 | `validation_command` | none | 1-24 non-empty strings. The program is resolved from PATH, an absolute path, or a repository path (in the base commit or under `allowed_changed_paths`). Python is run with `-B`. |
@@ -44,6 +44,8 @@ One JSON file per task, saved outside the repository. Start from [assets/task.te
 | `allow_subagents` | `false` | Only `false` is accepted. |
 | `require_subscription_auth` | `true` | Only `true` is accepted. |
 | `auto_review` | `null` | `null` follows the user's auto-review setting. `false` turns Codex auto-review off for this task. `true` cannot turn it on: while the user setting is off it is ignored and the result carries a warning, so one task file stays valid on every machine. [Safety](safety.md#auto-review). |
+
+None of these limits is a task-wide budget: `max_turns` and `timeout_seconds` apply to each segment, `auto_continue` and `max_extensions` bound only the bridge's automatic grants, and manual `continue` and `revise` rounds are unbounded, so total work is limited only by the capacity gate and your own decisions.
 
 Give paths, decisions and criteria, not pasted files or history. Reasoning effort is not a task field: pass `--effort` to `run`.
 

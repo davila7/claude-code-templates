@@ -196,6 +196,8 @@ def run_command(action: str, name: str | None, value: str | None) -> dict[str, A
         if name is not None or value is not None:
             raise SettingsError("settings show takes no arguments")
         return show()
+    if action not in {"set", "unset"}:
+        raise SettingsError(f"unknown settings action {action!r}: use show, set or unset")
     if name is None:
         raise SettingsError(f"settings {action} needs a setting name: {known_names()}")
     if action == "unset":

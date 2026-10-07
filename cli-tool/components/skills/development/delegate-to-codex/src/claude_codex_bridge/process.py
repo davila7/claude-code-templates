@@ -10,7 +10,7 @@ import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,7 @@ class ProcessResult:
     interrupted: bool
     cancelled: bool
     output_truncated: bool = False
+    lines_skipped: int = 0  # stdout lines the line callback could not take (over the line limit, or it raised)
 
 
 # After a kill, give the pipes this long to drain before giving up on any further output.
@@ -288,6 +289,9 @@ def release_tree(process: subprocess.Popen, job: _WindowsJob | None = None) -> N
 # was dropped.
 OUTPUT_HEAD_CHARS = 1_000_000
 OUTPUT_TAIL_CHARS = 3_000_000
+# A stdout line longer than this is not handed to the line callback (it is still kept, with the rest of the
+# output, in the head or tail): an unbounded line must not grow the bridge's memory.
+MAX_LINE_CHARS = 8_000_000
 _READ_SIZE = 65536
 
 
@@ -296,10 +300,18 @@ class _BoundedCapture:
 
     The pipe is always read to the end (the child must never block on a full pipe); only the middle is discarded.
     Newlines are translated the way a text-mode pipe would (CRLF and lone CR become LF).
+
+    ``on_line`` (optional) receives every complete line, newline removed, in order and before any of it can be
+    discarded, so a caller can build a bounded summary of a stream whose middle the stored text will not hold.
     """
 
-    def __init__(self, stream: Any):
+    def __init__(self, stream: Any, on_line: Callable[[str], None] | None = None):
         self.stream = stream
+        self._on_line = on_line
+        self._partial: list[str] = []
+        self._partial_size = 0
+        self._partial_overflow = False
+        self.lines_skipped = 0
         self._decoder = io.IncrementalNewlineDecoder(codecs.getincrementaldecoder("utf-8")(errors="replace"),
                                                      translate=True)
         self._lock = threading.Lock()
@@ -318,6 +330,7 @@ class _BoundedCapture:
                     break
                 self._feed(self._decoder.decode(chunk))
             self._feed(self._decoder.decode(b"", final=True))
+            self._finish_lines()
         except (OSError, ValueError):
             pass  # the pipe was closed under the reader (a kill that left a descendant holding it)
         finally:
@@ -326,9 +339,50 @@ class _BoundedCapture:
             except (OSError, ValueError):
                 pass
 
+    def _deliver(self, line: str) -> None:
+        try:
+            self._on_line(line)
+        except Exception:  # a failing consumer must never stop the pipe being drained
+            self.lines_skipped += 1
+
+    def _split_lines(self, text: str) -> None:
+        pieces = text.split("\n")
+        for index, piece in enumerate(pieces):
+            last = index == len(pieces) - 1
+            if not self._partial_overflow:
+                if self._partial_size + len(piece) > MAX_LINE_CHARS:
+                    self._partial_overflow = True
+                    self._partial.clear()
+                    self._partial_size = 0
+                else:
+                    self._partial.append(piece)
+                    self._partial_size += len(piece)
+            if last:
+                break
+            if self._partial_overflow:
+                self.lines_skipped += 1
+            else:
+                self._deliver("".join(self._partial))
+            self._partial.clear()
+            self._partial_size = 0
+            self._partial_overflow = False
+
+    def _finish_lines(self) -> None:
+        if self._on_line is None:
+            return
+        if self._partial_overflow:
+            self.lines_skipped += 1
+        elif self._partial_size:
+            self._deliver("".join(self._partial))
+        self._partial.clear()
+        self._partial_size = 0
+        self._partial_overflow = False
+
     def _feed(self, text: str) -> None:
         if not text:
             return
+        if self._on_line is not None:
+            self._split_lines(text)
         with self._lock:
             room = OUTPUT_HEAD_CHARS - self._head_size
             if room > 0:
@@ -389,15 +443,10 @@ def _drain_after_kill(process: subprocess.Popen, readers: Sequence[threading.Thr
     deadline = time.monotonic() + OUTPUT_GRACE_SECONDS
     for reader in readers:
         reader.join(timeout=max(deadline - time.monotonic(), 0))
-    if any(reader.is_alive() for reader in readers) and os.name != "nt":
-        # A descendant escaped the kill and still holds the pipes: stop reading and keep what was captured.
-        # On Windows closing a pipe a reader is blocked on can hang, so the daemon readers are left alone there.
-        for stream in (process.stdout, process.stderr):
-            try:
-                if stream is not None:
-                    stream.close()
-            except (OSError, ValueError):
-                pass
+    # A descendant that escaped the kill may still hold the pipes. Never close a stream from this thread:
+    # closing a buffered reader takes the lock its reader thread holds while blocked in read1(), so the
+    # close would wait for the escaped descendant. The daemon readers are abandoned (they close their own
+    # pipe if it ever ends) and whatever they captured so far is returned.
     try:
         process.wait(timeout=5)
     except subprocess.TimeoutExpired:
@@ -413,10 +462,14 @@ def run_process(
     stdin_text: str | None = None,
     env: Mapping[str, str] | None = None,
     cancel_event: threading.Event | None = None,
+    on_stdout_line: Callable[[str], None] | None = None,
 ) -> ProcessResult:
     """Run one program to completion, killing its whole process tree on a timeout, an interrupt or a cancel.
 
     ``cancel_event`` is for embedding callers (the tests use it): setting it ends the run like a kill.
+    ``on_stdout_line`` is called, on a reader thread, with every complete stdout line (newline removed) before
+    the bounded capture can drop any of it. A line over MAX_LINE_CHARS is skipped and counted in
+    ``lines_skipped``, as is a call that raised.
     """
     executable_path = Path(executable)
     if not executable_path.is_absolute():
@@ -434,7 +487,7 @@ def run_process(
         stderr=subprocess.PIPE,
         env=dict(env) if env is not None else None,
     )
-    captures = [_BoundedCapture(process.stdout), _BoundedCapture(process.stderr)]
+    captures = [_BoundedCapture(process.stdout, on_stdout_line), _BoundedCapture(process.stderr)]
     readers = [threading.Thread(target=capture.read_all, name="process-output", daemon=True) for capture in captures]
     for reader in readers:
         reader.start()
@@ -492,4 +545,5 @@ def run_process(
         interrupted=interrupted,
         cancelled=cancelled_by_request.is_set(),
         output_truncated=any(capture.dropped for capture in captures),
+        lines_skipped=captures[0].lines_skipped,
     )

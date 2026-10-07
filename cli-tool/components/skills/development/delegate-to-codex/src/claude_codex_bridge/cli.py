@@ -61,8 +61,17 @@ ARTIFACT_HELP = ("Artifact directory printed by run, or 'latest' for the newest 
                  "(accept refuses 'latest' unless it is the artifact last reported)")
 
 
+class _UsageError(Exception):
+    """A command line argparse rejected; reported as the documented JSON ``failed`` record, not usage text."""
+
+
+class _JsonArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str):  # type: ignore[override]
+        raise _UsageError(f"{self.prog}: {message}")
+
+
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Bounded Claude-led Codex CLI worker bridge")
+    parser = _JsonArgumentParser(description="Bounded Claude-led Codex CLI worker bridge")
     parser.add_argument("--full", action="store_true",
                         help="Print the complete result record instead of the compact lead summary")
     parser.add_argument("--pretty", action="store_true", help="Indent JSON output")
@@ -134,7 +143,12 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     _configure_streams()
-    args = _parser().parse_args(argv)
+    try:
+        args = _parser().parse_args(argv)
+    except _UsageError as exc:
+        _emit({"status": "failed", "error": f"invalid arguments: {exc}"},
+              "--pretty" in (sys.argv[1:] if argv is None else argv), sys.stderr)
+        return 2
     try:
         if args.command == "preflight":
             result = {"status": "ready", "preflight": bridge.preflight()}

@@ -219,6 +219,21 @@ def _publish_marker(root: Path, marker: Path, expected: dict) -> None:
         finally:
             if temporary is not None:
                 temporary.unlink(missing_ok=True)
+    # No hard links here: stage a complete file in root and publish it with an atomic rename, so a crash
+    # never leaves a truncated marker. The exclusive create stays only as a last resort.
+    temporary = None
+    try:
+        temporary = _stage_marker(root, expected)
+        if marker.exists():
+            return
+        os.replace(temporary, marker)
+        temporary = None
+        return
+    except OSError:
+        pass
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     try:
         with marker.open("x", encoding="utf-8") as out:
             out.write(json.dumps(expected, indent=2) + "\n")
@@ -307,10 +322,14 @@ def state_permission_report(root: Path | None = None) -> dict:
     try:
         # Asking about "." from inside the directory keeps the first output line free of the (possibly
         # non-ASCII, space-containing) path, so every line parses the same way.
-        output = subprocess.run([icacls, "."], cwd=str(root), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                timeout=30, check=False, shell=False).stdout.decode("utf-8", "replace")
+        done = subprocess.run([icacls, "."], cwd=str(root), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                              timeout=30, check=False, shell=False)
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {"status": "unknown", "platform": "windows", "issues": [f"icacls failed: {exc}"]}
+    if done.returncode != 0:
+        return {"status": "unknown", "platform": "windows",
+                "issues": [f"icacls exited with status {done.returncode}; permissions could not be inspected"]}
+    output = done.stdout.decode("utf-8", "replace")
     issues = []
     for line in output.splitlines():
         text = re.sub(r"^\.\s+", "", line.strip(), count=1)

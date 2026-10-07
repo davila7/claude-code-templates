@@ -87,35 +87,23 @@ def is_directory_link(info: os.stat_result) -> bool:
     return bool(getattr(info, "st_file_attributes", 0) & _DIRECTORY_ATTRIBUTE)
 
 
-def _is_junction(path: Path) -> bool:
-    is_junction = getattr(os.path, "isjunction", None)  # Python 3.12+
-    if is_junction is not None:
-        return bool(is_junction(path))
-    if os.name != "nt":
-        return False
-    # Python 3.11: a Windows junction is a mount-point reparse point that islink does not report.
-    try:
-        info = os.lstat(path)
-    except OSError:
-        return False
-    if not getattr(info, "st_file_attributes", 0) & _REPARSE_POINT:
-        return False
-    return getattr(info, "st_reparse_tag", _MOUNT_POINT_TAG) == _MOUNT_POINT_TAG
-
-
 def _is_link(path: Path) -> bool:
-    return path.is_symlink() or _is_junction(path)
+    """True for a symlink, a junction or any other reparse point (never followed or trusted)."""
+    return link_kind(path) is not None
 
 
 def ensure_no_links(root: Path, relative: str) -> Path:
-    """Resolve root/relative, refusing symlinks or junctions on any existing component and any escape."""
+    """Resolve root/relative, refusing symlinks, junctions or other reparse points on any component and any escape."""
     safe_relative_path(relative)
-    base = root.resolve(strict=True)
+    try:
+        base = root.resolve(strict=True)
+    except OSError as exc:
+        raise RevisionError(f"worktree cannot be read: {exc}") from exc
     current = base
     for part in PurePosixPath(relative).parts:
         current = current / part
         if _is_link(current):
-            raise RevisionError(f"path traverses a symbolic link or junction: {relative}")
+            raise RevisionError(f"path traverses a symbolic link, junction or reparse point: {relative}")
     resolved = current.resolve()
     if resolved != base and base not in resolved.parents:
         raise RevisionError(f"path resolves outside its root: {relative}")
@@ -176,6 +164,8 @@ def load_feedback(
                  json.loads(Path(feedback_file).resolve(strict=True).read_text(encoding="utf-8")))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise RevisionError(f"feedback file is not valid UTF-8 JSON: {exc}") from exc
+    except OSError as exc:
+        raise RevisionError(f"feedback file cannot be read: {exc}") from exc
     if not isinstance(value, dict) or set(value) != {"findings"}:
         raise RevisionError("feedback must be a JSON object containing only 'findings'")
     findings = value["findings"]
@@ -199,11 +189,14 @@ def load_feedback(
                     f"{MIN_FINDING_TEXT} through {MAX_FINDING_TEXT} characters"
                 )
             texts[key] = text.strip()
-        if (path, texts["issue"]) in seen:
+        # NTFS paths are case-insensitive: the same file spelled with another case is the same finding.
+        key = (os.path.normcase(path), texts["issue"])
+        if key in seen:
             raise RevisionError(f"finding {index} duplicates an earlier finding")
-        seen.add((path, texts["issue"]))
+        seen.add(key)
         normalized.append({"path": path, **texts})
+    digest_findings = [{**finding, "path": os.path.normcase(finding["path"])} for finding in normalized]
     digest = hashlib.sha256(
-        json.dumps({"findings": normalized}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        json.dumps({"findings": digest_findings}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     ).hexdigest()
     return {"findings": normalized, "sha256": digest}

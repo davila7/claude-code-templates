@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -28,9 +29,18 @@ def git_path() -> str | None:
         return None
 
 
+def scrubbed_environment(base: dict | None = None) -> dict:
+    """The environment without inherited ``GIT_*`` variables (``GIT_INDEX_FILE``, ``GIT_DIR``, ...).
+
+    Fixture Git calls must act on the fixture only, never on the checkout the caller's Git hook or shell points at.
+    """
+    return {key: value for key, value in (os.environ if base is None else base).items()
+            if not key.upper().startswith("GIT_")}
+
+
 def run(args: list[str], *, cwd: Path = ROOT, env: dict | None = None) -> subprocess.CompletedProcess:
     try:
-        return subprocess.run(args, cwd=cwd, env=env, capture_output=True, text=True,
+        return subprocess.run(args, cwd=cwd, env=scrubbed_environment(env), capture_output=True, text=True,
                               encoding="utf-8", errors="replace", timeout=60, check=False)
     except subprocess.TimeoutExpired:
         return subprocess.CompletedProcess(args, 124, "", f"timed out after 60 seconds: {' '.join(map(str, args))}")

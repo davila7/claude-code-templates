@@ -20,7 +20,7 @@
 python -B "$SKILL/scripts/codex_bridge.py" continue --task T --artifact A --grant-turns N
 ```
 
-`continue` needs an `EXTENSION_REQUESTED` artifact. N is 1 up to the worker's requested turns. It resumes the same session, worktree, model, effort and auto-review choice (a session that began with auto-review off stays off); do not repeat completed work. A further extension without measurable progress blocks. `max_turns` is a step budget, not a Codex turn cap; `timeout_seconds` bounds one segment. A segment that hits its time cap, or ends without a structured report, gets one read-only structured checkpoint.
+`continue` needs an `EXTENSION_REQUESTED` artifact. N is 1 up to the worker's requested turns. It resumes the same session, worktree, model and effort; do not repeat completed work. Auto-review is decided afresh: a session that began with auto-review off never gains it, and one that began on follows the user's current setting (and the task's `auto_review: false`), so it can be turned off. A further extension without measurable progress blocks. `max_turns` is a step budget, not a Codex turn cap; `timeout_seconds` bounds one segment. A segment that returns no valid structured report gets one read-only structured checkpoint, but only when Codex reported a session id, the run was not interrupted, and the process either exited 0 or hit the time cap. After any other nonzero exit, or with no session id, no checkpoint is requested and the segment fails without a report.
 
 `auto_continue` (task field, 0-3) lets the bridge grant the requested turns itself after a segment that changed the worktree, up to that many times (and no more than `max_extensions`, when set). Each grant needs a fresh capacity check and is recorded in `auto_continuations`. Without progress or capacity the result stays `EXTENSION_REQUESTED` for you.
 
@@ -42,7 +42,7 @@ Scope rules ([safety](safety.md) has the reasons):
 - A read-only task that changes the primary checkout fails. In every mode, a change to the primary repository's hooks or to a setting that makes Git run code (see [safety](safety.md#git-and-the-primary-checkout)) fails the result and names the hook or `config:<key>`; the same check runs after validation and again in `accept`. If you made the change, `revalidate --accept-repo-config-change` accepts it (both hashes are recorded); otherwise find out what changed it.
 - A worker that creates git-ignored files the patch cannot carry (other than ordinary build or cache output) fails.
 
-`error_kind` in a failed result helps diagnosis: `rate_limit` and `authentication` come from the worker's own error text, `sandbox_policy_rejected` means Codex refused every worker command (set the Windows sandbox up, see [setup](setup.md)), `bridge_error` is an internal failure, `codex_error` is anything else. None of them is capacity exhaustion.
+`error_kind` in a failed result helps diagnosis: `rate_limit` and `authentication` come from the worker's own error text, `sandbox_policy_rejected` means Codex refused at least one worker command as "blocked by policy" and no other error kind applied; with worker progress the result only warns. Only when no command ran and nothing changed does it fail the result, and only then point at the Windows sandbox setup (see [setup](setup.md)), `bridge_error` is an internal failure, `codex_error` is anything else. None of them is capacity exhaustion.
 
 ## Capacity
 

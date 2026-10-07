@@ -26,7 +26,7 @@ The user's settings live in `settings.json` in the bridge's state folder ([setup
  "then":"repeat the command that returned this result"}
 ```
 
-Ask the user `question` once, run the `record_with` command that matches the answer, and repeat the launch. `settings show` prints `settings` (`true`, `false` or `null` when unset), `state` (`on`, `off`, `unset`), `unset`, `settings_file` and `ignored_keys` (keys in the file this version does not know; they are kept). `settings set auto-review on|off` (also `true`, `false`, `enabled`, `disabled`) records a choice and `settings unset auto-review` clears it. An unknown setting or value, or a damaged or newer settings file, is an exit 2 error naming the problem.
+Ask the user `question` once, run the `record_with` command that matches the answer, and repeat the launch. `settings show` prints `status`, `settings_file`, `exists`, `schema_version`, `settings` and `state` (objects keyed by setting name: read the choice at `settings.auto_review`, `true`, `false` or `null` when unset, and `state.auto_review`, `on`, `off` or `unset`), `unset` (a list of names), `commands`, and `ignored_keys` only when the file holds keys this version does not know (they are kept). `settings set auto-review on|off` (also `true`, `false`, `enabled`, `disabled`) records a choice and `settings unset auto-review` clears it. An unknown setting or value, or a damaged or newer settings file, is an exit 2 error naming the problem.
 
 `scripts/setup.py` uses its own statuses and exits 0 for `passed`, `installation_ready` and `codex_ready`, otherwise 2 (see [setup](setup.md#doctor-statuses)).
 

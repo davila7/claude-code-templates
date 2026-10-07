@@ -12,7 +12,8 @@ TASK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 COMMIT_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 MODES = {"analyze", "implement", "review", "test"}
 # One identifier: no leading "-" (it would be read as an option by `codex -m`), no whitespace or control characters.
-MODEL_RE = re.compile(r"^[^\s\x00-\x1f\x7f-][^\s\x00-\x1f\x7f]{0,127}$")
+# Control characters include the C1 range U+0080-U+009F.
+MODEL_RE = re.compile(r"^[^\s\x00-\x1f\x7f-\x9f-][^\s\x00-\x1f\x7f-\x9f]{0,127}$")
 RISK_LEVELS = {"low", "medium", "high"}
 # Defaults for fields that are almost always the same, so the lead writes only task-specific values.
 DEFAULT_MAX_TURNS = 6
@@ -215,6 +216,8 @@ def validate_task(raw: dict[str, Any], *, allow_missing_validation: bool = False
 
     if mode in {"analyze", "review"} and allowed_changed_paths:
         raise ContractError(f"{mode} tasks cannot allow changed paths")
+    if mode in {"analyze", "review"} and copy_ignored:
+        raise ContractError(f"{mode} tasks cannot copy ignored files (copy_ignored requires an implement or test task)")
     if mode == "implement" and not allowed_changed_paths:
         raise ContractError("implement tasks require at least one allowed_changed_path")
 

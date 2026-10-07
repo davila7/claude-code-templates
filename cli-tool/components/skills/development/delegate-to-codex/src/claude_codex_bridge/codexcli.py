@@ -11,6 +11,7 @@ import json
 import math
 import os
 import queue
+import re
 import subprocess
 import threading
 import time
@@ -29,6 +30,8 @@ FIVE_HOUR_MAX_MINUTES = 720          # anything up to 12h is treated as the shor
 WEEKLY_MIN_MINUTES = 6 * 24 * 60     # anything from 6 days up is treated as the weekly window
 USAGE_CACHE_TTL_SECONDS = 60.0
 APP_SERVER_TIMEOUT_SECONDS = 30.0
+EPOCH_MILLISECONDS_FLOOR = 1e11      # a Unix timestamp this large is milliseconds (1e11 s is the year 5138)
+VERSION_RE = re.compile(r"\d+\.\d+\.\d+")
 
 
 class CodexCliError(RuntimeError):
@@ -118,7 +121,23 @@ def codex_version(command: CodexCommand) -> str:
     result = run_process(command.executable, command.args("--version"), cwd=Path.home(), timeout_seconds=20)
     if result.exit_code != 0 or result.timed_out:
         raise CodexCliError("codex --version failed")
-    return (result.stdout or result.stderr).strip()
+    # The first output line that carries a version number; a warning banner or crash text is not a version.
+    for text in (result.stdout, result.stderr):
+        for line in (text or "").splitlines():
+            if VERSION_RE.search(line):
+                return line.strip()
+    raise CodexCliError("codex --version printed no version number")
+
+
+def executable_fingerprint(command: CodexCommand) -> dict[str, Any]:
+    """Identify the selected executable, so a cached version is reused only for the same binary."""
+    record: dict[str, Any] = {"path": str(command.executable), "prefix_args": list(command.prefix)}
+    try:
+        info = command.executable.stat()
+        record.update(mtime_ns=info.st_mtime_ns, size=info.st_size)
+    except OSError:
+        pass
+    return record
 
 
 # ------------------------------------------------------------------ app-server
@@ -254,6 +273,30 @@ def check_subscription_account(account: dict[str, Any]) -> dict[str, Any]:
 
 # ------------------------------------------------------------------ usage
 
+def _integral(value: Any) -> int | None:
+    """An int, or a float with an integral value (JSON writers differ on 720 versus 720.0); never a bool."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float) and math.isfinite(value) and value.is_integer():
+        return int(value)
+    return None
+
+
+def _reset_time(value: Any) -> str | None:
+    """ISO time for a Unix reset timestamp (seconds, or milliseconds), or None when it is not a usable one."""
+    stamp = _integral(value)
+    if stamp is None:
+        return None
+    if stamp >= EPOCH_MILLISECONDS_FLOOR:
+        stamp //= 1000
+    try:
+        return datetime.fromtimestamp(stamp, timezone.utc).isoformat()
+    except (ValueError, OverflowError, OSError):
+        return None
+
+
 def _window(raw: Any) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
         return None
@@ -261,14 +304,13 @@ def _window(raw: Any) -> dict[str, Any] | None:
     if not isinstance(used, (int, float)) or isinstance(used, bool):
         return None
     used = max(0.0, min(100.0, float(used)))
-    minutes = raw.get("windowDurationMins")
-    resets = raw.get("resetsAt")
+    minutes = _integral(raw.get("windowDurationMins"))
     return {
         "applicable": True,
         "used_percent": used,
         "remaining_percent": round(100.0 - used, 3),
-        "window_minutes": minutes if isinstance(minutes, int) and not isinstance(minutes, bool) else None,
-        "resets_at": datetime.fromtimestamp(resets, timezone.utc).isoformat() if isinstance(resets, int) else None,
+        "window_minutes": minutes,
+        "resets_at": _reset_time(raw.get("resetsAt")),
     }
 
 
@@ -350,18 +392,21 @@ def read_usage_cache(cache_path: Path, *, max_age: float | None = USAGE_CACHE_TT
             if age >= 0 and (max_age is None or age <= max_age):
                 cached["retrieval"] = {"mode": "cache", "age_seconds": round(age, 1)}
                 cached.pop("_cached_at", None)
+                cached.pop("_codex_version", None)  # private cache bookkeeping, not part of the report
+                cached.pop("_codex_executable", None)
                 return cached
         except (OSError, ValueError, TypeError, KeyError, OverflowError):
             pass
     return None
 
 
-def _cached_codex_version(cache_path: Path, command: CodexCommand) -> str | None:
-    """The version recorded by an earlier preflight, or a fresh `codex --version` when the cache has none."""
+def cached_codex_version(cache_path: Path, command: CodexCommand) -> str | None:
+    """The version an earlier preflight recorded for this same executable, else a fresh `codex --version`."""
     try:
         previous = json.loads(cache_path.read_text(encoding="utf-8"))
         version = previous.get("_codex_version") if isinstance(previous, dict) else None
-        if isinstance(version, str) and version:
+        if (isinstance(version, str) and version
+                and previous.get("_codex_executable") == executable_fingerprint(command)):
             return version
     except (OSError, ValueError):
         pass
@@ -386,6 +431,7 @@ def fetch_usage(command: CodexCommand, cache_path: Path | None = None, *, use_ca
     record["retrieval"] = {"mode": "live", "age_seconds": 0}
     if cache_path is not None and record["gate"] != "unknown":
         # Keep the Codex version preflight recorded, so a later cache-hit preflight does not report None.
-        extra = {"_codex_version": version} if (version := _cached_codex_version(cache_path, command)) else {}
+        extra = ({"_codex_version": version, "_codex_executable": executable_fingerprint(command)}
+                 if (version := cached_codex_version(cache_path, command)) else {})
         atomic_write_json(cache_path, {**record, "_cached_at": time.time(), **extra})
     return record

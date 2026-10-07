@@ -5,8 +5,8 @@
   "properties": {
     "task_id": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
-      "description": "Defaults to the task file stem when valid."
+      "pattern": "^(?!.*\\.\\.)(?!(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\\.|$))[a-z0-9][a-z0-9._-]{0,63}$",
+      "description": "Defaults to the task file stem when valid. Lowercase letters, digits, '.', '_' and '-'; not '..' anywhere and not a Windows device name (con, prn, aux, nul, com1-9, lpt1-9), with or without an extension."
     },
     "repo_root": {
       "type": "string",
@@ -35,8 +35,7 @@
     "context_paths": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^(?=.*\\S)(?!\\s*[/\\\\])(?!.*:)(?!(?:.*[/\\\\])?\\.\\.(?:[/\\\\]|$))(?!(?:.*[/\\\\])?(?:\\.[Gg][Ii][Tt]|[Gg][Ii][Tt]~1)[. ]*(?:[/\\\\]|$))(?=[^*?\\[\\]]*(?:/\\*\\*)?\\s*$)"
+        "$ref": "#/$defs/repoPath"
       },
       "description": "The few files to read first; same path rules as allowed_changed_paths. Defaults to allowed_changed_paths, which is empty for analyze and review, so name them there."
     },
@@ -51,8 +50,7 @@
     "allowed_changed_paths": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^(?=.*\\S)(?!\\s*[/\\\\])(?!.*:)(?!(?:.*[/\\\\])?\\.\\.(?:[/\\\\]|$))(?!(?:.*[/\\\\])?(?:\\.[Gg][Ii][Tt]|[Gg][Ii][Tt]~1)[. ]*(?:[/\\\\]|$))(?=[^*?\\[\\]]*(?:/\\*\\*)?\\s*$)"
+        "$ref": "#/$defs/repoPath"
       },
       "description": "Exact repo-relative paths or a trailing /** directory boundary; no other wildcards. Rejected: absolute paths, '..' components, any ':' (drive letter or NTFS stream) and any .git component. Required for every mode: use [] for analyze and review (any entry is rejected); implement needs at least one entry."
     },
@@ -68,7 +66,8 @@
     "plan_status": {
       "type": "string",
       "const": "READY",
-      "description": "Must be READY (the default)."
+      "description": "Must be READY (the default).",
+      "default": "READY"
     },
     "risk": {
       "type": "string",
@@ -103,7 +102,7 @@
         "string",
         "null"
       ],
-      "pattern": "^[^\\s\\u0000-\\u001f\\u007f-][^\\s\\u0000-\\u001f\\u007f]{0,127}$",
+      "pattern": "^[^\\s\u0000-\u001f\u007f-\u009f-][^\\s\u0000-\u001f\u007f-\u009f]{0,127}$",
       "default": null,
       "description": "Null, or one model identifier of at most 128 characters: no whitespace, not starting with '-'. The run command's --model overrides it."
     },
@@ -127,11 +126,10 @@
     "copy_ignored": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^(?=.*\\S)(?!\\s*[/\\\\])(?!.*:)(?!(?:.*[/\\\\])?\\.\\.(?:[/\\\\]|$))(?!(?:.*[/\\\\])?(?:\\.[Gg][Ii][Tt]|[Gg][Ii][Tt]~1)[. ]*(?:[/\\\\]|$))"
+        "$ref": "#/$defs/ignoredPath"
       },
       "default": [],
-      "description": "Repo-relative git-ignored files, folders or globs to copy into the worktree before launch, up to 200 MB total. Tracked paths, links and repository escapes are refused; the path rules of allowed_changed_paths apply, wildcards allowed."
+      "description": "Repo-relative git-ignored files, folders or globs to copy into the worktree before launch, up to 200 MB total. Tracked paths, links and repository escapes are refused; the path rules of allowed_changed_paths apply, wildcards allowed. Only for implement and test tasks; analyze and review must leave it empty."
     },
     "auto_continue": {
       "type": "integer",
@@ -209,6 +207,9 @@
         "properties": {
           "allowed_changed_paths": {
             "maxItems": 0
+          },
+          "copy_ignored": {
+            "maxItems": 0
           }
         }
       }
@@ -258,5 +259,23 @@
       }
     }
   ],
-  "description": "Task contract, for documentation and editors. The bridge does not read this file: its own validator decides and is stricter about paths and number types than a schema can express."
+  "description": "Task contract, for documentation and editors. The bridge does not read this file: its own validator decides and is stricter about paths and number types than a schema can express.",
+  "$defs": {
+    "ignoredPath": {
+      "type": "string",
+      "pattern": "^(?=.*\\S)(?!\\s*[/\\\\])(?!.*:)(?!(?:.*[/\\\\])?\\.\\.(?:[/\\\\]|$))(?!(?:.*[/\\\\])?(?:\\.[Gg][Ii][Tt]|[Gg][Ii][Tt]~1)[. ]*(?:[/\\\\]|$))",
+      "description": "A repo-relative path: not absolute, no '..', no ':' (drive letter or NTFS stream), no .git component. Wildcards are not restricted here."
+    },
+    "repoPath": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/ignoredPath"
+        },
+        {
+          "pattern": "^(?=[^*?\\[\\]]*(?:/\\*\\*)?\\s*$)",
+          "description": "Only a trailing /** directory boundary is allowed as a wildcard."
+        }
+      ]
+    }
+  }
 }

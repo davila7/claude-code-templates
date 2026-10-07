@@ -12,8 +12,9 @@ permissions: [env, file_read, file_write, network, shell]
 
 Claude owns requirements, design, assignments, review and acceptance. Codex workers write code and tests.
 Requires Windows 10/11, Python 3.11+, Git and the Codex CLI signed in with ChatGPT; [setup](references/setup.md)
-checks this once per machine (macOS notes: [PLATFORMS.md](PLATFORMS.md)). Use the bundled bridge for every Codex
-operation, never the Codex CLI directly.
+checks this once per machine (macOS notes: [PLATFORMS.md](PLATFORMS.md)). Run every worker operation (tasks, usage,
+review, acceptance) through the bundled bridge, never the Codex CLI directly; `codex login` and `codex --version` are the
+only direct uses.
 
 Every command below is `python -B "${CLAUDE_SKILL_DIR}/scripts/codex_bridge.py" <subcommand>`. The reference files
 write the skill directory as `$SKILL`; it is the same path. A complete walk-through from task file to accepted patch:

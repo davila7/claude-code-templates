@@ -5,6 +5,7 @@ Everything the bridge produces stays in private external state, never in the rep
 """
 from __future__ import annotations
 
+import collections
 import hashlib
 import json
 import os
@@ -22,6 +23,7 @@ from typing import Any, Iterable, Iterator, Mapping
 from . import settings as user_settings
 from .codexcli import CodexCliError, CodexCommand, billing_overrides, check_subscription_account, codex_version
 from .codexcli import fetch_usage, find_codex, read_account_and_limits, classify_usage, read_usage_cache
+from .codexcli import cached_codex_version, executable_fingerprint
 from .contracts import MODEL_RE, Task, load_task
 from .gitops import (
     BridgeError, UnsafeWorktree, WorktreeTampered, _git, _git_bytes, _git_retry, _guard, _split_paths,
@@ -192,8 +194,9 @@ def preflight() -> dict[str, Any]:
     if overrides:
         raise BridgeError("Billing overrides are set; subscription-only routing cannot be confirmed: " + ", ".join(overrides))
     command = find_codex()
-    cached = read_usage_cache(usage_cache())
-    version = cached.get("_codex_version") if cached is not None else codex_version(command)
+    # A recent cache may supply the version, but only for the same executable; a stale one asks the program.
+    fresh = read_usage_cache(usage_cache()) is not None
+    version = cached_codex_version(usage_cache(), command) if fresh else codex_version(command)
     account, limits, limits_error = read_account_and_limits(command)
     auth = check_subscription_account(account)
     usage = classify_usage(limits) if limits is not None else {
@@ -221,7 +224,8 @@ def _gate_preflight(pre: dict[str, Any]) -> dict[str, Any]:
         raise CapacityPaused(record)
     try:
         cache = usage_cache()
-        atomic_write_json(cache, {**record, "_cached_at": time.time(), "_codex_version": pre.get("version")})
+        atomic_write_json(cache, {**record, "_cached_at": time.time(), "_codex_version": pre.get("version"),
+                                    "_codex_executable": executable_fingerprint(_command_from(pre))})
     except OSError:
         pass
     return record
@@ -428,71 +432,125 @@ def _exec_args(command: CodexCommand, task: Task, worktree: Path, schema: Path, 
 
 # ------------------------------------------------------------------ event parsing
 
-def parse_events(stdout: str) -> dict[str, Any]:
-    events: list[dict[str, Any]] = []
-    for line in stdout.splitlines():
+# Bounds on what one worker run's event stream may add to memory. Past a bound the summary keeps what it has and
+# says so (``events_complete`` False), so a long run still yields exact totals unless it is truly enormous.
+MAX_EVENT_COMMANDS = 20000
+MAX_EVENT_FILE_CHANGES = 50000
+MAX_EVENT_DECLINED = 1000
+MAX_EVENT_FORBIDDEN = 1000
+MAX_EVENT_TEXTS = 20  # agent messages and error messages: callers read only the last one
+MAX_EVENT_TEXT_CHARS = 4000  # per stored command or declined output; the report shows far less
+
+
+class EventSummary:
+    """Incremental reader of Codex's JSONL event stream, fed one line at a time.
+
+    The bridge feeds it every stdout line as the worker runs, before the bounded capture can drop the middle of
+    the transcript, so token totals, command records, declined commands and forbidden-tool items stay exact for
+    a run of any length. Only the facts ``parse_events`` returns are kept, each bounded.
+    """
+
+    def __init__(self) -> None:
+        self.event_count = 0
+        self.thread_id: str | None = None
+        self.messages: collections.deque[str] = collections.deque(maxlen=MAX_EVENT_TEXTS)
+        self.commands: list[dict[str, Any]] = []
+        self.file_changes: list[dict[str, Any]] = []
+        self.forbidden: list[str] = []
+        self.errors: collections.deque[str] = collections.deque(maxlen=MAX_EVENT_TEXTS)
+        self.usage: dict[str, int] = {}
+        self.declined: list[dict[str, Any]] = []
+        self.turn_failed: Any = None
+        self.turns_completed = self.turns_started = self.turns_failed = 0
+        self.overflowed = False
+
+    @staticmethod
+    def _clip(value: Any) -> Any:
+        return value[:MAX_EVENT_TEXT_CHARS] if isinstance(value, str) else value
+
+    def _add(self, target: list, limit: int, record: Any) -> None:
+        if len(target) < limit:
+            target.append(record)
+        else:
+            self.overflowed = True
+
+    def feed(self, line: str) -> None:
         line = line.strip()
         if not line:
-            continue
+            return
         try:
-            value = json.loads(line)
+            event = json.loads(line)
         except json.JSONDecodeError:
-            continue
-        if isinstance(value, dict):
-            events.append(value)
-    thread_id = None
-    messages: list[str] = []
-    commands: list[dict[str, Any]] = []
-    file_changes: list[dict[str, Any]] = []
-    forbidden: list[str] = []
-    errors: list[str] = []
-    usage: dict[str, int] = {}
-    declined: list[dict[str, Any]] = []
-    turn_failed = None
-    turns_completed = turns_started = turns_failed = 0
-    for event in events:
+            return
+        if isinstance(event, dict):
+            self.event_count += 1
+            self._take(event)
+
+    def _take(self, event: dict[str, Any]) -> None:
         kind = event.get("type")
         if kind == "thread.started" and isinstance(event.get("thread_id"), str):
-            thread_id = event["thread_id"]
+            self.thread_id = event["thread_id"]
         elif kind == "turn.started":
-            turns_started += 1
+            self.turns_started += 1
         elif kind == "turn.completed":
-            turns_completed += 1
+            self.turns_completed += 1
             reported = event.get("usage")
             for key, value in (reported.items() if isinstance(reported, dict) else ()):
                 if isinstance(value, int) and not isinstance(value, bool):
-                    usage[key] = usage.get(key, 0) + value
+                    self.usage[key] = self.usage.get(key, 0) + value
         elif kind == "turn.failed":
-            turns_failed += 1
+            self.turns_failed += 1
             error = event.get("error") or {}
             message = error.get("message") if isinstance(error, dict) else error
             if message is not None and not isinstance(message, str):
                 message = json.dumps(message, ensure_ascii=False, default=str)  # the text is displayed, never parsed
-            turn_failed = message
+            self.turn_failed = message
         elif kind == "error" and isinstance(event.get("message"), str):
-            errors.append(event["message"])
+            self.errors.append(event["message"])
         elif kind == "item.completed" and isinstance(event.get("item"), dict):
             item = event["item"]
             item_type = item.get("type")
             if item_type == "agent_message" and isinstance(item.get("text"), str):
-                messages.append(item["text"])
+                self.messages.append(item["text"])
             elif item_type == "command_execution":
-                commands.append({"command": item.get("command"), "exit_code": item.get("exit_code"),
-                                 "status": item.get("status")})
+                self._add(self.commands, MAX_EVENT_COMMANDS, {
+                    "command": self._clip(item.get("command")), "exit_code": item.get("exit_code"),
+                    "status": item.get("status")})
                 if item.get("status") == "declined":
                     # Codex marks a command it refused to run this way: the approval reviewer denied it (or no
                     # approval was possible). `codex exec --json` carries no reviewer verdict or reason.
-                    declined.append({"command": item.get("command"), "output": item.get("aggregated_output")})
+                    self._add(self.declined, MAX_EVENT_DECLINED, {
+                        "command": self._clip(item.get("command")), "output": self._clip(item.get("aggregated_output"))})
             elif item_type == "file_change":
                 for change in item.get("changes") or []:
                     if isinstance(change, dict):
-                        file_changes.append({"path": change.get("path"), "kind": change.get("kind")})
+                        self._add(self.file_changes, MAX_EVENT_FILE_CHANGES,
+                                  {"path": change.get("path"), "kind": change.get("kind")})
             elif item_type in FORBIDDEN_ITEM_TYPES:
-                forbidden.append(item_type)
-    return {"thread_id": thread_id, "messages": messages, "commands": commands, "file_changes": file_changes,
-            "forbidden_items": forbidden, "errors": errors, "usage": usage, "turn_failed": turn_failed,
-            "turns_completed": turns_completed, "turns_started": turns_started, "turns_failed": turns_failed,
-            "declined": declined, "event_count": len(events)}
+                self._add(self.forbidden, MAX_EVENT_FORBIDDEN, item_type)
+
+    def result(self, *, lines_skipped: int = 0, truncated: bool = False) -> dict[str, Any]:
+        """The parsed facts. ``truncated`` (events were lost before they reached this reader), skipped lines
+        and an overflowed bound all make ``events_complete`` False: the totals and lists are then lower bounds
+        and callers must not read a missing event as "did not happen"."""
+        return {"thread_id": self.thread_id, "messages": list(self.messages), "commands": self.commands,
+                "file_changes": self.file_changes, "forbidden_items": self.forbidden, "errors": list(self.errors),
+                "usage": self.usage, "turn_failed": self.turn_failed, "turns_completed": self.turns_completed,
+                "turns_started": self.turns_started, "turns_failed": self.turns_failed, "declined": self.declined,
+                "event_count": self.event_count,
+                "events_complete": not (truncated or lines_skipped or self.overflowed)}
+
+
+def parse_events(stdout: str, *, truncated: bool = False) -> dict[str, Any]:
+    """The facts in Codex's JSONL event stream, from text already in memory (``EventSummary`` is the streaming form).
+
+    ``truncated`` says events were lost before they got here, so the totals and lists are lower bounds:
+    ``events_complete`` is False.
+    """
+    summary = EventSummary()
+    for line in stdout.splitlines():
+        summary.feed(line)
+    return summary.result(truncated=truncated)
 
 
 # Whole words and HTTP-status phrases only: a bare "401" or "429" inside a longer number, a line number or a
@@ -654,12 +712,14 @@ def _run_codex(command: CodexCommand, task: Task, worktree: Path, artifact: Path
     (artifact / f"{label}.prompt.txt").write_text(prompt, encoding="utf-8")
     if env is None:
         env = worker_environment()[0]
+    events = EventSummary()  # fed every stdout line as it arrives, so the capture's dropped middle loses no event
     process = run_process(command.executable, _exec_args(command, task, worktree, schema, last, sandbox=sandbox,
                                                          effort=effort, resume=resume, auto_review=auto_review),
-                          cwd=worktree, timeout_seconds=timeout, stdin_text=prompt, env=env)
+                          cwd=worktree, timeout_seconds=timeout, stdin_text=prompt, env=env,
+                          on_stdout_line=events.feed)
     (artifact / f"{label}.events.jsonl").write_text(process.stdout, encoding="utf-8")
     (artifact / f"{label}.stderr.log").write_text(process.stderr, encoding="utf-8")
-    parsed = parse_events(process.stdout)
+    parsed = events.result(lines_skipped=process.lines_skipped)
     final = last.read_text(encoding="utf-8") if last.is_file() else (parsed["messages"][-1] if parsed["messages"] else "")
     return process, parsed, final
 
@@ -671,6 +731,7 @@ def _segment(command: CodexCommand, task: Task, worktree: Path, artifact: Path, 
     env, env_report = worker_environment()
     # What the worktree held before the worker started, so ignored files it creates can be told apart.
     ignored_before = _ignored_files(worktree, task) if writing else None
+    ignored_stamps = _ignored_stamps(worktree, ignored_before) if ignored_before else {}
     process, parsed, final = _run_codex(command, task, worktree, artifact, label, prompt, sandbox=sandbox,
                                         effort=effort, resume=resume, timeout=task.timeout_seconds, env=env,
                                         auto_review=auto_review)
@@ -699,7 +760,8 @@ def _segment(command: CodexCommand, task: Task, worktree: Path, artifact: Path, 
     return {"process": process, "parsed": parsed, "claim": claim, "error": error, "time_cap": time_cap,
             "checkpoint": checkpoint, "label": label, "thread_id": parsed["thread_id"],
             "error_kind": error_kind, "failure_text": failure_text, "policy_warning": policy_warning,
-            "policy_rejections": rejections, "ignored_before": ignored_before, "environment": env_report,
+            "policy_rejections": rejections, "ignored_before": ignored_before, "ignored_stamps": ignored_stamps,
+            "environment": env_report,
             "context_evidence": _context_evidence(task, parsed),
             "approvals": _segment_approvals(parsed, process)}
 
@@ -790,6 +852,51 @@ def _new_ignored_files(worktree: Path, task: Task, before: set[str] | None) -> t
     flagged = [path for path in created if not _is_build_output(path)]
     output = [path for path in created if _is_build_output(path) and not _is_bytecode(path)]
     return flagged, output, None
+
+
+def _ignored_stamps(worktree: Path, paths: Iterable[str]) -> dict[str, tuple[int, int]]:
+    """(size, modification time) of each listed ignored file: a cheap way to notice a later edit."""
+    stamps: dict[str, tuple[int, int]] = {}
+    for path in paths:
+        try:
+            info = (worktree / path).lstat()
+        except OSError:
+            continue
+        stamps[path] = (info.st_size, info.st_mtime_ns)
+    return stamps
+
+
+def _edited_ignored_files(worktree: Path, before: Mapping[str, tuple[int, int]] | None,
+                          skip: Iterable[str] = ()) -> list[str]:
+    """Ignored files that existed before the segment and were edited or deleted during it (build output aside)."""
+    skipped = set(skip)
+    edited: list[str] = []
+    now = _ignored_stamps(worktree, [p for p in (before or {}) if p not in skipped and not _is_build_output(p)])
+    for path, stamp in sorted((before or {}).items()):
+        if path in skipped or _is_build_output(path):
+            continue
+        if now.get(path) != stamp:
+            edited.append(path)
+    return edited
+
+
+INPUT_FAILURE = "worker edited or deleted copy_ignored input file(s)"
+
+
+def _changed_inputs(worktree: Path, record: Mapping[str, Any] | None) -> list[str]:
+    """The ``copy_ignored`` files whose content in the worktree differs from what was copied in (or are gone).
+
+    Each copied file's SHA-256 is recorded when it is copied; a record without one (made before it was kept)
+    has nothing to compare against.
+    """
+    changed: list[str] = []
+    for entry in (record or {}).get("copy_ignored") or []:
+        expected = entry.get("sha256")
+        if entry.get("directory") or not expected:
+            continue
+        if _file_digest(worktree / entry["path"]) != expected:
+            changed.append(entry["path"])
+    return changed
 
 
 def _remove_bytecode(worktree: Path, task: Task, keep: Iterable[str] = ()) -> tuple[list[str], list[str]]:
@@ -974,11 +1081,16 @@ def _relative_executable(value: str) -> str:
 
 
 def _resolve_validation_executable(task: Task, worktree: Path | None) -> Path | None:
-    """The program validation will start: an absolute path, a path inside the worktree/repository, or a PATH lookup."""
+    """The program validation will start: an absolute path, a path inside the worktree, or a PATH lookup.
+
+    A repository-relative program is looked up only in ``worktree`` when one is given: validation judges the
+    worker's patch, so a wrapper the patch deleted or renamed must not be replaced by the primary checkout's copy.
+    Without a worktree (the check before a worker is started) the primary repository stands in for it.
+    """
     first = task.validation_command[0]
     requested = Path(first)
     if requested.is_absolute() or "/" in first or "\\" in first:
-        roots = [] if requested.is_absolute() else [r for r in (worktree, task.repo_root) if r is not None]
+        roots = [] if requested.is_absolute() else [worktree if worktree is not None else task.repo_root]
         candidates = [requested] if requested.is_absolute() else [root / requested for root in roots]
         return next((p.resolve() for p in candidates if p.is_file()), None)
     found = which(first)
@@ -1257,10 +1369,27 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
             if build_output:
                 warnings.append("worker created build output in git-ignored folders; it is not in the patch, but "
                                 "validation can read it: " + _count_label(build_output))
+            inputs = _inventory_files(prior)
+            changed_inputs = _changed_inputs(worktree, prior)
+            if changed_inputs:
+                failures.append(INPUT_FAILURE + "; the change is not in the patch "
+                                "and is never applied to the primary checkout, so validation would run against "
+                                "inputs the lead never supplied: " + _count_label(changed_inputs))
+            edited_ignored = _edited_ignored_files(worktree, seg.get("ignored_stamps"), skip=inputs)
+            if edited_ignored:
+                warnings.append("worker edited or deleted existing git-ignored files; the change is not in the patch "
+                                "and validation can read it: " + _count_label(edited_ignored))
     diff_path = artifact / "diff.patch"
     write_json(artifact / "changed-paths.json", changed)
     if process.output_truncated:
-        warnings.append("the worker's output exceeded the capture limit; the middle of its transcript was dropped")
+        warnings.append("the worker's output exceeded the capture limit and the middle of its saved transcript was "
+                        "dropped; token totals, command records, declined commands and forbidden-tool checks were "
+                        "read from the whole stream as it arrived, so they stay exact, but the saved events and "
+                        "stderr files cannot show the dropped part")
+    if not seg["parsed"].get("events_complete", True):
+        warnings.append("some of the worker's events could not be read (a line over the size limit, or a record "
+                        "list over its bound): token totals, command records, declined commands and forbidden-tool "
+                        "checks are lower bounds, so a missing event does not prove it did not happen")
     # The primary checkout and its settings are compared before validation (a failure skips it) and again after
     # it, because validation runs code the worker wrote, as the user.
     primary_failures, primary_warnings, primary_unchanged = _primary_findings(task, artifact, primary_before,
@@ -1327,6 +1456,7 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
     segment_record = {
         "label": seg["label"], "session_id": seg["thread_id"], "process": _process_record(process),
         "time_cap_reached": seg["time_cap"], "checkpoint": seg["checkpoint"],
+        "events_complete": seg["parsed"].get("events_complete", True),
         "context_evidence": seg["context_evidence"], "commands_run": len(seg["parsed"]["commands"]),
         "worktree_fingerprint": fingerprint or "<unavailable: worktree not readable>",
         "token_usage": seg["parsed"]["usage"], "tree": tree, "environment": seg.get("environment"),
@@ -1508,6 +1638,7 @@ def _copy_ignored(task: Task, worktree: Path, inventory: list[dict[str, Any]]) -
         if len(data) != entry["size_bytes"]:
             raise BridgeError(f"copy_ignored file changed size before copying: {relative}")
         target.write_bytes(data)
+        entry["sha256"] = hashlib.sha256(data).hexdigest()  # what _finish compares the worker's copy against
 
 
 @contextmanager
@@ -1960,6 +2091,9 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         guard_after = _repo_guard_fingerprint(task)
         if _guard_changes(guard_now, guard_after):
             guard_failures.append(f"{GUARD_FAILURE} while validation ran: {_guard_change_text(guard_now, guard_after)}")
+        edited_inputs = _changed_inputs(worktree, prior)
+        if edited_inputs:
+            guard_failures.append(f"{INPUT_FAILURE}: {_count_label(edited_inputs)}")
         primary_before = (artifact / "primary-status.before.txt").read_text(encoding="utf-8")
         primary_after = primary_status(task)  # after validation, which ran code the worker wrote
         _write_text(artifact / "primary-status.after.txt", primary_after)
@@ -1980,7 +2114,7 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         else:
             failures = [f for f in prior.get("failures", [])
                         if f not in {"independent validation failed", "validation executable not found"}
-                        and not f.startswith(GUARD_FAILURE)]
+                        and not f.startswith(GUARD_FAILURE) and not f.startswith(INPUT_FAILURE)]
             if error:
                 failures.append(error)
             failures.extend(guard_failures)
@@ -2207,6 +2341,11 @@ def accept(task_file: Path, artifact_path: Path, three_way: bool = False,
                 raise BridgeError(f"{GUARD_FAILURE} since this artifact's run started: "
                                   f"{_guard_change_text(baseline, now)}; inspect them, and if the change is yours run "
                                   "revalidate with --accept-repo-config-change before accepting")
+        edited_inputs = _changed_inputs(worktree, record)
+        if edited_inputs:
+            raise BridgeError(f"{INPUT_FAILURE} since they were copied in: {_count_label(edited_inputs)}; the patch "
+                              "does not carry the change, so the reviewed result was not tested against the inputs "
+                              "you supplied")
         paths = changed_paths(worktree, task.base_commit)
         if paths != record.get("changed_paths") or any(not path_allowed(p, task.allowed_changed_paths) for p in paths):
             raise BridgeError("changed paths differ from the allowed reviewed result")

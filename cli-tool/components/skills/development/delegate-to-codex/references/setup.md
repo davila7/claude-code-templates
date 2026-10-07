@@ -44,11 +44,11 @@ python -B "$SKILL/scripts/setup.py" doctor --offline
 python -B "$SKILL/scripts/setup.py" self-test
 ```
 
-`self-test` is the check every install ships with: it builds a disposable Git fixture, runs the packaged launcher's `check-task`, builds the Codex command line and runs a validation, without starting Codex. A source checkout of the skill also has a `tests` folder; from the skill directory, `python -B -m unittest discover -s tests` runs it (the same command in bash, PowerShell and `cmd`; the tests find the source themselves). Installed copies may not include it.
+`self-test` is the check every install ships with: it builds a disposable Git fixture, runs the packaged launcher's `check-task`, builds the Codex command line and runs a validation, without starting Codex. The standalone repository also ships a `tests` folder; from the skill directory, `python -B -m unittest discover -s tests` runs it (the same command in bash, PowerShell and `cmd`; the tests find the source themselves). Catalog copies and other installed copies do not include `tests`, so use `self-test` there.
 
 ## Sign in and verify
 
-Sign in with `codex login` (ChatGPT, not an API key). Never ask for pasted tokens or read credential files.
+Sign in with `codex login` (ChatGPT, not an API key). When `CODEX_BRIDGE_COMMAND` is set, run `login` through that pinned executable (its first array item, then its fixed arguments), because a `codex` on PATH can be a different installation. Never ask for pasted tokens or read credential files.
 
 ```bash
 python -B "$SKILL/scripts/setup.py" doctor
@@ -93,7 +93,7 @@ python -B "$SKILL/scripts/codex_bridge.py" settings set auto-review on     # or 
 python -B "$SKILL/scripts/codex_bridge.py" settings unset auto-review      # ask again
 ```
 
-`auto_review` chooses whether Codex's auto-review (Approve for me) answers a worker's approval requests ([safety](safety.md#auto-review)). While it is unset, `run`, `continue` and `revise` refuse with status `settings_required` (exit 4, [results](results.md#settings-required)) before creating anything. The installer asks the question and records the answer (`install.py --auto-review on|off` skips the question). OpenAI states that automatic reviews do not count against plan usage (as of 2026-10-06); check Codex's current documentation.
+`auto_review` chooses whether Codex's auto-review (Approve for me) answers a worker's approval requests ([safety](safety.md#auto-review)). While it is unset, `run`, `continue` and `revise` refuse with status `settings_required` (exit 4, [results](results.md#settings-required)) before creating anything. The lead asks the user once and records the answer with the commands above. The standalone repository's own installer (`install.py`, not part of this skill folder or its catalog copies) can also record it with `--auto-review on|off`; otherwise the first launch asks. OpenAI states that automatic reviews do not count against plan usage (as of 2026-10-06); check Codex's current documentation.
 
 ## Local inputs (copy_ignored)
 
