@@ -43,8 +43,11 @@ unrelated conversation or personal data in `queryText`.
    the filters the user actually requested.
 2. Read `sessionId` and `nights` from the response.
 3. Call `poll_search_results` with that `sessionId` and `nights`.
-4. If the response is pending or partial with no useful results, poll again
-   until results arrive, the search completes or fails, or the session expires.
+4. While `status` is neither `completed` nor `failed` and no useful results
+   have arrived, poll again a few seconds later. Stop after about 10 polls (one
+   to two minutes) or when the session has expired: present what has arrived,
+   say which sources were still loading, and offer to check again with the same
+   `sessionId` rather than starting a new search.
 5. Present a concise comparison of relevant results. Label the source and
    currency exactly as returned.
 
@@ -102,8 +105,10 @@ return one.
    date, adults, and cabin.
 2. Read the returned `sessionId`.
 3. Call `poll_flight_results` with that `sessionId`.
-4. Continue only until useful results arrive, the search completes or fails, or
-   the session expires.
+4. While `status` is neither `completed` nor `failed` and no useful results
+   have arrived, poll again a few seconds later, for at most about 10 polls.
+   Then present what has arrived and offer to check again with the same
+   `sessionId`. A flight session expires 15 minutes after the search starts.
 5. Present relevant options with source, carrier, times, stops, cabin, currency,
    and fare exactly as returned.
 
@@ -126,24 +131,36 @@ instead.
    room is held and that nothing has been charged — are the ones the guest
    acts on.
 3. Keep the `confirmationCode` it returns; `check_booking_status` reads the
-   request's state back with it.
+   request's state back with it. Also keep the room's `propertyId`,
+   `ratePlanId` and check-in date: the cancellation policy needs them and no
+   tool recovers them from the code. Tell the guest to keep the code and the
+   email address they used.
 
-There is no payment step, now or later. Never ask how the guest wants to pay,
-and never mention a card, transfer, QR code, payment link or deposit — not
-even one the guest named earlier. The guest pays the property on arrival.
+No money changes hands through PriceWin: sending the request charges nothing,
+and the guest pays the hotel directly on arrival. Never ask how the guest wants
+to pay, and never mention a card, transfer, QR code, payment link or deposit —
+not even one the guest named earlier. If a property requires payment at
+booking time, `request_booking` creates nothing and returns a link to book on
+the PriceWin website instead; relay that link as given.
 
 ## Cancel a booking
 
-1. Call `get_cancellation_policy` first, with the `propertyId`, `ratePlanId`
-   and check-in date of the booked room, and tell the guest what they will get
-   back — or that the property has published no policy.
+1. If the conversation still has the booked room's `propertyId`,
+   `ratePlanId` and check-in date, call `get_cancellation_policy` with them and
+   tell the guest what they will get back — or that the property has published
+   no policy. If it does not (the guest came back with only the confirmation
+   code and email), call `check_booking_status` with the code to confirm the
+   hotel, dates and status, and tell the guest the refund terms cannot be
+   shown here and that `cancel_booking` reports the refund it applies. Do not
+   guess them.
 2. Call `request_cancel_token` with the confirmation code and the email on the
    booking. This cancels nothing; it emails a single-use token.
 3. Ask the guest to paste the token from that email. Never invent, guess or
    reuse one.
-4. Confirm the booking and the refund amount with the guest in their own
-   language, get an explicit yes, then call `cancel_booking` with the code,
-   the token and the guest's reason.
+4. Confirm the booking — and the refund amount, when step 1 returned one —
+   with the guest in their own language, get an explicit yes, then call
+   `cancel_booking` with the code, the token and the guest's reason. Relay the
+   refund amount and status it returns.
 
 `cancel_booking` cannot be undone. If there is no token yet, the answer is
 step 2, never step 4.
