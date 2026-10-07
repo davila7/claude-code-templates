@@ -23,7 +23,8 @@ class ProcessResult:
     interrupted: bool
     cancelled: bool
     output_truncated: bool = False
-    lines_skipped: int = 0  # stdout lines the line callback could not take (over the line limit, or it raised)
+    lines_skipped: int = 0  # stdout lines the line callback could not take (over the line limit, it raised, or late)
+    stdout_abandoned: bool = False  # the stdout reader was still running when the call returned: lines may be missing
 
 
 # After a kill, give the pipes this long to drain before giving up on any further output.
@@ -312,6 +313,8 @@ class _BoundedCapture:
         self._partial_size = 0
         self._partial_overflow = False
         self.lines_skipped = 0
+        self._deliver_lock = threading.Lock()
+        self._closed = False
         self._decoder = io.IncrementalNewlineDecoder(codecs.getincrementaldecoder("utf-8")(errors="replace"),
                                                      translate=True)
         self._lock = threading.Lock()
@@ -330,20 +333,34 @@ class _BoundedCapture:
                     break
                 self._feed(self._decoder.decode(chunk))
             self._feed(self._decoder.decode(b"", final=True))
-            self._finish_lines()
+            self._finish_lines(complete=True)
         except (OSError, ValueError):
-            pass  # the pipe was closed under the reader (a kill that left a descendant holding it)
+            # The pipe was closed under the reader (a kill that left a descendant holding it). A trailing partial
+            # line cannot be trusted as a whole line, so it is counted as skipped rather than lost silently.
+            self._finish_lines(complete=False)
         finally:
             try:
                 self.stream.close()  # the reader owns its pipe: whoever outlives the run still never leaks it
             except (OSError, ValueError):
                 pass
 
+    def close(self) -> None:
+        """Stop handing lines to the callback: a line that arrives afterwards is counted in ``lines_skipped``.
+
+        Returns only once no callback is running, so the caller may read the consumer's state afterwards.
+        """
+        with self._deliver_lock:
+            self._closed = True
+
     def _deliver(self, line: str) -> None:
-        try:
-            self._on_line(line)
-        except Exception:  # a failing consumer must never stop the pipe being drained
-            self.lines_skipped += 1
+        with self._deliver_lock:
+            if self._closed:
+                self.lines_skipped += 1  # arrived after the run returned: the consumer has already been read
+                return
+            try:
+                self._on_line(line)
+            except Exception:  # a failing consumer must never stop the pipe being drained
+                self.lines_skipped += 1
 
     def _split_lines(self, text: str) -> None:
         pieces = text.split("\n")
@@ -367,10 +384,10 @@ class _BoundedCapture:
             self._partial_size = 0
             self._partial_overflow = False
 
-    def _finish_lines(self) -> None:
+    def _finish_lines(self, *, complete: bool) -> None:
         if self._on_line is None:
             return
-        if self._partial_overflow:
+        if self._partial_overflow or (self._partial_size and not complete):
             self.lines_skipped += 1
         elif self._partial_size:
             self._deliver("".join(self._partial))
@@ -469,7 +486,9 @@ def run_process(
     ``cancel_event`` is for embedding callers (the tests use it): setting it ends the run like a kill.
     ``on_stdout_line`` is called, on a reader thread, with every complete stdout line (newline removed) before
     the bounded capture can drop any of it. A line over MAX_LINE_CHARS is skipped and counted in
-    ``lines_skipped``, as is a call that raised.
+    ``lines_skipped``, as is a call that raised, a trailing partial line cut off by a closed pipe, and a line that
+    arrives after this function returned (no call is made then). ``stdout_abandoned`` says the stdout reader was
+    still running at return, so lines may still be missing.
     """
     executable_path = Path(executable)
     if not executable_path.is_absolute():
@@ -534,6 +553,8 @@ def run_process(
                     stream.close()
                 except (OSError, ValueError):
                     pass
+    captures[0].close()  # a reader abandoned past the grace period must not feed the callback from here on
+    stdout_abandoned = on_stdout_line is not None and readers[0].is_alive()
     if cancelled_by_request.is_set():
         interrupted = True
     return ProcessResult(
@@ -546,4 +567,5 @@ def run_process(
         cancelled=cancelled_by_request.is_set(),
         output_truncated=any(capture.dropped for capture in captures),
         lines_skipped=captures[0].lines_skipped,
+        stdout_abandoned=stdout_abandoned,
     )

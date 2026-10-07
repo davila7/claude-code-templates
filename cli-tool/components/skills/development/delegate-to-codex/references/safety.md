@@ -65,7 +65,7 @@ Everything under `worker`, `failures`, `warnings`, `validation.output_tail`, `ex
 
 ## Output limits
 
-Worker and validation output is read to the end but kept bounded: the first 1,000,000 and the last 3,000,000 characters of each stream, with a marker line saying how much was dropped between them. The report warns when that happened. The saved events file then lacks the middle, but the bridge reads the worker's event stream line by line as it arrives, so token totals, command records, declined commands and forbidden-tool checks still cover the whole run (a segment's `events_complete` turns false only when an event line was too large to read or a record list hit its size bound). A task file's `timeout_seconds` and `validation_timeout_seconds` still bound the time.
+Worker and validation output is read to the end but kept bounded: the first 1,000,000 and the last 3,000,000 characters of each stream, with a marker line saying how much was dropped between them. The report warns when that happened. The saved events file then lacks the middle, but the bridge reads the worker's event stream line by line as it arrives, so token totals, command records, declined commands and forbidden-tool checks still cover the whole run (a segment's `events_complete` turns false when an event line was too large to read, the line callback raised, the stream ended mid-line or output arrived after the run ended, or a record list hit its size bound). A skipped, failed or late line can hide a forbidden-tool or declined-command event, so it adds a failure and the result cannot be accepted; a record list that merely hit its size bound only adds a warning. A task file's `timeout_seconds` and `validation_timeout_seconds` still bound the time.
 
 ## Private runtime state
 

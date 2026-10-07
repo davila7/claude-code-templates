@@ -224,11 +224,11 @@ def _filter_options(cwd: Path, prefix: Sequence[str]) -> list[str]:
     byte-exact and apply cleanly in the primary checkout. The trade-off: a filter whose stored form differs
     from its checked-out form (Git LFS pointers, keyword expansion) is seen in its stored form, so the worker
     edits pointer text instead of the large file; text and binary content without filters is unaffected.
+
+    The answer is never cached: Git reads filters from the common ``.git/config``, ``config.worktree``,
+    included files and the user's config, so a lookup on every filter-capable call is the only way to
+    neutralise a driver added at any time.
     """
-    key = (str(cwd), tuple(prefix), _config_signature(cwd, prefix))
-    cached = _filter_option_cache.get(key)
-    if cached is not None:
-        return list(cached)
     probe = subprocess.run(
         [git_executable(), "--no-pager", "--no-optional-locks", *prefix, "config", "-z", "--get-regexp",
          r"^filter\..*\.(clean|smudge|process|required)$"],
@@ -243,29 +243,7 @@ def _filter_options(cwd: Path, prefix: Sequence[str]) -> list[str]:
     for name in sorted(names):
         for variable, value in (("clean", ""), ("smudge", ""), ("process", ""), ("required", "false")):
             options.extend(("-c", f"filter.{name}.{variable}={value}"))
-    _filter_option_cache[key] = tuple(options)
     return options
-
-
-# One bridge command is one process and asks the same repository the same question many times, so the answer
-# is kept for the process. The key includes the size and mtime of the repository's and the user's config files:
-# a filter driver added to them mid-command changes the key and is neutralised too.
-_filter_option_cache: dict[tuple[str, tuple[str, ...], tuple], tuple[str, ...]] = {}
-
-
-def _config_signature(cwd: Path, prefix: Sequence[str]) -> tuple:
-    gitdir = next((item.split("=", 1)[1] for item in prefix if item.startswith("--git-dir=")), None)
-    roots = [Path(gitdir)] if gitdir else [Path(cwd) / ".git"]
-    files = [root / name for root in roots for name in ("config", "config.worktree")]
-    files.append(Path(os.environ.get("GIT_CONFIG_GLOBAL") or Path.home() / ".gitconfig"))
-    signature = []
-    for path in files:
-        try:
-            info = path.stat()
-            signature.append((str(path), info.st_size, info.st_mtime_ns))
-        except OSError:
-            signature.append((str(path), None, None))
-    return tuple(signature)
 
 
 _git_versions: dict[str, tuple[int, int]] = {}

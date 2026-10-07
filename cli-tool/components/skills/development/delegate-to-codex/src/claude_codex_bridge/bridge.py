@@ -439,7 +439,8 @@ MAX_EVENT_FILE_CHANGES = 50000
 MAX_EVENT_DECLINED = 1000
 MAX_EVENT_FORBIDDEN = 1000
 MAX_EVENT_TEXTS = 20  # agent messages and error messages: callers read only the last one
-MAX_EVENT_TEXT_CHARS = 4000  # per stored command or declined output; the report shows far less
+MAX_EVENT_TEXT_CHARS = 4000  # per stored command, declined output or error text; the report shows far less
+MAX_EVENT_MESSAGE_CHARS = 200_000  # per stored agent message: it is the fallback source of the structured reply
 
 
 class EventSummary:
@@ -504,14 +505,14 @@ class EventSummary:
             message = error.get("message") if isinstance(error, dict) else error
             if message is not None and not isinstance(message, str):
                 message = json.dumps(message, ensure_ascii=False, default=str)  # the text is displayed, never parsed
-            self.turn_failed = message
+            self.turn_failed = self._clip(message)
         elif kind == "error" and isinstance(event.get("message"), str):
-            self.errors.append(event["message"])
+            self.errors.append(self._clip(event["message"]))
         elif kind == "item.completed" and isinstance(event.get("item"), dict):
             item = event["item"]
             item_type = item.get("type")
             if item_type == "agent_message" and isinstance(item.get("text"), str):
-                self.messages.append(item["text"])
+                self.messages.append(item["text"][:MAX_EVENT_MESSAGE_CHARS])
             elif item_type == "command_execution":
                 self._add(self.commands, MAX_EVENT_COMMANDS, {
                     "command": self._clip(item.get("command")), "exit_code": item.get("exit_code"),
@@ -532,13 +533,16 @@ class EventSummary:
     def result(self, *, lines_skipped: int = 0, truncated: bool = False) -> dict[str, Any]:
         """The parsed facts. ``truncated`` (events were lost before they reached this reader), skipped lines
         and an overflowed bound all make ``events_complete`` False: the totals and lists are then lower bounds
-        and callers must not read a missing event as "did not happen"."""
+        and callers must not read a missing event as "did not happen". ``events_unreadable`` is the part of that
+        which hides events entirely (a skipped line or lost events); an overflowed bound alone only drops records
+        past a large limit, so it is not in it."""
         return {"thread_id": self.thread_id, "messages": list(self.messages), "commands": self.commands,
                 "file_changes": self.file_changes, "forbidden_items": self.forbidden, "errors": list(self.errors),
                 "usage": self.usage, "turn_failed": self.turn_failed, "turns_completed": self.turns_completed,
                 "turns_started": self.turns_started, "turns_failed": self.turns_failed, "declined": self.declined,
                 "event_count": self.event_count,
-                "events_complete": not (truncated or lines_skipped or self.overflowed)}
+                "events_complete": not (truncated or lines_skipped or self.overflowed),
+                "events_unreadable": bool(truncated or lines_skipped)}
 
 
 def parse_events(stdout: str, *, truncated: bool = False) -> dict[str, Any]:
@@ -719,7 +723,7 @@ def _run_codex(command: CodexCommand, task: Task, worktree: Path, artifact: Path
                           on_stdout_line=events.feed)
     (artifact / f"{label}.events.jsonl").write_text(process.stdout, encoding="utf-8")
     (artifact / f"{label}.stderr.log").write_text(process.stderr, encoding="utf-8")
-    parsed = events.result(lines_skipped=process.lines_skipped)
+    parsed = events.result(lines_skipped=process.lines_skipped, truncated=process.stdout_abandoned)
     final = last.read_text(encoding="utf-8") if last.is_file() else (parsed["messages"][-1] if parsed["messages"] else "")
     return process, parsed, final
 
@@ -1355,6 +1359,7 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
             failures.append("worker changed the starting commit")
     ignored_created: list[str] = []
     build_output: list[str] = []
+    changed_inputs: list[str] = []  # the worker's verdict, taken before validation runs anything
     if writing and not unusable and not hazards and "ignored_before" in seg:
         try:
             ignored_created, build_output, note = _new_ignored_files(worktree, task, seg["ignored_before"])
@@ -1386,10 +1391,14 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
                         "dropped; token totals, command records, declined commands and forbidden-tool checks were "
                         "read from the whole stream as it arrived, so they stay exact, but the saved events and "
                         "stderr files cannot show the dropped part")
-    if not seg["parsed"].get("events_complete", True):
-        warnings.append("some of the worker's events could not be read (a line over the size limit, or a record "
-                        "list over its bound): token totals, command records, declined commands and forbidden-tool "
-                        "checks are lower bounds, so a missing event does not prove it did not happen")
+    if seg["parsed"].get("events_unreadable"):
+        failures.append("worker events could not be read (a line over the size limit, a failed stream callback, "
+                        "or output that arrived after the run ended), so a forbidden-tool or declined-command event "
+                        "may be hidden; the result cannot be accepted")
+    elif not seg["parsed"].get("events_complete", True):
+        warnings.append("some of the worker's events were not recorded (a record list went over its bound): token "
+                        "totals, command records, declined commands and forbidden-tool checks are lower bounds, so "
+                        "a missing event does not prove it did not happen")
     # The primary checkout and its settings are compared before validation (a failure skips it) and again after
     # it, because validation runs code the worker wrote, as the user.
     primary_failures, primary_warnings, primary_unchanged = _primary_findings(task, artifact, primary_before,
@@ -1457,6 +1466,7 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
         "label": seg["label"], "session_id": seg["thread_id"], "process": _process_record(process),
         "time_cap_reached": seg["time_cap"], "checkpoint": seg["checkpoint"],
         "events_complete": seg["parsed"].get("events_complete", True),
+        "events_unreadable": bool(seg["parsed"].get("events_unreadable")),
         "context_evidence": seg["context_evidence"], "commands_run": len(seg["parsed"]["commands"]),
         "worktree_fingerprint": fingerprint or "<unavailable: worktree not readable>",
         "token_usage": seg["parsed"]["usage"], "tree": tree, "environment": seg.get("environment"),
@@ -1475,6 +1485,7 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
         "warnings": warnings, "failures": failures, "extension_request": extension,
         "environment_evidence": evidence, "ignored_files_created": ignored_created[:MAX_RECORDED_PATHS],
         "ignored_build_output_files": build_output[:MAX_RECORDED_PATHS],
+        "inputs_changed_by_worker": changed_inputs[:MAX_RECORDED_PATHS],
         "segments": (list(prior.get("segments", [])) if prior else []) + [segment_record],
         "run_settings": run_settings,
         "auto_review": run_settings.get("auto_review", "off"),
@@ -2087,13 +2098,19 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         if _guard_changes(baseline, guard_now):
             guard_failures.append(f"{GUARD_FAILURE} since the run started: {_guard_change_text(baseline, guard_now)}; "
                                   "if the change is yours, repeat revalidate with --accept-repo-config-change")
+        # The worker's verdict was taken at the end of its segment, before any validation ran; what validation
+        # itself writes (now or in an earlier revalidate) is never blamed on the worker.
+        edited_inputs = list(prior.get("inputs_changed_by_worker") or [])
+        if edited_inputs:
+            guard_failures.append(f"{INPUT_FAILURE}: {_count_label(edited_inputs)}")
         validation, error = _validation(task, worktree, artifact, keep=_inventory_files(prior))
         guard_after = _repo_guard_fingerprint(task)
         if _guard_changes(guard_now, guard_after):
             guard_failures.append(f"{GUARD_FAILURE} while validation ran: {_guard_change_text(guard_now, guard_after)}")
-        edited_inputs = _changed_inputs(worktree, prior)
-        if edited_inputs:
-            guard_failures.append(f"{INPUT_FAILURE}: {_count_label(edited_inputs)}")
+        touched_by_validation = [p for p in _changed_inputs(worktree, prior) if p not in edited_inputs]
+        if touched_by_validation:
+            _add_warning(prior, "copy_ignored input file(s) differ from their copied-in content, though the worker "
+                         "left them alone (validation changed them): " + _count_label(touched_by_validation))
         primary_before = (artifact / "primary-status.before.txt").read_text(encoding="utf-8")
         primary_after = primary_status(task)  # after validation, which ran code the worker wrote
         _write_text(artifact / "primary-status.after.txt", primary_after)
@@ -2341,7 +2358,7 @@ def accept(task_file: Path, artifact_path: Path, three_way: bool = False,
                 raise BridgeError(f"{GUARD_FAILURE} since this artifact's run started: "
                                   f"{_guard_change_text(baseline, now)}; inspect them, and if the change is yours run "
                                   "revalidate with --accept-repo-config-change before accepting")
-        edited_inputs = _changed_inputs(worktree, record)
+        edited_inputs = record.get("inputs_changed_by_worker") or []  # judged before validation ran
         if edited_inputs:
             raise BridgeError(f"{INPUT_FAILURE} since they were copied in: {_count_label(edited_inputs)}; the patch "
                               "does not carry the change, so the reviewed result was not tested against the inputs "
@@ -2359,6 +2376,10 @@ def accept(task_file: Path, artifact_path: Path, three_way: bool = False,
             _require_reported(task, artifact, digest)
         _check_expectations(record["segments"][-1]["tree"], digest, expect_tree, expect_patch_sha256)
         warnings: list[str] = []
+        since_review = _changed_inputs(worktree, record)
+        if since_review:  # not the worker's doing (its verdict was clean): validation or a later edit changed them
+            warnings.append("copy_ignored input file(s) differ from their copied-in content, though the worker left "
+                            "them alone (validation or a later edit changed them): " + _count_label(since_review))
         if not patch:
             warnings.append("the patch is empty: the worker made no changes, so nothing was applied")
         else:

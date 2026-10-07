@@ -27,6 +27,7 @@ import re
 import stat
 import subprocess
 import tempfile
+import time
 import uuid
 from pathlib import Path
 
@@ -219,26 +220,17 @@ def _publish_marker(root: Path, marker: Path, expected: dict) -> None:
         finally:
             if temporary is not None:
                 temporary.unlink(missing_ok=True)
-    # No hard links here: stage a complete file in root and publish it with an atomic rename, so a crash
-    # never leaves a truncated marker. The exclusive create stays only as a last resort.
-    temporary = None
+    # No hard links here: publish with an exclusive create that never replaces an existing marker, writing
+    # the whole content in one call. A concurrent reader that catches it half written treats it as not yet
+    # published and retries (ensure_state_root), and the loser of the race adopts the winner's marker.
     try:
-        temporary = _stage_marker(root, expected)
-        if marker.exists():
-            return
-        os.replace(temporary, marker)
-        temporary = None
-        return
-    except OSError:
-        pass
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-    try:
-        with marker.open("x", encoding="utf-8") as out:
-            out.write(json.dumps(expected, indent=2) + "\n")
+        descriptor = os.open(marker, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     except FileExistsError:
-        pass
+        return
+    try:
+        os.write(descriptor, (json.dumps(expected, indent=2) + "\n").encode("utf-8"))
+    finally:
+        os.close(descriptor)
 
 
 def state_id(root: Path) -> str | None:
@@ -282,6 +274,8 @@ def ensure_state_root() -> Path:
             raise ValueError("State directory is nonempty and unmarked; select an empty external directory")
         if not marker.exists():
             _publish_marker(root, marker, expected)
+        elif _read_marker(root) is None:
+            time.sleep(0.05)  # another initializer is mid-publish; re-read its marker
     if _read_marker(root) is None:
         raise ValueError("State directory initialization conflict")
     _tighten_permissions(root)
