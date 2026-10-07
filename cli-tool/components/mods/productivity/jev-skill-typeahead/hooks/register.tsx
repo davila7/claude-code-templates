@@ -400,6 +400,8 @@ export const register: Register = (on, options) => {
     if (e.props.hasSurvey) return next(e)
     const v = await read($, view)
     const rows = v.rows.slice(0, maxRows)
+    // The band is one instance: whatever the plugins beneath draw (another mod's band) stays, under ours.
+    const below = await next(e)
 
     const { Box, Text } = $.ui.resolve(e)
     const isTerminal = e.surface === 'terminal'
@@ -439,7 +441,7 @@ export const register: Register = (on, options) => {
       )
     })
 
-    return (
+    const band = (
       <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' && v.mode === 'prose' ? 'green' : 'cyan'} borderDimColor={!(v.phase === 'decided' && v.mode === 'prose')} paddingX={1} overflow="hidden">
         <Box key="head" flexDirection="row" overflow="hidden">
           <Text bold color="cyan">{pad(`✦ ${words.title} `)}</Text>
@@ -454,6 +456,12 @@ export const register: Register = (on, options) => {
             <Text dimColor>{pad(`  ${words.details}`)}</Text>
           </Box>
         </Box>
+      </Box>
+    )
+    return (
+      <Box flexDirection="column">
+        {band}
+        {below}
       </Box>
     )
   })
