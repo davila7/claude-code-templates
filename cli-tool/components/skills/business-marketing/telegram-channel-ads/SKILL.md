@@ -1,6 +1,6 @@
 ---
 name: telegram-channel-ads
-description: "When the user wants to advertise in Telegram channels, vet a Telegram channel before buying a post, check whether a channel's audience is real, or price a Telegram ad. Also use when the user mentions 'Telegram ads,' 'Telegram channel advertising,' 'buy a post in a Telegram channel,' 'Telegram CPM,' '1/24 post,' 'Telegram fake subscribers,' or 'is this Telegram channel worth it.' Covers reach benchmarks by size, topic and language, ad-network and channel-age checks, and per-view pricing with deletion windows. For ad platforms such as Google or Meta, see paid-ads."
+description: "Use when the user wants to vet or price Telegram channel ads, compare channels by reach, or check fake subscribers. Also use for 'Telegram ads,' 'buy a Telegram post,' 'Telegram CPM,' '1/24 posts,' or ad offers from channel admins. Covers reach benchmarks, channel and ad-network checks, deletion-window pricing, and placement measurement. For Google or Meta ads, see paid-ads."
 ---
 
 # Telegram Channel Ads
