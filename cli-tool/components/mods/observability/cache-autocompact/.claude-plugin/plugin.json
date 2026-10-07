@@ -1,0 +1,39 @@
+{
+  "name": "cache-autocompact",
+  "version": "0.1.0",
+  "description": "Runs /compact on its own when a big chat's prompt cache is about to lapse, so coming back after a break rereads a short summary instead of the whole chat at full price. Fires in the last minutes of the cache window, says so with a toast every time, says so again if the compact fails, and shows what it will do in the status line. Counts the cache down the same way prompt-cache-control does.",
+  "author": {
+    "name": "Morain Labs",
+    "url": "https://github.com/Morain-Labs"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "observability",
+    "prompt-caching",
+    "compact",
+    "cost"
+  ],
+  "userConfig": {
+    "minTokens": {
+      "type": "number",
+      "title": "Smallest chat to compact",
+      "description": "Prompt size in tokens below which a lapsing cache is left alone",
+      "default": 100000
+    },
+    "windowSeconds": {
+      "type": "number",
+      "title": "Compact this close to expiry (s)",
+      "description": "Seconds left on the cache countdown at which the compact fires. A 5-minute cache caps this at 120",
+      "default": 300
+    },
+    "skipPaths": {
+      "type": "string",
+      "title": "Folders to leave alone",
+      "description": "Comma-separated folders; a session started in one of them, or below it, never auto-compacts. Empty means it runs everywhere",
+      "default": ""
+    }
+  }
+}
