@@ -66,6 +66,7 @@ REPOS = [
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
+    ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
 ]
 
 DESCRIPTION_OVERRIDES = {
