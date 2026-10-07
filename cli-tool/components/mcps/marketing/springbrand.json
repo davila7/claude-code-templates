@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "springbrand": {
+      "description": "SpringBrand connects AI agents to go-to-market capabilities through one connector: social listening across X, TikTok, Instagram, YouTube, Reddit and Xiaohongshu; website traffic, traffic-source and SEO research; company, contact and creator discovery; and copy, image, video and voiceover generation. Agents discover the right capability, execute it, and return results - billed per call. Hosted remote server, authenticated with OAuth 2.1 (no API key to paste).",
+      "type": "http",
+      "url": "https://connector.springbrand.ai/mcp"
+    }
+  }
+}
