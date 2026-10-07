@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-06T03:13:40.266306+00:00",
-  "totalJobs": 89,
+  "lastUpdated": "2026-10-07T03:16:32.731065+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,50 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5445410008",
+      "company": "Anthropic",
+      "position": "Applied AI Engineer, Public Sector ",
+      "location": "Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "As a member of the Applied AI team at Anthropic, you will be an Applied AI Engineer supporting a dedicated national security mission program. You will be the customer's trusted technical advisor, working closely with their engineering and mission teams as they build and ship new capabilities...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5445410008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5445410008",
+      "postedAt": "2026-10-06T20:00:19-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5441896008",
+      "company": "Anthropic",
+      "position": "Discovery Technical Operations Specialist ",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic's legal team operates at the frontier of some of the most consequential legal and regulatory questions of our time — from landmark copyright matters to first-of-their-kind AI regulatory frameworks emerging across dozens of jurisdictions simultaneously. As we scale, the volume and...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5441896008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5441896008",
+      "postedAt": "2026-10-05T22:10:40-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-49964448",
       "company": "ALBERT",
@@ -209,26 +253,6 @@
         "Cursor",
         "Copilot",
         "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49922829",
-      "company": "RMG",
-      "position": "Software Engineer",
-      "location": "REMOTE (US/Canada)",
-      "remote": true,
-      "salary": "",
-      "description": "We run 100+ WordPress and Next.js properties and we're rebuilding our development workflow around coding agents. You'd own the platform and set the standard for how we use AI in production. Stack: WordPress (Gutenberg, ACF, WP-CLI), PHP, MySQL, Next.js, Linux/Docker, GitHub Actions, n8n. We want...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49922829",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49922829",
-      "postedAt": "2026-10-01T15:17:24+00:00",
-      "tags": [
-        "Next.js",
-        "Docker",
-        "Claude Code",
-        "MySQL"
       ],
       "companyIcon": ""
     },
