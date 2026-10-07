@@ -885,6 +885,8 @@ def _edited_ignored_files(worktree: Path, before: Mapping[str, tuple[int, int]] 
 
 
 INPUT_FAILURE = "worker edited or deleted copy_ignored input file(s)"
+INPUT_UNKNOWN_FAILURE = ("this result was recorded without a verdict on the copy_ignored inputs, so worker "
+                         "edits to them cannot be ruled out")
 
 
 def _changed_inputs(worktree: Path, record: Mapping[str, Any] | None) -> list[str]:
@@ -2101,6 +2103,8 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         # The worker's verdict was taken at the end of its segment, before any validation ran; what validation
         # itself writes (now or in an earlier revalidate) is never blamed on the worker.
         edited_inputs = list(prior.get("inputs_changed_by_worker") or [])
+        if task.copy_ignored and "inputs_changed_by_worker" not in prior:
+            guard_failures.append(INPUT_UNKNOWN_FAILURE)  # recorded before the verdict existed: fail closed
         if edited_inputs:
             guard_failures.append(f"{INPUT_FAILURE}: {_count_label(edited_inputs)}")
         validation, error = _validation(task, worktree, artifact, keep=_inventory_files(prior))
@@ -2131,7 +2135,7 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         else:
             failures = [f for f in prior.get("failures", [])
                         if f not in {"independent validation failed", "validation executable not found"}
-                        and not f.startswith(GUARD_FAILURE) and not f.startswith(INPUT_FAILURE)]
+                        and not f.startswith(GUARD_FAILURE) and not f.startswith((INPUT_FAILURE, INPUT_UNKNOWN_FAILURE))]
             if error:
                 failures.append(error)
             failures.extend(guard_failures)
@@ -2359,6 +2363,8 @@ def accept(task_file: Path, artifact_path: Path, three_way: bool = False,
                                   f"{_guard_change_text(baseline, now)}; inspect them, and if the change is yours run "
                                   "revalidate with --accept-repo-config-change before accepting")
         edited_inputs = record.get("inputs_changed_by_worker") or []  # judged before validation ran
+        if task.copy_ignored and "inputs_changed_by_worker" not in record:
+            raise BridgeError(INPUT_UNKNOWN_FAILURE + "; rerun the task to accept it")
         if edited_inputs:
             raise BridgeError(f"{INPUT_FAILURE} since they were copied in: {_count_label(edited_inputs)}; the patch "
                               "does not carry the change, so the reviewed result was not tested against the inputs "

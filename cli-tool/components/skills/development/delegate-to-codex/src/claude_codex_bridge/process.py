@@ -29,6 +29,7 @@ class ProcessResult:
 
 # After a kill, give the pipes this long to drain before giving up on any further output.
 OUTPUT_GRACE_SECONDS = 10.0
+CALLBACK_CLOSE_SECONDS = 5.0  # bounded wait for a running line callback once the run is over
 
 _PROCESS_TERMINATE = 0x0001
 _PROCESS_SET_QUOTA = 0x0100
@@ -344,13 +345,20 @@ class _BoundedCapture:
             except (OSError, ValueError):
                 pass
 
-    def close(self) -> None:
+    def close(self, timeout: float = CALLBACK_CLOSE_SECONDS) -> bool:
         """Stop handing lines to the callback: a line that arrives afterwards is counted in ``lines_skipped``.
 
-        Returns only once no callback is running, so the caller may read the consumer's state afterwards.
+        Waits at most ``timeout`` seconds for a running callback to return. True means no callback is running
+        and the consumer's state is final; False means one is still running, so its state may be incomplete.
         """
-        with self._deliver_lock:
-            self._closed = True
+        if self._deliver_lock.acquire(timeout=timeout):
+            try:
+                self._closed = True
+            finally:
+                self._deliver_lock.release()
+            return True
+        self._closed = True  # the stuck callback's own line still counts; later lines are skipped
+        return False
 
     def _deliver(self, line: str) -> None:
         with self._deliver_lock:
@@ -553,8 +561,8 @@ def run_process(
                     stream.close()
                 except (OSError, ValueError):
                     pass
-    captures[0].close()  # a reader abandoned past the grace period must not feed the callback from here on
-    stdout_abandoned = on_stdout_line is not None and readers[0].is_alive()
+    callback_idle = captures[0].close()  # a reader abandoned past the grace period must not feed the callback from here on
+    stdout_abandoned = on_stdout_line is not None and (readers[0].is_alive() or not callback_idle)
     if cancelled_by_request.is_set():
         interrupted = True
     return ProcessResult(
