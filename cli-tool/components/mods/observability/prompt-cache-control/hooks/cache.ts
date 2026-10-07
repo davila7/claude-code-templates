@@ -315,3 +315,15 @@ export function observeTtl(prev: Sample | undefined, cur: Sample, known: Ttl | u
   const lapsed = cur.write > 0 && promptTokens(cur) >= before * 0.7 && gap < ttlMs('1h') + SLACK_MS
   return lapsed ? '5m' : known
 }
+
+/**
+ * Nothing at all: what the band's `next` gave back when no mod after this one
+ * drew. Any element counts as a drawing, even an empty one, since it can
+ * reserve space or carry a background.
+ */
+export function isBlank(node: unknown): boolean {
+  if (node == null || node === false) return true
+  if (typeof node === 'string') return node.trim() === ''
+  if (Array.isArray(node)) return node.every(isBlank)
+  return false
+}

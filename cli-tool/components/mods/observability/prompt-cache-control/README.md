@@ -54,7 +54,7 @@ Other switches read from the environment at session start:
 
 - `turn.step`: reads each main-loop request's usage (subagents have their own prefixes and are left out)
 - `$.clock.every(1000)`: redraws the countdown, and only while its text changes, so an idle expired session costs nothing
-- `ui.render` on `AbovePrompt` (the band) and on `Pane` (`/cache`)
+- `ui.render` on `AbovePrompt` (the band) and on `Pane` (`/cache`); the band is shared, so what the mods after this one draw there stays, under the meter's row
 - `$.ui.toast`: once per cache entry at the warning threshold (60 s by default) and again at 10, 3, 2 and 1 seconds left, for prompts of 20k tokens or more
 
 ## Options
