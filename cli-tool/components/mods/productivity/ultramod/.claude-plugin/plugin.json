@@ -1,0 +1,35 @@
+{
+  "name": "ultramod",
+  "version": "1.0.0",
+  "description": "Claude Code mods for context, safety, and a receipt for every turn",
+  "author": {
+    "name": "Mert Kaya",
+    "url": "https://mertkayacs.com"
+  },
+  "homepage": "https://ultramod.mertkayacs.com",
+  "repository": "https://github.com/mertkayacs/ultramod",
+  "license": "MIT",
+  "keywords": ["claude-code", "mods", "hooks", "context", "safety"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "set": {
+      "type": "string",
+      "title": "Default set",
+      "description": "Set used in projects without a saved selection",
+      "options": ["essentials", "strict", "flow", "marathon", "quiet"],
+      "default": "essentials"
+    },
+    "notifyAfterSeconds": {
+      "type": "number",
+      "title": "Notification threshold",
+      "description": "Notify when a completed turn took longer than this many seconds",
+      "default": 30
+    },
+    "sound": {
+      "type": "boolean",
+      "title": "Notification sound",
+      "description": "Play a soft chime with notifications",
+      "default": true
+    }
+  }
+}
