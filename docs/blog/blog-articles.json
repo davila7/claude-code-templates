@@ -1,6 +1,25 @@
 {
   "articles": [
     {
+      "id": "safe-autonomous-claude-code-hooks",
+      "title": "Safe Autonomous Claude Code: Combine 3 Security Hooks to Guard Commands, .env Files & Secrets",
+      "description": "Combine the Dangerous Command Blocker, .env File Protection and Secret Scanner hooks into one guardrail workflow so Claude Code can run autonomously without wiping files, overwriting .env or committing API keys.",
+      "url": "safe-autonomous-claude-code-hooks/",
+      "image": "assets/safe-autonomous-claude-code-hooks-cover.png",
+      "category": "Security",
+      "readTime": "6 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Security",
+        "Workflow",
+        "Automation"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 27
+    },
+    {
       "id": "task-move-command",
       "title": "Task Move Command for Claude Code: Automate Your Task Status Workflow",
       "description": "Install the Task Move command for Claude Code to move tasks between status folders (todos, in progress, QA, completed) with validation, bulk operations, and a full audit trail.",
