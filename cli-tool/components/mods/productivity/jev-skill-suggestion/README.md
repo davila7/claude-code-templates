@@ -117,9 +117,9 @@ The skill bodies come from disk, by where Claude Code keeps them: `.claude/skill
 - A skill whose frontmatter says `disable-model-invocation: true` is never suggested, whichever path picked it: the engine leaves it out of the listing and the Skill tool refuses it. Before the first listing has been seen the candidates come from `$.command.list()`, which also names such skills, so their SKILL.md is the check (read for the shortlist and for the winner).
 - The built-in classifier answers one label from the descriptions, with no gate and no second request.
 
-Every failure — a non-2xx response, a timeout past `timeoutMs` on either request, a thrown error, a malformed body — lets the prompt through with no suggestion. The mod never blocks a prompt.
+Every failure — a non-2xx response, a timeout past `timeoutMs` on either request, a thrown error, a malformed body — lets the prompt through with no suggestion. The mod never blocks a prompt. The current `$.http.fetch` API has no cancellation signal or transport-timeout option: the latency budget stops waiting, but cannot cancel an HTTP request already sent.
 
-Prompts that are not a task get no suggestion: notifications, peer messages, observer reports, and a prompt that is itself a `/name` (its skill is already named).
+Prompts that are not a task get no suggestion: notifications, peer messages, observer reports, and a prompt that is itself a `/name` (its skill is already named). Since ranking receives only the latest prompt, not earlier conversation, it also skips text-only replies with no letters (such as `2`) and standalone acknowledgments or continuations (`go`, `ok`, `okay`, `continue`, `yes`, `no`, `thanks`, `thank you`, `hi`, `hello`, ignoring case, surrounding whitespace and trailing `.`, `!` or `?`). Short tasks such as `fix tests` and `continue migration`, non-English text, and non-empty prompts with attachments remain eligible.
 
 ## What you see in the transcript
 
