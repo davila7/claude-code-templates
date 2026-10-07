@@ -2114,6 +2114,13 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         # The worker's verdict was taken at the end of its segment, before any validation ran; what validation
         # itself writes (now or in an earlier revalidate) is never blamed on the worker.
         edited_inputs = list(prior.get("inputs_changed_by_worker") or [])
+        # Nothing but a worker runs in the worktree between validations, so a difference from the last verified
+        # state (an interrupted segment, for example) is the worker's: add it before validation moves the baseline.
+        for path in _changed_inputs(worktree, prior, since_validation=True):
+            if path not in edited_inputs:
+                edited_inputs.append(path)
+        if "inputs_changed_by_worker" in prior:
+            prior["inputs_changed_by_worker"] = edited_inputs[:MAX_RECORDED_PATHS]
         if task.copy_ignored and "inputs_changed_by_worker" not in prior:
             guard_failures.append(INPUT_UNKNOWN_FAILURE)  # recorded before the verdict existed: fail closed
         if edited_inputs:
