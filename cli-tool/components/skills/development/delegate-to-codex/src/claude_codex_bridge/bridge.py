@@ -889,20 +889,30 @@ INPUT_UNKNOWN_FAILURE = ("this result was recorded without a verdict on the copy
                          "edits to them cannot be ruled out")
 
 
-def _changed_inputs(worktree: Path, record: Mapping[str, Any] | None) -> list[str]:
+def _changed_inputs(worktree: Path, record: Mapping[str, Any] | None, *, since_validation: bool = False) -> list[str]:
     """The ``copy_ignored`` files whose content in the worktree differs from what was copied in (or are gone).
 
     Each copied file's SHA-256 is recorded when it is copied; a record without one (made before it was kept)
-    has nothing to compare against.
+    has nothing to compare against. ``since_validation`` compares against the state the last validation left
+    instead, so a later worker segment is not blamed for what validation itself wrote.
     """
     changed: list[str] = []
     for entry in (record or {}).get("copy_ignored") or []:
         expected = entry.get("sha256")
+        if since_validation and entry.get("validated_sha256"):
+            expected = entry["validated_sha256"]
         if entry.get("directory") or not expected:
             continue
         if _file_digest(worktree / entry["path"]) != expected:
             changed.append(entry["path"])
     return changed
+
+
+def _note_validated_inputs(worktree: Path, record: Mapping[str, Any] | None) -> None:
+    """Remember each ``copy_ignored`` file as validation left it: the baseline for the next worker segment."""
+    for entry in (record or {}).get("copy_ignored") or []:
+        if not entry.get("directory") and entry.get("sha256"):
+            entry["validated_sha256"] = _file_digest(worktree / entry["path"])
 
 
 def _remove_bytecode(worktree: Path, task: Task, keep: Iterable[str] = ()) -> tuple[list[str], list[str]]:
@@ -1377,7 +1387,7 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
                 warnings.append("worker created build output in git-ignored folders; it is not in the patch, but "
                                 "validation can read it: " + _count_label(build_output))
             inputs = _inventory_files(prior)
-            changed_inputs = _changed_inputs(worktree, prior)
+            changed_inputs = _changed_inputs(worktree, prior, since_validation=True)
             if changed_inputs:
                 failures.append(INPUT_FAILURE + "; the change is not in the patch "
                                 "and is never applied to the primary checkout, so validation would run against "
@@ -1409,6 +1419,7 @@ def _finish(task: Task, artifact: Path, worktree: Path, seg: dict[str, Any], pri
     warnings += primary_warnings
     if not failures and extension is None:
         validation, validation_error = _validation(task, worktree, artifact, keep=_inventory_files(prior))
+        _note_validated_inputs(worktree, prior)
         if validation_error:
             failures.append(validation_error)
         warnings += _validation_warnings(validation)
@@ -2108,6 +2119,7 @@ def revalidate(task_file: Path, artifact_path: Path, timeout: int | None = None,
         if edited_inputs:
             guard_failures.append(f"{INPUT_FAILURE}: {_count_label(edited_inputs)}")
         validation, error = _validation(task, worktree, artifact, keep=_inventory_files(prior))
+        _note_validated_inputs(worktree, prior)
         guard_after = _repo_guard_fingerprint(task)
         if _guard_changes(guard_now, guard_after):
             guard_failures.append(f"{GUARD_FAILURE} while validation ran: {_guard_change_text(guard_now, guard_after)}")
