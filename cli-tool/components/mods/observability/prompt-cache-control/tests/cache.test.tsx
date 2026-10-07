@@ -159,6 +159,11 @@ function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = {
   on('ui.close', () => ({ value: undefined }) as never)
   on('ui.invalidate', () => ({ value: undefined }) as never)
   on('ui.toast', () => ({ value: undefined }))
+  // what the plugins beneath draw above the prompt (another mod's band)
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>beneath</Text>
+  })
   on('ui.log', ($, e) => {
     calls.logs.push(String((e as { text: unknown }).text))
     return { value: undefined }
@@ -204,6 +209,7 @@ describe('the band', () => {
     expect(await ui.find({ type: 'Text', text: /wrote 1k/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /new 300/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /5m · warm/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /beneath/ })).toBeDefined()
     await ui.unmount()
     expect(calls.status.at(-1)).toMatch(/^cache 98% · [45]:\d\d$/)
   })
