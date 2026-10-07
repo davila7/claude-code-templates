@@ -63,9 +63,9 @@ Single-source facts are common and expected (e.g., a niche or company-specific d
 ## Customer Segments
 | Segment | Size | Growth | Pain Points | Willingness to Pay |
 |---------|------|--------|-------------|-------------------|
-| Enterprise | [sourced/estimated %] | [sourced/estimated %] | [List top 3, sourced] | $$$$ |
-| SMB | [sourced/estimated %] | [sourced/estimated %] | [List top 3, sourced] | $$$ |
-| Individual | [sourced/estimated %] | [sourced/estimated %] | [List top 3, sourced] | $$ |
+| Enterprise | [sourced/estimated %] | [sourced/estimated %] | [List top 3, sourced] | [sourced/estimated, cite source] |
+| SMB | [sourced/estimated %] | [sourced/estimated %] | [List top 3, sourced] | [sourced/estimated, cite source] |
+| Individual | [sourced/estimated %] | [sourced/estimated %] | [List top 3, sourced] | [sourced/estimated, cite source] |
 ```
 
 ### 2. Product Positioning Canvas
