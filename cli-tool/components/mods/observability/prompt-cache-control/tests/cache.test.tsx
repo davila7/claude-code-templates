@@ -209,7 +209,10 @@ describe('the band', () => {
     expect(await ui.find({ type: 'Text', text: /wrote 1k/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /new 300/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /5m · warm/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /beneath/ })).toBeDefined()
+    // ours first, what the plugins beneath drew under it
+    const texts = (await ui.findAll({ type: 'Text', text: /98%|beneath/ })).map(t => t.text)
+    expect(texts.at(-1)).toBe('beneath')
+    expect(texts.slice(0, -1).some(t => /98%/.test(t))).toBe(true)
     await ui.unmount()
     expect(calls.status.at(-1)).toMatch(/^cache 98% · [45]:\d\d$/)
   })

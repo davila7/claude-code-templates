@@ -71,8 +71,9 @@ describe('the band', () => {
 
   test('another mod drawing above the prompt keeps its band, under ours', async ($, on) => {
     const ui = await draw($, on, { mode: 'idle', draft: '', rows: [], phase: 'live', by: '', skills: 24, agents: 3 })
-    expect(await ui.find({ type: 'Text', text: /Claude may call/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /engine band/ })).toBeDefined()
+    const texts = (await ui.findAll({ type: 'Text', text: /Claude may call|engine band/ })).map(t => t.text)
+    expect(texts[0]).toMatch(/Claude may call/)
+    expect(texts.at(-1)).toBe('engine band')
     await ui.unmount()
   })
 
