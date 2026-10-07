@@ -23544,5 +23544,47 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "claude-plugin-software-buyer",
+    "name": "Software Buyer France",
+    "author": "Jaikin-SASU",
+    "description": "Claude plugin: buy custom software in France — price benchmarks (DECP + verified private data), spec, quote and contract review, vendor questions",
+    "github": "https://github.com/Jaikin-SASU/claude-plugin-software-buyer",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 7
+    },
+    "highlights": [
+      "Web UI: https://jaikin.eu"
+    ],
+    "website": "https://www.jaikin.eu/",
+    "marketplace_name": "jaikin",
+    "plugin_name": "software-buyer-france"
+  },
+  {
+    "slug": "claude-plugin-erp-upgrade",
+    "name": "ERP Upgrade & Fit-Gap Advisor",
+    "author": "Jaikin-SASU",
+    "description": "Claude plugin: Odoo 20 migration readiness (sourced checklist + read-only scanners), fit-gap, 5-year cost and integrator quote review",
+    "github": "https://github.com/Jaikin-SASU/claude-plugin-erp-upgrade",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 6
+    },
+    "highlights": [
+      "Web UI: https://www.jaikin.eu/"
+    ],
+    "website": "https://www.jaikin.eu/",
+    "marketplace_name": "jaikin-erp",
+    "plugin_name": "erp-upgrade-fit-gap"
   }
 ]
