@@ -1,7 +1,7 @@
 {
   "name": "pacman",
   "version": "0.1.0",
-  "description": "Pac-Man above the Claude Code prompt: a 19×15 maze, four ghosts that chase, scatter and flee, power pellets, three lives and faster levels. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. Needs function hooks (early access) and an interactive terminal.",
+  "description": "Pac-Man above the Claude Code prompt: a 19×15 maze, four ghosts that chase, scatter and flee, power pellets, three lives and faster levels. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. Needs an interactive terminal.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"

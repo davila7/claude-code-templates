@@ -81,19 +81,19 @@ With `--plugin-dir` the id is plain `agent-flow`.
 
 ```sh
 npx claude-code-templates@latest --mod ui/agent-flow
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/agent-flow/`, which Claude Code auto-loads as `agent-flow@skills-dir` in a **trusted** project. For one session: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/agent-flow`.
+It is written to `.claude/skills/agent-flow/`, which Claude Code auto-loads as `agent-flow@skills-dir` in a **trusted** project. For one session: `claude --plugin-dir .claude/skills/agent-flow`.
 
 If `/agent-flow` is missing from the typeahead, the mod did not load: run `claude --debug` and look for `hooks module agent-flow@… loaded` in `~/.claude/debug/latest`.
 
 ## Tests
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/agent-flow
+claude plugin test .claude/skills/agent-flow
 ```
 
 The tests drive the flow model directly, then raise `turn.start`, `agent.spawn`, `turn.step`, `tool.call` and `turn.complete` through the engine, mount the pane on the terminal surface and press its rows.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
