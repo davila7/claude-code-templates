@@ -1,5 +1,5 @@
 /**
- * secret-redactor — Claude Mod (EARLY ACCESS)
+ * secret-redactor — Claude Mod
  *
  * Replaces credential-shaped strings in every tool result before the model
  * reads it, and refuses to echo a redacted placeholder back into a Bash
@@ -12,7 +12,7 @@
  * Seat it as low as possible (an org appends it in managed settings) so no
  * plugin above ever sees the raw value on the way up.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:
@@ -108,6 +108,24 @@ export const register: Register = (on, options) => {
         ...(cleaned.context ?? []),
         `secret-redactor replaced ${hits.size} kind(s) of secret (${kinds}) with [REDACTED:*] placeholders before you read this result. Never paste a placeholder into a command.`,
       ],
+    }
+  }).catch(async ($, e, next) => {
+    // Fail closed: nothing reaches the transcript that was not scanned.
+    if (!next.called) {
+      $.ui.log(`[secret-redactor] check failed (${next.error.kind}); denied ${e.tool}`)
+      return { deny: `secret-redactor could not check this ${e.tool} call (${next.error.kind}), so it was not run.` }
+    }
+    try {
+      await next(e) // replayed: what the tool settled to, nothing runs again
+    } catch {
+      // The call itself failed; its error text is not passed on, since it was never scanned.
+      $.ui.log(`[secret-redactor] ${e.tool} failed; its error was withheld unscanned`)
+      return { deny: `The ${e.tool} call failed, and secret-redactor withheld its error unscanned.` }
+    }
+    // The tool ran and its output could not be scanned: its effects stand, only the output is kept back.
+    $.ui.log(`[secret-redactor] redaction failed (${next.error.kind}); withheld the ${e.tool} output`)
+    return {
+      deny: `secret-redactor could not scan the ${e.tool} output for secrets (${next.error.kind}), so it was withheld. The tool did run. Ask the user to check the output themselves.`,
     }
   })
 }

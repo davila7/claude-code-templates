@@ -17,7 +17,7 @@ const { type, slug } = Astro.params;
 
 let component: Component | null = null;
 let error: string | null = null;
-// Mods (function hooks, early access): a complete plugin directory; the
+// Mods (function hooks): a complete plugin directory; the
 // content file carries README.md as content plus every text file of it.
 let modFiles: Record<string, string> = {};
 
@@ -493,8 +493,8 @@ const componentSchema = component
         {/* Content viewer */}
         <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
         {typePlural === 'mods' && (
-          <div class="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
-            <strong class="text-amber-400">Early access.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-amber-300">mods/</a> layout); it loads in Claude Code 2.1.259+ with <code>CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1</code> and the <code>$</code> API may still change between releases.
+          <div class="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
+            <strong class="text-[var(--color-text-primary)]">Claude Mod.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">mods/</a> layout); it is on by default in Claude Code 2.1.287+.
             {modModules.length > 0 && (
               <span> Hooks module{modModules.length > 1 ? 's' : ''}: {modModules.map((mod, i) => (
                 <Fragment>{i > 0 && ', '}<code>hooks/{mod}</code></Fragment>

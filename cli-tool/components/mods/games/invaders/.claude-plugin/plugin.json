@@ -1,7 +1,7 @@
 {
   "name": "invaders",
   "version": "0.2.0",
-  "description": "Space Invaders above the Claude Code prompt: shoot each wave before it lands. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+  "description": "Space Invaders above the Claude Code prompt: shoot each wave before it lands. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
   "author": {
     "name": "Seza Akgün"
   },

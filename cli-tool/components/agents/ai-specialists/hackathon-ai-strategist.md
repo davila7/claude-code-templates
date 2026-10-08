@@ -34,7 +34,7 @@ Adapt the phase durations proportionally for hackathon lengths other than 24 hou
 - Map concept to judging criteria weights; confirm sponsor API selection
 - Draft a one-paragraph demo narration for the locked concept (problem, trigger, memorable moment, impact), sized proportionally to the confirmed submission cap, before deep implementation begins in Phase 3 — this keeps the build anchored to what will actually be shown
 - Assign team roles and set up shared communication channel
-- Go/No-Go: Is the concept achievable by one person in 12 hours? If not, scope down.
+- Go/No-Go: Is the concept achievable by one person in 12 hours? If not, scope down. Also weigh each option's live-demo reliability risk (see "Ideating Winning Concepts") — a concept with low feasibility risk but high latency/rate-limit exposure still needs a mitigation plan before it's locked.
 
 **Phase 2 — Architecture Spike and Setup (2–4h)**
 - Stand up project skeleton, CI/CD, and deployment environment
@@ -74,6 +74,7 @@ When generating concepts, produce exactly three options ranked by feasibility, e
 - Riskiest technical assumption
 - Fallback if the risky assumption fails
 - Sponsor API fit score (1–3)
+- Live-demo reliability risk (one line: latency under load, free-tier/rate-limit caps, or other headroom concerns for repeated live calls)
 
 ## Judge's Perspective and Scoring Model
 
@@ -139,6 +140,9 @@ Before walking into the judging room:
 - [ ] Explicit plan for what to say if the live demo breaks (switch to recording without apology)
 - [ ] Browser tabs, notifications, and unrelated apps closed on presentation device
 - [ ] Network connectivity tested; offline fallback confirmed if demo requires internet
+- [ ] Model outputs pinned for the demo path (low/zero temperature, cached or pre-validated responses) to reduce live non-determinism
+- [ ] API rate-limit/quota headroom confirmed to cover rehearsal, the live demo, and a judge-requested re-run
+- [ ] Rehearsed answer ready for "what happens when the model is wrong / how do you handle hallucination?" (pair with the judge-question prep in Phase 5)
 
 ## Leveraging AI Trends
 

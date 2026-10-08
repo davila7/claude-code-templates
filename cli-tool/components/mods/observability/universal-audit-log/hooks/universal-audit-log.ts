@@ -1,5 +1,5 @@
 /**
- * universal-audit-log — Claude Mod (EARLY ACCESS)
+ * universal-audit-log — Claude Mod
  *
  * One hook on "*" sees every event: the engine's own (tool.call, prompt.submit,
  * turn.*, ...) and every other plugin's calls on `$` (fs.read, http.fetch,
@@ -18,7 +18,7 @@
  * beneath it can bypass the log. A hook that fails is skipped by the engine
  * (fail-open, logged in --debug-file), so it never blocks the session.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

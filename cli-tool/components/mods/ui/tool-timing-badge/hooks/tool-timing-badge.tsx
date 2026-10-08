@@ -1,5 +1,5 @@
 /**
- * tool-timing-badge — Claude Mod (EARLY ACCESS)
+ * tool-timing-badge — Claude Mod
  *
  * Measures how long every tool call takes and draws a colored duration badge
  * beside the engine's own ToolUse rendering, on the terminal, Desktop and
@@ -11,7 +11,7 @@
  * once per props change, so the badge appears on the redraw that follows the
  * call settling (`isRunning` flips to false).
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:
