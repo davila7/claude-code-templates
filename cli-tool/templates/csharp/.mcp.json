@@ -1,0 +1,39 @@
+{
+  "mcpServers": {
+    "docker": {
+      "name": "Docker MCP",
+      "description": "Containerization support for .NET applications",
+      "command": "python",
+      "args": ["-m", "mcp_server_docker"],
+      "env": {}
+    },
+    "github-actions": {
+      "name": "GitHub Actions MCP",
+      "description": "CI/CD workflow automation for .NET projects",
+      "command": "python",
+      "args": ["-m", "server_github"],
+      "env": {}
+    },
+    "memory-bank": {
+      "name": "Memory Bank",
+      "description": "Persistent memory and context storage",
+      "command": "python",
+      "args": ["-m", "server_memory"],
+      "env": {}
+    },
+    "brave-search": {
+      "name": "Brave Search",
+      "description": "Web search integration for research and documentation",
+      "command": "python",
+      "args": ["-m", "server_brave_search"],
+      "env": {}
+    },
+    "code-graph": {
+      "name": "Code Graph Analyzer",
+      "description": "Code analysis and dependency graph visualization",
+      "command": "python",
+      "args": ["-m", "mcp_code_graph"],
+      "env": {}
+    }
+  }
+}
