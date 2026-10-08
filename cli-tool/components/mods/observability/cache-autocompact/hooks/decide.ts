@@ -67,20 +67,24 @@ export function isHeadlessRefusal(err: unknown): boolean {
   return (err instanceof Error ? err.message : String(err)).includes('not available in a headless')
 }
 
-// The test kit's own refusal of the mod's compact. The kit drops a test hook that throws, and the call
-// then fails with this text, so the engine's headless refusal cannot be staged in a test.
-export const TEST_KIT_REFUSAL = 'next() passed an argument with messages that are not a list'
+// What a refused compact looks like in `claude plugin test`. It is the engine's general check on an
+// argument a hook passes to next(), `<plugin>: next() passed an argument with <what is wrong>`: the
+// kit drops a test hook that throws and passes the mod's call on with no messages, under the test's
+// plugin name, "test". The engine's headless refusal cannot be staged there, so this text, under that
+// name only, stands in for it. Another plugin passing bad messages would raise the same words under
+// its own name, which never matches.
+export const KIT_STAND_IN_REFUSAL = 'test: next() passed an argument with messages that are not a list'
 
 // Whether a refused compact is handed off to /compact. In a real session only the headless refusal is:
 // the engine's own words, matched on a string copied from a live desktop run. Every other refusal (a
 // turn still running, compaction switched off, no session bound) stays a refusal. The one exception is
 // for the tests: in a session that is not interactive (isInteractive false: a -p run or the SDK) the
-// test kit's own refusal stands in for the headless one. A real engine refuses a headless compact with
-// the headless words before any hook runs, so it never sends this text there.
+// kit's stand-in (KIT_STAND_IN_REFUSAL) counts as the headless refusal. A real engine refuses a
+// headless compact with the headless words before any hook runs.
 export function handsOff(err: unknown, interactive: boolean): boolean {
   if (isHeadlessRefusal(err)) return true
   const why = err instanceof Error ? err.message : String(err)
-  return !interactive && why.includes(TEST_KIT_REFUSAL)
+  return !interactive && why.includes(KIT_STAND_IN_REFUSAL)
 }
 
 // The engine's refusal when compaction is switched off (DISABLE_COMPACT), for /compact as well, so
@@ -88,6 +92,13 @@ export function handsOff(err: unknown, interactive: boolean): boolean {
 export function isSwitchedOffRefusal(err: unknown): boolean {
   return (err instanceof Error ? err.message : String(err)).includes('compaction is switched off')
 }
+
+// A variable set the way the engine reads DISABLE_COMPACT: 1, true, yes or on, any case, trimmed.
+// cache.ts's isOn is a copy of prompt-cache-control's and reads only 1 and true, so it is not used here.
+export function isEngineOn(v: string | undefined): boolean {
+  return ['1', 'true', 'yes', 'on'].includes((v ?? '').trim().toLowerCase())
+}
+
 
 // where the session runs, as last checked: allowed, on the skip list, or not established
 export type Folder = 'on' | 'skip' | 'unknown'
@@ -119,7 +130,9 @@ export function statusLine(
   // the mod's own compact clears the recorded request, so firedFor is what remembers it ran
   if (!i.last) return i.firedFor ? 'Auto-compacted, waiting for the next reply' : 'Auto-compact waiting for a reply'
   if (i.firedFor === i.last.startedAt) return 'Auto-compacted, waiting for the next reply'
-  if (i.triedFor === i.last.startedAt) return 'Auto-compact started /compact for this cache'
+  // a tried cache that ran out with nothing compacted is missed, whatever became of the /compact
+  if (i.triedFor === i.last.startedAt)
+    return remainingMs(i.last, i.ttl, i.now) <= 0 ? 'Auto-compact missed: the cache ran out' : 'Auto-compact started /compact for this cache'
   const tokens = promptTokens(i.last)
   if (tokens < i.minTokens) return `Auto-compact waits for ${fmtTokens(i.minTokens)} (chat is ${fmtTokens(tokens)})`
   const leftMs = remainingMs(i.last, i.ttl, i.now)
@@ -152,10 +165,13 @@ export function normalizePath(p: string): string {
   else if (flat.startsWith('//?/')) flat = flat.slice(4)
   const unc = flat.startsWith('//')
   const rooted = flat.startsWith('/')
+  // ".." never climbs above a root: a drive (C:\.. is C:\) or a share (\\srv\share\.. is the share)
+  const floor = (rest: string[]) => (unc ? 2 : /^[a-z]:$/i.test(rest[0] ?? '') ? 1 : 0)
   for (const part of flat.split('/')) {
     if (part === '' || part === '.') continue
-    if (part === '..') parts.pop()
-    else parts.push(part)
+    if (part === '..') {
+      if (parts.length > floor(parts)) parts.pop()
+    } else parts.push(part)
   }
   const body = parts.join('/').toLowerCase()
   if (unc) return `//${body}`
@@ -183,9 +199,12 @@ export function splitPaths(option: unknown): string[] {
     .filter(Boolean)
 }
 
-// the same folders, spelled for comparison only
-export function parsePaths(option: unknown): string[] {
-  return splitPaths(option).map(normalizePath).filter(Boolean)
+// Skip folders spelled for comparison: every spelling (as written, where it lands) normalized. One that
+// names no folder (".", "x/..") leaves the roots undefined, never silently dropped: an empty root would
+// match every rooted folder. The mod builds its roots with this, and the tests with it too.
+export function toRoots(spellings: readonly string[]): string[] | undefined {
+  const out = spellings.map(normalizePath)
+  return out.includes('') ? undefined : out
 }
 
 // The folder itself or anything below it, never a sibling that only shares a prefix (private2).

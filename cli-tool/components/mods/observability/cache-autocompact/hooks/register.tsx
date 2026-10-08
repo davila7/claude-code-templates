@@ -27,9 +27,9 @@
  *   skipPaths: string       comma-separated folders it never fires in (default none)
  */
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
-import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, isOn, positive } from './cache.ts'
+import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { handsOff, isSkippedPath, isSwitchedOffRefusal, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import { handsOff, isEngineOn, isSkippedPath, isSwitchedOffRefusal, toRoots, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
@@ -124,11 +124,11 @@ async function currentTtlBase($: EngineInterface): Promise<Ttl> {
 async function resolveSkips($: EngineInterface): Promise<{ roots: string[] | undefined; unresolved: string | undefined }> {
   const roots: string[] = []
   for (const root of skipList) {
-    // ".", "./" or "x/.." names no folder as written: named as unresolved, never taken as a root
-    if (normalizePath(root) === '') return { roots: undefined, unresolved: root }
     const found = await spellings($, root)
-    if (!found) return { roots: undefined, unresolved: root }
-    for (const s of found) roots.push(normalizePath(s))
+    // the spellings start with the entry as written, so ".", "./" or "x/.." (no folder) is unresolved too
+    const spelled = found && toRoots(found)
+    if (!spelled) return { roots: undefined, unresolved: root }
+    roots.push(...spelled)
   }
   return { roots, unresolved: undefined }
 }
@@ -152,10 +152,19 @@ function standing(roots: string[] | undefined, here: string[] | undefined): Fold
   return isSkippedPath(here, roots) ? 'skip' : 'on'
 }
 
+// Lookups of the skip folders can overlap (a tick, a move, a session start); only the newest one that
+// finishes is published, so a slow, older one never overwrites a newer answer.
+let skipTickets = 0
+let skipPublished = 0
+
 // the folder the session runs in right now, against the skip folders as they resolve right now
 async function folderNow($: EngineInterface): Promise<Folder> {
+  const ticket = ++skipTickets
   const r = await resolveSkips($)
-  applySkips($, r)
+  if (ticket > skipPublished) {
+    skipPublished = ticket
+    applySkips($, r)
+  }
   if (!r.roots) return 'unknown'
   const cwd = await $.session.cwd().catch(() => undefined)
   if (!cwd) return 'unknown'
@@ -218,14 +227,21 @@ async function tick($: EngineInterface, cfg: Config) {
   if (gen !== mine || !judge(now, samples[samples.length - 1], busyAttempt !== 0, folder === 'skip').go) return
   const attempt = ++attempts
   busyAttempt = attempt
+  // what this attempt is about, kept outside the try so a refusal that comes back late can be told apart
+  const last = samples[samples.length - 1]
+  const rev = cwdRev
+  const req = requests.rev
   try {
-    const last = samples[samples.length - 1]
-    const rev = cwdRev
-    const req = requests.rev
     const where = await folderNow($)
     const skipped = where !== 'on'
+    // read again at the moment of the compact, the way the engine reads it, so a change is seen
+    const off = isEngineOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
     const at = await $.clock.now()
     if (gen === mine && cwdRev === rev) folder = where
+    if (gen === mine && off) {
+      compactOff = true
+      return
+    }
     // Every await is behind us. Nothing below awaits until compact() is called, so what is checked
     // here is what holds when it is called: the same conversation (which also means this tick
     // still holds the lock), the same request, no folder change since the check, and still
@@ -295,8 +311,10 @@ async function tick($: EngineInterface, cfg: Config) {
     $.ui.log(`cache-autocompact: compacted before the cache lapsed, ${size}${cost}`)
   } catch (err) {
     // the engine refuses while a turn runs; the next tick tries again. The reason goes on screen,
-    // and into the transcript once per new reason, so a miss always says why.
-    if (gen !== mine) return
+    // and into the transcript once per new reason, so a miss always says why. A refusal that comes
+    // back after the conversation, the request or the folder changed belongs to nothing current: it
+    // is dropped, so it never lands on a newer request or speaks after a move into a skip folder.
+    if (gen !== mine || cwdRev !== rev || requests.rev !== req || samples[samples.length - 1] !== last) return
     const why = err instanceof Error ? err.message : String(err)
     if (isSwitchedOffRefusal(err)) {
       // the engine refuses /compact too: say so on the status line and stop asking for the session
@@ -307,7 +325,6 @@ async function tick($: EngineInterface, cfg: Config) {
     if (why !== refused) $.ui.log(`cache-autocompact: compact refused: ${why}`)
     refused = why
     // one pop-up per cache: it keeps retrying every 5 seconds, and the status line shows each try
-    const last = samples[samples.length - 1]
     if (last && warnedFor !== last.startedAt) {
       warnedFor = last.startedAt
       $.ui.toast(`Auto-compact was refused (${why.slice(0, 80)}). It keeps trying; run /compact yourself to be sure`)
@@ -331,7 +348,7 @@ export const register: Register = (on, options) => {
     const r = await next(e)
     resetConversation()
     interactive = e.isInteractive
-    compactOff = isOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
+    compactOff = isEngineOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
     const none = () => undefined
     env = {
       enable1h: await $.env.get('ENABLE_PROMPT_CACHING_1H').catch(none),
@@ -342,7 +359,12 @@ export const register: Register = (on, options) => {
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
-    applySkips($, await resolveSkips($))
+    const ticket = ++skipTickets
+    const resolved = await resolveSkips($)
+    if (ticket > skipPublished) {
+      skipPublished = ticket
+      applySkips($, resolved)
+    }
     ttl = await currentTtlBase($)
     folder = standing(skipRoots, await spellings($, e.cwd))
     $.ui.log(
@@ -417,8 +439,10 @@ export const register: Register = (on, options) => {
     const rev = cwdRev
     // the status line follows the move, checked off to the side so the move never waits on it;
     // a later move makes this check stale and it is dropped
+    const mine = gen
     void folderNow($).then(where => {
-      if (cwdRev === rev) folder = where
+      // a resume or /clear meanwhile (gen) or a later move (cwdRev) makes this answer stale
+      if (gen === mine && cwdRev === rev) folder = where
     })
     return next(e)
   })
@@ -449,6 +473,8 @@ export const register: Register = (on, options) => {
       mineRequests.rev += 1
     }
     next.signal.addEventListener('abort', settle, { once: true })
+    // a signal already aborted never fires its listener
+    if (next.signal.aborted) settle()
     try {
       const mine = gen
       const startedAt = await $.clock.now()

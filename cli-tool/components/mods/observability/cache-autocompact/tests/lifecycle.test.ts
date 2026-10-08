@@ -54,6 +54,10 @@ type World = {
   statGateFor?: string
   // the next request reports no usage (an aborted or failed request): it ran, but records nothing
   noUsage?: boolean
+  // with statGate: hold only the first stat it catches
+  statGateOnce?: boolean
+  // what the mod wrote to the transcript
+  logs?: string[]
   // the environment the mod reads
   env?: Record<string, string>
   // a hook beneath the mod vetoes every compact the mod asks for
@@ -82,7 +86,8 @@ function hold() {
 // everything the mod asks the engine for, answered from `w`, which a test may change mid-run
 function engine(on: On, w: World) {
   const clock = mock.clock(on, { now: T0 })
-  mock.env(on, w.env ?? {})
+  // the environment answered live from w.env, so a test can change a variable mid-session
+  on('env.get', ($, e) => ({ value: w.env?.[(e as { name: string }).name] }) as never)
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('session.end', ($, e) => ({ sessionId: e.sessionId }))
   // calls on a noun are answered as { value } (or { deny }), the shape the engine's own answers take
@@ -90,9 +95,11 @@ function engine(on: On, w: World) {
   on('fs.stat', async ($, e) => {
     const path = (e as { path: string }).path
     w.statted = [...(w.statted ?? []), path]
-    if (w.statGate && (w.statGateFor === undefined || w.statGateFor === key(path))) {
+    const held = w.statGate
+    if (held && (w.statGateFor === undefined || w.statGateFor === key(path))) {
+      if (w.statGateOnce) w.statGate = undefined
       w.statEntered?.()
-      await w.statGate
+      await held
     }
     if (w.statRejects?.includes(key(path))) return { deny: 'ENOENT' } as never
     const real = w.links?.[key(path)]
@@ -101,7 +108,10 @@ function engine(on: On, w: World) {
   })
   on('settings.read', () => (w.settingsRejects ? { deny: 'unreadable' } : { value: w.settings ?? {} }) as never)
   on('session.usage', () => ({ value: { startedAt: T0, context: {}, rateLimits: w.rateLimits ?? [{ kind: 'five_hour', percentUsed: 10 }] } }) as never)
-  on('ui.log', () => ({ value: undefined }) as never)
+  on('ui.log', ($, e) => {
+    w.logs = [...(w.logs ?? []), JSON.stringify(e)]
+    return { value: undefined } as never
+  })
   on('ui.status', ($, e) => {
     w.statuses = [...(w.statuses ?? []), (e as { text: string | undefined }).text]
     return { value: undefined } as never
@@ -139,7 +149,7 @@ function engine(on: On, w: World) {
           w.refuseEntered?.()
           await w.refuseGate
         }
-        // neutral words: the kit drops a hook that throws, and the mod sees the kit's own text
+        // neutral words: the kit drops a hook that throws, and the mod sees the engine's next() check (KIT_STAND_IN_REFUSAL)
         throw new Error('refused by the test engine')
       }
       if (w.vetoes) return { skip: w.vetoes }
@@ -1063,6 +1073,9 @@ describe('the desktop handoff, checked again after the refusal', () => {
     await ticking
     await clock.advance(10_000)
     expect(latest(w)).toBe('Auto-compact started /compact for this cache')
+    // nothing compacted and the cache ran out: missed, not still started
+    await clock.advance(MIN)
+    expect(latest(w)).toBe('Auto-compact missed: the cache ran out')
     // the next reply's cache gets its own try while the first command is still out
     await request($, 2)
     await clock.advance(4 * MIN)
@@ -1147,5 +1160,127 @@ describe('review round 7', () => {
     expect(w.asked ?? 0).toBe(0)
     expect(w.toasts ?? 0).toBe(0)
     expect(latest(w)).toBe('Auto-compact off: compaction is switched off')
+  })
+})
+
+describe('review round 8', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+
+  test('a folder lookup from before a resume never decides the new conversation', SKIP, async ($, on) => {
+    const SUB = `${PRIVATE}/sub`
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: SUB }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    // a move into the skip folder whose lookup is held at the stat of the new folder
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    w.cwd = SUB
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: SUB } as never)
+    await h.arrived
+    // the session is resumed in an allowed folder before that lookup finishes
+    await $.session.end({ reason: 'resume', sessionId: 's1', resume: { id: 's1' } } as never)
+    w.cwd = ALLOWED
+    await start($, ALLOWED)
+    w.statGate = undefined
+    h.release()
+    await clock.advance(0)
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('a refusal that comes back after a newer request is not that request\'s', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($, 1)
+    await clock.advance(2 * MIN)
+    const h = hold()
+    w.refuseGate = h.gate
+    w.refuseEntered = h.reached
+    const ticking = clock.advance(MIN)
+    await h.arrived
+    await request($, 2)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    // the old refusal is dropped: no pop-up, and the new request's line is its own
+    expect(w.toasts ?? 0).toBe(0)
+    expect(latest(w)?.includes('refused')).toBe(false)
+    // the new request's own refusal, when its window opens, gets its pop-up
+    await clock.advance(3 * MIN)
+    expect(w.toasts).toBe(1)
+  })
+
+  test('a refusal that comes back after a move into a skip folder says nothing', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($, 1)
+    await clock.advance(2 * MIN)
+    const h = hold()
+    w.refuseGate = h.gate
+    w.refuseEntered = h.reached
+    const ticking = clock.advance(MIN)
+    await h.arrived
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(5_000)
+    expect(w.toasts ?? 0).toBe(0)
+    expect(latest(w)).toBe('Auto-compact off in this folder')
+  })
+
+  test('DISABLE_COMPACT=yes counts, as the engine reads it', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, env: { DISABLE_COMPACT: 'yes' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(10_000)
+    expect(latest(w)).toBe('Auto-compact off: compaction is switched off')
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.asked ?? 0).toBe(0)
+  })
+})
+
+describe('compaction switched off while the session runs', () => {
+  test('DISABLE_COMPACT set after the session started is read when a compact is due', async ($, on) => {
+    const env: Record<string, string> = {}
+    const w: World = { cwd: ALLOWED, compacts: 0, env }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    env.DISABLE_COMPACT = 'on'
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.asked ?? 0).toBe(0)
+    expect(w.compacts).toBe(0)
+  })
+})
+
+describe('overlapping skip lookups', () => {
+  test('an older lookup that finishes last is dropped', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: PRIVATE, statGateOnce: true }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    // move A: its lookup of the skip folder is held
+    w.cwd = '/work/Other'
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: '/work/Other' } as never)
+    await h.arrived
+    // move B: its lookup finishes first, with the skip folder found
+    w.cwd = '/work/Third'
+    await $.classic.CwdChanged({ old_cwd: '/work/Other', new_cwd: '/work/Third' } as never)
+    await clock.advance(0)
+    // the skip folder goes missing, and only then does A's older lookup finish
+    w.unresolved = [PRIVATE]
+    h.release()
+    await clock.advance(0)
+    expect(w.logs?.some(l => l.includes('off until it can find'))).toBe(false)
   })
 })

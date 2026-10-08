@@ -1,7 +1,15 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fmtWait, handsOff, isHeadlessRefusal, isSwitchedOffRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
+import { fmtWait, handsOff, isEngineOn, isHeadlessRefusal, isSwitchedOffRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine, toRoots } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
+
+// the skip roots for an option, built the way the mod builds them (toRoots); an entry that names no
+// folder fails the test rather than being dropped
+const roots = (option: unknown): string[] => {
+  const r = toRoots(splitPaths(option))
+  if (!r) throw new Error(`an entry in ${String(option)} names no folder`)
+  return r
+}
 
 const T0 = 1_000_000_000_000
 const HOUR = 3_600_000
@@ -127,7 +135,7 @@ describe('holds', () => {
 })
 
 describe('skip list', () => {
-  const priv = parsePaths('C:/Users/me/work/Private')
+  const priv = roots('C:/Users/me/work/Private')
 
   test('the folder itself', () => {
     expect(isSkippedPath(['C:\\Users\\me\\work\\Private'], priv)).toBe(true)
@@ -160,7 +168,7 @@ describe('skip list', () => {
   })
 
   test('dot segments, doubled slashes and the extended-length prefix', () => {
-    const odd = parsePaths('C:/Users/me/work/./Private')
+    const odd = roots('C:/Users/me/work/./Private')
     expect(isSkippedPath(['C:/Users/me/work/Private'], odd)).toBe(true)
     expect(isSkippedPath(['C://Users//me/work/Private/x'], priv)).toBe(true)
     expect(isSkippedPath(['\\\\?\\C:\\Users\\me\\work\\Private'], priv)).toBe(true)
@@ -168,14 +176,14 @@ describe('skip list', () => {
   })
 
   test('several folders, blanks and trailing separators', () => {
-    const list = parsePaths(' C:/a/Private , ,C:\\b\\App\\ ')
+    const list = roots(' C:/a/Private , ,C:\\b\\App\\ ')
     expect(list).toEqual(['c:/a/private', 'c:/b/app'])
     expect(isSkippedPath(['C:/b/App/x'], list)).toBe(true)
   })
 
   test('a missing or wrong-typed option skips nothing', () => {
-    expect(parsePaths(undefined)).toEqual([])
-    expect(parsePaths(42)).toEqual([])
+    expect(roots(undefined)).toEqual([])
+    expect(roots(42)).toEqual([])
     expect(isSkippedPath(['C:/Users/me/work/Private'], [])).toBe(false)
   })
 
@@ -189,7 +197,7 @@ describe('skip list on Linux and macOS', () => {
     expect(normalizePath('/home/me/finance')).toBe('/home/me/finance')
     expect(normalizePath('/home/me/finance/')).toBe('/home/me/finance')
     expect(normalizePath('/home//me/./x/../finance')).toBe('/home/me/finance')
-    expect(parsePaths('/home/me/finance')).toEqual(['/home/me/finance'])
+    expect(roots('/home/me/finance')).toEqual(['/home/me/finance'])
   })
 
   test('the option as written is what the file system sees: slash and case kept', () => {
@@ -198,10 +206,10 @@ describe('skip list on Linux and macOS', () => {
   })
 
   test('case never separates folders: macOS matches Finance and finance, and Linux over-skips, the safe way', () => {
-    const fin = parsePaths('/home/me/finance')
+    const fin = roots('/home/me/finance')
     expect(isSkippedPath(['/home/me/finance/2026'], fin)).toBe(true)
     expect(isSkippedPath(['/home/me/Finance'], fin)).toBe(true)
-    expect(isSkippedPath(['/Users/me/Finance/2026'], parsePaths('/users/me/finance'))).toBe(true)
+    expect(isSkippedPath(['/Users/me/Finance/2026'], roots('/users/me/finance'))).toBe(true)
     expect(normalizePath('/home/Me/X')).toBe('/home/me/x')
   })
 
@@ -209,11 +217,11 @@ describe('skip list on Linux and macOS', () => {
     expect(normalizePath('C:/Users/Me')).toBe('c:/users/me')
     expect(normalizePath('\\\\Server\\Share\\Dir')).toBe('//server/share/dir')
     expect(normalizePath('\\\\?\\UNC\\Server\\Share')).toBe('//server/share')
-    expect(isSkippedPath(['//SERVER/share/dir/x'], parsePaths('\\\\server\\Share\\Dir'))).toBe(true)
+    expect(isSkippedPath(['//SERVER/share/dir/x'], roots('\\\\server\\Share\\Dir'))).toBe(true)
   })
 
   test('the root "/" skips every rooted folder, and is not dropped', () => {
-    const root = parsePaths('/')
+    const root = roots('/')
     expect(root).toEqual(['/'])
     expect(isSkippedPath(['/'], root)).toBe(true)
     expect(isSkippedPath(['/home/me/anything'], root)).toBe(true)
@@ -221,7 +229,7 @@ describe('skip list on Linux and macOS', () => {
   })
 
   test('a rooted path and a relative one with the same words are different folders', () => {
-    expect(isSkippedPath(['home/me/finance'], parsePaths('/home/me/finance'))).toBe(false)
+    expect(isSkippedPath(['home/me/finance'], roots('/home/me/finance'))).toBe(false)
   })
 })
 
@@ -341,15 +349,15 @@ describe('review round 1', () => {
 
   test('a backslash in a rooted Linux path is part of a name, not a separator', () => {
     expect(normalizePath('/work/a\\b')).toBe('/work/a\\b')
-    expect(isSkippedPath(['/work/a/b'], parsePaths('/work/a\\b'))).toBe(false)
-    expect(isSkippedPath(['/work/a\\b/x'], parsePaths('/work/a\\b'))).toBe(true)
+    expect(isSkippedPath(['/work/a/b'], roots('/work/a\\b'))).toBe(false)
+    expect(isSkippedPath(['/work/a\\b/x'], roots('/work/a\\b'))).toBe(true)
     // Windows spellings still translate
     expect(normalizePath('C:\\work\\a')).toBe('c:/work/a')
     expect(normalizePath('\\\\server\\share')).toBe('//server/share')
   })
 
   test('the root "/" skips every absolute folder, on any drive or share', () => {
-    const root = parsePaths('/')
+    const root = roots('/')
     expect(isSkippedPath(['D:\\work'], root)).toBe(true)
     expect(isSkippedPath(['c:'], root)).toBe(true)
     expect(isSkippedPath(['\\\\server\\share\\x'], root)).toBe(true)
@@ -370,7 +378,7 @@ describe('review round 3', () => {
     expect(isSkippedPath(['/data/private /child'], ['/data/private '].map(normalizePath))).toBe(true)
     expect(isSkippedPath(['/data/private/child'], ['/data/private '].map(normalizePath))).toBe(false)
     // the option's own blanks around commas are still trimmed, by splitPaths
-    expect(parsePaths(' /a , /b ')).toEqual(['/a', '/b'])
+    expect(roots(' /a , /b ')).toEqual(['/a', '/b'])
   })
 })
 
@@ -408,7 +416,7 @@ describe('review round 4', () => {
 
   test('a single leading backslash is drive-relative on Windows: its resolved spelling covers it', () => {
     // as written it is not read as Windows, so on its own it would match nothing below C:
-    expect(isSkippedPath(['C:\\work\\x\\y'], parsePaths('\\work\\x'))).toBe(false)
+    expect(isSkippedPath(['C:\\work\\x\\y'], roots('\\work\\x'))).toBe(false)
     // the mod also keeps the stat's realPath for every skip folder, and that is drive-qualified
     expect(isSkippedPath(['C:\\work\\x\\y'], [normalizePath('\\work\\x'), normalizePath('C:\\work\\x')])).toBe(true)
   })
@@ -474,5 +482,43 @@ describe('review round 7', () => {
     expect(v.go ? 'went' : v.why).toBe('compaction is switched off')
     const { skipped: _, ...rest } = inputs({ compactOff: true })
     expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact off: compaction is switched off')
+  })
+})
+
+describe('review round 8', () => {
+  const MIN = 60_000
+  test('".." never climbs above a drive or a share root', () => {
+    expect(normalizePath('C:\\..')).toBe('c:')
+    expect(normalizePath('C:\\work\\..\\..')).toBe('c:')
+    expect(normalizePath('\\\\srv\\share\\..')).toBe('//srv/share')
+    expect(normalizePath('/..')).toBe('/')
+    const c = roots('C:\\..')
+    expect(isSkippedPath(['C:\\work'], c)).toBe(true)
+    expect(isSkippedPath(['D:\\work'], c)).toBe(false)
+  })
+
+  test('the roots are built one way: an entry that names no folder leaves them unresolved', () => {
+    expect(toRoots(['.'])).toBe(undefined)
+    expect(toRoots(['/a', 'x/..'])).toBe(undefined)
+    expect(toRoots(['/A', 'C:/B'])).toEqual(['/a', 'c:/b'])
+    expect(toRoots([])).toEqual([])
+  })
+
+  test("only the test kit's own stand-in, under the kit's own plugin name, stands in", () => {
+    const KIT = 'test: next() passed an argument with messages that are not a list'
+    expect(handsOff(new Error(KIT), false)).toBe(true)
+    expect(handsOff(new Error('other-plugin: next() passed an argument with messages that are not a list'), false)).toBe(false)
+  })
+
+  test('the engine reads DISABLE_COMPACT as 1, true, yes or on, any case, trimmed', () => {
+    for (const v of ['1', 'true', 'yes', 'on', ' On ', 'TRUE']) expect(isEngineOn(v)).toBe(true)
+    for (const v of [undefined, '', '0', 'false', 'no', 'off']) expect(isEngineOn(v)).toBe(false)
+  })
+
+  test('a cache tried and then run out says missed, not started', () => {
+    const { skipped: _, ...rest } = inputs({ triedFor: T0, now: T0 + HOUR + 1 })
+    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact missed: the cache ran out')
+    const { skipped: __, ...early } = inputs({ triedFor: T0, now: T0 + 10 * MIN })
+    expect(statusLine({ ...early, folder: 'on' })).toBe('Auto-compact started /compact for this cache')
   })
 })
