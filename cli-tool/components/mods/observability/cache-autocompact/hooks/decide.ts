@@ -17,12 +17,9 @@ export type Inputs = {
   windowMs: number
   // startedAt of the request whose cache was already compacted for; 0 for none
   firedFor: number
-  // startedAt of the request whose cache already had its one attempt, whatever came of it (a /compact
+  // startedAt of the request whose cache already had its one try, whatever came of it (a /compact
   // handed off, a veto); 0 or absent for none. It stops a second try and is never read as success.
   triedFor?: number
-  // a /compact the mod handed off has not been settled by a compaction: it may still be queued, so no
-  // second one is handed off for any request until it is, or the conversation is left
-  handoffOpen?: boolean
   // a main-loop request, or a turn between its requests, has started and not finished: it is about to
   // refresh the cache being counted
   requestRunning?: boolean
@@ -47,7 +44,6 @@ export function shouldCompact(i: Inputs): Verdict {
   if (i.skipped) return { go: false, why: 'folder is on the skip list' }
   if (i.disabled) return { go: false, why: 'prompt caching is off' }
   if (i.busy) return { go: false, why: 'a compact is already running' }
-  if (i.handoffOpen) return { go: false, why: 'a /compact it ran is still open' }
   if (i.requestRunning) return { go: false, why: 'a request is running' }
   if (i.compacting) return { go: false, why: 'a compaction is running' }
   if (!i.last) return { go: false, why: 'no request yet' }
@@ -68,41 +64,6 @@ export function isHeadlessRefusal(err: unknown): boolean {
   return (err instanceof Error ? err.message : String(err)).includes('not available in a headless')
 }
 
-// When a /compact that returned counts as failed if no compaction has turned up: 90 seconds after
-// it returned (a live compaction took 49), or half the time the cache had left then, whichever is
-// sooner, so most of the window is left to run it by hand.
-export function fallbackDeadline(at: number, leftMs: number): number {
-  return at + Math.min(90_000, leftMs / 2)
-}
-
-// A /compact the mod handed off: when, when the cache it was for runs out, and what command.run did
-// with it. `pending` until command.run settles (it queues the command until the session is idle, so it
-// may be waiting or running); `returned` once it resolved; `rejected` when it threw or a hook vetoed
-// the compaction it started.
-export type Handoff = { at: number; lapse: number; command: 'pending' | 'returned' | 'rejected'; returnedAt?: number; why?: string }
-
-export type HandoffState = { state: 'queued' } | { state: 'waiting' } | { state: 'failed'; why: string }
-
-// Whether a handed-off /compact has failed. A command still queued or running is never called failed by
-// a deadline: only a rejection, a cache that ran out, or one that returned and still no compaction
-// turned up within fallbackDeadline of its return.
-export function handoffState(h: Handoff, now: number): HandoffState {
-  if (h.command === 'rejected') return { state: 'failed', why: h.why ?? 'the /compact command failed' }
-  if (now >= h.lapse) return { state: 'failed', why: 'the cache ran out before a compaction turned up' }
-  if (h.command === 'pending') return { state: 'queued' }
-  const back = h.returnedAt ?? h.at
-  return now >= fallbackDeadline(back, h.lapse - back) ? { state: 'failed', why: 'no compaction happened' } : { state: 'waiting' }
-}
-
-// What the status line says about an open handoff, whichever reply came after it. A failed one is
-// "paused": it still holds off a second /compact until a compaction closes it. The failure itself is
-// shown, with its reason, for the request it was for.
-export function handoffStatus(h: Handoff | undefined, now: number): 'queued' | 'waiting' | 'paused' | undefined {
-  if (!h) return undefined
-  const s = handoffState(h, now).state
-  return s === 'failed' ? 'paused' : s
-}
-
 // where the session runs, as last checked: allowed, on the skip list, or not established
 export type Folder = 'on' | 'skip' | 'unknown'
 
@@ -112,12 +73,13 @@ export function fmtWait(ms: number): string {
 }
 
 // The status line: what the mod will do and, when it will not, why. It covers every reason
-// shouldCompact has, in its order, with three shown first: a failure for the current cache (`failed`),
-// then an open handoff (`handoff`), then the mod's own compact running (`busy`), so an attempt is never
-// shown as a compact that happened. A running reply or compaction only matters once it is due, so it is
+// shouldCompact has, in its order, with two shown first: a failure for the current cache (`failed`),
+// then the mod's own compact running (`busy`, set only once the folder check passed). A cache it
+// already tried is shown as tried, never as compacted: in the desktop app the mod hands /compact off
+// and does not learn how it ended. A running turn or compaction only matters once it is due, so it is
 // said there. `unresolved` names a skip folder that cannot be found, which turns the mod off.
 export function statusLine(
-  i: Omit<Inputs, 'skipped'> & { folder: Folder; refused?: string; failed?: string; handoff?: 'queued' | 'waiting' | 'paused'; unresolved?: string },
+  i: Omit<Inputs, 'skipped'> & { folder: Folder; refused?: string; failed?: string; unresolved?: string },
 ): string {
   if (i.folder === 'skip') return 'Auto-compact off in this folder'
   if (i.folder === 'unknown') return i.unresolved !== undefined ? `Auto-compact off: can't find skip folder ${i.unresolved.slice(0, 80)}` : "Auto-compact off: can't confirm the folder"
@@ -127,13 +89,11 @@ export function statusLine(
     const lapsed = i.last !== undefined && remainingMs(i.last, i.ttl, i.now) <= 0
     return lapsed ? `Auto-compact missed: the cache ran out (failed: ${why})` : `Auto-compact failed (${why}). Run /compact yourself`
   }
-  if (i.handoff === 'queued') return 'Auto-compact ran /compact: still queued or running'
-  if (i.handoff === 'waiting') return 'Auto-compact ran /compact, waiting for it to finish'
-  if (i.handoff === 'paused') return 'Auto-compact paused: the /compact it ran never finished. Run /compact yourself'
   if (i.busy) return 'Auto-compacting now'
   // the mod's own compact clears the recorded request, so firedFor is what remembers it ran
   if (!i.last) return i.firedFor ? 'Auto-compacted, waiting for the next reply' : 'Auto-compact waiting for a reply'
   if (i.firedFor === i.last.startedAt) return 'Auto-compacted, waiting for the next reply'
+  if (i.triedFor === i.last.startedAt) return 'Auto-compact ran /compact for this cache'
   const tokens = promptTokens(i.last)
   if (tokens < i.minTokens) return `Auto-compact waits for ${fmtTokens(i.minTokens)} (chat is ${fmtTokens(tokens)})`
   const leftMs = remainingMs(i.last, i.ttl, i.now)
@@ -142,7 +102,7 @@ export function statusLine(
   const until = leftMs - windowFor(i.ttl, i.windowMs)
   if (until <= 0) {
     if (i.compacting) return 'Auto-compact due, waiting for the compaction under way'
-    if (i.requestRunning) return 'Auto-compact due, waiting for the reply to finish'
+    if (i.requestRunning) return 'Auto-compact due, waiting for the turn to end (a reply, a tool, or your answer)'
     return i.refused ? `Auto-compact retrying${why}` : 'Auto-compact due now'
   }
   return `Auto-compact armed: fires in ${fmtWait(until)}`

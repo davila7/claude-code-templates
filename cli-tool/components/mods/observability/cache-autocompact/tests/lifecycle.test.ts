@@ -40,6 +40,10 @@ type World = {
   statuses?: (string | undefined)[]
   // the engine refuses every compact the mod asks for, as it does while a turn runs
   compactRefuses?: boolean
+  // the /compact command the mod runs in the desktop app throws
+  commandFails?: string
+  // turn.start fails for this turn id
+  turnStartFails?: string
   // a hook beneath the mod vetoes every compact the mod asks for
   vetoes?: string
   // compacts the mod asked for, whatever became of them
@@ -96,10 +100,15 @@ function engine(on: On, w: World) {
   })
   on('session.messages', () => ({ value: [CHAT] }) as never)
   on('classic.CwdChanged', () => ({}) as never)
-  on('turn.start', ($, e) => ({ turnId: (e as { turnId: string }).turnId }) as never)
+  on('turn.start', ($, e) => {
+    const id = (e as { turnId: string }).turnId
+    if (w.turnStartFails === id) throw new Error('the turn did not start')
+    return { turnId: id } as never
+  })
   on('turn.complete', () => ({ text: '' }) as never)
   on('command.run', ($, e) => {
     w.commands = [...(w.commands ?? []), (e as { command: string }).command]
+    if (w.commandFails) throw new Error(w.commandFails)
     return { value: { text: 'Compacted' } } as never
   })
   on('session.compact', async ($, e) => {
@@ -701,6 +710,19 @@ describe('a request still running', () => {
     expect(w.compacts).toBe(1)
     await clock.advance(10 * MIN)
     await old
+    // the old step has ended: the new conversation's count is untouched, so a request in flight
+    // still holds the next cache's compact
+    await request($, 3)
+    const h = hold()
+    w.gate = h.gate
+    w.entered = h.reached
+    const running = request($, 4)
+    await h.arrived
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(1)
+    w.gate = undefined
+    h.release()
+    await running
   })
 })
 
@@ -761,13 +783,13 @@ describe('review round 4', () => {
     const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' } }
     const clock = engine(on, w)
     await start($, ALLOWED)
-    await $.turn.start({ text: 'go', turnId: 'turn-1' } as never)
+    await $.turn.start({ text: 'go', turnId: 't1' } as never)
     await request($)
     // a tool runs: no request in flight, but the turn goes on
     await clock.advance(4 * MIN)
     expect(w.compacts).toBe(0)
-    expect(latest(w)).toBe('Auto-compact due, waiting for the reply to finish')
-    await $.turn.complete({ turnId: 'turn-1', reason: 'answer' } as never)
+    expect(latest(w)).toBe('Auto-compact due, waiting for the turn to end (a reply, a tool, or your answer)')
+    await $.turn.complete({ turnId: 't1', reason: 'answer' } as never)
     await clock.advance(5_000)
     expect(w.compacts).toBe(1)
   })
@@ -795,5 +817,93 @@ describe('review round 4', () => {
     await request($)
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(1)
+  })
+})
+
+describe('review round 5', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+  // the test kit replaces the words of any refusal, so the desktop's headless refusal cannot be staged;
+  // this option, for tests only, takes any refusal as that one
+  const DESKTOP = { options: { testTreatRefusalAsHeadless: true } }
+
+  test('desktop: a refused compact runs /compact once for the cache, with one notice', DESKTOP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.commands).toEqual(['compact'])
+    expect(w.asked).toBe(1)
+    expect(w.toasts).toBe(1)
+    expect(latest(w)).toBe('Auto-compact ran /compact for this cache')
+    // no second try on the same cache
+    await clock.advance(2 * MIN)
+    expect(w.asked).toBe(1)
+    expect(w.commands).toEqual(['compact'])
+    expect(w.toasts).toBe(1)
+  })
+
+  test('desktop: a /compact that throws pops up once, and the next cache tries again', DESKTOP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, commandFails: 'prompt is too long' }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($, 1)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.commands).toEqual(['compact'])
+    expect(w.toasts).toBe(2)
+    expect(latest(w)?.startsWith('Auto-compact failed (')).toBe(true)
+    await clock.advance(2 * MIN)
+    expect(w.commands).toEqual(['compact'])
+    expect(w.toasts).toBe(2)
+    await request($, 2)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.commands).toEqual(['compact', 'compact'])
+  })
+
+  test('desktop: a manual /compact after the handoff is never credited to the mod', DESKTOP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 4 * MIN)
+    await $.session.compact({ trigger: 'manual', messages: [CHAT] } as never)
+    await clock.advance(5_000)
+    expect(latest(w)).toBe('Auto-compact waiting for a reply')
+    expect(w.statuses?.some(t => t?.startsWith('Auto-compacted'))).toBe(false)
+  })
+
+  test('a turn whose turn.complete never comes is cleared by the next turn', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await $.turn.start({ text: 'go', turnId: 'lost' } as never)
+    // a request of another turn: the lost one is over
+    await request($, 2)
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('a turn that failed to start is not counted as open', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' }, turnStartFails: 't1' }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await $.turn.start({ text: 'go', turnId: 't1' } as never).catch(() => undefined)
+    await request($, 1)
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('in a skip folder the ticks do not look the folders up, and never say compacting', SKIP, async ($, on) => {
+    const w: World = { cwd: PRIVATE, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, PRIVATE)
+    await request($)
+    await clock.advance(HOUR - 6 * MIN)
+    const looked = w.statted?.length ?? 0
+    // two minutes inside the window: 24 ticks
+    await clock.advance(4 * MIN)
+    expect(w.statted?.length ?? 0).toBe(looked)
+    expect(w.compacts).toBe(0)
+    expect(w.statuses?.includes('Auto-compacting now')).toBe(false)
   })
 })

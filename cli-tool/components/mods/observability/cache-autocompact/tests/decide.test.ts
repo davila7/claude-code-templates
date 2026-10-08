@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fallbackDeadline, fmtWait, handoffState, handoffStatus, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
+import { fmtWait, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -297,9 +297,9 @@ describe('status line', () => {
     expect(line({ busy: true })).toBe('Auto-compacting now')
     expect(line({ disabled: true })).toBe('Auto-compact off: caching is off')
   })
-  test('a handed-off /compact is shown as waiting, never as done', () => {
-    const { skipped: _, ...rest } = inputs()
-    expect(statusLine({ ...rest, folder: 'on', handoff: 'waiting' })).toBe('Auto-compact ran /compact, waiting for it to finish')
+  test('a cache it already ran /compact for says so, and claims nothing about the outcome', () => {
+    const { skipped: _, ...rest } = inputs({ triedFor: T0 })
+    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact ran /compact for this cache')
   })
   test('a failed try says so and says what to do, even when the guard holds', () => {
     const { skipped: _, ...rest } = inputs({ triedFor: T0 })
@@ -330,25 +330,13 @@ describe('headless refusal', () => {
 })
 
 describe('review round 1', () => {
-  const line = (over: Partial<Inputs>, extra: { handoff?: 'queued' | 'waiting' | 'paused'; failed?: string }) => {
+  const line = (over: Partial<Inputs>, extra: { failed?: string }) => {
     const { skipped: _, ...rest } = inputs(over)
     return statusLine({ ...rest, folder: 'on', ...extra })
   }
 
-  test('a /compact handed off and still open blocks every later request, not only its own', () => {
-    expect(shouldCompact(inputs({ handoffOpen: true })).go).toBe(false)
-    const later = T0 + 30 * 60_000
-    const v = shouldCompact(inputs({ handoffOpen: true, last: sample({ startedAt: later }), now: later + HOUR - 60_000 }))
-    expect(v.go ? 'went' : v.why).toBe('a /compact it ran is still open')
-  })
-
-  test('a recorded failure and a pending handoff win over a call that never returned', () => {
-    expect(line({ busy: true }, { failed: 'no compaction happened' })).toBe('Auto-compact failed (no compaction happened). Run /compact yourself')
-    expect(line({ busy: true }, { handoff: 'waiting' })).toBe('Auto-compact ran /compact, waiting for it to finish')
-  })
-
-  test('an open handoff past its deadline holds a newer request, and says how to get going again', () => {
-    expect(line({}, { handoff: 'paused' })).toBe('Auto-compact paused: the /compact it ran never finished. Run /compact yourself')
+  test('a recorded failure wins over a compact call in flight', () => {
+    expect(line({ busy: true }, { failed: 'prompt is too long' })).toBe('Auto-compact failed (prompt is too long). Run /compact yourself')
   })
 
   test('a backslash in a rooted Linux path is part of a name, not a separator', () => {
@@ -373,19 +361,6 @@ describe('review round 2', () => {
   test('a main request still running holds the compact: it is about to refresh the cache', () => {
     const v = shouldCompact(inputs({ requestRunning: true }))
     expect(v.go ? 'went' : v.why).toBe('a request is running')
-  })
-
-  test('a handoff is shown for the whole conversation, even after a newer reply', () => {
-    const { skipped: _, ...rest } = inputs({ last: sample({ startedAt: T0 + 60_000 }) })
-    const h = { at: T0, lapse: T0 + HOUR, command: 'returned' as const, returnedAt: T0 }
-    expect(statusLine({ ...rest, folder: 'on', handoff: handoffStatus(h, T0 + 10_000) })).toBe('Auto-compact ran /compact, waiting for it to finish')
-  })
-
-  test('paused only once the handoff has failed and no compaction has closed it', () => {
-    const h = { at: T0, lapse: T0 + HOUR, command: 'returned' as const, returnedAt: T0 }
-    expect(handoffStatus(h, T0 + 89_000)).toBe('waiting')
-    expect(handoffStatus(h, T0 + 90_000)).toBe('paused')
-    expect(handoffStatus(undefined, T0)).toBe(undefined)
   })
 })
 
@@ -412,45 +387,12 @@ describe('the window on a 5-minute cache', () => {
   })
 })
 
-describe('when a handed-off /compact counts as failed', () => {
-  test('5 minutes left: judged after 90 seconds, leaving 3:30 to do it by hand', () => {
-    expect(fallbackDeadline(T0, 300_000)).toBe(T0 + 90_000)
-  })
-  test('a shorter window waits half of it, never past the lapse', () => {
-    expect(fallbackDeadline(T0, 120_000)).toBe(T0 + 60_000)
-    expect(fallbackDeadline(T0, 30_000)).toBe(T0 + 15_000)
-  })
-})
-
 describe('review round 4', () => {
   const MIN = 60_000
   const line = (over: Partial<Inputs>, extra: Record<string, unknown> = {}) => {
     const { skipped: _, ...rest } = inputs(over)
     return statusLine({ ...rest, folder: 'on', ...extra })
   }
-  const handed = (over: Record<string, unknown> = {}) => ({ at: T0, lapse: T0 + 5 * MIN, command: 'pending' as const, ...over })
-
-  test('a /compact still queued or running is never called failed by a deadline', () => {
-    expect(handoffState(handed(), T0 + 4 * MIN)).toEqual({ state: 'queued' })
-    expect(handoffStatus(handed(), T0 + 4 * MIN)).toBe('queued')
-    expect(line({}, { handoff: 'queued' })).toBe('Auto-compact ran /compact: still queued or running')
-  })
-
-  test('a /compact that returned gets its deadline from when it returned', () => {
-    const h = handed({ command: 'returned', returnedAt: T0 + 2 * MIN })
-    expect(handoffState(h, T0 + 2 * MIN + 89_000)).toEqual({ state: 'waiting' })
-    // 3 minutes left when it returned: half of it, 90 seconds
-    expect(handoffState(h, T0 + 2 * MIN + 90_000)).toEqual({ state: 'failed', why: 'no compaction happened' })
-  })
-
-  test('a rejected /compact or a veto fails at once, with its reason', () => {
-    expect(handoffState(handed({ command: 'rejected', why: 'vetoed: not now' }), T0 + 1)).toEqual({ state: 'failed', why: 'vetoed: not now' })
-    expect(handoffState(handed({ command: 'rejected' }), T0 + 1)).toEqual({ state: 'failed', why: 'the /compact command failed' })
-  })
-
-  test('a cache that runs out fails the handoff whatever the command is doing', () => {
-    expect(handoffState(handed(), T0 + 5 * MIN)).toEqual({ state: 'failed', why: 'the cache ran out before a compaction turned up' })
-  })
 
   test('a compaction already under way holds the mod', () => {
     const v = shouldCompact(inputs({ compacting: true }))
@@ -458,7 +400,7 @@ describe('review round 4', () => {
   })
 
   test('the status line says why a due compact waits, as shouldCompact does', () => {
-    expect(line({ requestRunning: true })).toBe('Auto-compact due, waiting for the reply to finish')
+    expect(line({ requestRunning: true })).toBe('Auto-compact due, waiting for the turn to end (a reply, a tool, or your answer)')
     expect(line({ compacting: true })).toBe('Auto-compact due, waiting for the compaction under way')
     // nothing to say while it is not due
     expect(line({ requestRunning: true, now: T0 + 60_000 })).toBe('Auto-compact armed: fires in 57m')
@@ -474,5 +416,19 @@ describe('review round 4', () => {
   test('a skip folder that cannot be found is named on the status line', () => {
     const { skipped: _, ...rest } = inputs()
     expect(statusLine({ ...rest, folder: 'unknown', unresolved: '/c/work/x' })).toBe("Auto-compact off: can't find skip folder /c/work/x")
+  })
+})
+
+describe('review round 5', () => {
+  test('a lapsed cache says missed and gives no advice to run /compact', () => {
+    const { skipped: _, ...rest } = inputs({ triedFor: T0, now: T0 + HOUR + 1 })
+    const text = statusLine({ ...rest, folder: 'on', failed: 'prompt is too long' })
+    expect(text).toBe('Auto-compact missed: the cache ran out (failed: prompt is too long)')
+    expect(text.includes('Run /compact')).toBe(false)
+  })
+
+  test('a skip folder is held off by the cheap check too', () => {
+    const v = shouldCompact(inputs({ skipped: true }))
+    expect(v.go ? 'went' : v.why).toBe('folder is on the skip list')
   })
 })

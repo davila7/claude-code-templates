@@ -29,12 +29,13 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { handoffState, handoffStatus, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
-import type { Folder, Handoff, TtlTrack } from './decide.ts'
+import { isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
 
-type Config = { minTokens: number; windowMs: number; skip: string[] }
+// testHeadless: for tests only, any refusal counts as the desktop app's (see register)
+type Config = { minTokens: number; windowMs: number; skip: string[]; testHeadless: boolean }
 
 let gen = 0
 // bumped whenever the session's folder changes, so a folder check made before the change does not count
@@ -43,7 +44,7 @@ let samples: Sample[] = []
 let ttl: Ttl = '5m'
 let track: TtlTrack | undefined
 let env: CacheEnv = {}
-// the request whose cache was compacted, by the mod or by a /compact it handed off; shown as done
+// the request whose cache the mod compacted itself (never a /compact it handed off, which it does not track)
 let firedFor = 0
 // the request whose cache already had its one try (a /compact handed off, a veto); never shown as done
 let triedFor = 0
@@ -51,6 +52,9 @@ let triedFor = 0
 // late can never release a newer attempt's lock
 let busyAttempt = 0
 let attempts = 0
+// the attempt that passed its folder check and is calling compact, 0 for none: the status line's
+// "Auto-compacting now", which a tick still checking the folder never shows
+let compactingAttempt = 0
 // What is under way in the current conversation: main-loop requests started and not finished, a
 // count bumped as each starts and ends, the turns started and not completed (a turn goes on between
 // its requests while a tool runs), and compactions started elsewhere. A reset installs a fresh one, and
@@ -77,12 +81,7 @@ let shown: string | undefined
 let refused: string | undefined
 // the request whose refusal has already been put on screen as a pop-up
 let warnedFor = 0
-// A /compact the mod handed off, open until a compaction of this conversation closes it or the
-// conversation is left (/clear, resume, the restart a compaction causes). While open, no second one is
-// handed off for any request: command.run may return while the command is still queued, and nothing
-// cancels it. Whether it failed is decided by handoffState; `notified` once that failure popped up.
-let handoff: (Handoff & { gen: number; startedAt: number; notified: boolean }) | undefined
-// why the one try on a request's cache came to nothing (a handed-off /compact that failed, a veto)
+// why the one try on a request's cache came to nothing (a /compact command that threw, a veto)
 let failed: { startedAt: number; why: string } | undefined
 
 function resetConversation() {
@@ -91,10 +90,10 @@ function resetConversation() {
   firedFor = 0
   triedFor = 0
   busyAttempt = 0
+  compactingAttempt = 0
   track = undefined
   refused = undefined
   warnedFor = 0
-  handoff = undefined
   failed = undefined
   requests = fresh()
 }
@@ -157,19 +156,6 @@ async function folderNow($: EngineInterface): Promise<Folder> {
   return standing(r.roots, await spellings($, cwd))
 }
 
-// pops up a handed-off /compact's failure once: rejected, vetoed, past its deadline after it
-// returned, or the cache ran out
-function noteHandoff($: EngineInterface, now: number) {
-  if (!handoff || handoff.gen !== gen || handoff.notified) return
-  const st = handoffState(handoff, now)
-  if (st.state !== 'failed') return
-  handoff.notified = true
-  failed = { startedAt: handoff.startedAt, why: st.why }
-  const left = handoff.lapse - now
-  $.ui.toast(`Auto-compact failed (${st.why.slice(0, 80)}). Run /compact yourself: ${left > 0 ? `${fmtClock(left)} left on the cache` : 'the cache already ran out'}`)
-  $.ui.log(`cache-autocompact: /compact failed: ${st.why}`)
-}
-
 // shows what the mod will do; only a changed line reaches the engine
 function show($: EngineInterface, text: string | undefined) {
   if (text === shown) return
@@ -178,7 +164,7 @@ function show($: EngineInterface, text: string | undefined) {
 }
 
 async function tick($: EngineInterface, cfg: Config) {
-  const judge = (now: number, last: Sample | undefined, busy: boolean) =>
+  const judge = (now: number, last: Sample | undefined, busy: boolean, skipped: boolean) =>
     shouldCompact({
       last,
       ttl,
@@ -187,17 +173,15 @@ async function tick($: EngineInterface, cfg: Config) {
       windowMs: cfg.windowMs,
       firedFor,
       triedFor,
-      handoffOpen: handoff?.gen === gen,
       requestRunning: requests.running > 0 || requests.turns.size > 0,
       compacting: requests.compacting > 0,
       busy,
-      skipped: false,
+      skipped,
       disabled: last ? isCachingDisabled(last.model, env) : false,
     })
   const mine = gen
   const now = await $.clock.now()
   if (gen !== mine) return
-  noteHandoff($, now)
   const last0 = samples[samples.length - 1]
   const current = (startedAt: number | undefined) => last0 !== undefined && startedAt === last0.startedAt
   show(
@@ -209,19 +193,21 @@ async function tick($: EngineInterface, cfg: Config) {
       minTokens: cfg.minTokens,
       windowMs: cfg.windowMs,
       firedFor,
-      busy: busyAttempt !== 0,
+      triedFor,
+      busy: compactingAttempt !== 0,
       disabled: last0 ? isCachingDisabled(last0.model, env) : false,
       requestRunning: requests.running > 0 || requests.turns.size > 0,
       compacting: requests.compacting > 0,
       folder,
       refused,
       failed: current(failed?.startedAt) ? failed?.why : undefined,
-      handoff: handoff?.gen === mine ? handoffStatus(handoff, now) : undefined,
       unresolved: unresolvedSkip,
     }),
   )
-  // cheap check first, so an idle session touches no file system every five seconds
-  if (gen !== mine || !judge(now, samples[samples.length - 1], busyAttempt !== 0).go) return
+  // Cheap check first, so an idle session touches no file system every five seconds, and a session
+  // already known to be in a skip folder (every move refreshes `folder`) looks nothing up in the window.
+  // An unconfirmed folder still goes on to the check: that is how a skip folder that turns up is found.
+  if (gen !== mine || !judge(now, samples[samples.length - 1], busyAttempt !== 0, folder === 'skip').go) return
   const attempt = ++attempts
   busyAttempt = attempt
   try {
@@ -238,8 +224,9 @@ async function tick($: EngineInterface, cfg: Config) {
     // inside the window.
     if (gen !== mine || cwdRev !== rev || requests.rev !== req || skipped) return
     if (!last || samples[samples.length - 1] !== last) return
-    const due = judge(at, last, false)
+    const due = judge(at, last, false, false)
     if (!due.go) return
+    compactingAttempt = attempt
     // no toast before the call: a refused compact retries every tick and would toast each time
     let r: SessionCompactResult | undefined
     try {
@@ -247,43 +234,35 @@ async function tick($: EngineInterface, cfg: Config) {
     } catch (err) {
       // The desktop app runs Claude Code headless, where a plugin cannot compact directly
       // (found in a live test). There /compact runs as a command, queued until the session is idle.
-      if (!isHeadlessRefusal(err)) throw err
+      if (!isHeadlessRefusal(err) && !cfg.testHeadless) throw err
       // The refusal arrived through an await, so everything checked before the call is checked again:
       // a /clear, a resume, a request started or finished (requests.rev counts both, and judge holds
       // while one runs), a folder move (which bumps cwdRev), or the cache leaving the window, abandons
       // the handoff. Nothing below awaits until command.run.
       const at2 = await $.clock.now()
       if (gen !== mine || cwdRev !== rev || requests.rev !== req || samples[samples.length - 1] !== last) return
-      const still = judge(at2, last, false)
+      const still = judge(at2, last, false, false)
       if (!still.go) return
-      // Notice first: the compact restarts the session, which bumps gen, so anything after the
-      // await never runs (seen live: /compact ran and no toast showed). Tried first too, so a
-      // /compact that fails is never retried into a second notice. Not marked done: only a
-      // compaction that turns up does that (the session.compact hook).
+      // One try per cache. The mod runs /compact and does not track how it ends: the command is queued
+      // until the session is idle, and the compaction restarts the session, which bumps gen, so
+      // anything after the await may never run (seen live: /compact ran and no toast showed). So the
+      // notice comes first, and the try is recorded first, never as a compaction.
       triedFor = last.startedAt
       refused = undefined
-      $.ui.toast(`Auto-compact is running /compact on a ${fmtTokens(still.tokens)}-token chat with ${fmtClock(still.leftMs)} left on the cache`)
+      $.ui.toast(`Auto-compact ran /compact on a ${fmtTokens(still.tokens)}-token chat with ${fmtClock(still.leftMs)} left on the cache`)
       $.ui.log('cache-autocompact: ran /compact before the cache lapsed')
-      // Whether it worked is judged by the tick (handoffState), from what command.run does with it.
-      const rec: NonNullable<typeof handoff> = { gen: mine, startedAt: last.startedAt, at: at2, lapse: at2 + still.leftMs, command: 'pending', notified: false }
-      handoff = rec
-      // The lock is released at dispatch: the open handoff keeps any second one out from here, and a
-      // command.run that never returns cannot leave the mod busy for good.
+      // the lock is released at dispatch, so a command.run that never returns cannot leave the mod busy
       if (busyAttempt === attempt) busyAttempt = 0
+      if (compactingAttempt === attempt) compactingAttempt = 0
       try {
         await $.command.run({ command: 'compact' })
-        const back = await $.clock.now().catch(() => rec.at)
-        // only this attempt's own record, and only while nothing else settled it
-        if (rec.command === 'pending') {
-          rec.command = 'returned'
-          rec.returnedAt = back
-        }
       } catch (e) {
-        // a rejection fails it at the next tick, with its reason
-        if (rec.command === 'pending') {
-          rec.command = 'rejected'
-          rec.why = e instanceof Error ? e.message : String(e)
-        }
+        // the command itself failed: one pop-up, and the next cache tries again (triedFor holds only this one)
+        if (gen !== mine) return
+        const why = e instanceof Error ? e.message : String(e)
+        failed = { startedAt: last.startedAt, why }
+        $.ui.toast(`Auto-compact could not run /compact (${why.slice(0, 80)}). Run /compact yourself`)
+        $.ui.log(`cache-autocompact: /compact failed: ${why}`)
       }
       return
     }
@@ -321,6 +300,7 @@ async function tick($: EngineInterface, cfg: Config) {
     }
   } finally {
     if (busyAttempt === attempt) busyAttempt = 0
+    if (compactingAttempt === attempt) compactingAttempt = 0
   }
 }
 
@@ -330,6 +310,9 @@ export const register: Register = (on, options) => {
     windowMs: positive(options.windowSeconds, 300) * 1000,
     // as written: the file system resolves these, and only the comparison uses normalized spellings
     skip: splitPaths(options.skipPaths),
+    // For tests only: the test kit replaces the words of any refusal with its own, so the desktop
+    // app's headless refusal cannot be staged there. With this set, any refusal counts as that one.
+    testHeadless: options.testTreatRefusalAsHeadless === true,
   }
   skipList = cfg.skip
 
@@ -384,30 +367,11 @@ export const register: Register = (on, options) => {
       if (main) counted.compacting -= 1
     }
     // a compact that finishes after a /clear belongs to the old conversation: leave the new one alone
-    if (!main || gen !== mine) return r
-    const h = handoff?.gen === mine ? handoff : undefined
-    if (r.skip !== undefined) {
-      // a veto while a /compact the mod handed off is open is taken as that /compact's
-      if (h && h.command !== 'rejected') {
-        h.command = 'rejected'
-        h.why = `vetoed: ${r.skip}`
-      }
-      return r
-    }
-    if (h) {
-      // the handed-off /compact landed: only now is that cache shown as compacted, and a failure
-      // notice already given is put right
-      firedFor = h.startedAt
-      if (h.notified) {
-        failed = undefined
-        $.ui.toast('Auto-compact: the /compact it ran finished after all, the chat is compacted')
-        $.ui.log('cache-autocompact: the /compact reported as failed finished after all')
-      }
-      handoff = undefined
-    } else {
-      // someone else's compaction: nothing the mod did, so an older auto-compact is not shown for it
-      firedFor = 0
-    }
+    if (!main || gen !== mine || r.skip !== undefined) return r
+    // Any compaction this hook sees is not the mod's own call (that skips its own hook): a /compact
+    // typed, another plugin's, or the one the mod handed off in the desktop app, which it does not
+    // track. None is shown as the mod's, so an older auto-compact is not credited for it.
+    firedFor = 0
     samples = []
     return r
   })
@@ -454,6 +418,13 @@ export const register: Register = (on, options) => {
     const mineRequests = requests
     mineRequests.running += 1
     mineRequests.rev += 1
+    // A main-loop request belongs to the one turn under way, so any other turn still open is over: its
+    // turn.complete was lost (another plugin's turn.complete hook that answers without calling next).
+    for (const id of mineRequests.turns) {
+      if (id === e.turnId) continue
+      mineRequests.turns.delete(id)
+      turnHome.delete(id)
+    }
     // settled once: at the end, or when the request is aborted, in case an abandoned stream never
     // reaches its finally
     let settled = false
