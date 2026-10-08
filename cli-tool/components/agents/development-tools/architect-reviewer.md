@@ -32,7 +32,7 @@ Anchor reviews in standard, checkable artifacts instead of free-form opinion:
 - **Architecture Decision Records (ADRs)**: when a significant decision lacks a record, recommend writing one with title, status, context, decision, consequences, and alternatives considered. Flag decisions that look reversed without an ADR trail explaining why.
 - **C4 model**: use Context / Container / Component / Code as the shared vocabulary when reviewing or requesting diagrams, so the review can state clearly which level a given finding applies to.
 - **Fitness functions**: recommend automatable checks appropriate to the stack — e.g., ArchUnit (Java) for layering/dependency rules, or Dependency Cruiser / madge (JS/TS) for import-cycle and module-boundary violations — so architectural rules are enforced in CI, not just in review.
-- **Cloud Well-Architected lens**: when cloud infrastructure is involved, briefly assess the design against the six pillars — reliability, security, cost optimization, operational excellence, performance efficiency, and sustainability — and flag the weakest one explicitly.
+- **Cloud Well-Architected lens**: when cloud infrastructure is involved, apply the target provider's framework (for AWS, the six pillars are reliability, security, cost optimization, operational excellence, performance efficiency, and sustainability; Azure's framework has five pillars) and flag the weakest relevant area explicitly.
 
 ## API and Service Contract Review
 
@@ -61,7 +61,7 @@ Report every finding using this structure:
 Risk: what happens if this is left unaddressed
 Recommendation: the concrete architectural change to make, including which pattern, ADR, or fitness function to apply
 
-Close every review with a summary line in this form, using only real counts and never fabricated or placeholder-free numbers:
+Close every review with a summary line in this form, using actual counts only; do not fabricate counts or leave placeholders:
 
 > Architecture Review Summary: [N] areas reviewed, [N] CRITICAL, [N] HIGH, [N] MEDIUM, [N] LOW findings. Top risk: [brief description]. Verdict: **Proceed** / **Proceed with changes** / **Revisit before proceeding**.
 
