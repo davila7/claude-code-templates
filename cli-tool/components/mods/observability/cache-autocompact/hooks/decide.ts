@@ -84,7 +84,8 @@ export const KIT_STAND_IN_REFUSAL = 'test: next() passed an argument with messag
 export function handsOff(err: unknown, interactive: boolean): boolean {
   if (isHeadlessRefusal(err)) return true
   const why = err instanceof Error ? err.message : String(err)
-  return !interactive && why.includes(KIT_STAND_IN_REFUSAL)
+  // the whole message, so another plugin's name ("contest: next() ...") never matches
+  return !interactive && why === KIT_STAND_IN_REFUSAL
 }
 
 // The engine's refusal when compaction is switched off (DISABLE_COMPACT), for /compact as well, so
@@ -165,12 +166,15 @@ export function normalizePath(p: string): string {
   else if (flat.startsWith('//?/')) flat = flat.slice(4)
   const unc = flat.startsWith('//')
   const rooted = flat.startsWith('/')
-  // ".." never climbs above a root: a drive (C:\.. is C:\) or a share (\\srv\share\.. is the share)
-  const floor = (rest: string[]) => (unc ? 2 : /^[a-z]:$/i.test(rest[0] ?? '') ? 1 : 0)
+  // ".." never climbs above a root: a drive (C:\.. is C:\) or a share (\\srv\share\.. is the share).
+  // A drive is one only at the start of a Windows spelling: inside a rooted path ("/c:/..") it is a
+  // folder named "c:", and ".." leaves it like any other.
+  const drive = /^[a-z]:(\/|$)/i.test(flat)
+  const floor = unc ? 2 : drive ? 1 : 0
   for (const part of flat.split('/')) {
     if (part === '' || part === '.') continue
     if (part === '..') {
-      if (parts.length > floor(parts)) parts.pop()
+      if (parts.length > floor) parts.pop()
     } else parts.push(part)
   }
   const body = parts.join('/').toLowerCase()

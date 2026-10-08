@@ -49,6 +49,8 @@ type World = {
   refuseEntered?: () => void
   // a gate the /compact command waits on, and a call when it is reached
   commandGate?: Promise<void>
+  // with commandGate: hold only the first command it catches
+  commandGateOnce?: boolean
   commandEntered?: () => void
   // with statGate: hold only the stat of this path (as `key` spells it), not every stat
   statGateFor?: string
@@ -130,9 +132,11 @@ function engine(on: On, w: World) {
   on('turn.complete', () => ({ text: '' }) as never)
   on('command.run', async ($, e) => {
     w.commands = [...(w.commands ?? []), (e as { command: string }).command]
-    if (w.commandGate) {
+    const heldCommand = w.commandGate
+    if (heldCommand) {
+      if (w.commandGateOnce) w.commandGate = undefined
       w.commandEntered?.()
-      await w.commandGate
+      await heldCommand
     }
     if (w.commandFails) throw new Error(w.commandFails)
     return { value: { text: 'Compacted' } } as never
@@ -1282,5 +1286,81 @@ describe('overlapping skip lookups', () => {
     h.release()
     await clock.advance(0)
     expect(w.logs?.some(l => l.includes('off until it can find'))).toBe(false)
+  })
+})
+
+describe('review round 9', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+
+  test('a folder lookup from before a link was retargeted never overrides a newer one', { options: { skipPaths: '/safe' } }, async ($, on) => {
+    const w: World = { cwd: '/work/Home', compacts: 0, links: { '/safe': '/work/A' }, statGateFor: '/work/A', statGateOnce: true }
+    const clock = engine(on, w)
+    await start($, '/work/Home')
+    await request($, 1)
+    await clock.advance(HOUR - 6 * MIN)
+    // a move into /work/A, which the link makes a skip folder; its lookup is held at the folder's stat
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    w.cwd = '/work/A'
+    await $.classic.CwdChanged({ old_cwd: '/work/Home', new_cwd: '/work/A' } as never)
+    await h.arrived
+    // the link is retargeted: /work/A is allowed now, and the compact due next finds so and runs
+    w.links = { '/safe': '/work/B' }
+    await clock.advance(2 * MIN)
+    expect(w.compacts).toBe(1)
+    // the older lookup finishes last, with the old answer: it must not turn the mod off
+    h.release()
+    await clock.advance(0)
+    await request($, 2)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.compacts).toBe(2)
+  })
+
+  test("an older /compact that fails late never overwrites a newer cache's failure", async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, commandFails: 'cannot compact', settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED, false)
+    await request($, 1)
+    // A's /compact is held; B's is not
+    const h = hold()
+    w.commandGate = h.gate
+    w.commandGateOnce = true
+    w.commandEntered = h.reached
+    const ticking = clock.advance(4 * MIN)
+    await h.arrived
+    await ticking
+    await request($, 2)
+    await clock.advance(4 * MIN)
+    expect(w.commands).toEqual(['compact', 'compact'])
+    const shown = w.toasts
+    expect(latest(w)?.startsWith('Auto-compact failed (')).toBe(true)
+    // A fails now, late: no pop-up for it, and B's failure stays on the line
+    h.release()
+    await clock.advance(0)
+    await clock.advance(5_000)
+    expect(w.toasts).toBe(shown)
+    expect(latest(w)?.startsWith('Auto-compact failed (')).toBe(true)
+  })
+
+  test('a /compact that fails after a move into a skip folder says nothing', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, commandFails: 'cannot compact', settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED, false)
+    await request($, 1)
+    const h = hold()
+    w.commandGate = h.gate
+    w.commandEntered = h.reached
+    const ticking = clock.advance(4 * MIN)
+    await h.arrived
+    await ticking
+    const shown = w.toasts
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    w.commandGate = undefined
+    h.release()
+    await clock.advance(5_000)
+    expect(w.toasts).toBe(shown)
+    expect(latest(w)).toBe('Auto-compact off in this folder')
   })
 })

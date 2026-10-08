@@ -157,19 +157,24 @@ function standing(roots: string[] | undefined, here: string[] | undefined): Fold
 let skipTickets = 0
 let skipPublished = 0
 
-// the folder the session runs in right now, against the skip folders as they resolve right now
-async function folderNow($: EngineInterface): Promise<Folder> {
+// The folder the session runs in right now, against the skip folders as they resolve right now, with
+// the ticket of that resolution. An answer is stale once a newer resolution was published: its roots
+// are superseded (a link retargeted, a folder gone), so it may neither set `folder` nor allow a compact.
+async function folderNow($: EngineInterface): Promise<{ where: Folder; ticket: number }> {
   const ticket = ++skipTickets
   const r = await resolveSkips($)
   if (ticket > skipPublished) {
     skipPublished = ticket
     applySkips($, r)
   }
-  if (!r.roots) return 'unknown'
+  if (!r.roots) return { where: 'unknown', ticket }
   const cwd = await $.session.cwd().catch(() => undefined)
-  if (!cwd) return 'unknown'
-  return standing(r.roots, await spellings($, cwd))
+  if (!cwd) return { where: 'unknown', ticket }
+  return { where: standing(r.roots, await spellings($, cwd)), ticket }
 }
+
+// whether a folder answer still rests on the newest published skip folders
+const freshFolder = (ticket: number) => ticket >= skipPublished
 
 // shows what the mod will do; only a changed line reaches the engine
 function show($: EngineInterface, text: string | undefined) {
@@ -232,12 +237,13 @@ async function tick($: EngineInterface, cfg: Config) {
   const rev = cwdRev
   const req = requests.rev
   try {
-    const where = await folderNow($)
+    const found = await folderNow($)
+    const where = found.where
     const skipped = where !== 'on'
     // read again at the moment of the compact, the way the engine reads it, so a change is seen
     const off = isEngineOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
     const at = await $.clock.now()
-    if (gen === mine && cwdRev === rev) folder = where
+    if (gen === mine && cwdRev === rev && freshFolder(found.ticket)) folder = where
     if (gen === mine && off) {
       compactOff = true
       return
@@ -246,7 +252,7 @@ async function tick($: EngineInterface, cfg: Config) {
     // here is what holds when it is called: the same conversation (which also means this tick
     // still holds the lock), the same request, no folder change since the check, and still
     // inside the window.
-    if (gen !== mine || cwdRev !== rev || requests.rev !== req || skipped) return
+    if (gen !== mine || cwdRev !== rev || requests.rev !== req || skipped || !freshFolder(found.ticket)) return
     if (!last || samples[samples.length - 1] !== last) return
     const due = judge(at, last, false, false)
     if (!due.go) return
@@ -281,8 +287,10 @@ async function tick($: EngineInterface, cfg: Config) {
       try {
         await $.command.run({ command: 'compact' })
       } catch (e) {
-        // the command itself failed: one pop-up, and the next cache tries again (triedFor holds only this one)
-        if (gen !== mine) return
+        // the command itself failed: one pop-up, and the next cache tries again (triedFor holds only this one).
+        // A failure that comes back after the conversation, the request or the folder changed belongs to
+        // nothing current, the same as a late refusal: it never overwrites a newer cache's failure.
+        if (gen !== mine || cwdRev !== rev || requests.rev !== req || samples[samples.length - 1] !== last) return
         const why = e instanceof Error ? e.message : String(e)
         failed = { startedAt: last.startedAt, why }
         $.ui.toast(`Auto-compact could not run /compact (${why.slice(0, 80)}). Run /compact yourself`)
@@ -440,9 +448,9 @@ export const register: Register = (on, options) => {
     // the status line follows the move, checked off to the side so the move never waits on it;
     // a later move makes this check stale and it is dropped
     const mine = gen
-    void folderNow($).then(where => {
-      // a resume or /clear meanwhile (gen) or a later move (cwdRev) makes this answer stale
-      if (gen === mine && cwdRev === rev) folder = where
+    void folderNow($).then(found => {
+      // a resume or /clear meanwhile (gen), a later move (cwdRev) or newer skip folders make it stale
+      if (gen === mine && cwdRev === rev && freshFolder(found.ticket)) folder = found.where
     })
     return next(e)
   })

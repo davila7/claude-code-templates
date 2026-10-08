@@ -522,3 +522,20 @@ describe('review round 8', () => {
     expect(statusLine({ ...early, folder: 'on' })).toBe('Auto-compact started /compact for this cache')
   })
 })
+
+describe('review round 9', () => {
+  test('a drive is a drive only at the start of a Windows spelling, never inside a rooted path', () => {
+    expect(normalizePath('/c:/../private')).toBe('/private')
+    expect(isSkippedPath(['/c:/private'], roots('/c:/../private'))).toBe(false)
+    expect(isSkippedPath(['/private/x'], roots('/c:/../private'))).toBe(true)
+    // and a real drive still keeps its floor
+    expect(normalizePath('C:/..')).toBe('c:')
+    expect(normalizePath('\\\\?\\C:\\..')).toBe('c:')
+  })
+
+  test("the stand-in is the whole message under the test's name: another plugin's name never matches", () => {
+    expect(handsOff(new Error('contest: next() passed an argument with messages that are not a list'), false)).toBe(false)
+    expect(handsOff(new Error('test: next() passed an argument with messages that are not a list, and more'), false)).toBe(false)
+    expect(handsOff(new Error('test: next() passed an argument with messages that are not a list'), false)).toBe(true)
+  })
+})
