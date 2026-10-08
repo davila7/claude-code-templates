@@ -560,6 +560,17 @@ describe('status line', () => {
     await clock.advance(10_000)
     expect(latest(w)).toBe("Auto-compact off: can't confirm the folder")
   })
+  test('with "/" skipped, a move to another drive stays off', { options: { skipPaths: '/' } }, async ($, on) => {
+    const w: World = { cwd: 'C:/work/App', compacts: 0 }
+    const clock = engine(on, w)
+    await start($, 'C:/work/App')
+    await request($)
+    w.cwd = 'D:/work'
+    await $.classic.CwdChanged({ old_cwd: 'C:/work/App', new_cwd: 'D:/work' } as never)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(0)
+    expect(latest(w)).toBe('Auto-compact off in this folder')
+  })
   test('moving into Private turns the line off without waiting for a compact check', SKIP, async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
     const clock = engine(on, w)

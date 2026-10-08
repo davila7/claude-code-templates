@@ -67,6 +67,10 @@ let warnedFor = 0
 let awaiting: { gen: number; startedAt: number; deadline: number; lapse: number; why?: string } | undefined
 // why the one try on a request's cache came to nothing (a handed-off /compact past its deadline, a veto)
 let failed: { startedAt: number; why: string } | undefined
+// The generation with a /compact handed off and not yet settled by a compaction; -1 for none. It
+// outlives the deadline: command.run may return while the command is still queued, and a deadline
+// cancels nothing, so no second /compact is handed off for any request until a compaction or a reset.
+let handoffGen = -1
 
 function resetConversation() {
   gen += 1
@@ -79,6 +83,7 @@ function resetConversation() {
   warnedFor = 0
   awaiting = undefined
   failed = undefined
+  handoffGen = -1
 }
 
 // a path as given and where it really lands; undefined when where it lands cannot be established
@@ -128,6 +133,7 @@ async function tick($: EngineInterface, cfg: Config) {
       windowMs: cfg.windowMs,
       firedFor,
       triedFor,
+      handoffOpen: handoffGen === gen,
       busy,
       skipped: false,
       disabled: last ? isCachingDisabled(last.model, env) : false,
@@ -160,6 +166,7 @@ async function tick($: EngineInterface, cfg: Config) {
       refused,
       pending: awaiting?.gen === mine && current(awaiting.startedAt),
       failed: current(failed?.startedAt) ? failed?.why : undefined,
+      blocked: handoffGen === mine,
     }),
   )
   // cheap check first, so an idle session touches no file system every five seconds
@@ -188,16 +195,24 @@ async function tick($: EngineInterface, cfg: Config) {
       // The desktop app runs Claude Code headless, where a plugin cannot compact directly
       // (found in a live test). There /compact runs as a command, queued until the session is idle.
       if (!isHeadlessRefusal(err)) throw err
+      // The refusal arrived through an await, so everything checked before the call is checked again:
+      // a /clear, a resume, a newer request or a folder move (which bumps cwdRev) in the meantime, or
+      // the cache leaving the window, abandons the handoff. Nothing below awaits until command.run.
+      const at2 = await $.clock.now()
+      if (gen !== mine || cwdRev !== rev || samples[samples.length - 1] !== last) return
+      const still = judge(at2, last, false)
+      if (!still.go) return
       // Notice first: the compact restarts the session, which bumps gen, so anything after the
       // await never runs (seen live: /compact ran and no toast showed). Tried first too, so a
       // /compact that fails is never retried into a second notice. Not marked done: only a
       // compaction that turns up does that (the session.compact hook).
       triedFor = last.startedAt
+      handoffGen = mine
       refused = undefined
-      $.ui.toast(`Auto-compact is running /compact on a ${fmtTokens(due.tokens)}-token chat with ${fmtClock(due.leftMs)} left on the cache`)
+      $.ui.toast(`Auto-compact is running /compact on a ${fmtTokens(still.tokens)}-token chat with ${fmtClock(still.leftMs)} left on the cache`)
       $.ui.log('cache-autocompact: ran /compact before the cache lapsed')
       // Whether it worked is judged later, by the tick, against a deadline: see `awaiting`.
-      const pending = { gen: mine, startedAt: last.startedAt, deadline: fallbackDeadline(at, due.leftMs), lapse: at + due.leftMs } as NonNullable<typeof awaiting>
+      const pending = { gen: mine, startedAt: last.startedAt, deadline: fallbackDeadline(at2, still.leftMs), lapse: at2 + still.leftMs } as NonNullable<typeof awaiting>
       awaiting = pending
       try {
         await $.command.run({ command: 'compact' })
@@ -311,6 +326,8 @@ export const register: Register = (on, options) => {
         firedFor = awaiting.startedAt
         awaiting = undefined
       }
+      // a compaction, the handed-off one or any other, closes an open handoff
+      if (handoffGen === mine) handoffGen = -1
       if (gen === mine) samples = []
     }
     return r

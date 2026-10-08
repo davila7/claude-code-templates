@@ -20,6 +20,9 @@ export type Inputs = {
   // startedAt of the request whose cache already had its one attempt, whatever came of it (a /compact
   // handed off, a veto); 0 or absent for none. It stops a second try and is never read as success.
   triedFor?: number
+  // a /compact the mod handed off has not been settled by a compaction: it may still be queued, so no
+  // second one is handed off for any request until it is, or the conversation is left
+  handoffOpen?: boolean
   // a compact this mod started is still running
   busy: boolean
   // the session runs in a folder the person asked to leave alone
@@ -39,6 +42,7 @@ export function shouldCompact(i: Inputs): Verdict {
   if (i.skipped) return { go: false, why: 'folder is on the skip list' }
   if (i.disabled) return { go: false, why: 'prompt caching is off' }
   if (i.busy) return { go: false, why: 'a compact is already running' }
+  if (i.handoffOpen) return { go: false, why: 'a /compact it ran is still open' }
   if (!i.last) return { go: false, why: 'no request yet' }
   if (i.firedFor === i.last.startedAt) return { go: false, why: 'already compacted for this cache' }
   if (i.triedFor === i.last.startedAt) return { go: false, why: 'already tried for this cache' }
@@ -74,20 +78,24 @@ export function fmtWait(ms: number): string {
 }
 
 // The status line: what the mod will do and, when it will not, why. Same order of checks as shouldCompact.
-// `pending` is a /compact handed off and not yet seen to finish; `failed` says why the one try on the
-// current cache came to nothing. Both are about the current request only, and both come before
-// `firedFor`, so an attempt is never shown as a compact that happened.
-export function statusLine(i: Omit<Inputs, 'skipped'> & { folder: Folder; refused?: string; pending?: boolean; failed?: string }): string {
+// `failed` says why the one try on the current cache came to nothing; `pending` is a /compact handed
+// off and inside its deadline; `blocked` is one past its deadline that no compaction has settled, which
+// holds every later request. All three come before `busy` (a /compact call that never returned keeps
+// the mod busy) and before `firedFor`, so an attempt is never shown as a compact that happened.
+export function statusLine(
+  i: Omit<Inputs, 'skipped'> & { folder: Folder; refused?: string; pending?: boolean; failed?: string; blocked?: boolean },
+): string {
   if (i.folder === 'skip') return 'Auto-compact off in this folder'
   if (i.folder === 'unknown') return "Auto-compact off: can't confirm the folder"
   if (i.disabled) return 'Auto-compact off: caching is off'
-  if (i.busy) return 'Auto-compacting now'
-  if (i.pending) return 'Auto-compact ran /compact, waiting for it to finish'
   if (i.failed !== undefined) {
     const why = i.failed.slice(0, 80)
     const lapsed = i.last !== undefined && remainingMs(i.last, i.ttl, i.now) <= 0
     return lapsed ? `Auto-compact missed: the cache ran out (failed: ${why})` : `Auto-compact failed (${why}). Run /compact yourself`
   }
+  if (i.pending) return 'Auto-compact ran /compact, waiting for it to finish'
+  if (i.blocked) return 'Auto-compact paused: the /compact it ran never finished. Run /compact yourself'
+  if (i.busy) return 'Auto-compacting now'
   // the mod's own compact clears the recorded request, so firedFor is what remembers it ran
   if (!i.last) return i.firedFor ? 'Auto-compacted, waiting for the next reply' : 'Auto-compact waiting for a reply'
   if (i.firedFor === i.last.startedAt) return 'Auto-compacted, waiting for the next reply'
@@ -105,10 +113,13 @@ export function statusLine(i: Omit<Inputs, 'skipped'> & { folder: Folder; refuse
 // Spelling only: a junction or symlink is resolved by the caller ($.fs.stat realPath) before this runs.
 // A drive path or a UNC share is folded to lower case, the way Windows compares them. Any other path
 // keeps its case, since "/home/me/Finance" and "/home/me/finance" are two folders on Linux. A rooted
-// path keeps its leading slash, so "/" stays the root rather than vanishing.
+// path keeps its leading slash, so "/" stays the root rather than vanishing. A backslash is a separator
+// only in a Windows spelling (a drive, or a leading "\\"): on Linux "/work/a\b" names one folder, not two.
 export function normalizePath(p: string): string {
   const parts: string[] = []
-  let flat = p.trim().replace(/\\/g, '/')
+  const raw = p.trim()
+  const windows = /^[a-z]:/i.test(raw) || raw.startsWith('\\\\')
+  let flat = windows ? raw.replace(/\\/g, '/') : raw
   // the extended-length prefix: \\?\C:\x is C:\x, and \\?\UNC\server\share is \\server\share
   if (/^\/\/\?\/unc\//i.test(flat)) flat = `//${flat.slice(8)}`
   else if (flat.startsWith('//?/')) flat = flat.slice(4)
@@ -159,7 +170,8 @@ export function isSkippedPath(cwds: readonly (string | undefined)[], skip: reado
   if (known.length === 0) return true
   return known.some(c => {
     const here = normalizePath(c)
-    // the root "/" already ends in its separator, and holds every rooted folder
-    return skip.some(s => here === s || here.startsWith(s.endsWith('/') ? s : `${s}/`))
+    // the root "/" holds every absolute folder: rooted, on any drive (D:\ is not below C:\), or on a share
+    const absolute = here.startsWith('/') || /^[a-z]:/.test(here)
+    return skip.some(s => (s === '/' ? absolute : here === s || here.startsWith(`${s}/`)))
   })
 }

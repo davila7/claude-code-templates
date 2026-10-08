@@ -329,6 +329,46 @@ describe('headless refusal', () => {
   })
 })
 
+describe('review round 1', () => {
+  const line = (over: Partial<Inputs>, extra: { pending?: boolean; failed?: string; blocked?: boolean }) => {
+    const { skipped: _, ...rest } = inputs(over)
+    return statusLine({ ...rest, folder: 'on', ...extra })
+  }
+
+  test('a /compact handed off and still open blocks every later request, not only its own', () => {
+    expect(shouldCompact(inputs({ handoffOpen: true })).go).toBe(false)
+    const later = T0 + 30 * 60_000
+    const v = shouldCompact(inputs({ handoffOpen: true, last: sample({ startedAt: later }), now: later + HOUR - 60_000 }))
+    expect(v.go ? 'went' : v.why).toBe('a /compact it ran is still open')
+  })
+
+  test('a recorded failure and a pending handoff win over a call that never returned', () => {
+    expect(line({ busy: true }, { failed: 'no compaction happened' })).toBe('Auto-compact failed (no compaction happened). Run /compact yourself')
+    expect(line({ busy: true }, { pending: true })).toBe('Auto-compact ran /compact, waiting for it to finish')
+  })
+
+  test('an open handoff past its deadline holds a newer request, and says how to get going again', () => {
+    expect(line({}, { blocked: true })).toBe('Auto-compact paused: the /compact it ran never finished. Run /compact yourself')
+  })
+
+  test('a backslash in a rooted Linux path is part of a name, not a separator', () => {
+    expect(normalizePath('/work/a\\b')).toBe('/work/a\\b')
+    expect(isSkippedPath(['/work/a/b'], parsePaths('/work/a\\b'))).toBe(false)
+    expect(isSkippedPath(['/work/a\\b/x'], parsePaths('/work/a\\b'))).toBe(true)
+    // Windows spellings still translate
+    expect(normalizePath('C:\\work\\a')).toBe('c:/work/a')
+    expect(normalizePath('\\\\server\\share')).toBe('//server/share')
+  })
+
+  test('the root "/" skips every absolute folder, on any drive or share', () => {
+    const root = parsePaths('/')
+    expect(isSkippedPath(['D:\\work'], root)).toBe(true)
+    expect(isSkippedPath(['c:'], root)).toBe(true)
+    expect(isSkippedPath(['\\\\server\\share\\x'], root)).toBe(true)
+    expect(isSkippedPath(['work/x'], root)).toBe(false)
+  })
+})
+
 describe('the window on a 5-minute cache', () => {
   test('a 5-minute window on a 5-minute cache waits until minute 3, never right after the reply', () => {
     const v = (now: number) => shouldCompact(inputs({ ttl: '5m', windowMs: 300_000, now }))
