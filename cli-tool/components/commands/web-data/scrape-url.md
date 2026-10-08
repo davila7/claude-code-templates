@@ -34,9 +34,19 @@ Arguments: $ARGUMENTS
 
 ```bash
 python3 - 'URL' 'PARSED' 'COUNTRY' <<'PY'
-import glob, http.client, json, os, sys, tempfile, time, urllib.error, urllib.parse, urllib.request
+import glob, http.client, json, os, re, sys, tempfile, time, urllib.error, urllib.parse, urllib.request
 
 LIMIT = 20000
+# Page text must not drive the terminal: drop control characters (ANSI escapes etc.).
+CONTROL = re.compile(r"[\x00-\x08\x0b-\x1f\x7f-\x9f]")
+
+
+def show(raw):
+    print(CONTROL.sub("", raw[:LIMIT].decode("utf-8", "ignore")))
+    if len(raw) > LIMIT:
+        print(f"\n[HTML truncated to {LIMIT} bytes; the full page is in the saved file]")
+
+
 url, parsed, country = sys.argv[1], sys.argv[2] == "1", sys.argv[3]
 key = os.environ.get("SCRAPEUNBLOCKER_KEY")
 if not key:
@@ -51,16 +61,20 @@ req = urllib.request.Request(
     method="POST",
     headers={"X-ScrapeUnblocker-Key": key},
 )
+
+
 def fetch():
     try:
         with urllib.request.urlopen(req, timeout=180) as resp:
             return resp.status, resp.read(), resp.headers.get("X-Origin-Status")
     except urllib.error.HTTPError as e:
-        if e.code not in (404, 410):
-            detail = e.read()[:500].decode("utf-8", "replace")
+        origin = e.headers.get("X-Origin-Status")
+        if e.code not in (404, 410) or not origin:
+            detail = CONTROL.sub("", e.read()[:500].decode("utf-8", "replace"))
             sys.exit(f"ERROR: ScrapeUnblocker returned HTTP {e.code}: {detail}")
-        # The target's own "page does not exist": delivered with its status.
-        return e.code, e.read(), e.headers.get("X-Origin-Status") or str(e.code)
+        # A 404/410 with X-Origin-Status is the target's own "page does not exist".
+        return e.code, e.read(), origin
+
 
 try:
     status, body, origin_status = fetch()
@@ -96,26 +110,21 @@ if parsed:
     if isinstance(data, dict) and data.get("data_extracted") is False:
         print("NOTE: no structured data could be extracted from this page (billed like a plain fetch). "
               "The rendered HTML follows; the full response is in the saved file.")
-        page = (data.get("html") or "").encode("utf-8")
-        print(page[:LIMIT].decode("utf-8", "ignore"))
-        if len(page) > LIMIT:
-            print(f"\n[HTML truncated to {LIMIT} bytes; the full page is in the saved file]")
+        show((data.get("html") or "").encode("utf-8"))
         sys.exit(0)
     text = json.dumps(data, indent=2, ensure_ascii=False)
     size = len(text.encode("utf-8"))
     if size <= LIMIT:
-        print(text)
+        print(CONTROL.sub("", text))
     else:
         if isinstance(data, dict):
             outline = {k: list(v)[:20] if isinstance(v, dict) else type(v).__name__ for k, v in list(data.items())[:20]}
         else:
             outline = f"list of {len(data)} items"
-        print(f"Parsed JSON is {size} bytes, too large to print in full. Outline: {str(outline)[:2000]}")
+        print(f"Parsed JSON is {size} bytes, too large to print in full. Outline: {CONTROL.sub('', str(outline))[:2000]}")
         print("Read the fields you need from the saved file instead of guessing.")
 else:
-    print(body[:LIMIT].decode("utf-8", "ignore"))
-    if len(body) > LIMIT:
-        print(f"\n[HTML truncated to {LIMIT} bytes; the full page is in the saved file]")
+    show(body)
 PY
 ```
 
