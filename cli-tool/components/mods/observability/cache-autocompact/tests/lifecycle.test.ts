@@ -45,6 +45,8 @@ type World = {
   // compacts the mod asked for, whatever became of them
   asked?: number
   commands?: string[]
+  // milliseconds a request (by turn id) stays suspended inside the engine, on the mocked clock
+  naps?: Record<string, number>
 }
 
 // The tests name rooted folders ("/work/Private"), rooted on Linux and Windows alike. The engine hands
@@ -119,6 +121,9 @@ function engine(on: On, w: World) {
   })
   on('turn.step', async function* ($, e) {
     w.entered?.()
+    // a step asleep on the mocked clock stays suspended without holding up the test
+    const nap = w.naps?.[e.turnId]
+    if (nap) await clock.sleep(nap)
     if (w.gate) await w.gate
     return {
       turnId: e.turnId,
@@ -659,6 +664,36 @@ describe('a request still running', () => {
     await running
     await clock.advance(5_000)
     // the second request started a fresh hour
+    expect(w.compacts).toBe(0)
+    // and once it is done it no longer counts as running: its own window compacts
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('a step from before a /clear that is still suspended does not hold the new conversation', async ($, on) => {
+    // a 5-minute cache, so the new chat's window opens at minute 3; the old chat's request stays
+    // suspended for 10 minutes, through that whole window
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' }, naps: { t1: 10 * MIN } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    const old = request($, 1)
+    await clock.advance(0)
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
+    await request($, 2)
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(1)
+    await clock.advance(10 * MIN)
+    await old
+  })
+})
+
+describe('a skip folder that resolves to a name ending in a space', () => {
+  test('a session below it is skipped: the space is part of the name', { options: { skipPaths: '/safe' } }, async ($, on) => {
+    const w: World = { cwd: '/data/private /child', compacts: 0, links: { '/safe': '/data/private ' } }
+    const clock = engine(on, w)
+    await start($, '/data/private /child')
+    await request($)
+    await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(0)
   })
 })

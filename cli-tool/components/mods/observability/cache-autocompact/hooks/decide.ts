@@ -128,7 +128,8 @@ export function statusLine(
 // only in a Windows spelling (a drive, or a leading "\\"): on Linux "/work/a\b" names one folder, not two.
 export function normalizePath(p: string): string {
   const parts: string[] = []
-  const raw = p.trim()
+  // no trim: a trailing space is part of a Linux folder name; splitPaths trims the option itself
+  const raw = p
   const windows = /^[a-z]:/i.test(raw) || raw.startsWith('\\\\')
   let flat = windows ? raw.replace(/\\/g, '/') : raw
   // the extended-length prefix: \\?\C:\x is C:\x, and \\?\UNC\server\share is \\server\share

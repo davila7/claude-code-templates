@@ -390,6 +390,16 @@ describe('review round 2', () => {
   })
 })
 
+describe('review round 3', () => {
+  test('a resolved path keeps a trailing space: it is part of a Linux folder name', () => {
+    expect(normalizePath('/data/private ')).toBe('/data/private ')
+    expect(isSkippedPath(['/data/private /child'], ['/data/private '].map(normalizePath))).toBe(true)
+    expect(isSkippedPath(['/data/private/child'], ['/data/private '].map(normalizePath))).toBe(false)
+    // the option's own blanks around commas are still trimmed, by splitPaths
+    expect(parsePaths(' /a , /b ')).toEqual(['/a', '/b'])
+  })
+})
+
 describe('the window on a 5-minute cache', () => {
   test('a 5-minute window on a 5-minute cache waits until minute 3, never right after the reply', () => {
     const v = (now: number) => shouldCompact(inputs({ ttl: '5m', windowMs: 300_000, now }))

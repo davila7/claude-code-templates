@@ -51,9 +51,10 @@ let triedFor = 0
 // late can never release a newer attempt's lock
 let busyAttempt = 0
 let attempts = 0
-// main-loop requests started and not yet finished, and a count bumped as each one starts
-let running = 0
-let requestRev = 0
+// The current conversation's main-loop requests: how many started and not yet finished, and a count
+// bumped as each starts and ends. A reset installs a fresh one, and each request settles the one it
+// started under, so a step left over from before a /clear or resume never holds the new conversation.
+let requests = { running: 0, rev: 0 }
 let timer: { cancel: () => void } | undefined
 // the skip folders as configured and as resolved through junctions and links, spelled for comparison;
 // undefined when one could not be resolved, which turns auto-compact off
@@ -89,6 +90,7 @@ function resetConversation() {
   awaiting = undefined
   failed = undefined
   handoffGen = -1
+  requests = { running: 0, rev: 0 }
 }
 
 // a path as given and where it really lands; undefined when where it lands cannot be established
@@ -139,7 +141,7 @@ async function tick($: EngineInterface, cfg: Config) {
       firedFor,
       triedFor,
       handoffOpen: handoffGen === gen,
-      requestRunning: running > 0,
+      requestRunning: requests.running > 0,
       busy,
       skipped: false,
       disabled: last ? isCachingDisabled(last.model, env) : false,
@@ -181,7 +183,7 @@ async function tick($: EngineInterface, cfg: Config) {
   try {
     const last = samples[samples.length - 1]
     const rev = cwdRev
-    const req = requestRev
+    const req = requests.rev
     const where = await folderNow($)
     const skipped = where !== 'on'
     const at = await $.clock.now()
@@ -190,7 +192,7 @@ async function tick($: EngineInterface, cfg: Config) {
     // here is what holds when it is called: the same conversation (which also means this tick
     // still holds the lock), the same request, no folder change since the check, and still
     // inside the window.
-    if (gen !== mine || cwdRev !== rev || requestRev !== req || skipped) return
+    if (gen !== mine || cwdRev !== rev || requests.rev !== req || skipped) return
     if (!last || samples[samples.length - 1] !== last) return
     const due = judge(at, last, false)
     if (!due.go) return
@@ -203,11 +205,11 @@ async function tick($: EngineInterface, cfg: Config) {
       // (found in a live test). There /compact runs as a command, queued until the session is idle.
       if (!isHeadlessRefusal(err)) throw err
       // The refusal arrived through an await, so everything checked before the call is checked again:
-      // a /clear, a resume, a request started or finished (requestRev counts starts, and judge holds
+      // a /clear, a resume, a request started or finished (requests.rev counts both, and judge holds
       // while one runs), a folder move (which bumps cwdRev), or the cache leaving the window, abandons
       // the handoff. Nothing below awaits until command.run.
       const at2 = await $.clock.now()
-      if (gen !== mine || cwdRev !== rev || requestRev !== req || samples[samples.length - 1] !== last) return
+      if (gen !== mine || cwdRev !== rev || requests.rev !== req || samples[samples.length - 1] !== last) return
       const still = judge(at2, last, false)
       if (!still.go) return
       // Notice first: the compact restarts the session, which bumps gen, so anything after the
@@ -360,9 +362,10 @@ export const register: Register = (on, options) => {
   on('turn.step', async function* ($, e, next) {
     if (e.agentId) return yield* next(e)
     // counted before the first await, so a compact checked from here on knows a request is under way;
-    // requestRev moves at the start and at the end, so a check that spans either sees the change
-    running += 1
-    requestRev += 1
+    // requests.rev moves at the start and at the end, so a check that spans either sees the change
+    const mineRequests = requests
+    mineRequests.running += 1
+    mineRequests.rev += 1
     try {
       const mine = gen
       const startedAt = await $.clock.now()
@@ -389,8 +392,8 @@ export const register: Register = (on, options) => {
       ttl = tracked.ttl
       return r
     } finally {
-      running -= 1
-      requestRev += 1
+      mineRequests.running -= 1
+      mineRequests.rev += 1
     }
   })
 }
