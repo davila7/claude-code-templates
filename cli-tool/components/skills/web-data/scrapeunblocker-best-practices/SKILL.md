@@ -36,14 +36,14 @@ The URL must be URL-encoded and passed as the `url` query parameter.
 |-----------|---------|
 | `parsed_data=true` | Return AI-parsed JSON instead of raw HTML |
 | `proxy_country=US` | Route through a specific country (ISO alpha-2) |
-| `method=css` + `value=#price` | Wait for a CSS selector before capturing |
+| `method=css` + `value=%23price` | Wait for a CSS selector (`#price`) before capturing |
 | `method=xPath` + `value=//div[@id='price']` | Wait for an XPath match (`className` and `tagName` also work) |
 | `method_timeout=15` | Cap (seconds) for the render-wait method |
 | `time_sleep=3` | Extra seconds to wait after load |
 
 ## Best practices
 
-- **Encode the target URL.** Pass it URL-encoded in the `url` query parameter, not raw.
+- **Encode the target URL.** Pass it URL-encoded in the `url` query parameter, not raw. Encode `value` too: a raw `#` in a selector starts the URL fragment and never reaches the API.
 - **Prefer parsed data.** For product/article/listing pages, `parsed_data=true` returns clean JSON and saves you brittle per-site parsers.
 - **Target the right country.** If a page is geo-restricted or localized, set `proxy_country` to match.
 - **Use render waits for JS-heavy pages.** If content loads late, wait on a CSS selector (`method=css`) or an XPath (`method=xPath`) instead of a fixed sleep.

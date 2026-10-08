@@ -20,9 +20,9 @@ The `url` must be URL-encoded. The response body is the page HTML.
 ## With the SDK
 
 ```python
-from scrapeunblocker import ScrapeUnblockerClient
+from scrapeunblocker import Client
 
-su = ScrapeUnblockerClient()  # reads SCRAPEUNBLOCKER_KEY
+su = Client()  # reads SCRAPEUNBLOCKER_KEY
 html = su.get_page_source("https://example.com")
 ```
 
@@ -37,8 +37,9 @@ const html = await su.getPageSource("https://example.com");
 
 If the content you need loads via JavaScript after the initial HTML:
 
-- Wait for a CSS selector: `method=css` and `value=#product-price`
+- Wait for a CSS selector: `method=css` and `value=%23product-price` (the selector `#product-price`)
 - Wait for an XPath match: `method=xPath` and `value=//div[contains(@class,'item')]`
+- URL-encode `value` just like `url`: a raw `#` starts the URL fragment, so the API would never receive the selector. The SDKs encode it for you.
 - Cap the wait with `method_timeout=15` (seconds), or add a fixed `time_sleep=3`.
 
 ## Country targeting

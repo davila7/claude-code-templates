@@ -18,15 +18,18 @@ curl -X POST "https://api.scrapeunblocker.com/getPageSource?url=<ENCODED_URL>&pa
 ## With the SDK
 
 ```python
-from scrapeunblocker import ScrapeUnblockerClient
+from scrapeunblocker import Client
 
-su = ScrapeUnblockerClient()
+su = Client()  # reads SCRAPEUNBLOCKER_KEY
 product = su.get_parsed("https://www.amazon.com/dp/B08N5WRWNW")
 print(product.page_type)  # e.g. "product"
 print(product.data)       # the extracted fields
 ```
 
 ```ts
+import { ScrapeUnblockerClient } from "scrapeunblocker";
+
+const su = new ScrapeUnblockerClient(); // reads SCRAPEUNBLOCKER_KEY
 const product = await su.getParsed("https://www.amazon.com/dp/B08N5WRWNW");
 console.log(product.pageType, product.data);
 ```
