@@ -58,6 +58,9 @@ type World = {
   noUsage?: boolean
   // with statGate: hold only the first stat it catches
   statGateOnce?: boolean
+  // a second, one-shot gate on the stat of one path, to hold two lookups at once
+  stat2Gate?: Promise<void>
+  stat2For?: string
   // what the mod wrote to the transcript
   logs?: string[]
   // the environment the mod reads
@@ -97,6 +100,11 @@ function engine(on: On, w: World) {
   on('fs.stat', async ($, e) => {
     const path = (e as { path: string }).path
     w.statted = [...(w.statted ?? []), path]
+    const second = w.stat2Gate
+    if (second && w.stat2For === key(path)) {
+      w.stat2Gate = undefined
+      await second
+    }
     const held = w.statGate
     if (held && (w.statGateFor === undefined || w.statGateFor === key(path))) {
       if (w.statGateOnce) w.statGate = undefined
@@ -1362,5 +1370,35 @@ describe('review round 9', () => {
     await clock.advance(5_000)
     expect(w.toasts).toBe(shown)
     expect(latest(w)).toBe('Auto-compact off in this folder')
+  })
+})
+
+describe('a move whose own lookup has not finished', () => {
+  test('still stops the compact the earlier check would have allowed', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: ALLOWED }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 6 * MIN)
+    // the due check is held at the stat of the session's folder
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    const ticking = clock.advance(MIN)
+    await h.arrived
+    // the move's own lookup is held at the stat of the skip folder, so it publishes nothing yet
+    const h2 = hold()
+    w.stat2Gate = h2.gate
+    w.stat2For = PRIVATE
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    w.statGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.compacts).toBe(0)
+    h2.release()
+    await clock.advance(5_000)
+    expect(w.compacts).toBe(0)
   })
 })
