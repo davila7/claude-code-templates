@@ -1,4 +1,4 @@
-// A verbatim copy of ../../prompt-cache-control/hooks/cache.ts, so this mod counts the cache down
+// A copy of ../../prompt-cache-control/hooks/cache.ts, this header comment added, so this mod counts the cache down
 // exactly the way the prompt-cache-control bar does. A mod installs as one folder and cannot import
 // from another, so the two are kept in sync by hand: change that file, then copy it here.
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fallbackDeadline, fmtWait, handoffFlags, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
+import { fallbackDeadline, fmtWait, handoffState, handoffStatus, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -197,12 +197,12 @@ describe('skip list on Linux and macOS', () => {
     expect(splitPaths(undefined)).toEqual([])
   })
 
-  test('case counts outside Windows: Finance and finance are two folders', () => {
+  test('case never separates folders: macOS matches Finance and finance, and Linux over-skips, the safe way', () => {
     const fin = parsePaths('/home/me/finance')
     expect(isSkippedPath(['/home/me/finance/2026'], fin)).toBe(true)
-    expect(isSkippedPath(['/home/me/Finance'], fin)).toBe(false)
-    expect(isSkippedPath(['/home/me/finance'], parsePaths('/home/me/Finance'))).toBe(false)
-    expect(normalizePath('/home/Me/X')).toBe('/home/Me/X')
+    expect(isSkippedPath(['/home/me/Finance'], fin)).toBe(true)
+    expect(isSkippedPath(['/Users/me/Finance/2026'], parsePaths('/users/me/finance'))).toBe(true)
+    expect(normalizePath('/home/Me/X')).toBe('/home/me/x')
   })
 
   test('a drive path and a UNC share still fold case, as Windows compares them', () => {
@@ -299,7 +299,7 @@ describe('status line', () => {
   })
   test('a handed-off /compact is shown as waiting, never as done', () => {
     const { skipped: _, ...rest } = inputs()
-    expect(statusLine({ ...rest, folder: 'on', pending: true })).toBe('Auto-compact ran /compact, waiting for it to finish')
+    expect(statusLine({ ...rest, folder: 'on', handoff: 'waiting' })).toBe('Auto-compact ran /compact, waiting for it to finish')
   })
   test('a failed try says so and says what to do, even when the guard holds', () => {
     const { skipped: _, ...rest } = inputs({ triedFor: T0 })
@@ -330,7 +330,7 @@ describe('headless refusal', () => {
 })
 
 describe('review round 1', () => {
-  const line = (over: Partial<Inputs>, extra: { pending?: boolean; failed?: string; blocked?: boolean }) => {
+  const line = (over: Partial<Inputs>, extra: { handoff?: 'queued' | 'waiting' | 'paused'; failed?: string }) => {
     const { skipped: _, ...rest } = inputs(over)
     return statusLine({ ...rest, folder: 'on', ...extra })
   }
@@ -344,11 +344,11 @@ describe('review round 1', () => {
 
   test('a recorded failure and a pending handoff win over a call that never returned', () => {
     expect(line({ busy: true }, { failed: 'no compaction happened' })).toBe('Auto-compact failed (no compaction happened). Run /compact yourself')
-    expect(line({ busy: true }, { pending: true })).toBe('Auto-compact ran /compact, waiting for it to finish')
+    expect(line({ busy: true }, { handoff: 'waiting' })).toBe('Auto-compact ran /compact, waiting for it to finish')
   })
 
   test('an open handoff past its deadline holds a newer request, and says how to get going again', () => {
-    expect(line({}, { blocked: true })).toBe('Auto-compact paused: the /compact it ran never finished. Run /compact yourself')
+    expect(line({}, { handoff: 'paused' })).toBe('Auto-compact paused: the /compact it ran never finished. Run /compact yourself')
   })
 
   test('a backslash in a rooted Linux path is part of a name, not a separator', () => {
@@ -375,18 +375,17 @@ describe('review round 2', () => {
     expect(v.go ? 'went' : v.why).toBe('a request is running')
   })
 
-  test('a handoff inside its deadline is pending for the whole conversation, even after a newer reply', () => {
-    expect(handoffFlags({ mine: 3, awaitingGen: 3, handoffGen: 3 })).toEqual({ pending: true, blocked: false })
+  test('a handoff is shown for the whole conversation, even after a newer reply', () => {
     const { skipped: _, ...rest } = inputs({ last: sample({ startedAt: T0 + 60_000 }) })
-    expect(statusLine({ ...rest, folder: 'on', ...handoffFlags({ mine: 3, awaitingGen: 3, handoffGen: 3 }) })).toBe(
-      'Auto-compact ran /compact, waiting for it to finish',
-    )
+    const h = { at: T0, lapse: T0 + HOUR, command: 'returned' as const, returnedAt: T0 }
+    expect(statusLine({ ...rest, folder: 'on', handoff: handoffStatus(h, T0 + 10_000) })).toBe('Auto-compact ran /compact, waiting for it to finish')
   })
 
-  test('paused only once the deadline record is gone and the handoff is still open', () => {
-    expect(handoffFlags({ mine: 3, awaitingGen: undefined, handoffGen: 3 })).toEqual({ pending: false, blocked: true })
-    expect(handoffFlags({ mine: 3, awaitingGen: 2, handoffGen: -1 })).toEqual({ pending: false, blocked: false })
-    expect(handoffFlags({ mine: 3, awaitingGen: undefined, handoffGen: -1 })).toEqual({ pending: false, blocked: false })
+  test('paused only once the handoff has failed and no compaction has closed it', () => {
+    const h = { at: T0, lapse: T0 + HOUR, command: 'returned' as const, returnedAt: T0 }
+    expect(handoffStatus(h, T0 + 89_000)).toBe('waiting')
+    expect(handoffStatus(h, T0 + 90_000)).toBe('paused')
+    expect(handoffStatus(undefined, T0)).toBe(undefined)
   })
 })
 
@@ -420,5 +419,60 @@ describe('when a handed-off /compact counts as failed', () => {
   test('a shorter window waits half of it, never past the lapse', () => {
     expect(fallbackDeadline(T0, 120_000)).toBe(T0 + 60_000)
     expect(fallbackDeadline(T0, 30_000)).toBe(T0 + 15_000)
+  })
+})
+
+describe('review round 4', () => {
+  const MIN = 60_000
+  const line = (over: Partial<Inputs>, extra: Record<string, unknown> = {}) => {
+    const { skipped: _, ...rest } = inputs(over)
+    return statusLine({ ...rest, folder: 'on', ...extra })
+  }
+  const handed = (over: Record<string, unknown> = {}) => ({ at: T0, lapse: T0 + 5 * MIN, command: 'pending' as const, ...over })
+
+  test('a /compact still queued or running is never called failed by a deadline', () => {
+    expect(handoffState(handed(), T0 + 4 * MIN)).toEqual({ state: 'queued' })
+    expect(handoffStatus(handed(), T0 + 4 * MIN)).toBe('queued')
+    expect(line({}, { handoff: 'queued' })).toBe('Auto-compact ran /compact: still queued or running')
+  })
+
+  test('a /compact that returned gets its deadline from when it returned', () => {
+    const h = handed({ command: 'returned', returnedAt: T0 + 2 * MIN })
+    expect(handoffState(h, T0 + 2 * MIN + 89_000)).toEqual({ state: 'waiting' })
+    // 3 minutes left when it returned: half of it, 90 seconds
+    expect(handoffState(h, T0 + 2 * MIN + 90_000)).toEqual({ state: 'failed', why: 'no compaction happened' })
+  })
+
+  test('a rejected /compact or a veto fails at once, with its reason', () => {
+    expect(handoffState(handed({ command: 'rejected', why: 'vetoed: not now' }), T0 + 1)).toEqual({ state: 'failed', why: 'vetoed: not now' })
+    expect(handoffState(handed({ command: 'rejected' }), T0 + 1)).toEqual({ state: 'failed', why: 'the /compact command failed' })
+  })
+
+  test('a cache that runs out fails the handoff whatever the command is doing', () => {
+    expect(handoffState(handed(), T0 + 5 * MIN)).toEqual({ state: 'failed', why: 'the cache ran out before a compaction turned up' })
+  })
+
+  test('a compaction already under way holds the mod', () => {
+    const v = shouldCompact(inputs({ compacting: true }))
+    expect(v.go ? 'went' : v.why).toBe('a compaction is running')
+  })
+
+  test('the status line says why a due compact waits, as shouldCompact does', () => {
+    expect(line({ requestRunning: true })).toBe('Auto-compact due, waiting for the reply to finish')
+    expect(line({ compacting: true })).toBe('Auto-compact due, waiting for the compaction under way')
+    // nothing to say while it is not due
+    expect(line({ requestRunning: true, now: T0 + 60_000 })).toBe('Auto-compact armed: fires in 57m')
+  })
+
+  test('a single leading backslash is drive-relative on Windows: its resolved spelling covers it', () => {
+    // as written it is not read as Windows, so on its own it would match nothing below C:
+    expect(isSkippedPath(['C:\\work\\x\\y'], parsePaths('\\work\\x'))).toBe(false)
+    // the mod also keeps the stat's realPath for every skip folder, and that is drive-qualified
+    expect(isSkippedPath(['C:\\work\\x\\y'], [normalizePath('\\work\\x'), normalizePath('C:\\work\\x')])).toBe(true)
+  })
+
+  test('a skip folder that cannot be found is named on the status line', () => {
+    const { skipped: _, ...rest } = inputs()
+    expect(statusLine({ ...rest, folder: 'unknown', unresolved: '/c/work/x' })).toBe("Auto-compact off: can't find skip folder /c/work/x")
   })
 })

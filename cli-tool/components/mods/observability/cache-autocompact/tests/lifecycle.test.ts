@@ -96,6 +96,8 @@ function engine(on: On, w: World) {
   })
   on('session.messages', () => ({ value: [CHAT] }) as never)
   on('classic.CwdChanged', () => ({}) as never)
+  on('turn.start', ($, e) => ({ turnId: (e as { turnId: string }).turnId }) as never)
+  on('turn.complete', () => ({ text: '' }) as never)
   on('command.run', ($, e) => {
     w.commands = [...(w.commands ?? []), (e as { command: string }).command]
     return { value: { text: 'Compacted' } } as never
@@ -473,9 +475,11 @@ describe('things that change while the mod is mid-check', () => {
   test('ticks that pile up behind a slow check still compact once', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
     const { clock, h, ticking } = await heldAtTheCheck($, on, w)
+    await ticking
+    // six more ticks come due while the first check is still held
+    await clock.advance(30_000)
     w.statGate = undefined
     h.release()
-    await ticking
     await clock.advance(0)
     expect(w.compacts).toBe(1)
   })
@@ -557,24 +561,37 @@ describe('status line', () => {
     expect(latest(w)).toBe('Auto-compact off in this folder')
     expect(w.statuses?.some(t => t?.startsWith('Auto-compact armed'))).toBe(false)
   })
-  test('a skip folder that cannot be resolved says it cannot confirm the folder', SKIP, async ($, on) => {
+  test('a skip folder that cannot be resolved is named on the status line', SKIP, async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0, unresolved: [PRIVATE] }
     const clock = engine(on, w)
     await start($, ALLOWED)
     await request($)
     await clock.advance(10_000)
-    expect(latest(w)).toBe("Auto-compact off: can't confirm the folder")
+    expect(latest(w)).toBe(`Auto-compact off: can't find skip folder ${PRIVATE}`)
   })
-  test('with "/" skipped, a move to another drive stays off', { options: { skipPaths: '/' } }, async ($, on) => {
+  test('a skip folder that turns up later is found again, and auto-compact comes back on', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, unresolved: [PRIVATE] }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(10_000)
+    w.unresolved = []
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+  test('a move to a skip folder on another drive turns the line off before any compact check', { options: { skipPaths: 'D:/work' } }, async ($, on) => {
     const w: World = { cwd: 'C:/work/App', compacts: 0 }
     const clock = engine(on, w)
     await start($, 'C:/work/App')
     await request($)
+    await clock.advance(5_000)
+    expect(latest(w)).toBe('Auto-compact armed: fires in 55m')
     w.cwd = 'D:/work'
     await $.classic.CwdChanged({ old_cwd: 'C:/work/App', new_cwd: 'D:/work' } as never)
+    await clock.advance(5_000)
+    expect(latest(w)).toBe('Auto-compact off in this folder')
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(0)
-    expect(latest(w)).toBe('Auto-compact off in this folder')
   })
   test('moving into Private turns the line off without waiting for a compact check', SKIP, async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
@@ -714,5 +731,69 @@ describe('a veto', () => {
     expect(w.asked).toBe(1)
     expect(w.toasts).toBe(1)
     expect(w.statuses?.some(t => t?.startsWith('Auto-compacted'))).toBe(false)
+  })
+})
+
+describe('review round 4', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+
+  test('a manual /compact under way holds the mod: one compaction, not two', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    const h = hold()
+    w.compactGate = h.gate
+    w.compactEntered = h.reached
+    const manual = $.session.compact({ trigger: 'manual', messages: [CHAT] } as never)
+    await h.arrived
+    // the window opens at minute 3 while the manual compaction is still running
+    await clock.advance(4 * MIN)
+    expect(w.asked ?? 0).toBe(0)
+    h.release()
+    await manual
+    await clock.advance(MIN)
+    expect(w.compacts).toBe(1)
+    expect(w.asked ?? 0).toBe(0)
+  })
+
+  test('a turn still under way between its requests holds the compact', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await $.turn.start({ text: 'go', turnId: 'turn-1' } as never)
+    await request($)
+    // a tool runs: no request in flight, but the turn goes on
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(0)
+    expect(latest(w)).toBe('Auto-compact due, waiting for the reply to finish')
+    await $.turn.complete({ turnId: 'turn-1', reason: 'answer' } as never)
+    await clock.advance(5_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('a manual /compact after an earlier auto-compact is not shown as the mod\'s', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($, 1)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.compacts).toBe(1)
+    await request($, 2)
+    w.compactRefuses = true
+    await clock.advance(HOUR - 4 * MIN)
+    await $.session.compact({ trigger: 'manual', messages: [CHAT] } as never)
+    await clock.advance(5_000)
+    expect(latest(w)).toBe('Auto-compact waiting for a reply')
+  })
+
+  test('a session end the process outlives does not stop the timer', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await $.session.end({ reason: 'other', sessionId: 's1', resume: { id: 's1' } } as never)
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
   })
 })

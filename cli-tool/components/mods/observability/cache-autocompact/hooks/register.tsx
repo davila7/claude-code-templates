@@ -29,8 +29,8 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { fallbackDeadline, handoffFlags, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
-import type { Folder, TtlTrack } from './decide.ts'
+import { handoffState, handoffStatus, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import type { Folder, Handoff, TtlTrack } from './decide.ts'
 
 const KEEP = 20
 
@@ -51,14 +51,25 @@ let triedFor = 0
 // late can never release a newer attempt's lock
 let busyAttempt = 0
 let attempts = 0
-// The current conversation's main-loop requests: how many started and not yet finished, and a count
-// bumped as each starts and ends. A reset installs a fresh one, and each request settles the one it
-// started under, so a step left over from before a /clear or resume never holds the new conversation.
-let requests = { running: 0, rev: 0 }
+// What is under way in the current conversation: main-loop requests started and not finished, a
+// count bumped as each starts and ends, the turns started and not completed (a turn goes on between
+// its requests while a tool runs), and compactions started elsewhere. A reset installs a fresh one, and
+// each piece of work settles the one it started under, so work left over from before a /clear or
+// resume never holds the new conversation.
+type Activity = { running: number; rev: number; turns: Set<string>; compacting: number }
+const fresh = (): Activity => ({ running: 0, rev: 0, turns: new Set(), compacting: 0 })
+let requests = fresh()
+// the conversation each open turn started under, so its turn.complete settles that one
+const turnHome = new Map<string, Activity>()
 let timer: { cancel: () => void } | undefined
+// the skip folders as configured, for the file system
+let skipList: string[] = []
 // the skip folders as configured and as resolved through junctions and links, spelled for comparison;
-// undefined when one could not be resolved, which turns auto-compact off
+// undefined when one could not be resolved, which turns auto-compact off until it can be. They are
+// resolved again at every folder check, so a folder that turns up later brings the mod back.
 let skipRoots: string[] | undefined = []
+// the skip folder that could not be resolved, named on the status line and in the transcript
+let unresolvedSkip: string | undefined
 // the folder as last checked, for the status line only; the compact itself always checks afresh
 let folder: Folder = 'unknown'
 let shown: string | undefined
@@ -66,17 +77,13 @@ let shown: string | undefined
 let refused: string | undefined
 // the request whose refusal has already been put on screen as a pop-up
 let warnedFor = 0
-// A /compact the mod handed off and has not yet seen finish. Settled only by a compaction of this
-// same conversation, or by leaving it (/clear, resume, the restart a compaction causes). Past its
-// deadline it pops up a failure notice. Not settled when command.run returns: that may be before the
-// compaction ends.
-let awaiting: { gen: number; startedAt: number; deadline: number; lapse: number; why?: string } | undefined
-// why the one try on a request's cache came to nothing (a handed-off /compact past its deadline, a veto)
+// A /compact the mod handed off, open until a compaction of this conversation closes it or the
+// conversation is left (/clear, resume, the restart a compaction causes). While open, no second one is
+// handed off for any request: command.run may return while the command is still queued, and nothing
+// cancels it. Whether it failed is decided by handoffState; `notified` once that failure popped up.
+let handoff: (Handoff & { gen: number; startedAt: number; notified: boolean }) | undefined
+// why the one try on a request's cache came to nothing (a handed-off /compact that failed, a veto)
 let failed: { startedAt: number; why: string } | undefined
-// The generation with a /compact handed off and not yet settled by a compaction; -1 for none. It
-// outlives the deadline: command.run may return while the command is still queued, and a deadline
-// cancels nothing, so no second /compact is handed off for any request until a compaction or a reset.
-let handoffGen = -1
 
 function resetConversation() {
   gen += 1
@@ -87,10 +94,9 @@ function resetConversation() {
   track = undefined
   refused = undefined
   warnedFor = 0
-  awaiting = undefined
+  handoff = undefined
   failed = undefined
-  handoffGen = -1
-  requests = { running: 0, rev: 0 }
+  requests = fresh()
 }
 
 // a path as given and where it really lands; undefined when where it lands cannot be established
@@ -109,18 +115,59 @@ async function currentTtlBase($: EngineInterface): Promise<Ttl> {
   return decideTtl('auto', env, merged.promptCacheTtl, account).ttl
 }
 
-// a folder's standing against the skip list; one that cannot be established is 'unknown', which never compacts
-function standing(here: string[] | undefined): Folder {
-  if (!skipRoots || !here) return 'unknown'
-  return isSkippedPath(here, skipRoots) ? 'skip' : 'on'
+// Every skip folder as written and where it lands, spelled for comparison. One that cannot be resolved
+// leaves the roots undefined and is named: an alias the mod cannot follow might lead to the session's
+// own folder, so every folder counts as unconfirmed until it can be resolved.
+async function resolveSkips($: EngineInterface): Promise<{ roots: string[] | undefined; unresolved: string | undefined }> {
+  const roots: string[] = []
+  for (const root of skipList) {
+    const found = await spellings($, root)
+    if (!found) return { roots: undefined, unresolved: root }
+    for (const s of found) roots.push(normalizePath(s))
+  }
+  return { roots, unresolved: undefined }
 }
 
-// the folder the session runs in right now
+// takes a fresh resolution, and says so in the transcript when a skip folder goes missing or turns up
+function applySkips($: EngineInterface, r: { roots: string[] | undefined; unresolved: string | undefined }) {
+  if (r.unresolved !== unresolvedSkip) {
+    $.ui.log(
+      r.unresolved !== undefined
+        ? `cache-autocompact: off until it can find the skip folder ${r.unresolved}`
+        : 'cache-autocompact: every skip folder found, back on',
+    )
+  }
+  skipRoots = r.roots
+  unresolvedSkip = r.unresolved
+}
+
+// a folder's standing against the skip list; one that cannot be established is 'unknown', which never compacts
+function standing(roots: string[] | undefined, here: string[] | undefined): Folder {
+  if (!roots || !here) return 'unknown'
+  return isSkippedPath(here, roots) ? 'skip' : 'on'
+}
+
+// the folder the session runs in right now, against the skip folders as they resolve right now
 async function folderNow($: EngineInterface): Promise<Folder> {
-  if (!skipRoots) return 'unknown'
+  const r = await resolveSkips($)
+  applySkips($, r)
+  if (!r.roots) return 'unknown'
   const cwd = await $.session.cwd().catch(() => undefined)
   if (!cwd) return 'unknown'
-  return standing(await spellings($, cwd))
+  return standing(r.roots, await spellings($, cwd))
+}
+
+// pops up a handed-off /compact's failure once: rejected, vetoed, past its deadline after it
+// returned, or the cache ran out
+function noteHandoff($: EngineInterface, now: number) {
+  if (!handoff || handoff.gen !== gen || handoff.notified) return
+  const st = handoffState(handoff, now)
+  if (st.state !== 'failed') return
+  handoff.notified = true
+  failed = { startedAt: handoff.startedAt, why: st.why }
+  const left = handoff.lapse - now
+  $.ui.toast(`Auto-compact failed (${st.why.slice(0, 80)}). Run /compact yourself: ${left > 0 ? `${fmtClock(left)} left on the cache` : 'the cache already ran out'}`)
+  $.ui.log(`cache-autocompact: /compact failed: ${st.why}`)
 }
 
 // shows what the mod will do; only a changed line reaches the engine
@@ -140,8 +187,9 @@ async function tick($: EngineInterface, cfg: Config) {
       windowMs: cfg.windowMs,
       firedFor,
       triedFor,
-      handoffOpen: handoffGen === gen,
-      requestRunning: requests.running > 0,
+      handoffOpen: handoff?.gen === gen,
+      requestRunning: requests.running > 0 || requests.turns.size > 0,
+      compacting: requests.compacting > 0,
       busy,
       skipped: false,
       disabled: last ? isCachingDisabled(last.model, env) : false,
@@ -149,14 +197,7 @@ async function tick($: EngineInterface, cfg: Config) {
   const mine = gen
   const now = await $.clock.now()
   if (gen !== mine) return
-  if (awaiting && awaiting.gen === mine && now >= awaiting.deadline) {
-    const why = awaiting.why ?? 'no compaction happened'
-    const left = awaiting.lapse - now
-    failed = { startedAt: awaiting.startedAt, why }
-    awaiting = undefined
-    $.ui.toast(`Auto-compact failed (${why.slice(0, 80)}). Run /compact yourself: ${left > 0 ? `${fmtClock(left)} left on the cache` : 'the cache already ran out'}`)
-    $.ui.log(`cache-autocompact: /compact failed: ${why}`)
-  }
+  noteHandoff($, now)
   const last0 = samples[samples.length - 1]
   const current = (startedAt: number | undefined) => last0 !== undefined && startedAt === last0.startedAt
   show(
@@ -170,10 +211,13 @@ async function tick($: EngineInterface, cfg: Config) {
       firedFor,
       busy: busyAttempt !== 0,
       disabled: last0 ? isCachingDisabled(last0.model, env) : false,
+      requestRunning: requests.running > 0 || requests.turns.size > 0,
+      compacting: requests.compacting > 0,
       folder,
       refused,
       failed: current(failed?.startedAt) ? failed?.why : undefined,
-      ...handoffFlags({ mine, awaitingGen: awaiting?.gen, handoffGen }),
+      handoff: handoff?.gen === mine ? handoffStatus(handoff, now) : undefined,
+      unresolved: unresolvedSkip,
     }),
   )
   // cheap check first, so an idle session touches no file system every five seconds
@@ -217,22 +261,29 @@ async function tick($: EngineInterface, cfg: Config) {
       // /compact that fails is never retried into a second notice. Not marked done: only a
       // compaction that turns up does that (the session.compact hook).
       triedFor = last.startedAt
-      handoffGen = mine
       refused = undefined
       $.ui.toast(`Auto-compact is running /compact on a ${fmtTokens(still.tokens)}-token chat with ${fmtClock(still.leftMs)} left on the cache`)
       $.ui.log('cache-autocompact: ran /compact before the cache lapsed')
-      // Whether it worked is judged later, by the tick, against a deadline: see `awaiting`.
-      const pending = { gen: mine, startedAt: last.startedAt, deadline: fallbackDeadline(at2, still.leftMs), lapse: at2 + still.leftMs } as NonNullable<typeof awaiting>
-      awaiting = pending
-      // The lock is released at dispatch: an open handoff (handoffGen) keeps any second one out from
-      // here, and a command.run that never returns cannot leave the mod busy for good.
+      // Whether it worked is judged by the tick (handoffState), from what command.run does with it.
+      const rec: NonNullable<typeof handoff> = { gen: mine, startedAt: last.startedAt, at: at2, lapse: at2 + still.leftMs, command: 'pending', notified: false }
+      handoff = rec
+      // The lock is released at dispatch: the open handoff keeps any second one out from here, and a
+      // command.run that never returns cannot leave the mod busy for good.
       if (busyAttempt === attempt) busyAttempt = 0
       try {
         await $.command.run({ command: 'compact' })
+        const back = await $.clock.now().catch(() => rec.at)
+        // only this attempt's own record, and only while nothing else settled it
+        if (rec.command === 'pending') {
+          rec.command = 'returned'
+          rec.returnedAt = back
+        }
       } catch (e) {
-        // a throw is only the reason shown if no compaction turns up by the deadline, and only for
-        // this attempt's own record: a late answer never touches a newer attempt
-        if (awaiting === pending) pending.why = e instanceof Error ? e.message : String(e)
+        // a rejection fails it at the next tick, with its reason
+        if (rec.command === 'pending') {
+          rec.command = 'rejected'
+          rec.why = e instanceof Error ? e.message : String(e)
+        }
       }
       return
     }
@@ -280,6 +331,7 @@ export const register: Register = (on, options) => {
     // as written: the file system resolves these, and only the comparison uses normalized spellings
     skip: splitPaths(options.skipPaths),
   }
+  skipList = cfg.skip
 
   on('session.start', async ($, e, next) => {
     const r = await next(e)
@@ -294,18 +346,9 @@ export const register: Register = (on, options) => {
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
-    const roots: string[] = []
-    let resolved = true
-    for (const root of cfg.skip) {
-      const found = await spellings($, root)
-      if (!found) resolved = false
-      for (const s of found ?? [root]) roots.push(normalizePath(s))
-    }
-    // a skip folder that cannot be resolved might be reached through an alias: off until it can be
-    skipRoots = resolved ? roots : undefined
-    if (!resolved) $.ui.log('cache-autocompact: off, a skip folder could not be resolved', { to: 'debug' })
+    applySkips($, await resolveSkips($))
     ttl = await currentTtlBase($)
-    folder = standing(await spellings($, e.cwd))
+    folder = standing(skipRoots, await spellings($, e.cwd))
     $.ui.log(
       folder !== 'on'
         ? `cache-autocompact: off in ${e.cwd} (skip list)`
@@ -318,33 +361,78 @@ export const register: Register = (on, options) => {
   })
 
   on('session.end', async ($, e, next) => {
-    // /clear and resume replace the conversation and the process goes on; anything else ends it
+    // /clear and resume replace the conversation and the process goes on. Any other end clears the
+    // status line but leaves the timer: a process that really ends takes it along, and one that goes
+    // on (a session the desktop app restarts in place, say) keeps its auto-compact. The next
+    // session.start replaces the timer either way.
     resetConversation()
-    if (e.reason !== 'clear' && e.reason !== 'resume') {
-      timer?.cancel()
-      timer = undefined
-      show($, undefined)
-    }
+    if (e.reason !== 'clear' && e.reason !== 'resume') show($, undefined)
     return next(e)
   })
 
   // anything else that compacts the main conversation (/compact, the threshold, another plugin)
   on('session.compact', async ($, e, next) => {
     const mine = gen
-    const r = await next(e)
-    // a compact that finishes after a /clear belongs to the old conversation: leave the new one's request
-    if (!e.agentId && e.trigger !== 'precompute' && r.skip === undefined) {
-      // whoever started it, a compaction of this conversation settles a /compact the mod handed off,
-      // and only now is that cache shown as compacted
-      if (awaiting?.gen === mine) {
-        firedFor = awaiting.startedAt
-        awaiting = undefined
-      }
-      // a compaction, the handed-off one or any other, closes an open handoff
-      if (handoffGen === mine) handoffGen = -1
-      if (gen === mine) samples = []
+    const main = !e.agentId && e.trigger !== 'precompute'
+    // while it runs the mod holds: the old request is still recorded and its window may open meanwhile
+    const counted = requests
+    if (main) counted.compacting += 1
+    let r: SessionCompactResult
+    try {
+      r = await next(e)
+    } finally {
+      if (main) counted.compacting -= 1
     }
+    // a compact that finishes after a /clear belongs to the old conversation: leave the new one alone
+    if (!main || gen !== mine) return r
+    const h = handoff?.gen === mine ? handoff : undefined
+    if (r.skip !== undefined) {
+      // a veto while a /compact the mod handed off is open is taken as that /compact's
+      if (h && h.command !== 'rejected') {
+        h.command = 'rejected'
+        h.why = `vetoed: ${r.skip}`
+      }
+      return r
+    }
+    if (h) {
+      // the handed-off /compact landed: only now is that cache shown as compacted, and a failure
+      // notice already given is put right
+      firedFor = h.startedAt
+      if (h.notified) {
+        failed = undefined
+        $.ui.toast('Auto-compact: the /compact it ran finished after all, the chat is compacted')
+        $.ui.log('cache-autocompact: the /compact reported as failed finished after all')
+      }
+      handoff = undefined
+    } else {
+      // someone else's compaction: nothing the mod did, so an older auto-compact is not shown for it
+      firedFor = 0
+    }
+    samples = []
     return r
+  })
+
+  // A turn goes on between its requests while a tool runs; a compact then would be refused, or, handed
+  // off as /compact, run after the turn against a cache the turn refreshed. Each turn is settled by its
+  // turn.complete, which comes for an answer, an interrupt, a refusal and an error alike.
+  on('turn.start', async ($, e, next) => {
+    const home = requests
+    home.turns.add(e.turnId)
+    turnHome.set(e.turnId, home)
+    try {
+      return await next(e)
+    } catch (err) {
+      // a turn that never started never completes
+      home.turns.delete(e.turnId)
+      turnHome.delete(e.turnId)
+      throw err
+    }
+  })
+
+  on('turn.complete', async ($, e, next) => {
+    turnHome.get(e.turnId)?.turns.delete(e.turnId)
+    turnHome.delete(e.turnId)
+    return next(e)
   })
 
   on('classic.CwdChanged', async ($, e, next) => {
@@ -366,6 +454,16 @@ export const register: Register = (on, options) => {
     const mineRequests = requests
     mineRequests.running += 1
     mineRequests.rev += 1
+    // settled once: at the end, or when the request is aborted, in case an abandoned stream never
+    // reaches its finally
+    let settled = false
+    const settle = () => {
+      if (settled) return
+      settled = true
+      mineRequests.running -= 1
+      mineRequests.rev += 1
+    }
+    next.signal.addEventListener('abort', settle, { once: true })
     try {
       const mine = gen
       const startedAt = await $.clock.now()
@@ -392,8 +490,8 @@ export const register: Register = (on, options) => {
       ttl = tracked.ttl
       return r
     } finally {
-      mineRequests.running -= 1
-      mineRequests.rev += 1
+      next.signal.removeEventListener('abort', settle)
+      settle()
     }
   })
 }
