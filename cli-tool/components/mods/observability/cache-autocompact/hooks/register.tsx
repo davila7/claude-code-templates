@@ -29,15 +29,17 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import { handsOff, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
 
-// testHeadless: for tests only, any refusal counts as the desktop app's (see register)
-type Config = { minTokens: number; windowMs: number; skip: string[]; testHeadless: boolean }
+type Config = { minTokens: number; windowMs: number; skip: string[] }
 
 let gen = 0
+// whether a person is at the prompt, as session.start reported it: false for -p, the SDK and the
+// desktop app, where a plugin's own compact is refused and /compact runs instead
+let interactive = true
 // bumped whenever the session's folder changes, so a folder check made before the change does not count
 let cwdRev = 0
 let samples: Sample[] = []
@@ -234,7 +236,7 @@ async function tick($: EngineInterface, cfg: Config) {
     } catch (err) {
       // The desktop app runs Claude Code headless, where a plugin cannot compact directly
       // (found in a live test). There /compact runs as a command, queued until the session is idle.
-      if (!isHeadlessRefusal(err) && !cfg.testHeadless) throw err
+      if (!handsOff(err, interactive)) throw err
       // The refusal arrived through an await, so everything checked before the call is checked again:
       // a /clear, a resume, a request started or finished (requests.rev counts both, and judge holds
       // while one runs), a folder move (which bumps cwdRev), or the cache leaving the window, abandons
@@ -249,8 +251,8 @@ async function tick($: EngineInterface, cfg: Config) {
       // notice comes first, and the try is recorded first, never as a compaction.
       triedFor = last.startedAt
       refused = undefined
-      $.ui.toast(`Auto-compact ran /compact on a ${fmtTokens(still.tokens)}-token chat with ${fmtClock(still.leftMs)} left on the cache`)
-      $.ui.log('cache-autocompact: ran /compact before the cache lapsed')
+      $.ui.toast(`Auto-compact is running /compact on a ${fmtTokens(still.tokens)}-token chat with ${fmtClock(still.leftMs)} left on the cache`)
+      $.ui.log('cache-autocompact: started /compact before the cache lapsed')
       // the lock is released at dispatch, so a command.run that never returns cannot leave the mod busy
       if (busyAttempt === attempt) busyAttempt = 0
       if (compactingAttempt === attempt) compactingAttempt = 0
@@ -310,15 +312,13 @@ export const register: Register = (on, options) => {
     windowMs: positive(options.windowSeconds, 300) * 1000,
     // as written: the file system resolves these, and only the comparison uses normalized spellings
     skip: splitPaths(options.skipPaths),
-    // For tests only: the test kit replaces the words of any refusal with its own, so the desktop
-    // app's headless refusal cannot be staged there. With this set, any refusal counts as that one.
-    testHeadless: options.testTreatRefusalAsHeadless === true,
   }
   skipList = cfg.skip
 
   on('session.start', async ($, e, next) => {
     const r = await next(e)
     resetConversation()
+    interactive = e.isInteractive
     const none = () => undefined
     env = {
       enable1h: await $.env.get('ENABLE_PROMPT_CACHING_1H').catch(none),
@@ -335,7 +335,7 @@ export const register: Register = (on, options) => {
     $.ui.log(
       folder !== 'on'
         ? `cache-autocompact: off in ${e.cwd} (skip list)`
-        : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(cfg.windowMs)} left on a ${ttl} cache`,
+        : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(cfg.windowMs)} left on a ${ttl} cache${interactive ? '' : ', not interactive: runs /compact'}`,
       { to: 'debug' },
     )
     timer?.cancel()
@@ -420,6 +420,7 @@ export const register: Register = (on, options) => {
     mineRequests.rev += 1
     // A main-loop request belongs to the one turn under way, so any other turn still open is over: its
     // turn.complete was lost (another plugin's turn.complete hook that answers without calling next).
+    // This only helps once a new turn starts: until then a lost turn.complete keeps the mod held.
     for (const id of mineRequests.turns) {
       if (id === e.turnId) continue
       mineRequests.turns.delete(id)

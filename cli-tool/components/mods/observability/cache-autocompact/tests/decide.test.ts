@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fmtWait, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
+import { fmtWait, handsOff, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -299,7 +299,7 @@ describe('status line', () => {
   })
   test('a cache it already ran /compact for says so, and claims nothing about the outcome', () => {
     const { skipped: _, ...rest } = inputs({ triedFor: T0 })
-    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact ran /compact for this cache')
+    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact started /compact for this cache')
   })
   test('a failed try says so and says what to do, even when the guard holds', () => {
     const { skipped: _, ...rest } = inputs({ triedFor: T0 })
@@ -430,5 +430,24 @@ describe('review round 5', () => {
   test('a skip folder is held off by the cheap check too', () => {
     const v = shouldCompact(inputs({ skipped: true }))
     expect(v.go ? 'went' : v.why).toBe('folder is on the skip list')
+  })
+})
+
+describe('which refusals hand off to /compact', () => {
+  const LIVE = 'cache-autocompact: $.session.compact: not available in a headless (-p / SDK) session yet'
+  const TURN = 'cache-autocompact: $.session.compact: a turn is running (t1); the conversation compacts between turns'
+  const OFF = 'cache-autocompact: $.session.compact: compaction is switched off in this session (DISABLE_COMPACT)'
+  test('the headless refusal hands off in any session', () => {
+    expect(handsOff(new Error(LIVE), true)).toBe(true)
+    expect(handsOff(new Error(LIVE), false)).toBe(true)
+  })
+  test('an interactive session hands off on nothing else', () => {
+    expect(handsOff(new Error(TURN), true)).toBe(false)
+    expect(handsOff(new Error('no implementation for session.compact'), true)).toBe(false)
+  })
+  test('a session that is not interactive hands off on any refusal but a running turn or compaction switched off', () => {
+    expect(handsOff(new Error('no implementation for session.compact'), false)).toBe(true)
+    expect(handsOff(new Error(TURN), false)).toBe(false)
+    expect(handsOff(new Error(OFF), false)).toBe(false)
   })
 })

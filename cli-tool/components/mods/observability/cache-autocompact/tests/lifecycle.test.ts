@@ -44,6 +44,16 @@ type World = {
   commandFails?: string
   // turn.start fails for this turn id
   turnStartFails?: string
+  // a gate the engine's refusal waits on before it rejects, and a call when it is reached
+  refuseGate?: Promise<void>
+  refuseEntered?: () => void
+  // a gate the /compact command waits on, and a call when it is reached
+  commandGate?: Promise<void>
+  commandEntered?: () => void
+  // with statGate: hold only the stat of this path (as `key` spells it), not every stat
+  statGateFor?: string
+  // the next request reports no usage (an aborted or failed request): it ran, but records nothing
+  noUsage?: boolean
   // a hook beneath the mod vetoes every compact the mod asks for
   vetoes?: string
   // compacts the mod asked for, whatever became of them
@@ -78,7 +88,7 @@ function engine(on: On, w: World) {
   on('fs.stat', async ($, e) => {
     const path = (e as { path: string }).path
     w.statted = [...(w.statted ?? []), path]
-    if (w.statGate) {
+    if (w.statGate && (w.statGateFor === undefined || w.statGateFor === key(path))) {
       w.statEntered?.()
       await w.statGate
     }
@@ -106,8 +116,12 @@ function engine(on: On, w: World) {
     return { turnId: id } as never
   })
   on('turn.complete', () => ({ text: '' }) as never)
-  on('command.run', ($, e) => {
+  on('command.run', async ($, e) => {
     w.commands = [...(w.commands ?? []), (e as { command: string }).command]
+    if (w.commandGate) {
+      w.commandEntered?.()
+      await w.commandGate
+    }
     if (w.commandFails) throw new Error(w.commandFails)
     return { value: { text: 'Compacted' } } as never
   })
@@ -118,7 +132,13 @@ function engine(on: On, w: World) {
     // the desktop app's headless refusal, which turns into /compact, cannot be staged here.
     if ((e as { trigger?: string }).trigger !== 'manual') {
       w.asked = (w.asked ?? 0) + 1
-      if (w.compactRefuses) throw new Error('a turn is running')
+      if (w.compactRefuses) {
+        if (w.refuseGate) {
+          w.refuseEntered?.()
+          await w.refuseGate
+        }
+        throw new Error('a turn is running')
+      }
       if (w.vetoes) return { skip: w.vetoes }
     }
     w.compacts += 1
@@ -136,6 +156,10 @@ function engine(on: On, w: World) {
     const nap = w.naps?.[e.turnId]
     if (nap) await clock.sleep(nap)
     if (w.gate) await w.gate
+    if (w.noUsage) {
+      w.noUsage = false
+      return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'end_turn' } as never
+    }
     return {
       turnId: e.turnId,
       index: e.index,
@@ -148,8 +172,9 @@ function engine(on: On, w: World) {
   return clock
 }
 
-async function start($: Engine, cwd: string) {
-  await $.session.start({ cwd, surface: null, isInteractive: true })
+// isInteractive false is a -p run or the SDK, which is how the desktop app runs Claude Code
+async function start($: Engine, cwd: string, isInteractive = true) {
+  await $.session.start({ cwd, surface: null, isInteractive })
 }
 
 // one main-loop request of a 142,500-token chat
@@ -487,6 +512,8 @@ describe('things that change while the mod is mid-check', () => {
     await ticking
     // six more ticks come due while the first check is still held
     await clock.advance(30_000)
+    // a check still under way is not a compact
+    expect(w.statuses?.includes('Auto-compacting now')).toBe(false)
     w.statGate = undefined
     h.release()
     await clock.advance(0)
@@ -823,19 +850,18 @@ describe('review round 4', () => {
 describe('review round 5', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
   // the test kit replaces the words of any refusal, so the desktop's headless refusal cannot be staged;
-  // this option, for tests only, takes any refusal as that one
-  const DESKTOP = { options: { testTreatRefusalAsHeadless: true } }
+  // a session that is not interactive (-p, the SDK, the desktop app) hands off on a refusal all the same
 
-  test('desktop: a refused compact runs /compact once for the cache, with one notice', DESKTOP, async ($, on) => {
+  test('desktop: a refused compact runs /compact once for the cache, with one notice', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
     const clock = engine(on, w)
-    await start($, ALLOWED)
+    await start($, ALLOWED, false)
     await request($)
     await clock.advance(HOUR - 4 * MIN)
     expect(w.commands).toEqual(['compact'])
     expect(w.asked).toBe(1)
     expect(w.toasts).toBe(1)
-    expect(latest(w)).toBe('Auto-compact ran /compact for this cache')
+    expect(latest(w)).toBe('Auto-compact started /compact for this cache')
     // no second try on the same cache
     await clock.advance(2 * MIN)
     expect(w.asked).toBe(1)
@@ -843,10 +869,10 @@ describe('review round 5', () => {
     expect(w.toasts).toBe(1)
   })
 
-  test('desktop: a /compact that throws pops up once, and the next cache tries again', DESKTOP, async ($, on) => {
+  test('desktop: a /compact that throws pops up once, and the next cache tries again', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, commandFails: 'prompt is too long' }
     const clock = engine(on, w)
-    await start($, ALLOWED)
+    await start($, ALLOWED, false)
     await request($, 1)
     await clock.advance(HOUR - 4 * MIN)
     expect(w.commands).toEqual(['compact'])
@@ -860,10 +886,10 @@ describe('review round 5', () => {
     expect(w.commands).toEqual(['compact', 'compact'])
   })
 
-  test('desktop: a manual /compact after the handoff is never credited to the mod', DESKTOP, async ($, on) => {
+  test('desktop: a manual /compact after the handoff is never credited to the mod', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
     const clock = engine(on, w)
-    await start($, ALLOWED)
+    await start($, ALLOWED, false)
     await request($)
     await clock.advance(HOUR - 4 * MIN)
     await $.session.compact({ trigger: 'manual', messages: [CHAT] } as never)
@@ -905,5 +931,191 @@ describe('review round 5', () => {
     expect(w.statted?.length ?? 0).toBe(looked)
     expect(w.compacts).toBe(0)
     expect(w.statuses?.includes('Auto-compacting now')).toBe(false)
+  })
+})
+
+describe('the desktop handoff, checked again after the refusal', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+  // runs a big chat into its window in a desktop session and holds the engine's refusal
+  async function heldAtTheRefusal($: Engine, on: On, w: World) {
+    const clock = engine(on, w)
+    await start($, ALLOWED, false)
+    await request($)
+    await clock.advance(HOUR - 6 * MIN)
+    const h = hold()
+    w.refuseGate = h.gate
+    w.refuseEntered = h.reached
+    const ticking = clock.advance(2 * MIN)
+    await h.arrived
+    return { clock, h, ticking }
+  }
+
+  test('an interactive session never turns a refusal into /compact', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('a /clear while the refusal comes back: no /compact', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const { clock, h, ticking } = await heldAtTheRefusal($, on, w)
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('a new request while the refusal comes back: no /compact for the old cache', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const { clock, h, ticking } = await heldAtTheRefusal($, on, w)
+    await request($, 2)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('a move into a skip folder while the refusal comes back: no /compact', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const { clock, h, ticking } = await heldAtTheRefusal($, on, w)
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('a manual /compact while the refusal comes back: no /compact for the cache it replaced', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const { clock, h, ticking } = await heldAtTheRefusal($, on, w)
+    await $.session.compact({ trigger: 'manual', messages: [CHAT] } as never)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('a request that records nothing while the refusal comes back: no /compact from that check', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED, false)
+    await request($)
+    // the window opens at minute 3: the tick at exactly 3:00 is the last one this advance makes
+    await clock.advance(2 * MIN)
+    const h = hold()
+    w.refuseGate = h.gate
+    w.refuseEntered = h.reached
+    const ticking = clock.advance(MIN)
+    await h.arrived
+    w.noUsage = true
+    await request($, 2)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('the cache runs out while the refusal comes back: no /compact', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const { clock, h, ticking } = await heldAtTheRefusal($, on, w)
+    await ticking
+    await clock.advance(5 * MIN)
+    w.refuseGate = undefined
+    h.release()
+    await clock.advance(0)
+    expect(w.commands ?? []).toEqual([])
+  })
+
+  test('the control: released in time, the handoff goes ahead', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
+    const { clock, h, ticking } = await heldAtTheRefusal($, on, w)
+    w.refuseGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.commands).toEqual(['compact'])
+  })
+
+  test('a /compact that never returns neither locks the mod nor reads as compacting', async ($, on) => {
+    // a 5-minute cache, so each window opens at minute 3
+    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED, false)
+    await request($, 1)
+    const h = hold()
+    w.commandGate = h.gate
+    w.commandEntered = h.reached
+    const ticking = clock.advance(4 * MIN)
+    await h.arrived
+    await ticking
+    await clock.advance(10_000)
+    expect(latest(w)).toBe('Auto-compact started /compact for this cache')
+    // the next reply's cache gets its own try while the first command is still out
+    await request($, 2)
+    await clock.advance(4 * MIN)
+    expect(w.commands).toEqual(['compact', 'compact'])
+    w.commandGate = undefined
+    h.release()
+    await clock.advance(0)
+  })
+})
+
+describe('a move while the folder check is under way', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+  test('the check of the old folder counts for nothing: no compact, and the line follows the move', SKIP, async ($, on) => {
+    // hold only the stat of the session's folder, after the skip folders were looked up
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: ALLOWED }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 6 * MIN)
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    // the window opens at 55:00, the last tick this advance makes
+    const ticking = clock.advance(MIN)
+    await h.arrived
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    w.statGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    // the next tick draws the line from the folder as the move left it, not as the stale check saw it
+    await clock.advance(5_000)
+    expect(w.compacts).toBe(0)
+    expect(latest(w)).toBe('Auto-compact off in this folder')
+  })
+
+  test('a request that records nothing during the check: that check stands down, the next one compacts', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: ALLOWED, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(2 * MIN)
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    const ticking = clock.advance(MIN)
+    await h.arrived
+    w.noUsage = true
+    await request($, 2)
+    w.statGate = undefined
+    h.release()
+    await ticking
+    await clock.advance(0)
+    expect(w.compacts).toBe(0)
+    await clock.advance(5_000)
+    expect(w.compacts).toBe(1)
   })
 })

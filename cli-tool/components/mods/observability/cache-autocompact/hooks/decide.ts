@@ -64,6 +64,17 @@ export function isHeadlessRefusal(err: unknown): boolean {
   return (err instanceof Error ? err.message : String(err)).includes('not available in a headless')
 }
 
+// Whether a refused compact is handed off to /compact. The headless refusal is, in any session. In a
+// session that is not interactive (a -p run, the SDK, the desktop app: the engine's own isInteractive,
+// the same condition that refusal names) any refusal is, except the two /compact cannot get past
+// either: a turn still running, and compaction switched off. In an interactive session nothing else is.
+export function handsOff(err: unknown, interactive: boolean): boolean {
+  if (isHeadlessRefusal(err)) return true
+  if (interactive) return false
+  const why = err instanceof Error ? err.message : String(err)
+  return !why.includes('a turn is running') && !why.includes('compaction is switched off')
+}
+
 // where the session runs, as last checked: allowed, on the skip list, or not established
 export type Folder = 'on' | 'skip' | 'unknown'
 
@@ -93,7 +104,7 @@ export function statusLine(
   // the mod's own compact clears the recorded request, so firedFor is what remembers it ran
   if (!i.last) return i.firedFor ? 'Auto-compacted, waiting for the next reply' : 'Auto-compact waiting for a reply'
   if (i.firedFor === i.last.startedAt) return 'Auto-compacted, waiting for the next reply'
-  if (i.triedFor === i.last.startedAt) return 'Auto-compact ran /compact for this cache'
+  if (i.triedFor === i.last.startedAt) return 'Auto-compact started /compact for this cache'
   const tokens = promptTokens(i.last)
   if (tokens < i.minTokens) return `Auto-compact waits for ${fmtTokens(i.minTokens)} (chat is ${fmtTokens(tokens)})`
   const leftMs = remainingMs(i.last, i.ttl, i.now)
