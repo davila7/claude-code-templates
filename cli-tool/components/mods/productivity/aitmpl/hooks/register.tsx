@@ -1,6 +1,6 @@
 /* @jsx h */
 /**
- * aitmpl — Claude Mod (EARLY ACCESS)
+ * aitmpl — Claude Mod
  *
  * `/aitmpl [query | type | stop]` opens a side pane laid out like VS Code's
  * Extensions view: a search box, quick filters for the component types of
@@ -26,7 +26,7 @@
  * spaces inside a label is a no-break space off the terminal, since HTML
  * surfaces size a cell to its text and collapse spaces.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:

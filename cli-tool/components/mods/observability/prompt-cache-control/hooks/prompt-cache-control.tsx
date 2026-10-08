@@ -1,5 +1,5 @@
 /**
- * prompt-cache-control — Claude Mod (EARLY ACCESS)
+ * prompt-cache-control — Claude Mod
  *
  * A prompt-cache meter for Claude Code. Every main-loop request reports how
  * many prompt tokens the cache served (`cache_read_input_tokens`), wrote
@@ -14,13 +14,16 @@
  *   - a row above the prompt (the AbovePrompt component), an optional status
  *     line entry, and `/cache`, a pane with one row per turn
  *
- * The lifetime is counted from the start of the request that last wrote or
- * read the cache, as Anthropic documents it, and the TTL comes from the
- * environment variables Claude Code honours (see ./cache.ts). The API's usage
- * block does not say which TTL a write used, so `ttl: "auto"` is the
- * environment's request, not an observation; set `ttl` to override it.
+ * The lifetime is counted from the start of the request that last wrote or read
+ * the cache, as Anthropic documents it. Which lifetime Claude Code asked for
+ * follows its documented rules (see decideTtl in ./cache.ts): FORCE_PROMPT_CACHING_5M,
+ * CLAUDE_CODE_PROMPT_CACHE_TTL, the promptCacheTtl setting, ENABLE_PROMPT_CACHING_1H,
+ * then the account (1 hour on a Claude subscription, 5 minutes otherwise). The
+ * API names the TTL of a write but the mod API passes on only the token counts,
+ * so the mod also watches the gaps between requests (a hit after more than 5
+ * minutes proves 1 hour; see observeTtl). `ttl: "5m" | "1h"` pins it.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
+ * Needs Claude Code >= 2.1.287.
  *
  * Options (pluginConfigs["prompt-cache-control@skills-dir"].options):
  *   ttl: "auto" | "5m" | "1h"   cache lifetime (default auto)
@@ -30,7 +33,7 @@
  *   status: boolean             entry under the prompt (default false)
  *   toast: boolean              toasts near expiry: at warnSeconds, then 10, 3, 2 and 1 s (default true)
  */
-import type { Register } from 'claude-code'
+import type { EngineInterface, Register } from 'claude-code'
 import {
   advise,
   COUNTDOWN_MARKS,
@@ -41,18 +44,19 @@ import {
   fmtTokens,
   hitRatio,
   isCachingDisabled,
-  isOn,
+  accountOf,
+  decideTtl,
+  observeTtl,
   lifeColor,
   lifeRatio,
   nextToastMark,
   positive,
   promptTokens,
   remainingMs,
-  resolveTtl,
   rowRatio,
   segments,
 } from './cache.ts'
-import type { Advice, CacheEnv, Sample, Ttl } from './cache.ts'
+import type { Account, Advice, CacheEnv, Sample, Ttl } from './cache.ts'
 
 const PANE = 'cache'
 const COMMAND = 'cache'
@@ -62,7 +66,13 @@ const TOAST_MIN_TOKENS = 20_000
 
 let samples: Sample[] = []
 let ttl: Ttl = '5m'
+let baseTtl: Ttl = '5m'
+let pinned = false
+let observed: Ttl | undefined
+let setting: unknown
+let account: Account = 'other'
 let ttlSource = 'default'
+let envSource = 'default'
 let env: CacheEnv = {}
 let timer: { cancel: () => void } | undefined
 let lastKey = ''
@@ -98,6 +108,23 @@ function shortLine(policy: Policy, now: number): string {
   return `cache ${Math.round(hitRatio(last) * 100)}%${clock}`
 }
 
+// the promptCacheTtl setting, from the settings files that can carry it (local over project over user)
+async function readSetting($: EngineInterface): Promise<unknown> {
+  const home = await $.env.get('HOME').catch(() => undefined)
+  const cwd = await $.session.cwd().catch(() => undefined)
+  const files = [cwd && `${cwd}/.claude/settings.local.json`, cwd && `${cwd}/.claude/settings.json`, home && `${home}/.claude/settings.json`]
+  for (const file of files) {
+    if (!file) continue
+    try {
+      const value = JSON.parse(await $.fs.read(file)).promptCacheTtl
+      if (value === '5m' || value === '1h') return value
+    } catch {
+      // missing or unreadable: the next file
+    }
+  }
+  return undefined
+}
+
 export const register: Register = (on, options) => {
   const policy: Policy = {
     warnMs: positive(options.warnSeconds, 60) * 1000,
@@ -116,20 +143,21 @@ export const register: Register = (on, options) => {
     env = {
       enable1h: await $.env.get('ENABLE_PROMPT_CACHING_1H').catch(none),
       force5m: await $.env.get('FORCE_PROMPT_CACHING_5M').catch(none),
+      ttlVar: await $.env.get('CLAUDE_CODE_PROMPT_CACHE_TTL').catch(none),
       disableAll: await $.env.get('DISABLE_PROMPT_CACHING').catch(none),
       disableHaiku: await $.env.get('DISABLE_PROMPT_CACHING_HAIKU').catch(none),
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
-    ttl = resolveTtl(options.ttl, env)
-    ttlSource =
-      options.ttl === '5m' || options.ttl === '1h'
-        ? 'option'
-        : isOn(env.force5m)
-          ? 'FORCE_PROMPT_CACHING_5M'
-          : isOn(env.enable1h)
-            ? 'ENABLE_PROMPT_CACHING_1H'
-            : 'default'
+    pinned = options.ttl === '5m' || options.ttl === '1h'
+    observed = undefined
+    setting = await readSetting($)
+    account = accountOf((await $.session.usage().catch(() => undefined))?.rateLimits ?? [])
+    const choice = decideTtl(options.ttl, env, setting, account)
+    baseTtl = choice.ttl
+    ttl = baseTtl
+    envSource = choice.source
+    ttlSource = envSource
 
     await $.command
       .register({
@@ -175,6 +203,9 @@ export const register: Register = (on, options) => {
       samples = []
       lastKey = ''
       toastedFor = 0
+      observed = undefined
+      ttl = baseTtl
+      ttlSource = envSource
       $.ui.invalidate('ui.render')
       return next(e)
     }
@@ -200,6 +231,24 @@ export const register: Register = (on, options) => {
         output: r.usage.output_tokens,
       })
       if (samples.length > KEEP) samples = samples.slice(-KEEP)
+      if (!pinned) {
+        // the account can change under a session: a subscription running out of plan usage moves to usage credits
+        account = accountOf((await $.session.usage().catch(() => undefined))?.rateLimits ?? [])
+        const choice = decideTtl(options.ttl, env, setting, account)
+        baseTtl = choice.ttl
+        envSource = choice.source
+        if (observed === undefined) {
+          ttl = baseTtl
+          ttlSource = envSource
+        }
+        const seen = observeTtl(samples[samples.length - 2], samples[samples.length - 1], observed)
+        if (seen !== observed) {
+          observed = seen
+          ttl = seen ?? baseTtl
+          ttlSource = `observed from request timing; ${envSource} said ${baseTtl}`
+          $.ui.log(`prompt-cache-control: cache lifetime is ${ttl} (${ttlSource})`, { to: 'debug' })
+        }
+      }
       lastKey = ''
       if (showStatus) $.ui.status(shortLine(policy, Date.now()))
       $.ui.invalidate('ui.render')
@@ -239,12 +288,20 @@ export const register: Register = (on, options) => {
     const { Box, Text } = $.ui.resolve(e)
     const columns = e.viewport?.columns ?? 100
     const color = COLOR[advice.kind]
+    // The band is one instance: whatever the plugins beneath draw (another mod's band) stays, under this line.
+    const below = await next(e)
+    const stack = (own: ReturnType<typeof Text>) => (
+      <Box flexDirection="column">
+        {own}
+        {below}
+      </Box>
+    )
 
-    if (!last) return <Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>
+    if (!last) return stack(<Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>)
 
     const ratio = hitRatio(last)
     const wide = columns >= 90
-    return (
+    return stack(
       <Box flexDirection="row" columnGap={1}>
         <Text bold color={color}>{advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'off' || advice.kind === 'cold' || advice.kind === 'uncached' ? '○' : '✖'}</Text>
         <Text bold color="cyan">cache</Text>
@@ -263,7 +320,7 @@ export const register: Register = (on, options) => {
           <Text bold color={left > 0 ? lifeColor(left, ttl, policy.warnMs) : 'red'}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
-      </Box>
+      </Box>,
     )
   })
 

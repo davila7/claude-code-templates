@@ -20,6 +20,7 @@ so it is outermost: its `engine.create` step returns last (its withholding
 wins) and it judges every `plugin.register` after it. Loaded with
 --plugin-dir it sits in the user tier and only binds plugins listed after it.
 
+**If a check itself fails** (it throws or runs out of its time budget), a user plugin is refused and a guardrail-mode command is denied, never let through unchecked. The `engine.create` step has no time budget; a failure there fails the load.
 
 ## Options
 
@@ -40,9 +41,9 @@ Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, 
 
 ```sh
 npx claude-code-templates@latest --mod enterprise/admin-capability-lockdown
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/admin-capability-lockdown/`, which Claude Code auto-loads as `admin-capability-lockdown@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/admin-capability-lockdown`. `claude plugin validate .claude/skills/admin-capability-lockdown` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/admin-capability-lockdown/`, which Claude Code auto-loads as `admin-capability-lockdown@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/admin-capability-lockdown`. `claude plugin validate .claude/skills/admin-capability-lockdown` prints every event it hooks and every `$` call it makes.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

@@ -120,9 +120,9 @@ Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, 
 
 ```sh
 npx claude-code-templates@latest --mod productivity/aitmpl
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/aitmpl/`, which Claude Code auto-loads as `aitmpl@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/aitmpl`. `claude plugin validate .claude/skills/aitmpl` prints every event it hooks and every `$` call it makes; `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/aitmpl` runs the tests (catalog helpers and the pane on the terminal and desktop surfaces). A project mod loads only once the workspace trust prompt is accepted; `~/.claude/skills/aitmpl/` always loads.
+It is written to `.claude/skills/aitmpl/`, which Claude Code auto-loads as `aitmpl@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/aitmpl`. `claude plugin validate .claude/skills/aitmpl` prints every event it hooks and every `$` call it makes; `claude plugin test .claude/skills/aitmpl` runs the tests (catalog helpers and the pane on the terminal and desktop surfaces). A project mod loads only once the workspace trust prompt is accepted; `~/.claude/skills/aitmpl/` always loads.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

@@ -1,4 +1,4 @@
-// Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test security/jev-auto-mode
+// Run with: claude plugin test security/jev-auto-mode
 import { describe, expect, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
 import type { On } from 'claude-code'

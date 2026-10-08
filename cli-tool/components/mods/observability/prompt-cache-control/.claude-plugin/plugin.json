@@ -1,7 +1,7 @@
 {
   "name": "prompt-cache-control",
   "version": "0.1.0",
-  "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL comes from the environment variables Claude Code honours (5 minutes by default, 1 hour with ENABLE_PROMPT_CACHING_1H). /cache opens a per-turn table. Needs function hooks (early access).",
+  "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL follows Claude Code's own rules for your account (1 hour on a Claude subscription, 5 minutes on an API key, cloud provider or usage credits, plus the TTL variables and setting) and corrects itself from request timing. /cache opens a per-turn table.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -19,7 +19,7 @@
     "ttl": {
       "type": "string",
       "title": "Cache lifetime",
-      "description": "How long the cache lives after a request: auto follows ENABLE_PROMPT_CACHING_1H / FORCE_PROMPT_CACHING_5M (5 minutes when neither is set); 5m or 1h overrides it",
+      "description": "How long the cache lives after a request: auto follows Claude Code's own rules (FORCE_PROMPT_CACHING_5M, CLAUDE_CODE_PROMPT_CACHE_TTL, the promptCacheTtl setting, ENABLE_PROMPT_CACHING_1H, then 1 hour on a Claude subscription and 5 minutes on an API key, cloud provider or usage credits) and corrects itself from request timing; 5m or 1h pins it",
       "default": "auto",
       "options": [
         "auto",

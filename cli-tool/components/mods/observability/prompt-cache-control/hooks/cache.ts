@@ -25,6 +25,8 @@ export type Ttl = '5m' | '1h'
 export type CacheEnv = {
   enable1h?: string
   force5m?: string
+  /** CLAUDE_CODE_PROMPT_CACHE_TTL: "5m" or "1h" for the main conversation */
+  ttlVar?: string
   disableAll?: string
   disableHaiku?: string
   disableSonnet?: string
@@ -60,10 +62,50 @@ export type Policy = {
 
 export const isOn = (v: string | undefined) => v === '1' || v?.toLowerCase() === 'true'
 
-export function resolveTtl(option: unknown, env: CacheEnv): Ttl {
-  if (option === '5m' || option === '1h') return option
-  if (isOn(env.force5m)) return '5m'
-  return isOn(env.enable1h) ? '1h' : '5m'
+/** What the account is billed as, as far as the mod can tell. */
+export type Account = 'subscription' | 'credits' | 'other'
+
+export type TtlChoice = { ttl: Ttl; source: string }
+
+const asTtl = (v: unknown): Ttl | undefined => (v === '5m' || v === '1h' ? v : undefined)
+
+/**
+ * Which lifetime Claude Code asks for on the main conversation, in the order
+ * its documentation gives (https://code.claude.com/docs/en/prompt-caching,
+ * "Choose the TTL yourself"), after the mod's own `ttl` option:
+ *
+ *   FORCE_PROMPT_CACHING_5M, CLAUDE_CODE_PROMPT_CACHE_TTL, the promptCacheTtl
+ *   setting, ENABLE_PROMPT_CACHING_1H, then the default of the account: one
+ *   hour on a Claude subscription within its plan usage, five minutes on usage
+ *   credits, an API key or a cloud provider.
+ */
+export function decideTtl(option: unknown, env: CacheEnv, setting?: unknown, account?: Account): TtlChoice {
+  const pinned = asTtl(option)
+  if (pinned) return { ttl: pinned, source: 'the ttl option' }
+  if (isOn(env.force5m)) return { ttl: '5m', source: 'FORCE_PROMPT_CACHING_5M' }
+  const fromVar = asTtl(env.ttlVar)
+  if (fromVar) return { ttl: fromVar, source: 'CLAUDE_CODE_PROMPT_CACHE_TTL' }
+  const fromSetting = asTtl(setting)
+  if (fromSetting) return { ttl: fromSetting, source: 'the promptCacheTtl setting' }
+  if (isOn(env.enable1h)) return { ttl: '1h', source: 'ENABLE_PROMPT_CACHING_1H' }
+  if (account === 'subscription') return { ttl: '1h', source: 'Claude subscription default' }
+  if (account === 'credits') return { ttl: '5m', source: 'usage credits default' }
+  return { ttl: '5m', source: 'default' }
+}
+
+export const resolveTtl = (option: unknown, env: CacheEnv, setting?: unknown, account?: Account): Ttl =>
+  decideTtl(option, env, setting, account).ttl
+
+/**
+ * The account, from the rate-limit windows the last response reported: a
+ * five-hour or seven-day window means a Claude subscription, and one that is
+ * full means the next requests draw on usage credits. No window (an API key,
+ * a cloud provider, or no response yet) says nothing.
+ */
+export function accountOf(windows: readonly { kind: string; percentUsed: number }[]): Account {
+  const plan = windows.filter(w => w.kind === 'five_hour' || w.kind === 'seven_day')
+  if (plan.length === 0) return 'other'
+  return plan.some(w => w.percentUsed >= 100) ? 'credits' : 'subscription'
 }
 
 export function ttlMs(ttl: Ttl): number {
@@ -242,4 +284,34 @@ export type LifeColor = 'green' | 'yellow' | 'red'
 export function lifeColor(leftMs: number, ttl: Ttl, warnMs: number): LifeColor {
   if (leftMs <= warnMs) return 'red'
   return leftMs / ttlMs(ttl) <= 0.4 ? 'yellow' : 'green'
+}
+
+// requests are timed from their start, so a little slack keeps a hit that
+// landed just inside the lifetime from reading as proof of the longer one
+const SLACK_MS = 10_000
+
+/**
+ * What the traffic says about the cache lifetime, given the request before and
+ * `known`, what earlier requests already showed.
+ *
+ *   - a hit (the cache served at least half of the previous prompt) more than
+ *     5 minutes after the previous request began proves the 1-hour lifetime,
+ *     and nothing later undoes it: a miss afterwards is more likely a changed
+ *     prefix than a lapse
+ *   - a miss with the same model and a prompt that did not shrink, 5 minutes to
+ *     an hour after the previous request, says the entry lapsed: 5 minutes
+ *     (weaker: a changed prefix looks the same, so a later hit overrules it)
+ *
+ * Needed because the API names the TTL of a write (`cache_creation.ephemeral_*`)
+ * but Claude Code's mod API passes on only the four token counts.
+ */
+export function observeTtl(prev: Sample | undefined, cur: Sample, known: Ttl | undefined): Ttl | undefined {
+  if (!prev || prev.read + prev.write === 0 || cur.model !== prev.model) return known
+  const gap = cur.startedAt - prev.startedAt
+  const before = promptTokens(prev)
+  if (gap <= ttlMs('5m') + SLACK_MS) return known
+  if (cur.read >= before * 0.5) return '1h'
+  if (known === '1h') return known
+  const lapsed = cur.write > 0 && promptTokens(cur) >= before * 0.7 && gap < ttlMs('1h') + SLACK_MS
+  return lapsed ? '5m' : known
 }

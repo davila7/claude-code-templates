@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import requests
+import yaml
 import subprocess
 from collections import defaultdict
 from dotenv import load_dotenv
@@ -10,6 +11,69 @@ from generate_trending_data import fetch_with_retry
 
 # Load environment variables
 load_dotenv()
+
+
+def _line_frontmatter(frontmatter):
+    """Line-based fallback for frontmatter that is not valid YAML (Claude Code
+    tolerates many of these, e.g. unquoted colons in a description)."""
+    meta = {}
+    for line in frontmatter.split('\n'):
+        for key in ('description', 'author', 'repo', 'version', 'license', 'tags'):
+            if line.startswith(key + ':'):
+                meta[key] = line.split(key + ':', 1)[1].strip()
+    return meta
+
+
+def parse_frontmatter_meta(content):
+    """Return description, author, repo, version, license and keywords from a
+    markdown file's frontmatter. Parses YAML so block scalars (`description: |`)
+    and the Agent Skills `metadata:` map work; `metadata.*` is used only when the
+    top-level key is absent."""
+    out = {'description': '', 'author': '', 'repo': '', 'version': '', 'license': '', 'keywords': []}
+    if not content.startswith('---'):
+        return out
+    end = content.find('---', 3)
+    if end == -1:
+        return out
+    frontmatter = content[3:end]
+    try:
+        # BaseLoader keeps every scalar a string (version 1.10 stays "1.10")
+        data = yaml.load(frontmatter, Loader=yaml.BaseLoader)
+    except yaml.YAMLError:
+        data = None
+    if not isinstance(data, dict):
+        data = _line_frontmatter(frontmatter)
+    meta = data.get('metadata') if isinstance(data.get('metadata'), dict) else {}
+
+    def pick(*keys):
+        for source in (data, meta):
+            for key in keys:
+                value = source.get(key)
+                if value not in (None, '', []):
+                    return value
+        return None
+
+    def text(value):
+        if value is None:
+            return ''
+        if isinstance(value, dict):
+            value = value.get('name') or value.get('url') or ''
+        return str(value).strip()
+
+    out['description'] = text(pick('description'))
+    out['author'] = text(pick('author'))
+    out['repo'] = text(pick('repo'))
+    out['version'] = text(pick('version'))
+    out['license'] = text(pick('license'))
+    tags = pick('tags')
+    if isinstance(tags, list):
+        out['keywords'] = [str(t).strip() for t in tags if str(t).strip()]
+    elif isinstance(tags, str):
+        tags = tags.strip()
+        # Line fallback keeps the old "[tag1, tag2]" behaviour
+        if tags.startswith('[') and tags.endswith(']'):
+            out['keywords'] = [t.strip() for t in tags[1:-1].split(',')]
+    return out
 
 def run_security_validation():
     """
@@ -400,27 +464,13 @@ def generate_components_json(skip_downloads=False):
                                     version = ''
                                     license_field = ''
                                     keywords = []
-                                    if content.startswith('---'):
-                                        frontmatter_end = content.find('---', 3)
-                                        if frontmatter_end != -1:
-                                            frontmatter = content[3:frontmatter_end]
-                                            for line in frontmatter.split('\n'):
-                                                if line.startswith('description:'):
-                                                    description = line.split('description:', 1)[1].strip()
-                                                elif line.startswith('author:'):
-                                                    author = line.split('author:', 1)[1].strip()
-                                                elif line.startswith('repo:'):
-                                                    repo = line.split('repo:', 1)[1].strip()
-                                                elif line.startswith('version:'):
-                                                    version = line.split('version:', 1)[1].strip()
-                                                elif line.startswith('license:'):
-                                                    license_field = line.split('license:', 1)[1].strip()
-                                                elif line.startswith('tags:'):
-                                                    tags_str = line.split('tags:', 1)[1].strip()
-                                                    # Parse tags array [tag1, tag2, tag3]
-                                                    if tags_str.startswith('[') and tags_str.endswith(']'):
-                                                        tags_str = tags_str[1:-1]
-                                                        keywords = [tag.strip() for tag in tags_str.split(',')]
+                                    meta = parse_frontmatter_meta(content)
+                                    description = meta['description']
+                                    author = meta['author']
+                                    repo = meta['repo']
+                                    version = meta['version']
+                                    license_field = meta['license']
+                                    keywords = meta['keywords']
 
                                 except Exception as e:
                                     print(f"Warning: Could not read file {skill_file_path}: {e}")
@@ -603,27 +653,13 @@ def generate_components_json(skip_downloads=False):
 
                             # Extract metadata from markdown frontmatter
                             elif file_name.endswith('.md'):
-                                if content.startswith('---'):
-                                    frontmatter_end = content.find('---', 3)
-                                    if frontmatter_end != -1:
-                                        frontmatter = content[3:frontmatter_end]
-                                        for line in frontmatter.split('\n'):
-                                            if line.startswith('description:'):
-                                                description = line.split('description:', 1)[1].strip()
-                                            elif line.startswith('author:'):
-                                                author = line.split('author:', 1)[1].strip()
-                                            elif line.startswith('repo:'):
-                                                repo = line.split('repo:', 1)[1].strip()
-                                            elif line.startswith('version:'):
-                                                version = line.split('version:', 1)[1].strip()
-                                            elif line.startswith('license:'):
-                                                license_field = line.split('license:', 1)[1].strip()
-                                            elif line.startswith('tags:'):
-                                                tags_str = line.split('tags:', 1)[1].strip()
-                                                # Parse tags array [tag1, tag2, tag3]
-                                                if tags_str.startswith('[') and tags_str.endswith(']'):
-                                                    tags_str = tags_str[1:-1]
-                                                    keywords = [tag.strip() for tag in tags_str.split(',')]
+                                meta = parse_frontmatter_meta(content)
+                                description = meta['description']
+                                author = meta['author']
+                                repo = meta['repo']
+                                version = meta['version']
+                                license_field = meta['license']
+                                keywords = meta['keywords']
 
                         except Exception as e:
                             print(f"Warning: Could not read file {file_path}: {e}")

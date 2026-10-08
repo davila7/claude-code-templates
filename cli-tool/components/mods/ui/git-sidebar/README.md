@@ -65,19 +65,19 @@ With `--plugin-dir` the id is plain `git-sidebar`. A pane opened on its own at s
 
 ```sh
 npx claude-code-templates@latest --mod ui/git-sidebar
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/git-sidebar/`, which Claude Code auto-loads as `git-sidebar@skills-dir` in a **trusted** project (accept the trust prompt once; `claude -p` never shows it). For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/git-sidebar`. `claude plugin validate .claude/skills/git-sidebar` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/git-sidebar/`, which Claude Code auto-loads as `git-sidebar@skills-dir` in a **trusted** project (accept the trust prompt once; `claude -p` never shows it). For one session with hot reload: `claude --plugin-dir .claude/skills/git-sidebar`. `claude plugin validate .claude/skills/git-sidebar` prints every event it hooks and every `$` call it makes.
 
 If `/git-sidebar` is missing from the typeahead, the mod did not load: `claude --debug` and look for `hooks module git-sidebar@… loaded` in `~/.claude/debug/latest`.
 
 ## Tests
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/git-sidebar
+claude plugin test .claude/skills/git-sidebar
 ```
 
 The tests answer `$.process.run` with a fake git, mount the pane on the terminal surface and press its rows.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
