@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import {
   GATE_QUESTIONS,
   NONE,
@@ -148,10 +148,10 @@ test('the first request ranks every skill and asks the three gate nouls, boolean
 
 test('the gate is the mean of the oriented nouls: an action passes, a prose question does not', () => {
   const action = readWide(wideAnswer('powerpoint', DECK, ACTION))
-  expect(action?.gate).toBeCloseTo((0.8 + 0.9 + 0.9) / 3)
+  expect(Math.abs((action?.gate) - ((0.8 + 0.9 + 0.9) / 3)) < 0.005).toBe(true)
   expect(passesGate(action!, config)).toBe(true)
   const prose = readWide(wideAnswer('commit', { commit: 0.6, pdf: 0.4 }, PROSE))
-  expect(prose?.gate).toBeCloseTo((0.05 + 0.2 + 0.05) / 3)
+  expect(Math.abs((prose?.gate) - ((0.05 + 0.2 + 0.05) / 3)) < 0.005).toBe(true)
   expect(passesGate(prose!, config)).toBe(false)
   expect(decide(prose, null, skills, config)).toEqual({ name: null, reason: 'needs a skill 0.10 < 0.3' })
 })

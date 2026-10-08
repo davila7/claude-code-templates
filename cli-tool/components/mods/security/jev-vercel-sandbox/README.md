@@ -170,7 +170,7 @@ With a Jev key, your latest message and each command that is not a plain read go
 
 ```sh
 npx claude-code-templates@latest --mod security/jev-vercel-sandbox
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
 `--mod` writes the plugin to `.claude/skills/jev-vercel-sandbox/`, which Claude Code auto-loads as `jev-vercel-sandbox@skills-dir` **in a trusted project** (accept the trust prompt on the first interactive `claude` there; `-p` never asks). In the fullscreen layout (`/tui fullscreen`) the pane docks beside the transcript.
@@ -178,7 +178,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 For one session, or in a folder you do not want to trust:
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-vercel-sandbox
+claude --plugin-dir .claude/skills/jev-vercel-sandbox
 ```
 
 `claude plugin validate .claude/skills/jev-vercel-sandbox` lists every event it hooks, every `$` call, and the four environment variables it reads.
@@ -187,13 +187,13 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-verce
 
 ```sh
 cd cli-tool/components/mods
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test security/jev-vercel-sandbox
+claude plugin test security/jev-vercel-sandbox
 ```
 
 They run the hooks against a fake Vercel API, a fake `git`/`tar` and a scripted question dialog: nothing starts with the session and the four tools are registered; a command that is no job, a plain read, "Run locally" and a dismissed question all run locally; the start uploads the project without its secrets; a confirmed job runs in its own worktree, is marked remote and keeps a patch it does not apply; an edit since the start goes up as a sync patch first, once; "Always" stops the questions; an installer runs in an empty folder and reports what it left; a test run goes to the background and reports back; a job confirmed before the start starts the sandbox; a hook that fails after the person chose the sandbox refuses the command; `sandbox_run` clones only https repositories and Jev keeps unknown code off the project copy; a patch is applied only after "Apply" and never when it touches `.claude/`; the size cap, an OIDC token, a stopped sandbox, the session end and the pane. `tests/judge.test.ts` and `tests/workspace.test.ts` cover the battery, the report reading and the URL checks. The sync, prepare and report scripts were run in bash against real git: the sandbox's tree after a sync matched the local tree hash, and the job's patch passed `git apply --check` in the original project.
 
 **Not yet checked against the live API**: Vercel's limit on a request body (a failure shows as the upload or sync failing), and git in the default image.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
 A mod runs without `node_modules`, so `@vercel/sandbox` is not available: the Sandbox is driven over HTTP through `$.http.fetch`, with the endpoints of Vercel's [REST API reference](https://vercel.com/docs/rest-api/sandboxes) (`POST /v3/sandboxes`, `GET /v2/sandboxes/sessions/{id}`, `POST …/cmd` with `wait` and `logs`, answering `application/x-ndjson`, `POST …/stop`, each with `?teamId=`), called the way `@vercel/sandbox` 3.5.0 calls them. The Jev wire shapes are jev-auto-mode's.

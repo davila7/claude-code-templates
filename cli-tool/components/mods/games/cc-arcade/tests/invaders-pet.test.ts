@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { fire, newInvaders, shift, tick, type InvadersGame } from '../hooks/games/invaders.ts'
 import { feed, feeling, level, moodAt, newPet, petEvent, stage } from '../hooks/games/pet.ts'
 

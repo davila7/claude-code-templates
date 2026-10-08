@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { pickAuto, pickRandom } from '../hooks/games/auto.ts'
 
 const zero = () => 0

@@ -106,10 +106,10 @@ to load. Check them in this order:
    `hooks module jev-model-router@skills-dir loaded (worker, …); events: prompt.submit,turn.step,agent.spawn`
    (`@inline` when loaded with `--plugin-dir`); `Found N plugins` without it
    means the plugin is not in the session.
-3. **Function hooks are off.** Without `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`
-   the debug log says `installed plugins' hooks modules not loaded: rollout
-   flag (tengu_plugin_hooks_modules) is off`. Set the flag; Claude Code must
-   be 2.1.259+.
+3. **Claude Code is too old.** Mods are on by default from 2.1.287; on an
+   older build the debug log says `installed plugins' hooks modules not
+   loaded: rollout flag (tengu_plugin_hooks_modules) is off`. Update Claude
+   Code.
 
 A `ready on the built-in classifier, no key set` line when you did set a key
 means the key sits under the wrong `pluginConfigs` entry: the key must match
@@ -152,7 +152,7 @@ change, so a session on `claude-opus-5[1m]` keeps its 1M-context id.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "jev-model-router": { "options": { "typesafeApiKey": "" } } } }
+{ "pluginConfigs": { "jev-model-router@skills-dir": { "options": { "typesafeApiKey": "" } } } }
 ```
 
 The entry's key is the plugin's id, and the id follows how the plugin was
@@ -165,7 +165,7 @@ wrong key every option stays at its default, and the `ready on` line reports
 
 ```sh
 npx claude-code-templates@latest --mod productivity/jev-model-router
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
 `--mod` writes the plugin to `.claude/skills/jev-model-router/` in the project,
@@ -181,7 +181,7 @@ name it on the command line instead — it loads as `jev-model-router@inline`
 and reads options from the `"jev-model-router"` key:
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-model-router
+claude --plugin-dir .claude/skills/jev-model-router
 ```
 
 Either way, `claude plugin validate .claude/skills/jev-model-router` prints
@@ -193,6 +193,6 @@ every event it hooks and every `$` call it makes.
 bun test cli-tool/components/mods/productivity/jev-model-router/tests
 ```
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
 A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.
