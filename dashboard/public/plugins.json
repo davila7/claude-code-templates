@@ -23544,5 +23544,202 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "svyatosllav-claude-plugins",
+    "name": "Plugins Factory",
+    "author": "SvyatoSllav",
+    "description": "Free, open-source everyday assistants for Claude: context translator, grammar checker, long-form story writer, SEO articles with FAQ, resume tailoring, cover letters, emails by tone, English speaking practice, prompt improver and dating reply coach.",
+    "github": "https://github.com/SvyatoSllav/claude-plugins",
+    "stars": 0,
+    "type": "marketplace",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "plugins": 10,
+      "components": {
+        "skills": 10
+      }
+    },
+    "highlights": [
+      "10 plugins in marketplace",
+      "MIT licensed, skills only, no external calls",
+      "Web UI: https://svyatosllav.github.io/claude-plugins/"
+    ],
+    "website": "https://svyatosllav.github.io/claude-plugins/",
+    "marketplace_name": "plugins-factory",
+    "plugins_list": [
+      {
+        "name": "context-translator",
+        "description": "Translates text between any languages while keeping tone, formatting and meaning, with notes on tricky phrases.",
+        "source": "./plugins/context-translator",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "context-translator",
+              "description": "Use when the user asks to translate text, a message, a document or a phrase into another language, asks how to say something naturally in another language, or wants a translation that keeps tone and formatting. Do not use for writing new content, summarizing, or grammar checks of text in the same language."
+            }
+          ]
+        }
+      },
+      {
+        "name": "cover-letter-writer",
+        "description": "Writes a tailored, concise cover letter from your resume and the job posting, in a natural voice.",
+        "source": "./plugins/cover-letter-writer",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "cover-letter-writer",
+              "description": "Use when the user asks to write, rewrite, shorten or improve a cover letter or motivation letter for a job, or asks for cover letter openings. Uses the job posting and the user's real experience. Do not use for resumes, interview practice, or letters unrelated to job applications."
+            }
+          ]
+        }
+      },
+      {
+        "name": "email-writer-by-tone",
+        "description": "Writes and replies to emails in the tone you choose, professional, polite, friendly or firm, clear and concise.",
+        "source": "./plugins/email-writer-by-tone",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "email-writer-by-tone",
+              "description": "Use when the user asks to write, reply to, shorten or fix the tone of an email, including follow-ups, requests, complaints, apologies, declines and replies to difficult messages, with a chosen tone such as professional, polite, friendly, firm or casual. Do not use for translation, marketing newsletters, or messages impersonating a company or another person."
+            }
+          ]
+        }
+      },
+      {
+        "name": "english-speaking-practice",
+        "description": "Practice English conversation at your level with gentle corrections after each reply and useful phrases.",
+        "source": "./plugins/english-speaking-practice",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "english-speaking-practice",
+              "description": "Use when the user wants to practice English conversation, improve spoken or everyday English, role-play a real-life situation in English (job interview, doctor, restaurant, meeting), or get corrections on their English while chatting. Do not use for translating documents, writing essays for submission, or general knowledge questions."
+            }
+          ]
+        }
+      },
+      {
+        "name": "flirty-reply-coach",
+        "description": "Helps you write witty, respectful replies and openers for dating apps and chats, in your own voice.",
+        "source": "./plugins/flirty-reply-coach",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "flirty-reply-coach",
+              "description": "Use when an adult user asks for help with dating app openers, replies in a flirty or romantic chat, turning a dry conversation into a fun one, or asking someone out by message. Do not use for anything involving minors, for pressuring someone who declined, or for non-dating writing tasks."
+            }
+          ]
+        }
+      },
+      {
+        "name": "grammar-clarity-checker",
+        "description": "Fixes grammar, spelling and punctuation, explains each change and suggests clearer wording.",
+        "source": "./plugins/grammar-clarity-checker",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "grammar-clarity-checker",
+              "description": "Use when the user asks to check, proofread or correct grammar, spelling or punctuation, asks whether a sentence or paragraph is correct, asks to make text clearer, or asks to explain a grammar rule. Do not use for translation, for writing new content from scratch, or for questions unrelated to English text."
+            }
+          ]
+        }
+      },
+      {
+        "name": "long-form-story-writer",
+        "description": "Writes long, coherent stories chapter by chapter from your premise, keeping characters and plot consistent.",
+        "source": "./plugins/long-form-story-writer",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "long-form-story-writer",
+              "description": "Use when the user asks to write a story, a tale, a chapter or other original fiction, or to continue or steer a story already started in this conversation. Handles long stories by writing chapter by chapter. Do not use for essays, marketing copy, poems on request of a specific form, or editing existing non-fiction text."
+            }
+          ]
+        }
+      },
+      {
+        "name": "prompt-improver",
+        "description": "Turns a rough request into a clear, structured prompt with role, context, constraints and output format.",
+        "source": "./plugins/prompt-improver",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "prompt-improver",
+              "description": "Use when the user asks to improve, rewrite, optimize or create a prompt for an AI assistant, or asks why a prompt gives vague or wrong answers. Produces a structured prompt ready to paste. Do not use to actually perform the task the prompt describes, and do not use for prompts meant to bypass safety rules."
+            }
+          ]
+        }
+      },
+      {
+        "name": "resume-tailor-job-match",
+        "description": "Tailors your resume to a specific job, scores the match and rewrites bullets with the right keywords for ATS.",
+        "source": "./plugins/resume-tailor-job-match",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "resume-tailor-job-match",
+              "description": "Use when the user asks to tailor, score, rewrite or improve a resume or CV for a job, to compare a resume with a job description, to find missing ATS keywords, or to rewrite experience bullets. Do not use for cover letters, interview practice or general career advice without a resume."
+            }
+          ]
+        }
+      },
+      {
+        "name": "seo-article-writer-with-faq",
+        "description": "Writes search-optimized articles for a keyword with an outline, meta title, meta description and FAQ section.",
+        "source": "./plugins/seo-article-writer-with-faq",
+        "author": "SvyatoSllav",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "seo-article-writer-with-faq",
+              "description": "Use when the user asks to write an SEO article or blog post for a keyword, to create an SEO outline, meta title, meta description or FAQ section, or to optimize an existing article for a keyword. Do not use for ads, social posts, product reviews presented as customer reviews, or translation."
+            }
+          ]
+        }
+      }
+    ]
   }
 ]

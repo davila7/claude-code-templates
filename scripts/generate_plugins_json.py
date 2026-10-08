@@ -66,6 +66,7 @@ REPOS = [
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
+    ("SvyatoSllav/claude-plugins", "https://svyatosllav.github.io/claude-plugins/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
