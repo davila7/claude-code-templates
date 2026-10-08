@@ -74,7 +74,7 @@ The other way round also works: define the `fastapi.FastAPI` object in `app.py` 
 
 - `add_insert_route`: POST from model columns. `uploadfile_inputs` for files. Persists the row. A file column is `uploadfile_inputs` or `inputs`, not both.
 - `add_compute_route`: same request shape as insert, but `Table.compute()`: no row stored
-- `add_update_route`: POST matches the row by primary key, so the request body carries the key (`id`) even though `inputs` does not list it. No `match_columns`
+- `add_update_route`: POST matches the row by primary key, so the request body carries the primary-key column (`uuid` in the example above) even though `inputs` does not list it. No `match_columns`
 - `add_query_route`: wraps `@pxt.query`. Default `{ "rows": [...] }`. `one_row=True` returns the object (0 rows is a 404, more than one is a 409). `return_fileresponse=True` returns the one media column as a file (implies one-row)
 - `add_delete_route`: POST delete by primary key, or by a nonempty `match_columns=` list
 - `@ingest.insert_route(...)`, `update_route`, `compute_route`: decorator forms taking the same table, `path`, `inputs` and `outputs`. The function takes each `outputs` column as a keyword-only, annotated parameter (media arrive as URL strings) and returns a `pydantic.BaseModel`, which becomes the response body. Reshape a response this way rather than in a hand-written endpoint.

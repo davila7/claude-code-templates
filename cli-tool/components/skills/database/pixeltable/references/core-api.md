@@ -190,7 +190,7 @@ App: `base=` plus `iterator=` on the model. See [workflows.md](workflows.md).
 
 An unbound model class builds queries (`.where()`, `.select()`, `.order_by()`, `.group_by()`, `.limit()`, `.sample()`, `.join()`) -- that is what makes `base=Docs.where(...)` work. Anything that touches rows (`.collect()`, `.insert()`, `.count()`, `.update()`) needs the table to exist: use `pxt.get_table()`, or let a bound router reach it.
 
-Every iterator view also gets `pos`. The nine that ship:
+Every iterator view also gets `pos`. The seven to reach for:
 
 | Iterator | Module | Output columns |
 |----------|--------|----------------|
@@ -202,7 +202,7 @@ Every iterator view also gets `pos`. The nine that ship:
 | `list_iterator` | `functions.json` | keys of `elements=`, or the kwarg names |
 | `tile_iterator` | `functions.image` | `tile` (unstored), `tile_coord`, `tile_box` |
 
-`legacy_frame_iterator` (`frame_idx` / `pos_msec` / `pos_frame`) and `sam3_for_video_segmentation` also exist; prefer `frame_iterator`.
+Two more ship: `legacy_frame_iterator` (`frame_idx` / `pos_msec` / `pos_frame`; prefer `frame_iterator`) and `sam3_for_video_segmentation` (`functions.huggingface`).
 
 ## Indexes
 

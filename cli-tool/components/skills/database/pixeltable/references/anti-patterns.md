@@ -16,7 +16,7 @@ class Chunks(
     iterator=pxtf.document.document_splitter(Docs.document, separators='token_limit', limit=512),
 ):
     __indexes__ = [
-        pxt.EmbeddingIndex(text, embedding=embeddings.using(model='text-embedding-3-small'), name='chunks_embed')
+        pxt.EmbeddingIndex(text, embedding=pxtf.openai.embeddings.using(model='text-embedding-3-small'), name='chunks_embed')
     ]  # type: ignore[name-defined]
 ```
 
