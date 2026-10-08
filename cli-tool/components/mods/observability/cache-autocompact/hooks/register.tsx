@@ -29,7 +29,7 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { fallbackDeadline, isHeadlessRefusal, isSkippedPath, nextTtl, parsePaths, shouldCompact, statusLine } from './decide.ts'
+import { fallbackDeadline, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
@@ -43,11 +43,14 @@ let samples: Sample[] = []
 let ttl: Ttl = '5m'
 let track: TtlTrack | undefined
 let env: CacheEnv = {}
+// the request whose cache was compacted, by the mod or by a /compact it handed off; shown as done
 let firedFor = 0
+// the request whose cache already had its one try (a /compact handed off, a veto); never shown as done
+let triedFor = 0
 // the generation whose compact is in flight; -1 for none
 let busyGen = -1
 let timer: { cancel: () => void } | undefined
-// the skip folders as configured and as resolved through junctions and links;
+// the skip folders as configured and as resolved through junctions and links, spelled for comparison;
 // undefined when one could not be resolved, which turns auto-compact off
 let skipRoots: string[] | undefined = []
 // the folder as last checked, for the status line only; the compact itself always checks afresh
@@ -61,17 +64,21 @@ let warnedFor = 0
 // same conversation, or by leaving it (/clear, resume, the restart a compaction causes). Past its
 // deadline it pops up a failure notice. Not settled when command.run returns: that may be before the
 // compaction ends.
-let awaiting: { gen: number; deadline: number; lapse: number; why?: string } | undefined
+let awaiting: { gen: number; startedAt: number; deadline: number; lapse: number; why?: string } | undefined
+// why the one try on a request's cache came to nothing (a handed-off /compact past its deadline, a veto)
+let failed: { startedAt: number; why: string } | undefined
 
 function resetConversation() {
   gen += 1
   samples = []
   firedFor = 0
+  triedFor = 0
   busyGen = -1
   track = undefined
   refused = undefined
   warnedFor = 0
   awaiting = undefined
+  failed = undefined
 }
 
 // a path as given and where it really lands; undefined when where it lands cannot be established
@@ -120,6 +127,7 @@ async function tick($: EngineInterface, cfg: Config) {
       minTokens: cfg.minTokens,
       windowMs: cfg.windowMs,
       firedFor,
+      triedFor,
       busy,
       skipped: false,
       disabled: last ? isCachingDisabled(last.model, env) : false,
@@ -130,11 +138,13 @@ async function tick($: EngineInterface, cfg: Config) {
   if (awaiting && awaiting.gen === mine && now >= awaiting.deadline) {
     const why = awaiting.why ?? 'no compaction happened'
     const left = awaiting.lapse - now
+    failed = { startedAt: awaiting.startedAt, why }
     awaiting = undefined
     $.ui.toast(`Auto-compact failed (${why.slice(0, 80)}). Run /compact yourself: ${left > 0 ? `${fmtClock(left)} left on the cache` : 'the cache already ran out'}`)
     $.ui.log(`cache-autocompact: /compact failed: ${why}`)
   }
   const last0 = samples[samples.length - 1]
+  const current = (startedAt: number | undefined) => last0 !== undefined && startedAt === last0.startedAt
   show(
     $,
     statusLine({
@@ -148,6 +158,8 @@ async function tick($: EngineInterface, cfg: Config) {
       disabled: last0 ? isCachingDisabled(last0.model, env) : false,
       folder,
       refused,
+      pending: awaiting?.gen === mine && current(awaiting.startedAt),
+      failed: current(failed?.startedAt) ? failed?.why : undefined,
     }),
   )
   // cheap check first, so an idle session touches no file system every five seconds
@@ -177,14 +189,15 @@ async function tick($: EngineInterface, cfg: Config) {
       // (found in a live test). There /compact runs as a command, queued until the session is idle.
       if (!isHeadlessRefusal(err)) throw err
       // Notice first: the compact restarts the session, which bumps gen, so anything after the
-      // await never runs (seen live: /compact ran and no toast showed). Settled first too,
-      // so a /compact that fails is never retried into a second notice.
-      firedFor = last.startedAt
+      // await never runs (seen live: /compact ran and no toast showed). Tried first too, so a
+      // /compact that fails is never retried into a second notice. Not marked done: only a
+      // compaction that turns up does that (the session.compact hook).
+      triedFor = last.startedAt
       refused = undefined
       $.ui.toast(`Auto-compact is running /compact on a ${fmtTokens(due.tokens)}-token chat with ${fmtClock(due.leftMs)} left on the cache`)
       $.ui.log('cache-autocompact: ran /compact before the cache lapsed')
       // Whether it worked is judged later, by the tick, against a deadline: see `awaiting`.
-      const pending = { gen: mine, deadline: fallbackDeadline(at, due.leftMs), lapse: at + due.leftMs } as NonNullable<typeof awaiting>
+      const pending = { gen: mine, startedAt: last.startedAt, deadline: fallbackDeadline(at, due.leftMs), lapse: at + due.leftMs } as NonNullable<typeof awaiting>
       awaiting = pending
       try {
         await $.command.run({ command: 'compact' })
@@ -195,13 +208,17 @@ async function tick($: EngineInterface, cfg: Config) {
       return
     }
     if (gen !== mine) return
-    // a compact that ran or was vetoed settles this cache: no second try on it
-    firedFor = last.startedAt
     refused = undefined
     if (r.skip !== undefined) {
-      $.ui.log(`cache-autocompact: compact skipped (${r.skip})`)
+      // A hook vetoed it: another plugin's decision, so it is not asked again every five seconds.
+      // It is a failure all the same, said in a pop-up and on the status line, never shown as done.
+      triedFor = last.startedAt
+      failed = { startedAt: last.startedAt, why: `vetoed: ${r.skip}` }
+      $.ui.toast(`Auto-compact was vetoed (${r.skip.slice(0, 80)}). Run /compact yourself: ${fmtClock(due.leftMs)} left on the cache`)
+      $.ui.log(`cache-autocompact: compact vetoed (${r.skip})`)
       return
     }
+    firedFor = last.startedAt
     if (samples[samples.length - 1] === last) samples = []
     const size = r.tokensBefore && r.tokensAfter ? `${fmtTokens(r.tokensBefore)} → ${fmtTokens(r.tokensAfter)} tokens` : 'done'
     const cost = r.usage
@@ -231,7 +248,8 @@ export const register: Register = (on, options) => {
   const cfg: Config = {
     minTokens: positive(options.minTokens, 100_000),
     windowMs: positive(options.windowSeconds, 300) * 1000,
-    skip: parsePaths(options.skipPaths),
+    // as written: the file system resolves these, and only the comparison uses normalized spellings
+    skip: splitPaths(options.skipPaths),
   }
 
   on('session.start', async ($, e, next) => {
@@ -252,7 +270,7 @@ export const register: Register = (on, options) => {
     for (const root of cfg.skip) {
       const found = await spellings($, root)
       if (!found) resolved = false
-      for (const s of found ?? [root]) roots.push(...parsePaths(s))
+      for (const s of found ?? [root]) roots.push(normalizePath(s))
     }
     // a skip folder that cannot be resolved might be reached through an alias: off until it can be
     skipRoots = resolved ? roots : undefined
@@ -287,8 +305,12 @@ export const register: Register = (on, options) => {
     const r = await next(e)
     // a compact that finishes after a /clear belongs to the old conversation: leave the new one's request
     if (!e.agentId && e.trigger !== 'precompute' && r.skip === undefined) {
-      // whoever started it, a compaction of this conversation settles a /compact the mod handed off
-      if (awaiting?.gen === mine) awaiting = undefined
+      // whoever started it, a compaction of this conversation settles a /compact the mod handed off,
+      // and only now is that cache shown as compacted
+      if (awaiting?.gen === mine) {
+        firedFor = awaiting.startedAt
+        awaiting = undefined
+      }
       if (gen === mine) samples = []
     }
     return r

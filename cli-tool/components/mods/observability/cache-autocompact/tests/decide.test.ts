@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fallbackDeadline, fmtWait, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, statusLine } from '../hooks/decide.ts'
+import { fallbackDeadline, fmtWait, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -98,6 +98,12 @@ describe('holds', () => {
     expect(shouldCompact(inputs({ firedFor: T0, last: sample({ startedAt: later }), now: later + HOUR - 60_000 })).go).toBe(true)
   })
 
+  test('one try already made for this cache, whatever came of it: never a second', () => {
+    expect(why({ triedFor: T0 })).toBe('already tried for this cache')
+    const later = T0 + 30 * 60_000
+    expect(shouldCompact(inputs({ triedFor: T0, last: sample({ startedAt: later }), now: later + HOUR - 60_000 })).go).toBe(true)
+  })
+
   test('a compact already running', () => {
     expect(why({ busy: true })).toBe('a compact is already running')
   })
@@ -178,6 +184,47 @@ describe('skip list', () => {
   })
 })
 
+describe('skip list on Linux and macOS', () => {
+  test('a rooted path keeps its leading slash, so a lookup never reads it as relative', () => {
+    expect(normalizePath('/home/me/finance')).toBe('/home/me/finance')
+    expect(normalizePath('/home/me/finance/')).toBe('/home/me/finance')
+    expect(normalizePath('/home//me/./x/../finance')).toBe('/home/me/finance')
+    expect(parsePaths('/home/me/finance')).toEqual(['/home/me/finance'])
+  })
+
+  test('the option as written is what the file system sees: slash and case kept', () => {
+    expect(splitPaths(' /home/me/Finance , , C:/Users/Me/Private ')).toEqual(['/home/me/Finance', 'C:/Users/Me/Private'])
+    expect(splitPaths(undefined)).toEqual([])
+  })
+
+  test('case counts outside Windows: Finance and finance are two folders', () => {
+    const fin = parsePaths('/home/me/finance')
+    expect(isSkippedPath(['/home/me/finance/2026'], fin)).toBe(true)
+    expect(isSkippedPath(['/home/me/Finance'], fin)).toBe(false)
+    expect(isSkippedPath(['/home/me/finance'], parsePaths('/home/me/Finance'))).toBe(false)
+    expect(normalizePath('/home/Me/X')).toBe('/home/Me/X')
+  })
+
+  test('a drive path and a UNC share still fold case, as Windows compares them', () => {
+    expect(normalizePath('C:/Users/Me')).toBe('c:/users/me')
+    expect(normalizePath('\\\\Server\\Share\\Dir')).toBe('//server/share/dir')
+    expect(normalizePath('\\\\?\\UNC\\Server\\Share')).toBe('//server/share')
+    expect(isSkippedPath(['//SERVER/share/dir/x'], parsePaths('\\\\server\\Share\\Dir'))).toBe(true)
+  })
+
+  test('the root "/" skips every rooted folder, and is not dropped', () => {
+    const root = parsePaths('/')
+    expect(root).toEqual(['/'])
+    expect(isSkippedPath(['/'], root)).toBe(true)
+    expect(isSkippedPath(['/home/me/anything'], root)).toBe(true)
+    expect(isSkippedPath(['relative/dir'], root)).toBe(false)
+  })
+
+  test('a rooted path and a relative one with the same words are different folders', () => {
+    expect(isSkippedPath(['home/me/finance'], parsePaths('/home/me/finance'))).toBe(false)
+  })
+})
+
 describe('cache lifetime tracking', () => {
   const MIN = 60_000
   // a hit 10 minutes after the request before it: proof of the 1-hour lifetime
@@ -249,6 +296,15 @@ describe('status line', () => {
     expect(line({ firedFor: T0 })).toBe('Auto-compacted, waiting for the next reply')
     expect(line({ busy: true })).toBe('Auto-compacting now')
     expect(line({ disabled: true })).toBe('Auto-compact off: caching is off')
+  })
+  test('a handed-off /compact is shown as waiting, never as done', () => {
+    const { skipped: _, ...rest } = inputs()
+    expect(statusLine({ ...rest, folder: 'on', pending: true })).toBe('Auto-compact ran /compact, waiting for it to finish')
+  })
+  test('a failed try says so and says what to do, even when the guard holds', () => {
+    const { skipped: _, ...rest } = inputs({ triedFor: T0 })
+    expect(statusLine({ ...rest, folder: 'on', failed: 'no compaction happened' })).toBe('Auto-compact failed (no compaction happened). Run /compact yourself')
+    expect(statusLine({ ...rest, now: T0 + HOUR + 1, folder: 'on', failed: 'vetoed: busy' })).toBe('Auto-compact missed: the cache ran out (failed: vetoed: busy)')
   })
   test('fmtWait rounds up, so it never says 0', () => {
     expect(fmtWait(60_000)).toBe('1m')

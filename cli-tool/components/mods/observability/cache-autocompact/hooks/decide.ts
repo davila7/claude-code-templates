@@ -17,6 +17,9 @@ export type Inputs = {
   windowMs: number
   // startedAt of the request whose cache was already compacted for; 0 for none
   firedFor: number
+  // startedAt of the request whose cache already had its one attempt, whatever came of it (a /compact
+  // handed off, a veto); 0 or absent for none. It stops a second try and is never read as success.
+  triedFor?: number
   // a compact this mod started is still running
   busy: boolean
   // the session runs in a folder the person asked to leave alone
@@ -38,6 +41,7 @@ export function shouldCompact(i: Inputs): Verdict {
   if (i.busy) return { go: false, why: 'a compact is already running' }
   if (!i.last) return { go: false, why: 'no request yet' }
   if (i.firedFor === i.last.startedAt) return { go: false, why: 'already compacted for this cache' }
+  if (i.triedFor === i.last.startedAt) return { go: false, why: 'already tried for this cache' }
   const tokens = promptTokens(i.last)
   if (tokens < i.minTokens) return { go: false, why: 'chat is small' }
   const leftMs = remainingMs(i.last, i.ttl, i.now)
@@ -70,11 +74,20 @@ export function fmtWait(ms: number): string {
 }
 
 // The status line: what the mod will do and, when it will not, why. Same order of checks as shouldCompact.
-export function statusLine(i: Omit<Inputs, 'skipped'> & { folder: Folder; refused?: string }): string {
+// `pending` is a /compact handed off and not yet seen to finish; `failed` says why the one try on the
+// current cache came to nothing. Both are about the current request only, and both come before
+// `firedFor`, so an attempt is never shown as a compact that happened.
+export function statusLine(i: Omit<Inputs, 'skipped'> & { folder: Folder; refused?: string; pending?: boolean; failed?: string }): string {
   if (i.folder === 'skip') return 'Auto-compact off in this folder'
   if (i.folder === 'unknown') return "Auto-compact off: can't confirm the folder"
   if (i.disabled) return 'Auto-compact off: caching is off'
   if (i.busy) return 'Auto-compacting now'
+  if (i.pending) return 'Auto-compact ran /compact, waiting for it to finish'
+  if (i.failed !== undefined) {
+    const why = i.failed.slice(0, 80)
+    const lapsed = i.last !== undefined && remainingMs(i.last, i.ttl, i.now) <= 0
+    return lapsed ? `Auto-compact missed: the cache ran out (failed: ${why})` : `Auto-compact failed (${why}). Run /compact yourself`
+  }
   // the mod's own compact clears the recorded request, so firedFor is what remembers it ran
   if (!i.last) return i.firedFor ? 'Auto-compacted, waiting for the next reply' : 'Auto-compact waiting for a reply'
   if (i.firedFor === i.last.startedAt) return 'Auto-compacted, waiting for the next reply'
@@ -90,15 +103,26 @@ export function statusLine(i: Omit<Inputs, 'skipped'> & { folder: Folder; refuse
 
 // "C:\\Users\\X\\", "c:/users/./x", "\\\\?\\C:\\Users\\X" and "c://users/x" name the same folder on Windows.
 // Spelling only: a junction or symlink is resolved by the caller ($.fs.stat realPath) before this runs.
+// A drive path or a UNC share is folded to lower case, the way Windows compares them. Any other path
+// keeps its case, since "/home/me/Finance" and "/home/me/finance" are two folders on Linux. A rooted
+// path keeps its leading slash, so "/" stays the root rather than vanishing.
 export function normalizePath(p: string): string {
   const parts: string[] = []
-  const flat = p.trim().replace(/\\/g, '/').replace(/^\/\/\?\//, '')
+  let flat = p.trim().replace(/\\/g, '/')
+  // the extended-length prefix: \\?\C:\x is C:\x, and \\?\UNC\server\share is \\server\share
+  if (/^\/\/\?\/unc\//i.test(flat)) flat = `//${flat.slice(8)}`
+  else if (flat.startsWith('//?/')) flat = flat.slice(4)
+  const unc = flat.startsWith('//')
+  const rooted = flat.startsWith('/')
   for (const part of flat.split('/')) {
     if (part === '' || part === '.') continue
     if (part === '..') parts.pop()
     else parts.push(part)
   }
-  return parts.join('/').toLowerCase()
+  const body = parts.join('/')
+  if (unc) return `//${body}`.toLowerCase()
+  if (/^[a-z]:$/i.test(parts[0] ?? '')) return body.toLowerCase()
+  return rooted ? `/${body}` : body
 }
 
 export type TtlTrack = { observed: Ttl | undefined; under: Ttl; model: string }
@@ -112,9 +136,19 @@ export function nextTtl(track: TtlTrack | undefined, base: Ttl, prev: Sample | u
   return { track: { observed, under: base, model: cur.model }, ttl: observed ?? base }
 }
 
-export function parsePaths(option: unknown): string[] {
+// The folders as the person wrote them, for the file system: a lookup must see "/home/me/finance",
+// never a normalized spelling that it would resolve against the working directory.
+export function splitPaths(option: unknown): string[] {
   if (typeof option !== 'string') return []
-  return option.split(',').map(normalizePath).filter(Boolean)
+  return option
+    .split(',')
+    .map(p => p.trim())
+    .filter(Boolean)
+}
+
+// the same folders, spelled for comparison only
+export function parsePaths(option: unknown): string[] {
+  return splitPaths(option).map(normalizePath).filter(Boolean)
 }
 
 // The folder itself or anything below it, never a sibling that only shares a prefix (private2).
@@ -125,6 +159,7 @@ export function isSkippedPath(cwds: readonly (string | undefined)[], skip: reado
   if (known.length === 0) return true
   return known.some(c => {
     const here = normalizePath(c)
-    return skip.some(s => here === s || here.startsWith(`${s}/`))
+    // the root "/" already ends in its separator, and holds every rooted folder
+    return skip.some(s => here === s || here.startsWith(s.endsWith('/') ? s : `${s}/`))
   })
 }

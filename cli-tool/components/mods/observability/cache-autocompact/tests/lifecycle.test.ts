@@ -7,8 +7,9 @@ import type { On } from 'claude-code'
 const T0 = 1_000_000_000_000
 const MIN = 60_000
 const HOUR = 60 * MIN
-const ALLOWED = 'C:/Users/me/work/App'
-const PRIVATE = 'C:/Users/me/work/Private'
+const ALLOWED = '/work/App'
+const PRIVATE = '/work/Private'
+const LINK = '/links/ledger'
 // the shipped skipPaths is empty, so the skip-folder tests name their folder
 const SKIP = { options: { skipPaths: PRIVATE } }
 const CHAT = { role: 'user' as const, text: 'the long chat', toolUses: [] }
@@ -26,7 +27,7 @@ type World = {
   gate?: Promise<void>
   // called when a model request reaches the engine, i.e. the mod's turn.step hook is already under way
   entered?: () => void
-  // paths (forward slashes, lower case) whose real location cannot be established, or whose stat fails
+  // paths, spelled as `key` spells them, whose real location cannot be established, or whose stat fails
   unresolved?: string[]
   statRejects?: string[]
   // a gate on the folder check the mod makes right before compacting, and a call when it is reached
@@ -37,12 +38,19 @@ type World = {
   compactGate?: Promise<void>
   compactEntered?: () => void
   statuses?: (string | undefined)[]
-  // the engine refuses every compact, as it does while a turn runs
+  // the engine refuses every compact the mod asks for, as it does while a turn runs
   compactRefuses?: boolean
+  // a hook beneath the mod vetoes every compact the mod asks for
+  vetoes?: string
+  // compacts the mod asked for, whatever became of them
+  asked?: number
   commands?: string[]
 }
 
-const key = (path: string) => path.split('\\').join('/').toLowerCase()
+// The tests name rooted folders ("/work/Private"), rooted on Linux and Windows alike. The engine hands
+// a hook the path it resolved: as written on Linux, "C:\work\Private" on Windows (the current drive).
+// The world is keyed by the path without the drive and with forward slashes, so both find the same entry.
+const key = (path: string) => path.split('\\').join('/').replace(/^[A-Za-z]:/, '')
 
 // a promise the test resolves by hand, and a second that resolves when the gated work reaches it
 function hold() {
@@ -69,8 +77,7 @@ function engine(on: On, w: World) {
       await w.statGate
     }
     if (w.statRejects?.includes(key(path))) return { deny: 'ENOENT' } as never
-    // the engine may hand the path over with either slash
-    const real = w.links?.[path.split('\\').join('/')]
+    const real = w.links?.[key(path)]
     const lands = w.unresolved?.includes(key(path)) ? undefined : (real ?? path)
     return { value: { kind: 'dir', size: 0, mtimeMs: 0, isLink: real !== undefined, realPath: lands } } as never
   })
@@ -91,8 +98,16 @@ function engine(on: On, w: World) {
     w.commands = [...(w.commands ?? []), (e as { command: string }).command]
     return { value: { text: 'Compacted' } } as never
   })
-  on('session.compact', async () => {
-    if (w.compactRefuses) return { deny: 'a turn is running' } as never
+  on('session.compact', async ($, e) => {
+    // Only the mod's own call is refused or vetoed (it reaches the test as an event with no trigger);
+    // a test's manual compact runs. A refusal is a rejection. The test kit skips a hook that throws
+    // and rejects the call with its own text, so the mod sees a rejection but never these words:
+    // the desktop app's headless refusal, which turns into /compact, cannot be staged here.
+    if ((e as { trigger?: string }).trigger !== 'manual') {
+      w.asked = (w.asked ?? 0) + 1
+      if (w.compactRefuses) throw new Error('a turn is running')
+      if (w.vetoes) return { skip: w.vetoes }
+    }
     w.compacts += 1
     const gate = w.compactGate
     if (gate) {
@@ -187,9 +202,9 @@ describe('never in a skip folder', () => {
   })
 
   test('a link whose real folder is in Private', SKIP, async ($, on) => {
-    const w: World = { cwd: 'C:/Links/ledger', compacts: 0, links: { 'C:/Links/ledger': `${PRIVATE}/ledger` } }
+    const w: World = { cwd: LINK, compacts: 0, links: { [LINK]: `${PRIVATE}/ledger` } }
     const clock = engine(on, w)
-    await start($, 'C:/Links/ledger')
+    await start($, LINK)
     await request($)
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(0)
@@ -204,10 +219,39 @@ describe('never in a skip folder', () => {
     expect(w.compacts).toBe(1)
   })
 
-  test('a comma-separated list skips the second folder too', { options: { skipPaths: `C:/elsewhere, ${PRIVATE}` } }, async ($, on) => {
+  test('a comma-separated list skips the second folder too', { options: { skipPaths: `/elsewhere, ${PRIVATE}` } }, async ($, on) => {
     const w: World = { cwd: PRIVATE, compacts: 0 }
     const clock = engine(on, w)
     await start($, PRIVATE)
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(0)
+  })
+
+  test('an absolute skip folder is looked up as written, never relative to the working folder', { options: { skipPaths: '/home/me/Finance' } }, async ($, on) => {
+    const w: World = { cwd: '/home/me/Finance/2026', compacts: 0 }
+    const clock = engine(on, w)
+    await start($, '/home/me/Finance/2026')
+    // the lookup keeps the leading slash and the capital F
+    expect(w.statted?.map(key)).toContain('/home/me/Finance')
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(0)
+  })
+
+  test('an absolute skip folder that exists leaves auto-compact on everywhere else', { options: { skipPaths: '/home/me/finance' } }, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('the root "/" skips every folder', { options: { skipPaths: '/' } }, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
     await request($)
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(0)
@@ -321,18 +365,18 @@ describe('conversation changes', () => {
 
 describe('resolution failures fail closed', () => {
   test('a folder whose real location cannot be established', async ($, on) => {
-    const w: World = { cwd: 'C:/Links/ledger', compacts: 0, unresolved: ['c:/links/ledger'] }
+    const w: World = { cwd: LINK, compacts: 0, unresolved: [LINK] }
     const clock = engine(on, w)
-    await start($, 'C:/Links/ledger')
+    await start($, LINK)
     await request($)
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(0)
   })
 
   test('a folder whose stat fails', async ($, on) => {
-    const w: World = { cwd: 'C:/Links/ledger', compacts: 0, statRejects: ['c:/links/ledger'] }
+    const w: World = { cwd: LINK, compacts: 0, statRejects: [LINK] }
     const clock = engine(on, w)
-    await start($, 'C:/Links/ledger')
+    await start($, LINK)
     await request($)
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(0)
@@ -388,41 +432,46 @@ describe('things that change while the mod is mid-check', () => {
 
   test('a /clear and a new small chat during the check: the old request is not compacted', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
-    const { h, ticking } = await heldAtTheCheck($, on, w)
+    const { clock, h, ticking } = await heldAtTheCheck($, on, w)
     await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
     w.read = 30_000
     w.statGate = undefined
     await request($, 2)
     h.release()
     await ticking
+    // let the released check run to its end before looking
+    await clock.advance(0)
     expect(w.compacts).toBe(0)
   })
 
   test('a manual /compact during the check: one compact, not two', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
-    const { h, ticking } = await heldAtTheCheck($, on, w)
+    const { clock, h, ticking } = await heldAtTheCheck($, on, w)
     await $.session.compact({ trigger: 'manual', messages: [CHAT] } as never)
     h.release()
     await ticking
+    await clock.advance(0)
     expect(w.compacts).toBe(1)
   })
 
   test('the session moves into Private during the check', SKIP, async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
-    const { h, ticking } = await heldAtTheCheck($, on, w)
+    const { clock, h, ticking } = await heldAtTheCheck($, on, w)
     w.cwd = PRIVATE
     await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
     h.release()
     await ticking
+    await clock.advance(0)
     expect(w.compacts).toBe(0)
   })
 
   test('ticks that pile up behind a slow check still compact once', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0 }
-    const { h, ticking } = await heldAtTheCheck($, on, w)
+    const { clock, h, ticking } = await heldAtTheCheck($, on, w)
     w.statGate = undefined
     h.release()
     await ticking
+    await clock.advance(0)
     expect(w.compacts).toBe(1)
   })
 
@@ -504,7 +553,7 @@ describe('status line', () => {
     expect(w.statuses?.some(t => t?.startsWith('Auto-compact armed'))).toBe(false)
   })
   test('a skip folder that cannot be resolved says it cannot confirm the folder', SKIP, async ($, on) => {
-    const w: World = { cwd: ALLOWED, compacts: 0, unresolved: [PRIVATE.toLowerCase()] }
+    const w: World = { cwd: ALLOWED, compacts: 0, unresolved: [PRIVATE] }
     const clock = engine(on, w)
     await start($, ALLOWED)
     await request($)
@@ -576,5 +625,24 @@ describe('failure notices', () => {
     await clock.advance(HOUR - MIN)
     expect(w.compacts).toBe(1)
     expect(w.toasts).toBe(1)
+  })
+})
+
+describe('a veto', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+  test('is a failure: one pop-up, the reason on the status line, never shown as done, not asked again', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, vetoes: 'not now' }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.compacts).toBe(0)
+    expect(w.asked).toBe(1)
+    expect(w.toasts).toBe(1)
+    expect(latest(w)).toBe('Auto-compact failed (vetoed: not now). Run /compact yourself')
+    await clock.advance(2 * MIN)
+    expect(w.asked).toBe(1)
+    expect(w.toasts).toBe(1)
+    expect(w.statuses?.some(t => t?.startsWith('Auto-compacted'))).toBe(false)
   })
 })

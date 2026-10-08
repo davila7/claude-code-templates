@@ -7,15 +7,15 @@ It is the action half of [prompt-cache-control](../prompt-cache-control). That m
 ## What it does
 
 - Watches each main-loop request and counts the cache down with the same code as prompt-cache-control (`hooks/cache.ts` is a copy of that mod's file), so the two always agree.
-- Fires when the chat is over **100k tokens** and the cache has under **5:00** left. Both are options. On a 5-minute cache (an API key, a cloud provider, usage credits) the window is capped at 2:00, so it fires at minute 3 and never straight after a reply.
+- Fires when the chat is at or over **100k tokens** and the cache has under **5:00** left. Both are options. On a 5-minute cache (an API key, a cloud provider, usage credits) the window is capped at 2:00, so it fires 3 minutes after the last request started. A reply that took longer than that is compacted as soon as it ends, since the engine refuses a compact while a turn runs.
 - Says so every time with a toast, plus a transcript line with the size before and after and what the compact itself cost.
-- Says so again when it fails. A refused compact pops up once per cache while it keeps retrying. A `/compact` it ran that has not compacted the chat within 90 seconds (or half the time left, whichever is shorter) pops up with the reason and how long the cache has left, so there is still time to run `/compact` yourself.
-- Shows what it will do in the status line: `Auto-compact armed: fires in 56m`, `Auto-compact due now`, `Auto-compact waits for 100k (chat is 40k)`, `Auto-compact off in this folder`, `Auto-compact missed: the cache ran out`.
-- Leaves chosen folders alone (`skipPaths`). A session started in one of them, or below it, or moved into one, never auto-compacts. Links and junctions are followed to where they really land.
+- Says so again when it fails. A refused compact pops up once per cache while it keeps retrying. A `/compact` it ran that has not compacted the chat within 90 seconds (or half the time left, whichever is shorter) pops up with the reason and how long the cache has left, so there is still time to run `/compact` yourself. A compact another plugin vetoes pops up once and is not asked again. Either way the status line says it failed, never that it compacted.
+- Shows what it will do in the status line: `Auto-compact armed: fires in 56m`, `Auto-compact due now`, `Auto-compact waits for 100k (chat is 40k)`, `Auto-compact off in this folder`, `Auto-compact ran /compact, waiting for it to finish`, `Auto-compact failed (...). Run /compact yourself`, `Auto-compact missed: the cache ran out`.
+- Leaves chosen folders alone (`skipPaths`). A session started in one of them, or below it, or moved into one, never auto-compacts. Links and junctions are followed to where they really land. Folders keep their case on Linux and macOS, while drive letters and UNC shares compare without case, as Windows does. `/` skips every folder.
 
 ## In the desktop app
 
-The Claude desktop app runs Claude Code headless, and there the engine refuses a plugin's own compact ("not available in a headless (-p / SDK) session yet"). When the mod gets that exact refusal it runs `/compact` as if you typed it. That path was proven in a live desktop session: with a 1-minute test window, the mod queued `/compact` about a minute after the reply started, with nobody typing. Any other refusal is never turned into `/compact`.
+The Claude desktop app runs Claude Code headless, and there the engine refuses a plugin's own compact ("not available in a headless (-p / SDK) session yet"). When the mod gets that exact refusal it runs `/compact` as if you typed it. That path was proven in a live desktop session: the mod queued `/compact` on its own, with nobody typing. Any other refusal is never turned into `/compact`.
 
 ## What it cannot do
 
@@ -60,4 +60,4 @@ Options are read from user settings (`~/.claude/settings.json`, never project se
 
 ## Tests
 
-85 tests under `claude plugin test`. `decide.test.ts` covers the decision logic, the window edges, path spellings and the status line. `lifecycle.test.ts` drives the whole mod through the engine on a mocked clock, including runs that pause the mod mid-check and change the world underneath it: a `/clear`, a manual `/compact`, a folder change, a cache that lapses during the check.
+98 tests under `claude plugin test`, passing on Linux and Windows. `decide.test.ts` covers the decision logic, the window edges, path spellings and the status line. `lifecycle.test.ts` drives the whole mod through the engine on a mocked clock, including runs that pause the mod mid-check and change the world underneath it: a `/clear`, a manual `/compact`, a folder change, a cache that lapses during the check. One branch cannot be staged there: the test kit swaps the words of any refusal for its own, so the desktop handoff to `/compact` is covered by the live run above, and the state it shares with a veto is tested through the engine.
