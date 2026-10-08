@@ -23,7 +23,7 @@ Five steps, in this order. Each one is checkable before the next.
 
 ```sh
 npx claude-code-templates@latest --mod productivity/jev-skill-suggestion
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
 The first prompt of the session prints `[jev-skill-suggestion] ready on …; withholding the skill listing` in the transcript. From here on the listing is already kept from the model on every prompt — but `/skills` and `/context` do not know that yet (see [Checking that it works](#checking-that-it-works)), which is what the next step is for.
@@ -153,7 +153,7 @@ jev · no skill
 
 1. **You ran `claude -p` (or the SDK).** A headless run has no transcript and no status row: every line still goes to the debug log, `~/.claude/debug/<session-id>.txt` (a `.txt`, not a `.log`; `latest` is a symlink to the newest), and an SDK host receives each one as `ui_log`.
 2. **The plugin was never loaded.** Claude Code adopts a plugin from a project's `.claude/skills/` (where `--mod` writes it) only once the project is trusted: it is repository content, so an untrusted folder's `.claude/` is not read at all, and `claude -p` never asks. Open `claude` interactively in the folder and accept the trust prompt, or name the plugin explicitly with `--plugin-dir` (see Install). `claude --debug` settles it: a loaded module prints `hooks module jev-skill-suggestion@skills-dir loaded (worker, …); events: prompt.attachment,prompt.submit,skill.prompt` (`@inline` when loaded with `--plugin-dir`); `Found N plugins` without it means the plugin is not in the session.
-3. **Function hooks are off.** Without `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` the debug log says `installed plugins' hooks modules not loaded: rollout flag (tengu_plugin_hooks_modules) is off`. Set the flag; Claude Code must be 2.1.278+ (see below).
+3. **Claude Code is too old.** Mods are on by default from 2.1.287; on an older build the debug log says `installed plugins' hooks modules not loaded: rollout flag (tengu_plugin_hooks_modules) is off`. Update Claude Code (this mod needs 2.1.278+, see below).
 
 A `ready on the built-in classifier, no key set` line when you did set a key means the key sits under the wrong `pluginConfigs` entry: the key must match the plugin's id, which depends on how it was loaded (see Options).
 
@@ -205,7 +205,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "jev-skill-suggestion": { "options": { "typesafeApiKey": "" } } } }
+{ "pluginConfigs": { "jev-skill-suggestion@skills-dir": { "options": { "typesafeApiKey": "" } } } }
 ```
 
 The entry's key is the plugin's id, and the id follows how the plugin was loaded: `"jev-skill-suggestion@skills-dir"` when auto-loaded from `.claude/skills/` (the `--mod` install), `"jev-skill-suggestion"` with `--plugin-dir`. Under the wrong key every option stays at its default, and the `ready on` line reports `no key set`.
@@ -216,7 +216,7 @@ The full sequence is in [Quick start](#quick-start); this is the detail behind i
 
 ```sh
 npx claude-code-templates@latest --mod productivity/jev-skill-suggestion
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
 `--mod` writes the plugin to `.claude/skills/jev-skill-suggestion/` in the project, and Claude Code auto-loads it as `jev-skill-suggestion@skills-dir` **in a trusted project**: a folder's `.claude/` is repository content and is not read until you accept the trust prompt on the first interactive `claude` there (`-p` never asks, so a headless run in a fresh folder never sees it). The options then go under the `"jev-skill-suggestion@skills-dir"` key in `pluginConfigs` (see Options).
@@ -224,7 +224,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
 For one session with hot reload, or in a folder you do not want to trust, name it on the command line instead — it loads as `jev-skill-suggestion@inline` and reads options from the `"jev-skill-suggestion"` key:
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-skill-suggestion
+claude --plugin-dir .claude/skills/jev-skill-suggestion
 ```
 
 Either way, `claude plugin validate .claude/skills/jev-skill-suggestion` prints every event it hooks and every `$` call it makes.
@@ -241,6 +241,6 @@ Pairs with [jev-model-router](../jev-model-router/README.md), which asks the sam
 bun test cli-tool/components/mods/productivity/jev-skill-suggestion/tests
 ```
 
-**Early access.** Mods need `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. This mod needs **Claude Code 2.1.278 or newer**: the `prompt.attachment` event it hooks to withhold the listing first shipped there. On an older release the module loads but the event never fires, so the listing stays and only the suggestion is added. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. This mod needs **Claude Code 2.1.278 or newer**: the `prompt.attachment` event it hooks to withhold the listing first shipped there. On an older release the module loads but the event never fires, so the listing stays and only the suggestion is added. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
 A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.

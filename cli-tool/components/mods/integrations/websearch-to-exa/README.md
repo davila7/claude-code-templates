@@ -21,16 +21,16 @@ Never hardcode it in this file.
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
 ```json
-{ "pluginConfigs": { "websearch-to-exa": { "options": { } } } }
+{ "pluginConfigs": { "websearch-to-exa@skills-dir": { "options": { } } } }
 ```
 
 ## Install
 
 ```sh
 npx claude-code-templates@latest --mod integrations/websearch-to-exa
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/websearch-to-exa/`, which Claude Code auto-loads as `websearch-to-exa@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/websearch-to-exa`. `claude plugin validate .claude/skills/websearch-to-exa` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/websearch-to-exa/`, which Claude Code auto-loads as `websearch-to-exa@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/websearch-to-exa`. `claude plugin validate .claude/skills/websearch-to-exa` prints every event it hooks and every `$` call it makes.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

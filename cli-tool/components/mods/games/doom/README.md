@@ -16,14 +16,14 @@ Your best score is kept in the plugin's store across sessions.
 
 ```sh
 npx claude-code-templates@latest --mod games/doom
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/doom/`, which Claude Code auto-loads as `doom@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/doom`.
+It is written to `.claude/skills/doom/`, which Claude Code auto-loads as `doom@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/doom`.
 
 ## Requirements
 
-- Claude Code 2.1.269 or later (the first build whose function hooks draw above the prompt) with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`. The `$` API is early access and may change between releases.
+- Claude Code 2.1.287 or later (mods are on by default from that version).
 - An interactive terminal that reports the mouse. Nothing draws in `claude -p`, the desktop app or mobile.
 - A terminal font with box-drawing and block characters.
 

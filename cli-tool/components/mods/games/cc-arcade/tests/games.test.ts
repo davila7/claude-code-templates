@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { newSnake, step as snakeStep, turn, type Pt } from '../hooks/games/snake.ts'
 import { cells, drop, newTetris, rotate, shift, type TetrisGame } from '../hooks/games/tetris.ts'
 import { move, slide, type G2048 } from '../hooks/games/twenty48.ts'

@@ -39,6 +39,20 @@ jobs:
           cd cli-tool/components/mods
           npx -y -p typescript@5 tsc -p tsconfig.json
 
+      - name: Install Claude Code (for plugin validate / plugin test)
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: claude plugin validate + claude plugin test on every mod
+        run: |
+          cd cli-tool/components/mods
+          status=0
+          for dir in */*/; do
+            case "$dir" in types/*) continue;; esac
+            claude plugin validate "$dir" || status=1
+            if [ -d "$dir/tests" ]; then claude plugin test "$dir" || status=1; fi
+          done
+          exit $status
+
       - name: Every mod is a plugin directory whose hooks.json modules exist
         run: |
           cd cli-tool/components/mods
