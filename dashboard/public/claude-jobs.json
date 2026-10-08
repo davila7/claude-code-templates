@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-07T03:16:32.731065+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-10-08T03:10:10.045039+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,70 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5444482008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architecture, Enterprise Tech",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "postedAt": "2026-10-07T15:00:01-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5434369008",
+      "company": "Anthropic",
+      "position": "Product Manager, Enterprise Privacy",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As a Product Manager focused on Enterprise Privacy, you'll collaborate with Privacy Engineering, Infrastructure, Trust and Safety, Legal, Security, GTM, enterprise and platform product teams, and our cloud partners to evolve and extend the controls that enterprises, regulated industries, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5434369008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5434369008",
+      "postedAt": "2026-10-07T13:23:27-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-49991656",
+      "company": "Flowstate",
+      "position": "Software Engineer",
+      "location": "On-site",
+      "remote": false,
+      "salary": "",
+      "description": "Flowstate ( https://www.flowstate.inc ) is building infrastructure for the emerging human + AI workforce. Companies are rapidly adopting Claude, ChatGPT, Cursor, Copilot and internal agents, but most still have very little idea what that AI is actually doing, what it costs, what work it contributes...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49991656",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49991656",
+      "postedAt": "2026-10-07T12:11:44+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5445410008",
       "company": "Anthropic",
@@ -253,23 +317,6 @@
         "Cursor",
         "Copilot",
         "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49922606",
-      "company": "We The Flywheel",
-      "position": "Software Engineer",
-      "location": "REMOTE (async, global)",
-      "remote": true,
-      "salary": "",
-      "description": "We're a small, agent-led studio. Most of our ops run through AI agents, and the people here direct them. We need a production designer who turns briefs into polished, on-brand marketing, social and ad creative, fast, inside an existing brand system. What we're looking for: - Real Figma experience...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49922606",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49922606",
-      "postedAt": "2026-10-01T15:03:25+00:00",
-      "tags": [
-        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -1538,24 +1585,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-48747990",
-      "company": "We The Flywheel",
-      "position": "Software Engineer",
-      "location": "REMOTE (worldwide)",
-      "remote": true,
-      "salary": "",
-      "description": "We're a remote-first digital product studio building across sports media, AI, fitness, and personal branding — 500+ web properties and deeply AI-native workflows. AI does the heavy lifting here, but it's the leverage, not the point: we hire for the human judgment, ingenuity, and taste on top of it....",
-      "applyUrl": "https://news.ycombinator.com/item?id=48747990",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48747990",
-      "postedAt": "2026-07-01T15:02:00+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
@@ -1796,6 +1825,27 @@
         "TypeScript",
         "Python",
         "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5082455008",
+      "company": "Anthropic",
+      "position": "AI Outcomes Manager",
+      "location": "New York City, NY; San Francisco, CA; Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Join Anthropic's Customer Success team in a high-visibility & high-impact role driving AI adoption across a small number of strategic accounts in our Enterprise Tech segment. As our dedicated Outcomes AI Manager for Strategic Tech Customers you’ll be their partner and trusted advisor helping them...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5082455008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5082455008",
+      "postedAt": "2026-01-23T17:55:09-05:00",
+      "tags": [
+        "Rust",
+        "Go",
         "AWS",
         "Claude Code",
         "Anthropic"
