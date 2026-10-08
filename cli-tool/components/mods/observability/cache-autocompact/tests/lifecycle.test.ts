@@ -54,6 +54,8 @@ type World = {
   statGateFor?: string
   // the next request reports no usage (an aborted or failed request): it ran, but records nothing
   noUsage?: boolean
+  // the environment the mod reads
+  env?: Record<string, string>
   // a hook beneath the mod vetoes every compact the mod asks for
   vetoes?: string
   // compacts the mod asked for, whatever became of them
@@ -80,7 +82,7 @@ function hold() {
 // everything the mod asks the engine for, answered from `w`, which a test may change mid-run
 function engine(on: On, w: World) {
   const clock = mock.clock(on, { now: T0 })
-  mock.env(on, {})
+  mock.env(on, w.env ?? {})
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('session.end', ($, e) => ({ sessionId: e.sessionId }))
   // calls on a noun are answered as { value } (or { deny }), the shape the engine's own answers take
@@ -137,7 +139,8 @@ function engine(on: On, w: World) {
           w.refuseEntered?.()
           await w.refuseGate
         }
-        throw new Error('a turn is running')
+        // neutral words: the kit drops a hook that throws, and the mod sees the kit's own text
+        throw new Error('refused by the test engine')
       }
       if (w.vetoes) return { skip: w.vetoes }
     }
@@ -1117,5 +1120,32 @@ describe('a move while the folder check is under way', () => {
     expect(w.compacts).toBe(0)
     await clock.advance(5_000)
     expect(w.compacts).toBe(1)
+  })
+})
+
+describe('review round 7', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+  for (const entry of ['.', 'x/..']) {
+    test(`a skip entry that names no folder (${entry}) is named, not taken as every folder`, { options: { skipPaths: entry } }, async ($, on) => {
+      const w: World = { cwd: ALLOWED, compacts: 0 }
+      const clock = engine(on, w)
+      await start($, ALLOWED)
+      await request($)
+      await clock.advance(10_000)
+      expect(latest(w)).toBe(`Auto-compact off: can't find skip folder ${entry}`)
+      await clock.advance(HOUR - 30_000)
+      expect(w.compacts).toBe(0)
+    })
+  }
+
+  test('with compaction switched off it never asks, never pops up, and says why', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, env: { DISABLE_COMPACT: '1' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.asked ?? 0).toBe(0)
+    expect(w.toasts ?? 0).toBe(0)
+    expect(latest(w)).toBe('Auto-compact off: compaction is switched off')
   })
 })

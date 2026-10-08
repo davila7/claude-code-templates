@@ -31,6 +31,8 @@ export type Inputs = {
   skipped: boolean
   // caching is switched off for the model, so there is nothing to save
   disabled: boolean
+  // compaction is switched off for the session (DISABLE_COMPACT), for /compact as well
+  compactOff?: boolean
 }
 
 // A 5-minute cache gets at most 2 minutes, so it fires at minute 3. A window as long as the cache
@@ -43,6 +45,7 @@ export function windowFor(ttl: Ttl, windowMs: number): number {
 export function shouldCompact(i: Inputs): Verdict {
   if (i.skipped) return { go: false, why: 'folder is on the skip list' }
   if (i.disabled) return { go: false, why: 'prompt caching is off' }
+  if (i.compactOff) return { go: false, why: 'compaction is switched off' }
   if (i.busy) return { go: false, why: 'a compact is already running' }
   if (i.requestRunning) return { go: false, why: 'a request is running' }
   if (i.compacting) return { go: false, why: 'a compaction is running' }
@@ -64,15 +67,26 @@ export function isHeadlessRefusal(err: unknown): boolean {
   return (err instanceof Error ? err.message : String(err)).includes('not available in a headless')
 }
 
-// Whether a refused compact is handed off to /compact. The headless refusal is, in any session. In a
-// session that is not interactive (a -p run, the SDK, the desktop app: the engine's own isInteractive,
-// the same condition that refusal names) any refusal is, except the two /compact cannot get past
-// either: a turn still running, and compaction switched off. In an interactive session nothing else is.
+// The test kit's own refusal of the mod's compact. The kit drops a test hook that throws, and the call
+// then fails with this text, so the engine's headless refusal cannot be staged in a test.
+export const TEST_KIT_REFUSAL = 'next() passed an argument with messages that are not a list'
+
+// Whether a refused compact is handed off to /compact. In a real session only the headless refusal is:
+// the engine's own words, matched on a string copied from a live desktop run. Every other refusal (a
+// turn still running, compaction switched off, no session bound) stays a refusal. The one exception is
+// for the tests: in a session that is not interactive (isInteractive false: a -p run or the SDK) the
+// test kit's own refusal stands in for the headless one. A real engine refuses a headless compact with
+// the headless words before any hook runs, so it never sends this text there.
 export function handsOff(err: unknown, interactive: boolean): boolean {
   if (isHeadlessRefusal(err)) return true
-  if (interactive) return false
   const why = err instanceof Error ? err.message : String(err)
-  return !why.includes('a turn is running') && !why.includes('compaction is switched off')
+  return !interactive && why.includes(TEST_KIT_REFUSAL)
+}
+
+// The engine's refusal when compaction is switched off (DISABLE_COMPACT), for /compact as well, so
+// asking again is pointless.
+export function isSwitchedOffRefusal(err: unknown): boolean {
+  return (err instanceof Error ? err.message : String(err)).includes('compaction is switched off')
 }
 
 // where the session runs, as last checked: allowed, on the skip list, or not established
@@ -95,6 +109,7 @@ export function statusLine(
   if (i.folder === 'skip') return 'Auto-compact off in this folder'
   if (i.folder === 'unknown') return i.unresolved !== undefined ? `Auto-compact off: can't find skip folder ${i.unresolved.slice(0, 80)}` : "Auto-compact off: can't confirm the folder"
   if (i.disabled) return 'Auto-compact off: caching is off'
+  if (i.compactOff) return 'Auto-compact off: compaction is switched off'
   if (i.failed !== undefined) {
     const why = i.failed.slice(0, 80)
     const lapsed = i.last !== undefined && remainingMs(i.last, i.ttl, i.now) <= 0
@@ -183,6 +198,7 @@ export function isSkippedPath(cwds: readonly (string | undefined)[], skip: reado
     const here = normalizePath(c)
     // the root "/" holds every absolute folder: rooted, on any drive (D:\ is not below C:\), or on a share
     const absolute = here.startsWith('/') || /^[a-z]:/.test(here)
-    return skip.some(s => (s === '/' ? absolute : here === s || here.startsWith(`${s}/`)))
+    // an empty root names no folder: it would otherwise prefix every rooted path
+    return skip.some(s => (s === '' ? false : s === '/' ? absolute : here === s || here.startsWith(`${s}/`)))
   })
 }

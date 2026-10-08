@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fmtWait, handsOff, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
+import { fmtWait, handsOff, isHeadlessRefusal, isSwitchedOffRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -445,9 +445,34 @@ describe('which refusals hand off to /compact', () => {
     expect(handsOff(new Error(TURN), true)).toBe(false)
     expect(handsOff(new Error('no implementation for session.compact'), true)).toBe(false)
   })
-  test('a session that is not interactive hands off on any refusal but a running turn or compaction switched off', () => {
-    expect(handsOff(new Error('no implementation for session.compact'), false)).toBe(true)
+  test('a real refusal other than the headless one never hands off, whatever the session', () => {
     expect(handsOff(new Error(TURN), false)).toBe(false)
     expect(handsOff(new Error(OFF), false)).toBe(false)
+    expect(handsOff(new Error('cache-autocompact: $.session.compact: no session is bound'), false)).toBe(false)
+    expect(handsOff(new Error('no implementation for session.compact'), false)).toBe(false)
+  })
+  test("the test kit's own refusal stands in for the headless one, outside an interactive session only", () => {
+    const KIT = 'test: next() passed an argument with messages that are not a list'
+    expect(handsOff(new Error(KIT), false)).toBe(true)
+    expect(handsOff(new Error(KIT), true)).toBe(false)
+  })
+  test('compaction switched off is recognized, so the mod stops asking', () => {
+    expect(isSwitchedOffRefusal(new Error(OFF))).toBe(true)
+    expect(isSwitchedOffRefusal(new Error(TURN))).toBe(false)
+  })
+})
+
+describe('review round 7', () => {
+  test('an empty root never matches: it is not a folder', () => {
+    expect(isSkippedPath(['/srv/other'], ['', '/home/me/proj'])).toBe(false)
+    expect(isSkippedPath(['C:\\work'], [''])).toBe(false)
+    expect(isSkippedPath(['/home/me/proj/x'], ['', '/home/me/proj'])).toBe(true)
+  })
+
+  test('compaction switched off holds the mod, and the line says so', () => {
+    const v = shouldCompact(inputs({ compactOff: true }))
+    expect(v.go ? 'went' : v.why).toBe('compaction is switched off')
+    const { skipped: _, ...rest } = inputs({ compactOff: true })
+    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact off: compaction is switched off')
   })
 })

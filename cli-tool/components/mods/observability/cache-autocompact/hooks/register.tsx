@@ -27,9 +27,9 @@
  *   skipPaths: string       comma-separated folders it never fires in (default none)
  */
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
-import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
+import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, isOn, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { handsOff, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import { handsOff, isSkippedPath, isSwitchedOffRefusal, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
@@ -37,9 +37,11 @@ const KEEP = 20
 type Config = { minTokens: number; windowMs: number; skip: string[] }
 
 let gen = 0
-// whether a person is at the prompt, as session.start reported it: false for -p, the SDK and the
-// desktop app, where a plugin's own compact is refused and /compact runs instead
+// whether a person is at the prompt, as session.start reported it: false for a -p run or the SDK (the
+// desktop app's value is unverified). It only gates the test kit's stand-in refusal (decide.ts handsOff).
 let interactive = true
+// compaction is switched off for the session (DISABLE_COMPACT), for /compact too: the mod stops asking
+let compactOff = false
 // bumped whenever the session's folder changes, so a folder check made before the change does not count
 let cwdRev = 0
 let samples: Sample[] = []
@@ -122,6 +124,8 @@ async function currentTtlBase($: EngineInterface): Promise<Ttl> {
 async function resolveSkips($: EngineInterface): Promise<{ roots: string[] | undefined; unresolved: string | undefined }> {
   const roots: string[] = []
   for (const root of skipList) {
+    // ".", "./" or "x/.." names no folder as written: named as unresolved, never taken as a root
+    if (normalizePath(root) === '') return { roots: undefined, unresolved: root }
     const found = await spellings($, root)
     if (!found) return { roots: undefined, unresolved: root }
     for (const s of found) roots.push(normalizePath(s))
@@ -177,6 +181,7 @@ async function tick($: EngineInterface, cfg: Config) {
       triedFor,
       requestRunning: requests.running > 0 || requests.turns.size > 0,
       compacting: requests.compacting > 0,
+      compactOff,
       busy,
       skipped,
       disabled: last ? isCachingDisabled(last.model, env) : false,
@@ -200,6 +205,7 @@ async function tick($: EngineInterface, cfg: Config) {
       disabled: last0 ? isCachingDisabled(last0.model, env) : false,
       requestRunning: requests.running > 0 || requests.turns.size > 0,
       compacting: requests.compacting > 0,
+      compactOff,
       folder,
       refused,
       failed: current(failed?.startedAt) ? failed?.why : undefined,
@@ -292,6 +298,12 @@ async function tick($: EngineInterface, cfg: Config) {
     // and into the transcript once per new reason, so a miss always says why.
     if (gen !== mine) return
     const why = err instanceof Error ? err.message : String(err)
+    if (isSwitchedOffRefusal(err)) {
+      // the engine refuses /compact too: say so on the status line and stop asking for the session
+      compactOff = true
+      $.ui.log(`cache-autocompact: off, ${why}`)
+      return
+    }
     if (why !== refused) $.ui.log(`cache-autocompact: compact refused: ${why}`)
     refused = why
     // one pop-up per cache: it keeps retrying every 5 seconds, and the status line shows each try
@@ -319,6 +331,7 @@ export const register: Register = (on, options) => {
     const r = await next(e)
     resetConversation()
     interactive = e.isInteractive
+    compactOff = isOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
     const none = () => undefined
     env = {
       enable1h: await $.env.get('ENABLE_PROMPT_CACHING_1H').catch(none),
