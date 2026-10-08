@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "qrx": {
+      "description": "Official QRX MCP server: make branded, print-ready art QR codes from a prompt and a link. Each code is checked to decode before it is returned and points at a hosted qrx.to short link. Hosted remote server; create your API key at https://qrx.codes/developers/keys (free account, 42 codes a day).",
+      "type": "http",
+      "url": "https://qrx.codes/mcp",
+      "headers": {
+        "Authorization": "Bearer your_api_key"
+      }
+    }
+  }
+}
