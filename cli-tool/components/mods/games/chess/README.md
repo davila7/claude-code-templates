@@ -39,6 +39,8 @@ Run `/chess` to open the board (`/chess black` to play Black, `/chess white` for
 
 Unicode draws White's pieces as outlines and Black's as solid shapes, which only reads right as dark ink on a light background. On a dark Claude Code theme (and on `auto`) the pane swaps them, so White is solid and Black is a dimmed outline; on a `light*` theme it keeps the Unicode convention. The theme is read when the session starts and each time you run `/chess`. A mod cannot see what `auto` resolved to, so if your terminal is light under `auto`, set the `board` option to `light`.
 
+The board is drawn as 64 fixed 3 x 1 cells on every surface. On Claude Code Desktop (HTML) a square used to size itself to its text, so empty squares came out narrower than ones with a piece and the rows drifted; the cells now have a fixed size, and the desktop gets no-break spaces so the label's padding is not collapsed. The terminal draws exactly what it did before.
+
 Mouse clicks land in the fullscreen layout. Everywhere else, focus the pane (ctrl+x tab), then move with Tab and press with Enter. The Claude Code mobile app has no text field, so there you click.
 
 The full rules are enforced: castling, en passant, promotion, check, checkmate, stalemate, the fifty-move rule, threefold repetition and insufficient material.
@@ -103,19 +105,19 @@ With `--plugin-dir` the id is plain `chess`. If the unicode pieces look too alik
 
 ```sh
 npx claude-code-templates@latest --mod games/chess
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/chess/`, which Claude Code auto-loads as `chess@skills-dir` in a **trusted** project (accept the trust prompt once; `claude -p` never shows it). For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/chess`. `claude plugin validate .claude/skills/chess` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/chess/`, which Claude Code auto-loads as `chess@skills-dir` in a **trusted** project (accept the trust prompt once; `claude -p` never shows it). For one session with hot reload: `claude --plugin-dir .claude/skills/chess`. `claude plugin validate .claude/skills/chess` prints every event it hooks and every `$` call it makes.
 
 If `/chess` is missing from the typeahead, the mod did not load: run `claude --debug` and look for `hooks module chess@… loaded` in `~/.claude/debug/latest`.
 
 ## Tests
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/chess
+claude plugin test .claude/skills/chess
 ```
 
 The rules are checked against published perft move counts. The Jev tests check the request (a choice over exactly the legal moves) and how each response is read. The pane tests answer `$.model.fork` and `$.model.complete` from a script, mount the pane on the terminal surface, click and type moves, and read the token lines.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.283 against its declarations; on 2.1.283 `$.model.fork` and `$.model.complete` resolve `{ isAnswered, text, usage }`, and the mod also reads the older string/null results. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written and tested on 2.1.283 against its declarations; on 2.1.283 `$.model.fork` and `$.model.complete` resolve `{ isAnswered, text, usage }`, and the mod also reads the older string/null results. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

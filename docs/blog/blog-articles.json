@@ -41,8 +41,8 @@
     },
     {
       "id": "function-hooks-claude-code",
-      "title": "Claude Code Function Hooks (Experimental): How to Enable Them and Write Your First TypeScript Hook",
-      "description": "Claude Mods are Claude Code plugins built on function hooks: TypeScript middleware on a $ engine interface. How to turn the early-access flag on, how a hook composes, and 10 ready-made mods in the aitmpl.com catalog.",
+      "title": "Claude Code Function Hooks: How to Enable Them and Write Your First TypeScript Hook",
+      "description": "Claude Mods are Claude Code plugins built on function hooks: TypeScript middleware on a $ engine interface. How to enable them, how a hook composes, and 10 ready-made mods in the aitmpl.com catalog.",
       "url": "function-hooks-claude-code/",
       "image": "assets/function-hooks-claude-code-cover.svg",
       "category": "Hooks",

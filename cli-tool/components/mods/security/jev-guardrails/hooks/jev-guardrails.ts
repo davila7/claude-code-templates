@@ -1,5 +1,5 @@
 /**
- * jev-guardrails — Claude Mod (EARLY ACCESS)
+ * jev-guardrails — Claude Mod
  *
  * Screens every message going into and out of the main conversation with
  * TypeSafe's Jev, a System One decision model, the way TypeSafe's
@@ -47,7 +47,7 @@
  * The API key comes from the plugin's options (userConfig "typesafeApiKey"
  * or "gatewayApiKey"). Never hardcode it in this file.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Privacy: with a key set, the prompt text and the model's replies are sent

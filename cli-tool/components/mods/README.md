@@ -4,8 +4,9 @@ Claude Mods are Claude Code plugins whose behaviour lives in a function-hooks
 module: one `register(on, options)` entry that hooks the engine's events as
 functions `($, e, next)`. Reference: https://github.com/anthropics/claude-code/tree/main/mods
 
-**Early access.** Mods load in Claude Code >= 2.1.259 with
-`CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases.
+Mods are on by default in Claude Code 2.1.287 and later. Builds from 2.1.259
+to 2.1.286 need `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; 2.1.287+ ignores it.
+Docs: https://code.claude.com/docs/en/plugins/mods/overview
 
 ## Layout in this repo
 
@@ -36,7 +37,7 @@ string. Values are read from **user** settings (`~/.claude/settings.json`),
 `--settings <file>` or managed settings, never from project settings:
 
 ```json
-{ "pluginConfigs": { "npm-to-pnpm-rewriter": { "options": { "manager": "yarn" } } } }
+{ "pluginConfigs": { "npm-to-pnpm-rewriter@skills-dir": { "options": { "manager": "yarn" } } } }
 ```
 
 `types/claude-code.d.ts` is Anthropic's declaration file as `/plugin-types`

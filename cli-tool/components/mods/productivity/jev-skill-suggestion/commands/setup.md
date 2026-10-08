@@ -6,4 +6,4 @@ allowed-tools: Read, Write, Edit, Bash(rm ~/.claude/jev-skill-suggestion.skill-o
 ---
 Mode: $ARGUMENTS
 
-If this text is all you can see, the jev-skill-suggestion mod is not loaded: it rewrites this command at run time with the real list of skills and the exact settings change. Tell the user to start Claude Code with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` (Claude Code 2.1.278 or newer) in a trusted project, or with `--plugin-dir .claude/skills/jev-skill-suggestion`, and to run this command again. Do not edit any settings file.
+If this text is all you can see, the jev-skill-suggestion mod is not loaded: it rewrites this command at run time with the real list of skills and the exact settings change. Tell the user to use Claude Code 2.1.287 or newer in a trusted project, or with `--plugin-dir .claude/skills/jev-skill-suggestion`, and to run this command again. Do not edit any settings file.
