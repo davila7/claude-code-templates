@@ -23,6 +23,8 @@ export type Inputs = {
   // a /compact the mod handed off has not been settled by a compaction: it may still be queued, so no
   // second one is handed off for any request until it is, or the conversation is left
   handoffOpen?: boolean
+  // a main-loop request has started and not finished: it is about to refresh the cache being counted
+  requestRunning?: boolean
   // a compact this mod started is still running
   busy: boolean
   // the session runs in a folder the person asked to leave alone
@@ -43,6 +45,7 @@ export function shouldCompact(i: Inputs): Verdict {
   if (i.disabled) return { go: false, why: 'prompt caching is off' }
   if (i.busy) return { go: false, why: 'a compact is already running' }
   if (i.handoffOpen) return { go: false, why: 'a /compact it ran is still open' }
+  if (i.requestRunning) return { go: false, why: 'a request is running' }
   if (!i.last) return { go: false, why: 'no request yet' }
   if (i.firedFor === i.last.startedAt) return { go: false, why: 'already compacted for this cache' }
   if (i.triedFor === i.last.startedAt) return { go: false, why: 'already tried for this cache' }
@@ -67,6 +70,14 @@ export function isHeadlessRefusal(err: unknown): boolean {
 // waits half of it.
 export function fallbackDeadline(at: number, leftMs: number): number {
   return at + Math.min(90_000, leftMs / 2)
+}
+
+// What the status line says about a /compact handed off, from the conversation's state: pending while
+// its deadline record stands (whichever request came after it), paused only once that record is gone
+// and no compaction has closed the handoff.
+export function handoffFlags(i: { mine: number; awaitingGen: number | undefined; handoffGen: number }): { pending: boolean; blocked: boolean } {
+  const pending = i.awaitingGen === i.mine
+  return { pending, blocked: !pending && i.handoffGen === i.mine }
 }
 
 // where the session runs, as last checked: allowed, on the skip list, or not established

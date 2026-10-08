@@ -29,7 +29,7 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { fallbackDeadline, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import { fallbackDeadline, handoffFlags, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
@@ -47,8 +47,13 @@ let env: CacheEnv = {}
 let firedFor = 0
 // the request whose cache already had its one try (a /compact handed off, a veto); never shown as done
 let triedFor = 0
-// the generation whose compact is in flight; -1 for none
-let busyGen = -1
+// the attempt that holds the lock, 0 for none; each attempt has its own number, so one that ends
+// late can never release a newer attempt's lock
+let busyAttempt = 0
+let attempts = 0
+// main-loop requests started and not yet finished, and a count bumped as each one starts
+let running = 0
+let requestRev = 0
 let timer: { cancel: () => void } | undefined
 // the skip folders as configured and as resolved through junctions and links, spelled for comparison;
 // undefined when one could not be resolved, which turns auto-compact off
@@ -77,7 +82,7 @@ function resetConversation() {
   samples = []
   firedFor = 0
   triedFor = 0
-  busyGen = -1
+  busyAttempt = 0
   track = undefined
   refused = undefined
   warnedFor = 0
@@ -134,6 +139,7 @@ async function tick($: EngineInterface, cfg: Config) {
       firedFor,
       triedFor,
       handoffOpen: handoffGen === gen,
+      requestRunning: running > 0,
       busy,
       skipped: false,
       disabled: last ? isCachingDisabled(last.model, env) : false,
@@ -160,21 +166,22 @@ async function tick($: EngineInterface, cfg: Config) {
       minTokens: cfg.minTokens,
       windowMs: cfg.windowMs,
       firedFor,
-      busy: busyGen !== -1,
+      busy: busyAttempt !== 0,
       disabled: last0 ? isCachingDisabled(last0.model, env) : false,
       folder,
       refused,
-      pending: awaiting?.gen === mine && current(awaiting.startedAt),
       failed: current(failed?.startedAt) ? failed?.why : undefined,
-      blocked: handoffGen === mine,
+      ...handoffFlags({ mine, awaitingGen: awaiting?.gen, handoffGen }),
     }),
   )
   // cheap check first, so an idle session touches no file system every five seconds
-  if (gen !== mine || !judge(now, samples[samples.length - 1], busyGen !== -1).go) return
-  busyGen = mine
+  if (gen !== mine || !judge(now, samples[samples.length - 1], busyAttempt !== 0).go) return
+  const attempt = ++attempts
+  busyAttempt = attempt
   try {
     const last = samples[samples.length - 1]
     const rev = cwdRev
+    const req = requestRev
     const where = await folderNow($)
     const skipped = where !== 'on'
     const at = await $.clock.now()
@@ -183,7 +190,7 @@ async function tick($: EngineInterface, cfg: Config) {
     // here is what holds when it is called: the same conversation (which also means this tick
     // still holds the lock), the same request, no folder change since the check, and still
     // inside the window.
-    if (gen !== mine || cwdRev !== rev || skipped) return
+    if (gen !== mine || cwdRev !== rev || requestRev !== req || skipped) return
     if (!last || samples[samples.length - 1] !== last) return
     const due = judge(at, last, false)
     if (!due.go) return
@@ -196,10 +203,11 @@ async function tick($: EngineInterface, cfg: Config) {
       // (found in a live test). There /compact runs as a command, queued until the session is idle.
       if (!isHeadlessRefusal(err)) throw err
       // The refusal arrived through an await, so everything checked before the call is checked again:
-      // a /clear, a resume, a newer request or a folder move (which bumps cwdRev) in the meantime, or
-      // the cache leaving the window, abandons the handoff. Nothing below awaits until command.run.
+      // a /clear, a resume, a request started or finished (requestRev counts starts, and judge holds
+      // while one runs), a folder move (which bumps cwdRev), or the cache leaving the window, abandons
+      // the handoff. Nothing below awaits until command.run.
       const at2 = await $.clock.now()
-      if (gen !== mine || cwdRev !== rev || samples[samples.length - 1] !== last) return
+      if (gen !== mine || cwdRev !== rev || requestRev !== req || samples[samples.length - 1] !== last) return
       const still = judge(at2, last, false)
       if (!still.go) return
       // Notice first: the compact restarts the session, which bumps gen, so anything after the
@@ -214,11 +222,15 @@ async function tick($: EngineInterface, cfg: Config) {
       // Whether it worked is judged later, by the tick, against a deadline: see `awaiting`.
       const pending = { gen: mine, startedAt: last.startedAt, deadline: fallbackDeadline(at2, still.leftMs), lapse: at2 + still.leftMs } as NonNullable<typeof awaiting>
       awaiting = pending
+      // The lock is released at dispatch: an open handoff (handoffGen) keeps any second one out from
+      // here, and a command.run that never returns cannot leave the mod busy for good.
+      if (busyAttempt === attempt) busyAttempt = 0
       try {
         await $.command.run({ command: 'compact' })
       } catch (e) {
-        // a throw is only the reason shown if no compaction turns up by the deadline
-        pending.why = e instanceof Error ? e.message : String(e)
+        // a throw is only the reason shown if no compaction turns up by the deadline, and only for
+        // this attempt's own record: a late answer never touches a newer attempt
+        if (awaiting === pending) pending.why = e instanceof Error ? e.message : String(e)
       }
       return
     }
@@ -255,7 +267,7 @@ async function tick($: EngineInterface, cfg: Config) {
       $.ui.toast(`Auto-compact was refused (${why.slice(0, 80)}). It keeps trying; run /compact yourself to be sure`)
     }
   } finally {
-    if (busyGen === mine) busyGen = -1
+    if (busyAttempt === attempt) busyAttempt = 0
   }
 }
 
@@ -347,29 +359,38 @@ export const register: Register = (on, options) => {
   // each main-loop request; subagents and the engine's own forks carry an agentId and keep their own caches
   on('turn.step', async function* ($, e, next) {
     if (e.agentId) return yield* next(e)
-    const mine = gen
-    const startedAt = await $.clock.now()
-    const r = yield* next(e)
-    if (!r.usage || gen !== mine) return r
-    const cur: Sample = {
-      turnId: e.turnId,
-      index: e.index,
-      model: r.usage.model || e.model,
-      startedAt,
-      read: r.usage.cache_read_input_tokens,
-      write: r.usage.cache_creation_input_tokens,
-      fresh: r.usage.input_tokens,
-      output: r.usage.output_tokens,
+    // counted before the first await, so a compact checked from here on knows a request is under way;
+    // requestRev moves at the start and at the end, so a check that spans either sees the change
+    running += 1
+    requestRev += 1
+    try {
+      const mine = gen
+      const startedAt = await $.clock.now()
+      const r = yield* next(e)
+      if (!r.usage || gen !== mine) return r
+      const cur: Sample = {
+        turnId: e.turnId,
+        index: e.index,
+        model: r.usage.model || e.model,
+        startedAt,
+        read: r.usage.cache_read_input_tokens,
+        write: r.usage.cache_creation_input_tokens,
+        fresh: r.usage.input_tokens,
+        output: r.usage.output_tokens,
+      }
+      const base = await currentTtlBase($)
+      if (gen !== mine) return r
+      const prev = samples[samples.length - 1]
+      samples.push(cur)
+      refused = undefined
+      if (samples.length > KEEP) samples = samples.slice(-KEEP)
+      const tracked = nextTtl(track, base, prev, cur)
+      track = tracked.track
+      ttl = tracked.ttl
+      return r
+    } finally {
+      running -= 1
+      requestRev += 1
     }
-    const base = await currentTtlBase($)
-    if (gen !== mine) return r
-    const prev = samples[samples.length - 1]
-    samples.push(cur)
-    refused = undefined
-    if (samples.length > KEEP) samples = samples.slice(-KEEP)
-    const tracked = nextTtl(track, base, prev, cur)
-    track = tracked.track
-    ttl = tracked.ttl
-    return r
   })
 }

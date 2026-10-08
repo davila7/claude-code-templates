@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fallbackDeadline, fmtWait, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
+import { fallbackDeadline, fmtWait, handoffFlags, isHeadlessRefusal, isSkippedPath, nextTtl, normalizePath, parsePaths, shouldCompact, splitPaths, statusLine } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -366,6 +366,27 @@ describe('review round 1', () => {
     expect(isSkippedPath(['c:'], root)).toBe(true)
     expect(isSkippedPath(['\\\\server\\share\\x'], root)).toBe(true)
     expect(isSkippedPath(['work/x'], root)).toBe(false)
+  })
+})
+
+describe('review round 2', () => {
+  test('a main request still running holds the compact: it is about to refresh the cache', () => {
+    const v = shouldCompact(inputs({ requestRunning: true }))
+    expect(v.go ? 'went' : v.why).toBe('a request is running')
+  })
+
+  test('a handoff inside its deadline is pending for the whole conversation, even after a newer reply', () => {
+    expect(handoffFlags({ mine: 3, awaitingGen: 3, handoffGen: 3 })).toEqual({ pending: true, blocked: false })
+    const { skipped: _, ...rest } = inputs({ last: sample({ startedAt: T0 + 60_000 }) })
+    expect(statusLine({ ...rest, folder: 'on', ...handoffFlags({ mine: 3, awaitingGen: 3, handoffGen: 3 }) })).toBe(
+      'Auto-compact ran /compact, waiting for it to finish',
+    )
+  })
+
+  test('paused only once the deadline record is gone and the handoff is still open', () => {
+    expect(handoffFlags({ mine: 3, awaitingGen: undefined, handoffGen: 3 })).toEqual({ pending: false, blocked: true })
+    expect(handoffFlags({ mine: 3, awaitingGen: 2, handoffGen: -1 })).toEqual({ pending: false, blocked: false })
+    expect(handoffFlags({ mine: 3, awaitingGen: undefined, handoffGen: -1 })).toEqual({ pending: false, blocked: false })
   })
 })
 

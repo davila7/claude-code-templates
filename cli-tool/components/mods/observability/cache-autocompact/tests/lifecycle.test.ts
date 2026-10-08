@@ -639,6 +639,30 @@ describe('failure notices', () => {
   })
 })
 
+describe('a request still running', () => {
+  test('holds the compact of the cache before it, which that request is about to refresh', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($, 1)
+    await clock.advance(HOUR - 6 * MIN)
+    const h = hold()
+    w.gate = h.gate
+    w.entered = h.reached
+    const running = request($, 2)
+    await h.arrived
+    // the first request's cache is inside its window while the second is still under way
+    await clock.advance(2 * MIN)
+    expect(w.compacts).toBe(0)
+    w.gate = undefined
+    h.release()
+    await running
+    await clock.advance(5_000)
+    // the second request started a fresh hour
+    expect(w.compacts).toBe(0)
+  })
+})
+
 describe('a veto', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
   test('is a failure: one pop-up, the reason on the status line, never shown as done, not asked again', async ($, on) => {
