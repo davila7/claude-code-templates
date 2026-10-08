@@ -50,7 +50,7 @@ ingest.add_query_route(path='/list', query=list_docs, method='get')
 ingest.add_query_route(path='/search', query=search_docs, method='post')
 ```
 
-`token_limit` needs `pip install tiktoken`, and the index calls OpenAI, so `OPENAI_API_KEY` must reach the daemon ([cli.md](cli.md#daemon)). `'sentence'` separators would add spaCy; a `sentence_transformer` index would add torch. `page` numbers PDF pages from 0 and is `None` for other formats.
+`token_limit` needs `pip install tiktoken`, and the index calls OpenAI, so `OPENAI_API_KEY` must reach the daemon ([CLI docs](https://docs.pixeltable.com/platform/cli)). `'sentence'` separators would add spaCy; a `sentence_transformer` index would add torch. `page` numbers PDF pages from 0 and is `None` for other formats.
 
 ```bash
 pxt init
@@ -91,4 +91,4 @@ Frontend types: `curl -fsS "$URL/openapi.json" -o openapi.json`, then `npx opena
 
 No HTTP: apply, then insert from Python. [Self-hosting](https://docs.pixeltable.com/howto/deployment/overview).
 
-[cli.md](cli.md) | [core-api.md](core-api.md#serving)
+[CLI docs](https://docs.pixeltable.com/platform/cli) | [core-api.md](core-api.md#serving)

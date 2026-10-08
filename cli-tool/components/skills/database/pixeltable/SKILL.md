@@ -46,7 +46,7 @@ pxt service update app.py my_app -f   # no TTY: without -f a pending start exits
 pxt service list                  # assigned port; do not hard-code :8000
 ```
 
-`pxt service example` writes models plus a `FastAPIRouter`. Schema only (no HTTP): `pxt schema example --brief --out app.py`. Then edit `app.py` and run `pxt schema update` again. After a schema change, run `pxt service update ... -f` again if routes exist; until then they answer 409. Do not `python app.py`. Full flags: [cli.md](references/cli.md).
+`pxt service example` writes models plus a `FastAPIRouter`. Schema only (no HTTP): `pxt schema example --brief --out app.py`. Then edit `app.py` and run `pxt schema update` again. After a schema change, run `pxt service update ... -f` again if routes exist; until then they answer 409. Do not `python app.py`. Full flags: [CLI docs](https://docs.pixeltable.com/platform/cli).
 
 The last argument (`my_app`, or `pxt://org:db` on Cloud) is a catalog directory, not a folder on disk. `pxt init` marks the project root. Local handle: `pxt.get_table('my_app.docs')`, or bind the models: `import app; app.TableModel.bind_all('my_app')`, then `app.Docs.insert(...)` / `app.Docs.select(...).collect()`. Inspect: `pxt ls -l`, `pxt errors my_app/docs`, `pxt dashboard`.
 
@@ -115,7 +115,7 @@ RAG, views, and search: [workflows.md](references/workflows.md). Do not add Hugg
 
 | Need | Open |
 |------|------|
-| `pxt schema`, `pxt service`, inspect | [cli.md](references/cli.md) |
+| `pxt schema`, `pxt service`, inspect | [CLI docs](https://docs.pixeltable.com/platform/cli) |
 | Types, views, UDFs, UDAs, tool calling | [core-api.md](references/core-api.md) |
 | Provider import, arguments, and output shape | [providers.md](references/providers.md) |
 | Serving, FastAPIRouter, routes | [workflows.md](references/workflows.md) |
@@ -201,5 +201,5 @@ Always `if_exists='ignore'` on notebook `create_*` / `add_*`. Failed cells: `t.r
 - [Quickstart](https://docs.pixeltable.com/overview/quick-start)
 - [CLI](https://docs.pixeltable.com/platform/cli)
 - [Developer MCP](https://github.com/pixeltable/mcp-server-pixeltable-developer) (catalog component: `database/pixeltable`)
-- [Cloud MCP](https://pixeltable.com/developers/mcp-cloud) (optional; reads and operates Cloud, see [cli.md](references/cli.md))
+- [Cloud MCP](https://pixeltable.com/developers/mcp-cloud) (optional; reads and operates Cloud, see [CLI docs](https://docs.pixeltable.com/platform/cli))
 - [Docs](https://docs.pixeltable.com/llms-full.txt)

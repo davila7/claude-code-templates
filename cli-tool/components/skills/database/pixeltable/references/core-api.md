@@ -1,6 +1,6 @@
 # Pixeltable Core API Reference
 
-Apps use `app.py` plus `pxt schema update`. This file is notebook form (`pxt.create_table()`) unless noted. CLI: [cli.md](cli.md). Routes: [workflows.md](workflows.md).
+Apps use `app.py` plus `pxt schema update`. This file is notebook form (`pxt.create_table()`) unless noted. CLI: [CLI docs](https://docs.pixeltable.com/platform/cli). Routes: [workflows.md](workflows.md).
 
 Types are non-nullable by default. Optional is `T | None`. Do not use `pxt.Required`.
 
