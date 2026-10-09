@@ -56,7 +56,9 @@ const runner = (api: UltraApi): GitRun => (argv, cwd, env) => git(api, cwd, argv
 const remover = (api: UltraApi): DropFile => async (cwd, path) => {
   let windows = false
   try {
-    windows = await api.env.get('OS') === 'Windows_NT'
+    // Under WSL the paths are Linux paths, even if WSLENV carries OS over.
+    const wsl = await api.env.get('WSL_DISTRO_NAME')
+    windows = await api.env.get('OS') === 'Windows_NT' && (wsl === undefined || wsl === '')
   } catch {
     windows = false
   }
