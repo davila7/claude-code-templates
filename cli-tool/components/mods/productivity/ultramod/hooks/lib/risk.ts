@@ -363,11 +363,14 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
       return null
     }
     if (cmd === 'clean') {
-      const hasF = rest.some((a) => isLong(a, 'force', 2) || /^-[a-zA-Z]*f/.test(a))
-      const dryRun = rest.some((a) => isLong(a, 'dry-run', 2) || /^-[a-zA-Z]*n/.test(a))
+      // After -- every word is a path, even one that looks like a flag (-nfile).
+      const end = rest.indexOf('--')
+      const opts = end === -1 ? rest : rest.slice(0, end)
+      const hasF = opts.some((a) => isLong(a, 'force', 2) || /^-[a-zA-Z]*f/.test(a))
+      const dryRun = opts.some((a) => isLong(a, 'dry-run', 2) || /^-[a-zA-Z]*n/.test(a))
       if (hasF && !dryRun) {
         // -x and -X delete ignored files too, which a snapshot (git add -A) does not hold.
-        const ignored = rest.some((a) => /^-[a-zA-Z]*[xX]/.test(a))
+        const ignored = opts.some((a) => /^-[a-zA-Z]*[xX]/.test(a))
         return ignored
           ? hit('git-clean', 'deletes untracked and ignored files', 'git', false)
           : hit('git-clean', 'deletes untracked files', 'git', true)
