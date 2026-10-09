@@ -244,7 +244,7 @@ async function updateGlobalAgent(agentName, options = {}) {
 async function generateExecutableScript(agentName, agentFile) {
   const scriptContent = `#!/usr/bin/env node
 
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -386,15 +386,13 @@ if (!checkClaudeCLI()) {
   process.exit(1);
 }
 
-// Escape quotes in system prompt for shell execution
-const escapedSystemPrompt = systemPrompt.replace(/"/g, '\\\\"').replace(/\`/g, '\\\\\`');
-
 // Build final prompt with context
 const finalPrompt = userInput + contextPrompt;
-const escapedFinalPrompt = finalPrompt.replace(/"/g, '\\\\"').replace(/\`/g, '\\\\\`');
 
-// Build Claude command with SDK - use --system-prompt instead of --append-system-prompt for better control
-const claudeCmd = \`claude -p "\${escapedFinalPrompt}" --system-prompt "\${escapedSystemPrompt}"\${verbose ? ' --verbose' : ''}\`;
+// Pass both prompts as argv entries: the system prompt is downloaded agent
+// markdown and must never be parsed by a shell.
+const claudeArgs = ['-p', finalPrompt, '--system-prompt', systemPrompt];
+if (verbose) claudeArgs.push('--verbose');
 
 // Debug output if verbose
 if (verbose) {
@@ -404,7 +402,7 @@ if (verbose) {
   console.log('📁 Project Context:', contextPrompt ? 'Auto-detected' : 'None');
   console.log('🎯 Final Prompt Length:', finalPrompt.length, 'characters');
   console.log('🤖 System Prompt Preview:', systemPrompt.substring(0, 150) + '...');
-  console.log('⚡ Claude Command:', claudeCmd);
+  console.log('⚡ Claude Command: claude -p <prompt> --system-prompt <agent>' + (verbose ? ' --verbose' : ''));
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n');
 }
 
@@ -421,7 +419,7 @@ const loader = setInterval(() => {
 
 try {
   // Execute Claude with the agent's system prompt
-  execSync(claudeCmd, { 
+  execFileSync('claude', claudeArgs, { 
     stdio: ['inherit', 'inherit', 'pipe'],
     cwd: process.cwd() 
   });

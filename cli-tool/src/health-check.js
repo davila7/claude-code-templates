@@ -1088,12 +1088,24 @@ class HealthChecker {
   
   commandExists(command) {
     try {
-      execSync(`command -v ${command}`, { 
-        encoding: 'utf8', 
-        stdio: 'pipe',
-        timeout: 2000 
-      });
-      return true;
+      // Resolve the name against PATH without a shell: `command` comes from
+      // the project's .claude/settings.json and must never be parsed by sh.
+      if (typeof command !== 'string' || !/^[A-Za-z0-9._+-]+$/.test(command)) {
+        return false;
+      }
+      const dirs = (process.env.PATH || '').split(path.delimiter).filter(Boolean);
+      const exts = process.platform === 'win32'
+        ? (process.env.PATHEXT || '.EXE;.CMD;.BAT;.COM').split(';')
+        : [''];
+      for (const dir of dirs) {
+        for (const ext of exts) {
+          try {
+            fs.accessSync(path.join(dir, command + ext), fs.constants.X_OK);
+            return true;
+          } catch (_) { /* not here */ }
+        }
+      }
+      return false;
     } catch (error) {
       return false;
     }
