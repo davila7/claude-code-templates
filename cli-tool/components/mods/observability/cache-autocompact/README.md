@@ -11,7 +11,7 @@ It is the action half of [prompt-cache-control](../prompt-cache-control). That m
 - Says so every time. In the terminal that is a toast, plus a transcript line with the size before and after and what the compact itself cost. In the desktop app (below) it is a toast as it hands off to `/compact`, and nothing after: the mod does not learn how that `/compact` ended. That toast has not yet been seen in the desktop app (below).
 - Says so again when it fails. A refused compact pops up once per cache while it keeps retrying. With compaction switched off (`DISABLE_COMPACT` set to 1, true, yes or on, read when the session starts and again when a compact is due), which refuses `/compact` too, it stops asking for the rest of the session, a `/clear` included, and the status line says `Auto-compact off: compaction is switched off`. A compact another plugin vetoes pops up once and is not asked again for that cache. In the desktop app, a `/compact` that cannot be run pops up once, and the next reply's cache tries again. A failure is never shown as a compaction, and once the cache has run out the status line says it was missed, with no advice to run `/compact`.
 - Shows what it will do in the status line: `Auto-compact armed: fires in 56m`, `Auto-compact due now`, `Auto-compact waits for 100k (chat is 40k)`, `Auto-compact due, waiting for the turn to end (a reply, a tool, or your answer)`, `Auto-compact off in this folder`, `Auto-compact off: can't find skip folder ...`, `Auto-compact started /compact for this cache`, `Auto-compact failed (...). Run /compact yourself`, `Auto-compact due, waiting until the reply is a minute old`, `Auto-compact missed: the cache runs out within a minute of the reply`, `Auto-compact missed: the cache ran out`.
-- Leaves chosen folders alone (`skipPaths`): absolute folders, comma separated, where it never compacts, folders below them included; a folder that cannot be found turns the mod off and the status line names it. See [Skip folder details](#skip-folder-details).
+- Leaves chosen folders alone (`skipPaths`): absolute folders, comma separated, where it never compacts, folders below them included. A folder that cannot be found turns the mod off and the status line names it. See [Skip folder details](#skip-folder-details).
 
 ## In the desktop app
 
@@ -42,7 +42,7 @@ It fails closed. An unknown folder, a folder whose real location cannot be found
 ## Skip folder details
 
 - Links and junctions are followed to where they really land.
-- Folders compare without case everywhere. Windows and macOS ignore case; on Linux this skips one folder too many, never one too few.
+- Folders compare without case everywhere. Windows and macOS ignore case. On Linux this skips one folder too many, never one too few.
 - A backslash separates folders only in a Windows spelling.
 - `/` skips every folder, on any drive.
 - `~` is not expanded. A relative entry is resolved by the engine, not against a folder you chose, so its meaning can change with the session's folder.
