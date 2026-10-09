@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-08T03:10:10.045039+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-10-09T03:17:52.200111+00:00",
+  "totalJobs": 93,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,26 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5446776008",
+      "company": "Anthropic",
+      "position": "Product Designer, Growth",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Growth at Anthropic is about helping people discover what Claude can do and make it part of how they work, from someone's first session to an entire company rolling out Claude. We're a small design team working across all of Anthropic's products, on problems that often don't have established...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5446776008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5446776008",
+      "postedAt": "2026-10-08T23:12:41-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "anth-5444482008",
       "company": "Anthropic",
