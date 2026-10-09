@@ -44,53 +44,70 @@ export function resolveSet(project: unknown, options: PluginOptions = {}): Ultra
   return { name, overrides, mods }
 }
 
+async function afterChanges(changes: Promise<unknown>, action: () => Promise<UltraSet>): Promise<UltraSet> {
+  try {
+    await changes
+  } catch {
+    // The queue moves on after a failed action.
+  }
+  return action()
+}
+
+async function settled(result: Promise<unknown>): Promise<void> {
+  try {
+    await result
+  } catch {
+    // A failed action does not hold up the next one.
+  }
+}
+
 export function createSets(options: PluginOptions = {}) {
   let cache: UltraSet | null = null
   let changes: Promise<unknown> = Promise.resolve()
   // Serialize presses so each toggle reads the previous action's result.
   const mutate = (action: () => Promise<UltraSet>) => {
-    const result = changes.then(action, action)
-    changes = result.then(() => undefined, () => undefined)
+    const result = afterChanges(changes, action)
+    changes = settled(result)
     return result
   }
-  const load = async ($: UltraApi) => resolveSet(await $.store.get(projectKey(await $.session.root())), options)
-  const publish = async ($: UltraApi, set: UltraSet) => {
-    await update($, activeSet, () => set)
+  const load = async (api: UltraApi) => resolveSet(await api.store.get(projectKey(await api.session.root())), options)
+  const publish = async (api: UltraApi, set: UltraSet) => {
+    await update(api, activeSet, () => set)
     cache = set
     return set
   }
-  const current = async ($: UltraApi) => {
-    const state = await read($, activeSet)
-    cache = state ?? cache ?? await load($)
+  const current = async (api: UltraApi) => {
+    const state = await read(api, activeSet)
+    cache = state ?? cache ?? await load(api)
     return cache
   }
-  const save = async ($: UltraApi, set: UltraSet) => {
-    await $.store.set(projectKey(await $.session.root()), { set: set.name, overrides: set.overrides })
-    return publish($, set)
+  const save = async (api: UltraApi, set: UltraSet) => {
+    await api.store.set(projectKey(await api.session.root()), { set: set.name, overrides: set.overrides })
+    return publish(api, set)
   }
   return {
     current,
-    ensure: async ($: UltraApi) => {
-      const state = await read($, activeSet)
-      return state ?? publish($, await current($))
+    ensure: async (api: UltraApi) => {
+      const state = await read(api, activeSet)
+      return state ?? publish(api, await current(api))
     },
-    hydrate: async ($: UltraApi) => publish($, await load($)),
-    enabled: async ($: UltraApi, id: ModId) => (await current($)).mods[id].enabled,
-    switch: ($: UltraApi, name: UltraSetName) => mutate(() => save($, resolveSet({ set: name }, options))),
-    toggle: ($: UltraApi, id: ModId) => mutate(async () => {
-      const set = await current($)
+    hydrate: async (api: UltraApi) => publish(api, await load(api)),
+    enabled: async (api: UltraApi, id: ModId) => (await current(api)).mods[id].enabled,
+    switch: (api: UltraApi, name: UltraSetName) => mutate(() => save(api, resolveSet({ set: name }, options))),
+    toggle: (api: UltraApi, id: ModId) => mutate(async () => {
+      const set = await current(api)
       const overrides = { ...set.overrides, [id]: !set.mods[id].enabled }
       if (overrides[id] === sets[set.name][id].enabled) delete overrides[id]
-      return save($, resolveSet({ set: set.name, overrides }, options))
+      return save(api, resolveSet({ set: set.name, overrides }, options))
     }),
-    reset: ($: UltraApi) => mutate(async () => {
-      const set = await current($)
-      return save($, resolveSet({ set: set.name }, options))
+    reset: (api: UltraApi) => mutate(async () => {
+      const set = await current(api)
+      return save(api, resolveSet({ set: set.name }, options))
     }),
   }
 }
 export type SetsEngine = ReturnType<typeof createSets>
 
-export async function settingsFor($: UltraApi, id: ModId): Promise<UltraModSettings> {
-  return (await read($, activeSet) ?? resolveSet(undefined)).mods[id]
+export async function settingsFor(api: UltraApi, id: ModId): Promise<UltraModSettings> {
+  return (await read(api, activeSet) ?? resolveSet(undefined)).mods[id]
 }

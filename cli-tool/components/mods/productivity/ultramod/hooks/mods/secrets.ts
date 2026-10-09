@@ -1,18 +1,18 @@
 import type { UltraApi } from '../core/api'
-import type { Args, EventResult, Frozen } from 'claude-code'
+import type { EventResult } from 'claude-code'
 import { atom, read, update } from 'claude-code'
 import { resolveSet, settingsFor } from '../core/sets'
 import { addAllowedPath } from '../core/state'
-import type { UltraMod } from '../core/mod'
+import type { RowContent, ToolCall, UltraMod } from '../core/mod'
 import type { UltraModSettings } from '../../types/index'
 import { bashReadsSecret, isEnvDump, isSecretPath, redactSecrets } from '../lib/secrets'
 import type { RedactionResult } from '../lib/secrets'
 
 const allow = atom({ plugin: 'ultramod', key: 'allow' } as const, { risks: [], paths: [] })
 
-async function modSettings($: UltraApi): Promise<UltraModSettings> {
+async function modSettings(api: UltraApi): Promise<UltraModSettings> {
   try {
-    return await settingsFor($, 'secrets')
+    return await settingsFor(api, 'secrets')
   } catch {
     return resolveSet(undefined).mods.secrets
   }
@@ -24,7 +24,7 @@ const PATH_TOOLS = ['Read', 'Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'Grep'
 const REDACT_DOORS: readonly string[] = ['tool-result', 'tool-message']
 
 // Path arguments of the file tools, however this build spells them.
-function pathsOf(e: Frozen<Args<'tool.call'>>): string[] {
+function pathsOf(e: ToolCall): string[] {
   const tool = String(e.tool)
   const input = e as Record<string, unknown>
   const out: string[] = []
@@ -41,15 +41,15 @@ function pathsOf(e: Frozen<Args<'tool.call'>>): string[] {
   return out
 }
 
-async function allowedPaths($: UltraApi): Promise<string[]> {
+async function allowedPaths(api: UltraApi): Promise<string[]> {
   try {
-    return (await read($, allow)).paths
+    return (await read(api, allow)).paths
   } catch {
     return []
   }
 }
 
-function commandOf(e: Frozen<Args<'tool.call'>>): string {
+function commandOf(e: ToolCall): string {
   const value = (e as Record<string, unknown>).command
   return typeof value === 'string' ? value : ''
 }
@@ -105,9 +105,9 @@ function redactValue(text: string, total: { kind: string; count: number }[]): { 
   return { text: result.text, changed: true }
 }
 
-function logRedaction($: UltraApi, total: { kind: string; count: number }[]): void {
+function logRedaction(api: UltraApi, total: { kind: string; count: number }[]): void {
   try {
-    $.ui.log(`secrets: redacted ${total.map(hit => `${hit.count} ${hit.kind}`).join(', ')}`)
+    api.ui.log(`secrets: redacted ${total.map(hit => `${hit.count} ${hit.kind}`).join(', ')}`)
   } catch {
     // A lost log line must not lose the row.
   }
@@ -117,7 +117,7 @@ function logRedaction($: UltraApi, total: { kind: string; count: number }[]): vo
 // lines it adds, and both go to the model without passing session.append.
 // Only those two model-facing strings are cleaned; the tool's own result is
 // stored as a row and redacted there.
-function cleanAnswer($: UltraApi, answer: EventResult<'tool.call'>): EventResult<'tool.call'> {
+function cleanAnswer(api: UltraApi, answer: EventResult<'tool.call'>): EventResult<'tool.call'> {
   try {
     const total: { kind: string; count: number }[] = []
     const held = answer as { deny?: unknown; context?: unknown }
@@ -141,7 +141,7 @@ function cleanAnswer($: UltraApi, answer: EventResult<'tool.call'>): EventResult
       })
     }
     if (!changed) return answer
-    logRedaction($, total)
+    logRedaction(api, total)
     return { ...answer, ...(deny !== undefined ? { deny } : {}), ...(context !== undefined ? { context } : {}) } as EventResult<'tool.call'>
   } catch {
     return answer
@@ -149,10 +149,10 @@ function cleanAnswer($: UltraApi, answer: EventResult<'tool.call'>): EventResult
 }
 
 // Refuses a secret read before the call runs; null lets it through.
-async function gate($: UltraApi, e: Frozen<Args<'tool.call'>>): Promise<{ deny: string } | null> {
+async function gate(api: UltraApi, e: ToolCall): Promise<{ deny: string } | null> {
   if (e.tool !== 'Bash' && !PATH_TOOLS.includes(String(e.tool))) return null
-  const settings = await modSettings($)
-  const paths = await allowedPaths($)
+  const settings = await modSettings(api)
+  const paths = await allowedPaths(api)
   if (e.tool === 'Bash') {
     const command = commandOf(e)
     if (settings.mode === 'strict' && isEnvDump(command)) {
@@ -175,66 +175,65 @@ async function gate($: UltraApi, e: Frozen<Args<'tool.call'>>): Promise<{ deny: 
 
 export const secrets: UltraMod = {
   id: 'secrets',
-  hooks: {
-    'tool.call': [{
-      gating: true,
-      run: async ($, e, next) => {
-        const denied = await gate($, e)
-        if (denied !== null) return denied
-        return cleanAnswer($, await next(e))
-      },
-    }],
-    'session.append': [{
-      // Only the rows a tool produced can carry a leaked value. The person's
-      // own prompt and the reply are stored as typed.
-      when: e => REDACT_DOORS.includes(e.door) && Array.isArray(e.message.content),
-      run: async ($, e, next) => {
-        const total: { kind: string; count: number }[] = []
-        let changed = false
-        const content = e.message.content.map(block => {
-          if (isTextBlock(block)) {
-            const redacted = redactValue(block.text, total)
+  check: {
+    run: async (api, e) => {
+      const denied = await gate(api, e)
+      return denied === null ? null : denied.deny
+    },
+  },
+  watch: {
+    run: api => result => cleanAnswer(api, result),
+  },
+  append: {
+    // Only the rows a tool produced can carry a leaked value. The person's
+    // own prompt and the reply are stored as typed.
+    when: e => REDACT_DOORS.includes(e.door) && Array.isArray(e.message.content),
+    run: (api, e) => {
+      const total: { kind: string; count: number }[] = []
+      let changed = false
+      const content = e.message.content.map(block => {
+        if (isTextBlock(block)) {
+          const redacted = redactValue(block.text, total)
+          if (!redacted.changed) return block
+          changed = true
+          return { ...block, text: redacted.text }
+        }
+        if (isToolResultBlock(block)) {
+          const inner = block.content
+          if (typeof inner === 'string') {
+            const redacted = redactValue(inner, total)
             if (!redacted.changed) return block
             changed = true
-            return { ...block, text: redacted.text }
+            return { ...block, content: redacted.text }
           }
-          if (isToolResultBlock(block)) {
-            const inner = block.content
-            if (typeof inner === 'string') {
-              const redacted = redactValue(inner, total)
-              if (!redacted.changed) return block
-              changed = true
-              return { ...block, content: redacted.text }
-            }
-            if (Array.isArray(inner)) {
-              let innerChanged = false
-              const blocks = inner.map(piece => {
-                if (isTextBlock(piece)) {
-                  const redacted = redactValue(piece.text, total)
-                  if (!redacted.changed) return piece
-                  innerChanged = true
-                  return { ...piece, text: redacted.text }
-                }
-                return piece
-              })
-              if (!innerChanged) return block
-              changed = true
-              return { ...block, content: blocks }
-            }
+          if (Array.isArray(inner)) {
+            let innerChanged = false
+            const blocks = inner.map(piece => {
+              if (isTextBlock(piece)) {
+                const redacted = redactValue(piece.text, total)
+                if (!redacted.changed) return piece
+                innerChanged = true
+                return { ...piece, text: redacted.text }
+              }
+              return piece
+            })
+            if (!innerChanged) return block
+            changed = true
+            return { ...block, content: blocks }
           }
-          return block
-        })
-        if (!changed) return next(e)
-        logRedaction($, total)
-        return next({ ...e, message: { ...e.message, content } })
-      },
-    }],
+        }
+        return block
+      })
+      if (!changed) return null
+      logRedaction(api, total)
+      return content as RowContent
+    },
   },
   commands: {
-    allow: async ($, args) => {
+    allow: async (api, args) => {
       const path = unquote(args.trim())
       if (!looksLikePath(path)) return null
-      await update($, allow, current => addAllowedPath(current, path))
+      await update(api, allow, current => addAllowedPath(current, path))
       return { text: `Secrets: ${path} is allowed for this session.` }
     },
   },

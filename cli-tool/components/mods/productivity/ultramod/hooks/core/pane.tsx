@@ -32,13 +32,13 @@ const setNotes: Record<UltraSetName, string> = {
   quiet: 'Safety only, nothing drawn. Guard, secrets and pins only.',
 }
 
-export async function renderPane($: UltraApi, e: Frozen<RenderInput<'Pane'>>, sets: SetsEngine, mods: readonly UltraMod[], sync: () => Promise<void>) {
-  const set = await sets.current($)
-  const { Box, Text, Button } = $.ui.resolve(e)
+export async function renderPane(api: UltraApi, e: Frozen<RenderInput<'Pane'>>, sets: SetsEngine, mods: readonly UltraMod[], sync: () => Promise<void>) {
+  const set = await sets.current(api)
+  const { Box, Text, Button } = api.ui.resolve(e)
   const columns = Math.max(0, Math.floor(e.props.bodyColumns))
   const pick = async (name: string) => {
     const selected = setNames.find(one => one === name)
-    if (selected) { await sets.switch($, selected); await sync() }
+    if (selected) { await sets.switch(api, selected); await sync() }
   }
   const picker = (
     <Box key="set-picker" flexDirection="row" flexWrap="wrap" gap={1}>
@@ -56,7 +56,7 @@ export async function renderPane($: UltraApi, e: Frozen<RenderInput<'Pane'>>, se
     const used = 10 + 1 + state.length + 4 + 1
     return <Box key={`mod-${id}`} flexDirection="row" gap={1}>
       <Box key={`name-${id}`} width={10}><Text>{id}</Text></Box>
-      <Button key={`toggle-${id}`} label={state} onPress={async () => { await sets.toggle($, id); await sync() }} />
+      <Button key={`toggle-${id}`} label={state} onPress={async () => { await sets.toggle(api, id); await sync() }} />
       {text !== null && used + text.length <= columns ? <Text dimColor>{text}</Text> : null}
     </Box>
   })
@@ -64,12 +64,12 @@ export async function renderPane($: UltraApi, e: Frozen<RenderInput<'Pane'>>, se
   for (const mod of mods) {
     if (!set.mods[mod.id].enabled || !mod.pane) continue
     try {
-      const section = await mod.pane({ $, e, set, settings: set.mods[mod.id] })
+      const section = await mod.pane({ api, e, set, settings: set.mods[mod.id] })
       if (section !== null) sections.push(section)
     } catch { /* A section cannot prevent opening the controls. */ }
   }
   const hud = set.mods.hud.enabled
-    ? <Box key="hud-row" flexDirection="row" width={columns} flexWrap="nowrap">{(await hudRow($, e, set, columns)).nodes}</Box>
+    ? <Box key="hud-row" flexDirection="row" width={columns} flexWrap="nowrap">{(await hudRow(api, e, set, columns)).nodes}</Box>
     : null
   // The footer names the keys the open pane really holds: Tab walks the rows,
   // Enter presses the focused button, digits 1-5 press the picker, Escape closes.

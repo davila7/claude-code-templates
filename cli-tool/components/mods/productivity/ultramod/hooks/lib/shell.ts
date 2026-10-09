@@ -712,14 +712,14 @@ export function shellInvocation(simple: string): ShellRun | null {
     const action = words[1]
     return words.length > 2 && action !== undefined && !action.startsWith('-') ? { kind: 'body', body: action } : null
   }
-  if (head === 'source' || head === '.') return words.length > 1 ? { kind: 'script', path: words[1] ?? '' } : null
+  if (head === 'source' || head === '.') return words.length > 1 ? script(words[1] ?? '') : null
   if (!SHELLS.includes(head)) return null
   let stdin = false
   for (let i = 1; i < words.length; i++) {
     const w = words[i] ?? ''
     if (w === '--') {
       const path = words[i + 1]
-      return path === undefined || stdin ? { kind: 'stdin' } : { kind: 'script', path }
+      return path === undefined || stdin ? { kind: 'stdin' } : script(path)
     }
     if (/^-[a-zA-Z]*c[a-zA-Z]*$/.test(w)) {
       // sh -c -- 'cmd': the -- ends the options before the command string
@@ -734,10 +734,15 @@ export function shellInvocation(simple: string): ShellRun | null {
     if (w === '-') return { kind: 'stdin' }
     if (/^-[a-zA-Z]*s/.test(w)) stdin = true
     if (w.startsWith('-') || w.startsWith('+')) continue
-    return stdin ? { kind: 'stdin' } : { kind: 'script', path: w }
+    return stdin ? { kind: 'stdin' } : script(w)
   }
   return { kind: 'stdin' }
 }
+
+// A script path that names standard input reads the heredoc or pipe:
+// bash /dev/stdin <<EOF runs the body like bash -s does.
+const STDIN_PATHS = ['/dev/stdin', '/dev/fd/0', '/proc/self/fd/0']
+const script = (path: string): ShellRun => STDIN_PATHS.includes(path) ? { kind: 'stdin' } : { kind: 'script', path }
 
 interface Analysis {
   simples: string[]
@@ -1260,7 +1265,65 @@ const WRAPPERS: Record<string, { value: readonly string[]; lead?: number }> = {
 // them, so `if x; then rm -rf a; fi` runs rm and `{ rm -rf a; }` does too.
 const KEYWORDS = ['if', 'then', 'elif', 'else', 'do', 'while', 'until', '!', '{', 'coproc']
 
-function stripWrappers(t: string[]): string[] {
+/**
+ * What the words in front of a command set up for it: VAR=value assignments
+ * (env's too) and the directories it starts in (env -C, sudo -D).
+ */
+export interface Prefix {
+  assigns: string[]
+  dirs: string[]
+}
+
+// env's options. -u, -C and -S take a value, attached (-uX, --unset=X) or as
+// the next word; -S's value is split into more env arguments. BSD's -P, -L
+// and -U and a newer GNU's -a take one too (where they do not exist, env
+// fails and runs nothing). The others (-0, -i, -v, --debug, --block-signal)
+// take none, so an unknown flag never hides the command after it.
+const ENV_VALUE_FLAGS = 'uCSPLUa'
+
+// env -S inside env -S is followed this many levels; deeper, the command is
+// left with env at its head, which the guard asks about as unchecked.
+export const MAX_ENV_SPLITS = 8
+
+function envOptions(t: string[], i: number, seen?: Prefix): { next: number; split?: string } {
+  let j = i
+  while (j < t.length) {
+    const f = t[j] ?? ''
+    if (ASSIGNMENT.test(f)) {
+      seen?.assigns.push(f)
+      j++
+      continue
+    }
+    if (f === '--') return { next: j + 1 }
+    if (!f.startsWith('-')) break
+    if (f.startsWith('--')) {
+      const eq = f.indexOf('=')
+      const name = eq === -1 ? f : f.slice(0, eq)
+      const takes = name === '--unset' || name === '--chdir' || name === '--split-string' || name === '--argv0'
+      const value = !takes ? undefined : eq === -1 ? t[j + 1] : f.slice(eq + 1)
+      j += takes && eq === -1 ? 2 : 1
+      if (name === '--chdir' && value !== undefined) seen?.dirs.push(value)
+      if (name === '--split-string') return { next: j, split: value ?? '' }
+      continue
+    }
+    // A cluster such as -iu X or -vS'cmd': the first value flag ends it.
+    let k = 1
+    while (k < f.length && ENV_VALUE_FLAGS.indexOf(f.charAt(k)) === -1) k++
+    if (k >= f.length) {
+      j++
+      continue
+    }
+    const flag = f.charAt(k)
+    const attached = f.slice(k + 1)
+    const value = attached !== '' ? attached : t[j + 1]
+    j += attached !== '' ? 1 : 2
+    if (flag === 'C' && value !== undefined) seen?.dirs.push(value)
+    if (flag === 'S') return { next: j, split: value ?? '' }
+  }
+  return { next: j }
+}
+
+function stripWrappers(t: string[], seen?: Prefix, splits = 0): string[] {
   let i = 0
   while (i < t.length) {
     const b = baseName(t[i] ?? '')
@@ -1279,6 +1342,7 @@ function stripWrappers(t: string[]): string[] {
       let k = i
       while (k < t.length && ASSIGNMENT.test(t[k] ?? '')) k++
       if (k >= t.length) break
+      seen?.assigns.push(...t.slice(i, k))
       i = k
       continue
     }
@@ -1292,6 +1356,9 @@ function stripWrappers(t: string[]): string[] {
           break
         }
         if (!f.startsWith('-') || f === '-') break
+        if (b === 'sudo' && (f === '-D' || f === '--chdir') && t[j + 1] !== undefined) seen?.dirs.push(t[j + 1] ?? '')
+        if (b === 'sudo' && f.startsWith('--chdir=')) seen?.dirs.push(f.slice('--chdir='.length))
+        if (b === 'sudo' && /^-D./.test(f)) seen?.dirs.push(f.slice(2))
         j += !f.includes('=') && w.value.indexOf(f) !== -1 ? 2 : 1
       }
       j += w.lead ?? 0
@@ -1299,19 +1366,18 @@ function stripWrappers(t: string[]): string[] {
       continue
     }
     if (b === 'env') {
-      let j = i + 1
-      while (j < t.length) {
-        const f = t[j] ?? ''
-        if (ASSIGNMENT.test(f) || f === '-i' || f === '--ignore-environment') j++
-        else if (f === '-u' || f === '-C' || f === '--unset' || f === '--chdir') j += 2
-        else break
+      const { next, split } = envOptions(t, i + 1, seen)
+      // env -S '-i rm -rf x': the words of the value are more env arguments.
+      if (split !== undefined) {
+        if (splits >= MAX_ENV_SPLITS) return t.slice(i)
+        return stripWrappers(['env', ...tokens(split), ...t.slice(next)], seen, splits + 1)
       }
-      if (j > i + 1 && j >= t.length) {
-        // pairs but no command: env prints the environment
+      if (next > i + 1 && next >= t.length) {
+        // options or pairs but no command: env prints the environment
         return t.slice(i)
       }
-      if (j < t.length) {
-        i = j
+      if (next < t.length) {
+        i = next
         continue
       }
       // bare env alone: kept as the head, the dump case
@@ -1319,6 +1385,16 @@ function stripWrappers(t: string[]): string[] {
     break
   }
   return t.slice(i)
+}
+
+/**
+ * The assignments and start directories in front of the command a simple
+ * command runs, read through the same wrappers commandArgv strips.
+ */
+export function commandPrefix(simple: string): Prefix {
+  const seen: Prefix = { assigns: [], dirs: [] }
+  stripWrappers(argv(simple), seen)
+  return seen
 }
 
 /**

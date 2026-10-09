@@ -9,7 +9,7 @@ Source, tests and releases: [github.com/mertkayacs/ultramod](https://github.com/
 | --- | --- |
 | hud | One line above the prompt: context bar, 5-hour and 7-day limits with reset times, turn timer, cost, model |
 | receipts | A line under each answer with files, commands, tests, time and cost; flags "tests pass" claims when no passing test ran after the last edit |
-| guard | Holds `rm -rf`, `git reset --hard`, force pushes, `DROP TABLE`, `terraform destroy` and similar until you approve; snapshots the work tree first so `/ultra undo` can restore it |
+| guard | Holds `rm -rf`, `git reset --hard`, force pushes, `DROP TABLE`, `terraform destroy` and similar until you approve. In a git work tree it first tries to save a snapshot, so `/ultra undo` can restore it; snapshots are best effort, and a failed one is logged without blocking the command |
 | secrets | Refuses reads of `.env`, keys and credential files; masks known token formats in tool output |
 | tests | Asks before a test is skipped, focused with `.only`, deleted or stripped of assertions |
 | notify | Desktop notification when a long turn ends or Claude waits for you |
@@ -21,8 +21,10 @@ Source, tests and releases: [github.com/mertkayacs/ultramod](https://github.com/
 Sets: `essentials` (default), `strict`, `flow`, `marathon`, `quiet`. Switch with `/ultra set <name>`; the choice is
 remembered per project. `/ultra` opens the control pane.
 
-Ultra Mod makes no network requests, collects nothing, has no dependencies and spends no model tokens on its own.
-Guards fail closed; everything else fails open.
+Ultra Mod makes no network requests, collects nothing, has no dependencies and calls no model itself. It does add some
+text to what Claude reads: the lines of `.claude/pins.md` (at most 30 lines and 3,000 characters) go into the system
+prompt while the file exists, and a refusal or a loop nudge is a short message in the conversation. Guards fail closed;
+everything else fails open.
 
 ## Install
 

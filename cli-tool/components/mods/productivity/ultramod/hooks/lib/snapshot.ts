@@ -16,7 +16,7 @@ const SNAPSHOT_AUTHOR = {
 
 export type GitResult = { ok: boolean; out: string }
 
-/** Runs argv in cwd with extra environment; never throws. */
+/** Runs argv in cwd with extra environment; never throws. stdout is trimmed, except a -z list, which keeps the spaces of its paths. */
 export type GitRun = (argv: string[], cwd: string, env?: Record<string, string>) => Promise<GitResult>
 
 /** Removes a temporary index file; a missing file is fine. */

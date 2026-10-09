@@ -13,7 +13,7 @@ import { createHud } from './hud'
 
 export function createMods(sets: SetsEngine) {
   const mods: UltraMod[] = [guard, secrets, tests, tidy, loops, receipts, compact, notify, pins]
-  const hud = createHud(sets, mods)
+  const hud = createHud(sets)
   mods.push(hud)
   return { mods, hud }
 }
