@@ -32,7 +32,7 @@
     "skipPaths": {
       "type": "string",
       "title": "Folders to leave alone",
-      "description": "Comma-separated absolute folders it never compacts in, folders below them included; a folder that cannot be found turns it off and the status line names it. Empty means it runs everywhere",
+      "description": "Comma-separated absolute folders it never compacts in, folders below them included. A folder that cannot be found turns it off and the status line names it. Empty means it runs everywhere",
       "default": ""
     }
   }
