@@ -42,7 +42,9 @@ string. Values are read from **user** settings (`~/.claude/settings.json`),
 
 `types/claude-code.d.ts` is Anthropic's declaration file as `/plugin-types`
 writes it (the first line names the Claude Code version). Regenerate it from a
-current Claude Code rather than editing it.
+current Claude Code rather than editing it. `types/claude-code-tools.d.ts` is the
+same engine's built-in tool arguments (`claude-code-tools/index.d.ts`), which
+narrow `e` on `tool.call`; regenerate both together.
 
 ## Typecheck
 
