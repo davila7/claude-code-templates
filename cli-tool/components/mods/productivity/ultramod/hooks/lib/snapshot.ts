@@ -7,6 +7,12 @@ export const SNAPSHOT_PREFIX = 'ultramod snapshot: '
 // trees of the repository, so an undo only ever offers this tree's snapshots.
 export const SNAPSHOT_REF = 'refs/worktree/ultramod/snapshots/'
 export const KEEP_SNAPSHOTS = 20
+// The snapshot commit is the mod's own record, so it carries a fixed identity:
+// commit-tree fails on a machine with no user.name or user.email configured.
+const SNAPSHOT_AUTHOR = {
+  GIT_AUTHOR_NAME: 'Ultra Mod', GIT_AUTHOR_EMAIL: 'ultramod@localhost',
+  GIT_COMMITTER_NAME: 'Ultra Mod', GIT_COMMITTER_EMAIL: 'ultramod@localhost',
+}
 
 export type GitResult = { ok: boolean; out: string }
 
@@ -48,7 +54,7 @@ async function saveTree(run: GitRun, cwd: string, message: string, now: number, 
   if (!tree.ok || !tree.out) { fail('git write-tree failed'); return false }
   const committed = await run(parent
     ? ['git', 'commit-tree', tree.out, '-p', parent, '-m', message]
-    : ['git', 'commit-tree', tree.out, '-m', message], cwd)
+    : ['git', 'commit-tree', tree.out, '-m', message], cwd, SNAPSHOT_AUTHOR)
   if (!committed.ok || !committed.out) { fail('git commit-tree failed'); return false }
   // Milliseconds in the name keep quick successive snapshots apart. The empty
   // old value makes update-ref refuse to replace a ref that already exists,
