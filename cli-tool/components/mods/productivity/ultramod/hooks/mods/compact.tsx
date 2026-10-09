@@ -41,13 +41,26 @@ export function compactInstructions(receipts: readonly UltraReceipt[]): string {
   return `${head}\n\n${KEEP}`
 }
 
-async function compactNow($: UltraApi): Promise<void> {
+// Auto-compaction is held from the moment it is scheduled until the context is
+// back under autoAt, so a compact that leaves the next turn above the line does
+// not queue another one. A failed compaction lets go so the next turn can retry.
+let autoHeld = false
+
+// True once the compaction went through; the warning flags then start over.
+async function compactNow($: UltraApi): Promise<boolean> {
   try {
     await $.session.compact({ instructions: compactInstructions(await read($, receiptHistory)) })
   } catch (error) {
     // Compaction is best effort: a failure leaves the turn untouched and the next one can try again.
     $.ui.log(`Ultra Mod could not compact: ${error instanceof Error ? error.message : String(error)}`)
+    return false
   }
+  try {
+    await update($, compactState, () => ({ warned: false, offered: false }))
+  } catch {
+    // The flags only decide whether a toast shows again.
+  }
+  return true
 }
 
 export const compact: UltraMod = {
@@ -56,7 +69,10 @@ export const compact: UltraMod = {
     'classic.SessionStart': [{
       when: e => ['clear', 'fork'].includes(e.source),
       run: async ($, e, next) => {
+        autoHeld = false
         await update($, compactState, () => ({ warned: false, offered: false }))
+        // A cleared conversation starts without the old receipts, or the next summary would carry them as current work.
+        if (e.source === 'clear') await update($, receiptHistory, () => [])
         return next(e)
       },
     }],
@@ -70,18 +86,30 @@ export const compact: UltraMod = {
           const percent = (await $.session.usage()).context.percent
           if (percent === undefined) return result
           const state = await read($, compactState)
-          const warn = settings.warnAt !== undefined && percent >= settings.warnAt && !state.warned
+          // A flag starts over once the context is back under its line, so a later climb warns again.
+          const warned = state.warned && !(settings.warnAt !== undefined && percent < settings.warnAt)
+          const offered = state.offered && !(settings.offerAt !== undefined && percent < settings.offerAt)
+          const warn = settings.warnAt !== undefined && percent >= settings.warnAt && !warned
           // The band draws while ui.render holds the write lock, so the offer flag is set here instead.
-          const offer = settings.offerAt !== undefined && percent >= settings.offerAt && !state.offered
-          if (warn || offer) {
-            await update($, compactState, held => ({ warned: held.warned || warn, offered: held.offered || offer }))
-            if (warn) $.ui.toast(settings.offerAt === undefined
-              ? `Context is at ${percent}%. Compacting now would free room for the next task.`
-              : `Context is at ${percent}%. A Compact now button appears above the prompt at ${settings.offerAt}%.`)
+          const offer = settings.offerAt !== undefined && percent >= settings.offerAt && !offered
+          if (warn || offer || warned !== state.warned || offered !== state.offered) {
+            await update($, compactState, held => ({
+              warned: (held.warned && warned) || warn,
+              offered: (held.offered && offered) || offer,
+            }))
           }
+          if (warn) $.ui.toast(settings.offerAt === undefined
+            ? `Context is at ${percent}%. Compacting now would free room for the next task.`
+            : `Context is at ${percent}%. A Compact now button appears above the prompt at ${settings.offerAt}%.`)
           // session.compact rejects while a turn runs, so the auto path waits for the turn to be over.
-          if (settings.autoAt !== undefined && percent >= settings.autoAt) {
-            $.clock.after(0, () => { void compactNow($) })
+          if (settings.autoAt !== undefined) {
+            if (percent < settings.autoAt) autoHeld = false
+            else if (!autoHeld) {
+              autoHeld = true
+              $.clock.after(0, () => {
+                void compactNow($).then((done) => { if (!done) autoHeld = false }, () => { autoHeld = false })
+              })
+            }
           }
         } catch {
           // A measurement failure must not change the turn's own result.

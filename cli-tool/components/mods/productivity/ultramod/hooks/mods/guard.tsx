@@ -6,7 +6,10 @@ import type { UltraMod } from '../core/mod'
 import { needsYou } from '../core/notifier'
 import { addAllowedRisk } from '../core/state'
 import { settingsFor } from '../core/sets'
-import { classifyCommand } from '../lib/risk'
+import { classifyCommand, runsElsewhere } from '../lib/risk'
+import { redactSecrets } from '../lib/secrets'
+import { KEEP_SNAPSHOTS, SNAPSHOT_PREFIX, SNAPSHOT_REF, restoreSnapshot, saveSnapshot } from '../lib/snapshot'
+import type { DropFile, GitRun } from '../lib/snapshot'
 import type { RiskHit } from '../lib/risk'
 
 // The validator wants every atom in a const of the file that reads and writes it.
@@ -23,11 +26,12 @@ async function rememberApproved($: UltraApi, id: string): Promise<void> {
   await update($, approved, ids => ids.includes(id) ? ids : [...ids, id].slice(-KEEP_APPROVED))
 }
 
-const SNAPSHOT_PREFIX = 'ultramod snapshot: '
-const SNAPSHOT_REF = 'refs/ultramod/snapshots/'
-const KEEP_SNAPSHOTS = 20
+const cut = (command: string) => command.length > 120 ? `${command.slice(0, 117)}...` : command
 
-const brief = (command: string) => command.length > 120 ? `${command.slice(0, 117)}...` : command
+// A command quoted back to the model, a log, a notification or a commit
+// message: secrets are redacted first (before the cut, so a token is not
+// split), since this mod runs ahead of the secrets mod.
+const brief = (command: string) => cut(redactSecrets(command).text)
 
 // Safer stand-ins the deny text can name for the common discard commands.
 const TIPS: Record<string, string> = {
@@ -43,26 +47,6 @@ const declinedText = (command: string, hit: RiskHit) =>
 const deniedText = (command: string, hit: RiskHit) =>
   `Not running \`${brief(command)}\`: it ${hit.reason}. This project runs Ultra Mod's marathon set, which refuses risky commands; ask the user.`
 
-// yyyymmdd-hhmmss from epoch milliseconds in UTC, no Date object: the hooks
-// environment guarantees no Node, so the conversion stays plain arithmetic.
-function stamp(ms: number): string {
-  const seconds = Math.floor(ms / 1000)
-  const days = Math.floor(seconds / 86_400)
-  const rest = seconds - days * 86_400
-  const z = days + 719_468
-  const era = Math.floor(z / 146_097)
-  const doe = z - era * 146_097
-  const yoe = Math.floor((doe - Math.floor(doe / 1_460) + Math.floor(doe / 36_524) - Math.floor(doe / 146_096)) / 365)
-  const y = yoe + era * 400
-  const doy = doe - (365 * yoe + Math.floor(yoe / 4) - Math.floor(yoe / 100))
-  const mp = Math.floor((5 * doy + 2) / 153)
-  const day = doy - Math.floor((153 * mp + 2) / 5) + 1
-  const month = mp < 10 ? mp + 3 : mp - 9
-  const year = month <= 2 ? y + 1 : y
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${year}${pad(month)}${pad(day)}-${pad(Math.floor(rest / 3_600))}${pad(Math.floor(rest / 60) % 60)}${pad(rest % 60)}`
-}
-
 type GitResult = { ok: boolean; out: string }
 
 async function git($: UltraApi, cwd: string, argv: string[], env?: Record<string, string>): Promise<GitResult> {
@@ -74,37 +58,18 @@ async function git($: UltraApi, cwd: string, argv: string[], env?: Record<string
   }
 }
 
-// Save the work tree, untracked files included, through a temporary index
-// under .git. The real index and work tree are never touched. A failure is
-// logged and never blocks the command it protects.
+// The snapshot code takes its git runner and file remover from here.
+const runner = ($: UltraApi): GitRun => (argv, cwd, env) => git($, cwd, argv, env)
+
+const remover = ($: UltraApi): DropFile => async (cwd, path) => {
+  const windows = await $.env.get('OS').then(value => value === 'Windows_NT', () => false)
+  // git reports the path with forward slashes, which `del` reads as a switch.
+  await git($, cwd, windows ? ['cmd', '/c', 'del', '/f', '/q', path.split('/').join('\\')] : ['rm', '-f', path])
+}
+
 async function snapshot($: UltraApi, command: string): Promise<void> {
   const cwd = await $.session.cwd()
-  const inside = await git($, cwd, ['git', 'rev-parse', '--is-inside-work-tree'])
-  if (!inside.ok || inside.out !== 'true') return
-  const fail = (why: string) => { $.ui.log(`guard snapshot skipped: ${why}`) }
-  const index = await git($, cwd, ['git', 'rev-parse', '--git-path', 'ultramod-index'])
-  if (!index.ok || !index.out) return fail('no index path')
-  const head = await git($, cwd, ['git', 'rev-parse', '--verify', 'HEAD'])
-  const parent = head.ok && head.out ? head.out : null
-  const env = { GIT_INDEX_FILE: index.out }
-  if (!(await git($, cwd, ['git', 'add', '-A'], env)).ok) return fail('git add -A failed')
-  const tree = await git($, cwd, ['git', 'write-tree'], env)
-  if (!tree.ok || !tree.out) return fail('git write-tree failed')
-  const message = `${SNAPSHOT_PREFIX}${brief(command)}`
-  const committed = await git($, cwd, parent
-    ? ['git', 'commit-tree', tree.out, '-p', parent, '-m', message]
-    : ['git', 'commit-tree', tree.out, '-m', message])
-  if (!committed.ok || !committed.out) return fail('git commit-tree failed')
-  const ref = `${SNAPSHOT_REF}${stamp(await $.clock.now())}`
-  if (!(await git($, cwd, ['git', 'update-ref', ref, committed.out])).ok) return fail('git update-ref failed')
-  const windows = await $.env.get('OS').then(value => value === 'Windows_NT', () => false)
-  await git($, cwd, windows ? ['cmd', '/c', 'del', index.out] : ['rm', '-f', index.out])
-  const listed = await git($, cwd, ['git', 'for-each-ref', '--sort=-committerdate', '--sort=-refname', '--format=%(refname)', SNAPSHOT_REF])
-  if (listed.ok) {
-    for (const old of listed.out.split('\n').map(line => line.trim()).filter(line => line.startsWith(SNAPSHOT_REF)).slice(KEEP_SNAPSHOTS)) {
-      await git($, cwd, ['git', 'update-ref', '-d', old])
-    }
-  }
+  await saveSnapshot(runner($), remover($), cwd, `${SNAPSHOT_PREFIX}${brief(command)}`, await $.clock.now(), why => { $.ui.log(`guard snapshot skipped: ${why}`) })
 }
 
 type Snapshot = { sha: string; at: number; command: string }
@@ -120,10 +85,11 @@ async function listSnapshots($: UltraApi): Promise<Snapshot[]> {
   }).filter(snap => snap.sha)
 }
 
-// A risk id never carries slashes, dots or a home prefix; those mark a path,
-// which the secrets mod answers after guard defers with null.
-const looksLikePath = (value: string) =>
-  value.includes('/') || value.includes('\\') || value.startsWith('.') || value.startsWith('~')
+// A risk id is lowercase words joined by hyphens (git-clean). Anything else,
+// a name with a dot or underscore such as server.pem or id_rsa, or a path, is
+// left to the secrets mod, which the null answer defers to.
+const RISK_ID = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/
+const looksLikeRiskId = (value: string) => RISK_ID.test(value)
 
 async function allowIds($: UltraApi): Promise<string[]> {
   return (await read($, allow)).risks
@@ -144,6 +110,9 @@ export const guard: UltraMod = {
         const mode = settings.mode === 'deny' || settings.mode === 'log' ? settings.mode : 'ask'
         const hit = classifyCommand(command, { strict: settings.strict === true })
         if (!hit) return next(e)
+        // A snapshot saves this session's repository, which a command that
+        // moves elsewhere does not change.
+        const elsewhere = hit.snapshot && runsElsewhere(command)
         if (!(await allowIds($)).includes(hit.id)) {
           if (mode === 'deny') {
             // Marathon refuses unattended; the notification is the only voice it has.
@@ -153,7 +122,11 @@ export const guard: UltraMod = {
           if (mode === 'log') {
             $.ui.log(`guard: ${hit.reason} (${brief(command)})`)
           } else {
-            const question = `Run \`${brief(command)}\`? It ${hit.reason}.${hit.snapshot ? ' A work tree snapshot is saved first, so /ultra undo can restore it.' : ''}`
+            // The whole command: the answer covers all of it, so a long one is not cut.
+            const note = !hit.snapshot ? '' : elsewhere
+              ? ' It acts outside this session\'s repository, so no snapshot is saved and /ultra undo cannot restore it.'
+              : ' A work tree snapshot is saved first, so /ultra undo can restore it.'
+            const question = `Run \`${command}\`? It ${hit.reason}.${note}`
             // An away user has to hear the dialog before it can wait for them.
             needsYou($, `guard: run \`${brief(command)}\`?`)
             let answer: string
@@ -173,7 +146,7 @@ export const guard: UltraMod = {
             if (e.tool_use_id !== undefined) await rememberApproved($, e.tool_use_id)
           }
         }
-        if (hit.snapshot) await snapshot($, command)
+        if (hit.snapshot && !elsewhere) await snapshot($, command)
         return next(e)
       },
     }],
@@ -195,7 +168,7 @@ export const guard: UltraMod = {
         const risks = await allowIds($)
         return { text: risks.length ? `Allowed this session: ${risks.join(', ')}` : 'No risk ids are allowed this session. Use /ultra allow <risk id>.' }
       }
-      if (looksLikePath(value)) return null
+      if (!looksLikeRiskId(value)) return null
       await update($, allow, held => addAllowedRisk(held, value))
       return { text: `${value} is allowed for this session.` }
     },
@@ -216,17 +189,23 @@ export const guard: UltraMod = {
       if (!snap) return { text: 'Choose a snapshot number from /ultra undo.' }
       let answer = 'Cancel'
       try {
-        answer = await $.ui.ask(`Restore snapshot ${index} (${snap.command})? Files created after it are kept.`, { header: 'Ultra Mod', options: ['Restore', 'Cancel'] })
+        answer = await $.ui.ask(`Restore snapshot ${index} (${snap.command})? Files in the snapshot go back to their saved content, so changes made to them since are lost. Files created after it are kept.`, { header: 'Ultra Mod', options: ['Restore', 'Cancel'] })
       } catch {
         // A dismissed question restores nothing.
       }
       if (answer !== 'Restore') return { text: `Snapshot ${index} was not restored.` }
       const cwd = await $.session.cwd()
       const root = await git($, cwd, ['git', 'rev-parse', '--show-toplevel'])
-      const files = await git($, cwd, ['git', 'ls-tree', '-r', '--name-only', snap.sha])
       const target = root.ok && root.out ? root.out : cwd
-      const restored = await git($, target, ['git', 'restore', `--source=${snap.sha}`, '--worktree', '--', '.'])
-      if (!restored.ok) return { text: `Could not restore snapshot ${index}: git restore failed. The work tree is unchanged.` }
+      let conflicts: string[] = []
+      const restored = await restoreSnapshot(runner($), remover($), target, snap.sha, paths => { conflicts = paths })
+      if (conflicts.length) {
+        const shown = conflicts.slice(0, 5).join(', ')
+        const more = conflicts.length > 5 ? ` and ${conflicts.length - 5} more` : ''
+        return { text: `Snapshot ${index} was not restored: ${shown}${more} ${conflicts.length === 1 ? 'is' : 'are'} a file where the snapshot has a directory, or a directory where it has a file, and writing it back would delete newer work. Move ${conflicts.length === 1 ? 'it' : 'them'} aside and run /ultra undo ${index} again.` }
+      }
+      if (!restored) return { text: `Could not restore snapshot ${index}: git could not finish writing the files. Check git status.` }
+      const files = await git($, target, ['git', 'ls-tree', '-r', '--name-only', '--full-tree', snap.sha])
       const names = files.ok ? files.out.split('\n').filter(Boolean) : []
       const shown = names.slice(0, 5).join(', ')
       const more = names.length > 5 ? ` and ${names.length - 5} more` : ''

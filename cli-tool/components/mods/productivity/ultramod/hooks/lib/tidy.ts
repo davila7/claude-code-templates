@@ -7,10 +7,22 @@ function lowerBasename(path: string): string {
   return (i === -1 ? norm : norm.slice(i + 1)).toLowerCase()
 }
 
+// Lowercase, forward slashes, and `.`/`..`/empty segments resolved, so
+// `docs/../notes.md` is judged as `notes.md`. A `..` that climbs out of the
+// project stays in front of the path, where no allowlist entry matches it.
 function lowerRel(path: string): string {
-  let p = path.replace(/\\/g, '/')
-  while (p.startsWith('./')) p = p.slice(2)
-  return p.toLowerCase()
+  const absolute = path.replace(/\\/g, '/').startsWith('/')
+  const kept: string[] = []
+  for (const part of path.replace(/\\/g, '/').toLowerCase().split('/')) {
+    if (part === '' || part === '.') continue
+    if (part === '..') {
+      if (kept.length > 0 && kept[kept.length - 1] !== '..') kept.pop()
+      else if (!absolute) kept.push(part)
+      continue
+    }
+    kept.push(part)
+  }
+  return (absolute ? '/' : '') + kept.join('/')
 }
 
 /**
@@ -30,7 +42,10 @@ function entryAllows(entry: string, rel: string): boolean {
   }
   if (e.endsWith('*')) {
     const prefix = e.slice(0, -1)
-    return lowerBasename(rel).startsWith(prefix) || rel.startsWith(prefix)
+    // Without a folder the prefix is a file name prefix, wherever the file sits.
+    // With one, the rest of the path after it must be a single file name.
+    if (!prefix.includes('/')) return lowerBasename(rel).startsWith(prefix)
+    return rel.startsWith(prefix) && !rel.slice(prefix.length).includes('/')
   }
   return rel === e || lowerBasename(rel) === e
 }

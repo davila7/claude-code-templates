@@ -1,6 +1,7 @@
 import type { UltraApi } from './api'
 import type { UltraMod } from './mod'
 import type { SetsEngine } from './sets'
+import { detectNotifier } from './notifier'
 import { isSetName, setLabel, setNames, settingsFor } from './sets'
 
 export async function runCommand($: UltraApi, args: string, sets: SetsEngine, mods: readonly UltraMod[], sync: () => Promise<void>) {
@@ -25,16 +26,9 @@ export async function runCommand($: UltraApi, args: string, sets: SetsEngine, mo
   if (command === 'help') return { text: '/ultra [set <name> | sets | reset | doctor | help]\nOther mod commands: undo, allow, pin, pins (when implemented and enabled).' }
   if (command === 'doctor') {
     const set = await sets.current($)
-    const [version, platform, git] = await Promise.all([
-      $.session.version(), $.env.get('OS'), $.process.run(['git', '--version']).then(result => result.exitCode === 0 ? 'available' : 'unavailable', () => 'unavailable'),
+    const [version, notifier, git] = await Promise.all([
+      $.session.version(), detectNotifier($), $.process.run(['git', '--version']).then(result => result.exitCode === 0 ? 'available' : 'unavailable', () => 'unavailable'),
     ])
-    const windows = platform === 'Windows_NT'
-    const candidates = windows ? ['powershell'] : ['notify-send', 'osascript']
-    let notifier = 'toast'
-    for (const candidate of candidates) {
-      const found = await $.process.run(windows ? ['where', candidate] : ['which', candidate]).then(result => result.exitCode === 0, () => false)
-      if (found) { notifier = candidate; break }
-    }
     const lines = [
       'Version 1.0.0',
       `Claude Code ${version.version}`,

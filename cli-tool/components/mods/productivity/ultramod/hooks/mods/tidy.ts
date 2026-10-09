@@ -3,6 +3,7 @@ import type { Args, Frozen } from 'claude-code'
 import { resolveSet, settingsFor } from '../core/sets'
 import type { UltraMod } from '../core/mod'
 import type { UltraModSettings } from '../../types/index'
+import { needsYou } from '../core/notifier'
 import { isAllowedDocPath, isDocFile } from '../lib/tidy'
 
 async function modSettings($: UltraApi): Promise<UltraModSettings> {
@@ -50,6 +51,7 @@ export const tidy: UltraMod = {
         if (settings.mode === 'deny') {
           return { deny: `Writing ${rel} would add a new documentation file. ${REFUSE_TEXT}` }
         }
+        needsYou($, `tidy: create ${rel}?`)
         let answer
         try {
           answer = await $.ui.ask(`Ultra Mod: create the new documentation file ${rel}?`, { header: 'Ultra Mod', options: ['Allow', 'Refuse'] })

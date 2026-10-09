@@ -1,7 +1,8 @@
 import type { UltraApi } from '../core/api'
-import type { Args, Frozen } from 'claude-code'
+import type { Args, EventResult, Frozen } from 'claude-code'
 import { atom, read, update } from 'claude-code'
 import { resolveSet, settingsFor } from '../core/sets'
+import { addAllowedPath } from '../core/state'
 import type { UltraMod } from '../core/mod'
 import type { UltraModSettings } from '../../types/index'
 import { bashReadsSecret, isEnvDump, isSecretPath, redactSecrets } from '../lib/secrets'
@@ -53,12 +54,27 @@ function commandOf(e: Frozen<Args<'tool.call'>>): string {
   return typeof value === 'string' ? value : ''
 }
 
+// A path may hold spaces (/workspace/My Project/.env). A spaced value counts
+// only when it starts like a path or names a secret file, so a phrase such as
+// "rm -rf /tmp/x" still goes to guard.
 function looksLikePath(value: string): boolean {
-  if (value === '' || value.includes(' ')) return false
+  if (value === '') return false
+  if (/\s/.test(value)) {
+    return value.startsWith('/') || value.startsWith('~') || value.startsWith('./') || value.startsWith('../')
+      || /^[A-Za-z]:[\\/]/.test(value) || isSecretPath(value)
+  }
   if (value.startsWith('.') || value.startsWith('~') || value.startsWith('/')) return true
   if (value.includes('/')) return true
   if (/^[A-Za-z0-9_-]+\.[A-Za-z0-9]+$/.test(value)) return true
   return isSecretPath(value)
+}
+
+// A path typed with quotes around it, as a shell would take it.
+function unquote(value: string): string {
+  if (value.length >= 2 && (value.startsWith('"') && value.endsWith('"') || value.startsWith("'") && value.endsWith("'"))) {
+    return value.slice(1, -1)
+  }
+  return value
 }
 
 function mergeHits(total: { kind: string; count: number }[], more: { kind: string; count: number }[]): void {
@@ -89,31 +105,83 @@ function redactValue(text: string, total: { kind: string; count: number }[]): { 
   return { text: result.text, changed: true }
 }
 
+function logRedaction($: UltraApi, total: { kind: string; count: number }[]): void {
+  try {
+    $.ui.log(`secrets: redacted ${total.map(hit => `${hit.count} ${hit.kind}`).join(', ')}`)
+  } catch {
+    // A lost log line must not lose the row.
+  }
+}
+
+// A later hook can put a credential into the refusal text or the context
+// lines it adds, and both go to the model without passing session.append.
+// Only those two model-facing strings are cleaned; the tool's own result is
+// stored as a row and redacted there.
+function cleanAnswer($: UltraApi, answer: EventResult<'tool.call'>): EventResult<'tool.call'> {
+  try {
+    const total: { kind: string; count: number }[] = []
+    const held = answer as { deny?: unknown; context?: unknown }
+    let changed = false
+    let deny: unknown = held.deny
+    if (typeof held.deny === 'string') {
+      const redacted = redactValue(held.deny, total)
+      if (redacted.changed) {
+        deny = redacted.text
+        changed = true
+      }
+    }
+    let context: unknown = held.context
+    if (Array.isArray(held.context)) {
+      context = held.context.map((line: unknown) => {
+        if (typeof line !== 'string') return line
+        const redacted = redactValue(line, total)
+        if (!redacted.changed) return line
+        changed = true
+        return redacted.text
+      })
+    }
+    if (!changed) return answer
+    logRedaction($, total)
+    return { ...answer, ...(deny !== undefined ? { deny } : {}), ...(context !== undefined ? { context } : {}) } as EventResult<'tool.call'>
+  } catch {
+    return answer
+  }
+}
+
+// Refuses a secret read before the call runs; null lets it through.
+async function gate($: UltraApi, e: Frozen<Args<'tool.call'>>): Promise<{ deny: string } | null> {
+  if (e.tool !== 'Bash' && !PATH_TOOLS.includes(String(e.tool))) return null
+  const settings = await modSettings($)
+  const paths = await allowedPaths($)
+  if (e.tool === 'Bash') {
+    const command = commandOf(e)
+    if (settings.mode === 'strict' && isEnvDump(command)) {
+      return { deny: 'This prints the whole environment, which can contain secrets. Ask the user for the specific value it needs.' }
+    }
+    // The allowlist is applied inside the scan, so one allowed file does
+    // not hide a second secret in the same command.
+    const secret = bashReadsSecret(command, paths)
+    if (secret !== null) {
+      return { deny: `This would print the secret file ${secret}. Ask the user for the value it needs, or read .env.example instead, or have the user run /ultra allow ${secret}.` }
+    }
+    return null
+  }
+  for (const path of pathsOf(e)) {
+    if (!isSecretPath(path, paths)) continue
+    return { deny: `${path} is a secret file. Ask the user for the value it needs, or read .env.example instead, or have the user run /ultra allow ${path}.` }
+  }
+  return null
+}
+
 export const secrets: UltraMod = {
   id: 'secrets',
   hooks: {
     'tool.call': [{
       gating: true,
-      when: e => PATH_TOOLS.includes(String(e.tool)) || e.tool === 'Bash',
       run: async ($, e, next) => {
-        const settings = await modSettings($)
-        const paths = await allowedPaths($)
-        if (e.tool === 'Bash') {
-          const command = commandOf(e)
-          if (settings.mode === 'strict' && isEnvDump(command)) {
-            return { deny: 'This prints the whole environment, which can contain secrets. Ask the user for the specific value it needs.' }
-          }
-          const secret = bashReadsSecret(command)
-          if (secret !== null && !paths.some(allowed => allowed.toLowerCase() === secret.toLowerCase())) {
-            return { deny: `This would print the secret file ${secret}. Ask the user for the value it needs, or read .env.example instead, or have the user run /ultra allow ${secret}.` }
-          }
-          return next(e)
-        }
-        for (const path of pathsOf(e)) {
-          if (!isSecretPath(path, paths)) continue
-          return { deny: `${path} is a secret file. Ask the user for the value it needs, or read .env.example instead, or have the user run /ultra allow ${path}.` }
-        }
-        return next(e)
+        const denied = await gate($, e)
+        if (denied !== null) return denied
+        return cleanAnswer($, await next(e))
       },
     }],
     'session.append': [{
@@ -157,20 +225,16 @@ export const secrets: UltraMod = {
           return block
         })
         if (!changed) return next(e)
-        try {
-          $.ui.log(`secrets: redacted ${total.map(hit => `${hit.count} ${hit.kind}`).join(', ')}`)
-        } catch {
-          // A lost log line must not lose the row.
-        }
+        logRedaction($, total)
         return next({ ...e, message: { ...e.message, content } })
       },
     }],
   },
   commands: {
     allow: async ($, args) => {
-      const path = args.trim()
+      const path = unquote(args.trim())
       if (!looksLikePath(path)) return null
-      await update($, allow, current => ({ ...current, paths: [...current.paths, path] }))
+      await update($, allow, current => addAllowedPath(current, path))
       return { text: `Secrets: ${path} is allowed for this session.` }
     },
   },
