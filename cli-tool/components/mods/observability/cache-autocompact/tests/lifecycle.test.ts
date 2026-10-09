@@ -1701,7 +1701,8 @@ describe('a minute of quiet after the reply', () => {
     await running
   }
 
-  test('a 30-second reply on a 5-minute cache fires no sooner than a minute after it ends', async ($, on) => {
+  // control: a short reply ends long before the window opens, so the quiet minute never comes into play
+  test('a 30-second reply on a 5-minute cache still fires when the window opens at minute 3', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' }, naps: { t1: 30_000 } }
     const clock = engine(on, w)
     await start($, ALLOWED)
