@@ -1402,3 +1402,52 @@ describe('a move whose own lookup has not finished', () => {
     expect(w.compacts).toBe(0)
   })
 })
+
+describe('a /clear while a move is being looked up', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+
+  test('the new conversation looks the folder up again, and compacts once', SKIP, async ($, on) => {
+    const w: World = { cwd: PRIVATE, compacts: 0, statGateFor: ALLOWED, statGateOnce: true }
+    const clock = engine(on, w)
+    await start($, PRIVATE)
+    // a move out of the skip folder, its lookup held at the new folder's stat
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    w.cwd = ALLOWED
+    await $.classic.CwdChanged({ old_cwd: PRIVATE, new_cwd: ALLOWED } as never)
+    await h.arrived
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
+    h.release()
+    await clock.advance(5_000)
+    // the stale "off in this folder" is gone without waiting for a compact to come due
+    expect(latest(w)).toBe('Auto-compact waiting for a reply')
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('even with the new lookup still out, a due compact checks the folder itself', SKIP, async ($, on) => {
+    // a 5-minute cache, so the window opens at minute 3
+    const w: World = { cwd: PRIVATE, compacts: 0, statGateFor: ALLOWED, statGateOnce: true, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, PRIVATE)
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    w.cwd = ALLOWED
+    await $.classic.CwdChanged({ old_cwd: PRIVATE, new_cwd: ALLOWED } as never)
+    await h.arrived
+    // the lookup the /clear starts is held too
+    const h2 = hold()
+    w.stat2Gate = h2.gate
+    w.stat2For = ALLOWED
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
+    h.release()
+    await request($)
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(1)
+    h2.release()
+    await clock.advance(0)
+  })
+})

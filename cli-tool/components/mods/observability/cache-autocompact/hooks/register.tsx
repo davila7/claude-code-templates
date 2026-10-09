@@ -100,6 +100,10 @@ function resetConversation() {
   warnedFor = 0
   failed = undefined
   requests = fresh()
+  // Folder lookups still out belong to the old conversation and are dropped when they land (gen), so
+  // their answer must not linger either: the folder is unconfirmed until a new lookup says otherwise.
+  // An unconfirmed folder still lets a due compact through to its own folder check.
+  folder = 'unknown'
 }
 
 // a path as given and where it really lands; undefined when where it lands cannot be established
@@ -393,6 +397,12 @@ export const register: Register = (on, options) => {
     // session.start replaces the timer either way.
     resetConversation()
     if (e.reason !== 'clear' && e.reason !== 'resume') show($, undefined)
+    // /clear fires no session.start, so the new conversation looks its folder up here, off to the side
+    const mine = gen
+    const rev = cwdRev
+    void folderNow($).then(found => {
+      if (gen === mine && cwdRev === rev && freshFolder(found.ticket)) folder = found.where
+    })
     return next(e)
   })
 
