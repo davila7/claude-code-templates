@@ -17,6 +17,8 @@
  *
  * Every piece of async work carries the conversation's generation: a /clear or
  * a resume bumps it, and work that started under an older one does nothing.
+ * A session start carries its own number too, so an older start that finishes
+ * after a newer one leaves the newer conversation alone.
  *
  * Known gap: a hot reload starts with no recorded request, so a reload while
  * idle means no compact until the next message. That fails safe: no compact.
@@ -44,6 +46,8 @@ let interactive = true
 let compactOff = false
 // bumped whenever the session's folder changes, so a folder check made before the change does not count
 let cwdRev = 0
+// bumped by every session start as it arrives; a start that is no longer the latest sets nothing more
+let startups = 0
 let samples: Sample[] = []
 let ttl: Ttl = '5m'
 let track: TtlTrack | undefined
@@ -369,12 +373,17 @@ export const register: Register = (on, options) => {
     // the setup below must make it obsolete too.
     cwdRev += 1
     const startRev = cwdRev
-    const r = await next(e)
+    // The start owns the conversation from the moment it arrives: it is reset here, before any await, and
+    // the start takes its own number. A newer start (a resume while this one still waits on the hooks
+    // beneath it) takes the conversation over, and everything this one would set after an await is then
+    // dropped, so a late older start never clears or reconfigures the newer conversation. This is not
+    // cwdRev: a move makes a folder lookup obsolete without cancelling the start's setup.
+    const startup = ++startups
     resetConversation()
-    interactive = e.isInteractive
-    compactOff = isEngineOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
+    const r = await next(e)
     const none = () => undefined
-    env = {
+    const off = isEngineOn(await $.env.get('DISABLE_COMPACT').catch(none))
+    const vars: CacheEnv = {
       enable1h: await $.env.get('ENABLE_PROMPT_CACHING_1H').catch(none),
       force5m: await $.env.get('FORCE_PROMPT_CACHING_5M').catch(none),
       ttlVar: await $.env.get('CLAUDE_CODE_PROMPT_CACHE_TTL').catch(none),
@@ -383,16 +392,26 @@ export const register: Register = (on, options) => {
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
+    if (startup !== startups) return r
+    interactive = e.isInteractive
+    compactOff = off
+    env = vars
     // refused if the session moved meanwhile: that move's own lookup publishes the folder it is in now
     const started = await lookUp($, { cwd: e.cwd, rev: startRev })
-    publish($, started)
-    ttl = await currentTtlBase($)
-    $.ui.log(
-      started.where !== 'on'
-        ? `cache-autocompact: off in ${e.cwd} (skip list)`
-        : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(cfg.windowMs)} left on a ${ttl} cache${interactive ? '' : ', not interactive: runs /compact'}`,
-      { to: 'debug' },
-    )
+    const published = publish($, started)
+    const base = await currentTtlBase($)
+    if (startup !== startups) return r
+    ttl = base
+    // The folder notice speaks only for a lookup that was published and is still the current one after
+    // the settings read: a move or a newer lookup since then makes its verdict obsolete.
+    if (published && started.rev === cwdRev && started.ticket === skipPublished) {
+      $.ui.log(
+        started.where !== 'on'
+          ? `cache-autocompact: off in ${e.cwd} (skip list)`
+          : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(cfg.windowMs)} left on a ${ttl} cache${interactive ? '' : ', not interactive: runs /compact'}`,
+        { to: 'debug' },
+      )
+    }
     timer?.cancel()
     timer = $.clock.every(5000, () => void tick($, cfg))
     return r

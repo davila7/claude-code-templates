@@ -76,6 +76,12 @@ type World = {
   commands?: string[]
   // milliseconds a request (by turn id) stays suspended inside the engine, on the mocked clock
   naps?: Record<string, number>
+  // a one-shot gate inside the engine's own session start, which the mod awaits as next(e), and a call when it is reached
+  startGate?: Promise<void>
+  startEntered?: () => void
+  // a one-shot gate on reading the settings, and a call when it is reached
+  settingsGate?: Promise<void>
+  settingsEntered?: () => void
 }
 
 // The tests name rooted folders ("/work/Private"), rooted on Linux and Windows alike. The engine hands
@@ -107,7 +113,15 @@ function engine(on: On, w: World) {
     }
     return { value: w.env?.[name] } as never
   })
-  on('session.start', ($, e) => ({ cwd: e.cwd }))
+  on('session.start', async ($, e) => {
+    const held = w.startGate
+    if (held) {
+      w.startGate = undefined
+      w.startEntered?.()
+      await held
+    }
+    return { cwd: e.cwd }
+  })
   on('session.end', ($, e) => ({ sessionId: e.sessionId }))
   // calls on a noun are answered as { value } (or { deny }), the shape the engine's own answers take
   on('session.cwd', () => (w.cwd === 'reject' ? { deny: 'no cwd' } : { value: w.cwd }) as never)
@@ -130,7 +144,15 @@ function engine(on: On, w: World) {
     const lands = w.unresolved?.includes(key(path)) ? undefined : (real ?? path)
     return { value: { kind: 'dir', size: 0, mtimeMs: 0, isLink: real !== undefined, realPath: lands } } as never
   })
-  on('settings.read', () => (w.settingsRejects ? { deny: 'unreadable' } : { value: w.settings ?? {} }) as never)
+  on('settings.read', async () => {
+    const held = w.settingsGate
+    if (held) {
+      w.settingsGate = undefined
+      w.settingsEntered?.()
+      await held
+    }
+    return (w.settingsRejects ? { deny: 'unreadable' } : { value: w.settings ?? {} }) as never
+  })
   on('session.usage', () => ({ value: { startedAt: T0, context: {}, rateLimits: w.rateLimits ?? [{ kind: 'five_hour', percentUsed: 10 }] } }) as never)
   on('ui.log', ($, e) => {
     w.logs = [...(w.logs ?? []), JSON.stringify(e)]
@@ -1518,5 +1540,161 @@ describe('a move while a session start is still setting up', () => {
     await request($)
     await clock.advance(HOUR - 30_000)
     expect(w.compacts).toBe(1)
+  })
+})
+
+describe('an older session start that finishes after a newer one', () => {
+  test('never clears the newer conversation: its big chat still compacts in its window', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    // the first start is held beneath the mod, while the mod awaits next(e)
+    const h = hold()
+    w.startGate = h.gate
+    w.startEntered = h.reached
+    const first = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
+    await h.arrived
+    // a resume starts a newer session, which finishes its setup and records a big request
+    await $.session.end({ reason: 'resume', sessionId: 's1', resume: { id: 's1' } } as never)
+    await start($, ALLOWED)
+    await request($)
+    h.release()
+    await first
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('never sets the newer session from the environment it read late', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, env: {}, envGateFor: 'DISABLE_COMPACT' }
+    const clock = engine(on, w)
+    // the first start is held at its first environment read, after next(e)
+    const h = hold()
+    w.envGate = h.gate
+    w.envEntered = h.reached
+    const first = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
+    await h.arrived
+    await $.session.end({ reason: 'resume', sessionId: 's1', resume: { id: 's1' } } as never)
+    await start($, ALLOWED)
+    await request($)
+    // what the older start reads now would switch compaction and caching off
+    w.env = { DISABLE_COMPACT: '1', DISABLE_PROMPT_CACHING: '1' }
+    h.release()
+    await first
+    w.env = {}
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test("never sets the newer chat's cache lifetime from the settings it read late", async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    // the first start is held at its settings read, the last await before its timer
+    const h = hold()
+    w.settingsGate = h.gate
+    w.settingsEntered = h.reached
+    const first = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
+    await h.arrived
+    await $.session.end({ reason: 'resume', sessionId: 's1', resume: { id: 's1' } } as never)
+    await start($, ALLOWED)
+    await request($)
+    // what the older start reads now would make the newer 1-hour cache look like 5 minutes
+    w.settings = { promptCacheTtl: '5m' }
+    h.release()
+    await first
+    await clock.advance(5 * MIN)
+    expect(w.compacts).toBe(0)
+    await clock.advance(HOUR - 6 * MIN)
+    expect(w.compacts).toBe(1)
+  })
+})
+
+describe("the start's folder notice", () => {
+  const said = (w: World, text: string) => w.logs?.some(l => l.includes(text)) ?? false
+
+  test('the control: a start in an allowed folder says on', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    engine(on, w)
+    await start($, ALLOWED)
+    expect(said(w, 'cache-autocompact: on,')).toBe(true)
+  })
+
+  test('says nothing once a move made its folder lookup obsolete', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: ALLOWED, statGateOnce: true }
+    const clock = engine(on, w)
+    // the start's lookup is held at the stat of its folder
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    const starting = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
+    await h.arrived
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    await clock.advance(0)
+    h.release()
+    await starting
+    expect(said(w, 'cache-autocompact: on,')).toBe(false)
+  })
+
+  test('says nothing once a move during its settings read made the verdict obsolete', SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    // the start's lookup has published; it is held at the settings read that follows
+    const h = hold()
+    w.settingsGate = h.gate
+    w.settingsEntered = h.reached
+    const starting = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
+    await h.arrived
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    await clock.advance(0)
+    h.release()
+    await starting
+    expect(said(w, 'cache-autocompact: on,')).toBe(false)
+  })
+
+  test("says nothing after a move during its settings read, even before the move's own lookup lands", SKIP, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    const h = hold()
+    w.settingsGate = h.gate
+    w.settingsEntered = h.reached
+    const starting = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
+    await h.arrived
+    // the move's own lookup is held at the stat of the skip folder, so it publishes nothing yet
+    const h2 = hold()
+    w.stat2Gate = h2.gate
+    w.stat2For = PRIVATE
+    w.cwd = PRIVATE
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: PRIVATE } as never)
+    await clock.advance(0)
+    h.release()
+    await starting
+    expect(said(w, 'cache-autocompact: on,')).toBe(false)
+    h2.release()
+    await clock.advance(0)
+  })
+
+  test('says nothing once a newer lookup in the same folder landed during its settings read', { options: { skipPaths: '/safe' } }, async ($, on) => {
+    const w: World = { cwd: '/work/A', compacts: 0, links: { '/safe': '/work/B' } }
+    const clock = engine(on, w)
+    await start($, '/work/A')
+    expect(w.logs?.filter(l => l.includes('cache-autocompact: on,')).length).toBe(1)
+    // a resume starts again in the same folder, held at its settings read after its lookup published "on"
+    await $.session.end({ reason: 'resume', sessionId: 's1', resume: { id: 's1' } } as never)
+    const h = hold()
+    w.settingsGate = h.gate
+    w.settingsEntered = h.reached
+    const starting = $.session.start({ cwd: '/work/A', surface: null, isInteractive: true })
+    await h.arrived
+    // the link is retargeted at the session's folder, and a compact check from the running timer finds so
+    // (a 5-minute cache, so the window opens at minute 3 and the clock runs only a few ticks past a held start)
+    w.links = { '/safe': '/work/A' }
+    w.settings = { promptCacheTtl: '5m' }
+    await request($)
+    await clock.advance(4 * MIN)
+    expect(w.compacts).toBe(0)
+    expect(w.statuses?.[w.statuses.length - 1]).toBe('Auto-compact off in this folder')
+    h.release()
+    await starting
+    expect(w.logs?.filter(l => l.includes('cache-autocompact: on,')).length).toBe(1)
   })
 })
