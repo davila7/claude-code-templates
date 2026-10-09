@@ -1,15 +1,13 @@
 import type { UltraApi } from '../core/api'
-import type { Args, Frozen } from 'claude-code'
-import { atom, read, update } from 'claude-code'
 import { resolveSet, settingsFor } from '../core/sets'
-import type { UltraMod } from '../core/mod'
+import type { ToolCall, UltraMod } from '../core/mod'
 import type { UltraModSettings } from '../../types/index'
 import { needsYou } from '../core/notifier'
 import { addedMarkers, assertionDrop, bashDeletesTests, isTestPath } from '../lib/testguard'
 
-async function modSettings($: UltraApi): Promise<UltraModSettings> {
+async function modSettings(api: UltraApi): Promise<UltraModSettings> {
   try {
-    return await settingsFor($, 'tests')
+    return await settingsFor(api, 'tests')
   } catch {
     return resolveSet(undefined).mods.tests
   }
@@ -19,7 +17,7 @@ const REFUSE_TEXT = 'Fix the code under test; do not skip or weaken tests unless
 
 const VIOLATION_TOOLS = ['Edit', 'MultiEdit', 'Write', 'NotebookEdit', 'Bash']
 
-function commandOf(e: Frozen<Args<'tool.call'>>): string {
+function commandOf(e: ToolCall): string {
   const value = (e as Record<string, unknown>).command
   return typeof value === 'string' ? value : ''
 }
@@ -37,14 +35,14 @@ function applyEdit(before: string, oldString: string, newString: string, replace
 // An unreadable file is not an untouched one.
 type FileState = { kind: 'text'; text: string } | { kind: 'missing' } | { kind: 'unreadable' }
 
-async function readFile($: UltraApi, path: string): Promise<FileState> {
+async function readFile(api: UltraApi, path: string): Promise<FileState> {
   try {
-    return { kind: 'text', text: await $.fs.read(path) }
+    return { kind: 'text', text: await api.fs.read(path) }
   } catch {
     // A failed existence check is taken as "exists": the safe side.
     let exists = true
     try {
-      exists = await $.fs.exists(path)
+      exists = await api.fs.exists(path)
     } catch {
       exists = true
     }
@@ -53,7 +51,7 @@ async function readFile($: UltraApi, path: string): Promise<FileState> {
 }
 
 // The file or command a call touches, for a check that failed.
-function checkedPath(e: Frozen<Args<'tool.call'>>): string {
+function checkedPath(e: ToolCall): string {
   const input = e as Record<string, unknown>
   if (typeof input.file_path === 'string') return input.file_path
   if (typeof input.notebook_path === 'string') return input.notebook_path
@@ -81,7 +79,7 @@ function notebookCell(raw: string, cellId: unknown, cellNumber: unknown): string
 }
 
 // What is risky about this call, or null when it is a normal edit.
-async function violation($: UltraApi, e: Frozen<Args<'tool.call'>>): Promise<string | null> {
+async function violation(api: UltraApi, e: ToolCall): Promise<string | null> {
   const tool = String(e.tool)
   const input = e as Record<string, unknown>
   if (e.tool === 'Bash') {
@@ -94,7 +92,7 @@ async function violation($: UltraApi, e: Frozen<Args<'tool.call'>>): Promise<str
   if (tool === 'NotebookEdit' && input.edit_mode === 'delete') return 'deletes a notebook cell'
   if (tool === 'Write') {
     const content = typeof input.content === 'string' ? input.content : ''
-    const held = await readFile($, path)
+    const held = await readFile(api, path)
     if (held.kind === 'unreadable') return unreadable(path)
     // A new file has nothing to lose, but a skip or focus marker in it still counts.
     const before = held.kind === 'text' ? held.text : ''
@@ -102,7 +100,7 @@ async function violation($: UltraApi, e: Frozen<Args<'tool.call'>>): Promise<str
     return markersAndDrops(path, before, content)
   }
   if (tool !== 'Edit' && tool !== 'MultiEdit' && tool !== 'NotebookEdit') return null
-  const held = await readFile($, path)
+  const held = await readFile(api, path)
   if (held.kind === 'missing') return null
   if (held.kind === 'unreadable') return unreadable(path)
   const before = held.text
@@ -137,70 +135,40 @@ function markersAndDrops(path: string, before: string, after: string): string | 
   return `${path} ${reasons.join(' and ')}`
 }
 
-// Call ids the person allowed in this mod's dialog. The engine asks about the
-// same call right after, and tool.check answers that ask with allow. The key
-// is shared with guard, whose tool.check honors the same ids.
-const approved = atom({ plugin: 'ultramod', key: 'guard-approved' } as const, [] as string[])
-
-// Bounded: one id per approved call, oldest dropped past the limit.
-const KEEP_APPROVED = 32
-
-async function rememberApproved($: UltraApi, id: string): Promise<void> {
-  await update($, approved, ids => ids.includes(id) ? ids : [...ids, id].slice(-KEEP_APPROVED))
-}
-
 export const tests: UltraMod = {
   id: 'tests',
-  hooks: {
-    'tool.call': [{
-      gating: true,
-      when: e => VIOLATION_TOOLS.includes(String(e.tool)),
-      run: async ($, e, next) => {
-        const settings = await modSettings($)
-        let reason: string
-        try {
-          const found = await violation($, e)
-          if (found === null) return next(e)
-          reason = found
-        } catch {
-          // A check that cannot finish is not a clean check.
-          reason = `${checkedPath(e)} could not be checked`
-        }
-        if (settings.mode === 'deny') {
-          // Unattended runs use deny; the notification is the only voice they have.
-          needsYou($, `tests: ${reason}`)
-          return { deny: `${reason}. ${REFUSE_TEXT}` }
-        }
-        // An away user has to hear the dialog before it can wait for them.
-        needsYou($, `tests: ${reason}`)
-        let answer
-        try {
-          answer = await $.ui.ask(`Ultra Mod: this edit ${reason}. Allow it?`, { header: 'Ultra Mod', options: ['Allow', 'Refuse'] })
-        } catch {
-          answer = 'Refuse'
-        }
-        if (answer !== 'Allow') {
-          return { deny: `The edit was refused (${reason}). ${REFUSE_TEXT}` }
-        }
-        // Recorded before next: the engine raises tool.check inside it.
-        if (e.tool_use_id !== undefined) {
-          try {
-            await rememberApproved($, e.tool_use_id)
-          } catch {
-            // The edit is allowed; a lost id only costs a second native dialog.
-          }
-        }
-        return next(e)
-      },
-    }],
-    'tool.check': [{
-      run: async ($, e: Frozen<Args<'tool.check'>>, next) => {
-        const verdict = await next(e)
-        const id = e.tool_use_id
-        if (verdict.decision !== 'ask' || id === undefined) return verdict
-        const ids = await read($, approved)
-        return ids.includes(id) ? { decision: 'allow' } : verdict
-      },
-    }],
+  check: {
+    when: e => VIOLATION_TOOLS.includes(String(e.tool)),
+    run: async (api, e) => {
+      const settings = await modSettings(api)
+      let reason: string
+      try {
+        const found = await violation(api, e)
+        if (found === null) return null
+        reason = found
+      } catch {
+        // A check that cannot finish is not a clean check.
+        reason = `${checkedPath(e)} could not be checked`
+      }
+      if (settings.mode === 'deny') {
+        // Unattended runs use deny; the notification is the only voice they have.
+        needsYou(api, `tests: ${reason}`)
+        return `${reason}. ${REFUSE_TEXT}`
+      }
+      // An away user has to hear the dialog before it can wait for them.
+      needsYou(api, `tests: ${reason}`)
+      let answer
+      try {
+        answer = await api.ui.ask(`Ultra Mod: this edit ${reason}. Allow it?`, { header: 'Ultra Mod', options: ['Allow', 'Refuse'] })
+      } catch {
+        answer = 'Refuse'
+      }
+      if (answer !== 'Allow') {
+        return `The edit was refused (${reason}). ${REFUSE_TEXT}`
+      }
+      // The engine may still show its own prompt after this dialog: Ultra Mod
+      // has no permission hook and never answers allow.
+      return null
+    },
   },
 }

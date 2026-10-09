@@ -1,147 +1,213 @@
-import type { Args, EngineInterface, EventResult, Frozen, Next, PluginState, Register, ResolveInput } from 'claude-code'
+import type { AskOptions, AudioClip, CatchHandler, CommandSpec, EngineInterface, Hook, MatchedHook, PaneOpenArgs, ProcessRunInit, Register, ResolveInput, SessionCompactArgs, StateSetOptions, StateSetResult } from 'claude-code'
 import type { UltraApi } from './core/api'
-import type { ModEvent } from './core/mod'
-import { runCommand } from './core/commands'
-import { createDispatcher, engineNext, refuse } from './core/dispatcher'
-import { renderPane } from './core/pane'
-import { createSets } from './core/sets'
-import { createMods } from './mods/index'
+import type { Runtime } from './core/runtime'
+import { band, checkTool, composeSections, createRuntime, maskRow, notification, pane, REFUSED, sessionEnd, sessionRestart, sessionStart, turnComplete, turnStart, ultraCommand, underAnswer, watchTool } from './core/runtime'
 
-// Keep raw engine calls here so the validator can account for every capability.
+// Every hook Ultra Mod registers is declared in this file, and this file alone
+// touches the engine: `$` goes whole to createApi below, and `next` never
+// leaves the hook that received it. The mods in ./mods compute plain values
+// (a refusal text, a line, a rewritten row) from the facade; each hook here
+// turns that value into its return. No hook answers a permission check
+// (there is no tool.check hook) and none answers allow. The tool.call check
+// returns `next(e)` or `{ deny }`; the tool.call watch returns what `next(e)`
+// returned, with context lines added or tokens masked.
+
+// The facade the mods use. Every raw engine call is written here as a plain
+// `$.noun.method(...)`, so the validator and the directory can account for
+// each capability; nothing else in this file names `$` except the hooks.
 function createApi($: EngineInterface): UltraApi {
-  return {
-    state: {
-      get: ((ref: Parameters<UltraApi['state']['get']>[0]) => {
-        if (ref.plugin !== 'ultramod') throw new Error('Ultra Mod can only read its own state.')
-        if (ref.key === 'set') return $.state.get({ plugin: 'ultramod', key: 'set' })
-        if (ref.key === 'turn') return $.state.get({ plugin: 'ultramod', key: 'turn' })
-        if (ref.key === 'receipts') return $.state.get({ plugin: 'ultramod', key: 'receipts' })
-        if (ref.key === 'allow') return $.state.get({ plugin: 'ultramod', key: 'allow' })
-        if (ref.key === 'guard-approved') return $.state.get({ plugin: 'ultramod', key: 'guard-approved' })
-        if (ref.key === 'compact') return $.state.get({ plugin: 'ultramod', key: 'compact' })
-        throw new Error('Ultra Mod state key is not declared in the facade.')
-      }) as UltraApi['state']['get'],
-      set: ((...args: Parameters<UltraApi['state']['set']>) => {
-        const [ref, value, options] = args
-        if (ref.plugin !== 'ultramod') throw new Error('Ultra Mod can only write its own state.')
-        if (ref.key === 'set') return $.state.set({ plugin: 'ultramod', key: 'set' }, value as PluginState['ultramod']['set'], options)
-        if (ref.key === 'turn') return $.state.set({ plugin: 'ultramod', key: 'turn' }, value as PluginState['ultramod']['turn'], options)
-        if (ref.key === 'receipts') return $.state.set({ plugin: 'ultramod', key: 'receipts' }, value as PluginState['ultramod']['receipts'], options)
-        if (ref.key === 'allow') return $.state.set({ plugin: 'ultramod', key: 'allow' }, value as PluginState['ultramod']['allow'], options)
-        if (ref.key === 'guard-approved') return $.state.set({ plugin: 'ultramod', key: 'guard-approved' }, value as PluginState['ultramod']['guard-approved'], options)
-        if (ref.key === 'compact') return $.state.set({ plugin: 'ultramod', key: 'compact' }, value as PluginState['ultramod']['compact'], options)
-        throw new Error('Ultra Mod state key is not declared in the facade.')
-      }) as UltraApi['state']['set'],
-    },
+  const stateGet = async (ref: { plugin: string; key: string }): Promise<unknown> => {
+    if (ref.plugin !== 'ultramod') throw new Error('Ultra Mod can only read its own state.')
+    if (ref.key === 'set') return $.state.get({ plugin: 'ultramod', key: 'set' })
+    if (ref.key === 'turn') return $.state.get({ plugin: 'ultramod', key: 'turn' })
+    if (ref.key === 'receipts') return $.state.get({ plugin: 'ultramod', key: 'receipts' })
+    if (ref.key === 'allow') return $.state.get({ plugin: 'ultramod', key: 'allow' })
+    if (ref.key === 'compact') return $.state.get({ plugin: 'ultramod', key: 'compact' })
+    throw new Error('Ultra Mod state key is not declared in the facade.')
+  }
+  const stateSet = async (ref: { plugin: string; key: string }, value: unknown, options?: StateSetOptions): Promise<StateSetResult> => {
+    // The contract in types/index.d.ts gives each key its value type; the
+    // facade's own signature checks it at the mod's call.
+    const held = value as never
+    if (ref.plugin !== 'ultramod') throw new Error('Ultra Mod can only write its own state.')
+    if (ref.key === 'set') return $.state.set({ plugin: 'ultramod', key: 'set' }, held, options)
+    if (ref.key === 'turn') return $.state.set({ plugin: 'ultramod', key: 'turn' }, held, options)
+    if (ref.key === 'receipts') return $.state.set({ plugin: 'ultramod', key: 'receipts' }, held, options)
+    if (ref.key === 'allow') return $.state.set({ plugin: 'ultramod', key: 'allow' }, held, options)
+    if (ref.key === 'compact') return $.state.set({ plugin: 'ultramod', key: 'compact' }, held, options)
+    throw new Error('Ultra Mod state key is not declared in the facade.')
+  }
+  // The one file Ultra Mod writes: the project's pins file, for /ultra pin.
+  const writePins = (root: string, text: string): Promise<void> => {
+    if (root === '') return $.fs.write('.claude/pins.md', text)
+    return $.fs.write(`${root}/.claude/pins.md`, text)
+  }
+  const envGet = (name: string): Promise<string | undefined> => {
+    if (name === 'OS') return $.env.get('OS')
+    if (name === 'HOME') return $.env.get('HOME')
+    if (name === 'USERPROFILE') return $.env.get('USERPROFILE')
+    if (name === 'WSL_DISTRO_NAME') return $.env.get('WSL_DISTRO_NAME')
+    throw new Error('Ultra Mod environment name is not declared in the facade.')
+  }
+  const facade = {
+    state: { get: stateGet, set: stateSet },
+    plugin: { root: $.plugin.root },
     store: {
-      get: (...args: Parameters<UltraApi['store']['get']>) => $.store.get(...args),
-      set: (...args: Parameters<UltraApi['store']['set']>) => $.store.set(...args),
-      delete: (...args: Parameters<UltraApi['store']['delete']>) => $.store.delete(...args),
-      keys: (...args: Parameters<UltraApi['store']['keys']>) => $.store.keys(...args),
+      get: (key: string) => $.store.get(key),
+      set: (key: string, value: unknown) => $.store.set(key, value),
     },
     clock: {
-      now: (...args: Parameters<UltraApi['clock']['now']>) => $.clock.now(...args),
-      every: (...args: Parameters<UltraApi['clock']['every']>) => $.clock.every(...args),
-      after: (...args: Parameters<UltraApi['clock']['after']>) => $.clock.after(...args),
+      now: () => $.clock.now(),
+      every: (ms: number, fn: () => void) => $.clock.every(ms, fn),
+      after: (ms: number, fn: () => void) => $.clock.after(ms, fn),
     },
     ui: {
-      ask: (...args: Parameters<UltraApi['ui']['ask']>) => $.ui.ask(...args),
-      toast: (...args: Parameters<UltraApi['ui']['toast']>) => $.ui.toast(...args),
-      status: (...args: Parameters<UltraApi['ui']['status']>) => $.ui.status(...args),
-      log: (...args: Parameters<UltraApi['ui']['log']>) => $.ui.log(...args),
-      invalidate: (...args: Parameters<UltraApi['ui']['invalidate']>) => $.ui.invalidate(...args),
-      open: (...args: Parameters<UltraApi['ui']['open']>) => $.ui.open(...args),
-      close: (...args: Parameters<UltraApi['ui']['close']>) => $.ui.close(...args),
-      resolve: <E extends ResolveInput>(e: E) => $.ui.resolve(e),
+      ask: (question: string, options?: AskOptions) => $.ui.ask(question, options),
+      toast: (text: string) => $.ui.toast(text),
+      log: (text: string) => $.ui.log(text),
+      open: (pane: PaneOpenArgs) => $.ui.open(pane),
+      resolve: (e: ResolveInput) => $.ui.resolve(e),
     },
     session: {
-      root: (...args: Parameters<UltraApi['session']['root']>) => $.session.root(...args),
-      cwd: (...args: Parameters<UltraApi['session']['cwd']>) => $.session.cwd(...args),
-      id: (...args: Parameters<UltraApi['session']['id']>) => $.session.id(...args),
-      usage: (...args: Parameters<UltraApi['session']['usage']>) => $.session.usage(...args),
-      model: (...args: Parameters<UltraApi['session']['model']>) => $.session.model(...args),
-      version: (...args: Parameters<UltraApi['session']['version']>) => $.session.version(...args),
-      compact: (...args: Parameters<UltraApi['session']['compact']>) => $.session.compact(...args),
+      root: () => $.session.root(),
+      cwd: () => $.session.cwd(),
+      usage: () => $.session.usage(),
+      model: () => $.session.model(),
+      version: () => $.session.version(),
+      compact: (input?: SessionCompactArgs) => $.session.compact(input),
     },
+    // Every command it starts is listed in plugin/README.md.
     process: {
-      run: (...args: Parameters<UltraApi['process']['run']>) => $.process.run(...args),
+      run: (argv: readonly string[], init?: ProcessRunInit) => $.process.run(argv, init),
     },
     fs: {
-      write: (...args: Parameters<UltraApi['fs']['write']>) => $.fs.write(...args),
-      stat: (...args: Parameters<UltraApi['fs']['stat']>) => $.fs.stat(...args),
-      exists: (...args: Parameters<UltraApi['fs']['exists']>) => $.fs.exists(...args),
-      read: ((...args: Parameters<UltraApi['fs']['read']>) => $.fs.read(...args)) as UltraApi['fs']['read'],
+      writePins,
+      stat: (path: string) => $.fs.stat(path),
+      exists: (path: string) => $.fs.exists(path),
+      read: (path: string) => $.fs.read(path),
     },
     audio: {
-      play: (...args: Parameters<UltraApi['audio']['play']>) => $.audio.play(...args),
+      play: (clip: AudioClip) => $.audio.play(clip),
     },
     command: {
-      register: (...args: Parameters<UltraApi['command']['register']>) => $.command.register(...args),
+      register: (command: CommandSpec) => $.command.register(command),
     },
-    env: {
-      get: name => {
-        if (name === 'OS') return $.env.get('OS')
-        if (name === 'HOME') return $.env.get('HOME')
-        if (name === 'USERPROFILE') return $.env.get('USERPROFILE')
-        if (name === 'WSL_DISTRO_NAME') return $.env.get('WSL_DISTRO_NAME')
-        if (name === 'TERM_PROGRAM') return $.env.get('TERM_PROGRAM')
-        throw new Error('Ultra Mod environment name is not declared in the facade.')
-      },
-    },
+    env: { get: envGet },
   }
+  return facade as unknown as UltraApi
 }
 
-type Runtime = ReturnType<typeof createMods> & { sets: ReturnType<typeof createSets>; dispatcher: ReturnType<typeof createDispatcher> }
-async function lifecycle<E extends ModEvent>($: UltraApi, event: E, e: Frozen<Args<E>>, runtime: Runtime) {
-  const { sets, hud } = runtime
-  if (event === 'session.start' || event === 'classic.SessionStart') {
-    const input = e as Args<'classic.SessionStart'>
-    if (event === 'session.start' || ['clear', 'resume', 'fork'].includes(input.source)) {
-      hud.stop()
-      await sets.hydrate($)
-      await $.command.register({ name: 'ultra', description: 'Control Ultra Mod and switch sets', argumentHint: '[set <name> | sets | reset | doctor | help]', immediate: true })
-    }
-  }
-  try {
-    if (event === 'turn.start') await hud.start($, e as Frozen<Args<'turn.start'>>)
-    if (event === 'turn.complete') await hud.complete($, e as Frozen<Args<'turn.complete'>>)
-  } catch {
-    hud.stop()
-  }
-  if (event === 'session.end') hud.stop()
+// Built again on every load from the plugin's options; the hooks below read it.
+let runtime: Runtime = createRuntime()
+
+// Starts the HUD over, reads the project's set and registers /ultra.
+const startSession: Hook<'session.start'> = async ($, e, next) => {
+  await sessionStart(createApi($), runtime, e)
+  return next(e)
 }
-export async function dispatch<E extends ModEvent>($: UltraApi, event: E, e: Frozen<Args<E>>, next: Next<E>, runtime: Runtime): Promise<EventResult<E>> {
-  await lifecycle($, event, e, runtime)
-  await runtime.sets.ensure($)
-  return runtime.dispatcher.dispatch($, event, e, engineNext(event, next))
+
+// A cleared, resumed or forked conversation: the same, plus fresh receipts and context warnings.
+const restartSession: Hook<'classic.SessionStart'> = async ($, e, next) => {
+  await sessionRestart(createApi($), runtime, e)
+  return next(e)
 }
+
+// Starts the turn timer and the receipt for this turn.
+const startTurn: Hook<'turn.start'> = async ($, e, next) => {
+  await turnStart(createApi($), runtime, e)
+  return next(e)
+}
+
+// Ends the turn: stores the receipt, checks the context fill, sends a
+// notification for a long turn, and adds the receipt line under the answer.
+const completeTurn: Hook<'turn.complete'> = async ($, e, next) => {
+  const line = await turnComplete(createApi($), runtime, e)
+  if (line === null) return next(e)
+  const result = await next(e)
+  return { ...result, text: underAnswer(result.text, e.answer, line) }
+}
+
+const endSession: Hook<'session.end'> = async ($, e, next) => {
+  await sessionEnd(createApi($), runtime, e)
+  return next(e)
+}
+
+// Answers /ultra, the command this plugin registers, and only that command.
+const runUltra: Hook<'command.run'> = async ($, e) => {
+  const answer = await ultraCommand(createApi($), runtime, e.args)
+  return { text: answer.text }
+}
+
+// Draws the Ultra Mod pane, and the HUD rows above the prompt over what the plugins beneath draw.
+const render: MatchedHook<'ui.render', { component: readonly ['AbovePrompt', 'Pane'] }> = async ($, e, next) => {
+  if (e.component === 'Pane' && e.requestId === 'ultramod') return pane(createApi($), runtime, e)
+  if (e.component !== 'AbovePrompt') return next(e)
+  const rows = await band(createApi($), runtime, e)
+  if (rows === null) return next(e)
+  const { Box } = $.ui.resolve(e)
+  return <Box flexDirection="column">{rows}{await next(e)}</Box>
+}
+
+// Before a call of the tools these mods read runs: guard, secrets, tests and
+// tidy may refuse it.
+const checkToolCall: Hook<'tool.call'> = async ($, e, next) => {
+  const refusal = await checkTool(createApi($), runtime, e)
+  if (refusal !== null) return { deny: refusal }
+  return next(e)
+}
+
+// A failed check refuses the call it had not let through yet.
+const refuseToolCall: CatchHandler<Hook<'tool.call'>> = ($, e, next) => {
+  if (next.called) return next(e)
+  return { deny: REFUSED }
+}
+
+// Around a tool call the checks let through: receipts and the HUD count it,
+// loops adds a line after the same failure repeats, secrets masks tokens in
+// refusal text and context lines from the hooks beneath.
+const watchToolCall: Hook<'tool.call'> = async ($, e, next) => {
+  const after = await watchTool(createApi($), runtime, e)
+  const result = await next(e)
+  const change = await after(result)
+  if (change === null) return result
+  if (change.deny !== undefined) return { deny: change.deny }
+  if (result.deny !== undefined) return result
+  return { ...result, context: change.context }
+}
+
+// Masks known token formats in a tool result before it is stored.
+const maskSecrets: Hook<'session.append'> = async ($, e, next) => {
+  const content = await maskRow(createApi($), runtime, e)
+  if (content === null) return next(e)
+  return next({ ...e, message: { ...e.message, content } })
+}
+
+// Adds the lines of .claude/pins.md to the system prompt.
+const addPins: Hook<'prompt.compose'> = async ($, e, next) => {
+  const added = await composeSections(createApi($), runtime, e)
+  if (added.length === 0) return next(e)
+  const composed = await next(e)
+  return { sections: [...composed.sections, ...added] }
+}
+
+// Sends a desktop notification when Claude Code waits for the person.
+const notifyWaiting: Hook<'classic.Notification'> = async ($, e, next) => {
+  await notification(createApi($), runtime, e)
+  return next(e)
+}
+
 export const register: Register = (on, options) => {
-  const sets = createSets(options)
-  const { mods, hud } = createMods(sets)
-  const dispatcher = createDispatcher(mods, sets)
-  const runtime = { sets, mods, hud, dispatcher }
-
-  on('session.start', ($, e, next) => dispatch(createApi($), 'session.start', e, next, runtime))
-  on('classic.SessionStart', ($, e, next) => dispatch(createApi($), 'classic.SessionStart', e, next, runtime))
-  on('turn.start', ($, e, next) => dispatch(createApi($), 'turn.start', e, next, runtime))
-  on('turn.complete', ($, e, next) => dispatch(createApi($), 'turn.complete', e, next, runtime))
-  on('session.end', ($, e, next) => dispatch(createApi($), 'session.end', e, next, runtime))
-  on('command.run', { command: 'ultra' }, async ($, e, next) => {
-    const api = createApi($)
-    await sets.ensure(api)
-    return dispatcher.dispatch(api, 'command.run', e, engineNext('command.run', next), input => runCommand(api, input.args, sets, mods, () => hud.sync(api)))
-  })
-  on('ui.render', { component: ['AbovePrompt', 'Pane'] }, async ($, e, next) => {
-    const api = createApi($)
-    const downstream = engineNext('ui.render', next as Next<'ui.render'>)
-    return dispatcher.dispatch(api, 'ui.render', e, downstream, input => input.component === 'Pane' && input.requestId === 'ultramod' ? renderPane(api, input, sets, mods, () => hud.sync(api)) : downstream(input))
-  })
-
-  // Literal registrations are required by the engine's source validator.
-  if (dispatcher.events.has('tool.call')) on('tool.call', ($, e, next) => dispatch(createApi($), 'tool.call', e, next, runtime)).catch(async ($, e, next) => next.called || !await dispatcher.hasGate(createApi($), 'tool.call') ? next(e) : refuse('tool.call'))
-  if (dispatcher.events.has('tool.check')) on('tool.check', ($, e, next) => dispatch(createApi($), 'tool.check', e, next, runtime)).catch(async ($, e, next) => await dispatcher.hasGate(createApi($), 'tool.check') ? refuse('tool.check') : next(e))
-  if (dispatcher.events.has('prompt.submit')) on('prompt.submit', ($, e, next) => dispatch(createApi($), 'prompt.submit', e, next, runtime)).catch(async ($, e, next) => next.called || !await dispatcher.hasGate(createApi($), 'prompt.submit') ? next(e) : refuse('prompt.submit'))
-  if (dispatcher.events.has('session.append')) on('session.append', ($, e, next) => dispatch(createApi($), 'session.append', e, next, runtime)).catch(async ($, e, next) => next.called || !await dispatcher.hasGate(createApi($), 'session.append') ? next(e) : refuse('session.append'))
-  if (dispatcher.events.has('prompt.compose')) on('prompt.compose', ($, e, next) => dispatch(createApi($), 'prompt.compose', e, next, runtime))
-  if (dispatcher.events.has('classic.Notification')) on('classic.Notification', ($, e, next) => dispatch(createApi($), 'classic.Notification', e, next, runtime))
+  runtime = createRuntime(options)
+  on('session.start', startSession)
+  on('classic.SessionStart', restartSession)
+  on('turn.start', startTurn)
+  on('turn.complete', completeTurn)
+  on('session.end', endSession)
+  on('command.run', { command: 'ultra' }, runUltra)
+  on('ui.render', { component: ['AbovePrompt', 'Pane'] }, render)
+  on('tool.call', { tool: /^(?:Bash|Read|Edit|MultiEdit|Write|NotebookEdit|Grep|Glob)$/ }, checkToolCall).catch(refuseToolCall)
+  on('tool.call', watchToolCall)
+  on('session.append', maskSecrets)
+  on('prompt.compose', addPins)
+  on('classic.Notification', notifyWaiting)
 }

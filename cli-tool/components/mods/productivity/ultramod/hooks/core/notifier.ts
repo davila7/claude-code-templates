@@ -19,27 +19,27 @@ export function resetNotifier(): void {
   chime = null
 }
 
-export async function notifierSettings($: UltraApi): Promise<UltraModSettings> {
+export async function notifierSettings(api: UltraApi): Promise<UltraModSettings> {
   try {
-    return await settingsFor($, 'notify')
+    return await settingsFor(api, 'notify')
   } catch {
     return resolveSet(undefined).mods.notify
   }
 }
 
 // The notifier a send would use, asked fresh; /ultra doctor reports it.
-export async function detectNotifier($: UltraApi): Promise<Notifier> {
+export async function detectNotifier(api: UltraApi): Promise<Notifier> {
   let os: string | undefined
   let wsl: string | undefined
   try {
-    os = await $.env.get('OS')
-    wsl = await $.env.get('WSL_DISTRO_NAME')
+    os = await api.env.get('OS')
+    wsl = await api.env.get('WSL_DISTRO_NAME')
   } catch {
     os = undefined
   }
   const has = async (name: string) => {
     try {
-      const result = await $.process.run(['which', name])
+      const result = await api.process.run(['which', name])
       return result.exitCode === 0
     } catch {
       return false
@@ -47,32 +47,41 @@ export async function detectNotifier($: UltraApi): Promise<Notifier> {
   }
   if (os === 'Windows_NT' || (wsl !== undefined && wsl !== '')) return 'powershell'
   // OS is only ever set on Windows, so the platform comes from the kernel.
-  if ((await kernel($)) === 'Darwin') return (await has('osascript')) ? 'osascript' : 'toast'
+  if ((await kernel(api)) === 'Darwin') return (await has('osascript')) ? 'osascript' : 'toast'
   return (await has('notify-send')) ? 'notify-send' : 'toast'
 }
 
 // `uname -s`: Darwin, Linux, and so on. Empty when it cannot be asked.
-async function kernel($: UltraApi): Promise<string> {
+async function kernel(api: UltraApi): Promise<string> {
   try {
-    const result = await $.process.run(['uname', '-s'])
+    const result = await api.process.run(['uname', '-s'])
     return result.exitCode === 0 ? result.stdout.trim() : ''
   } catch {
     return ''
   }
 }
 
-// Quote-safe argv forms: no shell strings anywhere. AppleScript strings
-// cannot span lines, so control characters become spaces before the quotes
-// are escaped. PowerShell gets the body as base64 data, never as source: it
-// treats curly quotes as delimiters, so no escaping of the text is safe.
-function appleScript(body: string): string {
-  const safe = body.replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, ' ').replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-  return `display notification "${safe}" with title "Claude Code"`
+// Quote-safe argv forms: no shell strings and no inline programs. Both
+// platform notifiers run a script shipped in the plugin's scripts folder and
+// receive the text as data. AppleScript gets title and body as arguments, so a
+// quote or a newline in them is never script source. PowerShell gets the body
+// as base64: it treats curly quotes as delimiters, so no escaping of the text
+// is safe.
+export function scriptPath(root: string, file: string): string {
+  const sep = root.includes('\\') ? '\\' : '/'
+  return `${root.replace(/[\\/]+$/, '')}${sep}scripts${sep}${file}`
 }
 
-function powerShell(body: string): string {
-  const encoded = base64(utf8(body))
-  return `$body = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encoded}')); Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; $n = New-Object System.Windows.Forms.NotifyIcon; $n.Icon = [System.Drawing.SystemIcons]::Information; $n.Visible = $true; $n.ShowBalloonTip(5000, 'Claude Code', $body, 'Info'); Start-Sleep -Seconds 2; $n.Dispose()`
+// powershell.exe under WSL reads Windows paths, so the script path goes
+// through wslpath. A failed conversion throws and the toast takes over.
+async function powerShellScript(api: UltraApi): Promise<string> {
+  const script = scriptPath(api.plugin.root, 'notify.ps1')
+  const [os, wsl] = await Promise.all([api.env.get('OS'), api.env.get('WSL_DISTRO_NAME')])
+  if (os === 'Windows_NT' || wsl === undefined || wsl === '') return script
+  const result = await api.process.run(['wslpath', '-w', script])
+  const converted = result.stdout.trim()
+  if (result.exitCode !== 0 || converted === '') throw new Error('wslpath could not convert the notifier script path')
+  return converted
 }
 
 function utf8(text: string): number[] {
@@ -139,23 +148,23 @@ function chimeClip(): { base64: string; mime: string } {
 }
 
 // A notifier that exits nonzero did not show anything: let the toast take over.
-async function runNotifier($: UltraApi, argv: string[]): Promise<void> {
-  const result = await $.process.run(argv)
+async function runNotifier(api: UltraApi, argv: string[]): Promise<void> {
+  const result = await api.process.run(argv)
   if (result.exitCode !== 0) throw new Error(`${argv[0] ?? 'notifier'} exited with ${result.exitCode}`)
 }
 
-async function clockNow($: UltraApi): Promise<number> {
+async function clockNow(api: UltraApi): Promise<number> {
   try {
-    return await $.clock.now()
+    return await api.clock.now()
   } catch {
     return Date.now()
   }
 }
 
 // The folder name a notification body leads with.
-export async function projectFolder($: UltraApi): Promise<string> {
+export async function projectFolder(api: UltraApi): Promise<string> {
   try {
-    const root = await $.session.root()
+    const root = await api.session.root()
     const parts = root.split(/[\\/]/).filter(part => part !== '')
     return parts.length > 0 ? (parts[parts.length - 1] ?? root) : root
   } catch {
@@ -164,27 +173,27 @@ export async function projectFolder($: UltraApi): Promise<string> {
 }
 
 // Returns the time the notification went out, or null when it did not send.
-export async function sendNotification($: UltraApi, body: string, settings: UltraModSettings): Promise<number | null> {
-  const now = await clockNow($)
+export async function sendNotification(api: UltraApi, body: string, settings: UltraModSettings): Promise<number | null> {
+  const now = await clockNow(api)
   if (now - lastSent < 10_000) return null
   lastSent = now
   try {
-    detection ??= detectNotifier($)
+    detection ??= detectNotifier(api)
     const notifier = await detection.catch(() => 'toast' as Notifier)
-    if (notifier === 'notify-send') await runNotifier($, ['notify-send', 'Claude Code', body])
-    else if (notifier === 'osascript') await runNotifier($, ['osascript', '-e', appleScript(body)])
-    else if (notifier === 'powershell') await runNotifier($, ['powershell.exe', '-NoProfile', '-Command', powerShell(body)])
-    else $.ui.toast(body)
+    if (notifier === 'notify-send') await runNotifier(api, ['notify-send', 'Claude Code', body])
+    else if (notifier === 'osascript') await runNotifier(api, ['osascript', scriptPath(api.plugin.root, 'notify.applescript'), 'Claude Code', body])
+    else if (notifier === 'powershell') await runNotifier(api, ['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', await powerShellScript(api), '-BodyBase64', base64(utf8(body))])
+    else api.ui.toast(body)
   } catch {
     try {
-      $.ui.toast(body)
+      api.ui.toast(body)
     } catch {
       // Nothing left to try; a notification must never throw.
     }
   }
   if (settings.chime === true && settings.sound !== false) {
     try {
-      await $.audio.play(chimeClip())
+      await api.audio.play(chimeClip())
     } catch {
       // A missing chime must never fail the notification.
     }
@@ -198,15 +207,15 @@ export async function sendNotification($: UltraApi, body: string, settings: Ultr
 // open, and clock.after would only run after that hook resolved, which is
 // after the user has answered. Only while the notify mod is on; the chime
 // follows the sound option.
-export function needsYou($: UltraApi, reason: string): void {
-  void deliverNeedsYou($, reason)
+export function needsYou(api: UltraApi, reason: string): void {
+  void deliverNeedsYou(api, reason)
 }
 
-async function deliverNeedsYou($: UltraApi, reason: string): Promise<void> {
+async function deliverNeedsYou(api: UltraApi, reason: string): Promise<void> {
   try {
-    const settings = await notifierSettings($)
+    const settings = await notifierSettings(api)
     if (!settings.enabled) return
-    await sendNotification($, `${await projectFolder($)} needs you: ${reason}`, settings)
+    await sendNotification(api, `${await projectFolder(api)} needs you: ${reason}`, settings)
   } catch {
     // The caller's own work is done by now; never throw behind it.
   }

@@ -1,7 +1,7 @@
 // Receipts claim checking from SPEC 4.2: which commands count as test, build,
 // typecheck or lint runs, and which English phrases claim they pass.
 // Plain TypeScript, no imports.
-import { splitCommand, commandTokens, baseName } from './shell'
+import { splitCommand, commandTokens, baseName, tokens } from './shell'
 
 export type CommandKind = 'test' | 'build' | 'typecheck' | 'lint'
 
@@ -151,9 +151,17 @@ function classifyWord(word: string | undefined): CommandKind | null {
   return DIRECT_TOOLS[unpinned(word)] ?? null
 }
 
+// Words that can stand before a command; a ! among them inverts its exit.
+const LEADS = ['if', 'then', 'elif', 'else', 'do', 'while', 'until', '{', 'time', '!']
+
 function classifySimple(simple: string): CommandKind | null {
   const words = commandTokens(simple)
   if (words.length === 0) return null
+  // ! npm test exits 0 when the tests fail, so its exit says nothing either way.
+  const raw = tokens(simple)
+  for (let i = 0; i < raw.length && LEADS.indexOf(raw[i] ?? '') !== -1; i++) {
+    if (raw[i] === '!') return null
+  }
   // A command that only prints help is nothing.
   if (words.some((w) => w === '--help')) return null
   const head = baseName(words[0] ?? '')
@@ -204,7 +212,8 @@ export function commandKind(cmd: string): CommandKind | null {
  * It does for a plain && chain. After a ;, |, || or & the last command alone
  * sets the exit code, so `npm test || true` and `npm test | tail` exit 0 when
  * the tests fail. Quoted text is skipped; a line the scan does not follow
- * (substitutions, heredocs, an open quote) counts as not proven.
+ * (substitutions, process substitutions, heredocs, an open quote) counts as
+ * not proven.
  */
 export function exitProvesAll(cmd: string): boolean {
   const line = cmd.trim()
@@ -227,6 +236,8 @@ export function exitProvesAll(cmd: string): boolean {
     } else if (c === '|' || c === ';' || c === '`' || c === '\n') return false
     else if (c === '$' && next === '(') return false
     else if (c === '<' && next === '<') return false
+    // <(npm test) and >(npm test) run beside the command, whose exit ignores theirs.
+    else if ((c === '<' || c === '>') && next === '(') return false
   }
   return quote === ''
 }
