@@ -1004,10 +1004,19 @@ async function installIndividualSetting(settingName, targetDir, options) {
         
         for (const [filePath, fileConfig] of Object.entries(additionalFiles)) {
           try {
-            // Resolve tilde (~) to home directory
-            const resolvedFilePath = filePath.startsWith('~') 
-              ? path.join(require('os').homedir(), filePath.slice(1))
-              : path.resolve(currentTargetDir, filePath);
+            // A setting may only add files under the install location's .claude/
+            // directory: no absolute paths, no ~, no `..` out of it.
+            const claudeRoot = path.resolve(currentTargetDir, '.claude');
+            const resolvedFilePath = path.resolve(currentTargetDir, filePath);
+            if (path.isAbsolute(filePath) || filePath.startsWith('~') ||
+                !resolvedFilePath.startsWith(claudeRoot + path.sep)) {
+              console.log(chalk.red(`❌ Skipped file outside .claude/: ${filePath}`));
+              continue;
+            }
+            if (typeof fileConfig?.content !== 'string') {
+              console.log(chalk.red(`❌ Skipped file without text content: ${filePath}`));
+              continue;
+            }
             
             // Ensure directory exists
             await fs.ensureDir(path.dirname(resolvedFilePath));
