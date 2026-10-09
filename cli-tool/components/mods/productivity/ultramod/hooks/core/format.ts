@@ -1,6 +1,8 @@
 export function fmtTokens(tokens: number): string {
   if (tokens < 1_000) return String(Math.round(tokens))
-  if (tokens < 1_000_000) return `${Math.round(tokens / 1_000)}k`
+  // 999,500 rounds to 1000k, so the million form starts where the thousands round up to it.
+  const thousands = Math.round(tokens / 1_000)
+  if (thousands < 1_000) return `${thousands}k`
   return `${Number((tokens / 1_000_000).toFixed(1))}m`
 }
 

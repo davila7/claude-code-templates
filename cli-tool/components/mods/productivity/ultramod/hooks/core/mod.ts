@@ -1,10 +1,12 @@
 import type { UltraApi } from './api'
+import type { GatingEvent } from './dispatcher'
 import type { Args, EventName, EventResult, Frozen, Next, RenderInput, RenderNode, ThemeKey } from 'claude-code'
 import type { UltraModSettings, UltraSet } from '../../types/index'
 
 // Core registers events once; mods form an ordered middleware chain.
 // when filters inputs, and disabled mods are skipped live.
-// A gating handler that fails before next refuses the event.
+// A gating handler that fails before next refuses the event, and only the
+// events the dispatcher can refuse (GatingEvent) accept the flag.
 // Other failures continue; failures after next reuse its result.
 // band and pane contribute drawings; commands answer /ultra subcommands.
 export type ModId = 'hud' | 'receipts' | 'guard' | 'secrets' | 'tests' | 'notify' | 'compact' | 'loops' | 'pins' | 'tidy'
@@ -17,7 +19,7 @@ export type ModNext<E extends ModEvent> = {
 }
 export type ModHandler<E extends ModEvent> = {
   when?: (e: Frozen<Args<E>>) => boolean
-  gating?: boolean
+  gating?: E extends GatingEvent ? boolean : never
   run: ($: UltraApi, e: Frozen<Args<E>>, next: ModNext<E>) => EventResult<E> | Promise<EventResult<E>>
 }
 export type BandPart = { node: RenderNode; columns: number }

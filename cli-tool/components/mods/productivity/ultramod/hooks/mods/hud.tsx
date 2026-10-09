@@ -139,22 +139,35 @@ export function createHud(sets: SetsEngine, mods: readonly UltraMod[]): HudMod {
           const columns = Math.max(0, Math.floor(e.props.bodyColumns))
           const { nodes: row, contextColor, used: consumed } = await hudRow($, e, set, columns)
           let used = consumed
+          // The readouts fill their row first, so a contribution with no room beside
+          // them (Compact now, 15 cells) takes a row of its own instead of vanishing.
+          const second: RenderNode[] = []
+          let usedSecond = 0
           for (const mod of mods) {
             if (!mod.band || !set.mods[mod.id].enabled) continue
             const gap = row.length ? 3 : 0
             const remaining = Math.max(0, columns - used - gap)
             try {
               const part = await mod.band({ $, e: e as Frozen<RenderInput<'AbovePrompt'>>, set, settings: set.mods[mod.id], columns: remaining, contextColor })
-              if (!part || part.columns <= 0 || part.columns > remaining) continue
-              if (gap) row.push(<Text dimColor> · </Text>)
-              row.push(part.node)
-              used += gap + part.columns
+              if (!part || part.columns <= 0) continue
+              if (part.columns <= remaining) {
+                if (gap) row.push(<Text dimColor> · </Text>)
+                row.push(part.node)
+                used += gap + part.columns
+                continue
+              }
+              const secondGap = second.length ? 3 : 0
+              if (usedSecond + secondGap + part.columns > columns) continue
+              if (secondGap) second.push(<Text dimColor> · </Text>)
+              second.push(part.node)
+              usedSecond += secondGap + part.columns
             } catch {
               // A broken contribution must leave the other rows visible.
             }
           }
           return <Box flexDirection="column">
             <Box flexDirection="row" width={columns} flexWrap="nowrap">{row}</Box>
+            {second.length ? <Box flexDirection="row" width={columns} flexWrap="nowrap">{second}</Box> : null}
             {await next(e)}
           </Box>
         },
