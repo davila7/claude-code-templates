@@ -1,7 +1,7 @@
 {
   "name": "flappy",
   "version": "0.2.0",
-  "description": "Flappy above the Claude Code prompt: flap through the gaps in the pipes. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+  "description": "Flappy above the Claude Code prompt: flap through the gaps in the pipes. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
   "author": {
     "name": "Seza Akgün"
   },

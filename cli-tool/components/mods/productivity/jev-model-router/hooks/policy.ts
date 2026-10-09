@@ -401,6 +401,19 @@ export function route(
 }
 
 /**
+ * Whether a prompt is a slash command and nothing else (`/simplify`). The
+ * decision model sees only the name, never the skill or command it runs:
+ * measured on TypeSafe (three calls each), `/simplify`, `/run` and `/github`
+ * came back fast with effort 0.1 to 0.5, low effort for a multi-step skill,
+ * while `/code-review` and `/security-review` came back balanced and deep.
+ * With text after the name there is a task to read, and it is classified.
+ * A one-segment path alone (`/etc`) matches too; nobody sends one as a task.
+ */
+export function bareCommand(text: string): boolean {
+  return /^\/[^\s/]+$/.test(text.trim())
+}
+
+/**
  * Holds a prompt's classification until the turn that reads that prompt
  * starts.
  *

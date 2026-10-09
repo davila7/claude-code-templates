@@ -1,5 +1,5 @@
 /**
- * jev-model-router — Claude Mod (EARLY ACCESS)
+ * jev-model-router — Claude Mod
  *
  * Picks the model each task runs on with TypeSafe's Jev, a System One
  * decision model: unstructured state in, a typed choice with a probability
@@ -35,7 +35,7 @@
  * The API key comes from the plugin's options (userConfig "typesafeApiKey"
  * or "gatewayApiKey"). Never hardcode it in this file.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Privacy: with a key set, the prompt text is sent to whichever backend the
@@ -57,6 +57,7 @@ import {
   requestModelId,
   route,
   TIER_ORDER,
+  bareCommand,
 } from './policy.ts'
 import type { Decision, Effort, PolicyConfig, Provider, Tier } from './policy.ts'
 
@@ -149,6 +150,15 @@ export const register: Register = (on, options) => {
     if (!unusableReported) {
       unusableReported = true
       $.ui.log(`[jev-model-router] provider "${forced}" has no key set; using the built-in classifier`)
+    }
+
+    // A slash command alone gives the decision model only the command's name.
+    // Its turn keeps the session's model and effort; the null put keeps a
+    // previous prompt's decision from reaching it.
+    if (bareCommand(e.text)) {
+      if (logDecisions) $.ui.log('[jev-model-router] a command with nothing after it; leaving the turn alone')
+      pending.put(null)
+      return next(e)
     }
 
     const startedAt = await $.clock.now()

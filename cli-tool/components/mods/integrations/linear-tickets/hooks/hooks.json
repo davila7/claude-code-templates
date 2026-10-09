@@ -1,0 +1,6 @@
+{
+  "description": "linear-tickets: /linear opens a Pane of Linear tickets by status with a closed-per-day chart and the cycle burn-up; a clock.every poll refreshes it and a status line entry summarizes it",
+  "modules": [
+    "./linear-tickets.tsx"
+  ]
+}

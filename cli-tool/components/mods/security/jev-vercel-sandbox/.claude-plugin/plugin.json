@@ -1,0 +1,188 @@
+{
+  "name": "jev-vercel-sandbox",
+  "version": "0.3.0",
+  "description": "A Vercel Sandbox Claude sends work to on purpose: long test runs in the background, someone else's repository, an installer of unknown origin, a bulk change to preview as a patch, a clean build. TypeSafe's Jev reads each Bash command and spots those jobs; by default you are asked whether it runs in the sandbox or locally (confirmSandbox), or it always goes to the sandbox with the question off. Claude also gets sandbox_run, sandbox_jobs, sandbox_result and sandbox_apply. Each job starts from the project as it is now (tracked files, credentials left out) in its own worktree, every result is marked remote, and a job's changes reach your disk only as a patch you apply after a question. /jev-vercel-sandbox starts it and opens a side pane with the jobs. Falls back to the engine's built-in classifier without a Jev key.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "security",
+    "sandbox",
+    "vercel",
+    "jev",
+    "typesafe",
+    "bash",
+    "tests"
+  ],
+  "userConfig": {
+    "vercelToken": {
+      "type": "string",
+      "title": "Vercel token",
+      "description": "A Vercel access token (vercel.com/account/tokens), or an OIDC token from `vercel env pull`. Empty: the VERCEL_TOKEN, then VERCEL_OIDC_TOKEN environment variable",
+      "sensitive": true,
+      "default": ""
+    },
+    "vercelTeamId": {
+      "type": "string",
+      "title": "Vercel team id",
+      "description": "The team (team_…) the sandbox is billed to; needed with an access token, read from an OIDC token. Empty: VERCEL_TEAM_ID",
+      "default": ""
+    },
+    "vercelProjectId": {
+      "type": "string",
+      "title": "Vercel project id",
+      "description": "The project (prj_…) the sandbox belongs to; needed with an access token, read from an OIDC token. Empty: VERCEL_PROJECT_ID",
+      "default": ""
+    },
+    "sandboxImage": {
+      "type": "string",
+      "title": "Sandbox image",
+      "description": "Image to start from; empty uses Vercel's default (vercel/sandbox/universal: Ubuntu, Node.js LTS, Python)",
+      "default": ""
+    },
+    "sandboxVcpus": {
+      "type": "number",
+      "title": "vCPUs",
+      "description": "vCPUs for the sandbox; leave unset for Vercel's default"
+    },
+    "sandboxTimeoutMinutes": {
+      "type": "number",
+      "title": "Sandbox lifetime (minutes)",
+      "description": "How long the sandbox lives before Vercel stops it; run /jev-vercel-sandbox again after that. Your plan caps it",
+      "default": 45
+    },
+    "persistent": {
+      "type": "boolean",
+      "title": "Persistent sandbox",
+      "description": "Keep the sandbox's filesystem when it stops (Vercel snapshots it). Off: every session starts clean",
+      "default": false
+    },
+    "uploadWorkspace": {
+      "type": "boolean",
+      "title": "Copy the project into the sandbox",
+      "description": "On /jev-vercel-sandbox, copy the project (the files git tracks, never .env*, keys, .git, .claude, node_modules) into the sandbox; each job then starts from it, brought up to date. Off: every job runs in an empty folder",
+      "default": true
+    },
+    "uploadUntracked": {
+      "type": "boolean",
+      "title": "Copy untracked files too",
+      "description": "Also copy files git does not track but does not ignore (and, outside a git repository, every file). Off: only tracked files go, since an untracked file can hold credentials no name list recognizes",
+      "default": false
+    },
+    "workspaceMaxMB": {
+      "type": "number",
+      "title": "Project size cap (MB)",
+      "description": "The largest compressed copy of the project that is uploaded; bigger, the start fails and says so",
+      "default": 10
+    },
+    "stopOnExit": {
+      "type": "boolean",
+      "title": "Stop on exit",
+      "description": "Stop the sandbox when the session ends",
+      "default": true
+    },
+    "commandTimeoutMs": {
+      "type": "number",
+      "title": "Command timeout (ms)",
+      "description": "Longest a sandbox job may run when Claude sets no timeout of its own (max 600000)",
+      "default": 120000
+    },
+    "confirmSandbox": {
+      "type": "boolean",
+      "title": "Ask before sandboxing",
+      "description": "When Jev spots a sandbox job in a Bash command, ask whether it runs in the sandbox or locally (with an \"always\" choice per kind for the session). Off: every detected job goes to the sandbox without asking, starting it if needed",
+      "default": true
+    },
+    "useCases": {
+      "type": "string",
+      "title": "Use cases to detect",
+      "description": "Comma-separated: tests, external_repo, untrusted_code, repo_change, clean_build. Empty: all of them",
+      "default": ""
+    },
+    "typesafeApiKey": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for api.typesafe.ai, the detector (calibrated probabilities). Empty: the Gateway key, else the built-in classifier",
+      "sensitive": true,
+      "default": ""
+    },
+    "gatewayApiKey": {
+      "type": "string",
+      "title": "Vercel AI Gateway key",
+      "description": "Reaches Jev through ai-gateway.vercel.sh when no TypeSafe key is set",
+      "sensitive": true,
+      "default": ""
+    },
+    "provider": {
+      "type": "string",
+      "title": "Detector backend",
+      "description": "\"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+      "default": "auto",
+      "options": [
+        "auto",
+        "typesafe",
+        "gateway",
+        "builtin"
+      ]
+    },
+    "typesafeBaseUrl": {
+      "type": "string",
+      "title": "TypeSafe base URL",
+      "description": "Empty uses https://api.typesafe.ai",
+      "default": ""
+    },
+    "typesafeModel": {
+      "type": "string",
+      "title": "TypeSafe model",
+      "description": "Empty uses jev-latest",
+      "default": ""
+    },
+    "gatewayBaseUrl": {
+      "type": "string",
+      "title": "AI Gateway base URL",
+      "description": "Empty uses https://ai-gateway.vercel.sh/v4/ai",
+      "default": ""
+    },
+    "gatewayModel": {
+      "type": "string",
+      "title": "AI Gateway model",
+      "description": "Empty uses typesafe-ai/jev",
+      "default": ""
+    },
+    "threshold": {
+      "type": "number",
+      "title": "Detection threshold",
+      "description": "The probability Jev must give a use case for a command to count as a sandbox job",
+      "default": 0.5
+    },
+    "judgeTimeoutMs": {
+      "type": "number",
+      "title": "Jev latency budget (ms)",
+      "description": "How long to wait for Jev; with no answer the command runs locally as usual",
+      "default": 2000
+    },
+    "columns": {
+      "type": "number",
+      "title": "Pane width",
+      "description": "Columns asked for the docked pane in the fullscreen layout (28-80)",
+      "default": 44
+    },
+    "vercelApiUrl": {
+      "type": "string",
+      "title": "Vercel API URL",
+      "description": "Empty uses https://api.vercel.com",
+      "default": ""
+    },
+    "logDecisions": {
+      "type": "boolean",
+      "title": "Log decisions",
+      "description": "Write each detection and each job's outcome to the session log",
+      "default": true
+    }
+  }
+}

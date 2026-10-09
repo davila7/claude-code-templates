@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'dashboard/**'
+  # Pushes made with GITHUB_TOKEN never trigger other workflows, so the
+  # catalog workflows (update-component-content.yml) start this one
+  # explicitly after they commit; it can also be run by hand from Actions.
+  workflow_dispatch:
 
 permissions:
   contents: read
