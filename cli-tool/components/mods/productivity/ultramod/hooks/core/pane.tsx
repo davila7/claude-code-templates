@@ -41,7 +41,7 @@ export async function renderPane($: UltraApi, e: Frozen<RenderInput<'Pane'>>, se
     if (selected) { await sets.switch($, selected); await sync() }
   }
   const picker = (
-    <Box key="set-picker" flexDirection="row" gap={1}>
+    <Box key="set-picker" flexDirection="row" flexWrap="wrap" gap={1}>
       {setNames.map((name, index) => (
         <Button key={`set-${name}`} plain label={name} hotkey={String(index + 1)} dimColor={name !== set.name} onPress={() => pick(name)} />
       ))}

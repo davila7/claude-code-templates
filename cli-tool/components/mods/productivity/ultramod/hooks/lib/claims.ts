@@ -47,6 +47,7 @@ function wrappedTool(words: string[]): string | undefined {
       if (args[0] === 'dlx') return args[1]
       return firstArg
     case 'yarn':
+    case 'bun':
       if (args[0] === 'dlx') return args[1]
       return firstArg
     case 'pnpm':
@@ -57,7 +58,7 @@ function wrappedTool(words: string[]): string | undefined {
         return searchArgs.find((a) => !a.startsWith('-'))
       }
       if (args[0] === 'dlx') return args[1]
-      return undefined
+      return firstArg
     case 'uv':
     case 'pipenv':
     case 'poetry':
@@ -97,6 +98,13 @@ function wrappedTool(words: string[]): string | undefined {
     default:
       return undefined
   }
+}
+
+// npx vitest@3: the version pin is not part of the tool's name. A leading @
+// belongs to a scope (@scope/tool), so only a later one counts.
+function unpinned(word: string): string {
+  const at = word.lastIndexOf('@')
+  return at > 0 && !word.includes('/', at) ? word.slice(0, at) : word
 }
 
 function classifyWord(word: string | undefined): CommandKind | null {
@@ -140,7 +148,7 @@ function classifyWord(word: string | undefined): CommandKind | null {
         return null
     }
   }
-  return DIRECT_TOOLS[word] ?? null
+  return DIRECT_TOOLS[unpinned(word)] ?? null
 }
 
 function classifySimple(simple: string): CommandKind | null {
@@ -152,7 +160,7 @@ function classifySimple(simple: string): CommandKind | null {
   const args = words.slice(1)
 
   if (NPM_FAMILY.indexOf(head) !== -1) {
-    const runIdx = args.indexOf('run')
+    const runIdx = args.findIndex((a) => a === 'run' || a === 'run-script')
     if (runIdx !== -1) {
       const k = npmFamilyKind(args[runIdx + 1])
       if (k !== null) return k
@@ -189,6 +197,38 @@ export function commandKind(cmd: string): CommandKind | null {
     if (k !== null && (best === null || RANK[k] > RANK[best])) best = k
   }
   return best
+}
+
+/**
+ * Whether a zero exit of the whole line proves every command in it passed.
+ * It does for a plain && chain. After a ;, |, || or & the last command alone
+ * sets the exit code, so `npm test || true` and `npm test | tail` exit 0 when
+ * the tests fail. Quoted text is skipped; a line the scan does not follow
+ * (substitutions, heredocs, an open quote) counts as not proven.
+ */
+export function exitProvesAll(cmd: string): boolean {
+  const line = cmd.trim()
+  let quote = ''
+  for (let i = 0; i < line.length; i++) {
+    const c = line.charAt(i)
+    const next = line.charAt(i + 1)
+    if (quote) {
+      if (quote === '"' && c === '\\') i++
+      else if (c === quote) quote = ''
+      else if (quote === '"' && (c === '`' || (c === '$' && next === '('))) return false
+      continue
+    }
+    if (c === "'" || c === '"') quote = c
+    else if (c === '\\') i++
+    else if (c === '&') {
+      // && joins, and >&, <& and &> belong to a redirect; a lone & backgrounds.
+      if (next === '&') i++
+      else if (next !== '>' && line.charAt(i - 1) !== '>' && line.charAt(i - 1) !== '<') return false
+    } else if (c === '|' || c === ';' || c === '`' || c === '\n') return false
+    else if (c === '$' && next === '(') return false
+    else if (c === '<' && next === '<') return false
+  }
+  return quote === ''
 }
 
 export interface Claims {
@@ -229,7 +269,7 @@ const CLAIM_PATTERNS: { kind: keyof Claims; re: RegExp }[] = [
 
 // A conditional or negated lead-in ending just before the claim.
 const GUARD =
-  /\b(if|once|when|unless|until|after|before|should|would|could|might|may|hopes?|expects?|expected|assuming|provided|in\s+case|so\s+that|verify|confirm|to\s+confirm|make\s+sure|be\s+sure|not|no|never|n't|cannot|can't|won't|don't|doesn't|didn't|isn't|aren't)\s+(\w+\s+){0,3}$/i
+  /\b(if|once|when|unless|until|after|before|should|would|could|might|may|hopes?|expects?|expected|assuming|provided|in\s+case|so\s+that|verify|confirm|to\s+confirm|check\s+that|make\s+sure|be\s+sure|not|no|never|n't|cannot|can't|won't|don't|doesn't|didn't|isn't|aren't)\s+(\w+\s+){0,3}$/i
 
 /**
  * Which passing claims an answer makes in precise English: tests, build,

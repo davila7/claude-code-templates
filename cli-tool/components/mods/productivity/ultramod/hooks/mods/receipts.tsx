@@ -3,7 +3,7 @@ import type { UltraCommandKind, UltraCommandRun, UltraReceipt } from '../../type
 import { fmtCountdown, fmtDuration, fmtUsd } from '../core/format'
 import type { UltraMod } from '../core/mod'
 import { settingsFor } from '../core/sets'
-import { claimsIn, commandKind } from '../lib/claims'
+import { claimsIn, commandKind, exitProvesAll } from '../lib/claims'
 
 // The validator wants every atom in a const of the file that reads and writes it.
 const receiptHistory = atom({ plugin: 'ultramod', key: 'receipts' } as const, [] as UltraReceipt[])
@@ -47,7 +47,9 @@ export const receipts: UltraMod = {
         const tool = String(e.tool)
         if (e.tool === 'Bash' && typeof e.command === 'string') {
           const error = result.isError ? (result.text ?? (typeof result.result === 'string' ? result.result : '')).split('\n').find(line => line.trim())?.trim() : undefined
-          held.commands.push({ command: e.command, kind: commandKind(e.command), passed: !result.isError, sequence, ...(error ? { error } : {}) })
+          // A zero exit vouches for the tests only when nothing after them sets the exit code.
+          const kind = result.isError || exitProvesAll(e.command) ? commandKind(e.command) : null
+          held.commands.push({ command: e.command, kind, passed: !result.isError, sequence, ...(error ? { error } : {}) })
         } else if (['Edit', 'Write', 'MultiEdit', 'NotebookEdit'].includes(tool) && !result.isError) {
           // The envelope is a union, so read the path argument by name rather
           // than through a narrowing the removed tools have left behind.

@@ -3,7 +3,6 @@ import { resolveSet, settingsFor } from '../core/sets'
 import type { UltraMod } from '../core/mod'
 import type { UltraModSettings } from '../../types/index'
 import type { EventResult } from 'claude-code'
-import { normalize } from '../lib/shell'
 
 function str(e: { [field: string]: unknown }, key: string): string {
   const value = e[key]
@@ -23,8 +22,60 @@ const EDIT_NUDGE = 'old_string was not found twice in a row in this file. Read t
 
 // Module state: counts reset when the module reloads, which is a fresh
 // session environment anyway. Nothing here is drawn, so $.state is not needed.
+// Both are bounded: the oldest streak is forgotten once MAX_STREAKS are tracked.
 const failures = new Map<string, number>()
 const nudged = new Set<string>()
+const MAX_STREAKS = 200
+
+function count(key: string): number {
+  const next = (failures.get(key) ?? 0) + 1
+  // Re-inserting keeps the Map ordered by last failure.
+  failures.delete(key)
+  failures.set(key, next)
+  while (failures.size > MAX_STREAKS) {
+    const oldest = failures.keys().next().value
+    if (oldest === undefined) break
+    failures.delete(oldest)
+    nudged.delete(oldest)
+  }
+  return next
+}
+
+function forget(key: string): void {
+  failures.delete(key)
+  nudged.delete(key)
+}
+
+// Whitespace runs collapse to one space outside quotes only: inside them the
+// spaces are part of an argument, so 'a  b' and 'a b' are different commands.
+function normalizeCommand(command: string): string {
+  let out = ''
+  let quote = ''
+  let space = false
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i] ?? ''
+    if (quote === '') {
+      if (/\s/.test(ch)) {
+        space = true
+        continue
+      }
+      if (space && out !== '') out += ' '
+      space = false
+      if (ch === '\\') {
+        out += ch + (command[i + 1] ?? '')
+        i++
+        continue
+      }
+      if (ch === "'" || ch === '"') quote = ch
+    } else if (ch === '\\' && quote === '"') {
+      out += ch + (command[i + 1] ?? '')
+      i++
+      continue
+    } else if (ch === quote) quote = ''
+    out += ch
+  }
+  return out
+}
 
 // Test seam: module state otherwise lives as long as the session.
 export function resetLoops(): void {
@@ -63,12 +114,13 @@ export const loops: UltraMod = {
           const settings = await modSettings($)
           const nudge = settings.mode !== 'warn'
           if (e.tool === 'Bash') {
-            const key = `bash:${normalize(str(e, 'command'))}`
+            const key = `bash:${normalizeCommand(str(e, 'command'))}`
             if (result.isError) {
-              const signature = `${key}|${firstErrorLine(result.text)}`
-              const count = (failures.get(signature) ?? 0) + 1
-              failures.set(signature, count)
-              if (count >= 3 && !nudged.has(signature)) {
+              const line = firstErrorLine(result.text)
+              // With no diagnostic line, unrelated failures would pass for one error.
+              if (line === '') return result
+              const signature = `${key}|${line}`
+              if (count(signature) >= 3 && !nudged.has(signature)) {
                 nudged.add(signature)
                 try {
                   $.ui.toast('Bash failed 3 times with the same error')
@@ -79,15 +131,13 @@ export const loops: UltraMod = {
               }
             } else {
               for (const signature of [...failures.keys()]) {
-                if (signature.startsWith(`${key}|`)) failures.delete(signature)
+                if (signature.startsWith(`${key}|`)) forget(signature)
               }
             }
           } else if (e.tool === 'Edit') {
             const key = `edit:${e.file_path}`
             if (result.isError && missedOldString(result.text)) {
-              const count = (failures.get(key) ?? 0) + 1
-              failures.set(key, count)
-              if (count >= 2 && !nudged.has(key)) {
+              if (count(key) >= 2 && !nudged.has(key)) {
                 nudged.add(key)
                 try {
                   $.ui.toast('Edit missed old_string twice on one file')
@@ -96,8 +146,9 @@ export const loops: UltraMod = {
                 }
                 if (nudge) return withContext(result, EDIT_NUDGE)
               }
-            } else if (!result.isError) {
-              failures.delete(key)
+            } else {
+              // A success or an unrelated failure ends the streak of misses.
+              forget(key)
             }
           }
         } catch {

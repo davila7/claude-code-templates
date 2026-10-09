@@ -1,17 +1,7 @@
 import type { UltraApi } from '../core/api'
-import { resolveSet, settingsFor } from '../core/sets'
 import type { UltraMod } from '../core/mod'
-import type { UltraModSettings } from '../../types/index'
 
 const TITLE = 'Pinned rules from the user. Follow them in every reply:'
-
-async function modSettings($: UltraApi): Promise<UltraModSettings> {
-  try {
-    return await settingsFor($, 'pins')
-  } catch {
-    return resolveSet(undefined).mods.pins
-  }
-}
 
 // Cache by mtime so every prompt.compose only stats the files.
 const cache = new Map<string, { mtimeMs: number; text: string }>()
@@ -34,12 +24,26 @@ async function loadPins($: UltraApi, path: string): Promise<string> {
   }
 }
 
+// Removes <!-- ... --> blocks, across lines too; an unterminated one runs to the end.
+function stripComments(text: string): string {
+  let out = ''
+  let from = 0
+  for (;;) {
+    const open = text.indexOf('<!--', from)
+    if (open === -1) return out + text.slice(from)
+    out += text.slice(from, open)
+    const close = text.indexOf('-->', open + 4)
+    if (close === -1) return out
+    from = close + 3
+  }
+}
+
 // Bullet or plain non-empty lines; headings and comments are skipped.
 function pinLines(text: string): string[] {
   const out: string[] = []
-  for (const raw of text.split('\n')) {
+  for (const raw of stripComments(text).split('\n')) {
     const line = raw.trim()
-    if (line === '' || line.startsWith('#') || line.startsWith('<!--')) continue
+    if (line === '' || line.startsWith('#')) continue
     if (line.startsWith('- ') || line.startsWith('* ') || line.startsWith('+ ')) {
       const stripped = line.slice(2).trim()
       if (stripped !== '') out.push(stripped)
@@ -90,7 +94,6 @@ export const pins: UltraMod = {
       run: async ($, e, next) => {
         const composed = await next(e)
         try {
-          await modSettings($)
           const files = await pinPaths($)
           const all = pinLines(await loadPins($, files.project))
           if (files.user !== null) all.push(...pinLines(await loadPins($, files.user)))
@@ -110,7 +113,13 @@ export const pins: UltraMod = {
       if (text === '') return { text: 'Usage: /ultra pin <text>' }
       const root = await $.session.root().catch(() => '')
       const path = `${root}/.claude/pins.md`
-      const current = await $.fs.read(path).catch(() => '')
+      // Only a missing file counts as empty: a read that fails on a file that is there must not end in an overwrite.
+      let current = ''
+      try {
+        if (await $.fs.exists(path)) current = await $.fs.read(path)
+      } catch {
+        return { text: `Could not read ${path}, so nothing was pinned.` }
+      }
       const prefix = current === '' || current.endsWith('\n') ? current : `${current}\n`
       await $.fs.write(path, `${prefix}- ${text}\n`)
       return { text: `Pinned: ${text}` }
