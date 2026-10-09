@@ -2,15 +2,18 @@ name: OSS Scanner Build
 
 # Anthropic's OSS Scanner builds .oss-scanner/Dockerfile with the repository as
 # context before every scan, and a build failure means no scan. This job runs
-# the same build so a broken Dockerfile or lockfile shows up here first.
+# the same build so a broken Dockerfile, manifest or lockfile shows up here first.
 
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - '.oss-scanner/**'
+      - 'cli-tool/package.json'
       - 'cli-tool/package-lock.json'
+      - 'dashboard/package.json'
       - 'dashboard/package-lock.json'
+      - 'cli-rust/Cargo.toml'
       - 'cli-rust/Cargo.lock'
       - '.github/workflows/oss-scanner-build.yml'
   push:
@@ -18,8 +21,11 @@ on:
       - main
     paths:
       - '.oss-scanner/**'
+      - 'cli-tool/package.json'
       - 'cli-tool/package-lock.json'
+      - 'dashboard/package.json'
       - 'dashboard/package-lock.json'
+      - 'cli-rust/Cargo.toml'
       - 'cli-rust/Cargo.lock'
 
 permissions:
