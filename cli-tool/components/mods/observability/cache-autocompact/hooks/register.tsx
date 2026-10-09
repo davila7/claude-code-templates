@@ -163,14 +163,17 @@ let skipPublished = 0
 
 type Lookup = { rev: number; ticket: number; skips: { roots: string[] | undefined; unresolved: string | undefined }; where: Folder }
 
-// where the session stands: `cwd` as given (a session start's own), or the session's folder now
-async function lookUp($: EngineInterface, given?: string): Promise<Lookup> {
-  const rev = cwdRev
+// Where the session stands. With no `given`, the session's folder now, under the revision current as
+// the lookup begins (the folder is read after that). With `given` (a session start's own e.cwd), that
+// path under the revision the start captured when it arrived: any move since, or a newer start, then
+// makes the lookup obsolete, however late it was stamped.
+async function lookUp($: EngineInterface, given?: { cwd: string; rev: number }): Promise<Lookup> {
+  const rev = given?.rev ?? cwdRev
   const ticket = ++skipTickets
   const skips = await resolveSkips($)
   const stamp = { rev, ticket, skips }
   if (!skips.roots) return { ...stamp, where: 'unknown' }
-  const cwd = given ?? (await $.session.cwd().catch(() => undefined))
+  const cwd = given?.cwd ?? (await $.session.cwd().catch(() => undefined))
   if (!cwd) return { ...stamp, where: 'unknown' }
   return { ...stamp, where: standing(skips.roots, await spellings($, cwd)) }
 }
@@ -361,6 +364,11 @@ export const register: Register = (on, options) => {
   skipList = cfg.skip
 
   on('session.start', async ($, e, next) => {
+    // A start sets the folder anew, so any lookup still out for the folder before it is obsolete. Bumped
+    // and captured before the first await: e.cwd is the folder as the start arrived, and a move during
+    // the setup below must make it obsolete too.
+    cwdRev += 1
+    const startRev = cwdRev
     const r = await next(e)
     resetConversation()
     interactive = e.isInteractive
@@ -375,9 +383,8 @@ export const register: Register = (on, options) => {
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
-    // a session start sets the folder anew: any lookup still out for the folder before it is obsolete
-    cwdRev += 1
-    const started = await lookUp($, e.cwd)
+    // refused if the session moved meanwhile: that move's own lookup publishes the folder it is in now
+    const started = await lookUp($, { cwd: e.cwd, rev: startRev })
     publish($, started)
     ttl = await currentTtlBase($)
     $.ui.log(

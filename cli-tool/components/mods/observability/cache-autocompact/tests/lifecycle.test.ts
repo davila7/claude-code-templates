@@ -65,6 +65,10 @@ type World = {
   logs?: string[]
   // the environment the mod reads
   env?: Record<string, string>
+  // a one-shot gate on reading one variable, and a call when it is reached
+  envGate?: Promise<void>
+  envGateFor?: string
+  envEntered?: () => void
   // a hook beneath the mod vetoes every compact the mod asks for
   vetoes?: string
   // compacts the mod asked for, whatever became of them
@@ -92,7 +96,17 @@ function hold() {
 function engine(on: On, w: World) {
   const clock = mock.clock(on, { now: T0 })
   // the environment answered live from w.env, so a test can change a variable mid-session
-  on('env.get', ($, e) => ({ value: w.env?.[(e as { name: string }).name] }) as never)
+  on('env.get', async ($, e) => {
+    const name = (e as { name: string }).name
+    // a one-shot gate on the read of one variable, to hold a session start mid-way
+    const held = w.envGate
+    if (held && w.envGateFor === name) {
+      w.envGate = undefined
+      w.envEntered?.()
+      await held
+    }
+    return { value: w.env?.[name] } as never
+  })
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('session.end', ($, e) => ({ sessionId: e.sessionId }))
   // calls on a noun are answered as { value } (or { deny }), the shape the engine's own answers take
@@ -1482,5 +1496,27 @@ describe('a session start makes earlier lookups obsolete', () => {
     expect(latest(w)).not.toBe('Auto-compact off in this folder')
     h2.release()
     await starting
+  })
+})
+
+describe('a move while a session start is still setting up', () => {
+  test('the start never looks up the folder it began in once the session has moved', SKIP, async ($, on) => {
+    const w: World = { cwd: PRIVATE, compacts: 0, envGateFor: 'DISABLE_COMPACT' }
+    const clock = engine(on, w)
+    // the start is held at its first environment read, before it looks the folder up
+    const h = hold()
+    w.envGate = h.gate
+    w.envEntered = h.reached
+    const starting = $.session.start({ cwd: PRIVATE, surface: null, isInteractive: true })
+    await h.arrived
+    // the session moves to an allowed folder, and that move's lookup lands
+    w.cwd = ALLOWED
+    await $.classic.CwdChanged({ old_cwd: PRIVATE, new_cwd: ALLOWED } as never)
+    await clock.advance(0)
+    h.release()
+    await starting
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
   })
 })
