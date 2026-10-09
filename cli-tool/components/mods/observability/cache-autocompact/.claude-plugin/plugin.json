@@ -32,7 +32,7 @@
     "skipPaths": {
       "type": "string",
       "title": "Folders to leave alone",
-      "description": "Comma-separated absolute folders; a session started in one of them, or below it, never auto-compacts. ~ is not expanded, and a relative entry is resolved by the engine, not against a folder you chose, so its meaning can change with the session's folder. A folder that cannot be found turns auto-compact off and is named on the status line. Empty means it runs everywhere",
+      "description": "Comma-separated absolute folders it never compacts in, folders below them included; a folder that cannot be found turns it off and the status line names it. Empty means it runs everywhere",
       "default": ""
     }
   }

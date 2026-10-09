@@ -715,17 +715,6 @@ describe('status line', () => {
   })
 })
 
-describe('refusals', () => {
-  test('any other refusal is not turned into /compact', async ($, on) => {
-    const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
-    const clock = engine(on, w)
-    await start($, ALLOWED)
-    await request($)
-    await clock.advance(HOUR + MIN)
-    expect(w.commands ?? []).toEqual([])
-  })
-})
-
 describe('failure notices', () => {
   test('a refused compact pops up once for the cache, not on every retry', async ($, on) => {
     const w: World = { cwd: ALLOWED, compacts: 0, compactRefuses: true }
@@ -844,7 +833,7 @@ describe('a veto', () => {
   })
 })
 
-describe('review round 4', () => {
+describe('other compactions, open turns and session ends', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
 
   test('a manual /compact under way holds the mod: one compaction, not two', async ($, on) => {
@@ -911,7 +900,7 @@ describe('review round 4', () => {
   })
 })
 
-describe('review round 5', () => {
+describe('the desktop handoff and turns that never close', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
   // the test kit replaces the words of any refusal, so the desktop's headless refusal cannot be staged;
   // a session that is not interactive (-p, the SDK, the desktop app) hands off on a refusal all the same
@@ -1187,7 +1176,7 @@ describe('a move while the folder check is under way', () => {
   })
 })
 
-describe('review round 7', () => {
+describe('skip entries that name no folder, and compaction switched off', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
   for (const entry of ['.', 'x/..']) {
     test(`a skip entry that names no folder (${entry}) is named, not taken as every folder`, { options: { skipPaths: entry } }, async ($, on) => {
@@ -1214,7 +1203,7 @@ describe('review round 7', () => {
   })
 })
 
-describe('review round 8', () => {
+describe('late lookups and refusals, and DISABLE_COMPACT spellings', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
 
   test('a folder lookup from before a resume never decides the new conversation', SKIP, async ($, on) => {
@@ -1336,7 +1325,7 @@ describe('overlapping skip lookups', () => {
   })
 })
 
-describe('review round 9', () => {
+describe('late lookups and late /compact failures', () => {
   const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
 
   test('a folder lookup from before a link was retargeted never overrides a newer one', { options: { skipPaths: '/safe' } }, async ($, on) => {

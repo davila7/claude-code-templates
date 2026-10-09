@@ -31,7 +31,7 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { handsOff, isEngineOn, isSkippedPath, isSwitchedOffRefusal, toRoots, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine, windowFor } from './decide.ts'
+import { handsOff, isEngineOn, isSkippedPath, isSwitchedOffRefusal, toRoots, nextTtl, shouldCompact, splitPaths, statusLine, windowFor } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20

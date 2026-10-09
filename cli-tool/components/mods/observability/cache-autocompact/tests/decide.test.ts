@@ -305,9 +305,15 @@ describe('status line', () => {
     expect(line({ busy: true })).toBe('Auto-compacting now')
     expect(line({ disabled: true })).toBe('Auto-compact off: caching is off')
   })
-  test('a cache it already ran /compact for says so, and claims nothing about the outcome', () => {
-    const { skipped: _, ...rest } = inputs({ triedFor: T0 })
-    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact started /compact for this cache')
+  test('a cache it already ran /compact for says so, claims nothing about the outcome, and says missed once it ran out', () => {
+    expect(line({ triedFor: T0 })).toBe('Auto-compact started /compact for this cache')
+    expect(line({ triedFor: T0, now: T0 + 10 * 60_000 })).toBe('Auto-compact started /compact for this cache')
+    expect(line({ triedFor: T0, now: T0 + HOUR + 1 })).toBe('Auto-compact missed: the cache ran out')
+    // a failure on a lapsed cache says missed and gives no advice to run /compact
+    const { skipped: _, ...rest } = inputs({ triedFor: T0, now: T0 + HOUR + 1 })
+    const text = statusLine({ ...rest, folder: 'on', failed: 'prompt is too long' })
+    expect(text).toBe('Auto-compact missed: the cache ran out (failed: prompt is too long)')
+    expect(text.includes('Run /compact')).toBe(false)
   })
   test('a failed try says so and says what to do, even when the guard holds', () => {
     const { skipped: _, ...rest } = inputs({ triedFor: T0 })
@@ -337,7 +343,7 @@ describe('headless refusal', () => {
   })
 })
 
-describe('review round 1', () => {
+describe('a failure in flight, a backslash, and the root on every drive', () => {
   const line = (over: Partial<Inputs>, extra: { failed?: string }) => {
     const { skipped: _, ...rest } = inputs(over)
     return statusLine({ ...rest, folder: 'on', ...extra })
@@ -365,14 +371,14 @@ describe('review round 1', () => {
   })
 })
 
-describe('review round 2', () => {
+describe('a request still running', () => {
   test('a main request still running holds the compact: it is about to refresh the cache', () => {
     const v = shouldCompact(inputs({ requestRunning: true }))
     expect(v.go ? 'went' : v.why).toBe('a request is running')
   })
 })
 
-describe('review round 3', () => {
+describe('a trailing space in a folder name', () => {
   test('a resolved path keeps a trailing space: it is part of a Linux folder name', () => {
     expect(normalizePath('/data/private ')).toBe('/data/private ')
     expect(isSkippedPath(['/data/private /child'], ['/data/private '].map(normalizePath))).toBe(true)
@@ -395,8 +401,7 @@ describe('the window on a 5-minute cache', () => {
   })
 })
 
-describe('review round 4', () => {
-  const MIN = 60_000
+describe('what holds a due compact, and skip folders that need their resolved spelling', () => {
   const line = (over: Partial<Inputs>, extra: Record<string, unknown> = {}) => {
     const { skipped: _, ...rest } = inputs(over)
     return statusLine({ ...rest, folder: 'on', ...extra })
@@ -427,20 +432,6 @@ describe('review round 4', () => {
   })
 })
 
-describe('review round 5', () => {
-  test('a lapsed cache says missed and gives no advice to run /compact', () => {
-    const { skipped: _, ...rest } = inputs({ triedFor: T0, now: T0 + HOUR + 1 })
-    const text = statusLine({ ...rest, folder: 'on', failed: 'prompt is too long' })
-    expect(text).toBe('Auto-compact missed: the cache ran out (failed: prompt is too long)')
-    expect(text.includes('Run /compact')).toBe(false)
-  })
-
-  test('a skip folder is held off by the cheap check too', () => {
-    const v = shouldCompact(inputs({ skipped: true }))
-    expect(v.go ? 'went' : v.why).toBe('folder is on the skip list')
-  })
-})
-
 describe('which refusals hand off to /compact', () => {
   const LIVE = 'cache-autocompact: $.session.compact: not available in a headless (-p / SDK) session yet'
   const TURN = 'cache-autocompact: $.session.compact: a turn is running (t1); the conversation compacts between turns'
@@ -459,10 +450,13 @@ describe('which refusals hand off to /compact', () => {
     expect(handsOff(new Error('cache-autocompact: $.session.compact: no session is bound'), false)).toBe(false)
     expect(handsOff(new Error('no implementation for session.compact'), false)).toBe(false)
   })
-  test("the test kit's own refusal stands in for the headless one, outside an interactive session only", () => {
+  test("the test kit's own refusal stands in for the headless one: the whole message, under the test's name, outside an interactive session only", () => {
     const KIT = 'test: next() passed an argument with messages that are not a list'
     expect(handsOff(new Error(KIT), false)).toBe(true)
     expect(handsOff(new Error(KIT), true)).toBe(false)
+    expect(handsOff(new Error('other-plugin: next() passed an argument with messages that are not a list'), false)).toBe(false)
+    expect(handsOff(new Error('contest: next() passed an argument with messages that are not a list'), false)).toBe(false)
+    expect(handsOff(new Error(`${KIT}, and more`), false)).toBe(false)
   })
   test('compaction switched off is recognized, so the mod stops asking', () => {
     expect(isSwitchedOffRefusal(new Error(OFF))).toBe(true)
@@ -470,7 +464,7 @@ describe('which refusals hand off to /compact', () => {
   })
 })
 
-describe('review round 7', () => {
+describe('an empty root, and compaction switched off', () => {
   test('an empty root never matches: it is not a folder', () => {
     expect(isSkippedPath(['/srv/other'], ['', '/home/me/proj'])).toBe(false)
     expect(isSkippedPath(['C:\\work'], [''])).toBe(false)
@@ -485,8 +479,7 @@ describe('review round 7', () => {
   })
 })
 
-describe('review round 8', () => {
-  const MIN = 60_000
+describe('roots at a drive or share, and how DISABLE_COMPACT is read', () => {
   test('".." never climbs above a drive or a share root', () => {
     expect(normalizePath('C:\\..')).toBe('c:')
     expect(normalizePath('C:\\work\\..\\..')).toBe('c:')
@@ -504,26 +497,13 @@ describe('review round 8', () => {
     expect(toRoots([])).toEqual([])
   })
 
-  test("only the test kit's own stand-in, under the kit's own plugin name, stands in", () => {
-    const KIT = 'test: next() passed an argument with messages that are not a list'
-    expect(handsOff(new Error(KIT), false)).toBe(true)
-    expect(handsOff(new Error('other-plugin: next() passed an argument with messages that are not a list'), false)).toBe(false)
-  })
-
   test('the engine reads DISABLE_COMPACT as 1, true, yes or on, any case, trimmed', () => {
     for (const v of ['1', 'true', 'yes', 'on', ' On ', 'TRUE']) expect(isEngineOn(v)).toBe(true)
     for (const v of [undefined, '', '0', 'false', 'no', 'off']) expect(isEngineOn(v)).toBe(false)
   })
-
-  test('a cache tried and then run out says missed, not started', () => {
-    const { skipped: _, ...rest } = inputs({ triedFor: T0, now: T0 + HOUR + 1 })
-    expect(statusLine({ ...rest, folder: 'on' })).toBe('Auto-compact missed: the cache ran out')
-    const { skipped: __, ...early } = inputs({ triedFor: T0, now: T0 + 10 * MIN })
-    expect(statusLine({ ...early, folder: 'on' })).toBe('Auto-compact started /compact for this cache')
-  })
 })
 
-describe('review round 9', () => {
+describe('a drive inside a rooted path', () => {
   test('a drive is a drive only at the start of a Windows spelling, never inside a rooted path', () => {
     expect(normalizePath('/c:/../private')).toBe('/private')
     expect(isSkippedPath(['/c:/private'], roots('/c:/../private'))).toBe(false)
@@ -531,12 +511,6 @@ describe('review round 9', () => {
     // and a real drive still keeps its floor
     expect(normalizePath('C:/..')).toBe('c:')
     expect(normalizePath('\\\\?\\C:\\..')).toBe('c:')
-  })
-
-  test("the stand-in is the whole message under the test's name: another plugin's name never matches", () => {
-    expect(handsOff(new Error('contest: next() passed an argument with messages that are not a list'), false)).toBe(false)
-    expect(handsOff(new Error('test: next() passed an argument with messages that are not a list, and more'), false)).toBe(false)
-    expect(handsOff(new Error('test: next() passed an argument with messages that are not a list'), false)).toBe(true)
   })
 })
 

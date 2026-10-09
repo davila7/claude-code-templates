@@ -86,7 +86,9 @@ export function isHeadlessRefusal(err: unknown): boolean {
 // kit drops a test hook that throws and passes the mod's call on with no messages, under the test's
 // plugin name, "test". The engine's headless refusal cannot be staged there, so this text, under that
 // name only, stands in for it. Another plugin passing bad messages would raise the same words under
-// its own name, which never matches.
+// its own name, which never matches. It is the only way the lifecycle tests reach the desktop handoff
+// code (a session that is not interactive, as the desktop app runs, takes it as the headless refusal);
+// the real headless words are covered by unit tests on the string copied from a live desktop run.
 export const KIT_STAND_IN_REFUSAL = 'test: next() passed an argument with messages that are not a list'
 
 // Whether a refused compact is handed off to /compact. In a real session only the headless refusal is:
@@ -113,7 +115,6 @@ export function isSwitchedOffRefusal(err: unknown): boolean {
 export function isEngineOn(v: string | undefined): boolean {
   return ['1', 'true', 'yes', 'on'].includes((v ?? '').trim().toLowerCase())
 }
-
 
 // where the session runs, as last checked: allowed, on the skip list, or not established
 export type Folder = 'on' | 'skip' | 'unknown'
