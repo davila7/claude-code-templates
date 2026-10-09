@@ -1,6 +1,6 @@
 // Risk table from SPEC 4.3. Precision beats recall: every rule here has
 // look-alike tests proving what it must ignore.
-import { analyzeCommand, splitCommand, commandArgv, commandLine, hasStdinText, shellInvocation, substitutionCommands, emittedText, tokens, baseName, normalize } from './shell'
+import { analyzeCommand, splitCommand, commandArgv, commandLine, commandPrefix, hasStdinText, shellInvocation, substitutionCommands, emittedText, tokens, baseName, normalize } from './shell'
 
 export type RiskKind = 'git' | 'rm' | 'sql' | 'infra' | 'remote-exec' | 'disk' | 'publish' | 'unchecked'
 
@@ -205,8 +205,9 @@ function hasWhere(text: string, from: number, memo: Uint8Array): boolean {
 
 // Block comments and line comments (-- followed by a blank) turn into one
 // space, the way SQL reads them: DROP/**/TABLE is DROP TABLE. A bare --flag
-// stays, so the shell options of the carrier survive.
-function stripSqlComments(text: string): string {
+// stays, so the shell options of the carrier survive. anyDashes reads every
+// -- as a comment, as PostgreSQL does (DROP--x<newline>TABLE).
+function stripSqlComments(text: string, anyDashes = false): string {
   let out = ''
   let from = 0
   let i = 0
@@ -221,7 +222,7 @@ function stripSqlComments(text: string): string {
       from = i
       continue
     }
-    if (c === '-' && text.charAt(i + 1) === '-' && (i + 2 >= n || isSpaceChar(text.charAt(i + 2)))) {
+    if (c === '-' && text.charAt(i + 1) === '-' && (anyDashes || i + 2 >= n || isSpaceChar(text.charAt(i + 2)))) {
       const j = text.indexOf('\n', i)
       out += text.slice(from, i) + ' '
       i = j === -1 ? n : j
@@ -237,10 +238,15 @@ const isSpaceChar = (c: string) => c === ' ' || c === '\t' || c === '\r' || c ==
 
 // Check SQL statements inside a carrier command. delete from without where
 // needs statement-level inspection. The text is read as written and with its
-// comments removed.
+// comments removed, and so is each word the shell hands over, with quotes and
+// $'...' escapes decoded: psql -c $'DROP\tTABLE users'.
 function sqlCheck(text: string): RiskHit | null {
-  const stripped = stripSqlComments(text)
-  for (const t of stripped === text ? [text] : [text, stripped]) {
+  const variants = new Set([text, stripSqlComments(text)])
+  for (const word of tokens(text)) {
+    variants.add(word)
+    variants.add(stripSqlComments(word, true))
+  }
+  for (const t of variants) {
     for (const p of SQL_PATTERNS) {
       if (p.re.test(t)) return hit(p.id, p.reason, 'sql', false)
     }
@@ -329,6 +335,11 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
   const head = baseName(words[0] ?? '')
   const args = words.slice(1)
 
+  // env -S nested deeper than the parser follows: what runs is not known.
+  if (head === 'env' && args.some((a) => a.startsWith('--split-string') || /^-[^-uCPLUa]*S/.test(a))) {
+    return hit('unchecked', 'nests commands deeper than the guard can read', 'unchecked', false)
+  }
+
   if (head === 'rm') {
     const { recursive, targets } = rmArgs(args)
     if (recursive) {
@@ -355,7 +366,11 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
       const hasF = rest.some((a) => isLong(a, 'force', 2) || /^-[a-zA-Z]*f/.test(a))
       const dryRun = rest.some((a) => isLong(a, 'dry-run', 2) || /^-[a-zA-Z]*n/.test(a))
       if (hasF && !dryRun) {
-        return hit('git-clean', 'deletes untracked files', 'git', true)
+        // -x and -X delete ignored files too, which a snapshot (git add -A) does not hold.
+        const ignored = rest.some((a) => /^-[a-zA-Z]*[xX]/.test(a))
+        return ignored
+          ? hit('git-clean', 'deletes untracked and ignored files', 'git', false)
+          : hit('git-clean', 'deletes untracked files', 'git', true)
       }
       return null
     }
@@ -584,11 +599,14 @@ function runsDownload(simple: string): RiskHit | null {
 }
 
 // Text that echo, printf or cat prints into a SQL tool is SQL the tool runs:
-// echo 'DROP TABLE users' | psql.
+// echo 'DROP TABLE users' | psql, also behind a remote runner such as
+// docker exec -i db psql.
 function pipedSql(pipelines: string[][]): RiskHit | null {
   for (const group of pipelines) {
     for (let k = 1; k < group.length; k++) {
-      if (SQL_CARRIERS.indexOf(baseName(commandArgv(group[k] ?? '')[0] ?? '')) === -1) continue
+      const words = commandArgv(group[k] ?? '')
+      const head = baseName(words[0] ?? '')
+      if (SQL_CARRIERS.indexOf(head) === -1 && !carrierBehindWrapper(head, words.slice(1))) continue
       for (let j = 0; j < k; j++) {
         for (const text of emittedText(group[j] ?? '')) {
           const h = sqlCheck(text)
@@ -657,30 +675,38 @@ function below(base: string[], path: string): string[] | null {
 }
 
 const GIT_VALUE_OPTIONS = ['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--exec-path']
-const ENV_WORDS = ['env', 'export', 'declare', 'typeset', 'local', 'readonly', 'sudo', 'nohup']
+const DECLARE_WORDS = ['export', 'declare', 'typeset', 'local', 'readonly']
 
 /**
  * Does a command act outside the session's repository? A snapshot saves the
- * repository at the session directory, so it cannot protect a command that
- * changes directory away (cd, pushd, popd) or points git elsewhere (-C,
- * --git-dir, --work-tree, GIT_DIR, GIT_WORK_TREE). Paths that cannot be placed
- * below the session directory count as elsewhere.
+ * repository the session is in, so it cannot protect a command that changes
+ * directory away (cd, pushd, popd, env -C, sudo -D) or points git elsewhere
+ * (-C, --git-dir, --work-tree, GIT_DIR, GIT_WORK_TREE). start is the session
+ * directory's place below the work tree root (its segments), so `..` from a
+ * subdirectory stays inside. Paths that cannot be placed below the root count
+ * as elsewhere.
  */
-export function runsElsewhere(cmd: string): boolean {
-  let cwd: string[] = []
+export function runsElsewhere(cmd: string, start: string[] = []): boolean {
+  let cwd: string[] = [...start]
   const stack: string[][] = []
   for (const simple of splitCommand(cmd)) {
-    for (const tok of tokens(simple)) {
-      const m = /^(GIT_DIR|GIT_WORK_TREE)=(.*)$/.exec(tok)
-      if (m !== null) {
-        if (below(cwd, m[2] ?? '') === null) return true
-        continue
-      }
-      if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tok) || tok.startsWith('-') || ENV_WORDS.indexOf(baseName(tok)) !== -1) continue
-      break
-    }
     const w = commandArgv(simple)
     const head = baseName(w[0] ?? '')
+    const prefix = commandPrefix(simple)
+    // The directory this one command starts in.
+    let here = cwd
+    for (const dir of prefix.dirs) {
+      const next = below(here, dir)
+      if (next === null) return true
+      here = next
+    }
+    // export GIT_DIR=x, or a line of only assignments, sets them for what follows.
+    const declares = DECLARE_WORDS.indexOf(head) !== -1 || /^[A-Za-z_][A-Za-z0-9_]*=/.test(w[0] ?? '')
+    const assigns = declares ? [...prefix.assigns, ...w] : prefix.assigns
+    for (const a of assigns) {
+      const m = /^(GIT_DIR|GIT_WORK_TREE)=(.*)$/.exec(a)
+      if (m !== null && below(here, m[2] ?? '') === null) return true
+    }
     if (head === 'cd' || head === 'pushd') {
       const target = w.slice(1).filter((a) => a === '-' || !a.startsWith('-'))[0]
       if (target === undefined || target === '-') return true
@@ -692,13 +718,13 @@ export function runsElsewhere(cmd: string): boolean {
     } else if (head === 'rm') {
       // A recursive rm outside the work tree is out of a snapshot's reach.
       const { recursive, targets } = rmArgs(w.slice(1))
-      if (recursive && targets.some((t) => !rmTargetSafe(t) && below(cwd, t) === null)) return true
+      if (recursive && targets.some((t) => !rmTargetSafe(t) && below(here, t) === null)) return true
     } else if (head === 'popd') {
       const back = stack.pop()
       if (back === undefined) return true
       cwd = back
     } else if (head === 'git') {
-      let base = cwd
+      let base = here
       for (let i = 1; i < w.length; i++) {
         const a = w[i] ?? ''
         if (a === '--') break
@@ -707,7 +733,7 @@ export function runsElsewhere(cmd: string): boolean {
         if (GIT_VALUE_OPTIONS.indexOf(flag) !== -1) {
           const value = eq === -1 ? (w[++i] ?? '') : a.slice(eq + 1)
           if (flag === '-c' || flag === '--namespace' || flag === '--exec-path') continue
-          const next = below(flag === '-C' ? base : cwd, value)
+          const next = below(flag === '-C' ? base : here, value)
           if (next === null) return true
           if (flag === '-C') base = next
           continue

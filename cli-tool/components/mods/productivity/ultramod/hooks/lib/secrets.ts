@@ -161,6 +161,26 @@ function globMatches(items: GlobItem[], name: string): boolean {
   return i === items.length
 }
 
+// One name the glob matches: each * becomes star, each ? or set one character
+// it takes.
+const SPELL_CHARS = 'xabcdefghijklmnopqrstuvwyz0123456789._-'
+function spell(items: GlobItem[], star: string): string {
+  let out = ''
+  for (const it of items) {
+    if (it.k === 'lit') out += it.c
+    else if (it.k === 'star') out += star
+    else {
+      for (const ch of SPELL_CHARS) {
+        if (itemTakes(it, ch)) {
+          out += ch
+          break
+        }
+      }
+    }
+  }
+  return out
+}
+
 // Names a glob can stand for. Files that need no folder to be secret:
 const GLOB_PLAIN: string[] = ['.npmrc', '.pypirc', '.netrc', '.git-credentials', 'id_rsa', 'id_ed25519', 'id_ecdsa', 'id_dsa']
 for (const suffix of ['', '.local', '.production', '.development', '.staging', '.test', '.prod', '.dev', '.stage', '.ci']) {
@@ -201,6 +221,11 @@ function secretGlob(token: string, allow: string[] | undefined): boolean {
     for (const it of items) if (it.k === 'lit' && it.c !== '.') literal = true
     if (parent === '.ssh') literal = true
     if (literal) {
+      // The glob's own spelling: client-cert.pem* can be client-cert.pem, and
+      // *.pem can be x.pem, names no finite list holds.
+      for (const name of [spell(items, ''), spell(items, 'x')]) {
+        if (globMatches(items, name) && isSecretPath(named(name), allow)) return true
+      }
       for (const name of GLOB_PLAIN) {
         if (globMatches(items, name) && isSecretPath(named(name), allow)) return true
       }
@@ -396,7 +421,7 @@ export function bashReadsSecret(cmd: string, allow?: string[]): string | null {
       const dest = args[args.length - 1]
       if (dest === '/dev/stdout' || dest === '-' || dest === '/dev/fd/1' || dest === '/proc/self/fd/1') {
         for (const a of args.slice(0, -1)) {
-          if (isSecretPath(a, allow) === true) return a
+          if (secretWord(a, allow)) return a
         }
       }
       continue
@@ -440,40 +465,22 @@ export function bashReadsSecret(cmd: string, allow?: string[]): string | null {
   return null
 }
 
-// env -0 and env --null print the whole environment NUL-separated.
-// commandTokens reads the flag as the command env runs, so this looks at the
-// plain words.
-function isNullSeparatedEnv(simple: string): boolean {
-  const t = tokens(simple)
-  let i = 0
-  while (i < t.length && ['sudo', 'nohup'].indexOf(baseName(t[i] ?? '')) !== -1) i++
-  if (baseName(t[i] ?? '') !== 'env') return false
-  let formatted = false
-  for (const a of t.slice(i + 1)) {
-    if (a === '-0' || a === '--null') formatted = true
-    else if (!/^[A-Za-z_][A-Za-z0-9_]*=/.test(a)) return false
-  }
-  return formatted
-}
-
 /**
  * True for bare env, printenv, set (the bash dump), export -p and bare
- * export, also in their null-separated forms (env -0, printenv --null).
- * env FOO=1 cmd and printenv HOME are not dumps.
+ * export, also in their null-separated forms (env -0, printenv --null) and
+ * behind wrappers (command env -0). env FOO=1 cmd and printenv HOME are not
+ * dumps.
  */
 export function isEnvDump(cmd: string): boolean {
   for (const simple of splitCommand(cmd)) {
-    if (isNullSeparatedEnv(simple)) return true
     const words = commandTokens(simple)
     if (words.length === 0) continue
     const head = baseName(words[0] ?? '')
     const args = words.slice(1)
-    if (head === 'env') {
-      if (args.length === 0) return true
-      let k = 0
-      while (k < args.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(args[k] ?? '')) k++
-      if (k === args.length) return true
-    }
+    // env stays the head only when no command follows its options and pairs,
+    // and then it prints the environment; after -i only the pairs given.
+    const empty = (a: string) => a === '-' || a === '--ignore-environment' || /^-[^-uCSPLUa]*i/.test(a)
+    if (head === 'env' && !args.some(a => a === '--help' || a === '--version' || empty(a))) return true
     // -0 and --null only change the separator, not what is printed.
     if (head === 'printenv' && args.every(a => a === '-0' || a === '--null')) return true
     if (head === 'set' && args.length === 0) return true

@@ -11,12 +11,12 @@ export function resetPinsCache(): void {
   cache.clear()
 }
 
-async function loadPins($: UltraApi, path: string): Promise<string> {
+async function loadPins(api: UltraApi, path: string): Promise<string> {
   try {
-    const stat = await $.fs.stat(path)
+    const stat = await api.fs.stat(path)
     const hit = cache.get(path)
     if (hit && hit.mtimeMs === stat.mtimeMs) return hit.text
-    const text = await $.fs.read(path).catch(() => '')
+    const text = await api.fs.read(path).catch(() => '')
     cache.set(path, { mtimeMs: stat.mtimeMs, text })
     return text
   } catch {
@@ -59,17 +59,17 @@ type PinFiles = { project: string; user: string | null }
 // The project pin file, plus the user one when a home is known and it is not
 // the same file. Without a home the old code fell back to the project root and
 // every pin showed up twice.
-async function pinPaths($: UltraApi): Promise<PinFiles> {
+async function pinPaths(api: UltraApi): Promise<PinFiles> {
   let root = ''
   let home = ''
   try {
-    root = await $.session.root()
+    root = await api.session.root()
   } catch {
     root = ''
   }
   try {
-    home = (await $.env.get('HOME')) ?? ''
-    if (home === '') home = (await $.env.get('USERPROFILE')) ?? ''
+    home = (await api.env.get('HOME')) ?? ''
+    if (home === '') home = (await api.env.get('USERPROFILE')) ?? ''
   } catch {
     home = ''
   }
@@ -89,48 +89,45 @@ function sectionText(lines: string[], truncated: boolean): string {
 
 export const pins: UltraMod = {
   id: 'pins',
-  hooks: {
-    'prompt.compose': [{
-      run: async ($, e, next) => {
-        const composed = await next(e)
-        try {
-          const files = await pinPaths($)
-          const all = pinLines(await loadPins($, files.project))
-          if (files.user !== null) all.push(...pinLines(await loadPins($, files.user)))
-          if (all.length === 0) return composed
-          const truncated = all.length > 30
-          const lines = all.slice(0, 30)
-          return { sections: [...composed.sections, { id: 'ultramod:pins', text: sectionText(lines, truncated), scope: 'session' as const }] }
-        } catch {
-          return composed
-        }
-      },
-    }],
+  compose: {
+    run: async api => {
+      try {
+        const files = await pinPaths(api)
+        const all = pinLines(await loadPins(api, files.project))
+        if (files.user !== null) all.push(...pinLines(await loadPins(api, files.user)))
+        if (all.length === 0) return null
+        const truncated = all.length > 30
+        const lines = all.slice(0, 30)
+        return { id: 'ultramod:pins', text: sectionText(lines, truncated), scope: 'session' as const }
+      } catch {
+        return null
+      }
+    },
   },
   commands: {
-    pin: async ($, args) => {
+    pin: async (api, args) => {
       const text = args.trim()
       if (text === '') return { text: 'Usage: /ultra pin <text>' }
-      const root = await $.session.root().catch(() => '')
+      const root = await api.session.root().catch(() => '')
       const path = `${root}/.claude/pins.md`
       // Only a missing file counts as empty: a read that fails on a file that is there must not end in an overwrite.
       let current = ''
       try {
-        if (await $.fs.exists(path)) current = await $.fs.read(path)
+        if (await api.fs.exists(path)) current = await api.fs.read(path)
       } catch {
         return { text: `Could not read ${path}, so nothing was pinned.` }
       }
       const prefix = current === '' || current.endsWith('\n') ? current : `${current}\n`
-      await $.fs.write(path, `${prefix}- ${text}\n`)
+      await api.fs.writePins(root, `${prefix}- ${text}\n`)
       return { text: `Pinned: ${text}` }
     },
-    pins: async $ => {
-      const files = await pinPaths($)
+    pins: async api => {
+      const files = await pinPaths(api)
       const sections: string[] = []
-      const projectLines = pinLines(await loadPins($, files.project))
+      const projectLines = pinLines(await loadPins(api, files.project))
       if (projectLines.length > 0) sections.push(`project (${files.project}):\n${projectLines.map(line => `- ${line}`).join('\n')}`)
       if (files.user !== null) {
-        const userLines = pinLines(await loadPins($, files.user))
+        const userLines = pinLines(await loadPins(api, files.user))
         if (userLines.length > 0) sections.push(`user (${files.user}):\n${userLines.map(line => `- ${line}`).join('\n')}`)
       }
       if (sections.length === 0) return { text: 'No pinned rules. Add one with /ultra pin <text>.' }

@@ -47,87 +47,97 @@ export function compactInstructions(receipts: readonly UltraReceipt[]): string {
 let autoHeld = false
 
 // True once the compaction went through; the warning flags then start over.
-async function compactNow($: UltraApi): Promise<boolean> {
+async function compactNow(api: UltraApi): Promise<boolean> {
   try {
-    await $.session.compact({ instructions: compactInstructions(await read($, receiptHistory)) })
+    const result = await api.session.compact({ instructions: compactInstructions(await read(api, receiptHistory)) })
+    // A hook that vetoes the compaction answers { skip } instead of throwing.
+    if ('skip' in result) {
+      api.ui.log(`Ultra Mod could not compact: ${result.skip}`)
+      return false
+    }
   } catch (error) {
     // Compaction is best effort: a failure leaves the turn untouched and the next one can try again.
-    $.ui.log(`Ultra Mod could not compact: ${error instanceof Error ? error.message : String(error)}`)
+    api.ui.log(`Ultra Mod could not compact: ${error instanceof Error ? error.message : String(error)}`)
     return false
   }
   try {
-    await update($, compactState, () => ({ warned: false, offered: false }))
+    await update(api, compactState, () => ({ warned: false, offered: false }))
   } catch {
     // The flags only decide whether a toast shows again.
   }
   return true
 }
 
+// Runs off the dispatch; a failed compaction lets go so the next turn can retry.
+async function compactLater(api: UltraApi): Promise<void> {
+  let done = false
+  try {
+    done = await compactNow(api)
+  } catch {
+    done = false
+  }
+  if (!done) autoHeld = false
+}
+
 export const compact: UltraMod = {
   id: 'compact',
-  hooks: {
-    'classic.SessionStart': [{
-      when: e => ['clear', 'fork'].includes(e.source),
-      run: async ($, e, next) => {
-        autoHeld = false
-        await update($, compactState, () => ({ warned: false, offered: false }))
-        // A cleared conversation starts without the old receipts, or the next summary would carry them as current work.
-        if (e.source === 'clear') await update($, receiptHistory, () => [])
-        return next(e)
-      },
-    }],
-    'turn.complete': [{
-      when: e => !e.agentId,
-      run: async ($, e, next) => {
-        const result = await next(e)
-        try {
-          const settings = await settingsFor($, 'compact')
-          if (!settings.enabled) return result
-          const percent = (await $.session.usage()).context.percent
-          if (percent === undefined) return result
-          const state = await read($, compactState)
-          // A flag starts over once the context is back under its line, so a later climb warns again.
-          const warned = state.warned && !(settings.warnAt !== undefined && percent < settings.warnAt)
-          const offered = state.offered && !(settings.offerAt !== undefined && percent < settings.offerAt)
-          const warn = settings.warnAt !== undefined && percent >= settings.warnAt && !warned
-          // The band draws while ui.render holds the write lock, so the offer flag is set here instead.
-          const offer = settings.offerAt !== undefined && percent >= settings.offerAt && !offered
-          if (warn || offer || warned !== state.warned || offered !== state.offered) {
-            await update($, compactState, held => ({
-              warned: (held.warned && warned) || warn,
-              offered: (held.offered && offered) || offer,
-            }))
-          }
-          if (warn) $.ui.toast(settings.offerAt === undefined
-            ? `Context is at ${percent}%. Compacting now would free room for the next task.`
-            : `Context is at ${percent}%. A Compact now button appears above the prompt at ${settings.offerAt}%.`)
-          // session.compact rejects while a turn runs, so the auto path waits for the turn to be over.
-          if (settings.autoAt !== undefined) {
-            if (percent < settings.autoAt) autoHeld = false
-            else if (!autoHeld) {
-              autoHeld = true
-              $.clock.after(0, () => {
-                void compactNow($).then((done) => { if (!done) autoHeld = false }, () => { autoHeld = false })
-              })
-            }
-          }
-        } catch {
-          // A measurement failure must not change the turn's own result.
-        }
-        return result
-      },
-    }],
+  sessionRestart: {
+    when: e => ['clear', 'fork'].includes(e.source),
+    run: async (api, e) => {
+      autoHeld = false
+      await update(api, compactState, () => ({ warned: false, offered: false }))
+      // A cleared conversation starts without the old receipts, or the next summary would carry them as current work.
+      if (e.source === 'clear') await update(api, receiptHistory, () => [])
+    },
   },
-  band: async ({ $, e, settings }) => {
+  turnComplete: {
+    when: e => !e.agentId,
+    run: async api => {
+      try {
+        const settings = await settingsFor(api, 'compact')
+        if (!settings.enabled) return null
+        const percent = (await api.session.usage()).context.percent
+        if (percent === undefined) return null
+        const state = await read(api, compactState)
+        // A flag starts over once the context is back under its line, so a later climb warns again.
+        const warned = state.warned && !(settings.warnAt !== undefined && percent < settings.warnAt)
+        const offered = state.offered && !(settings.offerAt !== undefined && percent < settings.offerAt)
+        const warn = settings.warnAt !== undefined && percent >= settings.warnAt && !warned
+        // The band draws while ui.render holds the write lock, so the offer flag is set here instead.
+        const offer = settings.offerAt !== undefined && percent >= settings.offerAt && !offered
+        if (warn || offer || warned !== state.warned || offered !== state.offered) {
+          await update(api, compactState, held => ({
+            warned: (held.warned && warned) || warn,
+            offered: (held.offered && offered) || offer,
+          }))
+        }
+        if (warn) api.ui.toast(settings.offerAt === undefined
+          ? `Context is at ${percent}%. Compacting now would free room for the next task.`
+          : `Context is at ${percent}%. A Compact now button appears above the prompt at ${settings.offerAt}%.`)
+        // session.compact rejects while a turn runs, so the auto path waits for the turn to be over.
+        if (settings.autoAt !== undefined) {
+          if (percent < settings.autoAt) autoHeld = false
+          else if (!autoHeld) {
+            autoHeld = true
+            api.clock.after(0, () => { void compactLater(api) })
+          }
+        }
+      } catch {
+        // A measurement failure must not change the turn's own result.
+      }
+      return null
+    },
+  },
+  band: async ({ api, e, settings }) => {
     // A render hook may only read: the offer flag is written from turn.complete.
     if (!settings.enabled || settings.offerAt === undefined) return null
-    const percent = (await $.session.usage()).context.percent
+    const percent = (await api.session.usage()).context.percent
     if (percent === undefined || percent < settings.offerAt) return null
     const label = 'Compact now'
-    const { Button } = $.ui.resolve(e)
+    const { Button } = api.ui.resolve(e)
     // The terminal draws `[ Compact now ]`, four cells around the label.
     return {
-      node: <Button key="compact-now" label={label} hotkey="c" onPress={() => { void compactNow($) }} />,
+      node: <Button key="compact-now" label={label} hotkey="c" onPress={() => { void compactNow(api) }} />,
       columns: label.length + 4,
     }
   },

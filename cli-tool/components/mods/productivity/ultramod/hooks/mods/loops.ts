@@ -9,9 +9,9 @@ function str(e: { [field: string]: unknown }, key: string): string {
   return typeof value === 'string' ? value : ''
 }
 
-async function modSettings($: UltraApi): Promise<UltraModSettings> {
+async function modSettings(api: UltraApi): Promise<UltraModSettings> {
   try {
-    return await settingsFor($, 'loops')
+    return await settingsFor(api, 'loops')
   } catch {
     return resolveSet(undefined).mods.loops
   }
@@ -21,7 +21,7 @@ const BASH_NUDGE = 'This exact command has now failed 3 times with the same erro
 const EDIT_NUDGE = 'old_string was not found twice in a row in this file. Read the file again before editing.'
 
 // Module state: counts reset when the module reloads, which is a fresh
-// session environment anyway. Nothing here is drawn, so $.state is not needed.
+// session environment anyway. Nothing here is drawn, so api.state is not needed.
 // Both are bounded: the oldest streak is forgotten once MAX_STREAKS are tracked.
 const failures = new Map<string, number>()
 const nudged = new Set<string>()
@@ -105,58 +105,55 @@ function missedOldString(text: string | undefined): boolean {
 
 export const loops: UltraMod = {
   id: 'loops',
-  hooks: {
-    'tool.call': [{
-      when: e => e.tool === 'Bash' || e.tool === 'Edit',
-      run: async ($, e, next) => {
-        const result = await next(e)
-        try {
-          const settings = await modSettings($)
-          const nudge = settings.mode !== 'warn'
-          if (e.tool === 'Bash') {
-            const key = `bash:${normalizeCommand(str(e, 'command'))}`
-            if (result.isError) {
-              const line = firstErrorLine(result.text)
-              // With no diagnostic line, unrelated failures would pass for one error.
-              if (line === '') return result
-              const signature = `${key}|${line}`
-              if (count(signature) >= 3 && !nudged.has(signature)) {
-                nudged.add(signature)
-                try {
-                  $.ui.toast('Bash failed 3 times with the same error')
-                } catch {
-                  // A toast must never break the result.
-                }
-                if (nudge) return withContext(result, BASH_NUDGE)
+  watch: {
+    when: e => e.tool === 'Bash' || e.tool === 'Edit',
+    run: (api, e) => async result => {
+      try {
+        const settings = await modSettings(api)
+        const nudge = settings.mode !== 'warn'
+        if (e.tool === 'Bash') {
+          const key = `bash:${normalizeCommand(str(e, 'command'))}`
+          if (result.isError) {
+            const line = firstErrorLine(result.text)
+            // With no diagnostic line, unrelated failures would pass for one error.
+            if (line === '') return result
+            const signature = `${key}|${line}`
+            if (count(signature) >= 3 && !nudged.has(signature)) {
+              nudged.add(signature)
+              try {
+                api.ui.toast('Bash failed 3 times with the same error')
+              } catch {
+                // A toast must never break the result.
               }
-            } else {
-              for (const signature of [...failures.keys()]) {
-                if (signature.startsWith(`${key}|`)) forget(signature)
-              }
+              if (nudge) return withContext(result, BASH_NUDGE)
             }
-          } else if (e.tool === 'Edit') {
-            const key = `edit:${e.file_path}`
-            if (result.isError && missedOldString(result.text)) {
-              if (count(key) >= 2 && !nudged.has(key)) {
-                nudged.add(key)
-                try {
-                  $.ui.toast('Edit missed old_string twice on one file')
-                } catch {
-                  // A toast must never break the result.
-                }
-                if (nudge) return withContext(result, EDIT_NUDGE)
-              }
-            } else {
-              // A success or an unrelated failure ends the streak of misses.
-              forget(key)
+          } else {
+            for (const signature of [...failures.keys()]) {
+              if (signature.startsWith(`${key}|`)) forget(signature)
             }
           }
-        } catch {
-          // An observer must never lose the tool's result.
+        } else if (e.tool === 'Edit') {
+          const key = `edit:${e.file_path}`
+          if (result.isError && missedOldString(result.text)) {
+            if (count(key) >= 2 && !nudged.has(key)) {
+              nudged.add(key)
+              try {
+                api.ui.toast('Edit missed old_string twice on one file')
+              } catch {
+                // A toast must never break the result.
+              }
+              if (nudge) return withContext(result, EDIT_NUDGE)
+            }
+          } else {
+            // A success or an unrelated failure ends the streak of misses.
+            forget(key)
+          }
         }
-        return result
-      },
-    }],
+      } catch {
+        // An observer must never lose the tool's result.
+      }
+      return result
+    },
   },
 }
 
