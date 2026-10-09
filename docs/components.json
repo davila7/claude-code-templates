@@ -16623,6 +16623,27 @@
       }
     },
     {
+      "name": "heyreagent",
+      "path": "marketing/heyreagent.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "A hosted MCP server for your own LinkedIn account: read your inbox, send messages and invitations, search people, and work with posts. Sign in with your HeyReagent account; there is no key to paste. An independent service, not made by or affiliated with LinkedIn.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "posthell",
       "path": "marketing/posthell.json",
       "category": "marketing",
