@@ -1,3 +1,9 @@
+---
+description: "Create git commits aligned with task completion, maintaining clean version control synchronized with task progress."
+allowed-tools: Read, Write, Edit, Bash
+
+---
+
 # Orchestration Commit Command
 
 Create git commits aligned with task completion, maintaining clean version control synchronized with task progress.

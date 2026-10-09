@@ -1,3 +1,9 @@
+---
+description: "Follow these steps to update the current branch name:"
+allowed-tools: Read, Write, Edit, Bash
+
+---
+
 # Update Branch Name
 
 Follow these steps to update the current branch name:
