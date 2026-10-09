@@ -11,5 +11,6 @@ $n = New-Object System.Windows.Forms.NotifyIcon
 $n.Icon = [System.Drawing.SystemIcons]::Information
 $n.Visible = $true
 $n.ShowBalloonTip(5000, 'Claude Code', $body, 'Info')
-Start-Sleep -Seconds 2
+# Disposing the icon removes its balloon, so it stays for the time asked above.
+Start-Sleep -Seconds 6
 $n.Dispose()

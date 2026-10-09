@@ -109,6 +109,8 @@ export const pins: UltraMod = {
       const text = args.trim()
       if (text === '') return { text: 'Usage: /ultra pin <text>' }
       const root = await api.session.root().catch(() => '')
+      // Without the project root the pin would land where /ultra pins and the prompt never look.
+      if (root === '') return { text: 'Could not find the project root, so nothing was pinned.' }
       const path = `${root}/.claude/pins.md`
       // Only a missing file counts as empty: a read that fails on a file that is there must not end in an overwrite.
       let current = ''
