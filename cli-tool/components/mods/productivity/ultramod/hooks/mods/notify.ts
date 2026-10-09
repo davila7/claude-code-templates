@@ -1,6 +1,5 @@
 import type { UltraApi } from '../core/api'
 import type { UltraMod } from '../core/mod'
-import type { Args, Frozen } from 'claude-code'
 import { fmtDuration } from '../core/format'
 import { notifierSettings, projectFolder, resetNotifier, sendNotification } from '../core/notifier'
 
@@ -21,55 +20,63 @@ export function resetNotify(): void {
 }
 
 // True while an idle nudge would only repeat a finished turn's toast.
-async function justFinished($: UltraApi): Promise<boolean> {
+async function justFinished(api: UltraApi): Promise<boolean> {
   try {
-    return (await $.clock.now()) - lastFinished < IDLE_GAP_MS
+    return (await api.clock.now()) - lastFinished < IDLE_GAP_MS
   } catch {
     return Date.now() - lastFinished < IDLE_GAP_MS
   }
 }
 
+// Off the dispatch: the Windows notifier alone sleeps two seconds.
+async function sendFinished(api: UltraApi, body: string, settings: Awaited<ReturnType<typeof notifierSettings>>): Promise<void> {
+  try {
+    const sent = await sendNotification(api, body, settings)
+    if (sent !== null) lastFinished = sent
+  } catch {
+    // A lost notification never reaches the turn.
+  }
+}
+
+async function sendWaiting(api: UltraApi, body: string, settings: Awaited<ReturnType<typeof notifierSettings>>): Promise<void> {
+  try {
+    await sendNotification(api, body, settings)
+  } catch {
+    // A lost notification never reaches the turn.
+  }
+}
+
 export const notify: UltraMod = {
   id: 'notify',
-  hooks: {
-    'turn.complete': [{
-      when: e => !e.agentId && !e.isAborted,
-      run: async ($, e: Frozen<Args<'turn.complete'>>, next) => {
-        const result = await next(e)
-        try {
-          const settings = await notifierSettings($)
-          const threshold = (settings.notifyAfterSeconds ?? 30) * 1000
-          if (e.durationMs >= threshold) {
-            const body = `${await projectFolder($)} finished in ${fmtDuration(e.durationMs)}`
-            // Off the dispatch: the Windows notifier alone sleeps two seconds.
-            $.clock.after(0, () => {
-              void sendNotification($, body, settings).then((sent) => {
-                if (sent !== null) lastFinished = sent
-              }, () => undefined)
-            })
-          }
-        } catch {
-          // Never throw out of a turn.
+  turnComplete: {
+    when: e => !e.agentId && !e.isAborted,
+    run: async (api, e) => {
+      try {
+        const settings = await notifierSettings(api)
+        const threshold = (settings.notifyAfterSeconds ?? 30) * 1000
+        if (e.durationMs >= threshold) {
+          const body = `${await projectFolder(api)} finished in ${fmtDuration(e.durationMs)}`
+          api.clock.after(0, () => { void sendFinished(api, body, settings) })
         }
-        return result
-      },
-    }],
-    'classic.Notification': [{
-      run: async ($, e, next) => {
-        const result = await next(e)
-        try {
-          if (!WAITING_NOTIFICATIONS.includes(e.notification_type)) return result
-          const settings = await notifierSettings($)
-          if (!IDLE_NOTIFICATIONS.includes(e.notification_type) || !(await justFinished($))) {
-            const body = `${await projectFolder($)} needs you: ${e.message}`
-            // Off the dispatch, like the other send paths: the Windows notifier sleeps and the chime plays.
-            $.clock.after(0, () => { void sendNotification($, body, settings).catch(() => undefined) })
-          }
-        } catch {
-          // Never throw out of a notification.
+      } catch {
+        // Never throw out of a turn.
+      }
+      return null
+    },
+  },
+  notification: {
+    run: async (api, e) => {
+      try {
+        if (!WAITING_NOTIFICATIONS.includes(e.notification_type)) return
+        const settings = await notifierSettings(api)
+        if (!IDLE_NOTIFICATIONS.includes(e.notification_type) || !(await justFinished(api))) {
+          const body = `${await projectFolder(api)} needs you: ${e.message}`
+          // Off the dispatch, like the other send paths: the Windows notifier sleeps and the chime plays.
+          api.clock.after(0, () => { void sendWaiting(api, body, settings) })
         }
-        return result
-      },
-    }],
+      } catch {
+        // Never throw out of a notification.
+      }
+    },
   },
 }

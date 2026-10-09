@@ -1,7 +1,7 @@
 {
   "name": "ultramod",
-  "version": "1.0.3",
-  "description": "All-in-one Claude Code mod pack: limits and context HUD, a guard with undo, secret protection and a receipt for every turn",
+  "version": "1.0.7",
+  "description": "The best all-in-one mod pack for Claude Code: a usage limits and context HUD, a guard with undo for rm -rf and git reset --hard, .env and secret protection, and a receipt for every turn.",
   "author": {
     "name": "Mert Kaya",
     "url": "https://mertkayacs.com"
@@ -9,7 +9,7 @@
   "homepage": "https://ultramod.mertkayacs.com",
   "repository": "https://github.com/mertkayacs/ultramod",
   "license": "MIT",
-  "keywords": ["claude-code", "mods", "hooks", "context", "safety"],
+  "keywords": ["claude-code", "claude-code-plugin", "claude-code-mods", "claude-code-hooks", "claude", "anthropic", "mod-pack", "mods", "hooks", "statusline", "hud", "usage-limits", "context-window", "guardrails", "guard", "undo", "secrets", "dotenv", "safety", "receipts", "notifications", "productivity", "ai-coding", "developer-tools", "context"],
   "types": "./types/index.d.ts",
   "userConfig": {
     "set": {

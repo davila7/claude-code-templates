@@ -56,7 +56,6 @@ declare module 'claude-code' {
       receipts: UltraReceipt[]
       allow: UltraAllow
       compact: UltraCompact
-      'guard-approved': string[]
     }
   }
 }

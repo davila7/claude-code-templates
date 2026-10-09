@@ -12,20 +12,20 @@ export const turn = atom({ plugin: 'ultramod', key: 'turn' } as const, {
 })
 
 export type HudMod = UltraMod & {
-  start: ($: UltraApi, e: Frozen<Args<'turn.start'>>) => Promise<void>
-  complete: ($: UltraApi, e: Frozen<Args<'turn.complete'>>) => Promise<void>
-  sync: ($: UltraApi) => Promise<void>
+  start: (api: UltraApi, e: Frozen<Args<'turn.start'>>) => Promise<void>
+  complete: (api: UltraApi, e: Frozen<Args<'turn.complete'>>) => Promise<void>
+  sync: (api: UltraApi) => Promise<void>
   stop: () => void
 }
 
 // The row of segments the band draws, and the pane draws too: context, the
 // rate limits, the turn, the cost, the model and the set badge, whole segments
 // only, each dropped when the next one will no longer fit.
-export async function hudRow($: UltraApi, e: Frozen<RenderInput<'AbovePrompt' | 'Pane'>>, set: UltraSet, columns: number) {
-  const usage = await $.session.usage()
-  const held = await read($, turn)
-  const now = await $.clock.now()
-  const { Text } = $.ui.resolve(e)
+export async function hudRow(api: UltraApi, e: Frozen<RenderInput<'AbovePrompt' | 'Pane'>>, set: UltraSet, columns: number) {
+  const usage = await api.session.usage()
+  const held = await read(api, turn)
+  const now = await api.clock.now()
+  const { Text } = api.ui.resolve(e)
   const percent = usage.context.percent
   const contextColor: ThemeKey = percent === undefined || percent < 60 ? 'text' : percent < 80 ? 'warning' : 'error'
   const filled = percent === undefined ? 0 : Math.max(0, Math.min(10, Math.round(percent / 10)))
@@ -55,7 +55,7 @@ export async function hudRow($: UltraApi, e: Frozen<RenderInput<'AbovePrompt' | 
     // A total that prints $0.00 says nothing, so it stays off the row.
     const cost = usage.cost && usage.cost.usd > 0 ? fmtUsd(usage.cost.usd) : ''
     if (cost && cost !== '$0.00') tail.push({ text: cost })
-    tail.push({ text: fmtModel(await $.session.model()) })
+    tail.push({ text: fmtModel(await api.session.model()) })
     tail.push({ text: `ultra:${setLabel(set)}`, dim: true })
   }
   const build = (verbose: boolean): { text: string; color?: ThemeKey; dim?: boolean }[] => [
@@ -80,98 +80,94 @@ export async function hudRow($: UltraApi, e: Frozen<RenderInput<'AbovePrompt' | 
   return { nodes, contextColor, used }
 }
 
-export function createHud(sets: SetsEngine, mods: readonly UltraMod[]): HudMod {
+// The band above the prompt: the HUD row, then a second row for contributions
+// with no room beside it. Null when nothing is drawn here.
+export async function bandRows(api: UltraApi, e: Frozen<RenderInput<'AbovePrompt'>>, sets: SetsEngine, mods: readonly UltraMod[]): Promise<RenderNode[] | null> {
+  if (e.surface !== 'terminal' && e.surface !== 'desktop' || e.props.hasSurvey) return null
+  if (!(await sets.enabled(api, 'hud'))) return null
+  const set = await sets.current(api)
+  const { Box, Text } = api.ui.resolve(e)
+  const columns = Math.max(0, Math.floor(e.props.bodyColumns))
+  const { nodes: row, contextColor, used: consumed } = await hudRow(api, e, set, columns)
+  let used = consumed
+  // The readouts fill their row first, so a contribution with no room beside
+  // them (Compact now, 15 cells) takes a row of its own instead of vanishing.
+  const second: RenderNode[] = []
+  let usedSecond = 0
+  for (const mod of mods) {
+    if (!mod.band || !set.mods[mod.id].enabled) continue
+    const gap = row.length ? 3 : 0
+    const remaining = Math.max(0, columns - used - gap)
+    try {
+      const part = await mod.band({ api, e, set, settings: set.mods[mod.id], columns: remaining, contextColor })
+      if (!part || part.columns <= 0) continue
+      if (part.columns <= remaining) {
+        if (gap) row.push(<Text dimColor> · </Text>)
+        row.push(part.node)
+        used += gap + part.columns
+        continue
+      }
+      const secondGap = second.length ? 3 : 0
+      if (usedSecond + secondGap + part.columns > columns) continue
+      if (secondGap) second.push(<Text dimColor> · </Text>)
+      second.push(part.node)
+      usedSecond += secondGap + part.columns
+    } catch {
+      // A broken contribution must leave the other rows visible.
+    }
+  }
+  const rows = [<Box flexDirection="row" width={columns} flexWrap="nowrap">{row}</Box>]
+  if (second.length) rows.push(<Box flexDirection="row" width={columns} flexWrap="nowrap">{second}</Box>)
+  return rows
+}
+
+export function createHud(sets: SetsEngine): HudMod {
   let timer: Timer | null = null
   const stop = () => {
     timer?.cancel()
     timer = null
   }
-  const tick = async ($: UltraApi) => {
-    if (!(await sets.enabled($, 'hud')) || !(await read($, turn)).id) {
+  const tick = async (api: UltraApi) => {
+    if (!(await sets.enabled(api, 'hud')) || !(await read(api, turn)).id) {
       stop()
       return
     }
-    const now = await $.clock.now()
-    await update($, turn, held => held.id ? { ...held, now } : held)
+    const now = await api.clock.now()
+    await update(api, turn, held => held.id ? { ...held, now } : held)
   }
-  const sync = async ($: UltraApi) => {
-    if (!(await sets.enabled($, 'hud')) || !(await read($, turn)).id) {
+  const sync = async (api: UltraApi) => {
+    if (!(await sets.enabled(api, 'hud')) || !(await read(api, turn)).id) {
       stop()
     } else if (!timer) {
-      timer = $.clock.every(1_000, () => { void tick($).catch(stop) })
+      timer = api.clock.every(1_000, () => { void tick(api).catch(stop) })
     }
   }
-  const start: HudMod['start'] = async ($, e) => {
+  const start: HudMod['start'] = async (api, e) => {
     stop()
-    const now = await $.clock.now()
-    await update($, turn, () => ({ id: e.turnId, startedAt: now, now, durationMs: null, edits: 0, commands: 0 }))
-    await sync($)
+    const now = await api.clock.now()
+    await update(api, turn, () => ({ id: e.turnId, startedAt: now, now, durationMs: null, edits: 0, commands: 0 }))
+    await sync(api)
   }
-  const complete: HudMod['complete'] = async ($, e) => {
+  const complete: HudMod['complete'] = async (api, e) => {
     if (e.agentId) return
     stop()
-    await update($, turn, held => ({ ...held, id: null, startedAt: null, durationMs: e.durationMs }))
+    await update(api, turn, held => ({ ...held, id: null, startedAt: null, durationMs: e.durationMs }))
   }
 
   return {
     id: 'hud', start, complete, sync, stop,
-    hooks: {
-      'tool.call': [{
-        when: e => !e.agentId && ['Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'Bash'].includes(String(e.tool)),
-        run: async ($, e, next) => {
-          const result = await next(e)
-          if (!result.deny && (String(e.tool) === 'Bash' || !result.isError)) {
-            await update($, turn, held => held.id ? {
-              ...held,
-              edits: held.edits + (String(e.tool) === 'Bash' ? 0 : 1),
-              commands: held.commands + (String(e.tool) === 'Bash' ? 1 : 0),
-            } : held)
-          }
-          return result
-        },
-      }],
-      'ui.render': [{
-        when: e => e.component === 'AbovePrompt' && (e.surface === 'terminal' || e.surface === 'desktop') && !e.props.hasSurvey,
-        run: async ($, e, next) => {
-          if (e.component !== 'AbovePrompt') return next(e)
-          const set = await sets.current($)
-          const { Box, Text } = $.ui.resolve(e)
-          const columns = Math.max(0, Math.floor(e.props.bodyColumns))
-          const { nodes: row, contextColor, used: consumed } = await hudRow($, e, set, columns)
-          let used = consumed
-          // The readouts fill their row first, so a contribution with no room beside
-          // them (Compact now, 15 cells) takes a row of its own instead of vanishing.
-          const second: RenderNode[] = []
-          let usedSecond = 0
-          for (const mod of mods) {
-            if (!mod.band || !set.mods[mod.id].enabled) continue
-            const gap = row.length ? 3 : 0
-            const remaining = Math.max(0, columns - used - gap)
-            try {
-              const part = await mod.band({ $, e: e as Frozen<RenderInput<'AbovePrompt'>>, set, settings: set.mods[mod.id], columns: remaining, contextColor })
-              if (!part || part.columns <= 0) continue
-              if (part.columns <= remaining) {
-                if (gap) row.push(<Text dimColor> · </Text>)
-                row.push(part.node)
-                used += gap + part.columns
-                continue
-              }
-              const secondGap = second.length ? 3 : 0
-              if (usedSecond + secondGap + part.columns > columns) continue
-              if (secondGap) second.push(<Text dimColor> · </Text>)
-              second.push(part.node)
-              usedSecond += secondGap + part.columns
-            } catch {
-              // A broken contribution must leave the other rows visible.
-            }
-          }
-          return <Box flexDirection="column">
-            <Box flexDirection="row" width={columns} flexWrap="nowrap">{row}</Box>
-            {second.length ? <Box flexDirection="row" width={columns} flexWrap="nowrap">{second}</Box> : null}
-            {await next(e)}
-          </Box>
-        },
-      }],
+    watch: {
+      when: e => !e.agentId && ['Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'Bash'].includes(String(e.tool)),
+      run: (api, e) => async result => {
+        if (!result.deny && (String(e.tool) === 'Bash' || !result.isError)) {
+          await update(api, turn, held => held.id ? {
+            ...held,
+            edits: held.edits + (String(e.tool) === 'Bash' ? 0 : 1),
+            commands: held.commands + (String(e.tool) === 'Bash' ? 1 : 0),
+          } : held)
+        }
+        return result
+      },
     },
   }
 }
