@@ -1427,27 +1427,60 @@ describe('a /clear while a move is being looked up', () => {
     expect(w.compacts).toBe(1)
   })
 
-  test('even with the new lookup still out, a due compact checks the folder itself', SKIP, async ($, on) => {
-    // a 5-minute cache, so the window opens at minute 3
-    const w: World = { cwd: PRIVATE, compacts: 0, statGateFor: ALLOWED, statGateOnce: true, settings: { promptCacheTtl: '5m' } }
+})
+
+describe('a session start whose folder lookup lands last', () => {
+  test('never overrides what a move and a /clear found since', SKIP, async ($, on) => {
+    // the start's lookup is held at its first stat, the skip folder's
+    const w: World = { cwd: PRIVATE, compacts: 0, statGateFor: PRIVATE, statGateOnce: true }
     const clock = engine(on, w)
-    await start($, PRIVATE)
     const h = hold()
     w.statGate = h.gate
     w.statEntered = h.reached
+    const starting = $.session.start({ cwd: PRIVATE, surface: null, isInteractive: true })
+    await h.arrived
+    // the session moves to an allowed folder, and a /clear follows; their lookups finish first
     w.cwd = ALLOWED
     await $.classic.CwdChanged({ old_cwd: PRIVATE, new_cwd: ALLOWED } as never)
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
+    await clock.advance(0)
+    // the start's lookup finishes now, for the folder it began in
+    h.release()
+    await starting
+    await request($)
+    await clock.advance(HOUR - 30_000)
+    expect(w.compacts).toBe(1)
+  })
+})
+
+describe('a session start makes earlier lookups obsolete', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+  test('even before its own lookup lands', SKIP, async ($, on) => {
+    const SUB = `${PRIVATE}/sub`
+    const w: World = { cwd: ALLOWED, compacts: 0, statGateFor: SUB, statGateOnce: true }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    // a move into the skip folder, its lookup held at the new folder's stat
+    const h = hold()
+    w.statGate = h.gate
+    w.statEntered = h.reached
+    w.cwd = SUB
+    await $.classic.CwdChanged({ old_cwd: ALLOWED, new_cwd: SUB } as never)
     await h.arrived
-    // the lookup the /clear starts is held too
+    // a resume starts again in the allowed folder; that start's own lookup is held too
+    await $.session.end({ reason: 'resume', sessionId: 's1', resume: { id: 's1' } } as never)
     const h2 = hold()
     w.stat2Gate = h2.gate
     w.stat2For = ALLOWED
-    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
-    h.release()
-    await request($)
-    await clock.advance(4 * MIN)
-    expect(w.compacts).toBe(1)
-    h2.release()
+    w.cwd = ALLOWED
+    const starting = $.session.start({ cwd: ALLOWED, surface: null, isInteractive: true })
     await clock.advance(0)
+    // the move's lookup lands first, for a folder the session has left
+    w.statGate = undefined
+    h.release()
+    await clock.advance(5_000)
+    expect(latest(w)).not.toBe('Auto-compact off in this folder')
+    h2.release()
+    await starting
   })
 })

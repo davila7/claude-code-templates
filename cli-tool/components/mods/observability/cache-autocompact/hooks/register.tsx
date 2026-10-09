@@ -100,10 +100,6 @@ function resetConversation() {
   warnedFor = 0
   failed = undefined
   requests = fresh()
-  // Folder lookups still out belong to the old conversation and are dropped when they land (gen), so
-  // their answer must not linger either: the folder is unconfirmed until a new lookup says otherwise.
-  // An unconfirmed folder still lets a due compact through to its own folder check.
-  folder = 'unknown'
 }
 
 // a path as given and where it really lands; undefined when where it lands cannot be established
@@ -156,29 +152,37 @@ function standing(roots: string[] | undefined, here: string[] | undefined): Fold
   return isSkippedPath(here, roots) ? 'skip' : 'on'
 }
 
-// Lookups of the skip folders can overlap (a tick, a move, a session start); only the newest one that
-// finishes is published, so a slow, older one never overwrites a newer answer.
+// Folder state (`folder`, `skipRoots`, `unresolvedSkip`) describes the working folder against the skip
+// list. It has one writer, publish(), fed by lookUp(). Lookups overlap (a session start, a move, a due
+// compact), so each is stamped when it begins: the folder revision it was made for, and a ticket.
+// publish() refuses a lookup the folder has moved on from (a move or a session start bumps cwdRev)
+// or that a newer published lookup superseded (a retargeted link, a folder gone or found). A /clear
+// changes the conversation, not the folder, so it leaves folder state alone.
 let skipTickets = 0
 let skipPublished = 0
 
-// The folder the session runs in right now, against the skip folders as they resolve right now, with
-// the ticket of that resolution. An answer is stale once a newer resolution was published: its roots
-// are superseded (a link retargeted, a folder gone), so it may neither set `folder` nor allow a compact.
-async function folderNow($: EngineInterface): Promise<{ where: Folder; ticket: number }> {
+type Lookup = { rev: number; ticket: number; skips: { roots: string[] | undefined; unresolved: string | undefined }; where: Folder }
+
+// where the session stands: `cwd` as given (a session start's own), or the session's folder now
+async function lookUp($: EngineInterface, given?: string): Promise<Lookup> {
+  const rev = cwdRev
   const ticket = ++skipTickets
-  const r = await resolveSkips($)
-  if (ticket > skipPublished) {
-    skipPublished = ticket
-    applySkips($, r)
-  }
-  if (!r.roots) return { where: 'unknown', ticket }
-  const cwd = await $.session.cwd().catch(() => undefined)
-  if (!cwd) return { where: 'unknown', ticket }
-  return { where: standing(r.roots, await spellings($, cwd)), ticket }
+  const skips = await resolveSkips($)
+  const stamp = { rev, ticket, skips }
+  if (!skips.roots) return { ...stamp, where: 'unknown' }
+  const cwd = given ?? (await $.session.cwd().catch(() => undefined))
+  if (!cwd) return { ...stamp, where: 'unknown' }
+  return { ...stamp, where: standing(skips.roots, await spellings($, cwd)) }
 }
 
-// whether a folder answer still rests on the newest published skip folders
-const freshFolder = (ticket: number) => ticket >= skipPublished
+// the one writer of folder state; false when the lookup is superseded and nothing was written
+function publish($: EngineInterface, l: Lookup): boolean {
+  if (l.rev !== cwdRev || l.ticket < skipPublished) return false
+  skipPublished = l.ticket
+  applySkips($, l.skips)
+  folder = l.where
+  return true
+}
 
 // shows what the mod will do; only a changed line reaches the engine
 function show($: EngineInterface, text: string | undefined) {
@@ -241,13 +245,13 @@ async function tick($: EngineInterface, cfg: Config) {
   const rev = cwdRev
   const req = requests.rev
   try {
-    const found = await folderNow($)
-    const where = found.where
-    const skipped = where !== 'on'
+    const found = await lookUp($)
+    const skipped = found.where !== 'on'
     // read again at the moment of the compact, the way the engine reads it, so a change is seen
     const off = isEngineOn(await $.env.get('DISABLE_COMPACT').catch(() => undefined))
     const at = await $.clock.now()
-    if (gen === mine && cwdRev === rev && freshFolder(found.ticket)) folder = where
+    // published only while current: false once the folder moved on or a newer lookup landed
+    const published = publish($, found)
     if (gen === mine && off) {
       compactOff = true
       return
@@ -256,7 +260,7 @@ async function tick($: EngineInterface, cfg: Config) {
     // here is what holds when it is called: the same conversation (which also means this tick
     // still holds the lock), the same request, no folder change since the check, and still
     // inside the window.
-    if (gen !== mine || cwdRev !== rev || requests.rev !== req || skipped || !freshFolder(found.ticket)) return
+    if (gen !== mine || !published || requests.rev !== req || skipped) return
     if (!last || samples[samples.length - 1] !== last) return
     const due = judge(at, last, false, false)
     if (!due.go) return
@@ -371,16 +375,13 @@ export const register: Register = (on, options) => {
       disableSonnet: await $.env.get('DISABLE_PROMPT_CACHING_SONNET').catch(none),
       disableOpus: await $.env.get('DISABLE_PROMPT_CACHING_OPUS').catch(none),
     }
-    const ticket = ++skipTickets
-    const resolved = await resolveSkips($)
-    if (ticket > skipPublished) {
-      skipPublished = ticket
-      applySkips($, resolved)
-    }
+    // a session start sets the folder anew: any lookup still out for the folder before it is obsolete
+    cwdRev += 1
+    const started = await lookUp($, e.cwd)
+    publish($, started)
     ttl = await currentTtlBase($)
-    folder = standing(skipRoots, await spellings($, e.cwd))
     $.ui.log(
-      folder !== 'on'
+      started.where !== 'on'
         ? `cache-autocompact: off in ${e.cwd} (skip list)`
         : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(cfg.windowMs)} left on a ${ttl} cache${interactive ? '' : ', not interactive: runs /compact'}`,
       { to: 'debug' },
@@ -397,12 +398,6 @@ export const register: Register = (on, options) => {
     // session.start replaces the timer either way.
     resetConversation()
     if (e.reason !== 'clear' && e.reason !== 'resume') show($, undefined)
-    // /clear fires no session.start, so the new conversation looks its folder up here, off to the side
-    const mine = gen
-    const rev = cwdRev
-    void folderNow($).then(found => {
-      if (gen === mine && cwdRev === rev && freshFolder(found.ticket)) folder = found.where
-    })
     return next(e)
   })
 
@@ -454,14 +449,8 @@ export const register: Register = (on, options) => {
 
   on('classic.CwdChanged', async ($, e, next) => {
     cwdRev += 1
-    const rev = cwdRev
-    // the status line follows the move, checked off to the side so the move never waits on it;
-    // a later move makes this check stale and it is dropped
-    const mine = gen
-    void folderNow($).then(found => {
-      // a resume or /clear meanwhile (gen), a later move (cwdRev) or newer skip folders make it stale
-      if (gen === mine && cwdRev === rev && freshFolder(found.ticket)) folder = found.where
-    })
+    // the status line follows the move, checked off to the side so the move never waits on it
+    void lookUp($).then(found => publish($, found))
     return next(e)
   })
 
