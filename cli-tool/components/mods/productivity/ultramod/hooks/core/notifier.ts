@@ -73,11 +73,12 @@ export function scriptPath(root: string, file: string): string {
 }
 
 // powershell.exe under WSL reads Windows paths, so the script path goes
-// through wslpath. A failed conversion throws and the toast takes over.
+// through wslpath, also when WSLENV carries OS=Windows_NT over. A failed
+// conversion throws and the toast takes over.
 async function powerShellScript(api: UltraApi): Promise<string> {
   const script = scriptPath(api.plugin.root, 'notify.ps1')
-  const [os, wsl] = await Promise.all([api.env.get('OS'), api.env.get('WSL_DISTRO_NAME')])
-  if (os === 'Windows_NT' || wsl === undefined || wsl === '') return script
+  const wsl = await api.env.get('WSL_DISTRO_NAME')
+  if (wsl === undefined || wsl === '') return script
   const result = await api.process.run(['wslpath', '-w', script])
   const converted = result.stdout.trim()
   if (result.exitCode !== 0 || converted === '') throw new Error('wslpath could not convert the notifier script path')
