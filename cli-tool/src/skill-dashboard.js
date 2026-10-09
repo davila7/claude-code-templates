@@ -5,6 +5,7 @@ const express = require('express');
 const open = require('open');
 const os = require('os');
 const yaml = require('js-yaml');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 class SkillDashboard {
   constructor(options = {}) {
@@ -13,7 +14,7 @@ class SkillDashboard {
     this.port = 3337;
     this.httpServer = null;
     this.homeDir = os.homedir();
-    this.claudeDir = path.join(this.homeDir, '.claude');
+    this.claudeDir = getClaudeConfigDir(this.homeDir);
     this.personalSkillsDir = path.join(this.claudeDir, 'skills');
   }
 
