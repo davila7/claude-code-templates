@@ -31,7 +31,7 @@
 import type { EngineInterface, Register, SessionCompactResult } from 'claude-code'
 import { accountOf, decideTtl, fmtClock, fmtTokens, isCachingDisabled, positive } from './cache.ts'
 import type { CacheEnv, Sample, Ttl } from './cache.ts'
-import { handsOff, isEngineOn, isSkippedPath, isSwitchedOffRefusal, toRoots, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine } from './decide.ts'
+import { handsOff, isEngineOn, isSkippedPath, isSwitchedOffRefusal, toRoots, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine, windowFor } from './decide.ts'
 import type { Folder, TtlTrack } from './decide.ts'
 
 const KEEP = 20
@@ -91,6 +91,8 @@ let refused: string | undefined
 let warnedFor = 0
 // why the one try on a request's cache came to nothing (a /compact command that threw, a veto)
 let failed: { startedAt: number; why: string } | undefined
+// when the conversation last went quiet: the end of its last recorded main-loop request or turn, 0 for none
+let idleSince = 0
 
 function resetConversation() {
   gen += 1
@@ -103,6 +105,7 @@ function resetConversation() {
   refused = undefined
   warnedFor = 0
   failed = undefined
+  idleSince = 0
   requests = fresh()
 }
 
@@ -214,6 +217,7 @@ async function tick($: EngineInterface, cfg: Config) {
       busy,
       skipped,
       disabled: last ? isCachingDisabled(last.model, env) : false,
+      idleSince,
     })
   const mine = gen
   const now = await $.clock.now()
@@ -239,6 +243,7 @@ async function tick($: EngineInterface, cfg: Config) {
       refused,
       failed: current(failed?.startedAt) ? failed?.why : undefined,
       unresolved: unresolvedSkip,
+      idleSince,
     }),
   )
   // Cheap check first, so an idle session touches no file system every five seconds, and a session
@@ -408,7 +413,7 @@ export const register: Register = (on, options) => {
       $.ui.log(
         started.where !== 'on'
           ? `cache-autocompact: off in ${e.cwd} (skip list)`
-          : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(cfg.windowMs)} left on a ${ttl} cache${interactive ? '' : ', not interactive: runs /compact'}`,
+          : `cache-autocompact: on, compacts chats over ${fmtTokens(cfg.minTokens)} with ${fmtClock(windowFor(ttl, cfg.windowMs))} left on a ${ttl} cache${interactive ? '' : ', not interactive: runs /compact'}`,
         { to: 'debug' },
       )
     }
@@ -467,8 +472,14 @@ export const register: Register = (on, options) => {
     }
   })
 
+  // A turn's end starts the minute of quiet, for the conversation the turn belongs to only: a turn from
+  // before a /clear or a resume never holds the new chat. The time is read before the turn is let go,
+  // so no check ever sees the turn over without its end.
   on('turn.complete', async ($, e, next) => {
-    turnHome.get(e.turnId)?.turns.delete(e.turnId)
+    const home = turnHome.get(e.turnId)
+    const at = await $.clock.now()
+    if (home === requests) idleSince = Math.max(idleSince, at)
+    home?.turns.delete(e.turnId)
     turnHome.delete(e.turnId)
     return next(e)
   })
@@ -513,6 +524,7 @@ export const register: Register = (on, options) => {
       const startedAt = await $.clock.now()
       const r = yield* next(e)
       if (!r.usage || gen !== mine) return r
+      const endedAt = await $.clock.now()
       const cur: Sample = {
         turnId: e.turnId,
         index: e.index,
@@ -527,6 +539,8 @@ export const register: Register = (on, options) => {
       if (gen !== mine) return r
       const prev = samples[samples.length - 1]
       samples.push(cur)
+      // the end of a recorded reply starts the minute of quiet
+      idleSince = Math.max(idleSince, endedAt)
       refused = undefined
       if (samples.length > KEEP) samples = samples.slice(-KEEP)
       const tracked = nextTtl(track, base, prev, cur)

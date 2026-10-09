@@ -874,11 +874,14 @@ describe('review round 4', () => {
     await $.turn.start({ text: 'go', turnId: 't1' } as never)
     await request($)
     // a tool runs: no request in flight, but the turn goes on
-    await clock.advance(4 * MIN)
+    await clock.advance(3 * MIN + 30_000)
     expect(w.compacts).toBe(0)
     expect(latest(w)).toBe('Auto-compact due, waiting for the turn to end (a reply, a tool, or your answer)')
     await $.turn.complete({ turnId: 't1', reason: 'answer' } as never)
-    await clock.advance(5_000)
+    // the turn's end starts the minute of quiet: not 5 seconds after it, but a minute after it
+    await clock.advance(55_000)
+    expect(w.compacts).toBe(0)
+    await clock.advance(10_000)
     expect(w.compacts).toBe(1)
   })
 
@@ -1696,5 +1699,101 @@ describe("the start's folder notice", () => {
     h.release()
     await starting
     expect(w.logs?.filter(l => l.includes('cache-autocompact: on,')).length).toBe(1)
+  })
+})
+
+describe('a minute of quiet after the reply', () => {
+  const latest = (w: World) => w.statuses?.[w.statuses.length - 1]
+
+  // one main-loop request that stays inside the engine for `ms` on the mocked clock
+  async function longRequest($: Engine, clock: ReturnType<typeof engine>, ms: number) {
+    const running = request($)
+    await clock.advance(ms)
+    await running
+  }
+
+  test('a 30-second reply on a 5-minute cache fires no sooner than a minute after it ends', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' }, naps: { t1: 30_000 } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await longRequest($, clock, 30_000)
+    await clock.advance(55_000)
+    expect(w.compacts).toBe(0)
+    // the window opens at minute 3, two and a half minutes after the reply ended
+    await clock.advance(2 * MIN)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('a reply over 3 minutes on a 5-minute cache is not compacted within a minute of its end', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' }, naps: { t1: 3 * MIN + 30_000 } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await longRequest($, clock, 3 * MIN + 30_000)
+    await clock.advance(55_000)
+    expect(w.compacts).toBe(0)
+    expect(latest(w)).toBe('Auto-compact due, waiting until the reply is a minute old')
+    // a minute after the reply, with 30 seconds left on the cache
+    await clock.advance(10_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test('a reply that ends too late for a minute of quiet is missed, never compacted straight after it', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' }, naps: { t1: 4 * MIN + 10_000 } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await longRequest($, clock, 4 * MIN + 10_000)
+    await clock.advance(5_000)
+    expect(latest(w)).toBe('Auto-compact missed: the cache runs out within a minute of the reply')
+    await clock.advance(5 * MIN)
+    expect(w.compacts).toBe(0)
+    expect(w.asked ?? 0).toBe(0)
+  })
+
+  test('a turn that ends near the hour on a 1-hour cache gets its minute too', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await $.turn.start({ text: 'go', turnId: 't1' } as never)
+    await request($)
+    await clock.advance(HOUR - 4 * MIN)
+    expect(w.compacts).toBe(0)
+    await $.turn.complete({ turnId: 't1', reason: 'answer' } as never)
+    await clock.advance(55_000)
+    expect(w.compacts).toBe(0)
+    await clock.advance(10_000)
+    expect(w.compacts).toBe(1)
+  })
+  test('a turn from before a /clear that ends late does not hold the new chat', async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' } }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await $.turn.start({ text: 'go', turnId: 'old' } as never)
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } } as never)
+    await request($, 2)
+    await clock.advance(2 * MIN + 55_000)
+    // the old conversation's turn ends just as the new chat's window opens
+    await $.turn.complete({ turnId: 'old', reason: 'answer' } as never)
+    await clock.advance(10_000)
+    expect(w.compacts).toBe(1)
+  })
+})
+
+describe('the window is at most half the cache', () => {
+  test('windowSeconds 3600 on a 1-hour cache fires at minute 30, not right after the reply', { options: { windowSeconds: 3600 } }, async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0 }
+    const clock = engine(on, w)
+    await start($, ALLOWED)
+    await request($)
+    await clock.advance(29 * MIN)
+    expect(w.compacts).toBe(0)
+    await clock.advance(MIN + 5_000)
+    expect(w.compacts).toBe(1)
+  })
+
+  test("the start's notice names the window in force: 2:00 on a 5-minute cache", async ($, on) => {
+    const w: World = { cwd: ALLOWED, compacts: 0, settings: { promptCacheTtl: '5m' } }
+    engine(on, w)
+    await start($, ALLOWED)
+    expect(w.logs?.some(l => l.includes('with 2:00 left on a 5m cache'))).toBe(true)
   })
 })

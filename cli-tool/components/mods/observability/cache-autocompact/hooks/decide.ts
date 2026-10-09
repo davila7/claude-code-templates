@@ -33,13 +33,25 @@ export type Inputs = {
   disabled: boolean
   // compaction is switched off for the session (DISABLE_COMPACT), for /compact as well
   compactOff?: boolean
+  // when the chat last went quiet: the end of its last recorded main-loop request or of its last turn;
+  // 0 or absent for none, which asks for no wait
+  idleSince?: number
 }
 
-// A 5-minute cache gets at most 2 minutes, so it fires at minute 3. A window as long as the cache
-// would fire straight after every reply.
+// The window is at most half the cache, so a window as long as the cache never fires straight after
+// every reply: a 5-minute cache gets at most 2 minutes (it fires at minute 3), a 1-hour cache 30.
 export const FIVE_MINUTE_CAP = 120_000
+export const ONE_HOUR_CAP = 1_800_000
 export function windowFor(ttl: Ttl, windowMs: number): number {
-  return ttl === '5m' ? Math.min(windowMs, FIVE_MINUTE_CAP) : windowMs
+  return Math.min(windowMs, ttl === '5m' ? FIVE_MINUTE_CAP : ONE_HOUR_CAP)
+}
+
+// A reply is never compacted within a minute of its end, so the person has time to read it. A wait
+// that would run past the lapse does not fire early instead: the cache is missed.
+export const QUIET_MS = 60_000
+// how much longer the chat must stay quiet before a compact; 0 once it has been quiet a minute
+export function quietLeft(now: number, idleSince: number | undefined): number {
+  return idleSince ? Math.max(0, QUIET_MS - (now - idleSince)) : 0
 }
 
 export function shouldCompact(i: Inputs): Verdict {
@@ -58,6 +70,8 @@ export function shouldCompact(i: Inputs): Verdict {
   // lapsed already: compacting now pays the full reread it was meant to avoid
   if (leftMs <= 0) return { go: false, why: 'cache already lapsed' }
   if (leftMs > windowFor(i.ttl, i.windowMs)) return { go: false, why: 'cache still has time' }
+  const wait = quietLeft(i.now, i.idleSince)
+  if (wait > 0) return { go: false, why: leftMs <= wait ? 'the cache lapses before the reply is a minute old' : 'the reply ended under a minute ago' }
   return { go: true, leftMs, tokens }
 }
 
@@ -140,12 +154,15 @@ export function statusLine(
   const why = i.refused ? ` (refused: ${i.refused.slice(0, 80)})` : ''
   if (leftMs <= 0) return `Auto-compact missed: the cache ran out${why}`
   const until = leftMs - windowFor(i.ttl, i.windowMs)
+  const wait = quietLeft(i.now, i.idleSince)
   if (until <= 0) {
     if (i.compacting) return 'Auto-compact due, waiting for the compaction under way'
     if (i.requestRunning) return 'Auto-compact due, waiting for the turn to end (a reply, a tool, or your answer)'
+    if (wait > 0)
+      return leftMs <= wait ? 'Auto-compact missed: the cache runs out within a minute of the reply' : 'Auto-compact due, waiting until the reply is a minute old'
     return i.refused ? `Auto-compact retrying${why}` : 'Auto-compact due now'
   }
-  return `Auto-compact armed: fires in ${fmtWait(until)}`
+  return `Auto-compact armed: fires in ${fmtWait(Math.max(until, wait))}`
 }
 
 // "C:\\Users\\X\\", "c:/users/./x", "\\\\?\\C:\\Users\\X" and "c://users/x" name the same folder on Windows.

@@ -26,7 +26,7 @@
     "windowSeconds": {
       "type": "number",
       "title": "Compact this close to expiry (s)",
-      "description": "Seconds left on the cache countdown at which the compact fires. A 5-minute cache caps this at 120",
+      "description": "Seconds left on the cache countdown at which the compact fires. It is at most half the cache: 120 on a 5-minute cache, 1800 on a 1-hour cache. It never fires within a minute of a reply ending",
       "default": 300
     },
     "skipPaths": {

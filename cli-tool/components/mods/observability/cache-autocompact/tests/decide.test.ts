@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'claude-code/testing'
-import { fmtWait, handsOff, isEngineOn, isHeadlessRefusal, isSwitchedOffRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine, toRoots } from '../hooks/decide.ts'
+import { fmtWait, handsOff, isEngineOn, isHeadlessRefusal, isSwitchedOffRefusal, isSkippedPath, nextTtl, normalizePath, shouldCompact, splitPaths, statusLine, toRoots, windowFor } from '../hooks/decide.ts'
 import type { Inputs } from '../hooks/decide.ts'
 import type { Sample } from '../hooks/cache.ts'
 
@@ -537,5 +537,62 @@ describe('review round 9', () => {
     expect(handsOff(new Error('contest: next() passed an argument with messages that are not a list'), false)).toBe(false)
     expect(handsOff(new Error('test: next() passed an argument with messages that are not a list, and more'), false)).toBe(false)
     expect(handsOff(new Error('test: next() passed an argument with messages that are not a list'), false)).toBe(true)
+  })
+})
+
+describe('a minute of quiet after the reply', () => {
+  const MIN = 60_000
+  const why = (over: Partial<Inputs>) => {
+    const v = shouldCompact(inputs(over))
+    return v.go ? 'went' : v.why
+  }
+  const line = (over: Partial<Inputs>) => {
+    const { skipped: _, ...rest } = inputs(over)
+    return statusLine({ ...rest, folder: 'on' })
+  }
+
+  test('a 30-second reply on a 5-minute cache fires at minute 3, more than a minute after it ended', () => {
+    expect(why({ ttl: '5m', now: T0 + 3 * MIN, idleSince: T0 + 30_000 })).toBe('went')
+  })
+
+  test('a reply that ended under a minute ago waits, on either cache', () => {
+    expect(why({ ttl: '5m', now: T0 + 3.5 * MIN, idleSince: T0 + 3.5 * MIN - 59_999 })).toBe('the reply ended under a minute ago')
+    expect(why({ ttl: '5m', now: T0 + 3.5 * MIN, idleSince: T0 + 2.5 * MIN })).toBe('went')
+    expect(why({ now: T0 + HOUR - 90_000, idleSince: T0 + HOUR - 120_000 })).toBe('the reply ended under a minute ago')
+    expect(why({ now: T0 + HOUR - 90_000, idleSince: T0 + HOUR - 150_000 })).toBe('went')
+  })
+
+  test('a wait that would carry past the lapse never fires: it is missed', () => {
+    // a reply that ends at 4:10 on a 5-minute cache: a minute later the cache is gone
+    expect(why({ ttl: '5m', now: T0 + 4 * MIN + 15_000, idleSince: T0 + 4 * MIN + 10_000 })).toBe('the cache lapses before the reply is a minute old')
+    // the wait ends exactly as the cache lapses: missed too
+    expect(why({ ttl: '5m', now: T0 + 4 * MIN, idleSince: T0 + 4 * MIN })).toBe('the cache lapses before the reply is a minute old')
+    // one millisecond to spare: it waits
+    expect(why({ ttl: '5m', now: T0 + 4 * MIN, idleSince: T0 + 4 * MIN - 1 })).toBe('the reply ended under a minute ago')
+  })
+
+  test('the status line says it waits for the minute, or that the cache will be missed', () => {
+    expect(line({ ttl: '5m', now: T0 + 3.5 * MIN, idleSince: T0 + 3.5 * MIN })).toBe('Auto-compact due, waiting until the reply is a minute old')
+    expect(line({ ttl: '5m', now: T0 + 4.5 * MIN, idleSince: T0 + 4.5 * MIN })).toBe('Auto-compact missed: the cache runs out within a minute of the reply')
+  })
+
+  test('armed counts down to the later of the window and the minute', () => {
+    // the window opens in 30 seconds, but the reply ended 10 seconds ago: 50 seconds to go
+    expect(line({ now: T0 + HOUR - 150_000, idleSince: T0 + HOUR - 160_000 })).toBe('Auto-compact armed: fires in 50s')
+  })
+})
+
+describe('the window is at most half the cache', () => {
+  test('a 1-hour window on a 1-hour cache waits until minute 30', () => {
+    const v = (now: number) => shouldCompact(inputs({ windowMs: 3_600_000, now }))
+    expect(v(T0 + 5_000).go).toBe(false)
+    expect(v(T0 + HOUR / 2 - 1).go).toBe(false)
+    expect(v(T0 + HOUR / 2).go).toBe(true)
+  })
+  test('a window under half the cache is kept as set', () => {
+    expect(windowFor('1h', 1_799_999)).toBe(1_799_999)
+    expect(windowFor('1h', 3_600_000)).toBe(1_800_000)
+    expect(windowFor('5m', 300_000)).toBe(120_000)
+    expect(windowFor('5m', 60_000)).toBe(60_000)
   })
 })
