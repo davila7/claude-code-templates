@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "datacircle": {
-      "description": "Datacircle is a data co-op. Query your favorite B2B data APIs through us. Same request, same price, no markup. Right now we have 2 live LinkedIn profile APIs that we trust: Up2Data and HarvestAPI. Each request goes to the provider and gets the profile as it is today.",
+      "description": "Datacircle is a data co-op. Query your favorite B2B data APIs through us. Same request, same price, no markup. Right now we have 2 live LinkedIn profile APIs that we trust: Up2Data and HarvestAPI. Each request goes to the provider and gets the profile as it is today. The first time, your client signs you in with your Datacircle email (OAuth). Or send your API key as a Bearer token. Docs: https://docs.datacircle.dev/mcp-server",
       "type": "http",
       "url": "https://api.datacircle.dev/mcp"
     }
