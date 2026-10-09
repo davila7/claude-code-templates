@@ -1,8 +1,8 @@
 // Risk table from SPEC 4.3. Precision beats recall: every rule here has
 // look-alike tests proving what it must ignore.
-import { splitCommand, commandTokens, baseName, normalize } from './shell'
+import { analyzeCommand, splitCommand, commandArgv, commandLine, hasStdinText, shellInvocation, substitutionCommands, emittedText, tokens, baseName, normalize } from './shell'
 
-export type RiskKind = 'git' | 'rm' | 'sql' | 'infra' | 'remote-exec' | 'disk' | 'publish'
+export type RiskKind = 'git' | 'rm' | 'sql' | 'infra' | 'remote-exec' | 'disk' | 'publish' | 'unchecked'
 
 export interface RiskHit {
   id: string
@@ -32,30 +32,38 @@ function rmTargetSafe(raw: string): boolean {
   if (t === '') return true
   while (t.length > 1 && t.endsWith('/')) t = t.slice(0, -1)
   if (t === '~' || t === '.' || t === '..' || t === '*' || t === '$HOME' || t === '${HOME}') return false
-  if (t.startsWith('$')) return false
+  // A variable, a command or a brace list can expand to anything, dist/{..,x}
+  // to dist/.. for one.
+  if (t.indexOf('$') !== -1 || t.indexOf('`') !== -1 || t.indexOf('{') !== -1) return false
   if (t.startsWith('~/')) t = t.slice(2)
   while (t.startsWith('./') || t.startsWith('../')) t = t.slice(t.indexOf('/', 1) + 1)
   if (t === '/' || t === '') return false
-  // Resolve path to handle /tmp/../etc traversal
-  t = resolvePath(t)
-  if (t.startsWith('/tmp/')) return true
-  if (t.startsWith('/')) return false
-  const first = t.split('/')[0] ?? ''
+  // Resolve . and .. first: /tmp/../etc and dist/../private are not what
+  // their first component says.
+  const resolved = resolvePath(t)
+  if (resolved === null) return false
+  if (resolved.startsWith('/tmp/')) return true
+  if (resolved.startsWith('/')) return false
+  const first = resolved.split('/')[0] ?? ''
   return RM_SAFE_ROOTS.indexOf(first) !== -1
 }
 
-function resolvePath(path: string): string {
-  if (!path.startsWith('/')) return path
-  const parts = path.split('/').filter((p) => p !== '' && p !== '.')
+// Collapse . and .. segments. A relative path that climbs out of its start
+// (or ends up at the start itself) has no safe name, so it returns null.
+function resolvePath(path: string): string | null {
+  const absolute = path.startsWith('/')
   const resolved: string[] = []
-  for (const part of parts) {
+  for (const part of path.split('/')) {
+    if (part === '' || part === '.') continue
     if (part === '..') {
       if (resolved.length > 0) resolved.pop()
-    } else {
-      resolved.push(part)
+      else if (!absolute) return null
+      continue
     }
+    resolved.push(part)
   }
-  return '/' + resolved.join('/')
+  if (!absolute && resolved.length === 0) return null
+  return absolute ? '/' + resolved.join('/') : resolved.join('/')
 }
 
 function hit(id: string, reason: string, kind: RiskKind, snapshot: boolean): RiskHit {
@@ -97,8 +105,13 @@ function isProtectedRef(ref: string): boolean {
 // a flag's value: kubectl -n prod delete ..., terraform -chdir dir destroy,
 // docker -H host system prune. Both the separate-value and the =value forms.
 const VERB_VALUE_FLAGS: Record<string, readonly string[]> = {
-  docker: ['-H', '--host', '-c', '--context', '--config'],
-  kubectl: ['-n', '--namespace', '--context', '-c', '--cluster', '--container', '--kubeconfig'],
+  docker: ['-H', '--host', '-c', '--context', '--config', '-l', '--log-level', '--tlscacert', '--tlscert', '--tlskey'],
+  kubectl: [
+    '-n', '--namespace', '--context', '-c', '--cluster', '--container', '--kubeconfig',
+    '-s', '--server', '--token', '--user', '--username', '--password', '--as', '--as-group', '--as-uid',
+    '--certificate-authority', '--client-certificate', '--client-key', '--cache-dir', '--request-timeout',
+    '--tls-server-name', '--profile', '--profile-output', '-v', '--v', '--vmodule',
+  ],
   terraform: ['-chdir'],
   tofu: ['-chdir'],
 }
@@ -126,55 +139,200 @@ const SQL_PATTERNS: { id: string; re: RegExp; reason: string }[] = [
   { id: 'sql-truncate', re: /\btruncate\s+(table\s+)?[A-Za-z_"'`.[\]]/i, reason: 'empties a table' },
 ]
 
-// Check SQL statements inside a carrier command. delete from without where
-// needs statement-level inspection.
-function sqlCheck(text: string): RiskHit | null {
-  for (const p of SQL_PATTERNS) {
-    if (p.re.test(text)) return hit(p.id, p.reason, 'sql', false)
+const isWordChar = (c: string) => /[A-Za-z0-9_]/.test(c)
+
+// Does the statement that starts at from carry a WHERE in code position?
+// Comments (/* */, --, #) and quoted text cannot supply the condition. The
+// scan from a position depends on nothing but the position, so memo keeps the
+// answer for every position a scan passed: a later scan that reaches one stops
+// there, and the whole text is read once however many deletes it holds.
+function hasWhere(text: string, from: number, memo: Uint8Array): boolean {
+  const n = text.length
+  const trail: number[] = []
+  let found: boolean | undefined
+  let i = from
+  while (i < n) {
+    const known = memo[i]
+    if (known !== undefined && known !== 0) {
+      found = known === 1
+      break
+    }
+    trail.push(i)
+    const c = text.charAt(i)
+    if (c === ';') {
+      found = false
+      break
+    }
+    if (c === "'" || c === '"' || c === '`') {
+      const j = text.indexOf(c, i + 1)
+      if (j === -1) {
+        found = false
+        break
+      }
+      i = j + 1
+      continue
+    }
+    if (c === '/' && text.charAt(i + 1) === '*') {
+      const j = text.indexOf('*/', i + 2)
+      if (j === -1) {
+        found = false
+        break
+      }
+      i = j + 2
+      continue
+    }
+    if ((c === '-' && text.charAt(i + 1) === '-') || c === '#') {
+      const j = text.indexOf('\n', i)
+      if (j === -1) {
+        found = false
+        break
+      }
+      i = j + 1
+      continue
+    }
+    if ((c === 'w' || c === 'W') && text.slice(i, i + 5).toLowerCase() === 'where') {
+      if (!isWordChar(text.charAt(i - 1)) && !isWordChar(text.charAt(i + 5))) {
+        found = true
+        break
+      }
+    }
+    i++
   }
-  const re = /\bdelete\s+from\b/gi
-  let m: RegExpExecArray | null
-  while ((m = re.exec(text)) !== null) {
-    const rest = text.slice(m.index + m[0].length)
-    const stmt = rest.split(';')[0] ?? ''
-    if (!/\bwhere\b/i.test(stmt)) {
-      return hit('sql-delete-all', 'deletes every row of a table', 'sql', false)
+  const result = found === true
+  for (const p of trail) memo[p] = result ? 1 : 2
+  return result
+}
+
+// Block comments and line comments (-- followed by a blank) turn into one
+// space, the way SQL reads them: DROP/**/TABLE is DROP TABLE. A bare --flag
+// stays, so the shell options of the carrier survive.
+function stripSqlComments(text: string): string {
+  let out = ''
+  let from = 0
+  let i = 0
+  const n = text.length
+  while (i < n) {
+    const c = text.charAt(i)
+    if (c === '/' && text.charAt(i + 1) === '*') {
+      const j = text.indexOf('*/', i + 2)
+      if (j === -1) break
+      out += text.slice(from, i) + ' '
+      i = j + 2
+      from = i
+      continue
+    }
+    if (c === '-' && text.charAt(i + 1) === '-' && (i + 2 >= n || isSpaceChar(text.charAt(i + 2)))) {
+      const j = text.indexOf('\n', i)
+      out += text.slice(from, i) + ' '
+      i = j === -1 ? n : j
+      from = i
+      continue
+    }
+    i++
+  }
+  return out + text.slice(from)
+}
+
+const isSpaceChar = (c: string) => c === ' ' || c === '\t' || c === '\r' || c === '\n'
+
+// Check SQL statements inside a carrier command. delete from without where
+// needs statement-level inspection. The text is read as written and with its
+// comments removed.
+function sqlCheck(text: string): RiskHit | null {
+  const stripped = stripSqlComments(text)
+  for (const t of stripped === text ? [text] : [text, stripped]) {
+    for (const p of SQL_PATTERNS) {
+      if (p.re.test(t)) return hit(p.id, p.reason, 'sql', false)
+    }
+    const re = /\bdelete\s+from\b/gi
+    const memo = new Uint8Array(t.length + 1)
+    let m: RegExpExecArray | null
+    while ((m = re.exec(t)) !== null) {
+      if (!hasWhere(t, m.index + m[0].length, memo)) {
+        return hit('sql-delete-all', 'deletes every row of a table', 'sql', false)
+      }
     }
   }
   return null
 }
 
+// Commands that run another command somewhere else (a container, a pod, a
+// host). A SQL tool named behind them is a carrier too.
+const REMOTE_HEADS = ['docker', 'docker-compose', 'podman', 'podman-compose', 'nerdctl', 'kubectl', 'oc', 'ssh', 'lxc', 'incus']
+
+function carrierBehindWrapper(head: string, args: string[]): boolean {
+  if (REMOTE_HEADS.indexOf(head) === -1) return false
+  for (const a of args) {
+    if (SQL_CARRIERS.indexOf(baseName(a)) !== -1) return true
+    // a quoted remote command line: ssh host "psql -c '...'"
+    if (/\s/.test(a)) {
+      for (const inner of splitCommand(a)) {
+        const w = commandArgv(inner)
+        if (w.length > 0 && SQL_CARRIERS.indexOf(baseName(w[0] ?? '')) !== -1) return true
+      }
+    }
+  }
+  return false
+}
+
+// Is a is the long option name, or an unambiguous abbreviation of it that is
+// at least min letters long? getopt accepts --recurs for --recursive.
+function isLong(a: string, name: string, min = 1): boolean {
+  return a.startsWith('--') && a.length >= 2 + min && name.startsWith(a.slice(2))
+}
+
+// The flags and targets of an rm command line. recursive is true for -r and
+// -R in any cluster and for --recursive in any accepted spelling.
+function rmArgs(args: string[]): { recursive: boolean; targets: string[] } {
+  let recursive = false
+  let afterDashDash = false
+  const targets: string[] = []
+  for (const a of args) {
+    if (a === '--' && !afterDashDash) {
+      afterDashDash = true
+      continue
+    }
+    if (!afterDashDash && a.startsWith('-') && a.length > 1) {
+      if (a.startsWith('--')) {
+        if (isLong(a, 'recursive')) recursive = true
+      } else {
+        for (const ch of a.slice(1)) {
+          if (ch === 'r' || ch === 'R') recursive = true
+        }
+      }
+      continue
+    }
+    if (a !== '' && a !== '&') targets.push(a)
+  }
+  return { recursive, targets }
+}
+
+// -f in a short cluster of push options (-fu, -uf), or --force. A cluster
+// with a letter git push does not have fails in git and pushes nothing, and
+// -o takes the rest of the cluster, or the next word, as its value.
+function isForceFlag(flag: string, next: string | undefined): boolean {
+  if (flag === '--force') return true
+  if (flag.startsWith('--') || !flag.startsWith('-') || flag.length < 2) return false
+  let force = false
+  for (let k = 1; k < flag.length; k++) {
+    const ch = flag.charAt(k)
+    if (ch === 'f') force = true
+    else if (ch === 'o') return force && (k + 1 < flag.length || next !== undefined)
+    else if ('vqundh46'.indexOf(ch) === -1) return false
+  }
+  return force
+}
+
 function checkSimple(simple: string, strict: boolean): RiskHit | null {
-  const words = commandTokens(simple)
+  const words = commandArgv(simple)
   if (words.length === 0) return null
   const head = baseName(words[0] ?? '')
   const args = words.slice(1)
 
   if (head === 'rm') {
-    let recursive = false
-    let afterDashDash = false
-    const targets: string[] = []
-    for (const a of args) {
-      if (a === '--') {
-        afterDashDash = true
-        continue
-      }
-      if (!afterDashDash && a.startsWith('-') && a.length > 1) {
-        if (a === '--recursive') recursive = true
-        else if (a.startsWith('--')) {
-          // other long flags take no interest here
-        } else {
-          for (const ch of a.slice(1)) {
-            if (ch === 'r' || ch === 'R') recursive = true
-          }
-        }
-        continue
-      }
-      targets.push(a)
-    }
-    const real = targets.filter((t) => t !== '' && t !== '&')
-    if (recursive && real.length > 0) {
-      for (const t of real) {
+    const { recursive, targets } = rmArgs(args)
+    if (recursive) {
+      for (const t of targets) {
         if (!rmTargetSafe(t)) {
           return hit('rm-recursive', `recursively deletes ${t}`, 'rm', true)
         }
@@ -188,14 +346,14 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
     const cmd = sub[0] ?? ''
     const rest = sub.slice(1)
     if (cmd === 'reset') {
-      if (rest.indexOf('--hard') !== -1) {
+      if (rest.some((a) => isLong(a, 'hard', 2))) {
         return hit('git-reset-hard', 'discards uncommitted changes', 'git', true)
       }
       return null
     }
     if (cmd === 'clean') {
-      const hasF = rest.some((a) => a === '-f' || a === '--force' || /^-[a-zA-Z]*f/.test(a))
-      const dryRun = rest.some((a) => a === '-n' || a === '--dry-run' || /^-[a-zA-Z]*n/.test(a))
+      const hasF = rest.some((a) => isLong(a, 'force', 2) || /^-[a-zA-Z]*f/.test(a))
+      const dryRun = rest.some((a) => isLong(a, 'dry-run', 2) || /^-[a-zA-Z]*n/.test(a))
       if (hasF && !dryRun) {
         return hit('git-clean', 'deletes untracked files', 'git', true)
       }
@@ -212,7 +370,13 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
     if (cmd === 'push') {
       const flags = rest.filter((a) => a.startsWith('-'))
       const refs = rest.filter((a) => !a.startsWith('-'))
-      const force = flags.some((f) => f === '-f' || f === '--force')
+      let force = false
+      for (let k = 0; k < rest.length && !force; k++) {
+        const a = rest[k] ?? ''
+        // a separate value belongs to its option, even when it looks like -f
+        if (a === '-o' || a === '--push-option' || a === '--repo' || a === '--receive-pack' || a === '--exec') k++
+        else force = isForceFlag(a, rest[k + 1])
+      }
       if (force) {
         return hit('git-push-force', 'overwrites remote history', 'git', false)
       }
@@ -231,10 +395,24 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
       return null
     }
     if (cmd === 'branch') {
-      const forceDelete =
-        rest.some((a) => /^-[a-zA-Z]*D/.test(a)) ||
-        (rest.indexOf('--delete') !== -1 && rest.indexOf('--force') !== -1)
-      if (forceDelete) {
+      // -D, or a delete and a force given together in any spelling:
+      // -d -f, -df, -fd, --delete -f, -d --force.
+      let del = false
+      let force = false
+      let forceDelete = false
+      for (const a of rest) {
+        if (a === '--') break
+        if (a === '--delete') del = true
+        else if (a === '--force') force = true
+        else if (a.startsWith('-') && !a.startsWith('--') && a.length > 1) {
+          for (const ch of a.slice(1)) {
+            if (ch === 'D') forceDelete = true
+            else if (ch === 'd') del = true
+            else if (ch === 'f') force = true
+          }
+        }
+      }
+      if (forceDelete || (del && force)) {
         return hit('git-branch-force-delete', 'force deletes a branch', 'git', false)
       }
       return null
@@ -253,9 +431,13 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
   if (SQL_CARRIERS.indexOf(head) !== -1) {
     const h = sqlCheck(simple)
     if (h !== null) return h
-  } else if (/<<-?\s*['"]?[A-Za-z0-9_]/.test(simple) && new RegExp('\\b(' + SQL_CARRIERS.join('|') + ')\\b').test(simple)) {
-    // Heredoc feeding a SQL tool that is not the head word (docker exec and
-    // friends). The body stays attached to this command, so scan it all.
+  } else if (
+    (hasStdinText(simple) && new RegExp('\\b(' + SQL_CARRIERS.join('|') + ')\\b').test(commandLine(simple))) ||
+    carrierBehindWrapper(head, args)
+  ) {
+    // A SQL tool that is not the head word (docker exec, kubectl exec, ssh
+    // and friends), fed by a heredoc or by its own -c / -e argument. The
+    // body stays attached to this command, so scan it all.
     const h = sqlCheck(simple)
     if (h !== null) return h
   }
@@ -365,146 +547,175 @@ function isWorldWritableSymbolic(mode: string): boolean {
   return null
 }
 
-// Split on top-level | only, respecting quotes, so pipe segments stay whole.
-function splitTopPipes(cmd: string): string[] {
-  const segs: string[] = []
-  let cur = ''
-  let i = 0
-  const n = cmd.length
-  while (i < n) {
-    const c = cmd[i]
-    if (c === "'") {
-      const j = cmd.indexOf("'", i + 1)
-      const end = j === -1 ? n : j
-      cur += cmd.slice(i, end + 1)
-      i = end + 1
-      continue
-    }
-    if (c === '"') {
-      i++
-      while (i < n && cmd[i] !== '"') {
-        if (cmd[i] === '\\') i++
-        i++
+const DOWNLOADERS = ['curl', 'wget', 'fetch', 'http', 'https', 'aria2c']
+const PIPE_SHELLS = ['sh', 'bash', 'zsh', 'dash', 'ksh', 'fish', 'csh', 'tcsh', 'ash']
+
+// A pipeline that feeds a download into a shell executes whatever arrives. A
+// shell after ||, && or ; is not fed by it, so only commands joined by a real
+// | count.
+function pipeToShell(pipelines: string[][]): RiskHit | null {
+  for (const group of pipelines) {
+    let fed = false
+    for (const simple of group) {
+      const w = commandArgv(simple)
+      const name = baseName(w[0] ?? '')
+      if (fed && PIPE_SHELLS.indexOf(name) !== -1) {
+        return hit('pipe-to-shell', 'pipes a download into a shell', 'remote-exec', false)
       }
-      i++
-      continue
+      if (DOWNLOADERS.indexOf(name) !== -1) fed = true
     }
-    if (c === '\\') {
-      cur += cmd.slice(i, i + 2)
-      i += 2
-      continue
-    }
-    if (c === '|') {
-      segs.push(cur)
-      cur = ''
-      i++
-      if (cmd[i] === '|') i++
-      continue
-    }
-    cur += c
-    i++
   }
-  segs.push(cur)
-  return segs
+  return null
 }
 
-// A pipeline ending in a shell executes anything piped into it. splitCommand
-// loses that grouping, so pipe-to-shell is checked on pipe segments.
-function pipeToShell(cmd: string): RiskHit | null {
-  const segs = splitTopPipes(cmd)
-  if (segs.length < 2) return null
-  const downloaders = ['curl', 'wget', 'fetch', 'http', 'https', 'aria2c']
-  for (let i = 0; i < segs.length - 1; i++) {
-    const head = commandTokens(segs[i] ?? '')
-    const b = head.length > 0 ? baseName(head[0] ?? '') : ''
-    if (!downloaders.includes(b)) continue
-    for (let j = i + 1; j < segs.length; j++) {
-      const down = commandTokens(segs[j] ?? '')
-      if (down.length === 0) continue
-      const db = baseName(down[0] ?? '')
-      if (db === 'sh' || db === 'bash' || db === 'zsh' || db === 'dash' || db === 'ksh') {
-        return hit('pipe-to-shell', 'pipes a download into a shell', 'remote-exec', false)
+// A shell, eval or source that runs a download without a pipe:
+// bash -c "$(curl ...)", bash <(curl ...), source <(curl ...), eval "$(curl ...)".
+function runsDownload(simple: string): RiskHit | null {
+  const run = shellInvocation(simple)
+  if (run === null || run.kind === 'stdin') return null
+  const word = run.kind === 'body' ? run.body : run.path
+  if (word.indexOf('$(') === -1 && word.indexOf('`') === -1 && word.indexOf('<(') === -1) return null
+  for (const inner of substitutionCommands(word)) {
+    if (DOWNLOADERS.indexOf(baseName(commandArgv(inner)[0] ?? '')) !== -1) {
+      return hit('pipe-to-shell', 'runs a download in a shell', 'remote-exec', false)
+    }
+  }
+  return null
+}
+
+// Text that echo, printf or cat prints into a SQL tool is SQL the tool runs:
+// echo 'DROP TABLE users' | psql.
+function pipedSql(pipelines: string[][]): RiskHit | null {
+  for (const group of pipelines) {
+    for (let k = 1; k < group.length; k++) {
+      if (SQL_CARRIERS.indexOf(baseName(commandArgv(group[k] ?? '')[0] ?? '')) === -1) continue
+      for (let j = 0; j < k; j++) {
+        for (const text of emittedText(group[j] ?? '')) {
+          const h = sqlCheck(text)
+          if (h !== null) return h
+        }
       }
     }
   }
   return null
 }
 
-// Extract raw text inside $( ) and ` ` command substitutions, without
-// splitting on pipes. This allows pipe-to-shell detection inside substitutions.
-function extractCommandSubs(cmd: string): string[] {
-  const subs: string[] = []
-  let i = 0
-  const n = cmd.length
-  while (i < n) {
-    const c = cmd[i]
-    if (c === '$' && cmd[i + 1] === '(') {
-      let depth = 1
-      let j = i + 2
-      while (j < n && depth > 0) {
-        if (cmd[j] === '(') depth++
-        else if (cmd[j] === ')') depth--
-        else if (cmd[j] === "'") {
-          const k = cmd.indexOf("'", j + 1)
-          if (k === -1) break
-          j = k
-        } else if (cmd[j] === '"') {
-          j++
-          while (j < n && cmd[j] !== '"') {
-            if (cmd[j] === '\\') j++
-            j++
-          }
-        }
-        j++
-      }
-      if (depth === 0) {
-        subs.push(cmd.slice(i + 2, j - 1))
-        i = j
-        continue
-      }
-    }
-    if (c === '`') {
-      let j = i + 1
-      while (j < n) {
-        if (cmd[j] === '`') break
-        if (cmd[j] === '\\') j += 2
-        else j++
-      }
-      if (j < n) {
-        subs.push(cmd.slice(i + 1, j))
-        i = j + 1
-        continue
-      }
-    }
-    i++
-  }
-  return subs
-}
-
 // Fork bomb: name(){ name|name& };name in any spacing. Checked on the whole
-// command because its parens and pipes shred it into harmless fragments.
-const FORK_BOMB = /([a-zA-Z_][a-zA-Z0-9_]*|:)\s*\(\)\s*\{\s*\1\s*\|\s*\1\s*&?\s*;?\s*\}\s*;\s*\1/
+// command because its parens and pipes shred it into harmless fragments. The
+// name must start at a word boundary, or a long run of name characters is
+// tried from every position.
+const FORK_BOMB = /((?<![A-Za-z0-9_])[a-zA-Z_][a-zA-Z0-9_]*|:)\s*\(\)\s*\{\s*\1\s*\|\s*\1\s*&?\s*;?\s*\}\s*;\s*\1/
 
 /**
  * Classify a shell command against the SPEC 4.3 risk table. Returns the first
  * hit among the simple commands, or null when everything is safe. strict adds
  * the strict-only entries (protected push, force-with-lease, publish, deploy).
+ * A command nested deeper than the parser follows is a hit too.
  */
 export function classifyCommand(cmd: string, opts?: ClassifyOptions): RiskHit | null {
   const strict = opts?.strict === true
-  for (const simple of splitCommand(cmd)) {
+  const parsed = analyzeCommand(cmd)
+  for (const simple of parsed.simples) {
     const h = checkSimple(simple, strict)
     if (h !== null) return h
-    const pipeHit = pipeToShell(simple)
-    if (pipeHit !== null) return pipeHit
   }
-  // Check pipe-to-shell inside command substitutions $( ) and ` `
-  for (const sub of extractCommandSubs(cmd)) {
-    const pipeHit = pipeToShell(sub)
-    if (pipeHit !== null) return pipeHit
+  // Pipelines of the line, its substitutions and its sh -c bodies.
+  const pipeHit = pipeToShell(parsed.pipelines)
+  if (pipeHit !== null) return pipeHit
+  for (const simple of parsed.simples) {
+    const h = runsDownload(simple)
+    if (h !== null) return h
   }
-  if (FORK_BOMB.test(normalize(cmd))) {
+  const sqlHit = pipedSql(parsed.pipelines)
+  if (sqlHit !== null) return sqlHit
+  if (cmd.indexOf('()') !== -1 && FORK_BOMB.test(normalize(cmd))) {
     return hit('fork-bomb', 'exponential process bomb', 'infra', false)
   }
-  return pipeToShell(cmd)
+  if (parsed.incomplete) {
+    return hit('unchecked', 'nests commands deeper than the guard can read', 'unchecked', false)
+  }
+  return null
+}
+
+// Follow a path argument from a directory held as segments below the
+// session's directory. Returns the new segments, or null when the path leaves
+// that tree or cannot be known (absolute, ~, a variable, above the start).
+function below(base: string[], path: string): string[] | null {
+  if (path.startsWith('/') || path.startsWith('~') || path.indexOf('$') !== -1 || path.indexOf('`') !== -1 || path.indexOf('{') !== -1) return null
+  // Very deep paths are not tracked: unknown counts as elsewhere.
+  if (path.length > 4096 || base.length > 64) return null
+  const out = [...base]
+  for (const part of path.split('/')) {
+    if (part === '' || part === '.') continue
+    if (part === '..') {
+      if (out.pop() === undefined) return null
+      continue
+    }
+    out.push(part)
+  }
+  return out
+}
+
+const GIT_VALUE_OPTIONS = ['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--exec-path']
+const ENV_WORDS = ['env', 'export', 'declare', 'typeset', 'local', 'readonly', 'sudo', 'nohup']
+
+/**
+ * Does a command act outside the session's repository? A snapshot saves the
+ * repository at the session directory, so it cannot protect a command that
+ * changes directory away (cd, pushd, popd) or points git elsewhere (-C,
+ * --git-dir, --work-tree, GIT_DIR, GIT_WORK_TREE). Paths that cannot be placed
+ * below the session directory count as elsewhere.
+ */
+export function runsElsewhere(cmd: string): boolean {
+  let cwd: string[] = []
+  const stack: string[][] = []
+  for (const simple of splitCommand(cmd)) {
+    for (const tok of tokens(simple)) {
+      const m = /^(GIT_DIR|GIT_WORK_TREE)=(.*)$/.exec(tok)
+      if (m !== null) {
+        if (below(cwd, m[2] ?? '') === null) return true
+        continue
+      }
+      if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tok) || tok.startsWith('-') || ENV_WORDS.indexOf(baseName(tok)) !== -1) continue
+      break
+    }
+    const w = commandArgv(simple)
+    const head = baseName(w[0] ?? '')
+    if (head === 'cd' || head === 'pushd') {
+      const target = w.slice(1).filter((a) => a === '-' || !a.startsWith('-'))[0]
+      if (target === undefined || target === '-') return true
+      const next = below(cwd, target)
+      if (next === null) return true
+      if (head === 'pushd' && stack.length >= 64) return true
+      if (head === 'pushd') stack.push(cwd)
+      cwd = next
+    } else if (head === 'rm') {
+      // A recursive rm outside the work tree is out of a snapshot's reach.
+      const { recursive, targets } = rmArgs(w.slice(1))
+      if (recursive && targets.some((t) => !rmTargetSafe(t) && below(cwd, t) === null)) return true
+    } else if (head === 'popd') {
+      const back = stack.pop()
+      if (back === undefined) return true
+      cwd = back
+    } else if (head === 'git') {
+      let base = cwd
+      for (let i = 1; i < w.length; i++) {
+        const a = w[i] ?? ''
+        if (a === '--') break
+        const eq = a.indexOf('=')
+        const flag = eq === -1 ? a : a.slice(0, eq)
+        if (GIT_VALUE_OPTIONS.indexOf(flag) !== -1) {
+          const value = eq === -1 ? (w[++i] ?? '') : a.slice(eq + 1)
+          if (flag === '-c' || flag === '--namespace' || flag === '--exec-path') continue
+          const next = below(flag === '-C' ? base : cwd, value)
+          if (next === null) return true
+          if (flag === '-C') base = next
+          continue
+        }
+        if (a.startsWith('-')) continue
+        break
+      }
+    }
+  }
+  return false
 }

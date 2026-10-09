@@ -6,6 +6,9 @@ import { notifierSettings, projectFolder, resetNotifier, sendNotification } from
 
 let lastFinished = Number.NEGATIVE_INFINITY
 
+// Notification types that wait for the user. Anything else (auth_success,
+// elicitation_complete and the like) is information and stays silent.
+const WAITING_NOTIFICATIONS: readonly string[] = ['permission_prompt', 'elicitation_dialog', 'idle_prompt']
 // The engine's idle nudge, which says nothing new right after a finished turn.
 const IDLE_NOTIFICATIONS: readonly string[] = ['idle_prompt']
 const IDLE_GAP_MS = 5 * 60_000
@@ -55,9 +58,12 @@ export const notify: UltraMod = {
       run: async ($, e, next) => {
         const result = await next(e)
         try {
+          if (!WAITING_NOTIFICATIONS.includes(e.notification_type)) return result
           const settings = await notifierSettings($)
           if (!IDLE_NOTIFICATIONS.includes(e.notification_type) || !(await justFinished($))) {
-            await sendNotification($, `${await projectFolder($)} needs you: ${e.message}`, settings)
+            const body = `${await projectFolder($)} needs you: ${e.message}`
+            // Off the dispatch, like the other send paths: the Windows notifier sleeps and the chime plays.
+            $.clock.after(0, () => { void sendNotification($, body, settings).catch(() => undefined) })
           }
         } catch {
           // Never throw out of a notification.
