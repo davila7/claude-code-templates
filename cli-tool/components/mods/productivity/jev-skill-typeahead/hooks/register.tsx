@@ -113,7 +113,7 @@ const WORDS = {
     none: 'nothing needed for this',
     offline: 'decision unavailable · keyword match',
     willUse: 'will be called',
-    legend: 'user ● · plugin ◆ · subagent ▣',
+    legend: 'skill:user ● · skill:plugin ◆ · subagent ▣',
     empty: 'type a prompt to see which skills or subagents Claude may call',
     command: 'commands run as typed · nothing for Claude to pick',
     short: 'keep typing…',
@@ -140,7 +140,7 @@ const WORDS = {
     none: 'no hace falta ninguno',
     offline: 'decisión no disponible · coincidencia por palabras',
     willUse: 'se llamará',
-    legend: 'usuario ● · plugin ◆ · subagent ▣',
+    legend: 'skill:user ● · skill:plugin ◆ · subagent ▣',
     empty: 'escribe un prompt para ver qué skills o subagents puede llamar Claude',
     command: 'los comandos se ejecutan tal cual · Claude no elige nada',
     short: 'sigue escribiendo…',
@@ -400,6 +400,8 @@ export const register: Register = (on, options) => {
     if (e.props.hasSurvey) return next(e)
     const v = await read($, view)
     const rows = v.rows.slice(0, maxRows)
+    // The band is one instance: whatever the plugins beneath draw (another mod's band) stays, under ours.
+    const below = await next(e)
 
     const { Box, Text } = $.ui.resolve(e)
     const isTerminal = e.surface === 'terminal'
@@ -439,7 +441,7 @@ export const register: Register = (on, options) => {
       )
     })
 
-    return (
+    const band = (
       <Box flexDirection="column" borderStyle="round" borderColor={v.phase === 'decided' && v.mode === 'prose' ? 'green' : 'cyan'} borderDimColor={!(v.phase === 'decided' && v.mode === 'prose')} paddingX={1} overflow="hidden">
         <Box key="head" flexDirection="row" overflow="hidden">
           <Text bold color="cyan">{pad(`✦ ${words.title} `)}</Text>
@@ -454,6 +456,12 @@ export const register: Register = (on, options) => {
             <Text dimColor>{pad(`  ${words.details}`)}</Text>
           </Box>
         </Box>
+      </Box>
+    )
+    return (
+      <Box flexDirection="column">
+        {band}
+        {below}
       </Box>
     )
   })

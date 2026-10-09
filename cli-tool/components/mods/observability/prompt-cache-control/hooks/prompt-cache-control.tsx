@@ -288,12 +288,20 @@ export const register: Register = (on, options) => {
     const { Box, Text } = $.ui.resolve(e)
     const columns = e.viewport?.columns ?? 100
     const color = COLOR[advice.kind]
+    // The band is one instance: whatever the plugins beneath draw (another mod's band) stays, under this line.
+    const below = await next(e)
+    const stack = (own: ReturnType<typeof Text>) => (
+      <Box flexDirection="column">
+        {own}
+        {below}
+      </Box>
+    )
 
-    if (!last) return <Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>
+    if (!last) return stack(<Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>)
 
     const ratio = hitRatio(last)
     const wide = columns >= 90
-    return (
+    return stack(
       <Box flexDirection="row" columnGap={1}>
         <Text bold color={color}>{advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'off' || advice.kind === 'cold' || advice.kind === 'uncached' ? '○' : '✖'}</Text>
         <Text bold color="cyan">cache</Text>
@@ -312,7 +320,7 @@ export const register: Register = (on, options) => {
           <Text bold color={left > 0 ? lifeColor(left, ttl, policy.warnMs) : 'red'}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
-      </Box>
+      </Box>,
     )
   })
 
