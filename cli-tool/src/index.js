@@ -20,6 +20,7 @@ const { runPluginDashboard } = require('./plugin-dashboard');
 const { runSkillDashboard } = require('./skill-dashboard');
 const { runTeamsDashboard } = require('./teams-dashboard');
 const { trackingService } = require('./tracking-service');
+const { createInstallUI } = require('./install-ui');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
@@ -501,7 +502,7 @@ async function installIndividualAgent(agentName, targetDir, options) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Agent "${agentName}" not found`));
         trackingService.trackInstallationOutcome('agent', agentName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
-        await showAvailableAgents();
+        if (!options.silent) await showAvailableAgents();
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -524,6 +525,7 @@ async function installIndividualAgent(agentName, targetDir, options) {
 
     const targetFile = path.join(agentsDir, `${fileName}.md`);
     await fs.writeFile(targetFile, agentContent, 'utf8');
+    options.onWrite?.(targetFile);
 
     if (!options.silent) {
       console.log(chalk.green(`✅ Agent "${agentName}" installed successfully!`));
@@ -594,6 +596,7 @@ async function installIndividualCommand(commandName, targetDir, options) {
     const targetFile = path.join(commandsDir, `${fileName}.md`);
     
     await fs.writeFile(targetFile, commandContent, 'utf8');
+    options.onWrite?.(targetFile);
     
     if (!options.silent) {
       console.log(chalk.green(`✅ Command "${commandName}" installed successfully!`));
@@ -683,6 +686,7 @@ async function installIndividualMCP(mcpName, targetDir, options) {
     
     // Write the merged configuration
     await fs.writeJson(targetMcpFile, mergedConfig, { spaces: 2 });
+    options.onWrite?.(targetMcpFile);
     
     if (!options.silent) {
       console.log(chalk.green(`✅ MCP "${mcpName}" installed successfully!`));
@@ -997,6 +1001,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
       
       // Write the merged configuration
       await fs.writeJson(actualTargetFile, mergedConfig, { spaces: 2 });
+      options.onWrite?.(actualTargetFile);
       
       // Install additional files if any exist
       if (Object.keys(additionalFiles).length > 0) {
@@ -1023,6 +1028,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
             
             // Write file content
             await fs.writeFile(resolvedFilePath, fileConfig.content, 'utf8');
+            options.onWrite?.(resolvedFilePath);
             
             // Make file executable if specified
             if (fileConfig.executable) {
@@ -1340,6 +1346,7 @@ async function installIndividualHook(hookName, targetDir, options) {
       
       // Write the merged configuration
       await fs.writeJson(actualTargetFile, mergedConfig, { spaces: 2 });
+      options.onWrite?.(actualTargetFile);
 
       // Install additional files (e.g., Python scripts)
       if (Object.keys(additionalFiles).length > 0) {
@@ -1352,6 +1359,7 @@ async function installIndividualHook(hookName, targetDir, options) {
 
           // Write file
           await fs.writeFile(absolutePath, fileData.content, { mode: fileData.executable ? 0o755 : 0o644 });
+          options.onWrite?.(absolutePath);
 
           if (!options.silent) {
             console.log(chalk.green(`✓ Installed additional file: ${relativePath}`));
@@ -1651,6 +1659,7 @@ async function installIndividualSkill(skillName, targetDir, options) {
       const fullPath = path.join(targetDir, filePath);
       await fs.ensureDir(path.dirname(fullPath));
       await fs.writeFile(fullPath, fileData.content, 'utf8');
+      options.onWrite?.(fullPath);
 
       if (fileData.executable) {
         await fs.chmod(fullPath, '755');
@@ -1800,6 +1809,7 @@ async function installIndividualMod(modName, targetDir, options = {}) {
       const fullPath = path.join(pluginDir, rel);
       await fs.ensureDir(path.dirname(fullPath));
       await fs.writeFile(fullPath, content, 'utf8');
+      options.onWrite?.(fullPath);
     }
 
     const relPluginDir = path.relative(targetDir, pluginDir);
@@ -1861,6 +1871,7 @@ async function installIndividualLoop(loopName, targetDir, options = {}) {
     const fileName = loopName.includes('/') ? loopName.split('/').pop() : loopName;
     const targetFile = path.join(loopsDir, `${fileName}.md`);
     await fs.writeFile(targetFile, loopContent, 'utf8');
+    options.onWrite?.(targetFile);
 
     if (!options.silent) {
       console.log(chalk.green(`✅ Loop "${loopName}" installed successfully!`));
@@ -1924,7 +1935,6 @@ async function installIndividualLoop(loopName, targetDir, options = {}) {
  * Install multiple components with optional YAML workflow
  */
 async function installMultipleComponents(options, targetDir) {
-  console.log(chalk.blue('🔧 Installing multiple components...'));
   const batchId = Math.random().toString(36).substring(2, 15);
 
   try {
@@ -1988,134 +1998,53 @@ async function installMultipleComponents(options, targetDir) {
       return;
     }
     
-    console.log(chalk.cyan(`📦 Installing ${totalComponents} components:`));
-    console.log(chalk.gray(`   Agents: ${components.agents.length}`));
-    console.log(chalk.gray(`   Commands: ${components.commands.length}`));
-    console.log(chalk.gray(`   MCPs: ${components.mcps.length}`));
-    console.log(chalk.gray(`   Settings: ${components.settings.length}`));
-    console.log(chalk.gray(`   Hooks: ${components.hooks.length}`));
-    console.log(chalk.gray(`   Skills: ${components.skills.length}`));
-    console.log(chalk.gray(`   Loops: ${components.loops.length}`));
-    if (components.mods.length > 0) {
-      console.log(chalk.gray(`   Mods: ${components.mods.length}`));
-    }
+    const ui = createInstallUI({ version: require('../package.json').version, targetDir });
+    const items = [
+      ...components.agents.map(name => ({ type: 'agent', name })),
+      ...components.commands.map(name => ({ type: 'command', name })),
+      ...components.mcps.map(name => ({ type: 'mcp', name })),
+      ...components.settings.map(name => ({ type: 'setting', name })),
+      ...components.hooks.map(name => ({ type: 'hook', name })),
+      ...components.skills.map(name => ({ type: 'skill', name })),
+      ...components.loops.map(name => ({ type: 'loop', name })),
+      ...components.mods.map(name => ({ type: 'mod', name }))
+    ];
 
-    // Counter for successfully installed components
-    let successfullyInstalled = 0;
-    
-    // Ask for installation locations once for configuration components (if any exist and not in silent mode)
-    let sharedInstallLocations = ['local']; // default
-    // Loops can pull in settings/hooks via their referenced components, so prompt for a location when loops are present too.
+    ui.header();
+    ui.plan(items);
+
+    // Ask for installation locations once for configuration components.
+    // Loops can pull in settings/hooks via their referenced components, so ask when loops are present too.
+    let sharedInstallLocations = ['local'];
     const hasSettingsOrHooks = components.settings.length > 0 || components.hooks.length > 0 || components.loops.length > 0;
-    
-    if (hasSettingsOrHooks && !options.yes) {
-      console.log(chalk.blue('\n📍 Choose installation locations for configuration components:'));
-      const inquirer = require('inquirer');
-      const { selectedLocations } = await inquirer.prompt([{
-        type: 'checkbox',
-        name: 'selectedLocations',
-        message: 'Where would you like to install the configuration components? (Select one or more)',
-        choices: [
-          {
-            name: '🏠 User settings (~/.claude/settings.json) - Applies to all projects',
-            value: 'user'
-          },
-          {
-            name: '📁 Project settings (.claude/settings.json) - Shared with team',
-            value: 'project'
-          },
-          {
-            name: '⚙️  Local settings (.claude/settings.local.json) - Personal, not committed',
-            value: 'local',
-            checked: true // Default selection
-          },
-          {
-            name: '🏢 Enterprise managed settings - System-wide policy (requires admin)',
-            value: 'enterprise'
-          }
-        ],
-        validate: function(answer) {
-          if (answer.length < 1) {
-            return 'You must choose at least one installation location.';
-          }
-          return true;
-        }
-      }]);
-      
-      sharedInstallLocations = selectedLocations;
-      console.log(chalk.cyan(`📋 Will install configuration components in: ${sharedInstallLocations.join(', ')}`));
-    }
-    
-    // Install agents
-    for (const agent of components.agents) {
-      console.log(chalk.gray(`   Installing agent: ${agent}`));
-      const agentSuccess = await installIndividualAgent(agent, targetDir, { ...options, silent: true, batchId });
-      if (agentSuccess) successfullyInstalled++;
+    if (hasSettingsOrHooks) {
+      sharedInstallLocations = await ui.chooseLocations({ skipPrompt: options.yes });
     }
 
-    // Install commands
-    for (const command of components.commands) {
-      console.log(chalk.gray(`   Installing command: ${command}`));
-      const commandSuccess = await installIndividualCommand(command, targetDir, { ...options, silent: true, batchId });
-      if (commandSuccess) successfullyInstalled++;
-    }
+    const installers = {
+      agent: installIndividualAgent,
+      command: installIndividualCommand,
+      mcp: installIndividualMCP,
+      setting: installIndividualSetting,
+      hook: installIndividualHook,
+      skill: installIndividualSkill,
+      loop: installIndividualLoop,
+      mod: installIndividualMod
+    };
+    const usesLocations = new Set(['setting', 'hook', 'loop']);
 
-    // Install MCPs
-    for (const mcp of components.mcps) {
-      console.log(chalk.gray(`   Installing MCP: ${mcp}`));
-      const mcpSuccess = await installIndividualMCP(mcp, targetDir, { ...options, silent: true, batchId });
-      if (mcpSuccess) successfullyInstalled++;
-    }
-
-    // Install settings (using shared installation locations)
-    for (const setting of components.settings) {
-      console.log(chalk.gray(`   Installing setting: ${setting}`));
-      const settingSuccess = await installIndividualSetting(setting, targetDir, {
+    const results = [];
+    for (const item of items) {
+      const result = await ui.runStep(item, onWrite => installers[item.type](item.name, targetDir, {
         ...options,
         silent: true,
-        sharedInstallLocations: sharedInstallLocations,
-        batchId
-      });
-      if (settingSuccess > 0) successfullyInstalled++;
+        batchId,
+        onWrite,
+        ...(usesLocations.has(item.type) ? { sharedInstallLocations } : {})
+      }));
+      results.push(result);
     }
-    
-    // Install hooks (using shared installation locations)
-    for (const hook of components.hooks) {
-      console.log(chalk.gray(`   Installing hook: ${hook}`));
-      const hookSuccess = await installIndividualHook(hook, targetDir, {
-        ...options,
-        silent: true,
-        sharedInstallLocations: sharedInstallLocations,
-        batchId
-      });
-      if (hookSuccess > 0) successfullyInstalled++;
-    }
-
-    // Install skills
-    for (const skill of components.skills) {
-      console.log(chalk.gray(`   Installing skill: ${skill}`));
-      const skillSuccess = await installIndividualSkill(skill, targetDir, { ...options, silent: true, batchId });
-      if (skillSuccess) successfullyInstalled++;
-    }
-
-    // Install loops (auto-installs their referenced components)
-    for (const loop of components.loops) {
-      console.log(chalk.gray(`   Installing loop: ${loop}`));
-      const loopSuccess = await installIndividualLoop(loop, targetDir, {
-        ...options,
-        silent: true,
-        sharedInstallLocations: sharedInstallLocations,
-        batchId
-      });
-      if (loopSuccess) successfullyInstalled++;
-    }
-
-    // Install mods (local plugin with a TypeScript hooks-module)
-    for (const mod of components.mods) {
-      console.log(chalk.gray(`   Installing mod: ${mod}`));
-      const modSuccess = await installIndividualMod(mod, targetDir, { ...options, silent: true, batchId });
-      if (modSuccess) successfullyInstalled++;
-    }
+    const successfullyInstalled = results.filter(r => r.ok).length;
 
     // Handle YAML workflow if provided
     if (options.yaml) {
@@ -2146,22 +2075,13 @@ async function installMultipleComponents(options, targetDir) {
       }
     }
     
-    if (successfullyInstalled === totalComponents) {
-      console.log(chalk.green(`\n✅ Successfully installed ${successfullyInstalled} components!`));
-    } else if (successfullyInstalled > 0) {
-      console.log(chalk.yellow(`\n⚠️  Successfully installed ${successfullyInstalled} of ${totalComponents} components.`));
-      console.log(chalk.red(`❌ ${totalComponents - successfullyInstalled} component(s) failed to install.`));
-    } else {
-      console.log(chalk.red(`\n❌ No components were installed successfully.`));
-      return; // Exit early if nothing was installed
-    }
-    console.log(chalk.cyan(`📁 Components installed to: .claude/`));
-    
+    ui.summary(results, items);
+    if (successfullyInstalled === 0) return;
+
     if (options.yaml) {
-      console.log(chalk.cyan(`📄 Workflow file created in: .claude/workflows/`));
-      console.log(chalk.cyan(`🚀 Use the workflow file with Claude Code to execute the complete setup`));
+      ui.note('Workflow file created in .claude/workflows/. Use it with Claude Code to run the complete setup.');
     }
-    
+
     // Note: Individual components are already tracked separately in their installation functions
     
     // Handle prompt execution if provided (but not in sandbox mode)

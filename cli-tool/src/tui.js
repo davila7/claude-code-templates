@@ -54,13 +54,13 @@ function showBanner() {
   // Clack/chalk color sequences add invisible bytes; we pad to fill the inner width
   // We compute visible length: "   🔮  Claude Code Templates" — emoji is 2 cols wide
   // Visible: 3 spaces + "🔮" (2) + 2 spaces + "Claude Code Templates" (21) = 28 visible
-  const titleVisible = 28;
+  const titleVisible = 2 + 2 + 'Claude Code Templates'.length;
   const titlePad = ' '.repeat(width - titleVisible - 3); // -3 for left margin (3 spaces)
   const titleLine = borderColor('║') + '   ' + titleText + titlePad + borderColor('║');
 
   // Subtitle line
   const subtitle = subtitleColor('Your starting point for Claude Code');
-  const subtitleVisible = 36;
+  const subtitleVisible = 'Your starting point for Claude Code'.length;
   const subtitlePad = ' '.repeat(width - subtitleVisible - 7); // 7 = "       " indent
   const subtitleLine = borderColor('║') + '       ' + subtitle + subtitlePad + borderColor('║');
 

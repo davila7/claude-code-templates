@@ -20,6 +20,7 @@
     "deploy:dashboard": "./scripts/deploy.sh"
   },
   "dependencies": {
+    "@clack/core": "^1.4.3",
     "@clack/prompts": "^1.5.1",
     "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.6.2",
