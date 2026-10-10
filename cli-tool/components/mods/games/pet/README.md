@@ -13,12 +13,12 @@ A virtual pet above the Claude Code prompt, fed by Claude's actual work. Passing
 
 ```sh
 npx claude-code-templates@latest --mod games/pet
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/pet/`, which Claude Code auto-loads as `pet@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/pet`.
+It is written to `.claude/skills/pet/`, which Claude Code auto-loads as `pet@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/pet`.
 
 ## Requirements
 
-- Claude Code 2.1.269 or later with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`. The `$` API is early access and may change between releases.
+- Claude Code 2.1.287 or later (mods are on by default from that version).
 - An interactive terminal. Nothing draws in `claude -p`, the desktop app or mobile.

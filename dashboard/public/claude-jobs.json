@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-04T04:09:08.141019+00:00",
-  "totalJobs": 86,
+  "lastUpdated": "2026-10-10T03:14:09.006629+00:00",
+  "totalJobs": 90,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,219 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "hn-50025234",
+      "company": "Location: Bangalore, India (IST, UTC+5:30)",
+      "position": "Software Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Remote: Yes Willing to relocate: No Technologies: React Native, React, Next.js, TypeScript, JavaScript, Astro, Expo, Redux Toolkit, Zustand, React Query, Node.js, Express, MongoDB, Firebase, Jest, React Testing Library, GitHub Actions, Fastlane, AWS, Gemini API, Azure OpenAI, Claude Code, Cursor...",
+      "applyUrl": "https://news.ycombinator.com/item?id=50025234",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50025234",
+      "postedAt": "2026-10-09T19:05:22+00:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "Firebase",
+        "AWS",
+        "Azure",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5446776008",
+      "company": "Anthropic",
+      "position": "Product Designer, Growth",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "Growth at Anthropic is about helping people discover what Claude can do and make it part of how they work, from someone's first session to an entire company rolling out Claude. We're a small design team working across all of Anthropic's products, on problems that often don't have established...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5446776008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5446776008",
+      "postedAt": "2026-10-08T23:12:41-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5444482008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architecture, Enterprise Tech",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "postedAt": "2026-10-07T15:00:01-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5434369008",
+      "company": "Anthropic",
+      "position": "Product Manager, Enterprise Privacy",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As a Product Manager focused on Enterprise Privacy, you'll collaborate with Privacy Engineering, Infrastructure, Trust and Safety, Legal, Security, GTM, enterprise and platform product teams, and our cloud partners to evolve and extend the controls that enterprises, regulated industries, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5434369008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5434369008",
+      "postedAt": "2026-10-07T13:23:27-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-49991656",
+      "company": "Flowstate",
+      "position": "Software Engineer",
+      "location": "On-site",
+      "remote": false,
+      "salary": "",
+      "description": "Flowstate ( https://www.flowstate.inc ) is building infrastructure for the emerging human + AI workforce. Companies are rapidly adopting Claude, ChatGPT, Cursor, Copilot and internal agents, but most still have very little idea what that AI is actually doing, what it costs, what work it contributes...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49991656",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49991656",
+      "postedAt": "2026-10-07T12:11:44+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5445410008",
+      "company": "Anthropic",
+      "position": "Applied AI Engineer, Public Sector ",
+      "location": "Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "As a member of the Applied AI team at Anthropic, you will be an Applied AI Engineer supporting a dedicated national security mission program. You will be the customer's trusted technical advisor, working closely with their engineering and mission teams as they build and ship new capabilities...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5445410008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5445410008",
+      "postedAt": "2026-10-06T20:00:19-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5441896008",
+      "company": "Anthropic",
+      "position": "Discovery Technical Operations Specialist ",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic's legal team operates at the frontier of some of the most consequential legal and regulatory questions of our time — from landmark copyright matters to first-of-their-kind AI regulatory frameworks emerging across dozens of jurisdictions simultaneously. As we scale, the volume and...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5441896008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5441896008",
+      "postedAt": "2026-10-05T22:10:40-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-49964448",
+      "company": "ALBERT",
+      "position": "Software Engineer",
+      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
+      "remote": true,
+      "salary": "$750k",
+      "description": "We're a consumer fintech with 20M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49964448",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49964448",
+      "postedAt": "2026-10-05T13:15:08+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "React Native"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49962075",
+      "company": "Revieve Oy",
+      "position": "Senior Product Engineer",
+      "location": "REMOTE [Europe / (GMT+2)]",
+      "remote": true,
+      "salary": "",
+      "description": "Revieve (Helsinki, with a US office and a team in Asia) builds AI, AR and computer-vision personalization for beauty brands and retailers: skin analysis, virtual try-on and product recommendations. We work with 120+ brands and retailers in 40+ countries, and our product reaches millions of end...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49962075",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49962075",
+      "postedAt": "2026-10-05T08:17:54+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49961551",
+      "company": "AssumeAI",
+      "position": "Senior AI Engineer",
+      "location": "REMOTE (UK)",
+      "remote": true,
+      "salary": "",
+      "description": "We are a fast-growing AI startup. We help SMEs find where AI will produce a measurable return, then build the systems that deliver it: AI agents, Claude skills and production-grade business software, up to full business and enterprise systems. Stack: Claude Code, Vercel, Supabase. A good fit for...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49961551",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49961551",
+      "postedAt": "2026-10-05T07:01:46+00:00",
+      "tags": [
+        "Python",
+        "Supabase",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "hn-49946276",
       "company": "Mattermost",
@@ -154,43 +367,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-49922829",
-      "company": "RMG",
-      "position": "Software Engineer",
-      "location": "REMOTE (US/Canada)",
-      "remote": true,
-      "salary": "",
-      "description": "We run 100+ WordPress and Next.js properties and we're rebuilding our development workflow around coding agents. You'd own the platform and set the standard for how we use AI in production. Stack: WordPress (Gutenberg, ACF, WP-CLI), PHP, MySQL, Next.js, Linux/Docker, GitHub Actions, n8n. We want...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49922829",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49922829",
-      "postedAt": "2026-10-01T15:17:24+00:00",
-      "tags": [
-        "Next.js",
-        "Docker",
-        "Claude Code",
-        "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49922606",
-      "company": "We The Flywheel",
-      "position": "Software Engineer",
-      "location": "REMOTE (async, global)",
-      "remote": true,
-      "salary": "",
-      "description": "We're a small, agent-led studio. Most of our ops run through AI agents, and the people here direct them. We need a production designer who turns briefs into polished, on-brand marketing, social and ad creative, fast, inside an existing brand system. What we're looking for: - Real Figma experience...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49922606",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49922606",
-      "postedAt": "2026-10-01T15:03:25+00:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5439830008",
       "company": "Anthropic",
       "position": "Applied AI Architect, International Policy",
@@ -250,6 +426,27 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "wwr-steuart-nutrition-software-developer-ai-coding",
+      "company": "STEUART NUTRITION",
+      "position": "Software Developer AI Coding",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Headquarters: Minnesota URL: https://www.steuartnutrition.com/ About us Steuart Nutrition is a GMP-certified contract manufacturer making powders, liquids, capsules and stick packs for growing wellness brands. We run on Extreme Ownership, clear communication and fast turnaround, and we want a...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/steuart-nutrition-software-developer-ai-coding",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/steuart-nutrition-software-developer-ai-coding",
+      "postedAt": "2026-09-23T15:03:18+00:00",
+      "tags": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5382518008",
@@ -941,6 +1138,73 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "hn-49291876",
+      "company": "Alaffia Health",
+      "position": "Principal Engineer",
+      "location": "NYC (Hybrid)",
+      "remote": false,
+      "salary": "",
+      "description": "Alaffia Health is a Series B healthtech company in NYC fixing a real, expensive problem: US health plans lose billions every year to improper payments and administrative waste in claims processing. We combine clinicians with AI to catch billing errors before they get paid out. Just raised $55M in...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49291876",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49291876",
+      "postedAt": "2026-08-13T21:06:43+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Go",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Claude Code",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49271778",
+      "company": "Odin",
+      "position": "Senior Design Engineer",
+      "location": "Remote (US)",
+      "remote": true,
+      "salary": "",
+      "description": "Odin is the workforce visibility and compliance platform for critical infrastructure. We protect the world’s largest construction projects, data centers, and critical assets—from groundbreaking through post-turnover—by unifying physical access control, workforce compliance, video monitoring, and...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49271778",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49271778",
+      "postedAt": "2026-08-12T13:03:29+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "GCP",
+        "Kubernetes",
+        "React Native",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49269646",
+      "company": "ORIGAMICS",
+      "position": "Backend Engineer",
+      "location": "REMOTE (US)",
+      "remote": true,
+      "salary": "",
+      "description": "Origamics is building AI models that reason about hardware and electronics systems. We turn existing schematics into production ready boards, helping hardware design move at the speed of software. We’re hiring our first founding engineer to work directly with the founders. You’ll own product...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49269646",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49269646",
+      "postedAt": "2026-08-12T09:10:00+00:00",
+      "tags": [
+        "Python",
+        "PostgreSQL",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5383596008",
       "company": "Anthropic",
       "position": "Developer Relations",
@@ -959,6 +1223,45 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-49215237",
+      "company": "Deepline",
+      "position": "Software Engineer",
+      "location": "On-site",
+      "remote": false,
+      "salary": "$160k–$230k",
+      "description": "User interfaces are dead. Knowledge workers will exclusively work through agent interfaces like Claude Code/Cowork. We've built the interface layer to enable that. One API that unifies hundreds of data providers, workflows, and data infrastructure to agents like Claude Code. This is GTM as code —...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49215237",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49215237",
+      "postedAt": "2026-08-07T19:32:31+00:00",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49215140",
+      "company": "Connie Health",
+      "position": "Senior Analytics Engineer",
+      "location": "Boston, MA",
+      "remote": false,
+      "salary": "$150k-$185k",
+      "description": "Connie Health is a fast-growing Medicare brokerage on a mission to empower older Americans to make confident, worry-free Medicare plan decisions. We offer a tech-enabled Medicare navigation platform that combines AI-driven technology with local Medicare experts to help people select optimal...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49215140",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49215140",
+      "postedAt": "2026-08-07T19:24:20+00:00",
+      "tags": [
+        "Rust",
+        "PostgreSQL"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5383610008",
@@ -985,20 +1288,138 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "hn-48915735",
+      "id": "hn-49206998",
+      "company": "Talonic",
+      "position": "Staff Site Reliability Engineer",
+      "location": "Berlin, Germany",
+      "remote": false,
+      "salary": "€80–90k",
+      "description": "We do enterprise document ingestion — capture a document once into a canonical field registry, then project it to any schema, no re-extraction. Stack: AWS, Docker, Railway. We've never had a dedicated reliability owner and it's starting to show. You'd be the first: SLOs and an error-budget policy...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49206998",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49206998",
+      "postedAt": "2026-08-07T07:24:31+00:00",
+      "tags": [
+        "AWS",
+        "Docker",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49200756",
+      "company": "Aeqium",
+      "position": "Product Engineer",
+      "location": "San Francisco (SF)",
+      "remote": false,
+      "salary": "$110k-$170k",
+      "description": "** PLEASE NOTE: We CANNOT provide visa sponsorship, transfers, or OPT/STEM extensions of any kind. Applicants must already be authorized to work in the US permanently. ** Aeqium is building an AI-powered compensation planning platform (backed by top VCs). We replace messy spreadsheets with...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49200756",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49200756",
+      "postedAt": "2026-08-06T18:53:25+00:00",
+      "tags": [
+        "Claude Code",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49199157",
+      "company": "DoubleVerify (DV Scibids)",
+      "position": "Software Engineer",
+      "location": "ONSITE/HYBRID - New York, NY (3x/week)",
+      "remote": false,
+      "salary": "$89K–$178K",
+      "description": "DV Scibids is the AI-powered digital campaign activation arm of DoubleVerify — the market standard for digital media measurement trusted by hundreds of Fortune 500 brands. Our Data Engineering team owns the critical integrations and data flows that connect Scibids' optimization engine to the...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49199157",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49199157",
+      "postedAt": "2026-08-06T16:47:25+00:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "GCP",
+        "Docker",
+        "Claude Code",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49187999",
+      "company": "Housecat",
+      "position": "Full Stack Engineer",
+      "location": "San Francisco but REMOTE (US) based on qualifications.",
+      "remote": true,
+      "salary": "",
+      "description": "Hi I'm Noah, founder and CTO at Housecat.com Housecat is an email inbox that gets real work done by connecting it to tools like your CRM, Slack, GitHub, and Claude. It is used by individuals and small teams that want to eliminate busywork and get through email incredibly fast. The team is founded...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49187999",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49187999",
+      "postedAt": "2026-08-05T19:48:43+00:00",
+      "tags": [
+        "PostgreSQL",
+        "GCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49172196",
+      "company": "ALBERT",
+      "position": "Software Engineer",
+      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
+      "remote": true,
+      "salary": "$750k",
+      "description": "We're a consumer fintech with 20M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49172196",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49172196",
+      "postedAt": "2026-08-04T17:40:12+00:00",
+      "tags": [
+        "React",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "React Native"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49169017",
       "company": "Portless",
       "position": "AI Engineer",
-      "location": "Remote (North America)",
+      "location": "REMOTE (North America only)",
       "remote": true,
-      "salary": "$180k-$230k",
-      "description": "We're a company doing real operational work in e-commerce/3PL logistics. AI usage internally is still basic — decks, spreadsheets, a few people vibe-coding dashboards. No real agentic workflows in production yet. That's what this role is for. You'd be the first dedicated AI engineer here. Two...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48915735",
+      "salary": "$180K-$230K",
+      "description": "Founding AI engineer seat. AI adoption at Portless today is basic (decks, spreadsheets, call summaries, a bit of vibe-coded dashboards) — no real end-to-end agentic workflows yet. You'll build the AI infrastructure: shipping high-impact agentic workflows yourself, and building reusable \"Lego...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49169017",
       "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48915735",
-      "postedAt": "2026-07-15T03:02:35+00:00",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49169017",
+      "postedAt": "2026-08-04T13:52:34+00:00",
       "tags": [
         "TypeScript",
         "Python",
+        "Go",
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49165622",
+      "company": "Viteus",
+      "position": "Full-Stack Engineer",
+      "location": "Contract (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "Viteus is Alteus's production support service for AI-built applications, delivered in partnership with vitX. We work with enterprises and scale-ups across APAC to audit, refactor, and support AI-built apps in production. When we win client engagements, we match contractors from the network onto...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49165622",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49165622",
+      "postedAt": "2026-08-04T08:04:08+00:00",
+      "tags": [
         "Claude Code",
         "Cursor",
         "Copilot"
@@ -1006,20 +1427,55 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-48900749",
-      "company": "Namecoach/Euphonia",
-      "position": "AI Engineer",
-      "location": "SF or Remote",
+      "id": "hn-49163658",
+      "company": "pganalyze",
+      "position": "Software Engineer",
+      "location": "REMOTE (US)",
       "remote": true,
       "salary": "",
-      "description": "Namecoach has spent 10 years building the largest verified pronunciation dataset of its kind: ~2M self-recorded name pronunciations, plus a large corpus of human-verified phonetic spellings. We're now building Euphonia ( https://euphonia.namecoach.ai/ ), a provider-neutral middleware layer that...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48900749",
+      "description": "At pganalyze, we build observability and automation tools for optimizing the performance of Postgres databases. Our product helps customers such as Auto Trader, Notion and Robinhood to understand complex Postgres problems and solve performance issues. We are bootstrapped, profitable, with over 500...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49163658",
       "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48900749",
-      "postedAt": "2026-07-14T00:20:28+00:00",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49163658",
+      "postedAt": "2026-08-04T02:09:55+00:00",
       "tags": [
-        "Claude Code",
-        "Cursor"
+        "PostgreSQL",
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49160915",
+      "company": "Railway",
+      "position": "Senior Infra Engineer",
+      "location": "REMOTE (Worldwide)",
+      "remote": true,
+      "salary": "",
+      "description": "Do you feel scared and alone when opening the AWS console? Do you wish you could just tell Claude to manage your infra, and it would just work? Do you dream of a future where software is abundant and developers and normies alike are free to build their wildest dreams? We're Railway, and we think...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49160915",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49160915",
+      "postedAt": "2026-08-03T20:21:05+00:00",
+      "tags": [
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-49157129",
+      "company": "Checkly",
+      "position": "Senior Sales Engineer",
+      "location": "Remote (Europe / US Eastern Time zone)",
+      "remote": true,
+      "salary": "",
+      "description": "Checkly is the active reliability layer for developers and agents — we unify testing, synthetic monitoring, and observability into a single AI-native workflow, so engineering teams (and the agents shipping alongside them) can catch issues before customers do. We're hiring two roles on our Sales...",
+      "applyUrl": "https://news.ycombinator.com/item?id=49157129",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49157129",
+      "postedAt": "2026-08-03T15:31:37+00:00",
+      "tags": [
+        "Node.js",
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -1066,326 +1522,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "hn-48833943",
-      "company": "Catalyst·Wayfare AI",
-      "position": "Lead AI Engineer",
-      "location": "Remote (US)",
-      "remote": true,
-      "salary": "",
-      "description": "We build and ship production AI systems for mid-market enterprises in regulated and technical domains — finance, energy, industrials, healthcare. We do not stop at PowerPoint AI strategy. We ship working systems alongside our clients' engineering teams. Small teams, deep expertise, real autonomy on...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48833943",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48833943",
-      "postedAt": "2026-07-08T16:24:22+00:00",
-      "tags": [
-        "Python",
-        "AWS",
-        "GCP",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48823535",
-      "company": "Note: This job is not longer vacant.",
-      "position": "Senior Software Engineer",
-      "location": "On-site",
-      "remote": false,
-      "salary": "$120k–$190k",
-      "description": "Youth Inc. ( https://youth.inc ) is hiring a Senior Software Engineer (Hybrid: Boston/Chicago). We’re a venture-backed e-commerce marketplace and media network for youth and high school sports. We’ve moved from zero to one with real revenue and are now looking for a Senior Engineer to help us scale...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48823535",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48823535",
-      "postedAt": "2026-07-07T20:48:44+00:00",
-      "tags": [
-        "Next.js",
-        "Rust",
-        "PostgreSQL",
-        "AWS",
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48819370",
-      "company": "Rabbet (YC S17)",
-      "position": "Software Engineer",
-      "location": "REMOTE (TX, NC, CO)",
-      "remote": true,
-      "salary": "",
-      "description": "Rabbet is hiring Sr. Software Engineers to help us streamline construction finances. We offer cloud-based software for commercial lenders and real estate developers to centralize construction finances, automate administrative tasks, and reduce the time spent managing draws. Backend is in Elixir...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48819370",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48819370",
-      "postedAt": "2026-07-07T15:42:29+00:00",
-      "tags": [
-        "React",
-        "PostgreSQL",
-        "AWS",
-        "GCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48811937",
-      "company": "Cora AI",
-      "position": "AI Engineer",
-      "location": "REMOTE (US ONLY, LA/SF preferred)",
-      "remote": true,
-      "salary": "",
-      "description": "We build customer success agents and account intelligence that do the actual manual work — so CS teams can focus on the relationship-driven work that drives growth. What we're looking for: - You build with AI IDEs (Cursor, Claude Code) as a force multiplier — not occasionally, as your default -...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48811937",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48811937",
-      "postedAt": "2026-07-06T23:41:34+00:00",
-      "tags": [
-        "Go",
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48801745",
-      "company": "Electric Twin",
-      "position": "Product Engineer",
-      "location": "London, UK",
-      "remote": false,
-      "salary": "",
-      "description": "Electric Twin builds science-based synthetic populations — LLM-driven AI agents that simulate human behaviour, so companies and governments can test ideas and explore uncertainty before they commit. We've just entered a major growth phase: new funding, a growing customer base, and a platform still...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48801745",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48801745",
-      "postedAt": "2026-07-06T07:43:32+00:00",
-      "tags": [
-        "React",
-        "Next.js",
-        "Python",
-        "GCP",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48768318",
-      "company": "airCFO (  )",
-      "position": "Software Engineer",
-      "location": "Remote, UTC -8 - UTC +2",
-      "remote": true,
-      "salary": "",
-      "description": "airCFO is an AI-powered accounting & finance services partner to 300+ startups (current/former clients include Anthropic, Replit, Harmonic), and we are building a platform to supercharge our service's capabilities. We're hiring a founding engineer to build the systems behind it: a retrieval/RAG...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48768318",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48768318",
-      "postedAt": "2026-07-02T22:41:59+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "PostgreSQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48766112",
-      "company": "We are hiring full",
-      "position": "Software Engineer",
-      "location": "On-site",
-      "remote": false,
-      "salary": "",
-      "description": "Our product helps everyone make better legal decisions by better understanding the law. About one-third of important U.S. law is not accessible via ChatGPT or Claude. Much AI-generated legal analysis is wrong. We are building one of the largest collections of U.S. law in existence and using AI to...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48766112",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48766112",
-      "postedAt": "2026-07-02T19:19:19+00:00",
-      "tags": [],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48761457",
-      "company": "Runway",
-      "position": "Trust & Safety Engineer",
-      "location": "London / NYC / SF / Seattle / Remote (US + Europe)",
-      "remote": true,
-      "salary": "",
-      "description": "We're hiring a Trust & Safety Engineer to join Runway's AI Safety and Responsibility team. Runway builds AI world models - general-purpose simulators for robotics, science, and storytelling — and this role exists to keep that safe as it reaches millions of users. Stack: TypeScript API on...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48761457",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48761457",
-      "postedAt": "2026-07-02T13:39:37+00:00",
-      "tags": [
-        "TypeScript",
-        "Python",
-        "Rust",
-        "AWS",
-        "GCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48756639",
-      "company": "Dashdoc",
-      "position": "Software Engineer",
-      "location": "REMOTE / EU",
-      "remote": true,
-      "salary": "€50k–€80k",
-      "description": "Dashdoc is a SaaS Transport Management System for road freight. We help carriers and shippers run transport operations on one shared platform. We’re hiring a product-minded engineer to help us expand in Belgium and the Netherlands. Local specifics: e-CMR mandates, digital waste regulations,...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48756639",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48756639",
-      "postedAt": "2026-07-02T04:41:27+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Go",
-        "PostgreSQL",
-        "GCP",
-        "Claude Code",
-        "Cursor",
-        "React Native",
-        "Django"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48754933",
-      "company": "Connie Health",
-      "position": "Senior Analytics Engineer",
-      "location": "Boston, MA",
-      "remote": false,
-      "salary": "$150k-$185k",
-      "description": "Connie Health is a fast-growing Medicare brokerage on a mission to empower older Americans to make confident, worry-free Medicare plan decisions. We offer a tech-enabled Medicare navigation platform that combines AI-driven technology with local Medicare experts to help people select optimal...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48754933",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48754933",
-      "postedAt": "2026-07-02T00:34:57+00:00",
-      "tags": [
-        "Rust",
-        "PostgreSQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48754582",
-      "company": "Obsidian Security",
-      "position": "Staff Software Engineer",
-      "location": "Philadelphia or Palo Alto",
-      "remote": false,
-      "salary": "$176k-$196k",
-      "description": "We secure the SaaS apps companies actually run on: M365, Salesforce, and hundreds more. You’d be on the Threat product team working full-stack. That means browser extension code (content/background scripts, manifest v3, message passing), backend services chewing through millions of events, and the...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48754582",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48754582",
-      "postedAt": "2026-07-01T23:41:42+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "PostgreSQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48754441",
-      "company": "Railway",
-      "position": "Senior Infra Engineer",
-      "location": "REMOTE (Worldwide)",
-      "remote": true,
-      "salary": "",
-      "description": "Do you feel scared and alone when opening the AWS console? Do you wish you could just tell Claude to manage your infra, and it would just work? Do you dream of a future where software is abundant and developers and normies alike are free to build their wildest dreams? We're Railway, and we think...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48754441",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48754441",
-      "postedAt": "2026-07-01T23:22:34+00:00",
-      "tags": [
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48751913",
-      "company": "ALBERT",
-      "position": "Software Engineer",
-      "location": "REMOTE ALMOST ANYWHERE IN THE WORLD",
-      "remote": true,
-      "salary": "$750k",
-      "description": "We're a consumer fintech with 20M+ users who trust us to budget, save, invest, and bank in one place. Profitable for 4+ years. And as of today, our average employee tenure is 3.6 years, a number you almost never see in startup tech, and one we're quietly proud of. People stay because the work is...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48751913",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48751913",
-      "postedAt": "2026-07-01T19:26:03+00:00",
-      "tags": [
-        "React",
-        "Python",
-        "Rust",
-        "PostgreSQL",
-        "React Native"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48750836",
-      "company": "Grafana Labs",
-      "position": "Staff Software Engineer",
-      "location": "100% Remote (US + Canada)",
-      "remote": true,
-      "salary": "",
-      "description": "Im the hiring manager - some of the product highlights under the team's scope: - Grafana Assistant: the actually useful AI assistant that helps you do everything in Grafana; it works everywhere - even in OSS! - Investigations: background agents for investigating issues - Grafana Cloud CLI (GCX):...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48750836",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48750836",
-      "postedAt": "2026-07-01T18:02:19+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48750050",
-      "company": "ArtCraft",
-      "position": "Backend Engineer",
-      "location": "Remote (Global) / Onsite (SF Bay Area and Atlanta, Georgia)",
-      "remote": true,
-      "salary": "",
-      "description": "We’re experienced artists and engineers building source available controllable AI for artists, filmmakers, musicians, and creatives. Many of the top artists in the expanding AI art industry use our tools. We’re building this for them as much as for ourselves. -...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48750050",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48750050",
-      "postedAt": "2026-07-01T17:07:49+00:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "Claude Code",
-        "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48749072",
-      "company": "DoubleVerify (DV Scibids)",
-      "position": "Software Engineer",
-      "location": "ONSITE/HYBRID - New York, NY (3x/week)",
-      "remote": false,
-      "salary": "$89K–$178K",
-      "description": "DV Scibids is the AI-powered digital campaign activation arm of DoubleVerify — the market standard for digital media measurement trusted by hundreds of Fortune 500 brands. Our Data Engineering team owns the critical integrations and data flows that connect Scibids' optimization engine to the...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48749072",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48749072",
-      "postedAt": "2026-07-01T16:04:27+00:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "GCP",
-        "Docker",
-        "Claude Code",
-        "Cursor",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5288742008",
       "company": "Anthropic",
       "position": "Staff+ Software Engineer, Enterprise",
@@ -1406,66 +1542,6 @@
         "GCP",
         "Azure",
         "Kubernetes",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "hn-48748512",
-      "company": "Credo Health",
-      "position": "Full Stack Engineer",
-      "location": "NYC (HYBRID — 1 day/week onsite, otherwise remote)",
-      "remote": true,
-      "salary": "$125k–$175k",
-      "description": "I'm Ketan, Head of Engineering at Credo. We're a seed-stage, HIPAA-compliant health-tech company fixing one of healthcare's dumbest problems: getting the right patient data to the people who need it. Billions of pages of medical records still move by fax every year — causing care delays, admin...",
-      "applyUrl": "https://news.ycombinator.com/item?id=48748512",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48748512",
-      "postedAt": "2026-07-01T15:30:17+00:00",
-      "tags": [
-        "Python",
-        "PostgreSQL",
-        "Cursor",
-        "Copilot",
-        "Django",
-        "Vue.js"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-48747990",
-      "company": "We The Flywheel",
-      "position": "Software Engineer",
-      "location": "REMOTE (worldwide)",
-      "remote": true,
-      "salary": "",
-      "description": "We're a remote-first digital product studio building across sports media, AI, fitness, and personal branding — 500+ web properties and deeply AI-native workflows. AI does the heavy lifting here, but it's the leverage, not the point: we hire for the human judgment, ingenuity, and taste on top of it....",
-      "applyUrl": "https://news.ycombinator.com/item?id=48747990",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=48747990",
-      "postedAt": "2026-07-01T15:02:00+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "anth-5277834008",
-      "company": "Anthropic",
-      "position": "Manager, Applied AI Engineering,  Beneficial Deployments (Life Sciences)",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Biology is the area where scientific progress has perhaps the greatest potential to directly and unambiguously improve human life — and we believe powerful AI could meaningfully accelerate the rate of biological discovery, helping compress decades of progress into years. With Claude for Life...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5277834008",
-      "postedAt": "2026-06-24T13:51:42-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
         "Claude Code",
         "Anthropic"
       ],
@@ -1712,6 +1788,27 @@
         "TypeScript",
         "Python",
         "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5082455008",
+      "company": "Anthropic",
+      "position": "AI Outcomes Manager",
+      "location": "New York City, NY; San Francisco, CA; Seattle, WA",
+      "remote": false,
+      "salary": "",
+      "description": "Join Anthropic's Customer Success team in a high-visibility & high-impact role driving AI adoption across a small number of strategic accounts in our Enterprise Tech segment. As our dedicated Outcomes AI Manager for Strategic Tech Customers you’ll be their partner and trusted advisor helping them...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5082455008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5082455008",
+      "postedAt": "2026-01-23T17:55:09-05:00",
+      "tags": [
+        "Rust",
+        "Go",
         "AWS",
         "Claude Code",
         "Anthropic"

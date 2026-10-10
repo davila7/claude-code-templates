@@ -12,47 +12,35 @@ Run `/arcade`, pick a game, and play it right above the prompt while Claude work
 
 Nine games and a pet: snake, Tetris, and Doom — a first-person corridor shooter raycast into half blocks, with four floors, three monsters and three weapons — plus 2048, Minesweeper, Flappy, Pong against the computer, a typing test and Space Invaders. Each board has one status line underneath with the score, the controls that matter now and your best score.
 
-The plugin is built on Claude Code **function hooks**: TypeScript that runs inside Claude Code's own process, instead of shell-command hooks. They are in early access, so they need the environment variable the quick start sets, and the API can change between Claude Code releases.
+The plugin is built on Claude Code **function hooks**: TypeScript that runs inside Claude Code's own process, instead of shell-command hooks. They are on by default from Claude Code 2.1.287.
 
 ## Requirements
 
-- Claude Code 2.1.269 or later, the first build whose function hooks draw above the prompt, with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` set. The quick start shows where.
+- Claude Code 2.1.287 or later (function hooks are on by default from that version).
 - An interactive terminal session. Nothing draws in `claude -p`, the desktop app or mobile.
 - A terminal that reports the mouse. One click is what gives a board the keyboard, and the picker buttons, doom, Minesweeper, Flappy, Pong and Space Invaders use the mouse too.
 - A terminal font with box-drawing and block characters. Modern terminals are fine; the old Windows console draws them as boxes.
 
 ## Quick start
 
-1. Turn function hooks on. Add this to `~/.claude/settings.json` (create the file if it does not exist, or merge the `env` key into what is there). Without it the plugin installs fine but does nothing.
-
-   ```json
-   {
-     "env": {
-       "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
-     }
-   }
-   ```
-
-   This also loads the hooks module of any other installed plugin that ships one. For a single session instead, prefix the command: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`.
-
-2. Install from GitHub. The repo is its own marketplace:
+1. Install from GitHub. The repo is its own marketplace:
 
    ```sh
    claude plugin marketplace add sezaakgun/cc-arcade
    claude plugin install cc-arcade@cc-arcade
    ```
 
-3. Start `claude` and run `/arcade`. A row of buttons appears above the prompt: one per game, plus `pet`, `random`, `auto` and `close`.
+2. Start `claude` and run `/arcade`. A row of buttons appears above the prompt: one per game, plus `pet`, `random`, `auto` and `close`.
 
    ![The /arcade picker above the prompt: a button for every game, plus pet, random, auto and close](https://raw.githubusercontent.com/sezaakgun/cc-arcade/main/docs/screenshots/picker.png)
 
-4. Click `snake`. The board appears in place of the buttons.
+3. Click `snake`. The board appears in place of the buttons.
 
-5. **Click the board**, then press an arrow key. The click gives the game the keyboard; until then your keys go to the prompt.
+4. **Click the board**, then press an arrow key. The click gives the game the keyboard; until then your keys go to the prompt.
 
    ![Snake above the prompt, a few moves in](https://raw.githubusercontent.com/sezaakgun/cc-arcade/main/docs/screenshots/snake.png)
 
-6. Press **Esc** to give the keyboard back to the prompt. Click `← games` above the board to go back to the list, or `close` to close the arcade.
+5. Press **Esc** to give the keyboard back to the prompt. Click `← games` above the board to go back to the list, or `close` to close the arcade.
 
 If `/arcade` is an unknown command, see [Troubleshooting](#troubleshooting).
 
@@ -197,7 +185,7 @@ Each game keeps its best score across sessions, and a new best shows a toast. `/
 
 ## Troubleshooting
 
-- **`/arcade` is an unknown command.** Function hooks are off. Check `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` is set in `~/.claude/settings.json` under `env` (see Quick start), and that the plugin is loaded with `/plugins`.
+- **`/arcade` is an unknown command.** The plugin is not loaded. Check Claude Code is 2.1.287 or later and that the plugin shows in `/plugins`.
 - **Keys go to the prompt instead of the game.** Click the board first. Esc hands the keyboard back to the prompt.
 - **Nothing happens when you click.** Your terminal does not report the mouse. `/arcade <game>` still opens a game, but a board cannot get the keyboard without a click.
 - **The board is small.** Claude Code gives the area above the prompt about half the terminal. Make the terminal taller.
@@ -226,7 +214,7 @@ claude plugin validate .claude-plugin/plugin.json    # lists the hooked events, 
 claude plugin validate .                             # checks the marketplace manifest
 ```
 
-Type checking needs the early-access types: open a Claude Code session in this folder with function hooks on, run `/plugin-types` (it writes the git-ignored `.claude/types/`), then:
+Type checking needs the types: open a Claude Code session in this folder run `/plugin-types` (it writes the git-ignored `.claude/types/`), then:
 
 ```sh
 bunx -p typescript tsc -p .

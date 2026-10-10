@@ -17,10 +17,10 @@ Your best score is kept in the plugin's store across sessions.
 
 ```sh
 npx claude-code-templates@latest --mod games/diff-invaders
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/diff-invaders/`, which Claude Code auto-loads as `diff-invaders@skills-dir`. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/diff-invaders`. `claude plugin validate .claude/skills/diff-invaders` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/diff-invaders/`, which Claude Code auto-loads as `diff-invaders@skills-dir`. For one session with hot reload: `claude --plugin-dir .claude/skills/diff-invaders`. `claude plugin validate .claude/skills/diff-invaders` prints every event it hooks and every `$` call it makes.
 
 ## How it is built
 
@@ -28,7 +28,7 @@ It is written to `.claude/skills/diff-invaders/`, which Claude Code auto-loads a
 
 ## Requirements
 
-- Claude Code 2.1.269 or later (the first build whose function hooks draw above the prompt) with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`. The `$` API is early access and may change between releases.
+- Claude Code 2.1.287 or later (mods are on by default from that version).
 - An interactive terminal that reports the mouse. Nothing draws in `claude -p`, the desktop app or mobile.
 - A terminal font with box-drawing and block characters.
 

@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.29.7] - 2026-10-09
+
+### Security
+- **Fix command injection in the analytics Console Bridge** (port 3334) —
+  GHSA-4jm9-m3fr-9jpx, reported by @manus-pi. Affected 1.11.0 through
+  1.29.6. Terminal input is spawned with argv and passed through the
+  environment instead of interpolated into `expect`/`osascript` source, the
+  macOS `do script` fallback is removed, and the WebSocket handshake now
+  requires a loopback peer, the local dashboard origin and a per-process token.
+- **Same class, found by the follow-up audit**: `--health-check`,
+  `--command-stats`, `--hook-stats`, `--mcp-stats`, global agent wrappers and
+  `--clone-session` no longer pass text from project files, downloaded
+  components or arguments through a shell. The Claude API proxy (port 3335)
+  binds to loopback and refuses browser and non-loopback requests. A setting
+  component can only write files under `.claude/`.
+
+### Changed
+- Mods: removed the early-access warning and the
+  `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` instruction; Claude Code 2.1.287+ loads
+  mods by default.
+
 ## [1.29.4] - 2026-07-13
 
 ### Security

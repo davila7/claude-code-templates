@@ -50,10 +50,10 @@ API calls (https://api-docs.neon.tech): `POST /projects/{id}/branches`, `GET` an
 
 ```sh
 npx claude-code-templates@latest --mod integrations/neon-branch-per-session
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-It is written to `.claude/skills/neon-branch-per-session/`, which Claude Code auto-loads as `neon-branch-per-session@skills-dir` once the workspace trust prompt is accepted. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/neon-branch-per-session`. `claude plugin validate .claude/skills/neon-branch-per-session` prints every event it hooks and every `$` call it makes; `claude plugin test .claude/skills/neon-branch-per-session` runs its tests.
+It is written to `.claude/skills/neon-branch-per-session/`, which Claude Code auto-loads as `neon-branch-per-session@skills-dir` once the workspace trust prompt is accepted. For one session with hot reload: `claude --plugin-dir .claude/skills/neon-branch-per-session`. `claude plugin validate .claude/skills/neon-branch-per-session` prints every event it hooks and every `$` call it makes; `claude plugin test .claude/skills/neon-branch-per-session` runs its tests.
 
 Options are read from user settings (`~/.claude/settings.json`, never project settings), `--settings <file>` or managed settings, under the plugin's full id:
 
@@ -61,4 +61,4 @@ Options are read from user settings (`~/.claude/settings.json`, never project se
 { "pluginConfigs": { "neon-branch-per-session@skills-dir": { "options": { } } } }
 ```
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

@@ -1,5 +1,5 @@
 /**
- * neon-branch-per-session — Claude Mod (EARLY ACCESS)
+ * neon-branch-per-session — Claude Mod
  *
  * One Neon database branch per Claude Code session. When the session starts
  * the mod creates `<prefix>/<session id>` from the project's default branch
@@ -17,7 +17,7 @@
  * Claude at it. Loaders such as dotenv do not override a variable already in
  * the environment, which is what makes the branch win in the common case.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259) and a Neon
+ * Needs Claude Code >= 2.1.287 and a Neon
  * API key in the plugin's options. Never hardcode it in this file.
  *
  * Options (pluginConfigs["neon-branch-per-session@skills-dir"].options):

@@ -1,5 +1,5 @@
 /**
- * prompt-cache-control — Claude Mod (EARLY ACCESS)
+ * prompt-cache-control — Claude Mod
  *
  * A prompt-cache meter for Claude Code. Every main-loop request reports how
  * many prompt tokens the cache served (`cache_read_input_tokens`), wrote
@@ -23,7 +23,7 @@
  * so the mod also watches the gaps between requests (a hit after more than 5
  * minutes proves 1 hour; see observeTtl). `ttl: "5m" | "1h"` pins it.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
+ * Needs Claude Code >= 2.1.287.
  *
  * Options (pluginConfigs["prompt-cache-control@skills-dir"].options):
  *   ttl: "auto" | "5m" | "1h"   cache lifetime (default auto)
@@ -288,12 +288,20 @@ export const register: Register = (on, options) => {
     const { Box, Text } = $.ui.resolve(e)
     const columns = e.viewport?.columns ?? 100
     const color = COLOR[advice.kind]
+    // The band is one instance: whatever the plugins beneath draw (another mod's band) stays, under this line.
+    const below = await next(e)
+    const stack = (own: ReturnType<typeof Text>) => (
+      <Box flexDirection="column">
+        {own}
+        {below}
+      </Box>
+    )
 
-    if (!last) return <Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>
+    if (!last) return stack(<Text dimColor>{fit(`cache: ${advice.text}`, columns)}</Text>)
 
     const ratio = hitRatio(last)
     const wide = columns >= 90
-    return (
+    return stack(
       <Box flexDirection="row" columnGap={1}>
         <Text bold color={color}>{advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'off' || advice.kind === 'cold' || advice.kind === 'uncached' ? '○' : '✖'}</Text>
         <Text bold color="cyan">cache</Text>
@@ -312,7 +320,7 @@ export const register: Register = (on, options) => {
           <Text bold color={left > 0 ? lifeColor(left, ttl, policy.warnMs) : 'red'}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
         <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
-      </Box>
+      </Box>,
     )
   })
 

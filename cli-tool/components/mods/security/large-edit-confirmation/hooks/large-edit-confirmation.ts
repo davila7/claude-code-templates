@@ -1,5 +1,5 @@
 /**
- * large-edit-confirmation — Claude Mod (EARLY ACCESS)
+ * large-edit-confirmation — Claude Mod
  *
  * Asks the user, in the engine's own AskUserQuestion dialog, before Claude
  * edits or overwrites a file larger than a configurable number of lines.
@@ -9,7 +9,7 @@
  * `$.ui.ask` rejects in a headless (`claude -p`) run, where nobody can answer;
  * the `headless` option decides what happens then (deny by default).
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:
@@ -80,5 +80,19 @@ export const register: Register = (on, options) => {
     }
 
     return next(e)
+  }).catch(async ($, e, next) => {
+    // The edit already ran after an approval: hand back its result (replayed, nothing runs twice).
+    if (next.called) {
+      try {
+        return await next(e)
+      } catch {
+        return { deny: `The ${e.tool} on ${e.file_path} failed.` }
+      }
+    }
+    // Otherwise a failed check never lets the edit through unconfirmed (fail closed).
+    $.ui.log(`[large-edit-confirmation] check failed (${next.error.kind}); denied ${e.tool} on ${e.file_path}`)
+    return {
+      deny: `large-edit-confirmation could not check ${e.file_path} (${next.error.kind}), so the ${e.tool} was not run. Propose a smaller, targeted change or ask the user to make it.`,
+    }
   })
 }
