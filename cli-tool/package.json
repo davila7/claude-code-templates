@@ -26,6 +26,8 @@
     "test:integration": "jest tests/integration",
     "test:e2e": "jest tests/e2e",
     "test:analytics": "jest --testPathPattern=analytics",
+    "orcarouter:dashboard": "node -e \"require('./src/orcarouter-dashboard').runOrcaRouterDashboard({ port: Number(process.env.PORT) || undefined })\"",
+    "orcarouter:live-check": "node scripts/orcarouter-live-check.js",
     "test:commands": "./test-commands.sh",
     "test:detailed": "./test-detailed.sh",
     "test:react": "make test-react",
