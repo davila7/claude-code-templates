@@ -1,0 +1,4 @@
+{
+  "description": "Provides explicit advisory local classification and schema-limited extraction.",
+  "modules": ["./register.js"]
+}
