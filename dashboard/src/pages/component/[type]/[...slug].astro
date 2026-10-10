@@ -120,6 +120,10 @@ const title = component ? formatName(component.name) : 'Component Not Found';
 const typePlural = type?.endsWith('s') ? type : (type + 's');
 const config = TYPE_CONFIG[typePlural ?? 'agents'];
 const installCmd = component ? getInstallCommand(component) : '';
+// Social preview rendered at build time by scripts/generate-og-images.mjs.
+const ogImage = component && config
+  ? encodeURI(`/og/${typePlural}/${component.path?.replace(/\.(md|json)$/, '') ?? component.name}.png`)
+  : undefined;
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
 const infoCards = CARD_FIELDS.filter((f) => {
   const v = frontmatter[f.key];
@@ -262,6 +266,8 @@ const componentSchema = component
 <DashboardLayout
   title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
   description={seoDescription}
+  ogImage={ogImage}
+  ogImageAlt={component && config ? `${title}, a Claude Code ${config.singular}` : undefined}
 >
   {componentSchema && (
     <script type="application/ld+json" set:html={JSON.stringify(componentSchema)} />
