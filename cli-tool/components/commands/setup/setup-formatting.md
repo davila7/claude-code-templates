@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [language] | --javascript | --typescript | --python | --multi-language
+argument-hint: "[language] | --javascript | --typescript | --python | --multi-language"
 description: Configure comprehensive code formatting tools with consistent style enforcement
 ---
 

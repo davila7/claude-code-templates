@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [schema-type] | --relational | --nosql | --hybrid | --normalize
+argument-hint: "[schema-type] | --relational | --nosql | --hybrid | --normalize"
 description: Design optimized database schemas with proper relationships, constraints, and performance considerations
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-description]
+argument-hint: "[task-description]"
 description: Plan and manage events — scheduling, invitations, and logistics.
 ---
 
