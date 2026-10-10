@@ -394,18 +394,32 @@ function landsInOutput(target: string): boolean {
     || /^\/proc\/(self|\d+)\/fd\//.test(target) || target.startsWith('>(') || target.startsWith('(')
 }
 
-// Does stdout of this simple command go to the model? False when stdout is
-// redirected to a file (2> alone still prints stdout). A redirect into stderr,
-// a /dev/fd path or a process substitution prints the same text.
+// Does stdout of this simple command go to the model? False when its final
+// destination is a file (2> alone still prints stdout). The last stdout
+// redirect wins, as in the shell: `> /dev/null > /dev/stderr` prints. A
+// redirect into stderr, a /dev/fd path or a process substitution prints the
+// same text, and so does `>&2`.
 function stdoutRedirected(words: string[]): boolean {
+  let toFile = false
   for (let i = 0; i < words.length; i++) {
-    if (!STDOUT_OPS.includes(words[i] ?? '')) continue
+    const w = words[i] ?? ''
+    if (w === '>&') {
+      // `>&2` and `1>&2` send stdout to stderr; `2>&1` and other descriptors do not touch stdout.
+      const prev = words[i - 1] ?? ''
+      if (/^[02-9]$/.test(prev)) { i++; continue }
+      const to = words[i + 1]
+      if (to === '2') toFile = false
+      else if (to !== '1') toFile = true
+      i++
+      continue
+    }
+    if (!STDOUT_OPS.includes(w)) continue
     const target = words[i + 1]
-    if (target === undefined || !landsInOutput(target)) return true
+    toFile = target === undefined || !landsInOutput(target)
     // A `> >(cmd)` target may arrive as '>' and '(cmd)' words; keep scanning.
     i++
   }
-  return false
+  return toFile
 }
 
 /**
