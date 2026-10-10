@@ -66,6 +66,7 @@ REPOS = [
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
+    ("voicehook-ai/voicehook-agent", "https://voicehook.ai/?utm_source=aitmpl&utm_campaign=d4-plugins"),
 ]
 
 DESCRIPTION_OVERRIDES = {
