@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.30.0] - 2026-10-10
+
+### Changed
+- **Redesigned multi-component install output** (`--agent x --hook y ...`): a
+  step rail with a plan table (per-type icons, what each component writes), a
+  location prompt that shows each settings file, one row per component that
+  turns from a spinner into ✔/✖ with the files written or the failure reason,
+  and a summary with a retry command for failures. Plain lines without a TTY
+  or in CI. The installers' internal logs and the zero-count type list are gone.
+
+### Fixed
+- The banner's right border was misaligned.
+
 ## [1.29.7] - 2026-10-09
 
 ### Security
