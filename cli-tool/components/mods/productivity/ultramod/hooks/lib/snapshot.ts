@@ -42,6 +42,15 @@ export function stamp(ms: number): string {
   return `${year}${pad(month)}${pad(day)}-${pad(Math.floor(rest / 3_600))}${pad(Math.floor(rest / 60) % 60)}${pad(rest % 60)}`
 }
 
+let tempCount = 0
+
+// A name no other snapshot or restore uses, in this session or another one
+// working in the same tree: each operation owns its temporary index.
+function tempName(base: string, now: number): string {
+  tempCount += 1
+  return `${base}-${Math.floor(now)}-${tempCount}-${Math.random().toString(36).slice(2, 8)}`
+}
+
 // Write the work tree, untracked files included, as a commit under
 // SNAPSHOT_REF through a temporary index. The real index and work tree are
 // never touched. Returns whether the ref was written.
@@ -82,7 +91,7 @@ export async function saveSnapshot(run: GitRun, drop: DropFile, cwd: string, mes
   const top = await run(['git', 'rev-parse', '--show-toplevel'], cwd)
   if (!top.ok || !top.out) return fail('no work tree root')
   const root = top.out
-  const index = await run(['git', 'rev-parse', '--git-path', 'ultramod-index'], root)
+  const index = await run(['git', 'rev-parse', '--git-path', tempName('ultramod-index', now)], root)
   if (!index.ok || !index.out) return fail('no index path')
   let saved = false
   try {
@@ -146,7 +155,7 @@ export function findConflicts(current: string[], snapshot: string[]): string[] {
  * result is false.
  */
 export async function restoreSnapshot(run: GitRun, drop: DropFile, root: string, sha: string, onConflict: (paths: string[]) => void = () => {}): Promise<boolean> {
-  const path = await run(['git', 'rev-parse', '--git-path', 'ultramod-restore-index'], root)
+  const path = await run(['git', 'rev-parse', '--git-path', tempName('ultramod-restore-index', 0)], root)
   if (!path.ok || !path.out) return false
   const env = { GIT_INDEX_FILE: path.out }
   try {
