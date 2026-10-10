@@ -1,0 +1,6 @@
+{
+  "description": "todo-pane: session.start registers /todo and reads todo.md; ui.render on AbovePrompt draws the todo (n) button and on the Pane the editable task list; tool.call re-reads todo.md after an Edit/Write on it; every change is written through $.fs",
+  "modules": [
+    "./register.tsx"
+  ]
+}
